@@ -7,15 +7,15 @@
  */
 
 import {Provider} from '@angular/core';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from '../../index';
-import {Date, DateWrapper, isBlank, isPresent} from '../../src/facade/lang';
+import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
+import {isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {
-    var reporter: ConsoleReporter;
-    var log: string[];
+    let reporter: ConsoleReporter;
+    let log: string[];
 
     function createReporter(
         {columnWidth = null, sampleId = null, descriptions = null, metrics = null}: {
@@ -25,13 +25,13 @@ export function main() {
           metrics?: {[key: string]: any}
         }) {
       log = [];
-      if (isBlank(descriptions)) {
+      if (!descriptions) {
         descriptions = [];
       }
-      if (isBlank(sampleId)) {
+      if (sampleId == null) {
         sampleId = 'null';
       }
-      var providers: Provider[] = [
+      const providers: Provider[] = [
         ConsoleReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)
@@ -90,5 +90,5 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

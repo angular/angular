@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
+/* tslint:disable:no-console  */
+
 import {Component, Directive, Host, NgModule} from '@angular/core';
-import {isPresent, print} from '@angular/core/src/facade/lang';
-import {FormGroup, FormsModule, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, NG_VALIDATORS, NgForm} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -33,8 +33,8 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
-function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean} {
-  if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
+function creditCardValidator(c: FormControl): {[key: string]: boolean} {
+  if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
     return {'invalidCreditCard': true};
@@ -74,17 +74,17 @@ class CreditCardValidator {
   `
 })
 class ShowError {
-  formDir: any /** TODO #9100 */;
+  formDir: NgForm;
   controlPath: string;
   errorTypes: string[];
 
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var form: FormGroup = this.formDir.form;
-    var control = form.get(this.controlPath);
-    if (isPresent(control) && control.touched) {
-      for (var i = 0; i < this.errorTypes.length; ++i) {
+    const form: FormGroup = this.formDir.form;
+    const control = form.get(this.controlPath);
+    if (control && control.touched) {
+      for (let i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
           return this._errorMessage(this.errorTypes[i]);
         }
@@ -93,9 +93,12 @@ class ShowError {
     return null;
   }
 
-  _errorMessage(code: string): string {
-    var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
-    return (config as any /** TODO #9100 */)[code];
+  private _errorMessage(code: string): string {
+    const config: {[key: string]: string} = {
+      'required': 'is required',
+      'invalidCreditCard': 'is invalid credit card number',
+    };
+    return config[code];
   }
 }
 
@@ -163,8 +166,8 @@ class TemplateDrivenForms {
   countries = ['US', 'Canada'];
 
   onSubmit(): void {
-    print('Submitting:');
-    print(this.model);
+    console.log('Submitting:');
+    console.log(this.model);
   }
 }
 @NgModule({

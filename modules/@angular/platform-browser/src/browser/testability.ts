@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetTestability, Injectable, Testability, TestabilityRegistry, setTestabilityGetter} from '@angular/core';
+import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
-import {ListWrapper} from '../facade/collection';
 import {global, isPresent} from '../facade/lang';
 
 export class BrowserGetTestability implements GetTestability {
@@ -17,22 +16,22 @@ export class BrowserGetTestability implements GetTestability {
 
   addToWindow(registry: TestabilityRegistry): void {
     global.getAngularTestability = (elem: any, findInAncestors: boolean = true) => {
-      var testability = registry.findTestabilityInTree(elem, findInAncestors);
+      const testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
         throw new Error('Could not find testability for element.');
       }
       return testability;
     };
 
-    global.getAllAngularTestabilities = () => { return registry.getAllTestabilities(); };
+    global.getAllAngularTestabilities = () => registry.getAllTestabilities();
 
     global.getAllAngularRootElements = () => registry.getAllRootElements();
 
-    var whenAllStable = (callback: any /** TODO #9100 */) => {
-      var testabilities = global.getAllAngularTestabilities();
-      var count = testabilities.length;
-      var didWork = false;
-      var decrement = function(didWork_: any /** TODO #9100 */) {
+    const whenAllStable = (callback: any /** TODO #9100 */) => {
+      const testabilities = global.getAllAngularTestabilities();
+      let count = testabilities.length;
+      let didWork = false;
+      const decrement = function(didWork_: any /** TODO #9100 */) {
         didWork = didWork || didWork_;
         count--;
         if (count == 0) {
@@ -45,7 +44,7 @@ export class BrowserGetTestability implements GetTestability {
     };
 
     if (!global['frameworkStabilizers']) {
-      global['frameworkStabilizers'] = ListWrapper.createGrowableSize(0);
+      global['frameworkStabilizers'] = [];
     }
     global['frameworkStabilizers'].push(whenAllStable);
   }
@@ -55,7 +54,7 @@ export class BrowserGetTestability implements GetTestability {
     if (elem == null) {
       return null;
     }
-    var t = registry.getTestability(elem);
+    const t = registry.getTestability(elem);
     if (isPresent(t)) {
       return t;
     } else if (!findInAncestors) {

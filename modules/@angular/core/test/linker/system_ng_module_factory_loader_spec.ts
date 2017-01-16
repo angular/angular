@@ -8,7 +8,7 @@
 
 import {global} from '@angular/common/src/facade/lang';
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
-import {async, tick} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 function mockSystem(modules: {[module: string]: any}) {
@@ -34,17 +34,17 @@ export function main() {
     afterEach(() => { (global as any).System = oldSystem; });
 
     it('loads a default factory by appending the factory suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler());
+         const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test').then(contents => { expect(contents).toBe('test module factory'); });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler());
+         const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test#Named').then(contents => {
            expect(contents).toBe('test NamedNgFactory');
          });
        }));
     it('loads a named factory with a configured prefix and suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler(), {
+         const loader = new SystemJsNgModuleLoader(new Compiler(), {
            factoryPathPrefix: 'prefixed/',
            factoryPathSuffix: '/suffixed',
          });

@@ -9,8 +9,6 @@
 import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../facade/async';
-import {ListWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
 import {AbstractControl, FormControl, FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
@@ -48,7 +46,8 @@ const resolvedPromise = Promise.resolve(null);
  * sub-groups within the form.
  *
  * You can listen to the directive's `ngSubmit` event to be notified when the user has
- * triggered a form submission.
+ * triggered a form submission. The `ngSubmit` event will be emitted with the original form
+ * submission event.
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
  *
@@ -61,7 +60,7 @@ const resolvedPromise = Promise.resolve(null);
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',
   providers: [formDirectiveProvider],
-  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
+  host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
@@ -102,8 +101,8 @@ export class NgForm extends ControlContainer implements Form {
 
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
-      if (isPresent(container)) {
+      const container = this._findContainer(dir.path);
+      if (container) {
         container.removeControl(dir.name);
       }
     });
@@ -111,8 +110,8 @@ export class NgForm extends ControlContainer implements Form {
 
   addFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
-      var group = new FormGroup({});
+      const container = this._findContainer(dir.path);
+      const group = new FormGroup({});
       setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
       group.updateValueAndValidity({emitEvent: false});
@@ -121,8 +120,8 @@ export class NgForm extends ControlContainer implements Form {
 
   removeFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
-      if (isPresent(container)) {
+      const container = this._findContainer(dir.path);
+      if (container) {
         container.removeControl(dir.name);
       }
     });
@@ -132,16 +131,16 @@ export class NgForm extends ControlContainer implements Form {
 
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      var ctrl = <FormControl>this.form.get(dir.path);
+      const ctrl = <FormControl>this.form.get(dir.path);
       ctrl.setValue(value);
     });
   }
 
   setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
-  onSubmit(): boolean {
+  onSubmit($event: Event): boolean {
     this._submitted = true;
-    this.ngSubmit.emit(null);
+    this.ngSubmit.emit($event);
     return false;
   }
 
@@ -155,6 +154,6 @@ export class NgForm extends ControlContainer implements Form {
   /** @internal */
   _findContainer(path: string[]): FormGroup {
     path.pop();
-    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.get(path);
+    return path.length ? <FormGroup>this.form.get(path) : this.form;
   }
 }

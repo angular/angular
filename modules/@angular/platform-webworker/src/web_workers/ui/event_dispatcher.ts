@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-
 import {EventEmitter} from '../../facade/async';
 import {RenderStoreObject, Serializer} from '../shared/serializer';
 
@@ -15,8 +13,17 @@ import {serializeEventWithTarget, serializeGenericEvent, serializeKeyboardEvent,
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}
 
+  dispatchAnimationEvent(player: any, phaseName: string, element: any): boolean {
+    this._sink.emit({
+      'element': this._serializer.serialize(element, RenderStoreObject),
+      'animationPlayer': this._serializer.serialize(player, RenderStoreObject),
+      'phaseName': phaseName
+    });
+    return true;
+  }
+
   dispatchRenderEvent(element: any, eventTarget: string, eventName: string, event: any): boolean {
-    var serializedEvent: any /** TODO #9100 */;
+    let serializedEvent: any /** TODO #9100 */;
     // TODO (jteplitz602): support custom events #3350
     switch (event.type) {
       case 'click':

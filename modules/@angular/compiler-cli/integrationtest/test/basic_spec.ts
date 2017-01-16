@@ -43,13 +43,13 @@ describe('template codegen output', () => {
   });
 
   it('should be able to create the basic component', () => {
-    var compFixture = createComponent(BasicComp);
+    const compFixture = createComponent(BasicComp);
     expect(compFixture.componentInstance).toBeTruthy();
   });
 
   it('should support ngIf', () => {
-    var compFixture = createComponent(BasicComp);
-    var debugElement = compFixture.debugElement;
+    const compFixture = createComponent(BasicComp);
+    const debugElement = compFixture.debugElement;
     expect(debugElement.children.length).toBe(3);
 
     compFixture.componentInstance.ctxBool = true;
@@ -59,8 +59,8 @@ describe('template codegen output', () => {
   });
 
   it('should support ngFor', () => {
-    var compFixture = createComponent(BasicComp);
-    var debugElement = compFixture.debugElement;
+    const compFixture = createComponent(BasicComp);
+    const debugElement = compFixture.debugElement;
     expect(debugElement.children.length).toBe(3);
 
     // test NgFor
@@ -83,11 +83,9 @@ describe('template codegen output', () => {
     });
 
     it('should support i18n for content tags', () => {
-      const compFixture = createComponent(BasicComp);
-      const debugElement = compFixture.debugElement;
-      const containerElement = <any>debugElement.nativeElement;
-      const pElement = <any>containerElement.children.find((c: any) => c.name == 'p');
-      const pText = <string>pElement.children.map((c: any) => c.data).join('').trim();
+      const containerElement = createComponent(BasicComp).nativeElement;
+      const pElement = containerElement.children.find((c: any) => c.name == 'p');
+      const pText = pElement.children.map((c: any) => c.data).join('').trim();
       expect(pText).toBe('tervetuloa');
     });
   });

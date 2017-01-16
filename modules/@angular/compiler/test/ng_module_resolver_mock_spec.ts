@@ -7,14 +7,12 @@
  */
 
 import {Injector, NgModule} from '@angular/core';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
-
-import {isBlank, stringify} from '../src/facade/lang';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {MockNgModuleResolver} from '../testing/index';
 
 export function main() {
   describe('MockNgModuleResolver', () => {
-    var ngModuleResolver: MockNgModuleResolver;
+    let ngModuleResolver: MockNgModuleResolver;
 
     beforeEach(inject([Injector], (injector: Injector) => {
       ngModuleResolver = new MockNgModuleResolver(injector);
@@ -23,14 +21,14 @@ export function main() {
     describe('NgModule overriding', () => {
       it('should fallback to the default NgModuleResolver when templates are not overridden',
          () => {
-           var ngModule = ngModuleResolver.resolve(SomeNgModule);
+           const ngModule = ngModuleResolver.resolve(SomeNgModule);
            expect(ngModule.declarations).toEqual([SomeDirective]);
          });
 
       it('should allow overriding the @NgModule', () => {
         ngModuleResolver.setNgModule(
             SomeNgModule, new NgModule({declarations: [SomeOtherDirective]}));
-        var ngModule = ngModuleResolver.resolve(SomeNgModule);
+        const ngModule = ngModuleResolver.resolve(SomeNgModule);
         expect(ngModule.declarations).toEqual([SomeOtherDirective]);
       });
     });

@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
+import {AUTO_STYLE, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
+import {CompilerInjectable} from '../injectable';
+
+import {dashCaseToCamelCase} from '../util';
 
 import {SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
@@ -229,20 +232,21 @@ const SCHEMA:
 
 const _ATTR_TO_PROP: {[name: string]: string} = {
   'class': 'className',
+  'for': 'htmlFor',
   'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
 };
 
-@Injectable()
+@CompilerInjectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
 
   constructor() {
     super();
     SCHEMA.forEach(encodedType => {
-      let type: {[property: string]: string} = {};
+      const type: {[property: string]: string} = {};
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
@@ -328,7 +332,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * 'NONE' security context, i.e. that they are safe inert string values. Only specific well known
    * attack vectors are assigned their appropriate context.
    */
-  securityContext(tagName: string, propName: string): SecurityContext {
+  securityContext(tagName: string, propName: string, isAttribute: boolean): SecurityContext {
+    if (isAttribute) {
+      // NB: For security purposes, use the mapped property name, not the attribute name.
+      propName = this.getMappedPropName(propName);
+    }
+
     // Make sure comparisons are case insensitive, so that case differences between attribute and
     // property names do not have a security impact.
     tagName = tagName.toLowerCase();
@@ -344,4 +353,88 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   getMappedPropName(propName: string): string { return _ATTR_TO_PROP[propName] || propName; }
 
   getDefaultComponentElementName(): string { return 'ng-component'; }
+
+  validateProperty(name: string): {error: boolean, msg?: string} {
+    if (name.toLowerCase().startsWith('on')) {
+      const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...` +
+          `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+          ` current module.`;
+      return {error: true, msg: msg};
+    } else {
+      return {error: false};
+    }
+  }
+
+  validateAttribute(name: string): {error: boolean, msg?: string} {
+    if (name.toLowerCase().startsWith('on')) {
+      const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...`;
+      return {error: true, msg: msg};
+    } else {
+      return {error: false};
+    }
+  }
+
+  allKnownElementNames(): string[] { return Object.keys(this._schema); }
+
+  normalizeAnimationStyleProperty(propName: string): string {
+    return dashCaseToCamelCase(propName);
+  }
+
+  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
+      {error: string, value: string} {
+    let unit: string = '';
+    const strVal = val.toString().trim();
+    let errorMsg: string = null;
+
+    if (_isPixelDimensionStyle(camelCaseProp) && val !== 0 && val !== '0') {
+      if (typeof val === 'number') {
+        unit = 'px';
+      } else {
+        const valAndSuffixMatch = val.match(/^[+-]?[\d\.]+([a-z]*)$/);
+        if (valAndSuffixMatch && valAndSuffixMatch[1].length == 0) {
+          errorMsg = `Please provide a CSS unit value for ${userProvidedProp}:${val}`;
+        }
+      }
+    }
+    return {error: errorMsg, value: strVal + unit};
+  }
+}
+
+function _isPixelDimensionStyle(prop: string): boolean {
+  switch (prop) {
+    case 'width':
+    case 'height':
+    case 'minWidth':
+    case 'minHeight':
+    case 'maxWidth':
+    case 'maxHeight':
+    case 'left':
+    case 'top':
+    case 'bottom':
+    case 'right':
+    case 'fontSize':
+    case 'outlineWidth':
+    case 'outlineOffset':
+    case 'paddingTop':
+    case 'paddingLeft':
+    case 'paddingBottom':
+    case 'paddingRight':
+    case 'marginTop':
+    case 'marginLeft':
+    case 'marginBottom':
+    case 'marginRight':
+    case 'borderRadius':
+    case 'borderWidth':
+    case 'borderTopWidth':
+    case 'borderLeftWidth':
+    case 'borderRightWidth':
+    case 'borderBottomWidth':
+    case 'textIndent':
+      return true;
+
+    default:
+      return false;
+  }
 }

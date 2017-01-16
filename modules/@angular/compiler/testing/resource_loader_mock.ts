@@ -8,7 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {ListWrapper} from './facade/collection';
-import {isBlank, normalizeBlank} from './facade/lang';
+import {isBlank} from './facade/lang';
 
 /**
  * A mock implementation of {@link ResourceLoader} that allows outgoing requests to be mocked
@@ -20,7 +20,7 @@ export class MockResourceLoader extends ResourceLoader {
   private _requests: _PendingRequest[] = [];
 
   get(url: string): Promise<string> {
-    var request = new _PendingRequest(url);
+    const request = new _PendingRequest(url);
     this._requests.push(request);
     return request.getPromise();
   }
@@ -33,7 +33,7 @@ export class MockResourceLoader extends ResourceLoader {
    * The response given will be returned if the expectation matches.
    */
   expect(url: string, response: string) {
-    var expectation = new _Expectation(url, response);
+    const expectation = new _Expectation(url, response);
     this._expectations.push(expectation);
   }
 
@@ -67,9 +67,9 @@ export class MockResourceLoader extends ResourceLoader {
   verifyNoOutstandingExpectations() {
     if (this._expectations.length === 0) return;
 
-    var urls: any[] /** TODO #9100 */ = [];
-    for (var i = 0; i < this._expectations.length; i++) {
-      var expectation = this._expectations[i];
+    const urls: string[] = [];
+    for (let i = 0; i < this._expectations.length; i++) {
+      const expectation = this._expectations[i];
       urls.push(expectation.url);
     }
 
@@ -77,10 +77,10 @@ export class MockResourceLoader extends ResourceLoader {
   }
 
   private _processRequest(request: _PendingRequest) {
-    var url = request.url;
+    const url = request.url;
 
     if (this._expectations.length > 0) {
-      var expectation = this._expectations[0];
+      const expectation = this._expectations[0];
       if (expectation.url == url) {
         ListWrapper.remove(this._expectations, expectation);
         request.complete(expectation.response);
@@ -89,8 +89,8 @@ export class MockResourceLoader extends ResourceLoader {
     }
 
     if (this._definitions.has(url)) {
-      var response = this._definitions.get(url);
-      request.complete(normalizeBlank(response));
+      const response = this._definitions.get(url);
+      request.complete(response == null ? null : response);
       return;
     }
 

@@ -30,7 +30,7 @@ export enum ChangeDetectionStrategy {
  */
 export enum ChangeDetectorStatus {
   /**
-   * `CheckedOnce` means that after calling detectChanges the mode of the change detector
+   * `CheckOnce` means that after calling detectChanges the mode of the change detector
    * will become `Checked`.
    */
   CheckOnce,
@@ -65,25 +65,6 @@ export enum ChangeDetectorStatus {
    */
   Destroyed,
 }
-
-/**
- * List of possible {@link ChangeDetectionStrategy} values.
- */
-export var CHANGE_DETECTION_STRATEGY_VALUES = [
-  ChangeDetectionStrategy.OnPush,
-  ChangeDetectionStrategy.Default,
-];
-/**
- * List of possible {@link ChangeDetectorStatus} values.
- */
-export var CHANGE_DETECTOR_STATUS_VALUES = [
-  ChangeDetectorStatus.CheckOnce,
-  ChangeDetectorStatus.Checked,
-  ChangeDetectorStatus.CheckAlways,
-  ChangeDetectorStatus.Detached,
-  ChangeDetectorStatus.Errored,
-  ChangeDetectorStatus.Destroyed,
-];
 
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
     boolean {

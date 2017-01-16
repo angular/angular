@@ -10,10 +10,10 @@ import {Component, EventEmitter, Input, NgModule, Output, forwardRef} from '@ang
 import {BrowserModule} from '@angular/platform-browser';
 import {UpgradeAdapter} from '@angular/upgrade';
 
-declare var angular: any;
+declare const angular: any;
 
 
-var styles = [`
+const styles = [`
     .border {
       border: solid 2px DodgerBlue;
     }
@@ -27,10 +27,10 @@ var styles = [`
     }
   `];
 
-var adapter = new UpgradeAdapter(forwardRef(() => Ng2AppModule));
-var ng1module = angular.module('myExample', []);
+const adapter = new UpgradeAdapter(forwardRef(() => Ng2AppModule));
+const ng1module = angular.module('myExample', []);
 
-ng1module.controller('Index', function($scope: any /** TODO #9100 */) { $scope.name = 'World'; });
+ng1module.controller('Index', function($scope: any) { $scope.name = 'World'; });
 
 ng1module.directive('ng1User', function() {
   return {

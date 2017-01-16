@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, TypeProvider, ValueProvider, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {ErrorHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {AnimationDriver, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
 
-import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, getDOM} from './private_import_platform-browser';
+import {APP_ID_RANDOM_PROVIDER} from './private_import_core';
+import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, WebAnimationsDriver, getDOM} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -18,7 +19,6 @@ import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from './web_workers/ui/renderer';
-
 
 
 /**
@@ -67,6 +67,7 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
   {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+  APP_ID_RANDOM_PROVIDER,
   {provide: DomRootRenderer, useClass: DomRootRenderer_},
   {provide: RootRenderer, useExisting: DomRootRenderer},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
@@ -90,12 +91,12 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
 ];
 
 function initializeGenericWorkerRenderer(injector: Injector) {
-  var bus = injector.get(MessageBus);
-  let zone = injector.get(NgZone);
+  const bus = injector.get(MessageBus);
+  const zone = injector.get(NgZone);
   bus.attachToZone(zone);
 
   // initialize message services after the bus has been created
-  let services = injector.get(WORKER_UI_STARTABLE_MESSAGING_SERVICE);
+  const services = injector.get(WORKER_UI_STARTABLE_MESSAGING_SERVICE);
   zone.runGuarded(() => { services.forEach((svc: any) => { svc.start(); }); });
 }
 
@@ -107,7 +108,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
   return () => {
     BrowserDomAdapter.makeCurrent();
     BrowserGetTestability.init();
-    var scriptUri: string;
+    let scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
     } catch (e) {
@@ -115,7 +116,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
           'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
     }
 
-    let instance = injector.get(WebWorkerInstance);
+    const instance = injector.get(WebWorkerInstance);
     spawnWebWorker(scriptUri, instance);
 
     initializeGenericWorkerRenderer(injector);
@@ -144,16 +145,17 @@ function createNgZone(): NgZone {
  * Spawns a new class and initializes the WebWorkerInstance
  */
 function spawnWebWorker(uri: string, instance: WebWorkerInstance): void {
-  var webWorker: Worker = new Worker(uri);
-  var sink = new PostMessageBusSink(webWorker);
-  var source = new PostMessageBusSource(webWorker);
-  var bus = new PostMessageBus(sink, source);
+  const webWorker: Worker = new Worker(uri);
+  const sink = new PostMessageBusSink(webWorker);
+  const source = new PostMessageBusSource(webWorker);
+  const bus = new PostMessageBus(sink, source);
 
   instance.init(webWorker, bus);
 }
 
 function _resolveDefaultAnimationDriver(): AnimationDriver {
-  // web workers have not been tested or configured to
-  // work with animations just yet...
+  if (getDOM().supportsWebAnimation()) {
+    return new WebAnimationsDriver();
+  }
   return AnimationDriver.NOOP;
 }

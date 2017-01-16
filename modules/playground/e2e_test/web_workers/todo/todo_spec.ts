@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, by, element, protractor} from 'protractor';
 
 describe('WebWorkers Todo', function() {
   afterEach(() => {
@@ -14,7 +15,7 @@ describe('WebWorkers Todo', function() {
     browser.ignoreSynchronization = false;
   });
 
-  var URL = 'all/playground/src/web_workers/todo/index.html';
+  const URL = 'all/playground/src/web_workers/todo/index.html';
 
   it('should bootstrap', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker

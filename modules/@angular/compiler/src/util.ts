@@ -6,40 +6,49 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileTokenMetadata} from './compile_metadata';
-import {StringMapWrapper} from './facade/collection';
-import {StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
-import * as o from './output/output_ast';
-
+import {BaseError} from './facade/errors';
+import {isPrimitive, isStrictStringMap} from './facade/lang';
 export const MODULE_SUFFIX = '';
 
-var CAMEL_CASE_REGEXP = /([A-Z])/g;
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(
-      input, CAMEL_CASE_REGEXP, (m: string[]) => { return '-' + m[1].toLowerCase(); });
+  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
+}
+
+export function dashCaseToCamelCase(input: string): string {
+  return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  const colonIndex = input.indexOf(':');
-  if (colonIndex == -1) return defaultValues;
-  return [input.slice(0, colonIndex).trim(), input.slice(colonIndex + 1).trim()];
+  return _splitAt(input, ':', defaultValues);
 }
 
-export function sanitizeIdentifier(name: string): string {
-  return StringWrapper.replaceAll(name, /\W/g, '_');
+export function splitAtPeriod(input: string, defaultValues: string[]): string[] {
+  return _splitAt(input, '.', defaultValues);
+}
+
+function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
+  const characterIndex = input.indexOf(character);
+  if (characterIndex == -1) return defaultValues;
+  return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
-  if (isArray(value)) {
+  if (Array.isArray(value)) {
     return visitor.visitArray(<any[]>value, context);
-  } else if (isStrictStringMap(value)) {
-    return visitor.visitStringMap(<{[key: string]: any}>value, context);
-  } else if (isBlank(value) || isPrimitive(value)) {
-    return visitor.visitPrimitive(value, context);
-  } else {
-    return visitor.visitOther(value, context);
   }
+
+  if (isStrictStringMap(value)) {
+    return visitor.visitStringMap(<{[key: string]: any}>value, context);
+  }
+
+  if (value == null || isPrimitive(value)) {
+    return visitor.visitPrimitive(value, context);
+  }
+
+  return visitor.visitOther(value, context);
 }
 
 export interface ValueVisitor {
@@ -54,33 +63,12 @@ export class ValueTransformer implements ValueVisitor {
     return arr.map(value => visitValue(value, this, context));
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
-    var result = {};
-    StringMapWrapper.forEach(map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-      (result as any /** TODO #9100 */)[key] = visitValue(value, this, context);
-    });
+    const result: {[key: string]: any} = {};
+    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
     return result;
   }
   visitPrimitive(value: any, context: any): any { return value; }
   visitOther(value: any, context: any): any { return value; }
-}
-
-export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
-  if (path == null) {
-    return `asset:@angular/lib/${pkg}/index`;
-  } else {
-    return `asset:@angular/lib/${pkg}/src/${path}`;
-  }
-}
-
-export function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
-  if (isPresent(token.value)) {
-    return o.literal(token.value);
-  } else if (token.identifierIsInstance) {
-    return o.importExpr(token.identifier)
-        .instantiate([], o.importType(token.identifier, [], [o.TypeModifier.Const]));
-  } else {
-    return o.importExpr(token.identifier);
-  }
 }
 
 export class SyncAsyncResult<T> {
@@ -90,3 +78,5 @@ export class SyncAsyncResult<T> {
     }
   }
 }
+
+export class SyntaxError extends BaseError {}

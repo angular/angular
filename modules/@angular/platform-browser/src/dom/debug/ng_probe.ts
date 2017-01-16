@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, DebugNode, NgZone, Optional, Provider, RootRenderer, getDebugNode, isDevMode} from '@angular/core';
+import * as core from '@angular/core';
 
 import {StringMapWrapper} from '../../facade/collection';
 import {DebugDomRootRenderer} from '../../private_import_core';
 import {getDOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 
-
 const CORE_TOKENS = {
-  'ApplicationRef': ApplicationRef,
-  'NgZone': NgZone
+  'ApplicationRef': core.ApplicationRef,
+  'NgZone': core.NgZone,
 };
 
 const INSPECT_GLOBAL_NAME = 'ng.probe';
@@ -27,26 +26,27 @@ const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
  * null if the given native element does not have an Angular view associated
  * with it.
  */
-export function inspectNativeElement(element: any /** TODO #9100 */): DebugNode {
-  return getDebugNode(element);
+export function inspectNativeElement(element: any): core.DebugNode {
+  return core.getDebugNode(element);
 }
 
 /**
- * @experimental
+ * Deprecated. Use the one from '@angular/core'.
+ * @deprecated
  */
 export class NgProbeToken {
-  constructor(private name: string, private token: any) {}
+  constructor(public name: string, public token: any) {}
 }
+
 
 export function _createConditionalRootRenderer(
-    rootRenderer: any /** TODO #9100 */, extraTokens: NgProbeToken[]) {
-  if (isDevMode()) {
-    return _createRootRenderer(rootRenderer, extraTokens);
-  }
-  return rootRenderer;
+    rootRenderer: any, extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]) {
+  return core.isDevMode() ?
+      _createRootRenderer(rootRenderer, (extraTokens || []).concat(coreTokens || [])) :
+      rootRenderer;
 }
 
-function _createRootRenderer(rootRenderer: any /** TODO #9100 */, extraTokens: NgProbeToken[]) {
+function _createRootRenderer(rootRenderer: any, extraTokens: NgProbeToken[]) {
   getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   getDOM().setGlobalVar(
       CORE_TOKENS_GLOBAL_NAME,
@@ -61,14 +61,11 @@ function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: Provider[] = [{
-  provide: RootRenderer,
+export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [{
+  provide: core.RootRenderer,
   useFactory: _createConditionalRootRenderer,
-  deps: [DomRootRenderer, [NgProbeToken, new Optional()]]
-}];
-
-export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = [{
-  provide: RootRenderer,
-  useFactory: _createRootRenderer,
-  deps: [DomRootRenderer, [NgProbeToken, new Optional()]]
+  deps: [
+    DomRootRenderer, [NgProbeToken, new core.Optional()],
+    [core.NgProbeToken, new core.Optional()]
+  ]
 }];

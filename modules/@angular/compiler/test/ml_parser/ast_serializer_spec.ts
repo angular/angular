@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, it} from '../../../core/testing/testing_internal';
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
+import * as html from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
 
 export function main() {
   describe('Node serializer', () => {
-    var parser: HtmlParser;
+    let parser: HtmlParser;
 
     beforeEach(() => { parser = new HtmlParser(); });
 
@@ -51,7 +51,7 @@ export function main() {
         <span>{{ interpolation }}</span>
         <!--comment-->
         <p expansion="true">
-          {number, plural, =0 {{sex, gender, other {<b>?</b>}}}}
+          {number, plural, =0 {{sex, select, other {<b>?</b>}}}}
         </p>                            
       </div>`;
       const ast = parser.parse(html, 'url', true);
@@ -62,6 +62,10 @@ export function main() {
 
 class _SerializerVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
+    if (getHtmlTagDefinition(element.name).isVoid) {
+      return `<${element.name}${this._visitAll(element.attrs, ' ')}/>`;
+    }
+
     return `<${element.name}${this._visitAll(element.attrs, ' ')}>${this._visitAll(element.children)}</${element.name}>`;
   }
 

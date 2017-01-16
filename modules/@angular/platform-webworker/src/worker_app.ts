@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, Provider, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
@@ -33,7 +33,7 @@ export function errorHandler(): ErrorHandler {
 
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
-let _postMessage = {
+const _postMessage = {
   postMessage: (message: any, transferrables?: [ArrayBuffer]) => {
     (<any>postMessage)(message, transferrables);
   }
@@ -41,9 +41,9 @@ let _postMessage = {
 
 
 export function createMessageBus(zone: NgZone): MessageBus {
-  let sink = new PostMessageBusSink(_postMessage);
-  let source = new PostMessageBusSource();
-  let bus = new PostMessageBus(sink, source);
+  const sink = new PostMessageBusSink(_postMessage);
+  const source = new PostMessageBusSource();
+  const bus = new PostMessageBus(sink, source);
   bus.attachToZone(zone);
   return bus;
 }

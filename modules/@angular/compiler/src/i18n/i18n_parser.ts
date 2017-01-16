@@ -12,7 +12,6 @@ import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
-import {digestMessage} from './digest';
 
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
@@ -23,35 +22,36 @@ const _expParser = new ExpressionParser(new ExpressionLexer());
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
 export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
-    nodes: html.Node[], meaning: string, description: string) => i18n.Message {
+    nodes: html.Node[], meaning: string, description: string, id: string) => i18n.Message {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
 
-  return (nodes: html.Node[], meaning: string, description: string) =>
-             visitor.toI18nMessage(nodes, meaning, description);
+  return (nodes: html.Node[], meaning: string, description: string, id: string) =>
+             visitor.toI18nMessage(nodes, meaning, description, id);
 }
 
 class _I18nVisitor implements html.Visitor {
   private _isIcu: boolean;
   private _icuDepth: number;
   private _placeholderRegistry: PlaceholderRegistry;
-  private _placeholderToContent: {[name: string]: string};
-  private _placeholderToIds: {[name: string]: string};
+  private _placeholderToContent: {[phName: string]: string};
+  private _placeholderToMessage: {[phName: string]: i18n.Message};
 
   constructor(
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
-  public toI18nMessage(nodes: html.Node[], meaning: string, description: string): i18n.Message {
+  public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string):
+      i18n.Message {
     this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
-    this._placeholderToIds = {};
+    this._placeholderToMessage = {};
 
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
 
     return new i18n.Message(
-        i18nodes, this._placeholderToContent, this._placeholderToIds, meaning, description);
+        i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description, id);
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
@@ -99,7 +99,13 @@ class _I18nVisitor implements html.Visitor {
     this._icuDepth--;
 
     if (this._isIcu || this._icuDepth > 0) {
-      // If the message (vs a part of the message) is an ICU message returns it
+      // Returns an ICU node when:
+      // - the message (vs a part of the message) is an ICU message, or
+      // - the ICU message is nested.
+      const expPh = this._placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
+      i18nIcu.expressionPlaceholder = expPh;
+      this._placeholderToContent[expPh] = icu.switchValue;
+
       return i18nIcu;
     }
 
@@ -110,7 +116,7 @@ class _I18nVisitor implements html.Visitor {
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
     const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
-    this._placeholderToIds[phName] = digestMessage(visitor.toI18nMessage([icu], '', ''));
+    this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '');
     return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 

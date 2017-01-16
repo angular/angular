@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '../di';
+import {Injectable, OpaqueToken} from '../di';
 import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata';
@@ -54,6 +54,7 @@ function _throwError() {
  * of components.
  * @stable
  */
+@Injectable()
 export class Compiler {
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed
@@ -81,6 +82,14 @@ export class Compiler {
       Promise<ModuleWithComponentFactories<T>> {
     throw _throwError();
   }
+
+  /**
+   * Exposes the CSS-style selectors that have been used in `ngContent` directives within
+   * the template of the given component.
+   * This is used by the `upgrade` library to compile the appropriate transclude content
+   * in the Angular 1 wrapper component.
+   */
+  getNgContentSelectors(component: Type<any>): string[] { throw _throwError(); }
 
   /**
    * Clears all caches.

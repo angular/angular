@@ -40,4 +40,10 @@ export class MockDomAnimatePlayer implements DomAnimatePlayer {
     this._position = val;
   }
   get position(): number { return this._position; }
+  addEventListener(eventName: string, handler: (event: any) => any): any {
+    if (eventName == 'finish') {
+      this.onfinish = handler;
+    }
+  }
+  dispatchEvent(eventName: string): any {}
 }

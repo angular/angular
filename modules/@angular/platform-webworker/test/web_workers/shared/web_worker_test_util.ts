@@ -10,7 +10,6 @@ import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
 import {isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 
@@ -21,13 +20,13 @@ import {MockEventEmitter} from './mock_event_emitter';
  * Such that whatever goes into one's sink comes out the others source.
  */
 export function createPairedMessageBuses(): PairedMessageBuses {
-  var firstChannels: {[key: string]: MockEventEmitter<any>} = {};
-  var workerMessageBusSink = new MockMessageBusSink(firstChannels);
-  var uiMessageBusSource = new MockMessageBusSource(firstChannels);
+  const firstChannels: {[key: string]: MockEventEmitter<any>} = {};
+  const workerMessageBusSink = new MockMessageBusSink(firstChannels);
+  const uiMessageBusSource = new MockMessageBusSource(firstChannels);
 
-  var secondChannels: {[key: string]: MockEventEmitter<any>} = {};
-  var uiMessageBusSink = new MockMessageBusSink(secondChannels);
-  var workerMessageBusSource = new MockMessageBusSource(secondChannels);
+  const secondChannels: {[key: string]: MockEventEmitter<any>} = {};
+  const uiMessageBusSink = new MockMessageBusSink(secondChannels);
+  const workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
   return new PairedMessageBuses(
       new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
@@ -43,15 +42,15 @@ export function createPairedMessageBuses(): PairedMessageBuses {
 export function expectBrokerCall(
     broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
     handler?: (..._: any[]) => Promise<any>| void): void {
-  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
+  broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
       vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
     }
-    var promise: Promise<any>|void = null;
+    let promise: Promise<any>|void = null;
     if (isPresent(handler)) {
-      let givenValues = args.args.map((arg) => arg.value);
+      const givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {

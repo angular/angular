@@ -11,7 +11,6 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/in
 import {ParseTreeResult} from '../ml_parser/parser';
 
 import {mergeTranslations} from './extractor_merger';
-import {MessageBundle} from './message_bundle';
 import {Serializer} from './serializers/serializer';
 import {Xliff} from './serializers/xliff';
 import {Xmb} from './serializers/xmb';
@@ -41,32 +40,29 @@ export class I18NHtmlParser implements HtmlParser {
     }
 
     // TODO(vicb): add support for implicit tags / attributes
-    const messageBundle = new MessageBundle(this._htmlParser, [], {});
-    const errors = messageBundle.updateFromTemplate(source, url, interpolationConfig);
 
-    if (errors && errors.length) {
-      return new ParseTreeResult(parseResult.rootNodes, parseResult.errors.concat(errors));
+    if (parseResult.errors.length) {
+      return new ParseTreeResult(parseResult.rootNodes, parseResult.errors);
     }
 
-    const serializer = this._createSerializer(interpolationConfig);
-    const translationBundle =
-        TranslationBundle.load(this._translations, url, messageBundle, serializer);
+    const serializer = this._createSerializer();
+    const translationBundle = TranslationBundle.load(this._translations, url, serializer);
 
     return mergeTranslations(parseResult.rootNodes, translationBundle, interpolationConfig, [], {});
   }
 
-  private _createSerializer(interpolationConfig: InterpolationConfig): Serializer {
+  private _createSerializer(): Serializer {
     const format = (this._translationsFormat || 'xlf').toLowerCase();
 
     switch (format) {
       case 'xmb':
         return new Xmb();
       case 'xtb':
-        return new Xtb(this._htmlParser, interpolationConfig);
+        return new Xtb();
       case 'xliff':
       case 'xlf':
       default:
-        return new Xliff(this._htmlParser, interpolationConfig);
+        return new Xliff();
     }
   }
 }

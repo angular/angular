@@ -7,11 +7,11 @@
  */
 
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
-import {StringMapWrapper} from '../facade/collection';
 import {ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
+
+export const QUOTED_KEYS = '$quoted$';
 
 export function convertValueToOutputAst(value: any, type: o.Type = null): o.Expression {
   return visitValue(value, new _ValueOutputAstTransformer(), type);
@@ -23,22 +23,22 @@ class _ValueOutputAstTransformer implements ValueTransformer {
   }
 
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
-    var entries: Array<string|o.Expression>[] = [];
-    StringMapWrapper.forEach(map, (value: any, key: string) => {
-      entries.push([key, visitValue(value, this, null)]);
+    const entries: o.LiteralMapEntry[] = [];
+    const quotedSet = new Set<string>(map && map[QUOTED_KEYS]);
+    Object.keys(map).forEach(key => {
+      entries.push(
+          new o.LiteralMapEntry(key, visitValue(map[key], this, null), quotedSet.has(key)));
     });
-    return o.literalMap(entries, type);
+    return new o.LiteralMapExpr(entries, type);
   }
 
   visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
 
   visitOther(value: any, type: o.Type): o.Expression {
-    if (value instanceof CompileIdentifierMetadata) {
-      return o.importExpr(value);
-    } else if (value instanceof o.Expression) {
+    if (value instanceof o.Expression) {
       return value;
     } else {
-      throw new Error(`Illegal state: Don't now how to compile value ${value}`);
+      return o.importExpr({reference: value});
     }
   }
 }

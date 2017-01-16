@@ -1,10 +1,27 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {writeFileSync} from 'fs';
-import {convertDecorators} from 'tsickle';
+import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
 import NgOptions from './options';
 import {MetadataCollector} from './collector';
+import {ModuleMetadata} from './schema';
 
+export function formatDiagnostics(d: ts.Diagnostic[]): string {
+  const host: ts.FormatDiagnosticsHost = {
+    getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
+    getNewLine: () => ts.sys.newLine,
+    getCanonicalFileName: (f: string) => f
+  };
+  return ts.formatDiagnostics(d, host);
+}
 
 /**
  * Implementation of CompilerHost that forwards all methods to another instance.
@@ -33,15 +50,16 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
 }
 
-export class TsickleHost extends DelegatingHost {
-  // Additional diagnostics gathered by pre- and post-emit transformations.
-  public diagnostics: ts.Diagnostic[] = [];
-  private TSICKLE_SUPPORT = `
+export class DecoratorDownlevelCompilerHost extends DelegatingHost {
+  private ANNOTATION_SUPPORT = `
 interface DecoratorInvocation {
   type: Function;
   args?: any[];
 }
 `;
+  /** Error messages produced by tsickle, if any. */
+  public diagnostics: ts.Diagnostic[] = [];
+
   constructor(delegate: ts.CompilerHost, private program: ts.Program) { super(delegate); }
 
   getSourceFile =
@@ -50,39 +68,73 @@ interface DecoratorInvocation {
         let newContent = originalContent;
         if (!/\.d\.ts$/.test(fileName)) {
           try {
-            const converted = convertDecorators(
+            const converted = tsickle.convertDecorators(
                 this.program.getTypeChecker(), this.program.getSourceFile(fileName));
             if (converted.diagnostics) {
               this.diagnostics.push(...converted.diagnostics);
             }
-            newContent = converted.output + this.TSICKLE_SUPPORT;
+            newContent = converted.output + this.ANNOTATION_SUPPORT;
           } catch (e) {
             console.error('Cannot convertDecorators on file', fileName);
             throw e;
           }
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
-      };
+      }
 }
 
-const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
+export class TsickleCompilerHost extends DelegatingHost {
+  /** Error messages produced by tsickle, if any. */
+  public diagnostics: ts.Diagnostic[] = [];
 
-export class MetadataWriterHost extends DelegatingHost {
-  private metadataCollector = new MetadataCollector();
   constructor(
-      delegate: ts.CompilerHost, private program: ts.Program, private ngOptions: NgOptions) {
+      delegate: ts.CompilerHost, private oldProgram: ts.Program, private options: NgOptions) {
     super(delegate);
   }
+
+  getSourceFile =
+      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
+        let sourceFile = this.oldProgram.getSourceFile(fileName);
+        let isDefinitions = /\.d\.ts$/.test(fileName);
+        // Don't tsickle-process any d.ts that isn't a compilation target;
+        // this means we don't process e.g. lib.d.ts.
+        if (isDefinitions) return sourceFile;
+
+        let {output, externs, diagnostics} =
+            tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
+        this.diagnostics = diagnostics;
+        return ts.createSourceFile(fileName, output, languageVersion, true);
+      }
+}
+
+const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
+
+export class MetadataWriterHost extends DelegatingHost {
+  private metadataCollector = new MetadataCollector({quotedNames: true});
+  private metadataCollector1 = new MetadataCollector({version: 1});
+  constructor(delegate: ts.CompilerHost, private ngOptions: NgOptions) { super(delegate); }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
     // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
     // released
     if (/*DTS*/ /\.js$/.test(emitFilePath)) {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
+
+      // Beginning with 2.1, TypeScript transforms the source tree before emitting it.
+      // We need the original, unmodified, tree which might be several levels back
+      // depending on the number of transforms performed. All SourceFile's prior to 2.1
+      // will appear to be the original source since they didn't include an original field.
+      let collectableFile = sourceFile;
+      while ((collectableFile as any).original) {
+        collectableFile = (collectableFile as any).original;
+      }
+
       const metadata =
-          this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
-      if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
+          this.metadataCollector.getMetadata(collectableFile, !!this.ngOptions.strictMetadataEmit);
+      const metadata1 = this.metadataCollector1.getMetadata(collectableFile, false);
+      const metadatas: ModuleMetadata[] = [metadata, metadata1].filter(e => !!e);
+      if (metadatas.length) {
+        const metadataText = JSON.stringify(metadatas);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
       }
     }
@@ -114,5 +166,5 @@ export class MetadataWriterHost extends DelegatingHost {
           throw new Error('Bundled emit with --out is not supported');
         }
         this.writeMetadata(fileName, sourceFiles[0]);
-      };
+      }
 }

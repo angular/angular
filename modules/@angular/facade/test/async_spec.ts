@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {EventEmitter, Observable, Subject} from '../src/async';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {EventEmitter} from '../src/async';
 
 export function main() {
   describe('EventEmitter', () => {
-    var emitter: EventEmitter<any>;
+    let emitter: EventEmitter<any>;
 
     beforeEach(() => { emitter = new EventEmitter(); });
 
@@ -53,7 +52,7 @@ export function main() {
        }));
 
     it('should subscribe to the wrapper synchronously', () => {
-      var called = false;
+      let called = false;
       emitter.subscribe({next: (value: any) => { called = true; }});
       emitter.emit(99);
 
@@ -62,7 +61,7 @@ export function main() {
 
     it('delivers next and error events synchronously',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let log: any[] /** TODO #9100 */ = [];
+         const log: any[] /** TODO #9100 */ = [];
 
          emitter.subscribe({
            next: (x: any) => {
@@ -83,7 +82,7 @@ export function main() {
        }));
 
     it('delivers next and complete events synchronously', () => {
-      let log: any[] /** TODO #9100 */ = [];
+      const log: any[] /** TODO #9100 */ = [];
 
       emitter.subscribe({
         next: (x: any) => {
@@ -106,8 +105,8 @@ export function main() {
 
     it('delivers events asynchronously when forced to async mode',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var e = new EventEmitter(true);
-         var log: any[] /** TODO #9100 */ = [];
+         const e = new EventEmitter(true);
+         const log: any[] /** TODO #9100 */ = [];
          e.subscribe((x: any) => {
            log.push(x);
            expect(log).toEqual([1, 3, 2]);
@@ -120,7 +119,7 @@ export function main() {
        }));
 
     it('reports whether it has subscribers', () => {
-      var e = new EventEmitter(false);
+      const e = new EventEmitter(false);
       expect(e.observers.length > 0).toBe(false);
       e.subscribe({next: () => {}});
       expect(e.observers.length > 0).toBe(true);

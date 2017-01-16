@@ -28,5 +28,5 @@ export const WORKER_APP_LOCATION_PROVIDERS = [
 
 function appInitFnFactory(platformLocation: WebWorkerPlatformLocation, zone: NgZone): () =>
     Promise<boolean> {
-  return () => { return zone.runGuarded(() => platformLocation.init()); };
+  return () => zone.runGuarded(() => platformLocation.init());
 }

@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '../di';
-import {MapWrapper} from '../facade/collection';
 import {scheduleMicroTask} from '../facade/lang';
 import {NgZone} from '../zone/ng_zone';
 
@@ -139,9 +138,9 @@ export class TestabilityRegistry {
 
   getTestability(elem: any): Testability { return this._applications.get(elem); }
 
-  getAllTestabilities(): Testability[] { return MapWrapper.values(this._applications); }
+  getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
 
-  getAllRootElements(): any[] { return MapWrapper.keys(this._applications); }
+  getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
 
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
@@ -177,4 +176,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = new _NoopGetTestability();
+let _testabilityGetter: GetTestability = new _NoopGetTestability();

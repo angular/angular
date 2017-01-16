@@ -7,15 +7,16 @@
  */
 
 import {Injector} from '../di/injector';
-import {ListWrapper} from '../facade/collection';
 import {unimplemented} from '../facade/errors';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
+
 import {ComponentFactory, ComponentRef} from './component_factory';
-import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
+import {ViewContainer} from './view_container';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
+
 
 
 /**
@@ -128,11 +129,11 @@ export abstract class ViewContainerRef {
 }
 
 export class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _element: AppElement) {}
+  constructor(private _element: ViewContainer) {}
 
   get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {
-    var views = this._element.nestedViews;
+    const views = this._element.nestedViews;
     return isPresent(views) ? views.length : 0;
   }
 
@@ -146,7 +147,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
   // to the methods below.
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null, index: number = -1):
       EmbeddedViewRef<C> {
-    var viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
+    const viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
     this.insert(viewRef, index);
     return viewRef;
   }
@@ -158,9 +159,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
   createComponent<C>(
       componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
       projectableNodes: any[][] = null): ComponentRef<C> {
-    var s = this._createComponentInContainerScope();
-    var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
-    var componentRef = componentFactory.create(contextInjector, projectableNodes);
+    const s = this._createComponentInContainerScope();
+    const contextInjector = injector || this._element.parentInjector;
+    const componentRef = componentFactory.create(contextInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);
   }
@@ -170,23 +171,23 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   insert(viewRef: ViewRef, index: number = -1): ViewRef {
-    var s = this._insertScope();
+    const s = this._insertScope();
     if (index == -1) index = this.length;
-    var viewRef_ = <ViewRef_<any>>viewRef;
+    const viewRef_ = <ViewRef_<any>>viewRef;
     this._element.attachView(viewRef_.internalView, index);
     return wtfLeave(s, viewRef_);
   }
 
   move(viewRef: ViewRef, currentIndex: number): ViewRef {
-    var s = this._insertScope();
+    const s = this._insertScope();
     if (currentIndex == -1) return;
-    var viewRef_ = <ViewRef_<any>>viewRef;
+    const viewRef_ = <ViewRef_<any>>viewRef;
     this._element.moveView(viewRef_.internalView, currentIndex);
     return wtfLeave(s, viewRef_);
   }
 
   indexOf(viewRef: ViewRef): number {
-    return ListWrapper.indexOf(this._element.nestedViews, (<ViewRef_<any>>viewRef).internalView);
+    return this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView);
   }
 
   /** @internal */
@@ -194,9 +195,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): rename to destroy
   remove(index: number = -1): void {
-    var s = this._removeScope();
+    const s = this._removeScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     view.destroy();
     // view is intentionally not returned to the client.
     wtfLeave(s);
@@ -207,14 +208,14 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   detach(index: number = -1): ViewRef {
-    var s = this._detachScope();
+    const s = this._detachScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     return wtfLeave(s, view.ref);
   }
 
   clear() {
-    for (var i = this.length - 1; i >= 0; i--) {
+    for (let i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }
   }

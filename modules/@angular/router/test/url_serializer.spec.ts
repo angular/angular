@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, decode, encode, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, encode, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -158,6 +158,11 @@ describe('url serializer', () => {
   it('should serializer query params', () => {
     const tree = url.parse('/one?a');
     expect(url.serialize(tree)).toEqual('/one?a=');
+  });
+
+  it('should handle multiple query params of the same name into an array', () => {
+    const tree = url.parse('/one?a=foo&a=bar&a=swaz');
+    expect(tree.queryParams).toEqual({a: ['foo', 'bar', 'swaz']});
   });
 
   it('should parse fragment', () => {

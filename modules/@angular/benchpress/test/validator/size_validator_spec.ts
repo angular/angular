@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {MeasureValues, ReflectiveInjector, SizeValidator, Validator} from '../../index';
-import {ListWrapper} from '../../src/facade/collection';
-import {Date, DateWrapper} from '../../src/facade/lang';
+import {MeasureValues, ReflectiveInjector, SizeValidator} from '../../index';
 
 export function main() {
   describe('size validator', () => {
-    var validator: SizeValidator;
+    let validator: SizeValidator;
 
     function createValidator(size: number) {
       validator =
@@ -37,15 +35,14 @@ export function main() {
 
     it('should return the last sampleSize runs when it has at least the given size', () => {
       createValidator(2);
-      var sample = [mv(0, 0, {'a': 1}), mv(1, 1, {'b': 2}), mv(2, 2, {'c': 3})];
-      expect(validator.validate(ListWrapper.slice(sample, 0, 2)))
-          .toEqual(ListWrapper.slice(sample, 0, 2));
-      expect(validator.validate(sample)).toEqual(ListWrapper.slice(sample, 1, 3));
+      const sample = [mv(0, 0, {'a': 1}), mv(1, 1, {'b': 2}), mv(2, 2, {'c': 3})];
+      expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
+      expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });
 
   });
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

@@ -8,8 +8,6 @@
 
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
-import {MapWrapper} from '../../platform-browser/src/facade/collection';
-
 class TestObj {
   prop: any;
   constructor(prop: any) { this.prop = prop; }
@@ -25,9 +23,9 @@ export function main() {
   describe('testing', () => {
     describe('equality', () => {
       it('should structurally compare objects', () => {
-        var expected = new TestObj(new TestObj({'one': [1, 2]}));
-        var actual = new TestObj(new TestObj({'one': [1, 2]}));
-        var falseActual = new TestObj(new TestObj({'one': [1, 3]}));
+        const expected = new TestObj(new TestObj({'one': [1, 2]}));
+        const actual = new TestObj(new TestObj({'one': [1, 2]}));
+        const falseActual = new TestObj(new TestObj({'one': [1, 3]}));
 
         expect(actual).toEqual(expected);
         expect(falseActual).not.toEqual(expected);
@@ -36,45 +34,54 @@ export function main() {
 
     describe('toEqual for Maps', () => {
       it('should detect equality for same reference', () => {
-        var m1 = MapWrapper.createFromStringMap({'a': 1});
+        const m1: Map<string, number> = new Map();
+        m1.set('a', 1);
         expect(m1).toEqual(m1);
       });
 
       it('should detect equality for same content', () => {
-        expect(MapWrapper.createFromStringMap({'a': 1})).toEqual(MapWrapper.createFromStringMap({
-          'a': 1
-        }));
+        const m1: Map<string, number> = new Map();
+        m1.set('a', 1);
+        const m2: Map<string, number> = new Map();
+        m2.set('a', 1);
+        expect(m1).toEqual(m2);
       });
 
       it('should detect missing entries', () => {
-        expect(MapWrapper.createFromStringMap({
-          'a': 1
-        })).not.toEqual(MapWrapper.createFromStringMap({}));
+        const m1: Map<string, number> = new Map();
+        m1.set('a', 1);
+        const m2: Map<string, number> = new Map();
+        expect(m1).not.toEqual(m2);
       });
 
       it('should detect different values', () => {
-        expect(MapWrapper.createFromStringMap({
-          'a': 1
-        })).not.toEqual(MapWrapper.createFromStringMap({'a': 2}));
+        const m1: Map<string, number> = new Map();
+        m1.set('a', 1);
+        const m2: Map<string, number> = new Map();
+        m2.set('a', 2);
+        expect(m1).not.toEqual(m2);
       });
 
       it('should detect additional entries', () => {
-        expect(MapWrapper.createFromStringMap({
-          'a': 1
-        })).not.toEqual(MapWrapper.createFromStringMap({'a': 1, 'b': 1}));
+        const m1: Map<string, number> = new Map();
+        m1.set('a', 1);
+        const m2: Map<string, number> = new Map();
+        m2.set('a', 1);
+        m2.set('b', 2);
+        expect(m1).not.toEqual(m2);
       });
     });
 
     describe('spy objects', () => {
-      var spyObj: any /** TODO #9100 */;
+      let spyObj: any;
 
-      beforeEach(() => { spyObj = <any>new SpyTestObj(); });
+      beforeEach(() => { spyObj = new SpyTestObj(); });
 
       it('should return a new spy func with no calls',
          () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
 
       it('should record function calls', () => {
-        spyObj.spy('someFunc').andCallFake((a: any, b: any) => a + b);
+        spyObj.spy('someFunc').and.callFake((a: any, b: any) => a + b);
 
         expect(spyObj.someFunc(1, 2)).toEqual(3);
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);
@@ -98,20 +105,13 @@ export function main() {
       });
 
       it('should support stubs', () => {
-        var s = SpyObject.stub({'a': 1}, {'b': 2});
-
+        const s = SpyObject.stub({'a': 1}, {'b': 2});
         expect(s.a()).toEqual(1);
         expect(s.b()).toEqual(2);
       });
 
       it('should create spys for all methods',
          () => { expect(() => spyObj.someFunc()).not.toThrow(); });
-
-      it('should create a default spy that does not fail for numbers', () => {
-        // Previously needed for rtts_assert. Revisit this behavior.
-        expect(spyObj.someFunc()).toBe(null);
-      });
     });
-
   });
 }

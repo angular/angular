@@ -8,12 +8,9 @@
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
-import {ListWrapper} from '../facade/collection';
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
 import {Validator} from '../validator';
-
-
 
 /**
  * A validator that checks the regression slope of a specific metric.
@@ -40,17 +37,17 @@ export class RegressionSlopeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      var latestSample = ListWrapper.slice(
-          completeSample, completeSample.length - this._sampleSize, completeSample.length);
-      var xValues: number[] = [];
-      var yValues: number[] = [];
-      for (var i = 0; i < latestSample.length; i++) {
+      const latestSample =
+          completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
+      const xValues: number[] = [];
+      const yValues: number[] = [];
+      for (let i = 0; i < latestSample.length; i++) {
         // For now, we only use the array index as x value.
         // TODO(tbosch): think about whether we should use time here instead
         xValues.push(i);
         yValues.push(latestSample[i].values[this._metric]);
       }
-      var regressionSlope = Statistic.calculateRegressionSlope(
+      const regressionSlope = Statistic.calculateRegressionSlope(
           xValues, Statistic.calculateMean(xValues), yValues, Statistic.calculateMean(yValues));
       return regressionSlope >= 0 ? latestSample : null;
     } else {

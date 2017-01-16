@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subscriber} from 'rxjs/Subscriber';
 
@@ -61,8 +59,8 @@ export class AsyncObservablePipeComponent {
 // protractor will not see us. Also we want to have this outside the docregion so as not to confuse
 // the reader.
 function setInterval(fn: Function, delay: number) {
-  var zone = Zone.current;
-  var rootZone = zone;
+  const zone = Zone.current;
+  let rootZone = zone;
   while (rootZone.parent) {
     rootZone = rootZone.parent;
   }

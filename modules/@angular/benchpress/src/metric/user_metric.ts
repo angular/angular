@@ -9,8 +9,6 @@
 import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
-import {StringMapWrapper} from '../facade/collection';
-import {isNumber} from '../facade/lang';
 import {Metric} from '../metric';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
@@ -35,20 +33,20 @@ export class UserMetric extends Metric {
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     let resolve: (result: any) => void;
     let reject: (error: any) => void;
-    let promise = new Promise((res, rej) => {
+    const promise = new Promise((res, rej) => {
       resolve = res;
       reject = rej;
     });
-    let adapter = this._wdAdapter;
-    let names = StringMapWrapper.keys(this._userMetrics);
+    const adapter = this._wdAdapter;
+    const names = Object.keys(this._userMetrics);
 
     function getAndClearValues() {
       Promise.all(names.map(name => adapter.executeScript(`return window.${name}`)))
           .then((values: any[]) => {
-            if (values.every(isNumber)) {
+            if (values.every(v => typeof v === 'number')) {
               Promise.all(names.map(name => adapter.executeScript(`delete window.${name}`)))
                   .then((_: any[]) => {
-                    let map: {[k: string]: any} = {};
+                    const map: {[k: string]: any} = {};
                     for (let i = 0, n = names.length; i < n; i++) {
                       map[names[i]] = values[i];
                     }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {digest} from '@angular/compiler/src/i18n/digest';
 import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
 import {serializeNodes} from '../../src/i18n/digest';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
@@ -186,16 +186,16 @@ export function main() {
 
       it('should not extract nested ICU messages', () => {
         expect(_humanizeMessages(
-                   '<div i18n="m|d">b{count, plural, =0 {{sex, gender, =m {m}}}}a</div>'))
+                   '<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>'))
             .toEqual([
               [
                 [
-                  'b', '<ph icu name="ICU">{count, plural, =0 {[{sex, gender, =m {[m]}}]}}</ph>',
+                  'b', '<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>',
                   'a'
                 ],
                 'm', 'd'
               ],
-              [['{count, plural, =0 {[{sex, gender, =m {[m]}}]}}'], '', ''],
+              [['{count, plural, =0 {[{sex, select, male {[m]}}]}}'], '', ''],
             ]);
       });
     });
@@ -272,11 +272,14 @@ export function main() {
           [['{count, plural, =1 {[1]}}'], '', ''],
         ]);
 
-        // ICU message placeholders are reference to translations.
-        // As such they have no static content but refs to message ids.
-        expect(_humanizePlaceholders(html)).toEqual(['', '', '', '']);
+        expect(_humanizePlaceholders(html)).toEqual([
+          '',
+          'VAR_PLURAL=count',
+          'VAR_PLURAL=count',
+          'VAR_PLURAL=count',
+        ]);
 
-        expect(_humanizePlaceholdersToIds(html)).toEqual([
+        expect(_humanizePlaceholdersToMessage(html)).toEqual([
           'ICU=f0f76923009914f1b05f41042a5c7231b9496504, ICU_1=73693d1f78d0fc882f0bcbce4cb31a0aa1995cfe',
           '',
           '',
@@ -308,13 +311,13 @@ function _humanizePlaceholders(
   // clang-format on
 }
 
-function _humanizePlaceholdersToIds(
+function _humanizePlaceholdersToMessage(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): string[] {
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map(
-    msg => Object.keys(msg.placeholderToMsgIds).map(k => `${k}=${msg.placeholderToMsgIds[k]}`).join(', '));
+    msg => Object.keys(msg.placeholderToMessage).map(k => `${k}=${digest(msg.placeholderToMessage[k])}`).join(', '));
   // clang-format on
 }
 

@@ -7,18 +7,18 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, ExpectedConditions, browser, by, element} from 'protractor';
 
-function waitForElement(selector: any /** TODO #9100 */) {
-  var EC = (<any>protractor).ExpectedConditions;
+function waitForElement(selector: string) {
   // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
+  browser.wait(ExpectedConditions.presenceOf($(selector)), 20000);
 }
 
 describe('relative assets relative-app', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'all/playground/src/relative_assets/';
+  const URL = 'all/playground/src/relative_assets/';
 
   it('should load in the templateUrl relative to the my-cmp component', () => {
     browser.get(URL);
@@ -31,10 +31,9 @@ describe('relative assets relative-app', () => {
     browser.get(URL);
 
     waitForElement('my-cmp .inner-container');
-    var elem = element(by.css('my-cmp .inner-container'));
-    var width = browser.executeScript(function(e: any /** TODO #9100 */) {
-      return parseInt(window.getComputedStyle(e).width);
-    }, elem.getWebElement());
+    const elem = element(by.css('my-cmp .inner-container'));
+    const width = browser.executeScript(
+        (e: Element) => parseInt(window.getComputedStyle(e).width), elem.getWebElement());
 
     expect(width).toBe(432);
   });

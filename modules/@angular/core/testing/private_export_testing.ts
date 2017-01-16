@@ -9,7 +9,7 @@
 import * as mock_animation_player from './mock_animation_player';
 import * as test_compiler from './test_compiler';
 
-export var __core_private_testing__: {
+export const __core_private_testing__: {
   TestingCompiler: typeof test_compiler.TestingCompiler,
   _TestingCompiler?: test_compiler.TestingCompiler,
   TestingCompilerFactory: typeof test_compiler.TestingCompilerFactory,

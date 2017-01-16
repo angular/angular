@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
+
 import {isBlank} from '../facade/lang';
 
 export class ParserError {
@@ -204,7 +204,7 @@ export class ASTWithSource extends AST {
 
 export class TemplateBinding {
   constructor(
-      public key: string, public keyIsVar: boolean, public name: string,
+      public span: ParseSpan, public key: string, public keyIsVar: boolean, public name: string,
       public expression: ASTWithSource) {}
 }
 
@@ -376,8 +376,8 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitAll(asts: any[]): any[] {
-    var res = new Array(asts.length);
-    for (var i = 0; i < asts.length; ++i) {
+    const res = new Array(asts.length);
+    for (let i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
     }
     return res;

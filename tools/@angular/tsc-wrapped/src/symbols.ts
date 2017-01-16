@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as ts from 'typescript';
 
 import {MetadataValue} from './schema';
@@ -24,7 +32,7 @@ export class Symbols {
   }
 
   private buildImports(): void {
-    let symbols = this._symbols;
+    const symbols = this._symbols;
     // Collect the imported symbols into this.symbols
     const stripQuotes = (s: string) => s.replace(/^['"]|['"]$/g, '');
     const visit = (node: ts.Node) => {
@@ -76,7 +84,7 @@ export class Symbols {
             switch (bindings.kind) {
               case ts.SyntaxKind.NamedImports:
                 // An `import { [<identifier> [, <identifier>] } from <module-specifier>` clause
-                for (let binding of (<ts.NamedImports>bindings).elements) {
+                for (const binding of (<ts.NamedImports>bindings).elements) {
                   symbols.set(binding.name.text, {
                     __symbolic: 'reference',
                     module: from,

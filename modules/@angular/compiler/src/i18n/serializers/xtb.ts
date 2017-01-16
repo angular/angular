@@ -7,112 +7,63 @@
  */
 
 import * as ml from '../../ml_parser/ast';
-import {HtmlParser} from '../../ml_parser/html_parser';
-import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {ParseError} from '../../parse_util';
 import * as i18n from '../i18n_ast';
-import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToIds, extractPlaceholders} from './serializer';
+import {Serializer} from './serializer';
+import {digest} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb implements Serializer {
-  constructor(private _htmlParser: HtmlParser, private _interpolationConfig: InterpolationConfig) {}
+  write(messages: i18n.Message[]): string { throw new Error('Unsupported'); }
 
-  write(messageMap: {[id: string]: i18n.Message}): string { throw new Error('Unsupported'); }
+  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
+    // xtb to xml nodes
+    const xtbParser = new XtbParser();
+    const {mlNodesByMsgId, errors} = xtbParser.parse(content, url);
 
-  load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: ml.Node[]} {
-    // Parse the xtb file into xml nodes
-    const result = new XmlParser().parse(content, url);
-
-    if (result.errors.length) {
-      throw new Error(`xtb parse errors:\n${result.errors.join('\n')}`);
-    }
-
-    // Replace the placeholders, messages are now string
-    const {messages, errors} = new _Visitor().parse(result.rootNodes, messageBundle);
+    // xml nodes to i18n nodes
+    const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
+    const converter = new XmlToI18n();
+    Object.keys(mlNodesByMsgId).forEach(msgId => {
+      const {i18nNodes, errors: e} = converter.convert(mlNodesByMsgId[msgId]);
+      errors.push(...e);
+      i18nNodesByMsgId[msgId] = i18nNodes;
+    });
 
     if (errors.length) {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    // Convert the string messages to html ast
-    // TODO(vicb): map error message back to the original message in xtb
-    let messageMap: {[id: string]: ml.Node[]} = {};
-    const parseErrors: ParseError[] = [];
-
-    Object.keys(messages).forEach((id) => {
-      const res = this._htmlParser.parse(messages[id], url, true, this._interpolationConfig);
-      parseErrors.push(...res.errors);
-      messageMap[id] = res.rootNodes;
-    });
-
-    if (parseErrors.length) {
-      throw new Error(`xtb parse errors:\n${parseErrors.join('\n')}`);
-    }
-
-    return messageMap;
+    return i18nNodesByMsgId;
   }
+
+  digest(message: i18n.Message): string { return digest(message); }
 }
 
-class _Visitor implements ml.Visitor {
-  private _messageNodes: [string, ml.Node[]][];
-  private _translatedMessages: {[id: string]: string};
+// Extract messages as xml nodes from the xtb file
+class XtbParser implements ml.Visitor {
   private _bundleDepth: number;
-  private _translationDepth: number;
   private _errors: I18nError[];
-  private _placeholders: {[name: string]: string};
-  private _placeholderToIds: {[name: string]: string};
+  private _mlNodesByMsgId: {[msgId: string]: ml.Node[]};
 
-  parse(nodes: ml.Node[], messageBundle: MessageBundle):
-      {messages: {[k: string]: string}, errors: I18nError[]} {
-    this._messageNodes = [];
-    this._translatedMessages = {};
+  parse(xtb: string, url: string) {
     this._bundleDepth = 0;
-    this._translationDepth = 0;
-    this._errors = [];
+    this._mlNodesByMsgId = {};
 
-    // Find all messages
-    ml.visitAll(this, nodes, null);
+    const xml = new XmlParser().parse(xtb, url, true);
 
-    const messageMap = messageBundle.getMessageMap();
-    const placeholders = extractPlaceholders(messageBundle);
-    const placeholderToIds = extractPlaceholderToIds(messageBundle);
+    this._errors = xml.errors;
+    ml.visitAll(this, xml.rootNodes);
 
-    this._messageNodes
-        .filter(message => {
-          // Remove any messages that is not present in the source message bundle.
-          return messageMap.hasOwnProperty(message[0]);
-        })
-        .sort((a, b) => {
-          // Because there could be no ICU placeholders inside an ICU message,
-          // we do not need to take into account the `placeholderToMsgIds` of the referenced
-          // messages, those would always be empty
-          // TODO(vicb): overkill - create 2 buckets and [...woDeps, ...wDeps].process()
-          if (Object.keys(messageMap[a[0]].placeholderToMsgIds).length == 0) {
-            return -1;
-          }
-
-          if (Object.keys(messageMap[b[0]].placeholderToMsgIds).length == 0) {
-            return 1;
-          }
-
-          return 0;
-        })
-        .forEach(message => {
-          const id = message[0];
-          this._placeholders = placeholders[id] || {};
-          this._placeholderToIds = placeholderToIds[id] || {};
-          // TODO(vicb): make sure there is no `_TRANSLATIONS_TAG` nor `_TRANSLATION_TAG`
-          this._translatedMessages[id] = ml.visitAll(this, message[1]).join('');
-        });
-
-    return {messages: this._translatedMessages, errors: this._errors};
+    return {
+      mlNodesByMsgId: this._mlNodesByMsgId,
+      errors: this._errors,
+    };
   }
 
   visitElement(element: ml.Element, context: any): any {
@@ -127,40 +78,16 @@ class _Visitor implements ml.Visitor {
         break;
 
       case _TRANSLATION_TAG:
-        this._translationDepth++;
-        if (this._translationDepth > 1) {
-          this._addError(element, `<${_TRANSLATION_TAG}> elements can not be nested`);
-        }
         const idAttr = element.attrs.find((attr) => attr.name === 'id');
         if (!idAttr) {
           this._addError(element, `<${_TRANSLATION_TAG}> misses the "id" attribute`);
         } else {
-          // ICU placeholders are reference to other messages.
-          // The referenced message might not have been decoded yet.
-          // We need to have all messages available to make sure deps are decoded first.
-          // TODO(vicb): report an error on duplicate id
-          this._messageNodes.push([idAttr.value, element.children]);
-        }
-        this._translationDepth--;
-        break;
-
-      case _PLACEHOLDER_TAG:
-        const nameAttr = element.attrs.find((attr) => attr.name === 'name');
-        if (!nameAttr) {
-          this._addError(element, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
-        } else {
-          const name = nameAttr.value;
-          if (this._placeholders.hasOwnProperty(name)) {
-            return this._placeholders[name];
+          const id = idAttr.value;
+          if (this._mlNodesByMsgId.hasOwnProperty(id)) {
+            this._addError(element, `Duplicated translations for msg ${id}`);
+          } else {
+            this._mlNodesByMsgId[id] = element.children;
           }
-          if (this._placeholderToIds.hasOwnProperty(name) &&
-              this._translatedMessages.hasOwnProperty(this._placeholderToIds[name])) {
-            return this._translatedMessages[this._placeholderToIds[name]];
-          }
-          // TODO(vicb): better error message for when
-          // !this._translatedMessages.hasOwnProperty(this._placeholderToIds[name])
-          this._addError(
-              element, `The placeholder "${name}" does not exists in the source message`);
         }
         break;
 
@@ -169,23 +96,68 @@ class _Visitor implements ml.Visitor {
     }
   }
 
-  visitAttribute(attribute: ml.Attribute, context: any): any {
-    throw new Error('unreachable code');
+  visitAttribute(attribute: ml.Attribute, context: any): any {}
+
+  visitText(text: ml.Text, context: any): any {}
+
+  visitComment(comment: ml.Comment, context: any): any {}
+
+  visitExpansion(expansion: ml.Expansion, context: any): any {}
+
+  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
+
+  private _addError(node: ml.Node, message: string): void {
+    this._errors.push(new I18nError(node.sourceSpan, message));
+  }
+}
+
+// Convert ml nodes (xtb syntax) to i18n nodes
+class XmlToI18n implements ml.Visitor {
+  private _errors: I18nError[];
+
+  convert(nodes: ml.Node[]) {
+    this._errors = [];
+    return {
+      i18nNodes: ml.visitAll(this, nodes),
+      errors: this._errors,
+    };
   }
 
-  visitText(text: ml.Text, context: any): any { return text.value; }
+  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
 
-  visitComment(comment: ml.Comment, context: any): any { return ''; }
+  visitExpansion(icu: ml.Expansion, context: any) {
+    const caseMap: {[value: string]: i18n.Node} = {};
 
-  visitExpansion(expansion: ml.Expansion, context: any): any {
-    const strCases = expansion.cases.map(c => c.visit(this, null));
+    ml.visitAll(this, icu.cases).forEach(c => {
+      caseMap[c.value] = new i18n.Container(c.nodes, icu.sourceSpan);
+    });
 
-    return `{${expansion.switchValue}, ${expansion.type}, strCases.join(' ')}`;
+    return new i18n.Icu(icu.switchValue, icu.type, caseMap, icu.sourceSpan);
   }
 
-  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {
-    return `${expansionCase.value} {${ml.visitAll(this, expansionCase.expression, null)}}`;
+  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {
+    return {
+      value: icuCase.value,
+      nodes: ml.visitAll(this, icuCase.expression),
+    };
   }
+
+  visitElement(el: ml.Element, context: any): i18n.Placeholder {
+    if (el.name === _PLACEHOLDER_TAG) {
+      const nameAttr = el.attrs.find((attr) => attr.name === 'name');
+      if (nameAttr) {
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan);
+      }
+
+      this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
+    } else {
+      this._addError(el, `Unexpected tag`);
+    }
+  }
+
+  visitComment(comment: ml.Comment, context: any) {}
+
+  visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));

@@ -9,7 +9,6 @@
 import {Injector, OpaqueToken} from '@angular/core';
 
 import {Options} from './common_options';
-import {isBlank, isPresent} from './facade/lang';
 
 export type PerfLogEvent = {
   [key: string]: any
@@ -35,7 +34,7 @@ export type PerfLogEvent = {
  */
 export abstract class WebDriverExtension {
   static provideFirstSupported(childTokens: any[]): any[] {
-    var res = [
+    const res = [
       {
         provide: _CHILDREN,
         useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
@@ -44,13 +43,13 @@ export abstract class WebDriverExtension {
       {
         provide: WebDriverExtension,
         useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
-          var delegate: WebDriverExtension;
+          let delegate: WebDriverExtension;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {
               delegate = extension;
             }
           });
-          if (isBlank(delegate)) {
+          if (!delegate) {
             throw new Error('Could not find a delegate for given capabilities!');
           }
           return delegate;
@@ -102,4 +101,4 @@ export class PerfLogFeatures {
   }
 }
 
-var _CHILDREN = new OpaqueToken('WebDriverExtension.children');
+const _CHILDREN = new OpaqueToken('WebDriverExtension.children');

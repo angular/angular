@@ -8,7 +8,7 @@
 
 import {SimpleChange} from '@angular/core/src/change_detection';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {Log, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator, Validators} from '@angular/forms';
 import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
 
@@ -29,9 +29,9 @@ class CustomValidatorDirective implements Validator {
 
 function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
   return (c: any /** TODO #9100 */) => {
-    var resolve: (result: any) => void;
-    var promise = new Promise(res => { resolve = res; });
-    var res = c.value != expected ? {'async': true} : null;
+    let resolve: (result: any) => void;
+    const promise = new Promise(res => { resolve = res; });
+    const res = c.value != expected ? {'async': true} : null;
     if (timeout == 0) {
       resolve(res);
     } else {
@@ -43,13 +43,13 @@ function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
 
 export function main() {
   describe('Form Directives', () => {
-    var defaultAccessor: DefaultValueAccessor;
+    let defaultAccessor: DefaultValueAccessor;
 
     beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null); });
 
     describe('shared', () => {
       describe('selectValueAccessor', () => {
-        var dir: NgControl;
+        let dir: NgControl;
 
         beforeEach(() => { dir = <any>new SpyNgControl(); });
 
@@ -60,14 +60,14 @@ export function main() {
            () => { expect(selectValueAccessor(dir, [defaultAccessor])).toEqual(defaultAccessor); });
 
         it('should return checkbox accessor when provided', () => {
-          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, [
             defaultAccessor, checkboxAccessor
           ])).toEqual(checkboxAccessor);
         });
 
         it('should return select accessor when provided', () => {
-          var selectAccessor = new SelectControlValueAccessor(null, null);
+          const selectAccessor = new SelectControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectAccessor
           ])).toEqual(selectAccessor);
@@ -81,14 +81,14 @@ export function main() {
         });
 
         it('should throw when more than one build-in accessor is provided', () => {
-          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          var selectAccessor = new SelectControlValueAccessor(null, null);
+          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          const selectAccessor = new SelectControlValueAccessor(null, null);
           expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
         });
 
         it('should return custom accessor when provided', () => {
-          var customAccessor = new SpyValueAccessor();
-          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          const customAccessor = new SpyValueAccessor();
+          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
               .toEqual(customAccessor);
         });
@@ -102,22 +102,22 @@ export function main() {
         });
 
         it('should throw when more than one custom accessor is provided', () => {
-          var customAccessor: ControlValueAccessor = <any>new SpyValueAccessor();
+          const customAccessor: ControlValueAccessor = <any>new SpyValueAccessor();
           expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
         });
       });
 
       describe('composeValidators', () => {
         it('should compose functions', () => {
-          var dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
-          var dummy2 = (_: any /** TODO #9100 */) => ({'dummy2': true});
-          var v = composeValidators([dummy1, dummy2]);
+          const dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
+          const dummy2 = (_: any /** TODO #9100 */) => ({'dummy2': true});
+          const v = composeValidators([dummy1, dummy2]);
           expect(v(new FormControl(''))).toEqual({'dummy1': true, 'dummy2': true});
         });
 
         it('should compose validator directives', () => {
-          var dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
-          var v = composeValidators([dummy1, new CustomValidatorDirective()]);
+          const dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
+          const v = composeValidators([dummy1, new CustomValidatorDirective()]);
           expect(v(new FormControl(''))).toEqual({'dummy1': true, 'custom': true});
         });
       });
@@ -156,6 +156,15 @@ export function main() {
         expect(form.untouched).toBe(formModel.untouched);
         expect(form.statusChanges).toBe(formModel.statusChanges);
         expect(form.valueChanges).toBe(formModel.valueChanges);
+      });
+
+      it('should reexport control methods', () => {
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
       });
 
       describe('addControl', () => {
@@ -219,7 +228,7 @@ export function main() {
       });
 
       describe('addFormGroup', () => {
-        var matchingPasswordsValidator = (g: any /** TODO #9100 */) => {
+        const matchingPasswordsValidator = (g: any /** TODO #9100 */) => {
           if (g.controls['password'].value != g.controls['passwordConfirm'].value) {
             return {'differentPasswords': true};
           } else {
@@ -228,7 +237,7 @@ export function main() {
         };
 
         it('should set up validator', fakeAsync(() => {
-             var group = new FormGroupName(
+             const group = new FormGroupName(
                  form, [matchingPasswordsValidator], [asyncValidator('expected')]);
              group.name = 'passwords';
              form.addFormGroup(group);
@@ -274,18 +283,18 @@ export function main() {
         });
 
         it('should set up a sync validator', () => {
-          var formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
-          var f = new FormGroupDirective([formValidator], []);
+          const formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
+          const f = new FormGroupDirective([formValidator], []);
           f.form = formModel;
-          f.ngOnChanges({'form': new SimpleChange(null, null)});
+          f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
           expect(formModel.errors).toEqual({'custom': true});
         });
 
         it('should set up an async validator', fakeAsync(() => {
-             var f = new FormGroupDirective([], [asyncValidator('expected')]);
+             const f = new FormGroupDirective([], [asyncValidator('expected')]);
              f.form = formModel;
-             f.ngOnChanges({'form': new SimpleChange(null, null)});
+             f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
              tick();
 
@@ -295,10 +304,10 @@ export function main() {
     });
 
     describe('NgForm', () => {
-      var form: any /** TODO #9100 */;
-      var formModel: FormGroup;
-      var loginControlDir: any /** TODO #9100 */;
-      var personControlGroupDir: any /** TODO #9100 */;
+      let form: any /** TODO #9100 */;
+      let formModel: FormGroup;
+      let loginControlDir: any /** TODO #9100 */;
+      let personControlGroupDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         form = new NgForm([], []);
@@ -327,6 +336,15 @@ export function main() {
         expect(form.valueChanges).toBe(formModel.valueChanges);
         expect(form.disabled).toBe(formModel.disabled);
         expect(form.enabled).toBe(formModel.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
       });
 
       describe('addControl & addFormGroup', () => {
@@ -360,8 +378,8 @@ export function main() {
       });
 
       it('should set up sync validator', fakeAsync(() => {
-           var formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
-           var f = new NgForm([formValidator], []);
+           const formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
+           const f = new NgForm([formValidator], []);
 
            tick();
 
@@ -369,7 +387,7 @@ export function main() {
          }));
 
       it('should set up async validator', fakeAsync(() => {
-           var f = new NgForm([], [asyncValidator('expected')]);
+           const f = new NgForm([], [asyncValidator('expected')]);
 
            tick();
 
@@ -378,13 +396,13 @@ export function main() {
     });
 
     describe('FormGroupName', () => {
-      var formModel: any /** TODO #9100 */;
-      var controlGroupDir: any /** TODO #9100 */;
+      let formModel: any /** TODO #9100 */;
+      let controlGroupDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         formModel = new FormGroup({'login': new FormControl(null)});
 
-        var parent = new FormGroupDirective([], []);
+        const parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'group': formModel});
         controlGroupDir = new FormGroupName(parent, [], []);
         controlGroupDir.name = 'group';
@@ -406,11 +424,20 @@ export function main() {
         expect(controlGroupDir.disabled).toBe(formModel.disabled);
         expect(controlGroupDir.enabled).toBe(formModel.enabled);
       });
+
+      it('should reexport control methods', () => {
+        expect(controlGroupDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlGroupDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(controlGroupDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlGroupDir.getError('required')).toBe(formModel.getError('required'));
+      });
     });
 
     describe('FormArrayName', () => {
-      var formModel: FormArray;
-      var formArrayDir: FormArrayName;
+      let formModel: FormArray;
+      let formArrayDir: FormArrayName;
 
       beforeEach(() => {
         const parent = new FormGroupDirective([], []);
@@ -434,12 +461,21 @@ export function main() {
         expect(formArrayDir.disabled).toBe(formModel.disabled);
         expect(formArrayDir.enabled).toBe(formModel.enabled);
       });
+
+      it('should reexport control methods', () => {
+        expect(formArrayDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(formArrayDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(formArrayDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(formArrayDir.getError('required')).toBe(formModel.getError('required'));
+      });
     });
 
     describe('FormControlDirective', () => {
-      var controlDir: any /** TODO #9100 */;
-      var control: any /** TODO #9100 */;
-      var checkProperties = function(control: any /** TODO #9100 */) {
+      let controlDir: any /** TODO #9100 */;
+      let control: any /** TODO #9100 */;
+      const checkProperties = function(control: any /** TODO #9100 */) {
         expect(controlDir.control).toBe(control);
         expect(controlDir.value).toBe(control.value);
         expect(controlDir.valid).toBe(control.valid);
@@ -466,10 +502,19 @@ export function main() {
 
       it('should reexport control properties', () => { checkProperties(control); });
 
+      it('should reexport control methods', () => {
+        expect(controlDir.hasError('required')).toBe(control.hasError('required'));
+        expect(controlDir.getError('required')).toBe(control.getError('required'));
+
+        control.setErrors({required: true});
+        expect(controlDir.hasError('required')).toBe(control.hasError('required'));
+        expect(controlDir.getError('required')).toBe(control.getError('required'));
+      });
+
       it('should reexport new control properties', () => {
-        var newControl = new FormControl(null);
+        const newControl = new FormControl(null);
         controlDir.form = newControl;
-        controlDir.ngOnChanges({'form': new SimpleChange(control, newControl)});
+        controlDir.ngOnChanges({'form': new SimpleChange(control, newControl, false)});
 
         checkProperties(newControl);
       });
@@ -478,7 +523,7 @@ export function main() {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.ngOnChanges({'form': new SimpleChange(null, control)});
+        controlDir.ngOnChanges({'form': new SimpleChange(null, control, false)});
 
         expect(control.valid).toBe(false);
       });
@@ -486,15 +531,16 @@ export function main() {
 
     describe('NgModel', () => {
       let ngModel: NgModel;
+      let control: FormControl;
 
       beforeEach(() => {
         ngModel = new NgModel(
             null, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
+        control = ngModel.control;
       });
 
       it('should reexport control properties', () => {
-        var control = ngModel.control;
         expect(ngModel.control).toBe(control);
         expect(ngModel.value).toBe(control.value);
         expect(ngModel.valid).toBe(control.valid);
@@ -509,6 +555,15 @@ export function main() {
         expect(ngModel.valueChanges).toBe(control.valueChanges);
         expect(ngModel.disabled).toBe(control.disabled);
         expect(ngModel.enabled).toBe(control.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(ngModel.hasError('required')).toBe(control.hasError('required'));
+        expect(ngModel.getError('required')).toBe(control.getError('required'));
+
+        control.setErrors({required: true});
+        expect(ngModel.hasError('required')).toBe(control.hasError('required'));
+        expect(ngModel.getError('required')).toBe(control.getError('required'));
       });
 
       it('should throw when no value accessor with named control', () => {
@@ -541,39 +596,39 @@ export function main() {
          }));
 
       it('should mark as disabled properly', fakeAsync(() => {
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', null)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', null, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', false)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', false, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
@@ -581,13 +636,13 @@ export function main() {
     });
 
     describe('FormControlName', () => {
-      var formModel: any /** TODO #9100 */;
-      var controlNameDir: any /** TODO #9100 */;
+      let formModel: any /** TODO #9100 */;
+      let controlNameDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         formModel = new FormControl('name');
 
-        var parent = new FormGroupDirective([], []);
+        const parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'name': formModel});
         controlNameDir = new FormControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';
@@ -609,6 +664,15 @@ export function main() {
         expect(controlNameDir.valueChanges).toBe(formModel.valueChanges);
         expect(controlNameDir.disabled).toBe(formModel.disabled);
         expect(controlNameDir.enabled).toBe(formModel.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(controlNameDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlNameDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(controlNameDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlNameDir.getError('required')).toBe(formModel.getError('required'));
       });
     });
   });

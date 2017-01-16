@@ -14,6 +14,7 @@ import 'reflect-metadata';
 import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
 
+import {SyntaxError} from '@angular/compiler';
 import {CodeGenerator} from './codegen';
 
 function codegen(
@@ -22,14 +23,25 @@ function codegen(
   return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
 }
 
+export function main(
+    args: any, consoleError: (s: string) => void = console.error): Promise<number> {
+  const project = args.p || args.project || '.';
+  const cliOptions = new tsc.NgcCliOptions(args);
+
+  return tsc.main(project, cliOptions, codegen).then(() => 0).catch(e => {
+    if (e instanceof tsc.UserError || e instanceof SyntaxError) {
+      consoleError(e.message);
+      return Promise.resolve(1);
+    } else {
+      consoleError(e.stack);
+      consoleError('Compilation failed');
+      return Promise.resolve(1);
+    }
+  });
+}
+
 // CLI entry point
 if (require.main === module) {
   const args = require('minimist')(process.argv.slice(2));
-  const project = args.p || args.project || '.';
-  const cliOptions = new tsc.NgcCliOptions(args);
-  tsc.main(project, cliOptions, codegen).then(exitCode => process.exit(exitCode)).catch(e => {
-    console.error(e.stack);
-    console.error('Compilation failed');
-    process.exit(1);
-  });
+  main(args).then((exitCode: number) => process.exit(exitCode));
 }

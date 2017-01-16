@@ -9,7 +9,7 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {FunctionWrapper, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer} from '../shared/serializer';
 
@@ -61,7 +61,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
       public channel: any /** TODO #9100 */) {
     super();
     this._sink = messageBus.to(channel);
-    var source = messageBus.from(channel);
+    const source = messageBus.from(channel);
     source.subscribe({next: (message: any) => this._handleMessage(message)});
   }
 
@@ -69,23 +69,23 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
       methodName: string, signature: Type<any>[], method: (..._: any[]) => Promise<any>| void,
       returnType?: Type<any>): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
-      var serializedArgs = message.args;
-      let numArgs = signature === null ? 0 : signature.length;
-      var deserializedArgs: any[] = new Array(numArgs);
-      for (var i = 0; i < numArgs; i++) {
-        var serializedArg = serializedArgs[i];
+      const serializedArgs = message.args;
+      const numArgs = signature === null ? 0 : signature.length;
+      const deserializedArgs: any[] = new Array(numArgs);
+      for (let i = 0; i < numArgs; i++) {
+        const serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
       }
 
-      var promise = FunctionWrapper.apply(method, deserializedArgs);
-      if (isPresent(returnType) && isPresent(promise)) {
+      const promise = method(...deserializedArgs);
+      if (isPresent(returnType) && promise) {
         this._wrapWebWorkerPromise(message.id, promise, returnType);
       }
     });
   }
 
   private _handleMessage(map: {[key: string]: any}): void {
-    var message = new ReceivedMessage(map);
+    const message = new ReceivedMessage(map);
     if (this._methods.has(message.method)) {
       this._methods.get(message.method)(message);
     }

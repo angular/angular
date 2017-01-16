@@ -8,13 +8,10 @@
 
 import {Injectable, RenderComponentType, Type, ViewEncapsulation} from '@angular/core';
 
-import {isArray, isPresent, serializeEnum} from '../../facade/lang';
-import {VIEW_ENCAPSULATION_VALUES} from '../../private_import_core';
+import {isPresent} from '../../facade/lang';
 
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
-
-
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
@@ -31,7 +28,7 @@ export class Serializer {
     if (!isPresent(obj)) {
       return null;
     }
-    if (isArray(obj)) {
+    if (Array.isArray(obj)) {
       return (<any[]>obj).map(v => this.serialize(v, type));
     }
     if (type == PRIMITIVE) {
@@ -39,41 +36,49 @@ export class Serializer {
     }
     if (type == RenderStoreObject) {
       return this._renderStore.serialize(obj);
-    } else if (type === RenderComponentType) {
-      return this._serializeRenderComponentType(obj);
-    } else if (type === ViewEncapsulation) {
-      return serializeEnum(obj);
-    } else if (type === LocationType) {
-      return this._serializeLocation(obj);
-    } else {
-      throw new Error('No serializer for ' + type.toString());
     }
+    if (type === RenderComponentType) {
+      return this._serializeRenderComponentType(obj);
+    }
+    if (type === ViewEncapsulation) {
+      return obj;
+    }
+    if (type === LocationType) {
+      return this._serializeLocation(obj);
+    }
+    throw new Error('No serializer for ' + type.toString());
   }
 
   deserialize(map: any, type: any, data?: any): any {
     if (!isPresent(map)) {
       return null;
     }
-    if (isArray(map)) {
-      var obj: any[] = [];
-      (<any[]>map).forEach(val => obj.push(this.deserialize(val, type, data)));
-      return obj;
+
+    if (Array.isArray(map)) {
+      return (<any[]>map).map(val => this.deserialize(val, type, data));
     }
-    if (type == PRIMITIVE) {
+
+    if (type === PRIMITIVE) {
       return map;
     }
 
-    if (type == RenderStoreObject) {
+    if (type === RenderStoreObject) {
       return this._renderStore.deserialize(map);
-    } else if (type === RenderComponentType) {
-      return this._deserializeRenderComponentType(map);
-    } else if (type === ViewEncapsulation) {
-      return VIEW_ENCAPSULATION_VALUES[map];
-    } else if (type === LocationType) {
-      return this._deserializeLocation(map);
-    } else {
-      throw new Error('No deserializer for ' + type.toString());
     }
+
+    if (type === RenderComponentType) {
+      return this._deserializeRenderComponentType(map);
+    }
+
+    if (type === ViewEncapsulation) {
+      return map as ViewEncapsulation;
+    }
+
+    if (type === LocationType) {
+      return this._deserializeLocation(map);
+    }
+
+    throw new Error('No deserializer for ' + type.toString());
   }
 
   private _serializeLocation(loc: LocationType): Object {
@@ -114,5 +119,6 @@ export class Serializer {
   }
 }
 
+export const ANIMATION_WORKER_PLAYER_PREFIX = 'AnimationPlayer.';
 
 export class RenderStoreObject {}

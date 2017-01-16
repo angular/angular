@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {$, ExpectedConditions, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 function waitForElement(selector: string) {
-  var EC = (<any>protractor).ExpectedConditions;
+  const EC = ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
   browser.wait(EC.presenceOf($(selector)), 20000);
 }
@@ -18,7 +19,7 @@ describe('pipe', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('async', () => {
-    var URL = '/common/pipes/ts/';
+    const URL = '/common/pipes/ts/';
 
     it('should resolve and display promise', () => {
       browser.get(URL);

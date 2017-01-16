@@ -22,9 +22,13 @@
   </p>
 
   <div>
-    <largetable id="root"></largetable>
+    <largetable id="root">Loading...</largetable>
   </div>
 
-  <script src="../../bootstrap_plain.js"></script>
+  <script>
+    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
+      || '../../bootstrap_plain.js';
+    document.write('<script src="' + mainUrl + '">\u003c/script>');
+  </script>
 </body>
 </html>

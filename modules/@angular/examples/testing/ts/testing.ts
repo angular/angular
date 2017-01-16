@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, beforeEachProviders, describe, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-var db: any;
+let db: any;
 class MyService {}
 class MyMockService implements MyService {}
 
@@ -21,6 +20,7 @@ describe('some component', () => {
 // #enddocregion
 
 // #docregion fdescribe
+/* tslint:disable-next-line:no-jasmine-focus */
 fdescribe('some component', () => {
   it('has a test', () => {
                        // This test will run.
@@ -43,6 +43,7 @@ describe('another component', () => {
 
 // #docregion fit
 describe('some component', () => {
+  /* tslint:disable-next-line:no-jasmine-focus */
   fit('has a test', () => {
                         // This test will run.
                     });
@@ -65,16 +66,6 @@ describe('some component', () => {
   it('uses the db', () => {
                         // Database is connected.
                     });
-});
-// #enddocregion
-
-// #docregion beforeEachProviders
-describe('some component', () => {
-  beforeEachProviders(() => [{provide: MyService, useClass: MyMockService}]);
-  it('uses MyService', inject(
-                           [MyService], (service: MyMockService) => {
-                                            // service is an instance of MyMockService.
-                                        }));
 });
 // #enddocregion
 

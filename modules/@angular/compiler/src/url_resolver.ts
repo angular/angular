@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
+import {Inject, PACKAGE_ROOT_URL} from '@angular/core';
 
-import {StringWrapper, isBlank, isPresent} from './facade/lang';
+import {isBlank, isPresent} from './facade/lang';
+import {CompilerInjectable} from './injectable';
 
-
-const _ASSET_SCHEME = 'asset:';
 
 /**
  * Create a {@link UrlResolver} with no package prefix.
@@ -21,13 +20,13 @@ export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
 }
 
 export function createOfflineCompileUrlResolver(): UrlResolver {
-  return new UrlResolver(_ASSET_SCHEME);
+  return new UrlResolver('.');
 }
 
 /**
  * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
  */
-export var DEFAULT_PACKAGE_URL_PROVIDER = {
+export const DEFAULT_PACKAGE_URL_PROVIDER = {
   provide: PACKAGE_ROOT_URL,
   useValue: '/'
 };
@@ -48,7 +47,7 @@ export var DEFAULT_PACKAGE_URL_PROVIDER = {
  * Attacker-controlled data introduced by a template could expose your
  * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
  */
-@Injectable()
+@CompilerInjectable()
 export class UrlResolver {
   constructor(@Inject(PACKAGE_ROOT_URL) private _packagePrefix: string = null) {}
 
@@ -61,23 +60,18 @@ export class UrlResolver {
    * returned as is (ignoring the `baseUrl`)
    */
   resolve(baseUrl: string, url: string): string {
-    var resolvedUrl = url;
+    let resolvedUrl = url;
     if (isPresent(baseUrl) && baseUrl.length > 0) {
       resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
     }
-    var resolvedParts = _split(resolvedUrl);
-    var prefix = this._packagePrefix;
+    const resolvedParts = _split(resolvedUrl);
+    let prefix = this._packagePrefix;
     if (isPresent(prefix) && isPresent(resolvedParts) &&
         resolvedParts[_ComponentIndex.Scheme] == 'package') {
-      var path = resolvedParts[_ComponentIndex.Path];
-      if (this._packagePrefix === _ASSET_SCHEME) {
-        var pathSegements = path.split(/\//);
-        resolvedUrl = `asset:${pathSegements[0]}/lib/${pathSegements.slice(1).join('/')}`;
-      } else {
-        prefix = StringWrapper.stripRight(prefix, '/');
-        path = StringWrapper.stripLeft(path, '/');
-        return `${prefix}/${path}`;
-      }
+      let path = resolvedParts[_ComponentIndex.Path];
+      prefix = prefix.replace(/\/+$/, '');
+      path = path.replace(/^\/+/, '');
+      return `${prefix}/${path}`;
     }
     return resolvedUrl;
   }
@@ -87,7 +81,7 @@ export class UrlResolver {
  * Extract the scheme of a URL.
  */
 export function getUrlScheme(url: string): string {
-  var match = _split(url);
+  const match = _split(url);
   return (match && match[_ComponentIndex.Scheme]) || '';
 }
 
@@ -114,7 +108,7 @@ export function getUrlScheme(url: string): string {
 function _buildFromEncodedParts(
     opt_scheme?: string, opt_userInfo?: string, opt_domain?: string, opt_port?: string,
     opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
-  var out: string[] = [];
+  const out: string[] = [];
 
   if (isPresent(opt_scheme)) {
     out.push(opt_scheme + ':');
@@ -211,7 +205,7 @@ function _buildFromEncodedParts(
  * @type {!RegExp}
  * @internal
  */
-var _splitRe = new RegExp(
+const _splitRe = new RegExp(
     '^' +
     '(?:' +
     '([^:/?#.]+)' +  // scheme - ignore special characters
@@ -273,14 +267,14 @@ function _split(uri: string): Array<string|any> {
 function _removeDotSegments(path: string): string {
   if (path == '/') return '/';
 
-  var leadingSlash = path[0] == '/' ? '/' : '';
-  var trailingSlash = path[path.length - 1] === '/' ? '/' : '';
-  var segments = path.split('/');
+  const leadingSlash = path[0] == '/' ? '/' : '';
+  const trailingSlash = path[path.length - 1] === '/' ? '/' : '';
+  const segments = path.split('/');
 
-  var out: string[] = [];
-  var up = 0;
-  for (var pos = 0; pos < segments.length; pos++) {
-    var segment = segments[pos];
+  const out: string[] = [];
+  let up = 0;
+  for (let pos = 0; pos < segments.length; pos++) {
+    const segment = segments[pos];
     switch (segment) {
       case '':
       case '.':
@@ -313,7 +307,7 @@ function _removeDotSegments(path: string): string {
  * and then joins all the parts.
  */
 function _joinAndCanonicalizePath(parts: any[]): string {
-  var path = parts[_ComponentIndex.Path];
+  let path = parts[_ComponentIndex.Path];
   path = isBlank(path) ? '' : _removeDotSegments(path);
   parts[_ComponentIndex.Path] = path;
 
@@ -329,8 +323,8 @@ function _joinAndCanonicalizePath(parts: any[]): string {
  * @param to The URL to resolve.
  */
 function _resolveUrl(base: string, url: string): string {
-  var parts = _split(encodeURI(url));
-  var baseParts = _split(base);
+  const parts = _split(encodeURI(url));
+  const baseParts = _split(base);
 
   if (isPresent(parts[_ComponentIndex.Scheme])) {
     return _joinAndCanonicalizePath(parts);
@@ -338,7 +332,7 @@ function _resolveUrl(base: string, url: string): string {
     parts[_ComponentIndex.Scheme] = baseParts[_ComponentIndex.Scheme];
   }
 
-  for (var i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
+  for (let i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
     if (isBlank(parts[i])) {
       parts[i] = baseParts[i];
     }
@@ -348,9 +342,9 @@ function _resolveUrl(base: string, url: string): string {
     return _joinAndCanonicalizePath(parts);
   }
 
-  var path = baseParts[_ComponentIndex.Path];
+  let path = baseParts[_ComponentIndex.Path];
   if (isBlank(path)) path = '/';
-  var index = path.lastIndexOf('/');
+  const index = path.lastIndexOf('/');
   path = path.substring(0, index + 1) + parts[_ComponentIndex.Path];
   parts[_ComponentIndex.Path] = path;
   return _joinAndCanonicalizePath(parts);

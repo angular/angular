@@ -7,11 +7,11 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, ExpectedConditions, browser, by, element} from 'protractor';
 
-function waitForElement(selector: any /** TODO #9100 */) {
-  var EC = (<any>protractor).ExpectedConditions;
+function waitForElement(selector: string) {
   // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
+  browser.wait(ExpectedConditions.presenceOf($(selector)), 20000);
 }
 
 describe('routing inbox-app', () => {
@@ -19,7 +19,7 @@ describe('routing inbox-app', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = 'all/playground/src/routing/';
+    const URL = 'all/playground/src/routing/';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);

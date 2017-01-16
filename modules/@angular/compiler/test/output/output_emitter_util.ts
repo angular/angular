@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import {assetUrl, createIdentifier} from '@angular/compiler/src/identifiers';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {ImportGenerator} from '@angular/compiler/src/output/path_util';
-import {assetUrl} from '@angular/compiler/src/util';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {EventEmitter} from '@angular/core';
 import {BaseError} from '@angular/core/src/facade/errors';
 import {ViewType} from '@angular/core/src/linker/view_type';
@@ -20,30 +21,36 @@ export class ExternalClass {
   someMethod(a: any /** TODO #9100 */) { return {'param': a, 'data': this.data}; }
 }
 
-var testDataIdentifier = new CompileIdentifierMetadata({
+const testDataIdentifier = {
   name: 'ExternalClass',
-  moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
-  reference: ExternalClass
-});
+  moduleUrl: `@angular/compiler/test/output/output_emitter_util`,
+  runtime: ExternalClass
+};
 
-var eventEmitterIdentifier = new CompileIdentifierMetadata(
-    {name: 'EventEmitter', moduleUrl: assetUrl('core'), reference: EventEmitter});
+const eventEmitterIdentifier = {
+  name: 'EventEmitter',
+  moduleUrl: assetUrl('core'),
+  runtime: EventEmitter
+};
 
-var enumIdentifier = new CompileIdentifierMetadata({
+const enumIdentifier = {
   name: 'ViewType.HOST',
   moduleUrl: assetUrl('core', 'linker/view_type'),
-  reference: ViewType.HOST
-});
+  runtime: ViewType.HOST
+};
 
-var baseErrorIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), reference: BaseError});
+const baseErrorIdentifier = {
+  name: 'BaseError',
+  moduleUrl: assetUrl('core', 'facade/errors'),
+  runtime: BaseError
+};
 
-export var codegenExportsVars = [
+export const codegenExportsVars = [
   'getExpressions',
 ];
 
 
-var _getExpressionsStmts: o.Statement[] = [
+const _getExpressionsStmts: o.Statement[] = [
   o.variable('readVar').set(o.literal('someValue')).toDeclStmt(),
 
   o.variable('changedVar').set(o.literal('initialValue')).toDeclStmt(),
@@ -58,7 +65,7 @@ var _getExpressionsStmts: o.Statement[] = [
   o.variable('map').key(o.literal('changeable')).set(o.literal('changedValue')).toStmt(),
 
   o.variable('externalInstance')
-      .set(o.importExpr(testDataIdentifier).instantiate([o.literal('someValue')]))
+      .set(o.importExpr(createIdentifier(testDataIdentifier)).instantiate([o.literal('someValue')]))
       .toDeclStmt(),
   o.variable('externalInstance').prop('changeable').set(o.literal('changedValue')).toStmt(),
 
@@ -69,8 +76,8 @@ var _getExpressionsStmts: o.Statement[] = [
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([], [new o.ThrowStmt(
-                        o.importExpr(baseErrorIdentifier).instantiate([o.literal('someError')]))]))
+      .set(o.fn([], [new o.ThrowStmt(o.importExpr(createIdentifier(baseErrorIdentifier))
+                                         .instantiate([o.literal('someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')
@@ -152,9 +159,9 @@ var _getExpressionsStmts: o.Statement[] = [
 
     ['not', o.not(o.literal(false))],
 
-    ['externalTestIdentifier', o.importExpr(testDataIdentifier)],
-    ['externalSrcIdentifier', o.importExpr(eventEmitterIdentifier)],
-    ['externalEnumIdentifier', o.importExpr(enumIdentifier)],
+    ['externalTestIdentifier', o.importExpr(createIdentifier(testDataIdentifier))],
+    ['externalSrcIdentifier', o.importExpr(createIdentifier(eventEmitterIdentifier))],
+    ['externalEnumIdentifier', o.importExpr(createIdentifier(enumIdentifier))],
 
     ['externalInstance', o.variable('externalInstance')],
     ['dynamicInstance', o.variable('dynamicInstance')],
@@ -184,11 +191,11 @@ var _getExpressionsStmts: o.Statement[] = [
   ]))
 ];
 
-export var codegenStmts: o.Statement[] = [
+export const codegenStmts: o.Statement[] = [
   new o.CommentStmt('This is a comment'),
 
   new o.ClassStmt(
-      'DynamicClass', o.importExpr(testDataIdentifier),
+      'DynamicClass', o.importExpr(createIdentifier(testDataIdentifier)),
       [
         new o.ClassField('dynamicProp', o.DYNAMIC_TYPE),
         new o.ClassField('dynamicChangeable', o.DYNAMIC_TYPE),
@@ -252,13 +259,9 @@ function createOperatorFn(op: o.BinaryOperator) {
       o.DYNAMIC_TYPE);
 }
 
-export class SimpleJsImportGenerator implements ImportGenerator {
-  getImportPath(moduleUrlStr: string, importedUrlStr: string): string {
-    var importedAssetUrl = ImportGenerator.parseAssetUrl(importedUrlStr);
-    if (importedAssetUrl) {
-      return `${importedAssetUrl.packageName}/${importedAssetUrl.modulePath}`;
-    } else {
-      return importedUrlStr;
-    }
+export class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
   }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
 }

@@ -1,7 +1,20 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as ts from 'typescript';
 
+import {CollectorOptions} from './collector';
 import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
+
+// In TypeScript 2.1 the spread element kind was renamed.
+const spreadElementSyntaxKind: ts.SyntaxKind =
+    (ts.SyntaxKind as any).SpreadElement || (ts.SyntaxKind as any).SpreadElementExpression;
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
   const expression = callExpression.expression;
@@ -57,7 +70,7 @@ export interface ImportMetadata {
 
 function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
-    node = node.parent
+    node = node.parent;
   }
   return <ts.SourceFile>node;
 }
@@ -70,7 +83,7 @@ export function errorSymbol(
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
-      let {line, character} =
+      const {line, character} =
           ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
       result = {__symbolic: 'error', message, line, character};
     };
@@ -89,7 +102,9 @@ export function errorSymbol(
  * possible.
  */
 export class Evaluator {
-  constructor(private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>) {}
+  constructor(
+      private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>,
+      private options: CollectorOptions = {}) {}
 
   nameOf(node: ts.Node): string|MetadataError {
     if (node.kind == ts.SyntaxKind.Identifier) {
@@ -215,11 +230,16 @@ export class Evaluator {
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
+        let quoted: string[] = [];
         ts.forEachChild(node, child => {
           switch (child.kind) {
             case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
+              if (assignment.name.kind == ts.SyntaxKind.StringLiteral) {
+                const name = (assignment.name as ts.StringLiteral).text;
+                quoted.push(name);
+              }
               const propertyName = this.nameOf(assignment.name);
               if (isMetadataError(propertyName)) {
                 error = propertyName;
@@ -237,6 +257,9 @@ export class Evaluator {
           }
         });
         if (error) return error;
+        if (this.options.quotedNames && quoted.length) {
+          obj['$quoted$'] = quoted;
+        }
         return obj;
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
@@ -252,7 +275,7 @@ export class Evaluator {
           // Handle spread expressions
           if (isMetadataSymbolicSpreadExpression(value)) {
             if (Array.isArray(value.expression)) {
-              for (let spreadValue of value.expression) {
+              for (const spreadValue of value.expression) {
                 arr.push(spreadValue);
               }
               return;
@@ -263,9 +286,8 @@ export class Evaluator {
         });
         if (error) return error;
         return arr;
-      case ts.SyntaxKind.SpreadElementExpression:
-        let spread = <ts.SpreadElementExpression>node;
-        let spreadExpression = this.evaluateNode(spread.expression);
+      case spreadElementSyntaxKind:
+        let spreadExpression = this.evaluateNode((node as any).expression);
         return recordEntry({__symbolic: 'spread', expression: spreadExpression}, node);
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;
@@ -375,13 +397,13 @@ export class Evaluator {
                         module: left.module,
                         name: qualifiedName.right.text
                       },
-                      node)
+                      node);
                 }
                 // Record a type reference to a declared type as a select.
                 return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};
               } else {
                 const identifier = <ts.Identifier>typeNameNode;
-                let symbol = this.symbols.resolve(identifier.text);
+                const symbol = this.symbols.resolve(identifier.text);
                 if (isMetadataError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
                   return recordEntry(symbol, node);
                 }

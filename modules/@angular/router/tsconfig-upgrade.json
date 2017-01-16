@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noEmitOnError": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "outDir": "../../../dist/packages-dist/router",
+    "paths": {
+      "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
+      "@angular/router": ["../../../dist/packages-dist/router"],
+      "@angular/upgrade/static": ["../../../dist/packages-dist/upgrade/static"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
+  },
+  "files": [
+    "upgrade.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

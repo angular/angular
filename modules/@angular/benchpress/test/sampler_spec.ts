@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
-import {Date, DateWrapper, isBlank, isPresent, stringify} from '../src/facade/lang';
+import {isBlank, isPresent} from '../src/facade/lang';
 
 export function main() {
-  var EMPTY_EXECUTE = () => {};
+  const EMPTY_EXECUTE = () => {};
 
   describe('sampler', () => {
-    var sampler: Sampler;
+    let sampler: Sampler;
 
     function createSampler({driver, metric, reporter, validator, prepare, execute}: {
       driver?: any,
@@ -25,21 +25,21 @@ export function main() {
       prepare?: any,
       execute?: any
     } = {}) {
-      var time = 1000;
-      if (isBlank(metric)) {
+      let time = 1000;
+      if (!metric) {
         metric = new MockMetric([]);
       }
-      if (isBlank(reporter)) {
+      if (!reporter) {
         reporter = new MockReporter([]);
       }
       if (isBlank(driver)) {
         driver = new MockDriverAdapter([]);
       }
-      var providers = [
+      const providers = [
         Options.DEFAULT_PROVIDERS, Sampler.PROVIDERS, {provide: Metric, useValue: metric},
         {provide: Reporter, useValue: reporter}, {provide: WebDriverAdapter, useValue: driver},
         {provide: Options.EXECUTE, useValue: execute}, {provide: Validator, useValue: validator},
-        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(time++)}
+        {provide: Options.NOW, useValue: () => new Date(time++)}
       ];
       if (isPresent(prepare)) {
         providers.push({provide: Options.PREPARE, useValue: prepare});
@@ -50,18 +50,18 @@ export function main() {
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var log: any[] = [];
-         var count = 0;
-         var driver = new MockDriverAdapter([], (callback: Function) => {
-           var result = callback();
+         const log: any[] = [];
+         let count = 0;
+         const driver = new MockDriverAdapter([], (callback: Function) => {
+           const result = callback();
            log.push(result);
            return Promise.resolve(result);
          });
          createSampler({
            driver: driver,
            validator: createCountingValidator(2),
-           prepare: () => { return count++; },
-           execute: () => { return count++; }
+           prepare: () => count++,
+           execute: () => count++,
          });
          sampler.sample().then((_) => {
            expect(count).toBe(4);
@@ -73,8 +73,8 @@ export function main() {
 
     it('should call prepare, beginMeasure, execute, endMeasure for every iteration',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var workCount = 0;
-         var log: any[] = [];
+         let workCount = 0;
+         const log: any[] = [];
          createSampler({
            metric: createCountingMetric(log),
            validator: createCountingValidator(2),
@@ -98,8 +98,8 @@ export function main() {
 
     it('should call execute, endMeasure for every iteration if there is no prepare callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var log: any[] = [];
-         var workCount = 0;
+         const log: any[] = [];
+         let workCount = 0;
          createSampler({
            metric: createCountingMetric(log),
            validator: createCountingValidator(2),
@@ -120,14 +120,14 @@ export function main() {
 
     it('should only collect metrics for execute and ignore metrics from prepare',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var scriptTime = 0;
-         var iterationCount = 1;
+         let scriptTime = 0;
+         let iterationCount = 1;
          createSampler({
            validator: createCountingValidator(2),
            metric: new MockMetric(
                [],
                () => {
-                 var result = Promise.resolve({'script': scriptTime});
+                 const result = Promise.resolve({'script': scriptTime});
                  scriptTime = 0;
                  return result;
                }),
@@ -147,8 +147,8 @@ export function main() {
 
     it('should call the validator for every execution and store the valid sample',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var log: any[] = [];
-         var validSample = [mv(null, null, {})];
+         const log: any[] = [];
+         const validSample = [mv(null, null, {})];
 
          createSampler({
            metric: createCountingMetric(),
@@ -174,8 +174,8 @@ export function main() {
 
     it('should report the metric values',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var log: any[] = [];
-         var validSample = [mv(null, null, {})];
+         const log: any[] = [];
+         const validSample = [mv(null, null, {})];
          createSampler({
            validator: createCountingValidator(2, validSample),
            metric: createCountingMetric(),
@@ -204,7 +204,7 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }
 
 function createCountingValidator(
@@ -212,7 +212,7 @@ function createCountingValidator(
   return new MockValidator(log, (completeSample: MeasureValues[]) => {
     count--;
     if (count === 0) {
-      return isPresent(validSample) ? validSample : completeSample;
+      return validSample || completeSample;
     } else {
       return null;
     }
@@ -220,8 +220,8 @@ function createCountingValidator(
 }
 
 function createCountingMetric(log: any[] = []) {
-  var scriptTime = 0;
-  return new MockMetric(log, () => { return {'script': scriptTime++}; });
+  let scriptTime = 0;
+  return new MockMetric(log, () => ({'script': scriptTime++}));
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
@@ -239,7 +239,8 @@ class MockDriverAdapter extends WebDriverAdapter {
 class MockValidator extends Validator {
   constructor(private _log: any[] = [], private _validate: Function = null) { super(); }
   validate(completeSample: MeasureValues[]): MeasureValues[] {
-    var stableSample = isPresent(this._validate) ? this._validate(completeSample) : completeSample;
+    const stableSample =
+        isPresent(this._validate) ? this._validate(completeSample) : completeSample;
     this._log.push(['validate', completeSample, stableSample]);
     return stableSample;
   }
@@ -252,7 +253,7 @@ class MockMetric extends Metric {
     return Promise.resolve(null);
   }
   endMeasure(restart: boolean) {
-    var measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
+    const measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
     this._log.push(['endMeasure', restart, measureValues]);
     return Promise.resolve(measureValues);
   }

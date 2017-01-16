@@ -40,14 +40,14 @@ class BadTemplateUrl {
 export function main() {
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
-      var actuallyDone: boolean;
+      let actuallyDone: boolean;
 
       beforeEach(() => { actuallyDone = false; });
 
       afterEach(() => { expect(actuallyDone).toEqual(true); });
 
       it('should run async tests with ResourceLoaders', async(() => {
-           var resourceLoader = new ResourceLoaderImpl();
+           const resourceLoader = new ResourceLoaderImpl();
            resourceLoader
                .get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
@@ -69,7 +69,7 @@ export function main() {
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
-             var value: any /** TODO #9100 */;
+             let value: any /** TODO #9100 */;
              service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
              tick();
              expect(value).toEqual('async value');
@@ -78,18 +78,18 @@ export function main() {
     });
 
     describe('errors', () => {
-      var originalJasmineIt: any;
+      let originalJasmineIt: any;
 
-      var patchJasmineIt = () => {
-        var resolve: (result: any) => void;
-        var reject: (error: any) => void;
+      const patchJasmineIt = () => {
+        let resolve: (result: any) => void;
+        let reject: (error: any) => void;
         const promise = new Promise((res, rej) => {
           resolve = res;
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
         jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-          var done = () => { resolve(null); };
+          const done = () => { resolve(null); };
           (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
           fn(done);
           return null;
@@ -97,10 +97,10 @@ export function main() {
         return promise;
       };
 
-      var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
+      const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
       it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
-        var itPromise = patchJasmineIt();
+        const itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(() => {
              TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
@@ -122,7 +122,7 @@ export function main() {
       it('should allow an external templateUrl', async(() => {
            TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
            TestBed.compileComponents().then(() => {
-             let componentFixture = TestBed.createComponent(ExternalTemplateComp);
+             const componentFixture = TestBed.createComponent(ExternalTemplateComp);
              componentFixture.detectChanges();
              expect(componentFixture.nativeElement.textContent).toEqual('from external template\n');
            });

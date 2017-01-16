@@ -117,6 +117,16 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
+/** @experimental */
+export declare class NgComponentOutlet implements OnChanges {
+    componentRef: ComponentRef<any>;
+    ngComponentOutlet: Type<any>;
+    ngComponentOutletContent: any[][];
+    ngComponentOutletInjector: Injector;
+    constructor(_cmpFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef);
+    ngOnChanges(changes: SimpleChanges): void;
+}
+
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
@@ -130,7 +140,16 @@ export declare class NgFor implements DoCheck, OnChanges {
 /** @stable */
 export declare class NgIf {
     ngIf: any;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<Object>);
+    ngIfElse: TemplateRef<NgIfContext>;
+    ngIfThen: TemplateRef<NgIfContext>;
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
+}
+
+/** @experimental */
+export declare class NgLocaleLocalization extends NgLocalization {
+    protected locale: string;
+    constructor(locale: string);
+    getPluralCategory(value: any): string;
 }
 
 /** @experimental */
@@ -166,20 +185,22 @@ export declare class NgSwitch {
 }
 
 /** @stable */
-export declare class NgSwitchCase {
+export declare class NgSwitchCase implements DoCheck {
     ngSwitchCase: any;
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
+    ngDoCheck(): void;
 }
 
 /** @stable */
 export declare class NgSwitchDefault {
-    constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, sswitch: NgSwitch);
+    constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 
 /** @experimental */
 export declare class NgTemplateOutlet implements OnChanges {
-    ngOutletContext: Object;
-    ngTemplateOutlet: TemplateRef<Object>;
+    /** @deprecated */ ngOutletContext: Object;
+    ngTemplateOutlet: TemplateRef<any>;
+    ngTemplateOutletContext: Object;
     constructor(_viewContainerRef: ViewContainerRef);
     ngOnChanges(changes: SimpleChanges): void;
 }
@@ -223,6 +244,14 @@ export declare class SlicePipe implements PipeTransform {
 }
 
 /** @stable */
+export declare class TitleCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
+/** @stable */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
+
+/** @stable */
+export declare const VERSION: Version;

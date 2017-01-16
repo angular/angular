@@ -8,9 +8,9 @@
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {StringMapWrapper} from './facade/collection';
-import {Math, global} from './facade/lang';
+import {global} from './facade/lang';
 import {isPromise} from './private_import_core';
-import {TestBed, getTestBed, inject} from './test_bed';
+import {getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';
 export {MockAnimationPlayer} from './mock_animation_player';
@@ -19,27 +19,26 @@ export {inject} from './test_bed';
 export * from './logger';
 export * from './ng_zone_mock';
 
-export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
+export const proxy: ClassDecorator = (t: any) => t;
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
-export var afterEach: Function = _global.afterEach;
-export var expect: (actual: any) => jasmine.Matchers = _global.expect;
+export const afterEach: Function = _global.afterEach;
+export const expect: (actual: any) => jasmine.Matchers = _global.expect;
 
-var jsmBeforeEach = _global.beforeEach;
-var jsmDescribe = _global.describe;
-var jsmDDescribe = _global.fdescribe;
-var jsmXDescribe = _global.xdescribe;
-var jsmIt = _global.it;
-var jsmIIt = _global.fit;
-var jsmXIt = _global.xit;
+const jsmBeforeEach = _global.beforeEach;
+const jsmDescribe = _global.describe;
+const jsmDDescribe = _global.fdescribe;
+const jsmXDescribe = _global.xdescribe;
+const jsmIt = _global.it;
+const jsmIIt = _global.fit;
+const jsmXIt = _global.xit;
 
-var runnerStack: BeforeEachRunner[] = [];
-var inIt = false;
+const runnerStack: BeforeEachRunner[] = [];
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
-var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+const globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testBed = getTestBed();
+const testBed = getTestBed();
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
@@ -63,10 +62,10 @@ class BeforeEachRunner {
 jsmBeforeEach(() => { testBed.resetTestingModule(); });
 
 function _describe(jsmFn: Function, ...args: any[]) {
-  var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
-  var runner = new BeforeEachRunner(parentRunner);
+  const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
+  const runner = new BeforeEachRunner(parentRunner);
   runnerStack.push(runner);
-  var suite = jsmFn(...args);
+  const suite = jsmFn(...args);
   runnerStack.pop();
   return suite;
 }
@@ -107,7 +106,7 @@ export function beforeEach(fn: Function): void {
  */
 export function beforeEachProviders(fn: Function): void {
   jsmBeforeEach(() => {
-    var providers = fn();
+    const providers = fn();
     if (!providers) return;
     testBed.configureTestingModule({providers: providers});
   });
@@ -120,11 +119,11 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     debugger;
     throw new Error('Empty Stack!');
   }
-  var runner = runnerStack[runnerStack.length - 1];
-  var timeOut = Math.max(globalTimeOut, testTimeOut);
+  const runner = runnerStack[runnerStack.length - 1];
+  const timeOut = Math.max(globalTimeOut, testTimeOut);
 
-  jsmFn(name, (done: any /** TODO #9100 */) => {
-    var completerProvider = {
+  jsmFn(name, (done: any) => {
+    const completerProvider = {
       provide: AsyncTestCompleter,
       useFactory: () => {
         // Mark the test as async when an AsyncTestCompleter is injected in an it()
@@ -134,9 +133,8 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     testBed.configureTestingModule({providers: [completerProvider]});
     runner.run();
 
-    inIt = true;
     if (testFn.length == 0) {
-      let retVal = testFn();
+      const retVal = testFn();
       if (isPromise(retVal)) {
         // Asynchronous test function that returns a Promise - wait for completion.
         (<Promise<any>>retVal).then(done, done.fail);
@@ -148,44 +146,26 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
       // Asynchronous test function that takes in 'done' parameter.
       testFn(done);
     }
-    inIt = false;
   }, timeOut);
 }
 
-export function it(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function it(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmIt, name, fn, timeOut);
 }
 
-export function xit(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function xit(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmXIt, name, fn, timeOut);
 }
 
-export function iit(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function iit(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
 
-export interface GuinessCompatibleSpy extends jasmine.Spy {
-  /** By chaining the spy with and.returnValue, all calls to the function will return a specific
-   * value. */
-  andReturn(val: any): void;
-  /** By chaining the spy with and.callFake, all calls to the spy will delegate to the supplied
-   * function. */
-  andCallFake(fn: Function): GuinessCompatibleSpy;
-  /** removes all recorded calls */
-  reset(): any /** TODO #9100 */;
-}
-
 export class SpyObject {
-  constructor(type: any /** TODO #9100 */ = null) {
+  constructor(type?: any) {
     if (type) {
-      for (var prop in type.prototype) {
-        var m: any /** TODO #9100 */ = null;
+      for (const prop in type.prototype) {
+        let m: any = null;
         try {
           m = type.prototype[prop];
         } catch (e) {
@@ -200,44 +180,25 @@ export class SpyObject {
       }
     }
   }
-  // Noop so that SpyObject has the same interface as in Dart
-  noSuchMethod(args: any /** TODO #9100 */) {}
 
-  spy(name: any /** TODO #9100 */) {
-    if (!(this as any /** TODO #9100 */)[name]) {
-      (this as any /** TODO #9100 */)[name] = this._createGuinnessCompatibleSpy(name);
+  spy(name: string) {
+    if (!(this as any)[name]) {
+      (this as any)[name] = jasmine.createSpy(name);
     }
-    return (this as any /** TODO #9100 */)[name];
+    return (this as any)[name];
   }
 
-  prop(name: any /** TODO #9100 */, value: any /** TODO #9100 */) {
-    (this as any /** TODO #9100 */)[name] = value;
-  }
+  prop(name: string, value: any) { (this as any)[name] = value; }
 
-  static stub(
-      object: any /** TODO #9100 */ = null, config: any /** TODO #9100 */ = null,
-      overrides: any /** TODO #9100 */ = null) {
+  static stub(object: any = null, config: any = null, overrides: any = null) {
     if (!(object instanceof SpyObject)) {
       overrides = config;
       config = object;
       object = new SpyObject();
     }
 
-    var m = StringMapWrapper.merge(config, overrides);
-    StringMapWrapper.forEach(m, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-      object.spy(key).andReturn(value);
-    });
+    const m = StringMapWrapper.merge(config, overrides);
+    Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
     return object;
-  }
-
-  /** @internal */
-  _createGuinnessCompatibleSpy(name: any /** TODO #9100 */): GuinessCompatibleSpy {
-    var newSpy: GuinessCompatibleSpy = <any>jasmine.createSpy(name);
-    newSpy.andCallFake = <any>newSpy.and.callFake;
-    newSpy.andReturn = <any>newSpy.and.returnValue;
-    newSpy.reset = <any>newSpy.calls.reset;
-    // revisit return null here (previously needed for rtts_assert).
-    newSpy.and.returnValue(null);
-    return newSpy;
   }
 }

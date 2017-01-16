@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var assertEventsContainsName = function(events: any[], eventName: string) {
-  var found = false;
-  for (var i = 0; i < events.length; ++i) {
+/* tslint:disable:no-console  */
+import {browser} from 'protractor';
+
+const assertEventsContainsName = function(events: any[], eventName: string) {
+  let found = false;
+  for (let i = 0; i < events.length; ++i) {
     if (events[i].name == eventName) {
       found = true;
       break;
@@ -18,7 +21,7 @@ var assertEventsContainsName = function(events: any[], eventName: string) {
 };
 
 describe('firefox extension', function() {
-  var TEST_URL = 'http://localhost:8001/playground/src/hello_world/index.html';
+  const TEST_URL = 'http://localhost:8001/playground/src/hello_world/index.html';
 
   it('should measure performance', function() {
     browser.sleep(3000);  // wait for extension to load

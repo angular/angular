@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from './facade/collection';
-import {global, isString} from './facade/lang';
+
+import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 
@@ -187,21 +187,21 @@ _global.beforeEach(function() {
       return {
         compare: function(actual: any, styles: {[k: string]: string}|string) {
           let allPassed: boolean;
-          if (isString(styles)) {
+          if (typeof styles === 'string') {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
-            allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(styles, (style: string, prop: string) => {
-              allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
+            allPassed = Object.keys(styles).length !== 0;
+            Object.keys(styles).forEach(prop => {
+              allPassed = allPassed && getDOM().hasStyle(actual, prop, styles[prop]);
             });
           }
 
           return {
             pass: allPassed,
             get message() {
-              const expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
+              const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
             }
           };
         }
@@ -244,7 +244,7 @@ _global.beforeEach(function() {
 });
 
 function elementText(n: any): string {
-  var hasNodes = (n: any) => {
+  const hasNodes = (n: any) => {
     const children = getDOM().childNodes(n);
     return children && children.length > 0;
   };

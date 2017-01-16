@@ -9,8 +9,6 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {StringWrapper, isBlank, isPresent} from './facade/lang';
-
 import {UrlResolver} from './url_resolver';
 
 export class StyleWithImports {
@@ -18,8 +16,8 @@ export class StyleWithImports {
 }
 
 export function isStyleUrlResolvable(url: string): boolean {
-  if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
-  const schemeMatch = url.match(_urlWithSchemaRe);
+  if (url == null || url.length === 0 || url[0] == '/') return false;
+  const schemeMatch = url.match(URL_WITH_SCHEMA_REGEXP);
   return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }
 
@@ -29,18 +27,21 @@ export function isStyleUrlResolvable(url: string): boolean {
  */
 export function extractStyleUrls(
     resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
-  var foundUrls: string[] = [];
-  var modifiedCssText = StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m: string[]) => {
-    var url = isPresent(m[1]) ? m[1] : m[2];
-    if (!isStyleUrlResolvable(url)) {
-      // Do not attempt to resolve non-package absolute URLs with URI scheme
-      return m[0];
-    }
-    foundUrls.push(resolver.resolve(baseUrl, url));
-    return '';
-  });
+  const foundUrls: string[] = [];
+
+  const modifiedCssText =
+      cssText.replace(CSS_COMMENT_REGEXP, '').replace(CSS_IMPORT_REGEXP, (...m: string[]) => {
+        const url = m[1] || m[2];
+        if (!isStyleUrlResolvable(url)) {
+          // Do not attempt to resolve non-package absolute URLs with URI scheme
+          return m[0];
+        }
+        foundUrls.push(resolver.resolve(baseUrl, url));
+        return '';
+      });
   return new StyleWithImports(modifiedCssText, foundUrls);
 }
 
-var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
-var _urlWithSchemaRe = /^([^:/?#]+):/;
+const CSS_IMPORT_REGEXP = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
+const CSS_COMMENT_REGEXP = /\/\*.+?\*\//g;
+const URL_WITH_SCHEMA_REGEXP = /^([^:/?#]+):/;

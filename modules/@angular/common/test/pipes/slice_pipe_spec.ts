@@ -9,14 +9,13 @@
 import {CommonModule, SlicePipe} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('SlicePipe', () => {
-    var list: number[];
-    var str: string;
-    var pipe: SlicePipe;
+    let list: number[];
+    let str: string;
+    let pipe: SlicePipe;
 
     beforeEach(() => {
       list = [1, 2, 3, 4, 5];
@@ -94,8 +93,8 @@ export function main() {
       });
 
       it('should work with mutable arrays', async(() => {
-           let fixture = TestBed.createComponent(TestComp);
-           let mutable: number[] = [1, 2];
+           const fixture = TestBed.createComponent(TestComp);
+           const mutable: number[] = [1, 2];
            fixture.componentInstance.data = mutable;
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('2');

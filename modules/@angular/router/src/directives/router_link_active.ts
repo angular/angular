@@ -10,7 +10,6 @@ import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChang
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
-import {UrlTree} from '../url_tree';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
@@ -21,7 +20,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * @howToUse
  *
  * ```
- * <a [routerLink]='/user/bob' routerLinkActive='active-link'>Bob</a>
+ * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
  * ```
  *
  * @description
@@ -32,7 +31,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * Consider the following example:
  *
  * ```
- * <a [routerLink]="/user/bob" routerLinkActive="active-link">Bob</a>
+ * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
  * ```
  *
  * When the url is either '/user' or '/user/bob', the active-link class will
@@ -41,24 +40,32 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * You can set more than one class, as follows:
  *
  * ```
- * <a [routerLink]="/user/bob" routerLinkActive="class1 class2">Bob</a>
- * <a [routerLink]="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
+ * <a routerLink="/user/bob" routerLinkActive="class1 class2">Bob</a>
+ * <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
  * ```
  *
  * You can configure RouterLinkActive by passing `exact: true`. This will add the classes
  * only when the url matches the link exactly.
  *
  * ```
- * <a [routerLink]="/user/bob" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:
+ * <a routerLink="/user/bob" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:
  * true}">Bob</a>
+ * ```
+ *
+ * You can assign the RouterLinkActive instance to a template variable and directly check
+ * the `isActive` status.
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive #rla="routerLinkActive">
+ *   Bob {{ rla.isActive ? '(already open)' : ''}}
+ * </a>
  * ```
  *
  * Finally, you can apply the RouterLinkActive directive to an ancestor of a RouterLink.
  *
  * ```
  * <div routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
- *   <a [routerLink]="/user/jim">Jim</a>
- *   <a [routerLink]="/user/bob">Bob</a>
+ *   <a routerLink="/user/jim">Jim</a>
+ *   <a routerLink="/user/bob">Bob</a>
  * </div>
  * ```
  *
@@ -70,8 +77,12 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * @stable
  */
-@Directive({selector: '[routerLinkActive]'})
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+@Directive({
+  selector: '[routerLinkActive]',
+  exportAs: 'routerLinkActive',
+})
+export class RouterLinkActive implements OnChanges,
+    OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs: QueryList<RouterLinkWithHref>;
@@ -88,6 +99,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       }
     });
   }
+
+  get isActive(): boolean { return this.hasActiveLink(); }
 
   ngAfterContentInit(): void {
     this.links.changes.subscribe(s => this.update());
@@ -110,17 +123,21 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
-    const isActiveLinks = this.reduceList(this.links);
-    const isActiveLinksWithHrefs = this.reduceList(this.linksWithHrefs);
-    this.classes.forEach(
-        c => this.renderer.setElementClass(
-            this.element.nativeElement, c, isActiveLinks || isActiveLinksWithHrefs));
+    const isActive = this.hasActiveLink();
+    this.classes.forEach(c => {
+      if (c) {
+        this.renderer.setElementClass(this.element.nativeElement, c, isActive);
+      }
+    });
   }
 
-  private reduceList(q: QueryList<any>): boolean {
-    return q.reduce(
-        (res: boolean, link: any) =>
-            res || this.router.isActive(link.urlTree, this.routerLinkActiveOptions.exact),
-        false);
+  private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
+    return (link: RouterLink | RouterLinkWithHref) =>
+               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+  }
+
+  private hasActiveLink(): boolean {
+    return this.links.some(this.isLinkActive(this.router)) ||
+        this.linksWithHrefs.some(this.isLinkActive(this.router));
   }
 }

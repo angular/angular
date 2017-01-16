@@ -22,19 +22,19 @@ export class DebugDomRootRenderer implements RootRenderer {
   }
 }
 
-export class DebugDomRenderer implements Renderer {
+export class DebugDomRenderer {
   constructor(private _delegate: Renderer) {}
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any {
-    var nativeEl = this._delegate.selectRootElement(selectorOrNode, debugInfo);
-    var debugEl = new DebugElement(nativeEl, null, debugInfo);
+    const nativeEl = this._delegate.selectRootElement(selectorOrNode, debugInfo);
+    const debugEl = new DebugElement(nativeEl, null, debugInfo);
     indexDebugNode(debugEl);
     return nativeEl;
   }
 
   createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
-    var nativeEl = this._delegate.createElement(parentElement, name, debugInfo);
-    var debugEl = new DebugElement(nativeEl, getDebugNode(parentElement), debugInfo);
+    const nativeEl = this._delegate.createElement(parentElement, name, debugInfo);
+    const debugEl = new DebugElement(nativeEl, getDebugNode(parentElement), debugInfo);
     debugEl.name = name;
     indexDebugNode(debugEl);
     return nativeEl;
@@ -43,34 +43,34 @@ export class DebugDomRenderer implements Renderer {
   createViewRoot(hostElement: any): any { return this._delegate.createViewRoot(hostElement); }
 
   createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
-    var comment = this._delegate.createTemplateAnchor(parentElement, debugInfo);
-    var debugEl = new DebugNode(comment, getDebugNode(parentElement), debugInfo);
+    const comment = this._delegate.createTemplateAnchor(parentElement, debugInfo);
+    const debugEl = new DebugNode(comment, getDebugNode(parentElement), debugInfo);
     indexDebugNode(debugEl);
     return comment;
   }
 
   createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any {
-    var text = this._delegate.createText(parentElement, value, debugInfo);
-    var debugEl = new DebugNode(text, getDebugNode(parentElement), debugInfo);
+    const text = this._delegate.createText(parentElement, value, debugInfo);
+    const debugEl = new DebugNode(text, getDebugNode(parentElement), debugInfo);
     indexDebugNode(debugEl);
     return text;
   }
 
   projectNodes(parentElement: any, nodes: any[]) {
-    var debugParent = getDebugNode(parentElement);
+    const debugParent = getDebugNode(parentElement);
     if (isPresent(debugParent) && debugParent instanceof DebugElement) {
-      let debugElement = debugParent;
+      const debugElement = debugParent;
       nodes.forEach((node) => { debugElement.addChild(getDebugNode(node)); });
     }
     this._delegate.projectNodes(parentElement, nodes);
   }
 
   attachViewAfter(node: any, viewRootNodes: any[]) {
-    var debugNode = getDebugNode(node);
+    const debugNode = getDebugNode(node);
     if (isPresent(debugNode)) {
-      var debugParent = debugNode.parent;
+      const debugParent = debugNode.parent;
       if (viewRootNodes.length > 0 && isPresent(debugParent)) {
-        var debugViewRootNodes: DebugNode[] = [];
+        const debugViewRootNodes: DebugNode[] = [];
         viewRootNodes.forEach((rootNode) => debugViewRootNodes.push(getDebugNode(rootNode)));
         debugParent.insertChildrenAfter(debugNode, debugViewRootNodes);
       }
@@ -80,7 +80,7 @@ export class DebugDomRenderer implements Renderer {
 
   detachView(viewRootNodes: any[]) {
     viewRootNodes.forEach((node) => {
-      var debugNode = getDebugNode(node);
+      const debugNode = getDebugNode(node);
       if (isPresent(debugNode) && isPresent(debugNode.parent)) {
         debugNode.parent.removeChild(debugNode);
       }
@@ -89,12 +89,13 @@ export class DebugDomRenderer implements Renderer {
   }
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
+    viewAllNodes = viewAllNodes || [];
     viewAllNodes.forEach((node) => { removeDebugNodeFromIndex(getDebugNode(node)); });
     this._delegate.destroyView(hostElement, viewAllNodes);
   }
 
   listen(renderElement: any, name: string, callback: Function): Function {
-    var debugEl = getDebugNode(renderElement);
+    const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl)) {
       debugEl.listeners.push(new EventListener(name, callback));
     }
@@ -106,7 +107,7 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any) {
-    var debugEl = getDebugNode(renderElement);
+    const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
       debugEl.properties[propertyName] = propertyValue;
     }
@@ -114,7 +115,7 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string) {
-    var debugEl = getDebugNode(renderElement);
+    const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
       debugEl.attributes[attributeName] = attributeValue;
     }
@@ -126,7 +127,7 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setElementClass(renderElement: any, className: string, isAdd: boolean) {
-    var debugEl = getDebugNode(renderElement);
+    const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
       debugEl.classes[className] = isAdd;
     }
@@ -134,7 +135,7 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
-    var debugEl = getDebugNode(renderElement);
+    const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
       debugEl.styles[styleName] = styleValue;
     }
@@ -149,7 +150,9 @@ export class DebugDomRenderer implements Renderer {
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
-    return this._delegate.animate(element, startingStyles, keyframes, duration, delay, easing);
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
+    return this._delegate.animate(
+        element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
   }
 }

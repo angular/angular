@@ -23,15 +23,15 @@ function getInertElement() {
   DOM = getDOM();
 
   // Prefer using <template> element if supported.
-  let templateEl = DOM.createElement('template');
+  const templateEl = DOM.createElement('template');
   if ('content' in templateEl) return templateEl;
 
-  let doc = DOM.createHtmlDocument();
+  const doc = DOM.createHtmlDocument();
   inertElement = DOM.querySelector(doc, 'body');
   if (inertElement == null) {
     // usually there should be only one body element in the document, but IE doesn't have any, so we
     // need to create one.
-    let html = DOM.createElement('html', doc);
+    const html = DOM.createElement('html', doc);
     inertElement = DOM.createElement('body', doc);
     DOM.appendChild(html, inertElement);
     DOM.appendChild(doc, html);
@@ -40,15 +40,15 @@ function getInertElement() {
 }
 
 function tagSet(tags: string): {[k: string]: boolean} {
-  let res: {[k: string]: boolean} = {};
-  for (let t of tags.split(',')) res[t] = true;
+  const res: {[k: string]: boolean} = {};
+  for (const t of tags.split(',')) res[t] = true;
   return res;
 }
 
 function merge(...sets: {[k: string]: boolean}[]): {[k: string]: boolean} {
-  let res: {[k: string]: boolean} = {};
-  for (let s of sets) {
-    for (let v in s) {
+  const res: {[k: string]: boolean} = {};
+  for (const s of sets) {
+    for (const v in s) {
       if (s.hasOwnProperty(v)) res[v] = true;
     }
   }
@@ -164,7 +164,7 @@ class SanitizingHtmlSerializer {
     this.buf.push('<');
     this.buf.push(tagName);
     DOM.attributeMap(element).forEach((value: string, attrName: string) => {
-      let lower = attrName.toLowerCase();
+      const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
         return;
@@ -210,8 +210,8 @@ function encodeEntities(value: string) {
       .replace(
           SURROGATE_PAIR_REGEXP,
           function(match: string) {
-            let hi = match.charCodeAt(0);
-            let low = match.charCodeAt(1);
+            const hi = match.charCodeAt(0);
+            const low = match.charCodeAt(1);
             return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
           })
       .replace(
@@ -234,7 +234,7 @@ function stripCustomNsAttrs(el: Element) {
       DOM.removeAttribute(el, attrName);
     }
   });
-  for (let n of DOM.childNodesAsList(el)) {
+  for (const n of DOM.childNodesAsList(el)) {
     if (DOM.isElementNode(n)) stripCustomNsAttrs(n as Element);
   }
 }
@@ -269,12 +269,12 @@ export function sanitizeHtml(unsafeHtmlInput: string): string {
       parsedHtml = DOM.getInnerHTML(containerEl);
     } while (unsafeHtml !== parsedHtml);
 
-    let sanitizer = new SanitizingHtmlSerializer();
-    let safeHtml = sanitizer.sanitizeChildren(DOM.getTemplateContent(containerEl) || containerEl);
+    const sanitizer = new SanitizingHtmlSerializer();
+    const safeHtml = sanitizer.sanitizeChildren(DOM.getTemplateContent(containerEl) || containerEl);
 
     // Clear out the body element.
-    let parent = DOM.getTemplateContent(containerEl) || containerEl;
-    for (let child of DOM.childNodesAsList(parent)) {
+    const parent = DOM.getTemplateContent(containerEl) || containerEl;
+    for (const child of DOM.childNodesAsList(parent)) {
       DOM.removeChild(parent, child);
     }
 

@@ -24,3 +24,4 @@ export const KeyEventsPlugin: typeof _.KeyEventsPlugin = _.KeyEventsPlugin;
 export const HammerGesturesPlugin: typeof _.HammerGesturesPlugin = _.HammerGesturesPlugin;
 export const DomAdapter: typeof _.DomAdapter = _.DomAdapter;
 export const setRootDomAdapter: typeof _.setRootDomAdapter = _.setRootDomAdapter;
+export const WebAnimationsDriver: typeof _.WebAnimationsDriver = _.WebAnimationsDriver;

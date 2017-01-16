@@ -11,16 +11,14 @@ import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {Json, StringWrapper} from '../../src/facade/lang';
-
 export function main() {
   describe('JsonPipe', () => {
-    var regNewLine = '\n';
-    var inceptionObj: any;
-    var inceptionObjString: string;
-    var pipe: JsonPipe;
+    const regNewLine = '\n';
+    let inceptionObj: any;
+    let inceptionObjString: string;
+    let pipe: JsonPipe;
 
-    function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
+    function normalize(obj: string): string { return obj.replace(regNewLine, ''); }
 
     beforeEach(() => {
       inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
@@ -41,14 +39,14 @@ export function main() {
          () => { expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString); });
 
       it('should return JSON-formatted string even when normalized', () => {
-        var dream1 = normalize(pipe.transform(inceptionObj));
-        var dream2 = normalize(inceptionObjString);
+        const dream1 = normalize(pipe.transform(inceptionObj));
+        const dream2 = normalize(inceptionObjString);
         expect(dream1).toEqual(dream2);
       });
 
       it('should return JSON-formatted string similar to Json.stringify', () => {
-        var dream1 = normalize(pipe.transform(inceptionObj));
-        var dream2 = normalize(Json.stringify(inceptionObj));
+        const dream1 = normalize(pipe.transform(inceptionObj));
+        const dream2 = normalize(JSON.stringify(inceptionObj, null, 2));
         expect(dream1).toEqual(dream2);
       });
     });
@@ -65,8 +63,8 @@ export function main() {
       });
 
       it('should work with mutable objects', async(() => {
-           let fixture = TestBed.createComponent(TestComp);
-           let mutable: number[] = [1];
+           const fixture = TestBed.createComponent(TestComp);
+           const mutable: number[] = [1];
            fixture.componentInstance.data = mutable;
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('[\n  1\n]');
@@ -74,7 +72,6 @@ export function main() {
            mutable.push(2);
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
-
          }));
     });
   });

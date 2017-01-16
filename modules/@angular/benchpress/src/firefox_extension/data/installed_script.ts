@@ -10,7 +10,7 @@ declare var exportFunction: any;
 declare var unsafeWindow: any;
 
 exportFunction(function() {
-  var curTime = unsafeWindow.performance.now();
+  const curTime = unsafeWindow.performance.now();
   (<any>self).port.emit('startProfiler', curTime);
 }, unsafeWindow, {defineAs: 'startProfiler'});
 
@@ -28,11 +28,11 @@ exportFunction(function() {
 }, unsafeWindow, {defineAs: 'forceGC'});
 
 exportFunction(function(name: string) {
-  var curTime = unsafeWindow.performance.now();
+  const curTime = unsafeWindow.performance.now();
   (<any>self).port.emit('markStart', name, curTime);
 }, unsafeWindow, {defineAs: 'markStart'});
 
 exportFunction(function(name: string) {
-  var curTime = unsafeWindow.performance.now();
+  const curTime = unsafeWindow.performance.now();
   (<any>self).port.emit('markEnd', name, curTime);
 }, unsafeWindow, {defineAs: 'markEnd'});

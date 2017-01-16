@@ -8,7 +8,7 @@
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 import {Element} from '../../src/ml_parser/ast';
@@ -105,13 +105,54 @@ export function main() {
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
     });
 
+    it('should return an error message when asserting event properties', () => {
+      let report = registry.validateProperty('onClick');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event property 'onClick' is disallowed for security reasons, please use (Click)=...
+If 'onClick' is a directive input, make sure the directive is imported by the current module.`);
+
+      report = registry.validateProperty('onAnything');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
+If 'onAnything' is a directive input, make sure the directive is imported by the current module.`);
+    });
+
+    it('should return an error message when asserting event attributes', () => {
+      let report = registry.validateAttribute('onClick');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event attribute 'onClick' is disallowed for security reasons, please use (Click)=...`);
+
+      report = registry.validateAttribute('onAnything');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`);
+    });
+
+    it('should not return an error message when asserting non-event properties or attributes',
+       () => {
+         let report = registry.validateProperty('title');
+         expect(report.error).toBeFalsy();
+         expect(report.msg).not.toBeDefined();
+
+         report = registry.validateProperty('exotic-unknown');
+         expect(report.error).toBeFalsy();
+         expect(report.msg).not.toBeDefined();
+       });
+
     it('should return security contexts for elements', () => {
-      expect(registry.securityContext('iframe', 'srcdoc')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('p', 'innerHTML')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('a', 'style')).toBe(SecurityContext.STYLE);
-      expect(registry.securityContext('ins', 'cite')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('base', 'href')).toBe(SecurityContext.RESOURCE_URL);
+      expect(registry.securityContext('iframe', 'srcdoc', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'innerHTML', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
+      expect(registry.securityContext('ins', 'cite', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
     });
 
     it('should detect properties on namespaced elements', () => {
@@ -121,9 +162,14 @@ export function main() {
     });
 
     it('should check security contexts case insensitive', () => {
-      expect(registry.securityContext('p', 'iNnErHtMl')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('p', 'formaction')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('p', 'formAction')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('p', 'iNnErHtMl', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'formaction', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('p', 'formAction', false)).toBe(SecurityContext.URL);
+    });
+
+    it('should check security contexts for attributes', () => {
+      expect(registry.securityContext('p', 'innerHtml', true)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'formaction', true)).toBe(SecurityContext.URL);
     });
 
     describe('Angular custom elements', () => {
@@ -146,5 +192,44 @@ export function main() {
       });
     }
 
+    describe('normalizeAnimationStyleProperty', () => {
+      it('should normalize the given CSS property to camelCase', () => {
+        expect(registry.normalizeAnimationStyleProperty('border-radius')).toBe('borderRadius');
+        expect(registry.normalizeAnimationStyleProperty('zIndex')).toBe('zIndex');
+        expect(registry.normalizeAnimationStyleProperty('-webkit-animation'))
+            .toBe('WebkitAnimation');
+      });
+    });
+
+    describe('normalizeAnimationStyleValue', () => {
+      it('should normalize the given dimensional CSS style value to contain a PX value when numeric',
+         () => {
+           expect(
+               registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', 10)['value'])
+               .toBe('10px');
+         });
+
+      it('should not normalize any values that are of zero', () => {
+        expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0)['value']).toBe('0');
+        expect(registry.normalizeAnimationStyleValue('width', 'width', 0)['value']).toBe('0');
+      });
+
+      it('should retain the given dimensional CSS style value\'s unit if it already exists', () => {
+        expect(
+            registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', '10em')['value'])
+            .toBe('10em');
+      });
+
+      it('should trim the provided CSS style value', () => {
+        expect(registry.normalizeAnimationStyleValue('color', 'color', '   red ')['value'])
+            .toBe('red');
+      });
+
+      it('should stringify all non dimensional numeric style values', () => {
+        expect(registry.normalizeAnimationStyleValue('zIndex', 'zIndex', 10)['value']).toBe('10');
+        expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0.5)['value'])
+            .toBe('0.5');
+      });
+    });
   });
 }

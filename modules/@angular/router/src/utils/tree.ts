@@ -57,7 +57,7 @@ export class Tree<T> {
 
 function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
   if (expected === c.value) return c;
-  for (let cc of c.children) {
+  for (const cc of c.children) {
     const r = findNode(expected, cc);
     if (r) return r;
   }
@@ -68,7 +68,7 @@ function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tre
   collected.push(c);
   if (expected === c.value) return collected;
 
-  for (let cc of c.children) {
+  for (const cc of c.children) {
     const cloned = collected.slice(0);
     const r = findPath(expected, cc, cloned);
     if (r.length > 0) return r;

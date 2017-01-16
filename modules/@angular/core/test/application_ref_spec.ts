@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -14,10 +14,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
+import {ServerModule} from '@angular/platform-server';
 
-import {TestBed, async, inject, withModule} from '../testing';
-
-import {SpyChangeDetectorRef} from './spies';
+import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
 @Component({selector: 'comp', template: 'hello'})
 class SomeComponent {
@@ -25,8 +24,8 @@ class SomeComponent {
 
 export function main() {
   describe('bootstrap', () => {
-    var mockConsole: MockConsole;
-    var fakeDoc: Document;
+    let mockConsole: MockConsole;
+    let fakeDoc: Document;
 
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
@@ -49,12 +48,14 @@ export function main() {
       const errorHandler = new ErrorHandler(false);
       errorHandler._console = mockConsole as any;
 
+      const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
+
       @NgModule({
         providers: [
           {provide: ErrorHandler, useValue: errorHandler}, {provide: DOCUMENT, useValue: fakeDoc},
           options.providers || []
         ],
-        imports: [BrowserModule],
+        imports: [platformModule],
         declarations: [SomeComponent],
         entryComponents: [SomeComponent],
         bootstrap: options.bootstrap || []
@@ -71,13 +72,16 @@ export function main() {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
 
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
-           var cdRef = <any>new SpyChangeDetectorRef();
+           const view = jasmine.createSpyObj('view', ['detach', 'attachToAppRef']);
+           const viewRef = jasmine.createSpyObj('viewRef', ['detectChanges']);
+           viewRef.internalView = view;
+           view.ref = viewRef;
            try {
-             ref.registerChangeDetector(cdRef);
-             cdRef.spy('detectChanges').andCallFake(() => ref.tick());
+             ref.attachView(viewRef);
+             viewRef.detectChanges.and.callFake(() => ref.tick());
              expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
            } finally {
-             ref.unregisterChangeDetector(cdRef);
+             ref.detachView(viewRef);
            }
          }));
 
@@ -123,14 +127,14 @@ export function main() {
     });
 
     describe('bootstrapModule', () => {
-      var defaultPlatform: PlatformRef;
+      let defaultPlatform: PlatformRef;
       beforeEach(
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
 
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           let promise: Promise<any> = new Promise((res) => { resolve = res; });
-           var initializerDone = false;
+           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           let initializerDone = false;
            setTimeout(() => {
              resolve(true);
              initializerDone = true;
@@ -211,13 +215,13 @@ export function main() {
     });
 
     describe('bootstrapModuleFactory', () => {
-      var defaultPlatform: PlatformRef;
+      let defaultPlatform: PlatformRef;
       beforeEach(
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           let promise: Promise<any> = new Promise((res) => { resolve = res; });
-           var initializerDone = false;
+           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           let initializerDone = false;
            setTimeout(() => {
              resolve(true);
              initializerDone = true;
@@ -257,6 +261,101 @@ export function main() {
                  expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
                });
          }));
+    });
+
+    describe('attachView / detachView', () => {
+      @Component({template: '{{name}}'})
+      class MyComp {
+        name = 'Initial';
+      }
+
+      @Component({template: '<ng-container #vc></ng-container>'})
+      class ContainerComp {
+        @ViewChild('vc', {read: ViewContainerRef})
+        vc: ViewContainerRef;
+      }
+
+      @Component({template: '<template #t>Dynamic content</template>'})
+      class EmbeddedViewComp {
+        @ViewChild(TemplateRef)
+        tplRef: TemplateRef<Object>;
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [MyComp, ContainerComp, EmbeddedViewComp],
+          providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]
+        });
+      });
+
+      it('should dirty check attached views', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        expect(appRef.viewCount).toBe(0);
+
+        appRef.tick();
+        expect(comp.nativeElement).toHaveText('');
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(appRef.viewCount).toBe(1);
+        expect(comp.nativeElement).toHaveText('Initial');
+      });
+
+      it('should not dirty check detached views', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(comp.nativeElement).toHaveText('Initial');
+
+        appRef.detachView(comp.componentRef.hostView);
+        comp.componentInstance.name = 'New';
+        appRef.tick();
+        expect(appRef.viewCount).toBe(0);
+        expect(comp.nativeElement).toHaveText('Initial');
+      });
+
+      it('should detach attached views if they are destroyed', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        appRef.attachView(comp.componentRef.hostView);
+        comp.destroy();
+
+        expect(appRef.viewCount).toBe(0);
+      });
+
+      it('should detach attached embedded views if they are destroyed', () => {
+        const comp = TestBed.createComponent(EmbeddedViewComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
+
+        appRef.attachView(embeddedViewRef);
+        embeddedViewRef.destroy();
+
+        expect(appRef.viewCount).toBe(0);
+      });
+
+      it('should not allow to attach a view to both, a view container and the ApplicationRef',
+         () => {
+           const comp = TestBed.createComponent(MyComp);
+           const hostView = comp.componentRef.hostView;
+           const containerComp = TestBed.createComponent(ContainerComp);
+           containerComp.detectChanges();
+           const vc = containerComp.componentInstance.vc;
+           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+           vc.insert(hostView);
+           expect(() => appRef.attachView(hostView))
+               .toThrowError('This view is already attached to a ViewContainer!');
+           vc.detach(0);
+
+           appRef.attachView(hostView);
+           expect(() => vc.insert(hostView))
+               .toThrowError('This view is already attached directly to the ApplicationRef!');
+         });
     });
   });
 }

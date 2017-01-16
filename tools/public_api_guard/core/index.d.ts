@@ -90,9 +90,9 @@ export declare abstract class AnimationStateMetadata {
 
 /** @experimental */
 export declare class AnimationStateTransitionMetadata extends AnimationStateMetadata {
-    stateChangeExpr: string;
+    stateChangeExpr: string | ((fromState: string, toState: string) => boolean);
     steps: AnimationMetadata;
-    constructor(stateChangeExpr: string, steps: AnimationMetadata);
+    constructor(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata);
 }
 
 /** @experimental */
@@ -108,13 +108,19 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 
 /** @experimental */
 export declare class AnimationTransitionEvent {
+    element: ElementRef;
     fromState: string;
+    phaseName: string;
     toState: string;
     totalTime: number;
-    constructor({fromState, toState, totalTime}: {
+    triggerName: string;
+    constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
         fromState: string;
         toState: string;
         totalTime: number;
+        phaseName: string;
+        element: any;
+        triggerName: string;
     });
 }
 
@@ -148,7 +154,10 @@ export declare class ApplicationModule {
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
+    viewCount: any;
+    attachView(view: ViewRef): void;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
+    detachView(view: ViewRef): void;
     abstract tick(): void;
 }
 
@@ -196,14 +205,8 @@ export interface ClassProvider {
     useClass: Type<any>;
 }
 
-/** @stable */
-export declare class CollectionChangeRecord {
-    currentIndex: number;
-    item: any;
-    previousIndex: number;
-    trackById: any;
-    constructor(item: any, trackById: any);
-    toString(): string;
+/** @deprecated */
+export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 /** @stable */
@@ -214,6 +217,7 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
+    getNgContentSelectors(component: Type<any>): string[];
 }
 
 /** @experimental */
@@ -245,7 +249,7 @@ export interface ComponentDecorator {
 export declare class ComponentFactory<C> {
     componentType: Type<any>;
     selector: string;
-    constructor(selector: string, _viewFactory: Function, _componentType: Type<any>);
+    constructor(selector: string, _viewClass: Type<AppView<any>>, _componentType: Type<any>);
     create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 
@@ -272,7 +276,7 @@ export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
 export interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {
@@ -299,7 +303,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -348,21 +352,21 @@ export declare class DebugNode {
     constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
 }
 
-/** @stable */
-export declare class DefaultIterableDiffer implements IterableDiffer {
+/** @deprecated */
+export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     collection: any;
     isDirty: boolean;
     length: number;
     constructor(_trackByFn?: TrackByFn);
-    check(collection: any): boolean;
-    diff(collection: any): DefaultIterableDiffer;
-    forEachAddedItem(fn: Function): void;
-    forEachIdentityChange(fn: Function): void;
-    forEachItem(fn: Function): void;
-    forEachMovedItem(fn: Function): void;
-    forEachOperation(fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void): void;
-    forEachPreviousItem(fn: Function): void;
-    forEachRemovedItem(fn: Function): void;
+    check(collection: V[] | Set<V>[] | any): boolean;
+    diff(collection: V[] | Set<V>[] | any): DefaultIterableDiffer<V>;
+    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachOperation(fn: (item: IterableChangeRecord_<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
     toString(): string;
 }
@@ -394,7 +398,6 @@ export declare class ElementRef {
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     context: C;
     rootNodes: any[];
-    abstract destroy(): void;
 }
 
 /** @stable */
@@ -502,20 +505,38 @@ export declare const Input: InputDecorator;
 export declare function isDevMode(): boolean;
 
 /** @stable */
-export interface IterableDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface IterableChangeRecord<V> {
+    currentIndex: number;
+    item: V;
+    previousIndex: number;
+    trackById: any;
+}
+
+/** @stable */
+export interface IterableChanges<V> {
+    forEachAddedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+}
+
+/** @stable */
+export interface IterableDiffer<V> {
+    diff(object: V[] | Set<V> | any): IterableChanges<V>;
 }
 
 /** @stable */
 export interface IterableDifferFactory {
-    create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+    create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class IterableDiffers {
-    factories: IterableDifferFactory[];
+    /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
@@ -526,33 +547,42 @@ export declare class IterableDiffers {
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
-export declare class KeyValueChangeRecord {
-    currentValue: any;
-    key: any;
-    previousValue: any;
-    constructor(key: any);
-    toString(): string;
+export interface KeyValueChangeRecord<K, V> {
+    currentValue: V;
+    key: K;
+    previousValue: V;
 }
 
 /** @stable */
-export interface KeyValueDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface KeyValueChanges<K, V> {
+    forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+}
+
+/** @stable */
+export interface KeyValueDiffer<K, V> {
+    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: {
+        [key: string]: V;
+    }): KeyValueChanges<string, V>;
 }
 
 /** @stable */
 export interface KeyValueDifferFactory {
-    create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+    create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class KeyValueDiffers {
-    factories: KeyValueDifferFactory[];
+    /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
-    find(kv: Object): KeyValueDifferFactory;
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): Provider;
+    find(kv: any): KeyValueDifferFactory;
+    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
 }
 
 /** @experimental */
@@ -595,6 +625,13 @@ export declare abstract class NgModuleRef<T> {
     instance: T;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
+}
+
+/** @experimental */
+export declare class NgProbeToken {
+    name: string;
+    token: any;
+    constructor(name: string, token: any);
 }
 
 /** @experimental */
@@ -695,6 +732,7 @@ export declare class QueryList<T> {
     last: T;
     length: number;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
+    find(fn: (item: T, index: number, array: T[]) => boolean): T;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
@@ -746,7 +784,7 @@ export declare class RenderComponentType {
 
 /** @experimental */
 export declare abstract class Renderer {
-    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
+    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string, previousPlayers?: AnimationPlayer[]): AnimationPlayer;
     abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
     abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
     abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
@@ -829,8 +867,9 @@ export declare function setTestabilityGetter(getter: GetTestability): void;
 /** @stable */
 export declare class SimpleChange {
     currentValue: any;
+    firstChange: boolean;
     previousValue: any;
-    constructor(previousValue: any, currentValue: any);
+    constructor(previousValue: any, currentValue: any, firstChange: boolean);
     isFirstChange(): boolean;
 }
 
@@ -904,7 +943,7 @@ export interface TrackByFn {
 }
 
 /** @experimental */
-export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
 export declare const TRANSLATIONS: OpaqueToken;
@@ -916,7 +955,7 @@ export declare const TRANSLATIONS_FORMAT: OpaqueToken;
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
 
 /** @stable */
-export declare var Type: FunctionConstructor;
+export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {
@@ -938,6 +977,18 @@ export interface ValueProvider {
 }
 
 /** @stable */
+export declare class Version {
+    full: string;
+    major: string;
+    minor: string;
+    patch: string;
+    constructor(full: string);
+}
+
+/** @stable */
+export declare const VERSION: Version;
+
+/** @stable */
 export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
@@ -954,7 +1005,8 @@ export interface ViewChildDecorator {
 export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
-export interface ViewChildrenDecorator { (selector: Type<any> | Function | string, {read}?: {
+export interface ViewChildrenDecorator {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {
@@ -987,8 +1039,9 @@ export declare enum ViewEncapsulation {
 }
 
 /** @stable */
-export declare abstract class ViewRef {
+export declare abstract class ViewRef extends ChangeDetectorRef {
     destroyed: boolean;
+    abstract destroy(): void;
     abstract onDestroy(callback: Function): any;
 }
 
@@ -1000,13 +1053,13 @@ export declare class WrappedValue {
 }
 
 /** @experimental */
-export declare var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
+export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
 
 /** @experimental */
-export declare var wtfEndTimeRange: (range: any) => void;
+export declare const wtfEndTimeRange: (range: any) => void;
 
 /** @experimental */
-export declare var wtfLeave: <T>(scope: any, returnValue?: T) => T;
+export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
 
 /** @experimental */
 export interface WtfScopeFn {
@@ -1014,4 +1067,4 @@ export interface WtfScopeFn {
 }
 
 /** @experimental */
-export declare var wtfStartTimeRange: (rangeType: string, action: string) => any;
+export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;

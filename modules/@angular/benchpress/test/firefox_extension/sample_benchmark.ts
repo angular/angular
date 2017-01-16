@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var benchpress = require('../../index.js');
-var runner = new benchpress.Runner([
+import {$, browser} from 'protractor';
+
+const benchpress = require('../../index.js');
+const runner = new benchpress.Runner([
   // use protractor as Webdriver client
   benchpress.SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
   // use RegressionSlopeValidator to validate samples

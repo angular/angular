@@ -9,7 +9,7 @@
 import {ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers, resolveIdentifier} from './identifiers';
+import {Identifiers, createIdentifier} from './identifiers';
 
 function unimplemented(): any {
   throw new Error('unimplemented');
@@ -61,7 +61,7 @@ export abstract class RenderTypes {
 }
 
 export class DefaultRenderTypes implements RenderTypes {
-  get renderer() { return resolveIdentifier(Identifiers.Renderer); };
+  get renderer() { return createIdentifier(Identifiers.Renderer); };
   renderText: any = null;
   renderElement: any = null;
   renderComment: any = null;

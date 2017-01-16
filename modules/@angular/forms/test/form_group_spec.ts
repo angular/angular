@@ -7,7 +7,7 @@
  */
 
 import {async, fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {EventEmitter} from '../src/facade/async';
@@ -16,10 +16,10 @@ import {isPresent} from '../src/facade/lang';
 export function main() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
-      var resolve: (result: any) => void;
-      var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
-      var res = c.value != expected ? {'async': true} : null;
+      let resolve: (result: any) => void;
+      const promise = new Promise(res => { resolve = res; });
+      const t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
+      const res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -32,7 +32,7 @@ export function main() {
   }
 
   function asyncValidatorReturningObservable(c: FormControl) {
-    var e = new EventEmitter();
+    const e = new EventEmitter();
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }
@@ -92,8 +92,8 @@ export function main() {
         const simpleValidator = (c: FormGroup) =>
             c.controls['one'].value != 'correct' ? {'broken': true} : null;
 
-        var c = new FormControl(null);
-        var g = new FormGroup({'one': c}, simpleValidator);
+        const c = new FormControl(null);
+        const g = new FormGroup({'one': c}, simpleValidator);
 
         c.setValue('correct');
 
@@ -185,6 +185,13 @@ export function main() {
         expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
       });
 
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'parent': g});
+        g.setValue({'one': 'one', 'two': 'two'}, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: {'one': '', 'two': ''}});
+      });
+
       it('should throw if fields are missing from supplied value (subset)', () => {
         expect(() => g.setValue({
           'one': 'one'
@@ -228,6 +235,15 @@ export function main() {
           g.setValue({'one': 'one', 'two': 'two'});
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.setValue({'one': 'one', 'two': 'two'}, {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
@@ -283,6 +299,13 @@ export function main() {
         expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
       });
 
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'parent': g});
+        g.patchValue({'one': 'one', 'two': 'two'}, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: {'one': '', 'two': ''}});
+      });
+
       it('should ignore fields that are missing from supplied value (subset)', () => {
         g.patchValue({'one': 'one'});
         expect(g.value).toEqual({'one': 'one', 'two': ''});
@@ -326,6 +349,15 @@ export function main() {
           g.patchValue({'one': 'one'});
           expect(logger).toEqual(['control1', 'group', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.patchValue({'one': 'one', 'two': 'two'}, {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
@@ -399,6 +431,13 @@ export function main() {
 
         g.reset();
         expect(form.value).toEqual({'g': {'one': null, 'two': null}});
+      });
+
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'g': g});
+        g.reset({'one': 'new value', 'two': 'new value'}, {onlySelf: true});
+
+        expect(form.value).toEqual({g: {'one': 'initial value', 'two': ''}});
       });
 
       it('should mark itself as pristine', () => {
@@ -520,6 +559,15 @@ export function main() {
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
 
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.reset({}, {emitEvent: false});
+             tick();
+           }));
+
         it('should emit one statusChange event per reset control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           g.statusChanges.subscribe(() => logger.push('group'));
@@ -541,7 +589,6 @@ export function main() {
           g.reset({'one': {value: '', disabled: true}});
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
-
       });
 
     });
@@ -823,7 +870,7 @@ export function main() {
 
       describe('disabled errors', () => {
         it('should clear out group errors when disabled', () => {
-          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
           expect(g.errors).toEqual({'expected': true});
 
           g.disable();
@@ -834,7 +881,7 @@ export function main() {
         });
 
         it('should re-populate group errors when enabled from a child', () => {
-          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
           g.disable();
           expect(g.errors).toEqual(null);
 

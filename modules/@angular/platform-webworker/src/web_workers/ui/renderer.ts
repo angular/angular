@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
-
-import {FunctionWrapper} from '../../facade/lang';
+import {AnimationPlayer, Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
-import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
+import {ANIMATION_WORKER_PLAYER_PREFIX, PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
+import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 import {EventDispatcher} from '../ui/event_dispatcher';
 
 @Injectable()
@@ -26,75 +24,130 @@ export class MessageBasedRenderer {
       private _rootRenderer: RootRenderer) {}
 
   start(): void {
-    var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+    const broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
 
     broker.registerMethod(
-        'renderComponent', [RenderComponentType, PRIMITIVE],
-        FunctionWrapper.bind(this._renderComponent, this));
+        'renderComponent', [RenderComponentType, PRIMITIVE], this._renderComponent.bind(this));
 
     broker.registerMethod(
         'selectRootElement', [RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._selectRootElement, this));
+        this._selectRootElement.bind(this));
     broker.registerMethod(
         'createElement', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._createElement, this));
+        this._createElement.bind(this));
     broker.registerMethod(
         'createViewRoot', [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-        FunctionWrapper.bind(this._createViewRoot, this));
+        this._createViewRoot.bind(this));
     broker.registerMethod(
         'createTemplateAnchor', [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-        FunctionWrapper.bind(this._createTemplateAnchor, this));
+        this._createTemplateAnchor.bind(this));
     broker.registerMethod(
         'createText', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._createText, this));
+        this._createText.bind(this));
     broker.registerMethod(
         'projectNodes', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        FunctionWrapper.bind(this._projectNodes, this));
+        this._projectNodes.bind(this));
     broker.registerMethod(
         'attachViewAfter', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        FunctionWrapper.bind(this._attachViewAfter, this));
+        this._attachViewAfter.bind(this));
     broker.registerMethod(
-        'detachView', [RenderStoreObject, RenderStoreObject],
-        FunctionWrapper.bind(this._detachView, this));
+        'detachView', [RenderStoreObject, RenderStoreObject], this._detachView.bind(this));
     broker.registerMethod(
         'destroyView', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        FunctionWrapper.bind(this._destroyView, this));
+        this._destroyView.bind(this));
     broker.registerMethod(
         'setElementProperty', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._setElementProperty, this));
+        this._setElementProperty.bind(this));
     broker.registerMethod(
         'setElementAttribute', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._setElementAttribute, this));
+        this._setElementAttribute.bind(this));
     broker.registerMethod(
         'setBindingDebugInfo', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._setBindingDebugInfo, this));
+        this._setBindingDebugInfo.bind(this));
     broker.registerMethod(
         'setElementClass', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._setElementClass, this));
+        this._setElementClass.bind(this));
     broker.registerMethod(
         'setElementStyle', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._setElementStyle, this));
+        this._setElementStyle.bind(this));
     broker.registerMethod(
         'invokeElementMethod', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._invokeElementMethod, this));
+        this._invokeElementMethod.bind(this));
     broker.registerMethod(
-        'setText', [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-        FunctionWrapper.bind(this._setText, this));
+        'setText', [RenderStoreObject, RenderStoreObject, PRIMITIVE], this._setText.bind(this));
     broker.registerMethod(
         'listen', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._listen, this));
+        this._listen.bind(this));
     broker.registerMethod(
         'listenGlobal', [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
-        FunctionWrapper.bind(this._listenGlobal, this));
+        this._listenGlobal.bind(this));
     broker.registerMethod(
-        'listenDone', [RenderStoreObject, RenderStoreObject],
-        FunctionWrapper.bind(this._listenDone, this));
+        'listenDone', [RenderStoreObject, RenderStoreObject], this._listenDone.bind(this));
+    broker.registerMethod(
+        'animate',
+        [
+          RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE, PRIMITIVE,
+          PRIMITIVE, PRIMITIVE, PRIMITIVE
+        ],
+        this._animate.bind(this));
+
+    this._bindAnimationPlayerMethods(broker);
+  }
+
+  private _bindAnimationPlayerMethods(broker: ServiceMessageBroker) {
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'play', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.play());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'pause', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.pause());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'init', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.init());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'restart', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.restart());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'destroy', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => {
+          player.destroy();
+          this._renderStore.remove(player);
+        });
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'finish', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.finish());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'getPosition', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.getPosition());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onStart',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any) =>
+            this._listenOnAnimationPlayer(player, element, 'onStart'));
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onDone',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any) =>
+            this._listenOnAnimationPlayer(player, element, 'onDone'));
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'setPosition',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any, position: number) => player.setPosition(position));
   }
 
   private _renderComponent(renderComponentType: RenderComponentType, rendererId: number) {
-    var renderer = this._rootRenderer.renderComponent(renderComponentType);
+    const renderer = this._rootRenderer.renderComponent(renderComponentType);
     this._renderStore.store(renderer, rendererId);
   }
 
@@ -107,7 +160,7 @@ export class MessageBasedRenderer {
   }
 
   private _createViewRoot(renderer: Renderer, hostElement: any, elId: number) {
-    var viewRoot = renderer.createViewRoot(hostElement);
+    const viewRoot = renderer.createViewRoot(hostElement);
     if (this._renderStore.serialize(hostElement) !== elId) {
       this._renderStore.store(viewRoot, elId);
     }
@@ -135,7 +188,7 @@ export class MessageBasedRenderer {
 
   private _destroyView(renderer: Renderer, hostElement: any, viewAllNodes: any[]) {
     renderer.destroyView(hostElement, viewAllNodes);
-    for (var i = 0; i < viewAllNodes.length; i++) {
+    for (let i = 0; i < viewAllNodes.length; i++) {
       this._renderStore.remove(viewAllNodes[i]);
     }
   }
@@ -175,7 +228,7 @@ export class MessageBasedRenderer {
   }
 
   private _listen(renderer: Renderer, renderElement: any, eventName: string, unlistenId: number) {
-    var unregisterCallback = renderer.listen(
+    const unregisterCallback = renderer.listen(
         renderElement, eventName,
         (event: any /** TODO #9100 */) =>
             this._eventDispatcher.dispatchRenderEvent(renderElement, null, eventName, event));
@@ -184,7 +237,7 @@ export class MessageBasedRenderer {
 
   private _listenGlobal(
       renderer: Renderer, eventTarget: string, eventName: string, unlistenId: number) {
-    var unregisterCallback = renderer.listenGlobal(
+    const unregisterCallback = renderer.listenGlobal(
         eventTarget, eventName,
         (event: any /** TODO #9100 */) =>
             this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
@@ -192,4 +245,30 @@ export class MessageBasedRenderer {
   }
 
   private _listenDone(renderer: Renderer, unlistenCallback: Function) { unlistenCallback(); }
+
+  private _animate(
+      renderer: Renderer, element: any, startingStyles: any, keyframes: any[], duration: number,
+      delay: number, easing: string, previousPlayers: number[], playerId: any) {
+    let normalizedPreviousPlayers: AnimationPlayer[];
+    if (previousPlayers && previousPlayers.length) {
+      normalizedPreviousPlayers =
+          previousPlayers.map(playerId => this._renderStore.deserialize(playerId));
+    }
+    const player = renderer.animate(
+        element, startingStyles, keyframes, duration, delay, easing, normalizedPreviousPlayers);
+    this._renderStore.store(player, playerId);
+  }
+
+  private _listenOnAnimationPlayer(player: AnimationPlayer, element: any, phaseName: string) {
+    const onEventComplete =
+        () => { this._eventDispatcher.dispatchAnimationEvent(player, phaseName, element); };
+
+    // there is no need to register a unlistener value here since the
+    // internal player callbacks are removed when the player is destroyed
+    if (phaseName == 'onDone') {
+      player.onDone(() => onEventComplete());
+    } else {
+      player.onStart(() => onEventComplete());
+    }
+  }
 }

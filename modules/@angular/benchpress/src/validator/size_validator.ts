@@ -8,11 +8,8 @@
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
-import {ListWrapper} from '../facade/collection';
 import {MeasureValues} from '../measure_values';
 import {Validator} from '../validator';
-
-
 
 /**
  * A validator that waits for the sample to have a certain size.
@@ -28,8 +25,7 @@ export class SizeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      return ListWrapper.slice(
-          completeSample, completeSample.length - this._sampleSize, completeSample.length);
+      return completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
     } else {
       return null;
     }

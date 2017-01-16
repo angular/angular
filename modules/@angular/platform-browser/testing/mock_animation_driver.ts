@@ -10,20 +10,28 @@ import {AnimationPlayer} from '@angular/core';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
 import {AnimationDriver} from '@angular/platform-browser';
 
-import {StringMapWrapper} from './facade/collection';
+import {ListWrapper} from './facade/collection';
 import {AnimationKeyframe, AnimationStyles} from './private_import_core';
 
 export class MockAnimationDriver extends AnimationDriver {
   public log: {[key: string]: any}[] = [];
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
-    var player = new MockAnimationPlayer();
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
+    const mockPlayers = <MockAnimationPlayer[]>previousPlayers.filter(
+        player => player instanceof MockAnimationPlayer);
+    const normalizedStartingStyles = _serializeStyles(startingStyles);
+    const normalizedKeyframes = _serializeKeyframes(keyframes);
+    const player =
+        new MockAnimationPlayer(normalizedStartingStyles, normalizedKeyframes, previousPlayers);
+
     this.log.push({
       'element': element,
-      'startingStyles': _serializeStyles(startingStyles),
+      'startingStyles': normalizedStartingStyles,
+      'previousStyles': player.previousStyles,
       'keyframes': keyframes,
-      'keyframeLookup': _serializeKeyframes(keyframes),
+      'keyframeLookup': normalizedKeyframes,
       'duration': duration,
       'delay': delay,
       'easing': easing,
@@ -38,9 +46,9 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 }
 
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
-  var flatStyles: {[key: string]: any} = {};
+  const flatStyles: {[key: string]: any} = {};
   styles.styles.forEach((entry: {[key: string]: string | number;}) => {
-    StringMapWrapper.forEach(entry, (val: any, prop: string) => { flatStyles[prop] = val; });
+    Object.keys(entry).forEach(prop => { flatStyles[prop] = entry[prop]; });
   });
   return flatStyles;
 }

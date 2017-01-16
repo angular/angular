@@ -11,7 +11,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-var MyApp: any;
+let MyApp: any;
 
 // #docregion url_resolver
 class MyUrlResolver extends UrlResolver {

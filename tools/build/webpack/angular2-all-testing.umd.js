@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // this bundle is almost identical to the angular2.umd.js
 // the only difference being "testing" exports
 exports.core = require('angular2/core');
@@ -8,9 +16,7 @@ exports.platform = {
   common_dom: require('angular2/platform/common_dom'),
 
   // this is included as compared to the angular2-all.umd.js bundle
-  testing: {
-    browser: require('angular2/platform/testing/browser')
-  }
+  testing: {browser: require('angular2/platform/testing/browser')}
 };
 exports.http = require('angular2/http');
 exports.router = require('angular2/router');

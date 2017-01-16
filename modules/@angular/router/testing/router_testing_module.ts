@@ -8,10 +8,11 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
-import {NoPreloading, PreloadAllModules, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
+import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
+import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes} from '@angular/router';
 
 import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
+
 
 
 /**
@@ -48,13 +49,29 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  public stubbedModules: {[path: string]: any} = {};
+  private _stubbedModules: {[path: string]: Promise<NgModuleFactory<any>>} = {};
+
+  /**
+   * @docsNotRequired
+   */
+  set stubbedModules(modules: {[path: string]: any}) {
+    const res: {[path: string]: any} = {};
+    for (const t of Object.keys(modules)) {
+      res[t] = this.compiler.compileModuleAsync(modules[t]);
+    }
+    this._stubbedModules = res;
+  }
+
+  /**
+   * @docsNotRequired
+   */
+  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
 
   constructor(private compiler: Compiler) {}
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    if (this.stubbedModules[path]) {
-      return this.compiler.compileModuleAsync(this.stubbedModules[path]);
+    if (this._stubbedModules[path]) {
+      return this._stubbedModules[path];
     } else {
       return <any>Promise.reject(new Error(`Cannot find module ${path}`));
     }
@@ -68,9 +85,14 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
-    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][]) {
-  return new Router(
+    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
+    urlHandlingStrategy?: UrlHandlingStrategy) {
+  const router = new Router(
       null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
+  if (urlHandlingStrategy) {
+    router.urlHandlingStrategy = urlHandlingStrategy;
+  }
+  return router;
 }
 
 /**
@@ -81,7 +103,7 @@ export function setupTestingRouter(
  * ```
  * beforeEach(() => {
  *   TestBed.configureTestModule({
- *     modules: [
+ *     imports: [
  *       RouterTestingModule.withRoutes(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
  *       )
@@ -107,7 +129,8 @@ export function setupTestingRouter(
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
-        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES
+        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES,
+        [UrlHandlingStrategy, new Optional()]
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])

@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from '../../index';
-import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   function createReporters(ids: any[]) {
-    var r = ReflectiveInjector
-                .resolveAndCreate([
-                  ids.map(id => { return {provide: id, useValue: new MockReporter(id)}; }),
-                  MultiReporter.provideWith(ids)
-                ])
-                .get(MultiReporter);
+    const r = ReflectiveInjector
+                  .resolveAndCreate([
+                    ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
+                    MultiReporter.provideWith(ids)
+                  ])
+                  .get(MultiReporter);
     return Promise.resolve(r);
   }
 
@@ -26,7 +25,7 @@ export function main() {
 
     it('should reportMeasureValues to all',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var mv = new MeasureValues(0, DateWrapper.now(), {});
+         const mv = new MeasureValues(0, new Date(), {});
          createReporters(['m1', 'm2']).then((r) => r.reportMeasureValues(mv)).then((values) => {
 
            expect(values).toEqual([{'id': 'm1', 'values': mv}, {'id': 'm2', 'values': mv}]);
@@ -35,10 +34,9 @@ export function main() {
        }));
 
     it('should reportSample to call', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var completeSample = [
-           new MeasureValues(0, DateWrapper.now(), {}), new MeasureValues(1, DateWrapper.now(), {})
-         ];
-         var validSample = [completeSample[1]];
+         const completeSample =
+             [new MeasureValues(0, new Date(), {}), new MeasureValues(1, new Date(), {})];
+         const validSample = [completeSample[1]];
 
          createReporters(['m1', 'm2'])
              .then((r) => r.reportSample(completeSample, validSample))

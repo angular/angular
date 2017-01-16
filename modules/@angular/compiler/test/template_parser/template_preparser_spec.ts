@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../../core/testing/testing_internal';
+import {beforeEach, describe, expect, inject, it} from '../../../core/testing/testing_internal';
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {
-    var htmlParser: HtmlParser;
+    let htmlParser: HtmlParser;
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {

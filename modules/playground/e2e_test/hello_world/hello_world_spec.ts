@@ -7,13 +7,14 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser} from 'protractor';
 
 describe('hello world', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('hello world app', function() {
-    var URL = 'all/playground/src/hello_world/index.html';
+    const URL = 'all/playground/src/hello_world/index.html';
 
     it('should greet', function() {
       browser.get(URL);
@@ -31,15 +32,12 @@ describe('hello world', function() {
 
 });
 
-function getComponentText(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
+function getComponentText(selector: string, innerSelector: string) {
   return browser.executeScript(
-      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
-      '").textContent');
+      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent`);
 }
 
-function clickComponentButton(
-    selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
+function clickComponentButton(selector: string, innerSelector: string) {
   return browser.executeScript(
-      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
-      '").click()');
+      `return document.querySelector("${selector}").querySelector("${innerSelector}").click()`);
 }

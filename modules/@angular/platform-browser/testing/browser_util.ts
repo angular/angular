@@ -8,18 +8,19 @@
 
 import {NgZone} from '@angular/core';
 
-import {ListWrapper} from './facade/collection';
-import {RegExp, StringWrapper, global, isPresent, isString} from './facade/lang';
+import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
+
+export let browserDetection: BrowserDetection;
 
 export class BrowserDetection {
   private _overrideUa: string;
   private get _ua(): string {
-    if (isPresent(this._overrideUa)) {
+    if (typeof this._overrideUa === 'string') {
       return this._overrideUa;
-    } else {
-      return isPresent(getDOM()) ? getDOM().getUserAgent() : '';
     }
+
+    return getDOM() ? getDOM().getUserAgent() : '';
   }
 
   static setup() { browserDetection = new BrowserDetection(null); }
@@ -83,36 +84,30 @@ export function el(html: string): HTMLElement {
 }
 
 export function normalizeCSS(css: string): string {
-  css = StringWrapper.replaceAll(css, /\s+/g, ' ');
-  css = StringWrapper.replaceAll(css, /:\s/g, ':');
-  css = StringWrapper.replaceAll(css, /'/g, '"');
-  css = StringWrapper.replaceAll(css, / }/g, '}');
-  css = StringWrapper.replaceAllMapped(
-      css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g,
-      (match: any /** TODO #9100 */) => `url("${match[2]}")`);
-  css = StringWrapper.replaceAllMapped(
-      css, /\[(.+)=([^"\]]+)\]/g, (match: any /** TODO #9100 */) => `[${match[1]}="${match[2]}"]`);
-  return css;
+  return css.replace(/\s+/g, ' ')
+      .replace(/:\s/g, ':')
+      .replace(/'/g, '"')
+      .replace(/ }/g, '}')
+      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
+      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
-var _singleTagWhitelist = ['br', 'hr', 'input'];
+const _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
-  var result = '';
+  let result = '';
   if (getDOM().isElementNode(el)) {
-    var tagName = getDOM().tagName(el).toLowerCase();
+    const tagName = getDOM().tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    var attributeMap = getDOM().attributeMap(el);
-    var keys: any[] /** TODO #9100 */ = [];
-    attributeMap.forEach((v, k) => keys.push(k));
-    ListWrapper.sort(keys);
+    const attributeMap = getDOM().attributeMap(el);
+    const keys: string[] = Array.from(attributeMap.keys()).sort();
     for (let i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var attValue = attributeMap.get(key);
-      if (!isString(attValue)) {
+      const key = keys[i];
+      const attValue = attributeMap.get(key);
+      if (typeof attValue !== 'string') {
         result += ` ${key}`;
       } else {
         result += ` ${key}="${attValue}"`;
@@ -121,14 +116,14 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     result += '>';
 
     // Children
-    var childrenRoot = getDOM().templateAwareRoot(el);
-    var children = isPresent(childrenRoot) ? getDOM().childNodes(childrenRoot) : [];
+    const childrenRoot = getDOM().templateAwareRoot(el);
+    const children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }
 
     // Closing tag
-    if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
+    if (_singleTagWhitelist.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
   } else if (getDOM().isCommentNode(el)) {
@@ -139,8 +134,6 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
   return result;
 }
-
-export var browserDetection: BrowserDetection = new BrowserDetection(null);
 
 export function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: true});

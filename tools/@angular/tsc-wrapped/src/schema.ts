@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // Metadata Schema
 
 // If you make a backwards incompatible change to the schema, increment the VERSION number.
@@ -7,7 +15,7 @@
 // semantics of the file in an array. For example, when generating a version 2 file, if version 1
 // can accurately represent the metadata, generate both version 1 and version 2 in an array.
 
-export const VERSION = 1;
+export const VERSION = 3;
 
 export type MetadataEntry = ClassMetadata | FunctionMetadata | MetadataValue;
 
@@ -28,6 +36,7 @@ export interface ModuleExportMetadata {
 
 export interface ClassMetadata {
   __symbolic: 'class';
+  extends?: MetadataSymbolicExpression|MetadataError;
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
   members?: MetadataMap;
   statics?: {[name: string]: MetadataValue | FunctionMetadata};
@@ -88,7 +97,7 @@ export interface MetadataObject { [name: string]: MetadataValue; }
 export interface MetadataArray { [name: number]: MetadataValue; }
 
 export interface MetadataSymbolicExpression {
-  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if'
+  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if';
 }
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {

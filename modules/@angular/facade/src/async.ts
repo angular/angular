@@ -78,14 +78,14 @@ export class EventEmitter<T> extends Subject<T> {
   emit(value?: T) { super.next(value); }
 
   subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
-    let schedulerFn: any /** TODO #9100 */;
-    let errorFn = (err: any): any /** TODO #9100 */ => null;
-    let completeFn = (): any /** TODO #9100 */ => null;
+    let schedulerFn: (t: any) => any;
+    let errorFn = (err: any): any => null;
+    let completeFn = (): any => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => {
+      schedulerFn = this.__isAsync ? (value: any) => {
         setTimeout(() => generatorOrNext.next(value));
-      } : (value: any /** TODO #9100 */) => { generatorOrNext.next(value); };
+      } : (value: any) => { generatorOrNext.next(value); };
 
       if (generatorOrNext.error) {
         errorFn = this.__isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
@@ -97,9 +97,8 @@ export class EventEmitter<T> extends Subject<T> {
                                       () => { generatorOrNext.complete(); };
       }
     } else {
-      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => {
-        setTimeout(() => generatorOrNext(value));
-      } : (value: any /** TODO #9100 */) => { generatorOrNext(value); };
+      schedulerFn = this.__isAsync ? (value: any) => { setTimeout(() => generatorOrNext(value)); } :
+                                     (value: any) => { generatorOrNext(value); };
 
       if (error) {
         errorFn =

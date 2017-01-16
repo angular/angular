@@ -1,22 +1,29 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ListWrapper} from '@angular/facade/src/lang';
-import {bootstrap} from '@angular/platform-browser';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, bootstrap} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
-var testList = null;
+let testList = null;
 
 export function main() {
-  var size = getIntParameter('size');
-  testList = ListWrapper.createFixedSize(size);
+  const size = getIntParameter('size');
+  testList = new Array(size);
 
   platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
-    var injector = ref.injector;
-    var app: AppComponent = ref.instance;
-    var appRef = injector.get(ApplicationRef);
+    const injector = ref.injector;
+    const app: AppComponent = ref.instance;
+    const appRef = injector.get(ApplicationRef);
 
     bindAction('#reset', function() {
       app.reset();

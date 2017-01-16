@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Injectable, Injector} from '@angular/core';
+import {Component, ComponentRef, Injectable} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
@@ -29,16 +29,16 @@ export function main() {
   function createWebWorkerBrokerFactory(
       messageBuses: PairedMessageBuses, workerSerializer: Serializer, uiSerializer: Serializer,
       domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore): ClientMessageBrokerFactory {
-    var uiMessageBus = messageBuses.ui;
-    var workerMessageBus = messageBuses.worker;
+    const uiMessageBus = messageBuses.ui;
+    const workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var webWorkerBrokerFactory =
+    const webWorkerBrokerFactory =
         new ClientMessageBrokerFactory_(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
-    var renderer = new MessageBasedRenderer(
+    const uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
+    const renderer = new MessageBasedRenderer(
         uiMessageBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRootRenderer);
     renderer.start();
 
@@ -48,22 +48,24 @@ export function main() {
   function createWorkerRenderer(
       workerSerializer: Serializer, uiSerializer: Serializer, domRootRenderer: DomRootRenderer,
       uiRenderStore: RenderStore, workerRenderStore: RenderStore): RootRenderer {
-    var messageBuses = createPairedMessageBuses();
-    var brokerFactory = createWebWorkerBrokerFactory(
+    const messageBuses = createPairedMessageBuses();
+    const brokerFactory = createWebWorkerBrokerFactory(
         messageBuses, workerSerializer, uiSerializer, domRootRenderer, uiRenderStore);
-    var workerRootRenderer = new WebWorkerRootRenderer(
+    const workerRootRenderer = new WebWorkerRootRenderer(
         brokerFactory, messageBuses.worker, workerSerializer, workerRenderStore);
     return new DebugDomRootRenderer(workerRootRenderer);
   }
 
   describe('Web Worker Renderer', () => {
-    var uiInjector: Injector;
-    var uiRenderStore: RenderStore;
-    var workerRenderStore: RenderStore;
+    // Don't run on server...
+    if (!getDOM().supportsDOMEvents()) return;
+
+    let uiRenderStore: RenderStore;
+    let workerRenderStore: RenderStore;
 
     beforeEach(() => {
       uiRenderStore = new RenderStore();
-      var testUiInjector = new TestBed();
+      const testUiInjector = new TestBed();
       testUiInjector.platform = platformBrowserDynamicTesting();
       testUiInjector.ngModule = BrowserTestingModule;
       testUiInjector.configureTestingModule({
@@ -73,8 +75,8 @@ export function main() {
           {provide: RootRenderer, useExisting: DomRootRenderer}
         ]
       });
-      var uiSerializer = testUiInjector.get(Serializer);
-      var domRootRenderer = testUiInjector.get(DomRootRenderer);
+      const uiSerializer = testUiInjector.get(Serializer);
+      const domRootRenderer = testUiInjector.get(DomRootRenderer);
       workerRenderStore = new RenderStore();
 
       TestBed.configureTestingModule({
@@ -94,7 +96,7 @@ export function main() {
     });
 
     function getRenderElement(workerEl: any) {
-      var id = workerRenderStore.serialize(workerEl);
+      const id = workerRenderStore.serialize(workerEl);
       return uiRenderStore.deserialize(id);
     }
 
@@ -106,7 +108,7 @@ export function main() {
       TestBed.overrideComponent(MyComp2, {set: {template: '<div>{{ctxProp}}</div>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      var renderEl = getRenderElement(fixture.nativeElement);
+      const renderEl = getRenderElement(fixture.nativeElement);
       expect(renderEl).toHaveText('');
 
       fixture.componentInstance.ctxProp = 'Hello World!';
@@ -120,10 +122,10 @@ export function main() {
              MyComp2, {set: {template: '<input [title]="y" style="position:absolute">'}});
          const fixture = TestBed.createComponent(MyComp2);
 
-         var checkSetters =
+         const checkSetters =
              (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
-               var renderer = getRenderer(componentRef);
-               var el = getRenderElement(workerEl);
+               const renderer = getRenderer(componentRef);
+               const el = getRenderElement(workerEl);
                renderer.setElementProperty(workerEl, 'tabIndex', 1);
                expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
@@ -150,21 +152,21 @@ export function main() {
     it('should update any template comment property/attributes', () => {
 
       TestBed.overrideComponent(
-          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp"></template>'}});
+          MyComp2, {set: {template: '<ng-container *ngIf="ctxBoolProp"></ng-container>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
       (<MyComp2>fixture.componentInstance).ctxBoolProp = true;
       fixture.detectChanges();
-      var el = getRenderElement(fixture.nativeElement);
+      const el = getRenderElement(fixture.nativeElement);
       expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
     });
 
     it('should add and remove fragments', () => {
       TestBed.overrideComponent(
-          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp">hello</template>'}});
+          MyComp2, {set: {template: '<ng-container *ngIf="ctxBoolProp">hello</ng-container>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      var rootEl = getRenderElement(fixture.nativeElement);
+      const rootEl = getRenderElement(fixture.nativeElement);
       expect(rootEl).toHaveText('');
 
       fixture.componentInstance.ctxBoolProp = true;
@@ -180,7 +182,7 @@ export function main() {
       it('should call actions on the element', () => {
         TestBed.overrideComponent(MyComp2, {set: {template: '<input [title]="y">'}});
         const fixture = TestBed.createComponent(MyComp2);
-        var el = fixture.debugElement.children[0];
+        const el = fixture.debugElement.children[0];
         getRenderer(fixture.componentRef).invokeElementMethod(el.nativeElement, 'setAttribute', [
           'a', 'b'
         ]);
@@ -193,7 +195,7 @@ export function main() {
         TestBed.overrideComponent(MyComp2, {set: {template: '<input (change)="ctxNumProp = 1">'}});
         const fixture = TestBed.createComponent(MyComp2);
 
-        var el = fixture.debugElement.children[0];
+        const el = fixture.debugElement.children[0];
         dispatchEvent(getRenderElement(el.nativeElement), 'change');
         expect(fixture.componentInstance.ctxNumProp).toBe(1);
 

@@ -9,13 +9,13 @@
 import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {isBlank, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {RenderStoreObject, Serializer} from '../shared/serializer';
+import {ANIMATION_WORKER_PLAYER_PREFIX, RenderStoreObject, Serializer} from '../shared/serializer';
 
 import {deserializeGenericEvent} from './event_deserializer';
 
@@ -28,33 +28,40 @@ export class WebWorkerRootRenderer implements RootRenderer {
 
   constructor(
       messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
-      private _serializer: Serializer, private _renderStore: RenderStore) {
+      private _serializer: Serializer, public renderStore: RenderStore) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
     bus.initChannel(EVENT_CHANNEL);
-    var source = bus.from(EVENT_CHANNEL);
+    const source = bus.from(EVENT_CHANNEL);
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
-    var eventName = message['eventName'];
-    var target = message['eventTarget'];
-    var event = deserializeGenericEvent(message['event']);
-    if (isPresent(target)) {
-      this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+    const element =
+        <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
+    const playerData = message['animationPlayer'];
+    if (playerData) {
+      const phaseName = message['phaseName'];
+      const player = <AnimationPlayer>this._serializer.deserialize(playerData, RenderStoreObject);
+      element.animationPlayerEvents.dispatchEvent(player, phaseName);
     } else {
-      var element =
-          <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
-      element.events.dispatchEvent(eventName, event);
+      const eventName = message['eventName'];
+      const target = message['eventTarget'];
+      const event = deserializeGenericEvent(message['event']);
+      if (isPresent(target)) {
+        this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+      } else {
+        element.events.dispatchEvent(eventName, event);
+      }
     }
   }
 
   renderComponent(componentType: RenderComponentType): Renderer {
-    var result = this._componentRenderers.get(componentType.id);
-    if (isBlank(result)) {
+    let result = this._componentRenderers.get(componentType.id);
+    if (!result) {
       result = new WebWorkerRenderer(this, componentType);
       this._componentRenderers.set(componentType.id, result);
-      var id = this._renderStore.allocateId();
-      this._renderStore.store(result, id);
+      const id = this.renderStore.allocateId();
+      this.renderStore.store(result, id);
       this.runOnService('renderComponent', [
         new FnArg(componentType, RenderComponentType),
         new FnArg(result, RenderStoreObject),
@@ -64,22 +71,22 @@ export class WebWorkerRootRenderer implements RootRenderer {
   }
 
   runOnService(fnName: string, fnArgs: FnArg[]) {
-    var args = new UiArguments(fnName, fnArgs);
+    const args = new UiArguments(fnName, fnArgs);
     this._messageBroker.runOnService(args, null);
   }
 
   allocateNode(): WebWorkerRenderNode {
-    var result = new WebWorkerRenderNode();
-    var id = this._renderStore.allocateId();
-    this._renderStore.store(result, id);
+    const result = new WebWorkerRenderNode();
+    const id = this.renderStore.allocateId();
+    this.renderStore.store(result, id);
     return result;
   }
 
-  allocateId(): number { return this._renderStore.allocateId(); }
+  allocateId(): number { return this.renderStore.allocateId(); }
 
   destroyNodes(nodes: any[]) {
-    for (var i = 0; i < nodes.length; i++) {
-      this._renderStore.remove(nodes[i]);
+    for (let i = 0; i < nodes.length; i++) {
+      this.renderStore.remove(nodes[i]);
     }
   }
 }
@@ -89,19 +96,19 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
       private _rootRenderer: WebWorkerRootRenderer, private _componentType: RenderComponentType) {}
 
   private _runOnService(fnName: string, fnArgs: FnArg[]) {
-    var fnArgsWithRenderer = [new FnArg(this, RenderStoreObject)].concat(fnArgs);
+    const fnArgsWithRenderer = [new FnArg(this, RenderStoreObject)].concat(fnArgs);
     this._rootRenderer.runOnService(fnName, fnArgsWithRenderer);
   }
 
   selectRootElement(selectorOrNode: string, debugInfo?: RenderDebugInfo): any {
-    var node = this._rootRenderer.allocateNode();
+    const node = this._rootRenderer.allocateNode();
     this._runOnService(
         'selectRootElement', [new FnArg(selectorOrNode, null), new FnArg(node, RenderStoreObject)]);
     return node;
   }
 
   createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
-    var node = this._rootRenderer.allocateNode();
+    const node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
       new FnArg(parentElement, RenderStoreObject), new FnArg(name, null),
       new FnArg(node, RenderStoreObject)
@@ -110,7 +117,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 
   createViewRoot(hostElement: any): any {
-    var viewRoot = this._componentType.encapsulation === ViewEncapsulation.Native ?
+    const viewRoot = this._componentType.encapsulation === ViewEncapsulation.Native ?
         this._rootRenderer.allocateNode() :
         hostElement;
     this._runOnService(
@@ -120,7 +127,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 
   createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
-    var node = this._rootRenderer.allocateNode();
+    const node = this._rootRenderer.allocateNode();
     this._runOnService(
         'createTemplateAnchor',
         [new FnArg(parentElement, RenderStoreObject), new FnArg(node, RenderStoreObject)]);
@@ -128,7 +135,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 
   createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any {
-    var node = this._rootRenderer.allocateNode();
+    const node = this._rootRenderer.allocateNode();
     this._runOnService('createText', [
       new FnArg(parentElement, RenderStoreObject), new FnArg(value, null),
       new FnArg(node, RenderStoreObject)
@@ -208,7 +215,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
 
   listen(renderElement: WebWorkerRenderNode, name: string, callback: Function): Function {
     renderElement.events.listen(name, callback);
-    var unlistenCallbackId = this._rootRenderer.allocateId();
+    const unlistenCallbackId = this._rootRenderer.allocateId();
     this._runOnService('listen', [
       new FnArg(renderElement, RenderStoreObject), new FnArg(name, null),
       new FnArg(unlistenCallbackId, null)
@@ -221,7 +228,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
 
   listenGlobal(target: string, name: string, callback: Function): Function {
     this._rootRenderer.globalEvents.listen(eventNameWithTarget(target, name), callback);
-    var unlistenCallbackId = this._rootRenderer.allocateId();
+    const unlistenCallbackId = this._rootRenderer.allocateId();
     this._runOnService(
         'listenGlobal',
         [new FnArg(target, null), new FnArg(name, null), new FnArg(unlistenCallbackId, null)]);
@@ -232,10 +239,23 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 
   animate(
-      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
-    // TODO
-    return null;
+      renderElement: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
+    const playerId = this._rootRenderer.allocateId();
+    const previousPlayerIds: number[] =
+        previousPlayers.map(player => this._rootRenderer.renderStore.serialize(player));
+
+    this._runOnService('animate', [
+      new FnArg(renderElement, RenderStoreObject), new FnArg(startingStyles, null),
+      new FnArg(keyframes, null), new FnArg(duration, null), new FnArg(delay, null),
+      new FnArg(easing, null), new FnArg(previousPlayerIds, null), new FnArg(playerId, null)
+    ]);
+
+    const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement);
+    this._rootRenderer.renderStore.store(player, playerId);
+
+    return player;
   }
 }
 
@@ -243,11 +263,11 @@ export class NamedEventEmitter {
   private _listeners: Map<string, Function[]>;
 
   private _getListeners(eventName: string): Function[] {
-    if (isBlank(this._listeners)) {
+    if (!this._listeners) {
       this._listeners = new Map<string, Function[]>();
     }
-    var listeners = this._listeners.get(eventName);
-    if (isBlank(listeners)) {
+    let listeners = this._listeners.get(eventName);
+    if (!listeners) {
       listeners = [];
       this._listeners.set(eventName, listeners);
     }
@@ -261,9 +281,41 @@ export class NamedEventEmitter {
   }
 
   dispatchEvent(eventName: string, event: any) {
-    var listeners = this._getListeners(eventName);
-    for (var i = 0; i < listeners.length; i++) {
+    const listeners = this._getListeners(eventName);
+    for (let i = 0; i < listeners.length; i++) {
       listeners[i](event);
+    }
+  }
+}
+
+export class AnimationPlayerEmitter {
+  private _listeners: Map<AnimationPlayer, {[phaseName: string]: Function[]}>;
+
+  private _getListeners(player: AnimationPlayer, phaseName: string): Function[] {
+    if (!this._listeners) {
+      this._listeners = new Map<AnimationPlayer, {[phaseName: string]: Function[]}>();
+    }
+    let phaseMap = this._listeners.get(player);
+    if (!phaseMap) {
+      this._listeners.set(player, phaseMap = {});
+    }
+    let phaseFns = phaseMap[phaseName];
+    if (!phaseFns) {
+      phaseFns = phaseMap[phaseName] = [];
+    }
+    return phaseFns;
+  }
+
+  listen(player: AnimationPlayer, phaseName: string, callback: Function) {
+    this._getListeners(player, phaseName).push(callback);
+  }
+
+  unlisten(player: AnimationPlayer) { this._listeners.delete(player); }
+
+  dispatchEvent(player: AnimationPlayer, phaseName: string) {
+    const listeners = this._getListeners(player, phaseName);
+    for (let i = 0; i < listeners.length; i++) {
+      listeners[i]();
     }
   }
 }
@@ -272,4 +324,65 @@ function eventNameWithTarget(target: string, eventName: string): string {
   return `${target}:${eventName}`;
 }
 
-export class WebWorkerRenderNode { events: NamedEventEmitter = new NamedEventEmitter(); }
+export class WebWorkerRenderNode {
+  events = new NamedEventEmitter();
+  animationPlayerEvents = new AnimationPlayerEmitter();
+}
+
+class _AnimationWorkerRendererPlayer implements RenderStoreObject {
+  public parentPlayer: AnimationPlayer = null;
+
+  private _destroyed: boolean = false;
+  private _started: boolean = false;
+
+  constructor(private _rootRenderer: WebWorkerRootRenderer, private _renderElement: any) {}
+
+  private _runOnService(fnName: string, fnArgs: FnArg[]) {
+    if (!this._destroyed) {
+      const fnArgsWithRenderer = [
+        new FnArg(this, RenderStoreObject), new FnArg(this._renderElement, RenderStoreObject)
+      ].concat(fnArgs);
+      this._rootRenderer.runOnService(ANIMATION_WORKER_PLAYER_PREFIX + fnName, fnArgsWithRenderer);
+    }
+  }
+
+  onStart(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onStart', fn);
+    this._runOnService('onStart', []);
+  }
+
+  onDone(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onDone', fn);
+    this._runOnService('onDone', []);
+  }
+
+  hasStarted(): boolean { return this._started; }
+
+  init(): void { this._runOnService('init', []); }
+
+  play(): void {
+    this._started = true;
+    this._runOnService('play', []);
+  }
+
+  pause(): void { this._runOnService('pause', []); }
+
+  restart(): void { this._runOnService('restart', []); }
+
+  finish(): void { this._runOnService('finish', []); }
+
+  destroy(): void {
+    if (!this._destroyed) {
+      this._renderElement.animationPlayerEvents.unlisten(this);
+      this._runOnService('destroy', []);
+      this._rootRenderer.renderStore.remove(this);
+      this._destroyed = true;
+    }
+  }
+
+  reset(): void { this._runOnService('reset', []); }
+
+  setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p, null)]); }
+
+  getPosition(): number { return 0; }
+}

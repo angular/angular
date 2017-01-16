@@ -1,6 +1,6 @@
 /** @experimental */
 export declare abstract class AnimationDriver {
-    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
+    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string, previousPlayers?: AnimationPlayer[]): AnimationPlayer;
     static NOOP: AnimationDriver;
 }
 
@@ -59,7 +59,35 @@ export declare class HammerGestureConfig {
 }
 
 /** @experimental */
+export declare class Meta {
+    constructor(_dom: DomAdapter);
+    addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement;
+    addTags(tags: MetaDefinition[], forceCreation?: boolean): HTMLMetaElement[];
+    getTag(attrSelector: string): HTMLMetaElement;
+    getTags(attrSelector: string): HTMLMetaElement[];
+    removeTag(attrSelector: string): void;
+    removeTagElement(meta: HTMLMetaElement): void;
+    updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement;
+}
+
+/** @experimental */
+export interface MetaDefinition {
+    charset?: string;
+    content?: string;
+    httpEquiv?: string;
+    id?: string;
+    itemprop?: string;
+    name?: string;
+    property?: string;
+    scheme?: string;
+    url?: string;
+    [prop: string]: string;
+}
+
+/** @deprecated */
 export declare class NgProbeToken {
+    name: string;
+    token: any;
     constructor(name: string, token: any);
 }
 
@@ -91,3 +119,6 @@ export declare class Title {
     getTitle(): string;
     setTitle(newTitle: string): void;
 }
+
+/** @stable */
+export declare const VERSION: Version;

@@ -7,8 +7,6 @@
  */
 
 import {Component, Directive, ElementRef, Injectable, Renderer} from '@angular/core';
-import {StringWrapper} from '@angular/core/src/facade/lang';
-
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
@@ -25,7 +23,6 @@ export class RedDec {
   constructor(el: ElementRef, renderer: Renderer) {
     renderer.setElementStyle(el.nativeElement, 'color', 'red');
   }
-  // constructor(renderer: Renderer) {}
 }
 
 // Angular 2.0 supports 2 basic types of directives:
@@ -56,7 +53,5 @@ export class HelloCmp {
 
   changeGreeting(): void { this.greeting = 'howdy'; }
 
-  onKeyDown(event: any /** TODO #9100 */): void {
-    this.lastKey = StringWrapper.fromCharCode(event.keyCode);
-  }
+  onKeyDown(event: KeyboardEvent): void { this.lastKey = String.fromCharCode(event.keyCode); }
 }

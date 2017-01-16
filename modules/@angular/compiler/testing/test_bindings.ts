@@ -18,8 +18,8 @@ export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
 // This provider is put here just so that we can access it from multiple
 // internal test packages.
 // TODO: get rid of it or move to a separate @angular/internal_testing package
-export var TEST_COMPILER_PROVIDERS: Provider[] = [
-  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {})},
+export const TEST_COMPILER_PROVIDERS: Provider[] = [
+  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
   {provide: ResourceLoader, useClass: MockResourceLoader},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix}
 ];

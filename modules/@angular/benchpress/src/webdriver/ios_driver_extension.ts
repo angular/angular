@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {StringWrapper, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -25,7 +25,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
-    var script = `console.timeEnd('${name}');`;
+    let script = `console.timeEnd('${name}');`;
     if (isPresent(restartName)) {
       script += `console.time('${restartName}');`;
     }
@@ -39,10 +39,10 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('1+1')
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
-          var records: any[] = [];
+          const records: any[] = [];
           entries.forEach(entry => {
-            var message = JSON.parse(entry['message'])['message'];
-            if (StringWrapper.equals(message['method'], 'Timeline.eventRecorded')) {
+            const message = JSON.parse(entry['message'])['message'];
+            if (message['method'] === 'Timeline.eventRecorded') {
               records.push(message['params']['record']);
             }
           });
@@ -52,29 +52,26 @@ export class IOsDriverExtension extends WebDriverExtension {
 
   /** @internal */
   private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[] = null) {
-    if (isBlank(events)) {
+    if (!events) {
       events = [];
     }
     records.forEach((record) => {
-      var endEvent: PerfLogEvent = null;
-      var type = record['type'];
-      var data = record['data'];
-      var startTime = record['startTime'];
-      var endTime = record['endTime'];
+      let endEvent: PerfLogEvent = null;
+      const type = record['type'];
+      const data = record['data'];
+      const startTime = record['startTime'];
+      const endTime = record['endTime'];
 
-      if (StringWrapper.equals(type, 'FunctionCall') &&
-          (isBlank(data) || !StringWrapper.equals(data['scriptName'], 'InjectedScript'))) {
+      if (type === 'FunctionCall' && (data == null || data['scriptName'] !== 'InjectedScript')) {
         events.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
-      } else if (StringWrapper.equals(type, 'Time')) {
+      } else if (type === 'Time') {
         events.push(createMarkStartEvent(data['message'], startTime));
-      } else if (StringWrapper.equals(type, 'TimeEnd')) {
+      } else if (type === 'TimeEnd') {
         events.push(createMarkEndEvent(data['message'], startTime));
       } else if (
-          StringWrapper.equals(type, 'RecalculateStyles') || StringWrapper.equals(type, 'Layout') ||
-          StringWrapper.equals(type, 'UpdateLayerTree') || StringWrapper.equals(type, 'Paint') ||
-          StringWrapper.equals(type, 'Rasterize') ||
-          StringWrapper.equals(type, 'CompositeLayers')) {
+          type === 'RecalculateStyles' || type === 'Layout' || type === 'UpdateLayerTree' ||
+          type === 'Paint' || type === 'Rasterize' || type === 'CompositeLayers') {
         events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -92,13 +89,13 @@ export class IOsDriverExtension extends WebDriverExtension {
   perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true}); }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'safari');
+    return capabilities['browserName'].toLowerCase() === 'safari';
   }
 }
 
 function createEvent(
     ph: 'X' | 'B' | 'E' | 'B' | 'E', name: string, time: number, args: any = null) {
-  var result: PerfLogEvent = {
+  const result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,
     'ts': time,

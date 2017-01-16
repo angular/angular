@@ -37,11 +37,11 @@ export class PostMessageBusSink implements MessageBusSink {
       throw new Error(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter(false);
-    var channelInfo = new _Channel(emitter, runInZone);
+    const emitter = new EventEmitter(false);
+    const channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
     emitter.subscribe((data: Object) => {
-      var message = {channel: channel, message: data};
+      const message = {channel: channel, message: data};
       if (runInZone) {
         this._messageBuffer.push(message);
       } else {
@@ -89,8 +89,8 @@ export class PostMessageBusSource implements MessageBusSource {
       throw new Error(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter(false);
-    var channelInfo = new _Channel(emitter, runInZone);
+    const emitter = new EventEmitter(false);
+    const channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
   }
 
@@ -103,16 +103,16 @@ export class PostMessageBusSource implements MessageBusSource {
   }
 
   private _handleMessages(ev: MessageEvent): void {
-    var messages = ev.data;
-    for (var i = 0; i < messages.length; i++) {
+    const messages = ev.data;
+    for (let i = 0; i < messages.length; i++) {
       this._handleMessage(messages[i]);
     }
   }
 
   private _handleMessage(data: any): void {
-    var channel = data.channel;
+    const channel = data.channel;
     if (this._channels.hasOwnProperty(channel)) {
-      var channelInfo = this._channels[channel];
+      const channelInfo = this._channels[channel];
       if (channelInfo.runInZone) {
         this._zone.run(() => { channelInfo.emitter.emit(data.message); });
       } else {

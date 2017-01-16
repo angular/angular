@@ -1,6 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {PromiseWrapper} from '@angular/facade/src/async';
-import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
-import {DateWrapper, Type, isPresent, print} from '@angular/facade/src/lang';
+import {Type, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -14,7 +21,7 @@ import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): any[] {
-  var multiplyTemplatesBy = getIntParameter('elements');
+  const multiplyTemplatesBy = getIntParameter('elements');
   return [
     {
       provide: DirectiveResolver,
@@ -35,7 +42,7 @@ function _createBindings(): any[] {
 export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings()).then((ref) => {
-    var app = ref.instance;
+    const app = ref.instance;
     bindAction('#compileNoBindings', measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
     bindAction(
         '#compileWithBindings', measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
@@ -44,21 +51,21 @@ export function main() {
 
 function measureWrapper(func, desc) {
   return function() {
-    var begin = DateWrapper.now();
+    const begin = new Date();
     print(`[${desc}] Begin...`);
-    var onSuccess = function(_) {
-      var elapsedMs = DateWrapper.toMillis(DateWrapper.now()) - DateWrapper.toMillis(begin);
+    const onSuccess = function(_) {
+      const elapsedMs = new Date().getTime() - begin.getTime();
       print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
-    var onError = function(e) { DOM.logError(e); };
+    const onError = function(e) { DOM.logError(e); };
     PromiseWrapper.then(func(), onSuccess, onError);
   };
 }
 
 
 class MultiplyDirectiveResolver extends DirectiveResolver {
-  _multiplyBy: number;
-  _cache = new Map<Type, ViewMetadata>();
+  private _multiplyBy: number;
+  private _cache = new Map<Type, ViewMetadata>();
 
   constructor(multiple: number, components: Type[]) {
     super();
@@ -66,10 +73,10 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
     components.forEach(c => this._fillCache(c));
   }
 
-  _fillCache(component: Type) {
-    var view = super.resolve(component);
-    var multipliedTemplates = ListWrapper.createFixedSize(this._multiplyBy);
-    for (var i = 0; i < this._multiplyBy; ++i) {
+  private _fillCache(component: Type) {
+    const view = super.resolve(component);
+    const multipliedTemplates = new Array(this._multiplyBy);
+    for (let i = 0; i < this._multiplyBy; ++i) {
       multipliedTemplates[i] = view.template;
     }
     this._cache.set(
@@ -78,8 +85,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
   }
 
   resolve(component: Type): ViewMetadata {
-    var result = this._cache.get(component);
-    return isPresent(result) ? result : super.resolve(component);
+    return this._cache.get(component) || super.resolve(component);
   }
 }
 

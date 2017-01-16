@@ -7,13 +7,12 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Directive, HostBinding, HostListener, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
-
 
 /**
  * @whatItDoes Lets you link to specific parts of your app.
@@ -21,26 +20,17 @@ import {UrlTree} from '../url_tree';
  * @howToUse
  *
  * Consider the following route configuration:
-
- * ```
- * [{ path: 'user/:name', component: UserCmp }]
- * ```
+ * `[{ path: 'user/:name', component: UserCmp }]`
  *
  * When linking to this `user/:name` route, you can write:
- *
- * ```
- * <a routerLink='/user/bob'>link to user component</a>
- * ```
+ * `<a routerLink='/user/bob'>link to user component</a>`
  *
  * @description
  *
  * The RouterLink directives let you link to specific parts of your app.
  *
- * Whe the link is static, you can use the directive as follows:
- *
- * ```
- * <a routerLink="/user/bob">link to user component</a>
- * ```
+ * When the link is static, you can use the directive as follows:
+ * `<a routerLink="/user/bob">link to user component</a>`
  *
  * If you use dynamic values to generate the link, you can pass an array of path
  * segments, followed by the params for each segment.
@@ -48,29 +38,31 @@ import {UrlTree} from '../url_tree';
  * For instance `['/team', teamId, 'user', userName, {details: true}]`
  * means that we want to generate a link to `/team/11/user/bob;details=true`.
  *
- * Multiple static segments can be merged into one (e.g., `['/team/11/user', userName, {details:
- true}]`).
+ * Multiple static segments can be merged into one
+ * (e.g., `['/team/11/user', userName, {details: true}]`).
  *
  * The first segment name can be prepended with `/`, `./`, or `../`:
  * * If the first segment begins with `/`, the router will look up the route from the root of the
- app.
+ *   app.
  * * If the first segment begins with `./`, or doesn't begin with a slash, the router will
- * instead look in the children of the current activated route.
+ *   instead look in the children of the current activated route.
  * * And if the first segment begins with `../`, the router will go up one level.
  *
  * You can set query params and fragment as follows:
  *
  * ```
- * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" fragment="education">link to user
- component</a>
+ * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" fragment="education">
+ *   link to user component
+ * </a>
  * ```
  * RouterLink will use these to generate this link: `/user/bob#education?debug=true`.
  *
  * You can also tell the directive to preserve the current query params and fragment:
  *
  * ```
- * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>link to user
- component</a>
+ * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>
+ *   link to user component
+ * </a>
  * ```
  *
  * The router link directive always treats the provided input as a delta to the current url.
@@ -89,32 +81,39 @@ import {UrlTree} from '../url_tree';
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
-  private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
   @Input() preserveFragment: boolean;
+  @Input() skipLocationChange: boolean;
+  @Input() replaceUrl: boolean;
+  private commands: any[] = [];
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {}
-
-  @Input()
-  set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
-    } else {
-      this.commands = [data];
+      @Attribute('tabindex') tabIndex: string, renderer: Renderer, el: ElementRef) {
+    if (tabIndex == null) {
+      renderer.setElementAttribute(el.nativeElement, 'tabindex', '0');
     }
   }
 
-  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
-  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
-    if (button !== 0 || ctrlKey || metaKey) {
-      return true;
+  @Input()
+  set routerLink(commands: any[]|string) {
+    if (commands != null) {
+      this.commands = Array.isArray(commands) ? commands : [commands];
+    } else {
+      this.commands = [];
     }
-    this.router.navigateByUrl(this.urlTree);
-    return false;
+  }
+
+  @HostListener('click')
+  onClick(): boolean {
+    const extras = {
+      skipLocationChange: attrBoolValue(this.skipLocationChange),
+      replaceUrl: attrBoolValue(this.replaceUrl),
+    };
+    this.router.navigateByUrl(this.urlTree, extras);
+    return true;
   }
 
   get urlTree(): UrlTree {
@@ -122,8 +121,8 @@ export class RouterLink {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment)
+      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
 }
@@ -140,13 +139,14 @@ export class RouterLink {
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
-  @Input() target: string;
-  private commands: any[] = [];
+  @HostBinding('attr.target') @Input() target: string;
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
-  @Input() routerLinkOptions: {preserveQueryParams: boolean, preserveFragment: boolean};
   @Input() preserveQueryParams: boolean;
   @Input() preserveFragment: boolean;
+  @Input() skipLocationChange: boolean;
+  @Input() replaceUrl: boolean;
+  private commands: any[] = [];
   private subscription: Subscription;
 
   // the url displayed on the anchor element.
@@ -163,11 +163,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
+  set routerLink(commands: any[]|string) {
+    if (commands != null) {
+      this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
-      this.commands = [data];
+      this.commands = [];
     }
   }
 
@@ -184,7 +184,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    this.router.navigateByUrl(this.urlTree);
+    const extras = {
+      skipLocationChange: attrBoolValue(this.skipLocationChange),
+      replaceUrl: attrBoolValue(this.replaceUrl),
+    };
+    this.router.navigateByUrl(this.urlTree, extras);
     return false;
   }
 
@@ -197,13 +201,12 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment)
+      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
 }
 
-function toBool(s?: any): boolean {
-  if (s === '') return true;
-  return !!s;
+function attrBoolValue(s: any): boolean {
+  return s === '' || !!s;
 }

@@ -12,8 +12,6 @@ import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
-
-
 /**
  * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
  * state.
@@ -56,6 +54,9 @@ export class RouterOutlet implements OnDestroy {
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
 
+  get locationInjector(): Injector { return this.location.injector; }
+  get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
+
   get isActivated(): boolean { return !!this.activated; }
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -66,33 +67,45 @@ export class RouterOutlet implements OnDestroy {
     return this._activatedRoute;
   }
 
+  detach(): ComponentRef<any> {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    this.location.detach();
+    const r = this.activated;
+    this.activated = null;
+    this._activatedRoute = null;
+    return r;
+  }
+
+  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
+    this.activated = ref;
+    this._activatedRoute = activatedRoute;
+    this.location.insert(ref.hostView);
+  }
+
   deactivate(): void {
     if (this.activated) {
       const c = this.component;
       this.activated.destroy();
       this.activated = null;
+      this._activatedRoute = null;
       this.deactivateEvents.emit(c);
     }
   }
 
   activate(
-      activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver,
-      loadedInjector: Injector, providers: ResolvedReflectiveProvider[],
-      outletMap: RouterOutletMap): void {
+      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
+      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
+    if (this.isActivated) {
+      throw new Error('Cannot activate an already activated outlet');
+    }
+
     this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
 
     const snapshot = activatedRoute._futureSnapshot;
     const component: any = <any>snapshot._routeConfig.component;
+    const factory = resolver.resolveComponentFactory(component);
 
-    let factory: ComponentFactory<any>;
-    if (loadedResolver) {
-      factory = loadedResolver.resolveComponentFactory(component);
-    } else {
-      factory = this.resolver.resolveComponentFactory(component);
-    }
-
-    const injector = loadedInjector ? loadedInjector : this.location.parentInjector;
     const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();

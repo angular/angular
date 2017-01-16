@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as ts from 'typescript';
 
 import {isMetadataGlobalReferenceExpression} from '../src/schema';
@@ -49,16 +57,16 @@ describe('Symbols', () => {
   it('should be able to find the source files', () => {
     expect(expressions).toBeDefined();
     expect(imports).toBeDefined();
-  })
+  });
 
   it('should be able to create symbols for a source file', () => {
-    let symbols = new Symbols(expressions);
+    const symbols = new Symbols(expressions);
     expect(symbols).toBeDefined();
   });
 
 
   it('should be able to find symbols in expression', () => {
-    let symbols = new Symbols(expressions);
+    const symbols = new Symbols(expressions);
     expect(symbols.has('someName')).toBeTruthy();
     expect(symbols.resolve('someName'))
         .toEqual({__symbolic: 'reference', module: './consts', name: 'someName'});
@@ -68,24 +76,24 @@ describe('Symbols', () => {
   });
 
   it('should be able to detect a * import', () => {
-    let symbols = new Symbols(imports);
+    const symbols = new Symbols(imports);
     expect(symbols.resolve('b')).toEqual({__symbolic: 'reference', module: 'b'});
   });
 
   it('should be able to detect importing a default export', () => {
-    let symbols = new Symbols(imports);
+    const symbols = new Symbols(imports);
     expect(symbols.resolve('d')).toEqual({__symbolic: 'reference', module: 'd', default: true});
   });
 
   it('should be able to import a renamed symbol', () => {
-    let symbols = new Symbols(imports);
+    const symbols = new Symbols(imports);
     expect(symbols.resolve('g')).toEqual({__symbolic: 'reference', name: 'f', module: 'f'});
   });
 
   it('should be able to resolve any symbol in core global scope', () => {
-    let core = program.getSourceFiles().find(source => source.fileName.endsWith('lib.d.ts'));
+    const core = program.getSourceFiles().find(source => source.fileName.endsWith('lib.d.ts'));
     expect(core).toBeDefined();
-    let visit = (node: ts.Node): boolean => {
+    const visit = (node: ts.Node): boolean => {
       switch (node.kind) {
         case ts.SyntaxKind.VariableStatement:
         case ts.SyntaxKind.VariableDeclarationList:

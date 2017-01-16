@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 import {TimerWrapper} from '@angular/facade/src/async';
@@ -29,18 +37,18 @@ export class App {
   scrollIncrement: number;
 
   constructor() {
-    var appSize = getIntParameter('appSize');
+    let appSize = getIntParameter('appSize');
     this.iterationCount = getIntParameter('iterationCount');
     this.scrollIncrement = getIntParameter('scrollIncrement');
     appSize = appSize > 1 ? appSize - 1 : 0;  // draw at least one table
     this.scrollAreas = [];
-    for (var i = 0; i < appSize; i++) {
+    for (let i = 0; i < appSize; i++) {
       this.scrollAreas.push(i);
     }
     bindAction('#run-btn', () => { this.runBenchmark(); });
     bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
-      var existingMarker = this._locateFinishedMarker();
+      const existingMarker = this._locateFinishedMarker();
       if (isPresent(existingMarker)) {
         DOM.removeChild(document.body, existingMarker);
       }
@@ -48,9 +56,9 @@ export class App {
   }
 
   runBenchmark() {
-    var scrollDiv = this._getScrollDiv();
-    var n: number = this.iterationCount;
-    var scheduleScroll;
+    const scrollDiv = this._getScrollDiv();
+    let n: number = this.iterationCount;
+    let scheduleScroll;
     scheduleScroll = () => {
       TimerWrapper.setTimeout(() => {
         scrollDiv.scrollTop += this.scrollIncrement;
@@ -66,21 +74,21 @@ export class App {
   }
 
   // Puts a marker indicating that the test is finished.
-  _scheduleFinishedMarker() {
-    var existingMarker = this._locateFinishedMarker();
+  private _scheduleFinishedMarker() {
+    const existingMarker = this._locateFinishedMarker();
     if (isPresent(existingMarker)) {
       // Nothing to do, the marker is already there
       return;
     }
     TimerWrapper.setTimeout(() => {
-      var finishedDiv = DOM.createElement('div');
+      const finishedDiv = DOM.createElement('div');
       finishedDiv.id = 'done';
       DOM.setInnerHTML(finishedDiv, 'Finished');
       DOM.appendChild(document.body, finishedDiv);
     }, 0);
   }
 
-  _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
+  private _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
 
-  _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
+  private _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
 }

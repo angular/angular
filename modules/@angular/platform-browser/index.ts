@@ -12,5 +12,4 @@
  * Entry point for all public APIs of the platform-browser package.
  */
 export * from './src/platform-browser';
-
 // This file only reexports content of the `src` folder. Keep it that way.

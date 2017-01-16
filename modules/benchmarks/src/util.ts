@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 urlParamsToForm();
 
 export function getIntParameter(name: string) {
@@ -13,13 +14,13 @@ export function getIntParameter(name: string) {
 }
 
 export function getStringParameter(name: string) {
-  var els = document.querySelectorAll(`input[name="${name}"]`);
-  var value: any;
-  var el: any;
+  const els = document.querySelectorAll(`input[name="${name}"]`);
+  let value: any;
+  let el: any;
 
-  for (var i = 0; i < els.length; i++) {
+  for (let i = 0; i < els.length; i++) {
     el = els[i];
-    var type = el.type;
+    const type = el.type;
     if ((type != 'radio' && type != 'checkbox') || el.checked) {
       value = el.value;
       break;
@@ -41,11 +42,11 @@ export function bindAction(selector: string, callback: () => void) {
 export function profile(create: () => void, destroy: () => void, name: string) {
   return function() {
     window.console.profile(name + ' w GC');
-    var duration = 0;
-    var count = 0;
+    let duration = 0;
+    let count = 0;
     while (count++ < 150) {
       (<any>window)['gc']();
-      var start = window.performance.now();
+      const start = window.performance.now();
       create();
       duration += window.performance.now() - start;
       destroy();
@@ -57,7 +58,7 @@ export function profile(create: () => void, destroy: () => void, name: string) {
     duration = 0;
     count = 0;
     while (count++ < 150) {
-      var start = window.performance.now();
+      const start = window.performance.now();
       create();
       duration += window.performance.now() - start;
       destroy();
@@ -70,15 +71,15 @@ export function profile(create: () => void, destroy: () => void, name: string) {
 // helper script that will read out the url parameters
 // and store them in appropriate form fields on the page
 function urlParamsToForm() {
-  var regex = /(\w+)=(\w+)/g;
-  var search = decodeURIComponent(location.search);
-  var match: any[];
+  const regex = /(\w+)=(\w+)/g;
+  const search = decodeURIComponent(location.search);
+  let match: any[];
   while (match = regex.exec(search)) {
-    var name = match[1];
-    var value = match[2];
-    var els = document.querySelectorAll('input[name="' + name + '"]');
-    var el: any;
-    for (var i = 0; i < els.length; i++) {
+    const name = match[1];
+    const value = match[2];
+    const els = document.querySelectorAll('input[name="' + name + '"]');
+    let el: any;
+    for (let i = 0; i < els.length; i++) {
       el = els[i];
       if (el.type === 'radio' || el.type === 'checkbox') {
         el.checked = el.value === value;

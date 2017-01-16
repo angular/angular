@@ -43,7 +43,10 @@ export function main() {
         NeedsContentChildWithRead,
         NeedsViewChildrenWithRead,
         NeedsViewChildWithRead,
-        NeedsViewContainerWithRead
+        NeedsContentChildTemplateRef,
+        NeedsContentChildTemplateRefApp,
+        NeedsViewContainerWithRead,
+        ManualProjecting
       ]
     }));
 
@@ -259,6 +262,15 @@ export function main() {
         const comp: NeedsContentChildWithRead =
             view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
         expect(comp.textDirChild.text).toEqual('ca');
+      });
+
+      it('should contain the first descendant content child templateRef', () => {
+        const template = '<needs-content-child-template-ref-app>' +
+            '</needs-content-child-template-ref-app>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+        view.detectChanges();
+        expect(view.nativeElement).toHaveText('OUTER');
       });
 
       it('should contain the first view child', () => {
@@ -505,6 +517,25 @@ export function main() {
         expect(q.query4).toBeDefined();
       });
     });
+
+    describe('query over moved templates', () => {
+      it('should include manually projected templates in queries', () => {
+        const template =
+            '<manual-projecting #q><template><div text="1"></div></template></manual-projecting>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+        const q = view.debugElement.children[0].references['q'];
+        expect(q.query.length).toBe(0);
+
+        q.create();
+        view.detectChanges();
+        expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1']);
+
+        q.destroy();
+        view.detectChanges();
+        expect(q.query.length).toBe(0);
+      });
+
+    });
   });
 }
 
@@ -641,8 +672,7 @@ class NeedsQueryAndProject {
 
 @Component({
   selector: 'needs-view-query',
-  template: '<div text="1"><div text="2"></div></div>' +
-      '<div text="3"></div><div text="4"></div>'
+  template: '<div text="1"><div text="2"></div></div><div text="3"></div><div text="4"></div>'
 })
 class NeedsViewQuery {
   @ViewChildren(TextDirective) query: QueryList<TextDirective>;
@@ -712,6 +742,23 @@ class NeedsContentChildWithRead {
 }
 
 @Component({
+  selector: 'needs-content-child-template-ref',
+  template: '<div [ngTemplateOutlet]="templateRef"></div>'
+})
+class NeedsContentChildTemplateRef {
+  @ContentChild(TemplateRef) templateRef: TemplateRef<any>;
+}
+
+@Component({
+  selector: 'needs-content-child-template-ref-app',
+  template: '<needs-content-child-template-ref>' +
+      '<template>OUTER<template>INNER</template></template>' +
+      '</needs-content-child-template-ref>'
+})
+class NeedsContentChildTemplateRefApp {
+}
+
+@Component({
   selector: 'needs-view-children-read',
   template: '<div #q text="va"></div><div #w text="vb"></div>',
 })
@@ -751,4 +798,19 @@ class MyComp0 {
 
 @Component({selector: 'my-comp', template: ''})
 class MyCompBroken0 {
+}
+
+@Component({selector: 'manual-projecting', template: '<div #vc></div>'})
+class ManualProjecting {
+  @ContentChild(TemplateRef) template: TemplateRef<any>;
+
+  @ViewChild('vc', {read: ViewContainerRef})
+  vc: ViewContainerRef;
+
+  @ContentChildren(TextDirective)
+  query: QueryList<TextDirective>;
+
+  create() { this.vc.createEmbeddedView(this.template); }
+
+  destroy() { this.vc.clear(); }
 }

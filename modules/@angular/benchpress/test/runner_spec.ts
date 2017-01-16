@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
-import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('runner', () => {
-    var injector: ReflectiveInjector;
-    var runner: Runner;
+    let injector: ReflectiveInjector;
+    let runner: Runner;
 
     function createRunner(defaultProviders: any[] = null): Runner {
-      if (isBlank(defaultProviders)) {
+      if (!defaultProviders) {
         defaultProviders = [];
       }
       runner = new Runner([
@@ -77,7 +76,7 @@ export function main() {
 
     it('should provide Options.EXECUTE',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var execute = () => {};
+         const execute = () => {};
          createRunner().sample({id: 'someId', execute: execute}).then((_) => {
            expect(injector.get(Options.EXECUTE)).toEqual(execute);
            async.done();
@@ -86,7 +85,7 @@ export function main() {
 
     it('should provide Options.PREPARE',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var prepare = () => {};
+         const prepare = () => {};
          createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
            expect(injector.get(Options.PREPARE)).toEqual(prepare);
            async.done();

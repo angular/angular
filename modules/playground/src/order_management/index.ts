@@ -7,7 +7,6 @@
  */
 
 import {Component, EventEmitter, Injectable, Input, NgModule, Output} from '@angular/core';
-import {ListWrapper} from '@angular/core/src/facade/collection';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -40,7 +39,7 @@ class Order {
 
 // ---- services
 
-var _nextId = 1000;
+let _nextId = 1000;
 @Injectable()
 class DataService {
   orderItems: OrderItem[];
@@ -70,7 +69,7 @@ class DataService {
     this.orderItems.push(new OrderItem(_nextId++, order.orderId, '', 0, 0));
   }
 
-  deleteItem(item: OrderItem): void { ListWrapper.remove(this.orderItems, item); }
+  deleteItem(item: OrderItem): void { this.orderItems.splice(this.orderItems.indexOf(item), 1); }
 }
 
 

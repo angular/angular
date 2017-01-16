@@ -10,7 +10,7 @@ import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/re
 
 export function main() {
   describe('RenderStoreSpec', () => {
-    var store: RenderStore;
+    let store: RenderStore;
     beforeEach(() => { store = new RenderStore(); });
 
     it('should allocate ids', () => {
@@ -19,15 +19,15 @@ export function main() {
     });
 
     it('should serialize objects', () => {
-      var id = store.allocateId();
-      var obj = 'testObject';
+      const id = store.allocateId();
+      const obj = 'testObject';
       store.store(obj, id);
       expect(store.serialize(obj)).toBe(id);
     });
 
     it('should deserialize objects', () => {
-      var id = store.allocateId();
-      var obj = 'testObject';
+      const id = store.allocateId();
+      const obj = 'testObject';
       store.store(obj, id);
       expect(store.deserialize(id)).toBe(obj);
     });

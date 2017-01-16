@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, by, element, protractor} from 'protractor';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
@@ -20,18 +21,18 @@ describe('WebWorker Router', () => {
     browser.ignoreSynchronization = false;
   });
 
-  let contentSelector = 'app main h1';
-  let navSelector = 'app nav ul';
-  var baseUrl = 'all/playground/src/web_workers/router/index.html';
+  const contentSelector = 'app main h1';
+  const navSelector = 'app nav ul';
+  const baseUrl = 'all/playground/src/web_workers/router/index.html';
 
   it('should route on click', () => {
     browser.get(baseUrl);
 
     waitForElement(contentSelector);
-    var content = element(by.css(contentSelector));
+    let content = element(by.css(contentSelector));
     expect(content.getText()).toEqual('Start');
 
-    let aboutBtn = element(by.css(navSelector + ' .about'));
+    const aboutBtn = element(by.css(navSelector + ' .about'));
     aboutBtn.click();
     waitForUrl(/\/about/);
     waitForElement(contentSelector);
@@ -40,7 +41,7 @@ describe('WebWorker Router', () => {
     expect(content.getText()).toEqual('About');
     expect(browser.getCurrentUrl()).toMatch(/\/about/);
 
-    let contactBtn = element(by.css(navSelector + ' .contact'));
+    const contactBtn = element(by.css(navSelector + ' .contact'));
     contactBtn.click();
     waitForUrl(/\/contact/);
     waitForElement(contentSelector);
@@ -55,7 +56,7 @@ describe('WebWorker Router', () => {
 
     waitForElement(contentSelector);
     waitForElementText(contentSelector, 'About');
-    let content = element(by.css(contentSelector));
+    const content = element(by.css(contentSelector));
     expect(content.getText()).toEqual('About');
   });
 
@@ -65,18 +66,18 @@ describe('WebWorker Router', () => {
 
   function waitForElementText(contentSelector: string, expected: string): void {
     browser.wait(() => {
-      let deferred = protractor.promise.defer();
-      var elem = element(by.css(contentSelector));
-      elem.getText().then((text) => { return deferred.fulfill(text === expected); });
+      const deferred = protractor.promise.defer();
+      const elem = element(by.css(contentSelector));
+      elem.getText().then((text: string) => { return deferred.fulfill(text === expected); });
       return deferred.promise;
     }, 5000);
   }
 
-  function waitForUrl(regex: any /** TODO #9100 */): void {
+  function waitForUrl(regex: RegExp): void {
     browser.wait(() => {
-      let deferred = protractor.promise.defer();
+      const deferred = protractor.promise.defer();
       browser.getCurrentUrl().then(
-          (url) => { return deferred.fulfill(url.match(regex) !== null); });
+          (url: string) => { return deferred.fulfill(url.match(regex) !== null); });
       return deferred.promise;
     }, 5000);
   }

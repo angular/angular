@@ -7,7 +7,6 @@
  */
 
 import {Injector, OpaqueToken} from '@angular/core';
-import {StringMapWrapper} from '../facade/collection';
 
 import {Metric} from '../metric';
 
@@ -56,10 +55,9 @@ export class MultiMetric extends Metric {
 }
 
 function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
-  var result: {[key: string]: string} = {};
-  maps.forEach(
-      map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });
+  const result: {[key: string]: string} = {};
+  maps.forEach(map => { Object.keys(map).forEach(prop => { result[prop] = map[prop]; }); });
   return result;
 }
 
-var _CHILDREN = new OpaqueToken('MultiMetric.children');
+const _CHILDREN = new OpaqueToken('MultiMetric.children');

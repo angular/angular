@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
 import {BaseError, WrappedError} from '../facade/errors';
-import {isBlank, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
 function findFirstClosedCycle(keys: any[]): any[] {
-  var res: any[] = [];
-  for (var i = 0; i < keys.length; ++i) {
-    if (ListWrapper.contains(res, keys[i])) {
+  const res: any[] = [];
+  for (let i = 0; i < keys.length; ++i) {
+    if (res.indexOf(keys[i]) > -1) {
       res.push(keys[i]);
       return res;
     }
@@ -28,8 +27,8 @@ function findFirstClosedCycle(keys: any[]): any[] {
 
 function constructResolvingPath(keys: any[]): string {
   if (keys.length > 1) {
-    var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
-    var tokenStrs = reversed.map(k => stringify(k.token));
+    const reversed = findFirstClosedCycle(keys.slice().reverse());
+    const tokenStrs = reversed.map(k => stringify(k.token));
     return ' (' + tokenStrs.join(' -> ') + ')';
   }
 
@@ -88,7 +87,7 @@ export class AbstractProviderError extends BaseError {
 export class NoProviderError extends AbstractProviderError {
   constructor(injector: ReflectiveInjector, key: ReflectiveKey) {
     super(injector, key, function(keys: any[]) {
-      var first = stringify(ListWrapper.first(keys).token);
+      const first = stringify(keys[0].token);
       return `No provider for ${first}!${constructResolvingPath(keys)}`;
     });
   }
@@ -167,7 +166,7 @@ export class InstantiationError extends WrappedError {
   }
 
   get message(): string {
-    var first = stringify(ListWrapper.first(this.keys).token);
+    const first = stringify(this.keys[0].token);
     return `${this.originalError.message}: Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
   }
 
@@ -226,10 +225,10 @@ export class NoAnnotationError extends BaseError {
   }
 
   private static _genMessage(typeOrFunc: Type<any>|Function, params: any[][]) {
-    var signature: string[] = [];
-    for (var i = 0, ii = params.length; i < ii; i++) {
-      var parameter = params[i];
-      if (isBlank(parameter) || parameter.length == 0) {
+    const signature: string[] = [];
+    for (let i = 0, ii = params.length; i < ii; i++) {
+      const parameter = params[i];
+      if (!parameter || parameter.length == 0) {
         signature.push('?');
       } else {
         signature.push(parameter.map(stringify).join(' '));

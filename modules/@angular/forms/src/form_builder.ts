@@ -9,8 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {StringMapWrapper} from './facade/collection';
-import {isArray, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 
 /**
@@ -43,10 +42,8 @@ export class FormBuilder {
    */
   group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
-    const validator: ValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
-    const asyncValidator: AsyncValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
+    const validator: ValidatorFn = isPresent(extra) ? extra['validator'] : null;
+    const asyncValidator: AsyncValidatorFn = isPresent(extra) ? extra['asyncValidator'] : null;
     return new FormGroup(controls, validator, asyncValidator);
   }
   /**
@@ -70,15 +67,15 @@ export class FormBuilder {
   array(
       controlsConfig: any[], validator: ValidatorFn = null,
       asyncValidator: AsyncValidatorFn = null): FormArray {
-    var controls = controlsConfig.map(c => this._createControl(c));
+    const controls = controlsConfig.map(c => this._createControl(c));
     return new FormArray(controls, validator, asyncValidator);
   }
 
   /** @internal */
   _reduceControls(controlsConfig: {[k: string]: any}): {[key: string]: AbstractControl} {
-    var controls: {[key: string]: AbstractControl} = {};
-    StringMapWrapper.forEach(controlsConfig, (controlConfig: any, controlName: string) => {
-      controls[controlName] = this._createControl(controlConfig);
+    const controls: {[key: string]: AbstractControl} = {};
+    Object.keys(controlsConfig).forEach(controlName => {
+      controls[controlName] = this._createControl(controlsConfig[controlName]);
     });
     return controls;
   }
@@ -89,10 +86,10 @@ export class FormBuilder {
         controlConfig instanceof FormArray) {
       return controlConfig;
 
-    } else if (isArray(controlConfig)) {
-      var value = controlConfig[0];
-      var validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
-      var asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
+    } else if (Array.isArray(controlConfig)) {
+      const value = controlConfig[0];
+      const validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
+      const asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
       return this.control(value, validator, asyncValidator);
 
     } else {

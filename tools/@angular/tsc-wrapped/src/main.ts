@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -5,8 +13,10 @@ import * as ts from 'typescript';
 import {check, tsc} from './tsc';
 
 import NgOptions from './options';
-import {MetadataWriterHost, TsickleHost} from './compiler_host';
+import {MetadataWriterHost, DecoratorDownlevelCompilerHost, TsickleCompilerHost} from './compiler_host';
 import {CliOptions} from './cli_options';
+
+export {UserError} from './tsc';
 
 export type CodegenExtension =
     (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>
@@ -26,6 +36,10 @@ export function main(
     // read the configuration options from wherever you store them
     const {parsed, ngOptions} = tsc.readConfiguration(project, basePath);
     ngOptions.basePath = basePath;
+    const createProgram = (host: ts.CompilerHost, oldProgram?: ts.Program) =>
+        ts.createProgram(parsed.fileNames, parsed.options, host, oldProgram);
+    const diagnostics = (parsed.options as any).diagnostics;
+    if (diagnostics) (ts as any).performance.enable();
 
     const host = ts.createCompilerHost(parsed.options, true);
 
@@ -34,30 +48,60 @@ export function main(
     // todo(misko): remove once facade symlinks are removed
     host.realpath = (path) => path;
 
-    const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+    const program = createProgram(host);
     const errors = program.getOptionsDiagnostics();
     check(errors);
 
     if (ngOptions.skipTemplateCodegen || !codegen) {
       codegen = () => Promise.resolve(null);
     }
+
+    if (diagnostics) console.time('NG codegen');
     return codegen(ngOptions, cliOptions, program, host).then(() => {
-      // Create a new program since codegen files were created after making the old program
-      const newProgram = ts.createProgram(parsed.fileNames, parsed.options, host, program);
-      tsc.typeCheck(host, newProgram);
-
-      // Emit *.js with Decorators lowered to Annotations, and also *.js.map
-      const tsicklePreProcessor = new TsickleHost(host, newProgram);
-      tsc.emit(tsicklePreProcessor, newProgram);
-
+      if (diagnostics) console.timeEnd('NG codegen');
+      let definitionsHost = host;
       if (!ngOptions.skipMetadataEmit) {
-        // Emit *.metadata.json and *.d.ts
-        // Not in the same emit pass with above, because tsickle erases
-        // decorators which we want to read or document.
-        // Do this emit second since TypeScript will create missing directories for us
-        // in the standard emit.
-        const metadataWriter = new MetadataWriterHost(host, newProgram, ngOptions);
-        tsc.emit(metadataWriter, newProgram);
+        definitionsHost = new MetadataWriterHost(host, ngOptions);
+      }
+      // Create a new program since codegen files were created after making the old program
+      let programWithCodegen = createProgram(definitionsHost, program);
+      tsc.typeCheck(host, programWithCodegen);
+
+      let preprocessHost = host;
+      let programForJsEmit = programWithCodegen;
+
+      if (ngOptions.annotationsAs !== 'decorators') {
+        if (diagnostics) console.time('NG downlevel');
+        const downlevelHost = new DecoratorDownlevelCompilerHost(preprocessHost, programForJsEmit);
+        // A program can be re-used only once; save the programWithCodegen to be reused by
+        // metadataWriter
+        programForJsEmit = createProgram(downlevelHost);
+        check(downlevelHost.diagnostics);
+        preprocessHost = downlevelHost;
+        if (diagnostics) console.timeEnd('NG downlevel');
+      }
+
+      if (ngOptions.annotateForClosureCompiler) {
+        if (diagnostics) console.time('NG JSDoc');
+        const tsickleHost = new TsickleCompilerHost(preprocessHost, programForJsEmit, ngOptions);
+        programForJsEmit = createProgram(tsickleHost);
+        check(tsickleHost.diagnostics);
+        if (diagnostics) console.timeEnd('NG JSDoc');
+      }
+
+      // Emit *.js and *.js.map
+      tsc.emit(programForJsEmit);
+
+      // Emit *.d.ts and maybe *.metadata.json
+      // Not in the same emit pass with above, because tsickle erases
+      // decorators which we want to read or document.
+      // Do this emit second since TypeScript will create missing directories for us
+      // in the standard emit.
+      tsc.emit(programWithCodegen);
+
+      if (diagnostics) {
+        (ts as any).performance.forEachMeasure(
+            (name: string, duration: number) => { console.error(`TS ${name}: ${duration}ms`); });
       }
     });
   } catch (e) {

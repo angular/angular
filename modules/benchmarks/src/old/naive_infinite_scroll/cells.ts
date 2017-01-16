@@ -1,6 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
-import {ListWrapper, Map} from '@angular/facade/src/collection';
 
 import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
@@ -64,7 +71,7 @@ export class Stage {
       </div>`
 })
 export class StageButtonsComponent extends HasStyle {
-  _offering: Offering;
+  private _offering: Offering;
   stages: Stage[];
 
   get offering(): Offering { return this._offering; }
@@ -79,19 +86,21 @@ export class StageButtonsComponent extends HasStyle {
     this._computeStageButtons();
   }
 
-  _computeStageButtons() {
-    var disabled = true;
-    this.stages = ListWrapper.clone(STATUS_LIST.map((status) => {
-      var isCurrent = this._offering.status == status;
-      var stage = new Stage();
-      stage.name = status;
-      stage.isDisabled = disabled;
-      stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
-      if (isCurrent) {
-        disabled = false;
-      }
-      return stage;
-    }));
+  private _computeStageButtons() {
+    let disabled = true;
+    this.stages = STATUS_LIST
+                      .map((status) => {
+                        const isCurrent = this._offering.status == status;
+                        const stage = new Stage();
+                        stage.name = status;
+                        stage.isDisabled = disabled;
+                        stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
+                        if (isCurrent) {
+                          disabled = false;
+                        }
+                        return stage;
+                      })
+                      .slice();
   }
 }
 

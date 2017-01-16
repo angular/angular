@@ -8,22 +8,15 @@
 
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {iterateListLike} from '../../src/facade/collection';
-import {StringWrapper} from '../../src/facade/lang';
-
-interface _JsQueryList {
-  filter(c: any): any;
-  reduce(a: any, b: any): any;
-  toArray(): any;
-}
 
 export function main() {
   describe('QueryList', () => {
-    var queryList: QueryList<string>;
-    var log: string;
+    let queryList: QueryList<string>;
+    let log: string;
     beforeEach(() => {
       queryList = new QueryList<string>();
       log = '';
@@ -69,43 +62,50 @@ export function main() {
 
     it('should support filter', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).filter((x: string) => x == 'one')).toEqual(['one']);
+      expect(queryList.filter((x: string) => x == 'one')).toEqual(['one']);
     });
 
     it('should support filter with index', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).filter((x: string, i: number) => i == 0)).toEqual(['one']);
+      expect(queryList.filter((x: string, i: number) => i == 0)).toEqual(['one']);
+    });
+
+    it('should support find', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.find((x: string) => x == 'two')).toEqual('two');
+    });
+
+    it('should support find with index', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.find((x: string, i: number) => i == 1)).toEqual('two');
     });
 
     it('should support reduce', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-          .toEqual('start:onetwo');
+      expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
     });
 
     it('should support reduce with index', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList)
-                 .reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
+      expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
           .toEqual('start:one0two1');
     });
 
     it('should support toArray', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-          .toEqual('start:onetwo');
+      expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
     });
 
     it('should support toArray', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).toArray()).toEqual(['one', 'two']);
+      expect(queryList.toArray()).toEqual(['one', 'two']);
     });
 
     it('should support toString', () => {
       queryList.reset(['one', 'two']);
-      var listString = queryList.toString();
-      expect(StringWrapper.contains(listString, 'one')).toBeTruthy();
-      expect(StringWrapper.contains(listString, 'two')).toBeTruthy();
+      const listString = queryList.toString();
+      expect(listString.indexOf('one') != -1).toBeTruthy();
+      expect(listString.indexOf('two') != -1).toBeTruthy();
     });
 
     it('should support first and last', () => {
@@ -123,7 +123,7 @@ export function main() {
     if (getDOM().supportsDOMEvents()) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
-             var fires = 0;
+             let fires = 0;
              queryList.changes.subscribe({next: (_) => { fires += 1; }});
 
              queryList.notifyOnChanges();
@@ -138,7 +138,7 @@ export function main() {
            }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             var recorded: any /** TODO #9100 */;
+             let recorded: any /** TODO #9100 */;
              queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
 
              queryList.reset(['one']);

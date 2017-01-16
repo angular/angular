@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
@@ -7,7 +15,7 @@ import {Symbols} from '../src/symbols';
 import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
 
 describe('Evaluator', () => {
-  let documentRegistry = ts.createDocumentRegistry();
+  const documentRegistry = ts.createDocumentRegistry();
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;

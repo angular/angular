@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {Location} from '@angular/common';
+import {TestBed, inject} from '@angular/core/testing';
 
+import {ResolveData} from '../src/config';
 import {PreActivation, Router} from '../src/router';
 import {RouterOutletMap} from '../src/router_outlet_map';
-import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/router_testing_module';
@@ -31,6 +33,25 @@ describe('Router', () => {
     });
   });
 
+  describe('setUpLocationChangeListener', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should be indempotent', inject([Router, Location], (r: Router, location: Location) => {
+         r.setUpLocationChangeListener();
+         const a = (<any>r).locationSubscription;
+         r.setUpLocationChangeListener();
+         const b = (<any>r).locationSubscription;
+
+         expect(a).toBe(b);
+
+         r.dispose();
+         r.setUpLocationChangeListener();
+         const c = (<any>r).locationSubscription;
+
+         expect(c).not.toBe(b);
+       }));
+  });
+
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};
@@ -39,7 +60,7 @@ describe('Router', () => {
     beforeEach(() => { empty = createEmptyStateSnapshot(serializer.parse('/'), null); });
 
     it('should resolve data', () => {
-      const r = new InheritedResolve(InheritedResolve.empty, {data: 'resolver'});
+      const r = {data: 'resolver'};
       const n = createActivatedRouteSnapshot('a', {resolve: r});
       const s = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n, [])]));
 
@@ -48,9 +69,26 @@ describe('Router', () => {
       });
     });
 
+    it('should wait for the parent resolve to complete', () => {
+      const parentResolve = {data: 'resolver'};
+      const childResolve = {};
+
+      const parent = createActivatedRouteSnapshot(null, {resolve: parentResolve});
+      const child = createActivatedRouteSnapshot('b', {resolve: childResolve});
+
+      const s = new RouterStateSnapshot(
+          'url', new TreeNode(empty.root, [new TreeNode(parent, [new TreeNode(child, [])])]));
+
+      const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
+
+      checkResolveData(s, empty, inj, () => {
+        expect(s.root.firstChild.firstChild.data).toEqual({data: 'resolver_value'});
+      });
+    });
+
     it('should copy over data when creating a snapshot', () => {
-      const r1 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver1'});
-      const r2 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver2'});
+      const r1 = {data: 'resolver1'};
+      const r2 = {data: 'resolver2'};
 
       const n1 = createActivatedRouteSnapshot('a', {resolve: r1});
       const s1 = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n1, [])]));
@@ -77,6 +115,6 @@ function checkResolveData(
 
 function createActivatedRouteSnapshot(cmp: string, extra: any = {}): ActivatedRouteSnapshot {
   return new ActivatedRouteSnapshot(
-      <any>null, {}, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, <any>null, -1,
+      <any>[], {}, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, <any>null, -1,
       extra.resolve);
 }

@@ -7,10 +7,7 @@
  */
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
-
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {NumberWrapper, isBlank, isPresent, print} from '../facade/lang';
-import {Math} from '../facade/math';
+import {print} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -31,8 +28,8 @@ export class ConsoleReporter extends Reporter {
   ];
 
   private static _lpad(value: string, columnWidth: number, fill = ' ') {
-    var result = '';
-    for (var i = 0; i < columnWidth - value.length; i++) {
+    let result = '';
+    for (let i = 0; i < columnWidth - value.length; i++) {
       result += fill;
     }
     return result + value;
@@ -52,7 +49,7 @@ export class ConsoleReporter extends Reporter {
   private _printDescription(sampleDescription: SampleDescription) {
     this._print(`BENCHMARK ${sampleDescription.id}`);
     this._print('Description:');
-    var props = sortedProps(sampleDescription.description);
+    const props = sortedProps(sampleDescription.description);
     props.forEach((prop) => { this._print(`- ${prop}: ${sampleDescription.description[prop]}`); });
     this._print('Metrics:');
     this._metricNames.forEach((metricName) => {
@@ -64,8 +61,8 @@ export class ConsoleReporter extends Reporter {
   }
 
   reportMeasureValues(measureValues: MeasureValues): Promise<any> {
-    var formattedValues = this._metricNames.map(metricName => {
-      var value = measureValues.values[metricName];
+    const formattedValues = this._metricNames.map(metricName => {
+      const value = measureValues.values[metricName];
       return formatNum(value);
     });
     this._printStringRow(formattedValues);

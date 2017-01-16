@@ -7,13 +7,14 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser} from 'protractor';
 
 describe('http', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    var URL = 'all/playground/src/http/index.html';
+    const URL = 'all/playground/src/http/index.html';
 
     it('should fetch and display people', function() {
       browser.get(URL);
@@ -22,8 +23,7 @@ describe('http', function() {
   });
 });
 
-function getComponentText(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
+function getComponentText(selector: string, innerSelector: string) {
   return browser.executeScript(
-      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
-      '").textContent.trim()');
+      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent.trim()`);
 }

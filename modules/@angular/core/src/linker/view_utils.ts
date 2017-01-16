@@ -6,39 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID} from '../application_tokens';
-import {devModeEqual} from '../change_detection/change_detection';
-import {UNINITIALIZED} from '../change_detection/change_detection_util';
-import {Inject, Injectable} from '../di';
-import {ListWrapper} from '../facade/collection';
-import {isBlank, isPresent, looseIdentical} from '../facade/lang';
+import {AnimationQueue} from '../animation/animation_queue';
+import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
+import {Injectable} from '../di';
+import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
-import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
-import {Sanitizer} from '../security';
-import {AppElement} from './element';
+import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
+import {Sanitizer, SecurityContext} from '../security';
+import {Type} from '../type';
+import {VERSION} from '../version';
+
+import {ComponentFactory} from './component_factory';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
+import {AppView} from './view';
 
 @Injectable()
 export class ViewUtils {
   sanitizer: Sanitizer;
-  private _nextCompTypeId: number = 0;
 
   constructor(
-      private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
-      sanitizer: Sanitizer) {
+      private _renderer: RootRenderer, sanitizer: Sanitizer,
+      public animationQueue: AnimationQueue) {
     this.sanitizer = sanitizer;
-  }
-
-  /**
-   * Used by the generated code
-   */
-  // TODO (matsko): add typing for the animation function
-  createRenderComponentType(
-      templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
-      styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
-    return new RenderComponentType(
-        `${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles,
-        animations);
   }
 
   /** @internal */
@@ -47,49 +36,28 @@ export class ViewUtils {
   }
 }
 
-export function flattenNestedViewRenderNodes(nodes: any[]): any[] {
-  return _flattenNestedViewRenderNodes(nodes, []);
+let nextRenderComponentTypeId = 0;
+
+export function createRenderComponentType(
+    templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
+    styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
+  return new RenderComponentType(
+      `${nextRenderComponentTypeId++}`, templateUrl, slotCount, encapsulation, styles, animations);
 }
 
-function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] {
-  for (var i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
-    if (node instanceof AppElement) {
-      var appEl = <AppElement>node;
-      renderNodes.push(appEl.nativeElement);
-      if (isPresent(appEl.nestedViews)) {
-        for (var k = 0; k < appEl.nestedViews.length; k++) {
-          _flattenNestedViewRenderNodes(appEl.nestedViews[k].rootNodesOrAppElements, renderNodes);
-        }
-      }
-    } else {
-      renderNodes.push(node);
-    }
+export function addToArray(e: any, array: any[]) {
+  array.push(e);
+}
+
+export function interpolate(valueCount: number, constAndInterp: string[]): string {
+  let result = '';
+  for (let i = 0; i < valueCount * 2; i = i + 2) {
+    result = result + constAndInterp[i] + _toStringWithNull(constAndInterp[i + 1]);
   }
-  return renderNodes;
+  return result + constAndInterp[valueCount * 2];
 }
 
-const EMPTY_ARR: any[] = [];
-
-export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
-  var res: any[][];
-  if (isBlank(projectableNodes)) {
-    res = EMPTY_ARR;
-  } else if (projectableNodes.length < expectedSlotCount) {
-    var givenSlotCount = projectableNodes.length;
-    res = new Array(expectedSlotCount);
-    for (var i = 0; i < expectedSlotCount; i++) {
-      res[i] = (i < givenSlotCount) ? projectableNodes[i] : EMPTY_ARR;
-    }
-  } else {
-    res = projectableNodes;
-  }
-  return res;
-}
-
-export const MAX_INTERPOLATION_VALUES = 9;
-
-export function interpolate(
+export function inlineInterpolate(
     valueCount: number, c0: string, a1: any, c1: string, a2?: any, c2?: string, a3?: any,
     c3?: string, a4?: any, c4?: string, a5?: any, c5?: string, a6?: any, c6?: string, a7?: any,
     c7?: string, a8?: any, c8?: string, a9?: any, c9?: string): string {
@@ -131,14 +99,77 @@ function _toStringWithNull(v: any): string {
   return v != null ? v.toString() : '';
 }
 
-export function checkBinding(throwOnChange: boolean, oldValue: any, newValue: any): boolean {
-  if (throwOnChange) {
-    if (!devModeEqual(oldValue, newValue)) {
-      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue);
+export function checkBinding(
+    view: AppView<any>, oldValue: any, newValue: any, forceUpdate: boolean): boolean {
+  const isFirstCheck = view.numberOfChecks === 0;
+  if (view.throwOnChange) {
+    if (isFirstCheck || !devModeEqual(oldValue, newValue)) {
+      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue, isFirstCheck);
     }
     return false;
   } else {
-    return !looseIdentical(oldValue, newValue);
+    return isFirstCheck || forceUpdate || !looseIdentical(oldValue, newValue);
+  }
+}
+
+export function checkBindingChange(
+    view: AppView<any>, oldValue: any, newValue: any, forceUpdate: boolean): SimpleChange {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    return new SimpleChange(oldValue, newValue, view.numberOfChecks === 0);
+  }
+}
+
+export function checkRenderText(
+    view: AppView<any>, renderElement: any, oldValue: any, newValue: any, forceUpdate: boolean) {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    view.renderer.setText(renderElement, newValue);
+  }
+}
+
+export function checkRenderProperty(
+    view: AppView<any>, renderElement: any, propName: string, oldValue: any, newValue: any,
+    forceUpdate: boolean, securityContext: SecurityContext) {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    let renderValue =
+        securityContext ? view.viewUtils.sanitizer.sanitize(securityContext, newValue) : newValue;
+    view.renderer.setElementProperty(renderElement, propName, renderValue);
+  }
+}
+
+export function checkRenderAttribute(
+    view: AppView<any>, renderElement: any, attrName: string, oldValue: any, newValue: any,
+    forceUpdate: boolean, securityContext: SecurityContext) {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    let renderValue =
+        securityContext ? view.viewUtils.sanitizer.sanitize(securityContext, newValue) : newValue;
+    renderValue = renderValue != null ? renderValue.toString() : null;
+    view.renderer.setElementAttribute(renderElement, attrName, renderValue);
+  }
+}
+
+export function checkRenderClass(
+    view: AppView<any>, renderElement: any, className: string, oldValue: any, newValue: any,
+    forceUpdate: boolean) {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    view.renderer.setElementClass(renderElement, className, newValue);
+  }
+}
+
+export function checkRenderStyle(
+    view: AppView<any>, renderElement: any, styleName: string, unit: string, oldValue: any,
+    newValue: any, forceUpdate: boolean, securityContext: SecurityContext) {
+  if (checkBinding(view, oldValue, newValue, forceUpdate)) {
+    let renderValue =
+        securityContext ? view.viewUtils.sanitizer.sanitize(securityContext, newValue) : newValue;
+    if (renderValue != null) {
+      renderValue = renderValue.toString();
+      if (unit != null) {
+        renderValue = renderValue + unit;
+      }
+    } else {
+      renderValue = null;
+    }
+    view.renderer.setElementStyle(renderElement, styleName, renderValue);
   }
 }
 
@@ -150,11 +181,12 @@ export const EMPTY_ARRAY: any[] = [];
 export const EMPTY_MAP = {};
 
 export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
+  let v0: any;
 
   return (p0) => {
-    if (!looseIdentical(v0, p0)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0)) {
       v0 = p0;
       result = fn(p0);
     }
@@ -163,12 +195,13 @@ export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
 }
 
 export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P1) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
-  let v1: any = UNINITIALIZED;
+  let v0: any;
+  let v1: any;
 
   return (p0, p1) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1)) {
       v0 = p0;
       v1 = p1;
       result = fn(p0, p1);
@@ -179,13 +212,15 @@ export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P
 
 export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
     p0: P0, p1: P1, p2: P2) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
-  let v1: any = UNINITIALIZED;
-  let v2: any = UNINITIALIZED;
+  let v0: any;
+  let v1: any;
+  let v2: any;
 
   return (p0, p1, p2) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -197,12 +232,13 @@ export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
 
 export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P3) => R): (
     p0: P0, p1: P1, p2: P2, p3: P3) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any;
-  v0 = v1 = v2 = v3 = UNINITIALIZED;
+  v0 = v1 = v2 = v3;
   return (p0, p1, p2, p3) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -216,12 +252,13 @@ export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P
 export function pureProxy5<P0, P1, P2, P3, P4, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) =>
     R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any;
-  v0 = v1 = v2 = v3 = v4 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4;
   return (p0, p1, p2, p3, p4) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -237,12 +274,14 @@ export function pureProxy5<P0, P1, P2, P3, P4, R>(
 export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5;
   return (p0, p1, p2, p3, p4, p5) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -258,13 +297,14 @@ export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
 export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6;
   return (p0, p1, p2, p3, p4, p5, p6) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -281,13 +321,14 @@ export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
 export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7;
   return (p0, p1, p2, p3, p4, p5, p6, p7) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -305,13 +346,15 @@ export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
 export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7) || !looseIdentical(v8, p8)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7) ||
+        !looseIdentical(v8, p8)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -330,14 +373,15 @@ export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
 export function pureProxy10<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any, v9: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = v9 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = v9;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8, p9) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7) || !looseIdentical(v8, p8) ||
-        !looseIdentical(v9, p9)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7) ||
+        !looseIdentical(v8, p8) || !looseIdentical(v9, p9)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -352,4 +396,341 @@ export function pureProxy10<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(
     }
     return result;
   };
+}
+
+export function setBindingDebugInfoForChanges(
+    renderer: Renderer, el: any, changes: {[key: string]: SimpleChange}) {
+  Object.keys(changes).forEach((propName) => {
+    setBindingDebugInfo(renderer, el, propName, changes[propName].currentValue);
+  });
+}
+
+export function setBindingDebugInfo(renderer: Renderer, el: any, propName: string, value: any) {
+  try {
+    renderer.setBindingDebugInfo(
+        el, `ng-reflect-${camelCaseToDashCase(propName)}`, value ? value.toString() : null);
+  } catch (e) {
+    renderer.setBindingDebugInfo(
+        el, `ng-reflect-${camelCaseToDashCase(propName)}`,
+        '[ERROR] Exception while trying to serialize the value');
+  }
+}
+
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+
+function camelCaseToDashCase(input: string): string {
+  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
+}
+
+export function createRenderElement(
+    renderer: Renderer, parentElement: any, name: string, attrs: InlineArray<string>,
+    debugInfo?: RenderDebugInfo): any {
+  const el = renderer.createElement(parentElement, name, debugInfo);
+  for (let i = 0; i < attrs.length; i += 2) {
+    renderer.setElementAttribute(el, attrs.get(i), attrs.get(i + 1));
+  }
+  return el;
+}
+
+export function selectOrCreateRenderHostElement(
+    renderer: Renderer, elementName: string, attrs: InlineArray<string>,
+    rootSelectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
+  let hostElement: any;
+  if (isPresent(rootSelectorOrNode)) {
+    hostElement = renderer.selectRootElement(rootSelectorOrNode, debugInfo);
+    for (let i = 0; i < attrs.length; i += 2) {
+      renderer.setElementAttribute(hostElement, attrs.get(i), attrs.get(i + 1));
+    }
+    renderer.setElementAttribute(hostElement, 'ng-version', VERSION.full);
+  } else {
+    hostElement = createRenderElement(renderer, null, elementName, attrs, debugInfo);
+  }
+  return hostElement;
+}
+
+export function subscribeToRenderElement(
+    view: AppView<any>, element: any, eventNamesAndTargets: InlineArray<string>,
+    listener: (eventName: string, event: any) => any) {
+  const disposables = createEmptyInlineArray(eventNamesAndTargets.length / 2);
+  for (let i = 0; i < eventNamesAndTargets.length; i += 2) {
+    const eventName = eventNamesAndTargets.get(i);
+    const eventTarget = eventNamesAndTargets.get(i + 1);
+    let disposable: Function;
+    if (eventTarget) {
+      disposable = view.renderer.listenGlobal(
+          eventTarget, eventName, listener.bind(view, `${eventTarget}:${eventName}`));
+    } else {
+      disposable = view.renderer.listen(element, eventName, listener.bind(view, eventName));
+    }
+    disposables.set(i / 2, disposable);
+  }
+  return disposeInlineArray.bind(null, disposables);
+}
+
+function disposeInlineArray(disposables: InlineArray<Function>) {
+  for (let i = 0; i < disposables.length; i++) {
+    disposables.get(i)();
+  }
+}
+
+export function noop() {}
+
+export interface InlineArray<T> {
+  length: number;
+  get(index: number): T;
+  set(index: number, value: T): void;
+}
+
+function createEmptyInlineArray<T>(length: number): InlineArray<T> {
+  let ctor: any;
+  if (length <= 2) {
+    ctor = InlineArray2;
+  } else if (length <= 4) {
+    ctor = InlineArray4;
+  } else if (length <= 8) {
+    ctor = InlineArray8;
+  } else if (length <= 16) {
+    ctor = InlineArray16;
+  } else {
+    ctor = InlineArrayDynamic;
+  }
+  return new ctor(length);
+}
+
+class InlineArray0 implements InlineArray<any> {
+  length = 0;
+  get(index: number): any { return undefined; }
+  set(index: number, value: any): void {}
+}
+
+export class InlineArray2<T> implements InlineArray<T> {
+  constructor(public length: number, private _v0?: T, private _v1?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      default:
+        return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+    }
+  }
+}
+
+export class InlineArray4<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      default:
+        return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
+    }
+  }
+}
+
+export class InlineArray8<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      case 4:
+        return this._v4;
+      case 5:
+        return this._v5;
+      case 6:
+        return this._v6;
+      case 7:
+        return this._v7;
+      default:
+        return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
+      case 4:
+        this._v4 = value;
+        break;
+      case 5:
+        this._v5 = value;
+        break;
+      case 6:
+        this._v6 = value;
+        break;
+      case 7:
+        this._v7 = value;
+        break;
+    }
+  }
+}
+
+export class InlineArray16<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T, private _v8?: T,
+      private _v9?: T, private _v10?: T, private _v11?: T, private _v12?: T, private _v13?: T,
+      private _v14?: T, private _v15?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      case 4:
+        return this._v4;
+      case 5:
+        return this._v5;
+      case 6:
+        return this._v6;
+      case 7:
+        return this._v7;
+      case 8:
+        return this._v8;
+      case 9:
+        return this._v9;
+      case 10:
+        return this._v10;
+      case 11:
+        return this._v11;
+      case 12:
+        return this._v12;
+      case 13:
+        return this._v13;
+      case 14:
+        return this._v14;
+      case 15:
+        return this._v15;
+      default:
+        return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
+      case 4:
+        this._v4 = value;
+        break;
+      case 5:
+        this._v5 = value;
+        break;
+      case 6:
+        this._v6 = value;
+        break;
+      case 7:
+        this._v7 = value;
+        break;
+      case 8:
+        this._v8 = value;
+        break;
+      case 9:
+        this._v9 = value;
+        break;
+      case 10:
+        this._v10 = value;
+        break;
+      case 11:
+        this._v11 = value;
+        break;
+      case 12:
+        this._v12 = value;
+        break;
+      case 13:
+        this._v13 = value;
+        break;
+      case 14:
+        this._v14 = value;
+        break;
+      case 15:
+        this._v15 = value;
+        break;
+    }
+  }
+}
+
+export class InlineArrayDynamic<T> implements InlineArray<T> {
+  private _values: any[];
+  // Note: We still take the length argument so this class can be created
+  // in the same ways as the other classes!
+  constructor(public length: number, ...values: any[]) { this._values = values; }
+
+  get(index: number) { return this._values[index]; }
+  set(index: number, value: T) { this._values[index] = value; }
+}
+
+export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();
+
+/**
+ * This is a private API only used by the compiler to read the view class.
+ */
+export function getComponentFactoryViewClass(componentFactory: ComponentFactory<any>): Type<any> {
+  return componentFactory._viewClass;
 }

@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 /**
  * this script is just a temporary solution to deal with the issue of npm outputting the npm
@@ -7,32 +14,30 @@
  * See: https://github.com/npm/npm/issues/3581
  */
 
-var _ = require('lodash');
-var sorted = require('sorted-object');
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 
-function cleanModule(moduleRecord, name) {
-
+function cleanModule(moduleRecord) {
   // keep `resolve` properties for git dependencies, delete otherwise
   delete moduleRecord.from;
   if (!(moduleRecord.resolved && moduleRecord.resolved.match(/^git(\+[a-z]+)?:\/\//))) {
     delete moduleRecord.resolved;
   }
 
-  _.forEach(moduleRecord.dependencies, function(mod, name) {
-    cleanModule(mod, name);
-  });
+  if (moduleRecord.dependencies) {
+    Object.keys(moduleRecord.dependencies)
+        .forEach((name) => cleanModule(moduleRecord.dependencies[name]));
+  }
 }
 
 
-//console.log('Reading npm-shrinkwrap.json');
-var shrinkwrap = require('../../npm-shrinkwrap.json');
+// console.log('Reading npm-shrinkwrap.json');
+const shrinkwrap = require('../../npm-shrinkwrap.json');
 
-//console.log('Cleaning shrinkwrap object');
-cleanModule(shrinkwrap, shrinkwrap.name);
+// console.log('Cleaning shrinkwrap object');
+cleanModule(shrinkwrap);
 
-var cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
+const cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
 console.log('writing npm-shrinkwrap.clean.json');
-fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
+fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(shrinkwrap, null, 2) + '\n');

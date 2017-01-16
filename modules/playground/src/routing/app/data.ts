@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export var data = [
+export const data = [
   {
     'id': '1',
     'first-name': 'Montana',
@@ -2121,4 +2121,4 @@ export var data = [
     'subject': 'Fwd: wedding photos',
     'draft': true
   }
-]
+];

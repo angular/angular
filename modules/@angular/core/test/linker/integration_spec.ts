@@ -17,7 +17,7 @@ import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {Renderer} from '@angular/core/src/render';
-import {TestBed, async, fakeAsync, getTestBed, inject, tick} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -60,6 +60,38 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.detectChanges();
         expect(fixture.nativeElement).toHaveText('');
       });
+
+      it('should allow both null and undefined in expressions', () => {
+        const template = '<div>{{null == undefined}}|{{null === undefined}}</div>';
+        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+                            .overrideComponent(MyComp, {set: {template}})
+                            .createComponent(MyComp);
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('true|false');
+      });
+
+      it('should support an arbitrary number of interpolations in an element', () => {
+        TestBed.configureTestingModule({declarations: [MyComp]});
+        const template =
+            `<div>before{{'0'}}a{{'1'}}b{{'2'}}c{{'3'}}d{{'4'}}e{{'5'}}f{{'6'}}g{{'7'}}h{{'8'}}i{{'9'}}j{{'10'}}after</div>`;
+        const fixture =
+            TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('before0a1b2c3d4e5f6g7h8i9j10after');
+      });
+
+      it('should use a blank string when interpolation evaluates to null or undefined with an arbitrary number of interpolations',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyComp]});
+           const template =
+               `<div>0{{null}}a{{undefined}}b{{null}}c{{undefined}}d{{null}}e{{undefined}}f{{null}}g{{undefined}}h{{null}}i{{undefined}}j{{null}}1</div>`;
+           const fixture =
+               TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('0abcdefghij1');
+         });
 
       it('should consume element binding changes', () => {
         TestBed.configureTestingModule({declarations: [MyComp]});
@@ -176,13 +208,26 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var nativeEl = fixture.debugElement.children[0].nativeElement;
+        const nativeEl = fixture.debugElement.children[0].nativeElement;
         fixture.componentInstance.ctxProp = 'foo bar';
         fixture.detectChanges();
 
         expect(nativeEl).toHaveCssClass('foo');
         expect(nativeEl).toHaveCssClass('bar');
         expect(nativeEl).not.toHaveCssClass('initial');
+      });
+
+      it('should consume binding to htmlFor using for alias', () => {
+        const template = '<label [for]="ctxProp"></label>';
+        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+                            .overrideComponent(MyComp, {set: {template}})
+                            .createComponent(MyComp);
+
+        const nativeEl = fixture.debugElement.children[0].nativeElement;
+        fixture.debugElement.componentInstance.ctxProp = 'foo';
+        fixture.detectChanges();
+
+        expect(nativeEl.htmlFor).toBe('foo');
       });
 
       it('should consume directive watch expression change.', () => {
@@ -199,7 +244,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'Hello World!';
         fixture.detectChanges();
 
-        var containerSpan = fixture.debugElement.children[0];
+        const containerSpan = fixture.debugElement.children[0];
 
         expect(containerSpan.children[0].injector.get(MyDir).dirProp).toEqual('Hello World!');
         expect(containerSpan.children[1].injector.get(MyDir).dirProp).toEqual('Hi there!');
@@ -218,7 +263,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           fixture.componentInstance.ctxProp = 'a';
           fixture.detectChanges();
 
-          var dir = fixture.debugElement.children[0].references['dir'];
+          const dir = fixture.debugElement.children[0].references['dir'];
           expect(dir.dirProp).toEqual('aa');
         });
       });
@@ -244,7 +289,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'Hello World!';
         fixture.detectChanges();
 
-        var tc = fixture.debugElement.children[0];
+        const tc = fixture.debugElement.children[0];
 
         expect(tc.injector.get(MyDir).dirProp).toEqual('Hello World!');
         expect(tc.injector.get(ChildComp).dirProp).toEqual(null);
@@ -272,8 +317,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
-        var idDir = tc.injector.get(IdDir);
+        const tc = fixture.debugElement.children[0];
+        const idDir = tc.injector.get(IdDir);
 
         fixture.componentInstance.ctxProp = 'some_id';
         fixture.detectChanges();
@@ -290,7 +335,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
+        const tc = fixture.debugElement.children[0];
         expect(tc.injector.get(EventDir)).not.toBe(null);
       });
 
@@ -310,7 +355,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        var childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
+        const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         // 1 template + 2 copies.
         expect(childNodesOfWrapper.length).toBe(3);
         expect(childNodesOfWrapper[1]).toHaveText('hello');
@@ -338,8 +383,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        var ngIfEl = fixture.debugElement.children[0];
-        var someViewport: SomeViewport = ngIfEl.childNodes[0].injector.get(SomeViewport);
+        const ngIfEl = fixture.debugElement.children[0];
+        const someViewport: SomeViewport = ngIfEl.childNodes[0].injector.get(SomeViewport);
         expect(someViewport.container.length).toBe(2);
         expect(ngIfEl.children.length).toBe(2);
 
@@ -356,7 +401,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
+        const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         expect(childNodesOfWrapper.length).toBe(1);
         expect(getDOM().isCommentNode(childNodesOfWrapper[0])).toBe(true);
       });
@@ -370,7 +415,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        var childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
+        const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         // 1 template + 2 copies.
         expect(childNodesOfWrapper.length).toBe(3);
         expect(childNodesOfWrapper[1]).toHaveText('hello');
@@ -438,10 +483,10 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var pEl = fixture.debugElement.children[0];
+          const pEl = fixture.debugElement.children[0];
 
-          var alice = pEl.children[0].references['alice'];
-          var bob = pEl.children[1].references['bob'];
+          const alice = pEl.children[0].references['alice'];
+          const bob = pEl.children[1].references['bob'];
           expect(alice).toBeAnInstanceOf(ChildComp);
           expect(bob).toBeAnInstanceOf(ChildComp);
           expect(alice).not.toBe(bob);
@@ -462,7 +507,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var value = fixture.debugElement.children[0].children[0].references['alice'];
+          const value = fixture.debugElement.children[0].children[0].references['alice'];
           expect(value).not.toBe(null);
           expect(value.tagName.toLowerCase()).toEqual('div');
         });
@@ -473,7 +518,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var value = fixture.debugElement.childNodes[0].references['alice'];
+          const value = fixture.debugElement.childNodes[0].references['alice'];
           expect(value).toBeAnInstanceOf(TemplateRef_);
         });
 
@@ -510,7 +555,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var cmp = fixture.debugElement.children[0].references['cmp'];
+          const cmp = fixture.debugElement.children[0].references['cmp'];
 
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(1);
@@ -531,7 +576,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var cmp = fixture.debugElement.children[0].references['cmp'];
+          const cmp = fixture.debugElement.children[0].references['cmp'];
 
           fixture.componentInstance.ctxProp = 'one';
           fixture.detectChanges();
@@ -553,8 +598,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                tick();
                fixture.detectChanges();
 
-               var cmpEl = fixture.debugElement.children[0];
-               var cmp: PushCmpWithHostEvent = cmpEl.injector.get(PushCmpWithHostEvent);
+               const cmpEl = fixture.debugElement.children[0];
+               const cmp: PushCmpWithHostEvent = cmpEl.injector.get(PushCmpWithHostEvent);
                cmp.ctxCallback = (_: any) => fixture.destroy();
 
                expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
@@ -568,8 +613,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var cmpEl = fixture.debugElement.children[0];
-          var cmp = cmpEl.componentInstance;
+          const cmpEl = fixture.debugElement.children[0];
+          const cmp = cmpEl.componentInstance;
           fixture.detectChanges();
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(1);
@@ -602,7 +647,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var cmp = fixture.debugElement.children[0].references['cmp'];
+          const cmp = fixture.debugElement.children[0].references['cmp'];
 
           fixture.componentInstance.ctxProp = 'one';
           fixture.detectChanges();
@@ -623,7 +668,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                tick();
 
-               var cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references['cmp'];
+               const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references['cmp'];
                fixture.detectChanges();
                expect(cmp.numberOfChecks).toEqual(1);
 
@@ -654,7 +699,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var childComponent =
+        const childComponent =
             fixture.debugElement.children[0].children[0].children[0].references['child'];
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
@@ -675,9 +720,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        var tc = fixture.debugElement.children[0].children[0].children[0];
+        const tc = fixture.debugElement.children[0].children[0].children[0];
 
-        var childComponent = tc.references['child'];
+        const childComponent = tc.references['child'];
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
@@ -688,12 +733,12 @@ function declareTests({useJit}: {useJit: boolean}) {
            TestBed.overrideComponent(MyComp, {set: {template}});
            const fixture = TestBed.createComponent(MyComp);
 
-           var tc = fixture.debugElement.children[0];
-           var emitter = tc.injector.get(DirectiveEmittingEvent);
-           var listener = tc.injector.get(DirectiveListeningEvent);
+           const tc = fixture.debugElement.children[0];
+           const emitter = tc.injector.get(DirectiveEmittingEvent);
+           const listener = tc.injector.get(DirectiveListeningEvent);
 
            expect(listener.msg).toEqual('');
-           var eventCount = 0;
+           let eventCount = 0;
 
            emitter.event.subscribe({
              next: () => {
@@ -718,11 +763,11 @@ function declareTests({useJit}: {useJit: boolean}) {
            TestBed.overrideComponent(MyComp, {set: {template}});
            const fixture = TestBed.createComponent(MyComp);
 
-           var tc = fixture.debugElement.childNodes[0];
+           const tc = fixture.debugElement.childNodes[0];
 
-           var emitter = tc.injector.get(DirectiveEmittingEvent);
-           var myComp = fixture.debugElement.injector.get(MyComp);
-           var listener = tc.injector.get(DirectiveListeningEvent);
+           const emitter = tc.injector.get(DirectiveEmittingEvent);
+           const myComp = fixture.debugElement.injector.get(MyComp);
+           const listener = tc.injector.get(DirectiveListeningEvent);
 
            myComp.ctxProp = '';
            expect(listener.msg).toEqual('');
@@ -742,8 +787,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            const template = '<div [(control)]="ctxProp" two-way></div>';
            TestBed.overrideComponent(MyComp, {set: {template}});
            const fixture = TestBed.createComponent(MyComp);
-           var tc = fixture.debugElement.children[0];
-           var dir = tc.injector.get(DirectiveWithTwoWayBinding);
+           const tc = fixture.debugElement.children[0];
+           const dir = tc.injector.get(DirectiveWithTwoWayBinding);
 
            fixture.componentInstance.ctxProp = 'one';
            fixture.detectChanges();
@@ -762,8 +807,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
-        var listener = tc.injector.get(DirectiveListeningDomEvent);
+        const tc = fixture.debugElement.children[0];
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
 
         dispatchEvent(tc.nativeElement, 'domEvent');
 
@@ -783,8 +828,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
-        var listener = tc.injector.get(DirectiveListeningDomEvent);
+        const tc = fixture.debugElement.children[0];
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
         dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
 
@@ -798,7 +843,20 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(listener.eventTypes).toEqual([]);
       });
 
-      it('should support updating host element via hostAttributes', () => {
+      it('should support updating host element via hostAttributes on root elements', () => {
+        @Component({host: {'role': 'button'}, template: ''})
+        class ComponentUpdatingHostAttributes {
+        }
+
+        TestBed.configureTestingModule({declarations: [ComponentUpdatingHostAttributes]});
+        const fixture = TestBed.createComponent(ComponentUpdatingHostAttributes);
+
+        fixture.detectChanges();
+
+        expect(getDOM().getAttribute(fixture.debugElement.nativeElement, 'role')).toEqual('button');
+      });
+
+      it('should support updating host element via hostAttributes on host elements', () => {
         TestBed.configureTestingModule({declarations: [MyComp, DirectiveUpdatingHostAttributes]});
         const template = '<div update-host-attributes></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
@@ -816,8 +874,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
-        var updateHost = tc.injector.get(DirectiveUpdatingHostProperties);
+        const tc = fixture.debugElement.children[0];
+        const updateHost = tc.injector.get(DirectiveUpdatingHostProperties);
 
         updateHost.id = 'newId';
 
@@ -825,6 +883,73 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(tc.nativeElement.id).toEqual('newId');
       });
+
+      it('should not use template variables for expressions in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+        class DirectiveWithHostProps {
+          id = 'one';
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}})
+                .createComponent(MyComp);
+        fixture.detectChanges();
+
+        const tc = fixture.debugElement.children[0];
+        expect(tc.properties['id']).toBe('one');
+        expect(tc.properties['title']).toBe(undefined);
+      });
+
+      it('should not allow pipes in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
+        class DirectiveWithHostProps {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
+        const template = '<div host-properties></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Host binding expression cannot contain pipes/);
+      });
+
+      it('should not use template variables for expressions in hostListeners', () => {
+        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
+        class DirectiveWithHostListener {
+          id = 'one';
+          receivedArgs: any[];
+
+          doIt(...args: any[]) { this.receivedArgs = args; }
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<div *ngFor="let id of ['forId']" host-listener></div>`}})
+                .createComponent(MyComp);
+        fixture.detectChanges();
+        const tc = fixture.debugElement.children[0];
+        tc.triggerEventHandler('click', {});
+        const dir: DirectiveWithHostListener = tc.injector.get(DirectiveWithHostListener);
+        expect(dir.receivedArgs).toEqual(['one', undefined]);
+      });
+
+      it('should not allow pipes in hostListeners', () => {
+        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
+        class DirectiveWithHostListener {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
+        const template = '<div host-listener></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Cannot have a pipe in an action expression/);
+      });
+
+
 
       if (getDOM().supportsDOMEvents()) {
         it('should support preventing default on render events', () => {
@@ -837,8 +962,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var dispatchedEvent = getDOM().createMouseEvent('click');
-          var dispatchedEvent2 = getDOM().createMouseEvent('click');
+          const dispatchedEvent = getDOM().createMouseEvent('click');
+          const dispatchedEvent2 = getDOM().createMouseEvent('click');
           getDOM().dispatchEvent(fixture.debugElement.children[0].nativeElement, dispatchedEvent);
           getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement, dispatchedEvent2);
           expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
@@ -859,10 +984,10 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        var tc = fixture.debugElement.children[0];
+        const tc = fixture.debugElement.children[0];
 
-        var listener = tc.injector.get(DirectiveListeningDomEvent);
-        var listenerother = tc.injector.get(DirectiveListeningDomEventOther);
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
+        const listenerother = tc.injector.get(DirectiveListeningDomEventOther);
         dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
         expect(listenerother.eventType).toEqual('other_domEvent');
@@ -901,15 +1026,28 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
         it('should allow to create a ViewContainerRef at any bound location', async(() => {
-             var fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                               .createComponent(MyComp);
-             var tc = fixture.debugElement.children[0].children[0];
-             var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-             dynamicVp.done.then((_) => {
-               fixture.detectChanges();
-               expect(fixture.debugElement.children[0].children[1].nativeElement)
-                   .toHaveText('dynamic greet');
-             });
+             const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                 .createComponent(MyComp);
+             const tc = fixture.debugElement.children[0].children[0];
+             const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+             dynamicVp.create();
+             fixture.detectChanges();
+             expect(fixture.debugElement.children[0].children[1].nativeElement)
+                 .toHaveText('dynamic greet');
+           }));
+
+        it('should allow to create multiple ViewContainerRef at a location', async(() => {
+             const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                 .createComponent(MyComp);
+             const tc = fixture.debugElement.children[0].children[0];
+             const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+             dynamicVp.create();
+             dynamicVp.create();
+             fixture.detectChanges();
+             expect(fixture.debugElement.children[0].children[1].nativeElement)
+                 .toHaveText('dynamic greet');
+             expect(fixture.debugElement.children[0].children[2].nativeElement)
+                 .toHaveText('dynamic greet');
            }));
       });
 
@@ -919,8 +1057,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var tc = fixture.debugElement.children[0];
-        var needsAttribute = tc.injector.get(NeedsAttribute);
+        const tc = fixture.debugElement.children[0];
+        const needsAttribute = tc.injector.get(NeedsAttribute);
         expect(needsAttribute.typeAttribute).toEqual('text');
         expect(needsAttribute.staticAttribute).toEqual('');
         expect(needsAttribute.fooAttribute).toEqual(null);
@@ -963,7 +1101,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var comp = fixture.debugElement.children[0].children[0].references['consuming'];
+        const comp = fixture.debugElement.children[0].children[0].references['consuming'];
         expect(comp.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -979,7 +1117,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
         const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
-        var comp = fixture.debugElement.children[0].references['consuming'];
+        const comp = fixture.debugElement.children[0].references['consuming'];
         expect(comp.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -1007,7 +1145,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
         const fixture = TestBed.createComponent(MyComp);
 
-        var comp = fixture.debugElement.children[0].children[0].references['dir'];
+        const comp = fixture.debugElement.children[0].children[0].references['dir'];
         expect(comp.directive.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -1029,13 +1167,13 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var gpComp = fixture.debugElement.children[0];
-        var parentComp = gpComp.children[0];
-        var childComp = parentComp.children[0];
+        const gpComp = fixture.debugElement.children[0];
+        const parentComp = gpComp.children[0];
+        const childComp = parentComp.children[0];
 
-        var grandParent = gpComp.injector.get(GrandParentProvidingEventBus);
-        var parent = parentComp.injector.get(ParentProvidingEventBus);
-        var child = childComp.injector.get(ChildConsumingEventBus);
+        const grandParent = gpComp.injector.get(GrandParentProvidingEventBus);
+        const parent = parentComp.injector.get(ParentProvidingEventBus);
+        const child = childComp.injector.get(ChildConsumingEventBus);
 
         expect(grandParent.bus.name).toEqual('grandparent');
         expect(parent.bus.name).toEqual('parent');
@@ -1057,7 +1195,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        var providing = fixture.debugElement.children[0].references['providing'];
+        const providing = fixture.debugElement.children[0].references['providing'];
         expect(providing.created).toBe(false);
 
         fixture.componentInstance.ctxBoolProp = true;
@@ -1157,7 +1295,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.createComponent(MyComp);
           throw 'Should throw';
         } catch (e) {
-          var c = e.context;
+          const c = e.context;
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
         }
@@ -1172,7 +1310,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           fixture.detectChanges();
           throw 'Should throw';
         } catch (e) {
-          var c = e.context;
+          const c = e.context;
           expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
@@ -1192,7 +1330,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              fixture.detectChanges();
              throw 'Should throw';
            } catch (e) {
-             var c = e.context;
+             const c = e.context;
              expect(c.renderNode).toBeTruthy();
              expect(c.source).toContain(':0:5');
            }
@@ -1210,12 +1348,12 @@ function declareTests({useJit}: {useJit: boolean}) {
              const fixture = TestBed.createComponent(MyComp);
              tick();
 
-             var tc = fixture.debugElement.children[0];
+             const tc = fixture.debugElement.children[0];
 
              try {
                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
              } catch (e) {
-               var c = e.context;
+               const c = e.context;
                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
                expect((<Injector>c.injector).get).toBeTruthy();
@@ -1319,7 +1457,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'TITLE';
         fixture.detectChanges();
 
-        var el = getDOM().querySelector(fixture.nativeElement, 'span');
+        const el = getDOM().querySelector(fixture.nativeElement, 'span');
         expect(isBlank(el.title) || el.title == '').toBeTruthy();
       });
 
@@ -1332,7 +1470,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'TITLE';
         fixture.detectChanges();
 
-        var el = getDOM().querySelector(fixture.nativeElement, 'span');
+        const el = getDOM().querySelector(fixture.nativeElement, 'span');
         expect(el.title).toEqual('TITLE');
       });
     });
@@ -1388,7 +1526,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        var dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
+        const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
         expect(dir.dirProp).toEqual('aaa');
       });
 
@@ -1402,7 +1540,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        var dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
+        const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
         dir.myAttr = 'aaa';
 
         fixture.detectChanges();
@@ -1422,7 +1560,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              tick();
 
-             var emitter =
+             const emitter =
                  fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
              emitter.fireEvent('fired !');
 
@@ -1442,8 +1580,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           fixture.detectChanges();
-          var dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
-          var native = fixture.debugElement.children[0].nativeElement;
+          const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
+          const native = fixture.debugElement.children[0].nativeElement;
           getDOM().dispatchEvent(native, getDOM().createMouseEvent('click'));
 
           expect(dir.target).toBe(native);
@@ -1461,7 +1599,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        var native = fixture.debugElement.children[0].nativeElement;
+        const native = fixture.debugElement.children[0].nativeElement;
         expect(native).toHaveText('No View Decorator: 123');
       });
     });
@@ -1475,15 +1613,15 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var el = fixture.nativeElement;
-          var svg = getDOM().childNodes(el)[0];
-          var use = getDOM().childNodes(svg)[0];
+          const el = fixture.nativeElement;
+          const svg = getDOM().childNodes(el)[0];
+          const use = getDOM().childNodes(svg)[0];
           expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
               .toEqual('http://www.w3.org/2000/svg');
           expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
               .toEqual('http://www.w3.org/2000/svg');
 
-          var firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
+          const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
           expect(firstAttribute.name).toEqual('xlink:href');
           expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
         });
@@ -1495,10 +1633,10 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          var el = fixture.nativeElement;
-          var svg = getDOM().childNodes(el)[0];
-          var foreignObject = getDOM().childNodes(svg)[0];
-          var p = getDOM().childNodes(foreignObject)[0];
+          const el = fixture.nativeElement;
+          const svg = getDOM().childNodes(el)[0];
+          const foreignObject = getDOM().childNodes(svg)[0];
+          const p = getDOM().childNodes(foreignObject)[0];
           expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
               .toEqual('http://www.w3.org/2000/svg');
           expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
@@ -1516,7 +1654,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(SomeCmp, {set: {template}});
           const fixture = TestBed.createComponent(SomeCmp);
 
-          let useEl = getDOM().firstChild(fixture.nativeElement);
+          const useEl = getDOM().firstChild(fixture.nativeElement);
           expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
               .toEqual('#id');
         });
@@ -1527,8 +1665,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.overrideComponent(SomeCmp, {set: {template}});
           const fixture = TestBed.createComponent(SomeCmp);
 
-          let cmp = fixture.componentInstance;
-          let useEl = getDOM().firstChild(fixture.nativeElement);
+          const cmp = fixture.componentInstance;
+          const useEl = getDOM().firstChild(fixture.nativeElement);
 
           cmp.value = '#id';
           fixture.detectChanges();
@@ -1583,24 +1721,25 @@ class SimpleImperativeViewComponent {
   done: any;
 
   constructor(self: ElementRef, renderer: Renderer) {
-    var hostElement = self.nativeElement;
+    const hostElement = self.nativeElement;
     getDOM().appendChild(hostElement, el('hello imp view'));
   }
 }
 
 @Directive({selector: 'dynamic-vp'})
 class DynamicViewport {
-  done: Promise<any>;
-  constructor(vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
-    var myService = new MyService();
+  private componentFactory: ComponentFactory<ChildCompUsingService>;
+  private injector: Injector;
+  constructor(private vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
+    const myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var injector = ReflectiveInjector.resolveAndCreate(
+    this.injector = ReflectiveInjector.resolveAndCreate(
         [{provide: MyService, useValue: myService}], vc.injector);
-    this.done =
-        Promise.resolve(componentFactoryResolver.resolveComponentFactory(ChildCompUsingService))
-            .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
+    this.componentFactory = componentFactoryResolver.resolveComponentFactory(ChildCompUsingService);
   }
+
+  create() { this.vc.createComponent(this.componentFactory, this.vc.length, this.injector); }
 }
 
 @Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
@@ -1849,7 +1988,7 @@ class DirectiveListeningDomEvent {
   onBodyEvent(eventType: string) { this.eventTypes.push('body_' + eventType); }
 }
 
-var globalCounter = 0;
+let globalCounter = 0;
 @Directive({selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
 class DirectiveListeningDomEventOther {
   eventType: string;
@@ -2083,8 +2222,8 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
-      var nodes = this.view.rootNodes;
-      for (var i = 0; i < nodes.length; i++) {
+      const nodes = this.view.rootNodes;
+      for (let i = 0; i < nodes.length; i++) {
         getDOM().appendChild(this.anchor, nodes[i]);
       }
     }

@@ -7,9 +7,10 @@
  */
 
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
-import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
+import {NgModule, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
-import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from './private_import_platform_server';
+
+import {INTERNAL_SERVER_PLATFORM_PROVIDERS, SERVER_RENDER_PROVIDERS} from './private_import_platform_server';
 
 
 /**
@@ -25,6 +26,6 @@ export const platformServerTesting = createPlatformFactory(
  *
  * @experimental API related to bootstrapping are still under review.
  */
-@NgModule({exports: [BrowserDynamicTestingModule]})
+@NgModule({exports: [BrowserDynamicTestingModule], providers: SERVER_RENDER_PROVIDERS})
 export class ServerTestingModule {
 }

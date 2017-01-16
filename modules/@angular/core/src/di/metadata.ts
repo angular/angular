@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {makeParamDecorator} from '../util/decorators';
+import {makeDecorator, makeParamDecorator} from '../util/decorators';
+
 
 /**
  * Type of the Inject decorator / constructor function.
@@ -150,7 +151,7 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = makeParamDecorator('Injectable', []);
+export const Injectable: InjectableDecorator = <InjectableDecorator>makeDecorator('Injectable', []);
 
 /**
  * Type of the Self decorator / constructor function.

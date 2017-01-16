@@ -60,19 +60,19 @@ export function last<T>(a: T[]): T {
 }
 
 export function and(bools: boolean[]): boolean {
-  return bools.reduce((a, b) => a && b, true);
+  return !bools.some(v => !v);
 }
 
 export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
-  var m: {[key: string]: V} = {};
+  const m: {[key: string]: V} = {};
 
-  for (var attr in m1) {
+  for (const attr in m1) {
     if (m1.hasOwnProperty(attr)) {
       m[attr] = m1[attr];
     }
   }
 
-  for (var attr in m2) {
+  for (const attr in m2) {
     if (m2.hasOwnProperty(attr)) {
       m[attr] = m2[attr];
     }
@@ -81,9 +81,8 @@ export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key:
   return m;
 }
 
-export function forEach<K, V>(
-    map: {[key: string]: V}, callback: /*(V, K) => void*/ Function): void {
-  for (var prop in map) {
+export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: string) => void): void {
+  for (const prop in map) {
     if (map.hasOwnProperty(prop)) {
       callback(map[prop], prop);
     }
@@ -117,9 +116,9 @@ export function waitForMap<A, B>(
     const concatted$ = concatAll.call(of (...waitFor));
     const last$ = l.last.call(concatted$);
     return map.call(last$, () => res);
-  } else {
-    return of (res);
   }
+
+  return of (res);
 }
 
 export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
@@ -130,9 +129,11 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
 export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
   if (value instanceof Observable) {
     return value;
-  } else if (value instanceof Promise) {
-    return fromPromise(value);
-  } else {
-    return of (value);
   }
+
+  if (value instanceof Promise) {
+    return fromPromise(value);
+  }
+
+  return of (value);
 }

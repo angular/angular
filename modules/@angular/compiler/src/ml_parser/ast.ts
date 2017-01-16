@@ -34,7 +34,9 @@ export class ExpansionCase implements Node {
 }
 
 export class Attribute implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
 }
 
@@ -52,6 +54,10 @@ export class Comment implements Node {
 }
 
 export interface Visitor {
+  // Returning a truthy value from `visit()` will prevent `visitAll()` from the call to the typed
+  // method and result returned will become the result included in `visitAll()`s result array.
+  visit?(node: Node, context: any): any;
+
   visitElement(element: Element, context: any): any;
   visitAttribute(attribute: Attribute, context: any): any;
   visitText(text: Text, context: any): any;
@@ -61,9 +67,13 @@ export interface Visitor {
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {
-  let result: any[] = [];
+  const result: any[] = [];
+
+  const visit = visitor.visit ?
+      (ast: Node) => visitor.visit(ast, context) || ast.visit(visitor, context) :
+      (ast: Node) => ast.visit(visitor, context);
   nodes.forEach(ast => {
-    const astResult = ast.visit(visitor, context);
+    const astResult = visit(ast);
     if (astResult) {
       result.push(astResult);
     }

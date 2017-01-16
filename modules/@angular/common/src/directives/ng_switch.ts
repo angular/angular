@@ -6,19 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
-
-import {ListWrapper} from '../facade/collection';
-
-const _CASE_DEFAULT = new Object();
+import {Directive, DoCheck, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 export class SwitchView {
+  private _created = false;
+
   constructor(
       private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef<Object>) {}
 
-  create(): void { this._viewContainerRef.createEmbeddedView(this._templateRef); }
+  create(): void {
+    this._created = true;
+    this._viewContainerRef.createEmbeddedView(this._templateRef);
+  }
 
-  destroy(): void { this._viewContainerRef.clear(); }
+  destroy(): void {
+    this._created = false;
+    this._viewContainerRef.clear();
+  }
+
+  enforceState(created: boolean) {
+    if (created && !this._created) {
+      this.create();
+    } else if (!created && this._created) {
+      this.destroy();
+    }
+  }
 }
 
 /**
@@ -38,7 +50,7 @@ export class SwitchView {
  *         <inner-element></inner-element>
  *         <inner-other-element></inner-other-element>
  *       </ng-container>
- *       <some-element *ngSwitchDefault>...</p>
+ *       <some-element *ngSwitchDefault>...</some-element>
  *     </container-element>
  * ```
  * @description
@@ -53,8 +65,7 @@ export class SwitchView {
  * root elements.
  *
  * Elements within `NgSwitch` but outside of a `NgSwitchCase` or `NgSwitchDefault` directives will
- * be
- * preserved at the location.
+ * be preserved at the location.
  *
  * The `ngSwitchCase` directive informs the parent `NgSwitch` of which view to display when the
  * expression is evaluated.
@@ -65,91 +76,52 @@ export class SwitchView {
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
-  private _switchValue: any;
-  private _useDefault: boolean = false;
-  private _valueViews = new Map<any, SwitchView[]>();
-  private _activeViews: SwitchView[] = [];
+  private _defaultViews: SwitchView[];
+  private _defaultUsed = false;
+  private _caseCount = 0;
+  private _lastCaseCheckIndex = 0;
+  private _lastCasesMatched = false;
+  private _ngSwitch: any;
 
   @Input()
-  set ngSwitch(value: any) {
-    // Empty the currently active ViewContainers
-    this._emptyAllActiveViews();
-
-    // Add the ViewContainers matching the value (with a fallback to default)
-    this._useDefault = false;
-    let views = this._valueViews.get(value);
-    if (!views) {
-      this._useDefault = true;
-      views = this._valueViews.get(_CASE_DEFAULT) || null;
+  set ngSwitch(newValue: any) {
+    this._ngSwitch = newValue;
+    if (this._caseCount === 0) {
+      this._updateDefaultCases(true);
     }
-    this._activateViews(views);
-
-    this._switchValue = value;
   }
 
   /** @internal */
-  _onCaseValueChanged(oldCase: any, newCase: any, view: SwitchView): void {
-    this._deregisterView(oldCase, view);
-    this._registerView(newCase, view);
+  _addCase(): number { return this._caseCount++; }
 
-    if (oldCase === this._switchValue) {
-      view.destroy();
-      ListWrapper.remove(this._activeViews, view);
-    } else if (newCase === this._switchValue) {
-      if (this._useDefault) {
-        this._useDefault = false;
-        this._emptyAllActiveViews();
+  /** @internal */
+  _addDefault(view: SwitchView) {
+    if (!this._defaultViews) {
+      this._defaultViews = [];
+    }
+    this._defaultViews.push(view);
+  }
+
+  /** @internal */
+  _matchCase(value: any): boolean {
+    const matched = value == this._ngSwitch;
+    this._lastCasesMatched = this._lastCasesMatched || matched;
+    this._lastCaseCheckIndex++;
+    if (this._lastCaseCheckIndex === this._caseCount) {
+      this._updateDefaultCases(!this._lastCasesMatched);
+      this._lastCaseCheckIndex = 0;
+      this._lastCasesMatched = false;
+    }
+    return matched;
+  }
+
+  private _updateDefaultCases(useDefault: boolean) {
+    if (this._defaultViews && useDefault !== this._defaultUsed) {
+      this._defaultUsed = useDefault;
+      for (let i = 0; i < this._defaultViews.length; i++) {
+        const defaultView = this._defaultViews[i];
+        defaultView.enforceState(useDefault);
       }
-      view.create();
-      this._activeViews.push(view);
-    }
-
-    // Switch to default when there is no more active ViewContainers
-    if (this._activeViews.length === 0 && !this._useDefault) {
-      this._useDefault = true;
-      this._activateViews(this._valueViews.get(_CASE_DEFAULT));
-    }
-  }
-
-  /** @internal */
-  _emptyAllActiveViews(): void {
-    const activeContainers = this._activeViews;
-    for (var i = 0; i < activeContainers.length; i++) {
-      activeContainers[i].destroy();
-    }
-    this._activeViews = [];
-  }
-
-  /** @internal */
-  _activateViews(views: SwitchView[]): void {
-    // TODO(vicb): assert(this._activeViews.length === 0);
-    if (views) {
-      for (var i = 0; i < views.length; i++) {
-        views[i].create();
-      }
-      this._activeViews = views;
-    }
-  }
-
-  /** @internal */
-  _registerView(value: any, view: SwitchView): void {
-    let views = this._valueViews.get(value);
-    if (!views) {
-      views = [];
-      this._valueViews.set(value, views);
-    }
-    views.push(view);
-  }
-
-  /** @internal */
-  _deregisterView(value: any, view: SwitchView): void {
-    // `_CASE_DEFAULT` is used a marker for non-registered cases
-    if (value === _CASE_DEFAULT) return;
-    const views = this._valueViews.get(value);
-    if (views.length == 1) {
-      this._valueViews.delete(value);
-    } else {
-      ListWrapper.remove(views, view);
     }
   }
 }
@@ -179,26 +151,20 @@ export class NgSwitch {
  * @stable
  */
 @Directive({selector: '[ngSwitchCase]'})
-export class NgSwitchCase {
-  // `_CASE_DEFAULT` is used as a marker for a not yet initialized value
-  /** @internal */
-  _value: any = _CASE_DEFAULT;
-  /** @internal */
-  _view: SwitchView;
-  private _switch: NgSwitch;
+export class NgSwitchCase implements DoCheck {
+  private _view: SwitchView;
+
+  @Input()
+  ngSwitchCase: any;
 
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() ngSwitch: NgSwitch) {
-    this._switch = ngSwitch;
+      @Host() private ngSwitch: NgSwitch) {
+    ngSwitch._addCase();
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
-  @Input()
-  set ngSwitchCase(value: any) {
-    this._switch._onCaseValueChanged(this._value, value, this._view);
-    this._value = value;
-  }
+  ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
 }
 
 /**
@@ -228,7 +194,7 @@ export class NgSwitchCase {
 export class NgSwitchDefault {
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() sswitch: NgSwitch) {
-    sswitch._registerView(_CASE_DEFAULT, new SwitchView(viewContainer, templateRef));
+      @Host() ngSwitch: NgSwitch) {
+    ngSwitch._addDefault(new SwitchView(viewContainer, templateRef));
   }
 }

@@ -19,7 +19,8 @@ import {ComponentFactory} from './component_factory';
  */
 export class NoComponentFactoryError extends BaseError {
   constructor(public component: Function) {
-    super(`No component factory found for ${stringify(component)}`);
+    super(
+        `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
   }
 }
 
@@ -42,7 +43,7 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
 
   constructor(factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver) {
     for (let i = 0; i < factories.length; i++) {
-      let factory = factories[i];
+      const factory = factories[i];
       this._factories.set(factory.componentType, factory);
     }
   }

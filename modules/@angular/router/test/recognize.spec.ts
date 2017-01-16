@@ -219,26 +219,7 @@ describe('recognize', () => {
           [{path: 'a', resolve: {one: 'some-token'}, component: ComponentA}], 'a',
           (s: RouterStateSnapshot) => {
             const r: ActivatedRouteSnapshot = s.firstChild(s.root);
-            expect(r._resolve.current).toEqual({one: 'some-token'});
-          });
-    });
-
-    it('should reuse componentless route\'s resolve', () => {
-      checkRecognize(
-          [{
-            path: 'a',
-            resolve: {one: 'one'},
-            children: [
-              {path: '', resolve: {two: 'two'}, component: ComponentB},
-              {path: '', resolve: {three: 'three'}, component: ComponentC, outlet: 'aux'}
-            ]
-          }],
-          'a', (s: RouterStateSnapshot) => {
-            const a: ActivatedRouteSnapshot = s.firstChild(s.root);
-            const c: ActivatedRouteSnapshot[] = s.children(<any>a);
-
-            expect(c[0]._resolve.parent).toBe(a._resolve);
-            expect(c[1]._resolve.parent).toBe(a._resolve);
+            expect(r._resolve).toEqual({one: 'some-token'});
           });
     });
   });
@@ -623,6 +604,58 @@ describe('recognize', () => {
 
             const c = s.firstChild(b);
             checkActivatedRoute(c, 'c', {}, ComponentC);
+          });
+    });
+  });
+
+  describe('empty URL leftovers', () => {
+    it('should not throw when no children matching', () => {
+      checkRecognize(
+          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
+          '/a', (s: RouterStateSnapshot) => {
+            const a = s.firstChild(s.root);
+            checkActivatedRoute(a, 'a', {}, ComponentA);
+          });
+    });
+
+    it('should not throw when no children matching (aux routes)', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            component: ComponentA,
+            children: [
+              {path: 'b', component: ComponentB},
+              {path: '', component: ComponentC, outlet: 'aux'},
+            ]
+          }],
+          '/a', (s: RouterStateSnapshot) => {
+            const a = s.firstChild(s.root);
+            checkActivatedRoute(a, 'a', {}, ComponentA);
+            checkActivatedRoute(a.children[0], '', {}, ComponentC, 'aux');
+          });
+    });
+  });
+
+  describe('custom path matchers', () => {
+    it('should use custom path matcher', () => {
+      const matcher = (s: any, g: any, r: any) => {
+        if (s[0].path === 'a') {
+          return {consumed: s.slice(0, 2), posParams: {id: s[1]}};
+        } else {
+          return null;
+        }
+      };
+
+      checkRecognize(
+          [{
+            matcher: matcher,
+            component: ComponentA,
+            children: [{path: 'b', component: ComponentB}]
+          }],
+          '/a/1;p=99/b', (s: RouterStateSnapshot) => {
+            const a = s.root.firstChild;
+            checkActivatedRoute(a, 'a/1', {id: '1', p: '99'}, ComponentA);
+            checkActivatedRoute(a.firstChild, 'b', {}, ComponentB);
           });
     });
   });

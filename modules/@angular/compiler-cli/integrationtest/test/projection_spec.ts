@@ -13,10 +13,10 @@ import {createComponent} from './util';
 
 describe('content projection', () => {
   it('should support basic content projection', () => {
-    var mainCompFixture = createComponent(ProjectingComp);
+    const mainCompFixture = createComponent(ProjectingComp);
 
-    var debugElement = mainCompFixture.debugElement;
-    var compWithProjection = debugElement.query(By.directive(CompWithNgContent));
+    const debugElement = mainCompFixture.debugElement;
+    const compWithProjection = debugElement.query(By.directive(CompWithNgContent));
     expect(compWithProjection.children.length).toBe(1);
     expect(compWithProjection.children[0].attributes['greeting']).toEqual('Hello world!');
   });

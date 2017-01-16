@@ -7,21 +7,23 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, browser} from 'protractor';
+import {promise} from 'selenium-webdriver';
 
 describe('async', () => {
-  var URL = 'all/playground/src/async/index.html';
+  const URL = 'all/playground/src/async/index.html';
 
   beforeEach(() => browser.get(URL));
 
   it('should work with synchronous actions', () => {
-    var increment = $('#increment');
+    const increment = $('#increment');
     increment.$('.action').click();
 
     expect(increment.$('.val').getText()).toEqual('1');
   });
 
   it('should wait for asynchronous actions', () => {
-    var timeout = $('#delayedIncrement');
+    const timeout = $('#delayedIncrement');
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -35,7 +37,7 @@ describe('async', () => {
   });
 
   it('should notice when asynchronous actions are cancelled', () => {
-    var timeout = $('#delayedIncrement');
+    const timeout = $('#delayedIncrement');
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -53,7 +55,7 @@ describe('async', () => {
   });
 
   it('should wait for a series of asynchronous actions', () => {
-    var timeout = $('#multiDelayedIncrements');
+    const timeout = $('#multiDelayedIncrements');
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -67,14 +69,14 @@ describe('async', () => {
   });
 
   it('should wait via frameworkStabilizer', () => {
-    var whenAllStable = function() {
+    const whenAllStable = (): promise.Promise<any> => {
       return browser.executeAsyncScript('window.frameworkStabilizers[0](arguments[0]);');
     };
 
     // This disables protractor's wait mechanism
     browser.ignoreSynchronization = true;
 
-    var timeout = $('#multiDelayedIncrements');
+    const timeout = $('#multiDelayedIncrements');
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -82,14 +84,14 @@ describe('async', () => {
 
     timeout.$('.action').click();
 
-    whenAllStable().then((didWork) => {
+    whenAllStable().then((didWork: any) => {
       // whenAllStable should only be called when all the async actions
       // finished, so the count should be 10 at this point.
       expect(timeout.$('.val').getText()).toEqual('10');
       expect(didWork).toBeTruthy();  // Work was done.
     });
 
-    whenAllStable().then((didWork) => {
+    whenAllStable().then((didWork: any) => {
       // whenAllStable should be called immediately since nothing is pending.
       expect(didWork).toBeFalsy();  // No work was done.
       browser.ignoreSynchronization = false;

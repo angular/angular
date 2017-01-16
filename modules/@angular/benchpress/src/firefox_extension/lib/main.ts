@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var {Cc, Ci, Cu} = require('chrome');
-var os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
-var ParserUtil = require('./parser_util');
+const {Cc, Ci, Cu} = require('chrome');
+const os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
+const ParserUtil = require('./parser_util');
 
 class Profiler {
   private _profiler: any;
@@ -26,8 +26,8 @@ class Profiler {
   stop() { this._profiler.StopProfiler(); }
 
   getProfilePerfEvents() {
-    var profileData = this._profiler.getProfileData();
-    var perfEvents = ParserUtil.convertPerfProfileToEvents(profileData);
+    const profileData = this._profiler.getProfileData();
+    let perfEvents = ParserUtil.convertPerfProfileToEvents(profileData);
     perfEvents = this._mergeMarkerEvents(perfEvents);
     perfEvents.sort(function(event1: any, event2: any) {
       return event1.ts - event2.ts;
@@ -55,9 +55,9 @@ function forceGC() {
   os.notifyObservers(null, 'child-gc-request', null);
 };
 
-var mod = require('sdk/page-mod');
-var data = require('sdk/self').data;
-var profiler = new Profiler();
+const mod = require('sdk/page-mod');
+const data = require('sdk/self').data;
+const profiler = new Profiler();
 mod.PageMod({
   include: ['*'],
   contentScriptFile: data.url('installed_script.js'),

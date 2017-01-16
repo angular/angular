@@ -22,3 +22,8 @@ $ ./node_modules/.bin/protractor protractor-perf.conf.js --specs=dist/all/benchm
 Options for protractor with `protractor-perf.conf.js`:
 - `--bundles=true`: use prebuilt bundles
 - `--ng-help`: show all available options
+
+## Compile *_aot.ts files
+
+These files are compiled as part of the compiler_cli integration tests.
+See `@angular/compile_cli/integrationtest/tsconfig.json`

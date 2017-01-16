@@ -65,7 +65,7 @@ export class NgModuleFactory<T> {
     if (!parentInjector) {
       parentInjector = Injector.NULL;
     }
-    var instance = new this._injectorClass(parentInjector);
+    const instance = new this._injectorClass(parentInjector);
     instance.create();
     return instance;
   }
@@ -95,7 +95,7 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
     if (token === Injector || token === ComponentFactoryResolver) {
       return this;
     }
-    var result = this.getInternal(token, _UNDEFINED);
+    const result = this.getInternal(token, _UNDEFINED);
     return result === _UNDEFINED ? this.parent.get(token, notFoundValue) : result;
   }
 

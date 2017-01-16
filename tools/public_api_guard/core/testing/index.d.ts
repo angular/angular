@@ -56,7 +56,7 @@ export declare type MetadataOverride<T> = {
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
-/** @experimental */
+/** @stable */
 export declare class TestBed implements Injector {
     ngModule: Type<any>;
     platform: PlatformRef;
@@ -89,6 +89,7 @@ export declare class TestBed implements Injector {
     static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): typeof TestBed;
     static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed;
     static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBed;
+    static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;
 }

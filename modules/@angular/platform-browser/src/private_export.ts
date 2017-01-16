@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from '@angular/core';
+
 
 import * as browser from './browser';
 import * as browserDomAdapter from './browser/browser_adapter';
@@ -18,10 +18,9 @@ import * as dom_events from './dom/events/dom_events';
 import * as hammer_gesture from './dom/events/hammer_gestures';
 import * as key_events from './dom/events/key_events';
 import * as shared_styles_host from './dom/shared_styles_host';
+import {WebAnimationsDriver} from './dom/web_animations_driver';
 
-
-
-export var __platform_browser_private__: {
+export const __platform_browser_private__: {
   _BrowserPlatformLocation?: location.BrowserPlatformLocation,
   BrowserPlatformLocation: typeof location.BrowserPlatformLocation,
   _DomAdapter?: dom_adapter.DomAdapter,
@@ -36,6 +35,12 @@ export var __platform_browser_private__: {
   DomRootRenderer: typeof dom_renderer.DomRootRenderer,
   _DomRootRenderer_?: dom_renderer.DomRootRenderer,
   DomRootRenderer_: typeof dom_renderer.DomRootRenderer_,
+  NAMESPACE_URIS: typeof dom_renderer.NAMESPACE_URIS,
+  shimContentAttribute: typeof dom_renderer.shimContentAttribute,
+  shimHostAttribute: typeof dom_renderer.shimHostAttribute,
+  flattenStyles: typeof dom_renderer.flattenStyles,
+  splitNamespace: typeof dom_renderer.splitNamespace,
+  isNamespaced: typeof dom_renderer.isNamespaced,
   _DomSharedStylesHost?: shared_styles_host.DomSharedStylesHost,
   DomSharedStylesHost: typeof shared_styles_host.DomSharedStylesHost,
   _SharedStylesHost?: shared_styles_host.SharedStylesHost,
@@ -48,7 +53,8 @@ export var __platform_browser_private__: {
   HammerGesturesPlugin: typeof hammer_gesture.HammerGesturesPlugin,
   initDomAdapter: typeof browser.initDomAdapter,
   INTERNAL_BROWSER_PLATFORM_PROVIDERS: typeof browser.INTERNAL_BROWSER_PLATFORM_PROVIDERS,
-  BROWSER_SANITIZATION_PROVIDERS: typeof browser.BROWSER_SANITIZATION_PROVIDERS
+  BROWSER_SANITIZATION_PROVIDERS: typeof browser.BROWSER_SANITIZATION_PROVIDERS,
+  WebAnimationsDriver: typeof WebAnimationsDriver
 } = {
   BrowserPlatformLocation: location.BrowserPlatformLocation,
   DomAdapter: dom_adapter.DomAdapter,
@@ -58,6 +64,12 @@ export var __platform_browser_private__: {
   setRootDomAdapter: dom_adapter.setRootDomAdapter,
   DomRootRenderer_: dom_renderer.DomRootRenderer_,
   DomRootRenderer: dom_renderer.DomRootRenderer,
+  NAMESPACE_URIS: dom_renderer.NAMESPACE_URIS,
+  shimContentAttribute: dom_renderer.shimContentAttribute,
+  shimHostAttribute: dom_renderer.shimHostAttribute,
+  flattenStyles: dom_renderer.flattenStyles,
+  splitNamespace: dom_renderer.splitNamespace,
+  isNamespaced: dom_renderer.isNamespaced,
   DomSharedStylesHost: shared_styles_host.DomSharedStylesHost,
   SharedStylesHost: shared_styles_host.SharedStylesHost,
   ELEMENT_PROBE_PROVIDERS: ng_probe.ELEMENT_PROBE_PROVIDERS,
@@ -66,5 +78,6 @@ export var __platform_browser_private__: {
   HammerGesturesPlugin: hammer_gesture.HammerGesturesPlugin,
   initDomAdapter: browser.initDomAdapter,
   INTERNAL_BROWSER_PLATFORM_PROVIDERS: browser.INTERNAL_BROWSER_PLATFORM_PROVIDERS,
-  BROWSER_SANITIZATION_PROVIDERS: browser.BROWSER_SANITIZATION_PROVIDERS
+  BROWSER_SANITIZATION_PROVIDERS: browser.BROWSER_SANITIZATION_PROVIDERS,
+  WebAnimationsDriver: WebAnimationsDriver
 };

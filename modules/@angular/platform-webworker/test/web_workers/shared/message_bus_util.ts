@@ -15,9 +15,9 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from '@angular
  * Useful for testing the sink and source.
  */
 export function createConnectedMessageBus(): MessageBus {
-  var mockPostMessage = new MockPostMessage();
-  var source = new PostMessageBusSource(<any>mockPostMessage);
-  var sink = new PostMessageBusSink(mockPostMessage);
+  const mockPostMessage = new MockPostMessage();
+  const source = new PostMessageBusSource(<any>mockPostMessage);
+  const sink = new PostMessageBusSink(mockPostMessage);
 
   return new PostMessageBus(sink, source);
 }

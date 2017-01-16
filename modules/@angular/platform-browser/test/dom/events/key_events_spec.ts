@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
 export function main() {
-  describe('KeyEvents', () => {
+  describe('KeyEventsPlugin', () => {
 
     it('should ignore unrecognized events', () => {
       expect(KeyEventsPlugin.parseEventName('keydown')).toEqual(null);
@@ -56,6 +56,15 @@ export function main() {
     it('should alias esc to escape', () => {
       expect(KeyEventsPlugin.parseEventName('keyup.control.esc'))
           .toEqual(KeyEventsPlugin.parseEventName('keyup.control.escape'));
+    });
+
+    it('should implement addGlobalEventListener', () => {
+      const plugin = new KeyEventsPlugin();
+
+      spyOn(plugin, 'addEventListener').and.callFake(() => {});
+
+      expect(() => plugin.addGlobalEventListener('window', 'keyup.control.esc', () => {}))
+          .not.toThrowError();
     });
 
   });

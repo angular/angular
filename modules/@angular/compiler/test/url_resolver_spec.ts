@@ -7,11 +7,11 @@
  */
 
 import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('UrlResolver', () => {
-    var resolver = new UrlResolver();
+    let resolver = new UrlResolver();
 
     describe('absolute base url', () => {
       it('should add a relative path to the base url', () => {
@@ -103,16 +103,6 @@ export function main() {
         resolver = new UrlResolver('/my_special_dir');
         expect(resolver.resolve('package:some_dir/', 'matias.html'))
             .toEqual('/my_special_dir/some_dir/matias.html');
-      });
-    });
-
-    describe('asset urls', () => {
-      var resolver: UrlResolver;
-      beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
-
-      it('should resolve package: urls into asset: urls', () => {
-        expect(resolver.resolve(null, 'package:somePkg/somePath'))
-            .toEqual('asset:somePkg/lib/somePath');
       });
     });
 

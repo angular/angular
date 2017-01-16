@@ -46,16 +46,14 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
     let providers = metadata.providers;
     if (isPresent(providerOverrides)) {
-      const originalViewProviders: Provider[] =
-          isPresent(metadata.providers) ? metadata.providers : [];
+      const originalViewProviders: Provider[] = metadata.providers || [];
       providers = originalViewProviders.concat(providerOverrides);
     }
 
     if (metadata instanceof Component) {
       let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
-        const originalViewProviders: Provider[] =
-            isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
+        const originalViewProviders: Provider[] = metadata.viewProviders || [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 
@@ -153,8 +151,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
 function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
   if (!isPresent(tree)) return;
-  for (var i = 0; i < tree.length; i++) {
-    var item = resolveForwardRef(tree[i]);
+  for (let i = 0; i < tree.length; i++) {
+    const item = resolveForwardRef(tree[i]);
     if (Array.isArray(item)) {
       flattenArray(item, out);
     } else {

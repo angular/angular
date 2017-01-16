@@ -30,7 +30,7 @@ export function serializeGenericEvent(e: Event): {[key: string]: any} {
 // TODO(jteplitz602): Allow users to specify the properties they need rather than always
 // adding value and files #3374
 export function serializeEventWithTarget(e: Event): {[key: string]: any} {
-  var serializedEvent = serializeEvent(e, EVENT_PROPERTIES);
+  const serializedEvent = serializeEvent(e, EVENT_PROPERTIES);
   return addTarget(e, serializedEvent);
 }
 
@@ -39,19 +39,19 @@ export function serializeMouseEvent(e: MouseEvent): {[key: string]: any} {
 }
 
 export function serializeKeyboardEvent(e: KeyboardEvent): {[key: string]: any} {
-  var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
+  const serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
   return addTarget(e, serializedEvent);
 }
 
 export function serializeTransitionEvent(e: TransitionEvent): {[key: string]: any} {
-  var serializedEvent = serializeEvent(e, TRANSITION_EVENT_PROPERTIES);
+  const serializedEvent = serializeEvent(e, TRANSITION_EVENT_PROPERTIES);
   return addTarget(e, serializedEvent);
 }
 
 // TODO(jteplitz602): #3374. See above.
 function addTarget(e: Event, serializedEvent: {[key: string]: any}): {[key: string]: any} {
   if (NODES_WITH_VALUE.has((<HTMLElement>e.target).tagName.toLowerCase())) {
-    var target = <HTMLInputElement>e.target;
+    const target = <HTMLInputElement>e.target;
     serializedEvent['target'] = {'value': target.value};
     if (target.files) {
       serializedEvent['target']['files'] = target.files;
@@ -61,9 +61,9 @@ function addTarget(e: Event, serializedEvent: {[key: string]: any}): {[key: stri
 }
 
 function serializeEvent(e: any, properties: string[]): {[key: string]: any} {
-  var serialized = {};
-  for (var i = 0; i < properties.length; i++) {
-    var prop = properties[i];
+  const serialized = {};
+  for (let i = 0; i < properties.length; i++) {
+    const prop = properties[i];
     (serialized as any /** TODO #9100 */)[prop] = e[prop];
   }
   return serialized;

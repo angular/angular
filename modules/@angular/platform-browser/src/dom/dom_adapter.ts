@@ -8,9 +8,7 @@
 
 import {Type} from '@angular/core';
 
-import {isBlank} from '../facade/lang';
-
-var _DOM: DomAdapter = null;
+let _DOM: DomAdapter = null;
 
 export function getDOM() {
   return _DOM;
@@ -21,7 +19,7 @@ export function setDOM(adapter: DomAdapter) {
 }
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  if (isBlank(_DOM)) {
+  if (!_DOM) {
     _DOM = adapter;
   }
 }

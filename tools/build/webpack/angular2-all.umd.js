@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 exports.core = require('angular2/core');
 exports.common = require('angular2/common');
 exports.compiler = require('angular2/compiler');

@@ -17,7 +17,7 @@ import {TestBed} from './test_bed';
 
 declare var global: any;
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 // Reset the test providers and the fake async zone before each test.
 if (_global.beforeEach) {
@@ -29,4 +29,4 @@ if (_global.beforeEach) {
 
 // TODO(juliemr): remove this, only used because we need to export something to have compilation
 // work.
-export var __core_private_testing_placeholder__ = '';
+export const __core_private_testing_placeholder__ = '';

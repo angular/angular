@@ -7,7 +7,7 @@
  */
 
 import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
-
+import {getDOM} from '../dom_adapter';
 
 /**
  * @stable
@@ -20,6 +20,7 @@ export const EVENT_MANAGER_PLUGINS: OpaqueToken = new OpaqueToken('EventManagerP
 @Injectable()
 export class EventManager {
   private _plugins: EventManagerPlugin[];
+  private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
 
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
     plugins.forEach(p => p.manager = this);
@@ -27,12 +28,12 @@ export class EventManager {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin = this._findPluginFor(eventName);
     return plugin.addEventListener(element, eventName, handler);
   }
 
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
 
@@ -40,10 +41,16 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
-    var plugins = this._plugins;
-    for (var i = 0; i < plugins.length; i++) {
-      var plugin = plugins[i];
+    const plugin = this._eventNameToPlugin.get(eventName);
+    if (plugin) {
+      return plugin;
+    }
+
+    const plugins = this._plugins;
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i];
       if (plugin.supports(eventName)) {
+        this._eventNameToPlugin.set(eventName, plugin);
         return plugin;
       }
     }
@@ -51,17 +58,18 @@ export class EventManager {
   }
 }
 
-export class EventManagerPlugin {
+export abstract class EventManagerPlugin {
   manager: EventManager;
 
-  // That is equivalent to having supporting $event.target
-  supports(eventName: string): boolean { return false; }
+  abstract supports(eventName: string): boolean;
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    throw 'not implemented';
-  }
+  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    throw 'not implemented';
-  }
+    const target: HTMLElement = getDOM().getGlobalEventTarget(element);
+    if (!target) {
+      throw new Error(`Unsupported event target ${target} for event ${eventName}`);
+    }
+    return this.addEventListener(target, eventName, handler);
+  };
 }

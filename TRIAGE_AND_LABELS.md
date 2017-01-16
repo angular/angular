@@ -1,7 +1,7 @@
 # Triage Process and Github Labels for Angular 2
 
 This document describes how the Angular team uses labels and milestones 
-to triage issues on github. The basic idea of the new process is that 
+to triage issues on github. The basic idea of the process is that
 caretaker only assigns a component and type (bug, feature) label. The 
 owner of the component than is in full control of how the issues should 
 be triaged further.
@@ -17,26 +17,27 @@ with it.
 
 * `comp: animations`: `@matsko`
 * `comp: benchpress`: `@tbosch`
-* `comp: build/ci`: `@IgorMinar` -- All build and CI scripts 
+* `comp: build & ci`: `@IgorMinar` -- All build and CI scripts 
 * `comp: common`: `@mhevery`  -- This includes core components / pipes.
-* `comp: core/compiler`: `@tbosch` -- Because core and compiler are very 
+* `comp: core & compiler`: `@tbosch` -- Because core and compiler are very 
   intertwined, we will be treating them as one.
 * `comp: forms`: `@kara`
 * `comp: http`: `@jeffbcross`
 * `comp: i18n`: `@vicb`
+* `comp: language service`: `@chuckjaz`
 * `comp: metadata-extractor`: `@chuckjaz`
-* `comp: router`: `@vsavkin`
+* `comp: router`: `@vicb`
 * `comp: testing`: `@juliemr`
 * `comp: upgrade`: `@mhevery`
 * `comp: web-worker`: `@vicb`
-* `comp: zone`: `@mhevery`
+* `comp: zones`: `@mhevery`
 
 There are few components which are cross-cutting. They don't have
 a clear location in the source tree. We will treat them as a component
 even thought no specific source tree is associated with them.
 
-* `comp: documentation`: `@naomiblack`
-* `comp: packaging`: `@mhevery`
+* `comp: docs`: `@naomiblack`
+* `comp: packaging`: `@IgorMinar`
 * `comp: performance`: `@tbosch`
 * `comp: security`: `@IgorMinar`
 
@@ -53,11 +54,11 @@ What kind of problem is this?
 
 ## Caretaker Triage Process
 
-It is the caretaker's responsibility to assign `comp:  *` and `type: *`
-to each new issue as they come in. The reason why we limit the 
-responsibility of the caretaker to these two labels is that it is 
-unlikely that without domain knowledge the caretaker could add any 
-additional labels of value.
+It is the caretaker's responsibility to assign `comp:  *` to each new
+issue as they come in. The reason why we limit the responsibility of the
+caretaker to this one label is that it is likely that without domain
+knowledge the caretaker could mislabel issues or lack knowledge of
+duplicate issues.
 
 
 ## Component's owner Triage Process
@@ -68,11 +69,37 @@ process for their component.
 It will be up to the component owner to determine the order in which the
 issues within the component will be resolved.
 
+Several owners have adopted the issue categorization based on
+[user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html)
+used by Angular 1. In this system every issue is assigned frequency and
+severity based on which the total user pain score is calculated.
+
+Following is the definition of various frequency and severity levels:
+
+1. `freq(score): *` – How often does this issue come up? How many developers does this affect?
+    * low (1) - obscure issue affecting a handful of developers
+    * moderate (2) - impacts auxiliary usage patterns, only small number of applications are affected
+    * high (3) - impacts primary usage patterns, affecting most Angular apps
+    * critical (4) - impacts all Angular apps
+1. `severity(score): *` - How bad is the issue?
+    * inconvenience (1) - causes ugly/boilerplate code in apps
+    * confusing (2) - unexpected or inconsistent behavior; hard-to-debug
+    * broken expected use (3) - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
+    * memory leak (4)
+    * regression (5) - functionality that used to work no longer works in a new release due to an unintentional change
+    * security issue (6)
+
+
+These criteria are then used to calculate a "user pain" score as follows:
+
+`pain = severity × frequency`
+
+
 ### Assigning Issues to Milestones
 
 Any issue that is being worked on must have:
 
-* An `assignee`: The person doing the work.
+* An `Assignee`: The person doing the work.
 * A `Milestone`: When we expect to complete this work.
 
 We aim to only have at most three milestones open at a time:

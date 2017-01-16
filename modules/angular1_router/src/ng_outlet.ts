@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 ///<reference path="../typings/angularjs/angular.d.ts"/>
 
 
@@ -17,7 +25,7 @@
  * The value for the `ngOutlet` attribute is optional.
  */
 function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
-  let rootRouter = $rootRouter;
+  const rootRouter = $rootRouter;
 
   return {
     restrict: 'AE',
@@ -59,7 +67,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
 
       reuse(instruction) {
         let next = $q.when(true);
-        let previousInstruction = this.currentInstruction;
+        const previousInstruction = this.currentInstruction;
         this.currentInstruction = instruction;
         if (this.currentController && this.currentController.$routerOnReuse) {
           next = $q.when(
@@ -103,7 +111,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
         this.previousInstruction = this.currentInstruction;
         this.currentInstruction = instruction;
 
-        let componentName = this.controller.$$componentName = instruction.componentType;
+        const componentName = this.controller.$$componentName = instruction.componentType;
 
         if (typeof componentName !== 'string') {
           throw new Error('Component is not a string for ' + instruction.urlPath);
@@ -114,13 +122,13 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
         this.controller.$$router = this.router.childRouter(instruction.componentType);
         this.controller.$$outlet = this;
 
-        let newScope = scope.$new();
+        const newScope = scope.$new();
         newScope.$$router = this.controller.$$router;
         this.deferredActivation = $q.defer();
 
-        let clone = $transclude(newScope, clone => {});
+        const clone = $transclude(newScope, clone => {});
 
-        let activateView = () => {
+        const activateView = () => {
           $animate.enter(clone, null, this.currentElement || element);
           this.cleanupLastView();
           this.currentElement = clone;
@@ -131,7 +139,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
       }
     }
 
-    let parentCtrl = ctrls[0], myCtrl = ctrls[1],
+    const parentCtrl = ctrls[0], myCtrl = ctrls[1],
         router = (parentCtrl && parentCtrl.$$router) || rootRouter;
 
     myCtrl.$$currentComponent = null;
@@ -148,7 +156,7 @@ function ngOutletFillContentDirective($compile) {
     priority: -400,
     require: 'ngOutlet',
     link: (scope, element, attrs, ctrl) => {
-      let template = ctrl.$$template;
+      const template = ctrl.$$template;
       element.html(template);
       $compile(element.contents())(scope);
     }
@@ -162,9 +170,9 @@ function routerTriggerDirective($q) {
     require: '^ngOutlet',
     priority: -1000,
     link: function(scope, element, attr, ngOutletCtrl) {
-      var promise = $q.when();
-      var outlet = ngOutletCtrl.$$outlet;
-      var currentComponent = outlet.currentController =
+      let promise = $q.when();
+      const outlet = ngOutletCtrl.$$outlet;
+      const currentComponent = outlet.currentController =
           element.controller(ngOutletCtrl.$$componentName);
       if (currentComponent.$routerOnActivate) {
         promise = $q.when(currentComponent.$routerOnActivate(outlet.currentInstruction,
@@ -204,13 +212,13 @@ function ngLinkDirective($rootRouter, $parse) {
   return {require: '?^^ngOutlet', restrict: 'A', link: ngLinkDirectiveLinkFn};
 
   function ngLinkDirectiveLinkFn(scope, element, attrs, ctrl) {
-    let router = (ctrl && ctrl.$$router) || $rootRouter;
+    const router = (ctrl && ctrl.$$router) || $rootRouter;
     if (!router) {
       return;
     }
 
     let navigationInstruction = null;
-    let link = attrs.ngLink || '';
+    const link = attrs.ngLink || '';
 
     function getLink(params) {
       if (!params) {
@@ -232,10 +240,10 @@ function ngLinkDirective($rootRouter, $parse) {
       return $rootRouter._location.prepareExternalUrl(navigationHref);
     }
 
-    let routeParamsGetter = $parse(link);
+    const routeParamsGetter = $parse(link);
     // we can avoid adding a watcher if it's a literal
     if (routeParamsGetter.constant) {
-      let params = routeParamsGetter();
+      const params = routeParamsGetter();
       element.attr('href', getLink(params));
     } else {
       scope.$watch(() => routeParamsGetter(scope), params => element.attr('href', getLink(params)),

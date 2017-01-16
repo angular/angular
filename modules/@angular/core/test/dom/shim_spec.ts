@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Shim', () => {
 
     it('should provide correct function.name ', () => {
-      var functionWithoutName = identity(() => function(_: any /** TODO #9100 */) {});
+      const functionWithoutName = identity(() => function(_: any /** TODO #9100 */) {});
       function foo(_: any /** TODO #9100 */){};
 
       expect((<any>functionWithoutName).name).toBeFalsy();

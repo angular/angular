@@ -6,21 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {IOsDriverExtension, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {Json, isBlank, isPresent} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
   describe('ios driver extension', () => {
-    var log: any[];
-    var extension: IOsDriverExtension;
+    let log: any[];
+    let extension: IOsDriverExtension;
 
-    var normEvents = new TraceEventFactory('timeline', 'pid0');
+    const normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(perfRecords: any[] = null): WebDriverExtension {
-      if (isBlank(perfRecords)) {
+      if (!perfRecords) {
         perfRecords = [];
       }
       log = [];
@@ -156,7 +155,7 @@ function timeEndRecord(name: string, time: number) {
 }
 
 function durationRecord(type: string, startTime: number, endTime: number, children: any[] = null) {
-  if (isBlank(children)) {
+  if (!children) {
     children = [];
   }
   return {'type': type, 'startTime': startTime, 'endTime': endTime, 'children': children};
@@ -184,8 +183,9 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (type === 'performance') {
       return Promise.resolve(this._perfRecords.map(function(record) {
         return {
-          'message': Json.stringify(
-              {'message': {'method': 'Timeline.eventRecorded', 'params': {'record': record}}})
+          'message': JSON.stringify(
+              {'message': {'method': 'Timeline.eventRecorded', 'params': {'record': record}}}, null,
+              2)
         };
       }));
     } else {

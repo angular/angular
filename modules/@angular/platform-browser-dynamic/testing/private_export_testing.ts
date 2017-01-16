@@ -8,7 +8,7 @@
 
 import * as testing from './dom_test_component_renderer';
 
-export var __platform_browser_dynamic_private__:
+export const __platform_browser_dynamic_private__:
     {DOMTestComponentRenderer: typeof testing.DOMTestComponentRenderer} = {
       DOMTestComponentRenderer: testing.DOMTestComponentRenderer
     };

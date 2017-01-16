@@ -8,9 +8,6 @@
 
 import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
 
-import {ListWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
@@ -32,13 +29,12 @@ export class RadioControlRegistry {
   }
 
   remove(accessor: RadioControlValueAccessor) {
-    var indexToRemove = -1;
-    for (var i = 0; i < this._accessors.length; ++i) {
+    for (let i = this._accessors.length - 1; i >= 0; --i) {
       if (this._accessors[i][1] === accessor) {
-        indexToRemove = i;
+        this._accessors.splice(i, 1);
+        return;
       }
     }
-    ListWrapper.removeAt(this._accessors, indexToRemove);
   }
 
   select(accessor: RadioControlValueAccessor) {
@@ -102,7 +98,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   /** @internal */
   _fn: Function;
   onChange = () => {};
-  onTouched = () => {}
+  onTouched = () => {};
 
   @Input() name: string;
   @Input() formControlName: string;

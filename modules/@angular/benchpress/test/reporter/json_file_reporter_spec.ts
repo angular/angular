@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {JsonFileReporter, MeasureValues, Options, ReflectiveInjector, SampleDescription} from '../../index';
-import {DateWrapper, Json, isPresent} from '../../src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('file reporter', () => {
-    var loggedFile: any;
+    let loggedFile: any;
 
     function createReporter({sampleId, descriptions, metrics, path}: {
       sampleId: string,
@@ -21,13 +21,13 @@ export function main() {
       metrics: {[key: string]: string},
       path: string
     }) {
-      var providers = [
+      const providers = [
         JsonFileReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)
         },
         {provide: JsonFileReporter.PATH, useValue: path},
-        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(1234)}, {
+        {provide: Options.NOW, useValue: () => new Date(1234)}, {
           provide: Options.WRITE_FILE,
           useValue: (filename: string, content: string) => {
             loggedFile = {'filename': filename, 'content': content};
@@ -49,9 +49,9 @@ export function main() {
              .reportSample(
                  [mv(0, 0, {'a': 3, 'b': 6})],
                  [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
-         var regExp = /somePath\/someId_\d+\.json/;
+         const regExp = /somePath\/someId_\d+\.json/;
          expect(isPresent(loggedFile['filename'].match(regExp))).toBe(true);
-         var parsedContent = Json.parse(loggedFile['content']);
+         const parsedContent = JSON.parse(loggedFile['content']);
          expect(parsedContent).toEqual({
            'description': {
              'id': 'someId',
@@ -77,5 +77,5 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

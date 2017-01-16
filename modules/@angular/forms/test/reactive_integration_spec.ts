@@ -6,34 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, forwardRef} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, EventEmitter, Input, Output, Type, forwardRef} from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
-import {ListWrapper} from '../src/facade/collection';
-
 export function main() {
   describe('reactive forms integration tests', () => {
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [FormsModule, ReactiveFormsModule],
-        declarations: [
-          FormControlComp, FormGroupComp, FormArrayComp, FormArrayNestedGroup,
-          FormControlNameSelect, FormControlNumberInput, FormControlRadioButtons, WrappedValue,
-          WrappedValueForm, MyInput, MyInputForm, FormGroupNgModel, FormControlNgModel,
-          LoginIsEmptyValidator, LoginIsEmptyWrapper, ValidationBindingsForm, UniqLoginValidator,
-          UniqLoginWrapper, NestedFormGroupComp
-        ]
-      });
-    });
+    function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
+      TestBed.configureTestingModule(
+          {declarations: [component, ...directives], imports: [FormsModule, ReactiveFormsModule]});
+      return TestBed.createComponent(component);
+    }
 
     describe('basic functionality', () => {
       it('should work with single controls', () => {
-        const fixture = TestBed.createComponent(FormControlComp);
+        const fixture = initTest(FormControlComp);
         const control = new FormControl('old value');
         fixture.componentInstance.control = control;
         fixture.detectChanges();
@@ -50,7 +41,7 @@ export function main() {
       });
 
       it('should work with formGroups (model -> view)', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
@@ -58,8 +49,17 @@ export function main() {
         expect(input.nativeElement.value).toEqual('loginValue');
       });
 
+      it('should add novalidate by default to form', () => {
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form'));
+        expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
+      });
+
       it('work with formGroups (view -> model)', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('oldValue')});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -76,7 +76,7 @@ export function main() {
     describe('rebound form groups', () => {
 
       it('should update DOM elements initially', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('oldValue')});
         fixture.detectChanges();
 
@@ -88,7 +88,7 @@ export function main() {
       });
 
       it('should update model when UI changes', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('oldValue')});
         fixture.detectChanges();
 
@@ -109,7 +109,7 @@ export function main() {
       });
 
       it('should work with radio buttons when reusing control', () => {
-        const fixture = TestBed.createComponent(FormControlRadioButtons);
+        const fixture = initTest(FormControlRadioButtons);
         const food = new FormControl('chicken');
         fixture.componentInstance.form =
             new FormGroup({'food': food, 'drink': new FormControl('')});
@@ -127,7 +127,7 @@ export function main() {
       });
 
       it('should update nested form group model when UI changes', () => {
-        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        const fixture = initTest(NestedFormGroupComp);
         fixture.componentInstance.form = new FormGroup(
             {'signin': new FormGroup({'login': new FormControl(), 'password': new FormControl()})});
         fixture.detectChanges();
@@ -155,7 +155,7 @@ export function main() {
       });
 
       it('should pick up dir validators from form controls', () => {
-        const fixture = TestBed.createComponent(LoginIsEmptyWrapper);
+        const fixture = initTest(LoginIsEmptyWrapper, LoginIsEmptyValidator);
         const form = new FormGroup({
           'login': new FormControl(''),
           'min': new FormControl(''),
@@ -179,7 +179,7 @@ export function main() {
       });
 
       it('should pick up dir validators from nested form groups', () => {
-        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
         const form = new FormGroup({
           'signin':
               new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
@@ -199,7 +199,7 @@ export function main() {
       });
 
       it('should strip named controls that are not found', () => {
-        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
         const form = new FormGroup({
           'signin':
               new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
@@ -225,7 +225,7 @@ export function main() {
       });
 
       it('should strip array controls that are not found', () => {
-        const fixture = TestBed.createComponent(FormArrayComp);
+        const fixture = initTest(FormArrayComp);
         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
         const form = new FormGroup({cities: cityArray});
         fixture.componentInstance.form = form;
@@ -254,7 +254,7 @@ export function main() {
 
         it('should attach dir to control when leaf control changes', () => {
           const form = new FormGroup({'login': new FormControl('oldValue')});
-          const fixture = TestBed.createComponent(FormGroupComp);
+          const fixture = initTest(FormGroupComp);
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
@@ -277,7 +277,7 @@ export function main() {
         });
 
         it('should attach dirs to all child controls when group control changes', () => {
-          const fixture = TestBed.createComponent(NestedFormGroupComp);
+          const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
           const form = new FormGroup({
             signin: new FormGroup(
                 {login: new FormControl('oldLogin'), password: new FormControl('oldPassword')})
@@ -309,7 +309,7 @@ export function main() {
         });
 
         it('should attach dirs to all present child controls when array control changes', () => {
-          const fixture = TestBed.createComponent(FormArrayComp);
+          const fixture = initTest(FormArrayComp);
           const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
           const form = new FormGroup({cities: cityArray});
           fixture.componentInstance.form = form;
@@ -340,7 +340,7 @@ export function main() {
 
     describe('form arrays', () => {
       it('should support form arrays', () => {
-        const fixture = TestBed.createComponent(FormArrayComp);
+        const fixture = initTest(FormArrayComp);
         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
         const form = new FormGroup({cities: cityArray});
         fixture.componentInstance.form = form;
@@ -363,7 +363,7 @@ export function main() {
       });
 
       it('should support pushing new controls to form arrays', () => {
-        const fixture = TestBed.createComponent(FormArrayComp);
+        const fixture = initTest(FormArrayComp);
         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
         const form = new FormGroup({cities: cityArray});
         fixture.componentInstance.form = form;
@@ -379,7 +379,7 @@ export function main() {
       });
 
       it('should support form groups nested in form arrays', () => {
-        const fixture = TestBed.createComponent(FormArrayNestedGroup);
+        const fixture = initTest(FormArrayNestedGroup);
         const cityArray = new FormArray([
           new FormGroup({town: new FormControl('SF'), state: new FormControl('CA')}),
           new FormGroup({town: new FormControl('NY'), state: new FormControl('NY')})
@@ -411,7 +411,7 @@ export function main() {
 
     describe('programmatic changes', () => {
       it('should update the value in the DOM when setValue() is called', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const login = new FormControl('oldValue');
         const form = new FormGroup({'login': login});
         fixture.componentInstance.form = form;
@@ -427,7 +427,7 @@ export function main() {
       describe('disabled controls', () => {
         it('should add disabled attribute to an individual control when instantiated as disabled',
            () => {
-             const fixture = TestBed.createComponent(FormControlComp);
+             const fixture = initTest(FormControlComp);
              const control = new FormControl({value: 'some value', disabled: true});
              fixture.componentInstance.control = control;
              fixture.detectChanges();
@@ -441,7 +441,7 @@ export function main() {
            });
 
         it('should add disabled attribute to formControlName when instantiated as disabled', () => {
-          const fixture = TestBed.createComponent(FormGroupComp);
+          const fixture = initTest(FormGroupComp);
           const control = new FormControl({value: 'some value', disabled: true});
           fixture.componentInstance.form = new FormGroup({login: control});
           fixture.componentInstance.control = control;
@@ -457,7 +457,7 @@ export function main() {
 
         it('should add disabled attribute to an individual control when disable() is called',
            () => {
-             const fixture = TestBed.createComponent(FormControlComp);
+             const fixture = initTest(FormControlComp);
              const control = new FormControl('some value');
              fixture.componentInstance.control = control;
              fixture.detectChanges();
@@ -475,7 +475,7 @@ export function main() {
 
         it('should add disabled attribute to child controls when disable() is called on group',
            () => {
-             const fixture = TestBed.createComponent(FormGroupComp);
+             const fixture = initTest(FormGroupComp);
              const form = new FormGroup({'login': new FormControl('login')});
              fixture.componentInstance.form = form;
              fixture.detectChanges();
@@ -493,7 +493,7 @@ export function main() {
 
 
         it('should not add disabled attribute to custom controls when disable() is called', () => {
-          const fixture = TestBed.createComponent(MyInputForm);
+          const fixture = initTest(MyInputForm, MyInput);
           const control = new FormControl('some value');
           fixture.componentInstance.form = new FormGroup({login: control});
           fixture.detectChanges();
@@ -512,7 +512,7 @@ export function main() {
     describe('user input', () => {
 
       it('should mark controls as touched after interacting with the DOM control', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const login = new FormControl('oldValue');
         const form = new FormGroup({'login': login});
         fixture.componentInstance.form = form;
@@ -529,21 +529,21 @@ export function main() {
     });
 
     describe('submit and reset events', () => {
-      it('should emit ngSubmit event on submit', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+      it('should emit ngSubmit event with the original submit event on submit', () => {
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
-        fixture.componentInstance.data = 'should be changed';
+        fixture.componentInstance.event = null;
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
-        expect(fixture.componentInstance.data).toEqual('submitted');
+        expect(fixture.componentInstance.event.type).toEqual('submit');
       });
 
       it('should mark formGroup as submitted on submit event', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
@@ -558,7 +558,7 @@ export function main() {
       });
 
       it('should set value in UI when form resets to that value programmatically', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const login = new FormControl('some value');
         const form = new FormGroup({'login': login});
         fixture.componentInstance.form = form;
@@ -572,7 +572,7 @@ export function main() {
       });
 
       it('should clear value in UI when form resets programmatically', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const login = new FormControl('some value');
         const form = new FormGroup({'login': login});
         fixture.componentInstance.form = form;
@@ -590,7 +590,7 @@ export function main() {
     describe('value changes and status changes', () => {
 
       it('should mark controls as dirty before emitting a value change event', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const login = new FormControl('oldValue');
         fixture.componentInstance.form = new FormGroup({'login': login});
         fixture.detectChanges();
@@ -605,7 +605,7 @@ export function main() {
 
       it('should mark control as pristine before emitting a value change event when resetting ',
          () => {
-           const fixture = TestBed.createComponent(FormGroupComp);
+           const fixture = initTest(FormGroupComp);
            const login = new FormControl('oldValue');
            const form = new FormGroup({'login': login});
            fixture.componentInstance.form = form;
@@ -626,7 +626,7 @@ export function main() {
 
     describe('setting status classes', () => {
       it('should work with single fields', () => {
-        const fixture = TestBed.createComponent(FormControlComp);
+        const fixture = initTest(FormControlComp);
         const control = new FormControl('', Validators.required);
         fixture.componentInstance.control = control;
         fixture.detectChanges();
@@ -646,8 +646,62 @@ export function main() {
         expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
       });
 
+      it('should work with single fields and async validators', fakeAsync(() => {
+           const fixture = initTest(FormControlComp);
+           const control = new FormControl('', null, uniqLoginAsyncValidator('good'));
+           fixture.debugElement.componentInstance.control = control;
+           fixture.detectChanges();
+
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
+
+           dispatchEvent(input, 'blur');
+           fixture.detectChanges();
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+
+           input.value = 'good';
+           dispatchEvent(input, 'input');
+           tick();
+           fixture.detectChanges();
+
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+         }));
+
+      it('should work with single fields that combines async and sync validators', fakeAsync(() => {
+           const fixture = initTest(FormControlComp);
+           const control =
+               new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
+           fixture.debugElement.componentInstance.control = control;
+           fixture.detectChanges();
+
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+
+           dispatchEvent(input, 'blur');
+           fixture.detectChanges();
+           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+
+           input.value = 'bad';
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+
+           tick();
+           fixture.detectChanges();
+
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
+
+           input.value = 'good';
+           dispatchEvent(input, 'input');
+           tick();
+           fixture.detectChanges();
+
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+         }));
+
       it('should work with single fields in parent forms', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('', Validators.required)});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -668,7 +722,7 @@ export function main() {
       });
 
       it('should work with formGroup', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('', Validators.required)});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -697,7 +751,7 @@ export function main() {
       it('should support <input> without type', () => {
         TestBed.overrideComponent(
             FormControlComp, {set: {template: `<input [formControl]="control">`}});
-        const fixture = TestBed.createComponent(FormControlComp);
+        const fixture = initTest(FormControlComp);
         const control = new FormControl('old');
         fixture.componentInstance.control = control;
         fixture.detectChanges();
@@ -714,7 +768,7 @@ export function main() {
       });
 
       it('should support <input type=text>', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('old')});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -731,7 +785,7 @@ export function main() {
       });
 
       it('should ignore the change event for <input type=text>', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('oldValue')});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -746,7 +800,7 @@ export function main() {
       it('should support <textarea>', () => {
         TestBed.overrideComponent(
             FormControlComp, {set: {template: `<textarea [formControl]="control"></textarea>`}});
-        const fixture = TestBed.createComponent(FormControlComp);
+        const fixture = initTest(FormControlComp);
         const control = new FormControl('old');
         fixture.componentInstance.control = control;
         fixture.detectChanges();
@@ -765,7 +819,7 @@ export function main() {
       it('should support <type=checkbox>', () => {
         TestBed.overrideComponent(
             FormControlComp, {set: {template: `<input type="checkbox" [formControl]="control">`}});
-        const fixture = TestBed.createComponent(FormControlComp);
+        const fixture = initTest(FormControlComp);
         const control = new FormControl(true);
         fixture.componentInstance.control = control;
         fixture.detectChanges();
@@ -782,7 +836,7 @@ export function main() {
       });
 
       it('should support <select>', () => {
-        const fixture = TestBed.createComponent(FormControlNameSelect);
+        const fixture = initTest(FormControlNameSelect);
         fixture.detectChanges();
 
         // model -> view
@@ -802,7 +856,7 @@ export function main() {
 
       describe('should support <type=number>', () => {
         it('with basic use case', () => {
-          const fixture = TestBed.createComponent(FormControlNumberInput);
+          const fixture = initTest(FormControlNumberInput);
           const control = new FormControl(10);
           fixture.componentInstance.control = control;
           fixture.detectChanges();
@@ -819,7 +873,7 @@ export function main() {
         });
 
         it('when value is cleared in the UI', () => {
-          const fixture = TestBed.createComponent(FormControlNumberInput);
+          const fixture = initTest(FormControlNumberInput);
           const control = new FormControl(10, Validators.required);
           fixture.componentInstance.control = control;
           fixture.detectChanges();
@@ -839,7 +893,7 @@ export function main() {
         });
 
         it('when value is cleared programmatically', () => {
-          const fixture = TestBed.createComponent(FormControlNumberInput);
+          const fixture = initTest(FormControlNumberInput);
           const control = new FormControl(10);
           fixture.componentInstance.control = control;
           fixture.detectChanges();
@@ -854,7 +908,7 @@ export function main() {
       describe('should support <type=radio>', () => {
 
         it('should support basic functionality', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form =
               new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
           fixture.componentInstance.form = form;
@@ -881,7 +935,7 @@ export function main() {
         });
 
         it('should support an initial undefined value', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form = new FormGroup({'food': new FormControl(), 'drink': new FormControl()});
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -892,7 +946,7 @@ export function main() {
         });
 
         it('should reset properly', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form =
               new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
           fixture.componentInstance.form = form;
@@ -907,7 +961,7 @@ export function main() {
         });
 
         it('should set value to null and undefined properly', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form = new FormGroup(
               {'food': new FormControl('chicken'), 'drink': new FormControl('sprite')});
           fixture.componentInstance.form = form;
@@ -928,7 +982,7 @@ export function main() {
         });
 
         it('should use formControlName to group radio buttons when name is absent', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const foodCtrl = new FormControl('fish');
           const drinkCtrl = new FormControl('sprite');
           fixture.componentInstance.form = new FormGroup({'food': foodCtrl, 'drink': drinkCtrl});
@@ -960,7 +1014,7 @@ export function main() {
         });
 
         it('should support removing controls from <type=radio>', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const showRadio = new FormControl('yes');
           const form =
               new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
@@ -994,7 +1048,7 @@ export function main() {
               `
             }
           });
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form = new FormGroup({
             food: new FormControl('fish'),
             nested: new FormGroup({food: new FormControl('fish')})
@@ -1023,7 +1077,7 @@ export function main() {
         });
 
         it('should disable all radio buttons when disable() is called', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form =
               new FormGroup({food: new FormControl('fish'), drink: new FormControl('cola')});
           fixture.componentInstance.form = form;
@@ -1055,7 +1109,7 @@ export function main() {
         });
 
         it('should disable all radio buttons when initially disabled', () => {
-          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const fixture = initTest(FormControlRadioButtons);
           const form = new FormGroup({
             food: new FormControl({value: 'fish', disabled: true}),
             drink: new FormControl('cola')
@@ -1072,9 +1126,60 @@ export function main() {
 
       });
 
+      describe('should support <type=range>', () => {
+        it('with basic use case', () => {
+          const fixture = initTest(FormControlRangeInput);
+          const control = new FormControl(10);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          // model -> view
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('10');
+
+          input.nativeElement.value = '20';
+          dispatchEvent(input.nativeElement, 'input');
+
+          // view -> model
+          expect(control.value).toEqual(20);
+        });
+
+        it('when value is cleared in the UI', () => {
+          const fixture = initTest(FormControlNumberInput);
+          const control = new FormControl(10, Validators.required);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          input.nativeElement.value = '';
+          dispatchEvent(input.nativeElement, 'input');
+
+          expect(control.valid).toBe(false);
+          expect(control.value).toEqual(null);
+
+          input.nativeElement.value = '0';
+          dispatchEvent(input.nativeElement, 'input');
+
+          expect(control.valid).toBe(true);
+          expect(control.value).toEqual(0);
+        });
+
+        it('when value is cleared programmatically', () => {
+          const fixture = initTest(FormControlNumberInput);
+          const control = new FormControl(10);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          control.setValue(null);
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('');
+        });
+      });
+
       describe('custom value accessors', () => {
         it('should support basic functionality', () => {
-          const fixture = TestBed.createComponent(WrappedValueForm);
+          const fixture = initTest(WrappedValueForm, WrappedValue);
           const form = new FormGroup({'login': new FormControl('aa')});
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -1097,7 +1202,7 @@ export function main() {
 
         it('should support non builtin input elements that fire a change event without a \'target\' property',
            () => {
-             const fixture = TestBed.createComponent(MyInputForm);
+             const fixture = initTest(MyInputForm, MyInput);
              fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
              fixture.detectChanges();
 
@@ -1112,7 +1217,7 @@ export function main() {
            });
 
         it('should support custom accessors without setDisabledState - formControlName', () => {
-          const fixture = TestBed.createComponent(WrappedValueForm);
+          const fixture = initTest(WrappedValueForm, WrappedValue);
           fixture.componentInstance.form = new FormGroup({
             'login': new FormControl({value: 'aa', disabled: true}),
           });
@@ -1126,7 +1231,7 @@ export function main() {
              TestBed.overrideComponent(
                  FormControlComp,
                  {set: {template: `<input type="text" [formControl]="control" wrapped-value>`}});
-             const fixture = TestBed.createComponent(FormControlComp);
+             const fixture = initTest(FormControlComp);
              fixture.componentInstance.control = new FormControl({value: 'aa', disabled: true});
              fixture.detectChanges();
              expect(fixture.componentInstance.control.status).toEqual('DISABLED');
@@ -1139,7 +1244,7 @@ export function main() {
     describe('ngModel interactions', () => {
 
       it('should support ngModel for complex forms', fakeAsync(() => {
-           const fixture = TestBed.createComponent(FormGroupNgModel);
+           const fixture = initTest(FormGroupNgModel);
            fixture.componentInstance.form = new FormGroup({'login': new FormControl('')});
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
@@ -1156,7 +1261,7 @@ export function main() {
          }));
 
       it('should support ngModel for single fields', fakeAsync(() => {
-           const fixture = TestBed.createComponent(FormControlNgModel);
+           const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
@@ -1173,7 +1278,7 @@ export function main() {
          }));
 
       it('should not update the view when the value initially came from the view', fakeAsync(() => {
-           const fixture = TestBed.createComponent(FormControlNgModel);
+           const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
            fixture.detectChanges();
            tick();
@@ -1193,8 +1298,26 @@ export function main() {
     });
 
     describe('validations', () => {
+      it('required validator should validate checkbox', () => {
+        const fixture = initTest(FormControlCheckboxRequiredValidator);
+        const control = new FormControl(false, Validators.requiredTrue);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        const checkbox = fixture.debugElement.query(By.css('input'));
+        expect(checkbox.nativeElement.checked).toBe(false);
+        expect(control.hasError('required')).toEqual(true);
+
+        checkbox.nativeElement.checked = true;
+        dispatchEvent(checkbox.nativeElement, 'change');
+        fixture.detectChanges();
+
+        expect(checkbox.nativeElement.checked).toBe(true);
+        expect(control.hasError('required')).toEqual(false);
+      });
+
       it('should use sync validators defined in html', () => {
-        const fixture = TestBed.createComponent(LoginIsEmptyWrapper);
+        const fixture = initTest(LoginIsEmptyWrapper, LoginIsEmptyValidator);
         const form = new FormGroup({
           'login': new FormControl(''),
           'min': new FormControl(''),
@@ -1239,7 +1362,7 @@ export function main() {
       });
 
       it('should use sync validators using bindings', () => {
-        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const fixture = initTest(ValidationBindingsForm);
         const form = new FormGroup({
           'login': new FormControl(''),
           'min': new FormControl(''),
@@ -1287,7 +1410,7 @@ export function main() {
       });
 
       it('changes on bound properties should change the validation state of the form', () => {
-        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const fixture = initTest(ValidationBindingsForm);
         const form = new FormGroup({
           'login': new FormControl(''),
           'min': new FormControl(''),
@@ -1362,7 +1485,7 @@ export function main() {
       });
 
       it('should support rebound controls with rebound validators', () => {
-        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const fixture = initTest(ValidationBindingsForm);
         const form = new FormGroup({
           'login': new FormControl(''),
           'min': new FormControl(''),
@@ -1399,7 +1522,7 @@ export function main() {
       });
 
       it('should use async validators defined in the html', fakeAsync(() => {
-           const fixture = TestBed.createComponent(UniqLoginWrapper);
+           const fixture = initTest(UniqLoginWrapper, UniqLoginValidator);
            const form = new FormGroup({'login': new FormControl('')});
            tick();
            fixture.componentInstance.form = form;
@@ -1419,7 +1542,7 @@ export function main() {
          }));
 
       it('should use sync validators defined in the model', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('aa', Validators.required)});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -1433,7 +1556,7 @@ export function main() {
       });
 
       it('should use async validators defined in the model', fakeAsync(() => {
-           const fixture = TestBed.createComponent(FormGroupComp);
+           const fixture = initTest(FormGroupComp);
            const control =
                new FormControl('', Validators.required, uniqLoginAsyncValidator('expected'));
            const form = new FormGroup({'login': control});
@@ -1464,7 +1587,7 @@ export function main() {
     describe('errors', () => {
 
       it('should throw if a form isn\'t passed into formGroup', () => {
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp(`formGroup expects a FormGroup instance`));
@@ -1478,7 +1601,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1495,7 +1618,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1514,7 +1637,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1531,7 +1654,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1550,7 +1673,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1566,7 +1689,7 @@ export function main() {
          </div>`
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
             .toThrowError(
@@ -1583,7 +1706,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.myGroup = new FormGroup({});
 
         expect(() => fixture.detectChanges())
@@ -1601,7 +1724,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.myGroup = new FormGroup({});
 
         expect(() => fixture.detectChanges()).not.toThrowError();
@@ -1619,7 +1742,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         const myGroup = new FormGroup({person: new FormGroup({})});
         fixture.componentInstance.myGroup = new FormGroup({person: new FormGroup({})});
 
@@ -1640,7 +1763,7 @@ export function main() {
         `
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.myGroup = new FormGroup({});
 
         expect(() => fixture.detectChanges())
@@ -1657,7 +1780,7 @@ export function main() {
           </form>`
           }
         });
-        const fixture = TestBed.createComponent(FormGroupComp);
+        const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'food': new FormControl('fish')});
 
         expect(() => fixture.detectChanges())
@@ -1708,9 +1831,9 @@ class MyInput implements ControlValueAccessor {
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: AbstractControl) => {
-    var resolve: (result: any) => void;
-    var promise = new Promise(res => { resolve = res; });
-    var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    let resolve: (result: any) => void;
+    const promise = new Promise(res => { resolve = res; });
+    const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     resolve(res);
     return promise;
   };
@@ -1736,23 +1859,16 @@ class LoginIsEmptyValidator {
   }]
 })
 class UniqLoginValidator implements Validator {
-  @Input('uniq-login-validator') expected: any /** TODO #9100 */;
+  @Input('uniq-login-validator') expected: any;
 
   validate(c: AbstractControl) { return uniqLoginAsyncValidator(this.expected)(c); }
 }
 
 function sortedClassList(el: HTMLElement) {
-  var l = getDOM().classList(el);
-  ListWrapper.sort(l);
-  return l;
+  return getDOM().classList(el).sort();
 }
 
-@Component({
-  selector: 'form-control-comp',
-  template: `
-    <input type="text" [formControl]="control">
-  `
-})
+@Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
   control: FormControl;
 }
@@ -1760,16 +1876,15 @@ class FormControlComp {
 @Component({
   selector: 'form-group-comp',
   template: `
-    <form [formGroup]="form" (ngSubmit)="data='submitted'">
+    <form [formGroup]="form" (ngSubmit)="event=$event">
       <input type="text" formControlName="login">
-    </form>
-  `
+    </form>`
 })
 class FormGroupComp {
   control: FormControl;
   form: FormGroup;
   myGroup: FormGroup;
-  data: string;
+  event: Event;
 }
 
 @Component({
@@ -1781,8 +1896,7 @@ class FormGroupComp {
         <input formControlName="password">
       </div>
       <input *ngIf="form.contains('email')" formControlName="email">
-    </form>
-  `
+    </form>`
 })
 class NestedFormGroupComp {
   form: FormGroup;
@@ -1790,11 +1904,17 @@ class NestedFormGroupComp {
 
 @Component({
   selector: 'form-control-number-input',
-  template: `
-    <input type="number" [formControl]="control">
-  `
+  template: `<input type="number" [formControl]="control">`
 })
 class FormControlNumberInput {
+  control: FormControl;
+}
+
+@Component({
+  selector: 'form-control-range-input',
+  template: `<input type="range" [formControl]="control">`
+})
+class FormControlRangeInput {
   control: FormControl;
 }
 
@@ -1808,8 +1928,7 @@ class FormControlNumberInput {
     <input type="radio" formControlName="drink" value="sprite">
   </form>
   <input type="radio" [formControl]="showRadio" value="yes">
-  <input type="radio" [formControl]="showRadio" value="no">
-  `
+  <input type="radio" [formControl]="showRadio" value="no">`
 })
 class FormControlRadioButtons {
   form: FormGroup;
@@ -1825,8 +1944,7 @@ class FormControlRadioButtons {
           <input [formControlName]="i">
         </div>
       </div>
-     </div>
-  `
+     </div>`
 })
 class FormArrayComp {
   form: FormGroup;
@@ -1843,8 +1961,7 @@ class FormArrayComp {
           <input formControlName="state">
         </div>
       </div>
-     </div>
-  `
+     </div>`
 })
 class FormArrayNestedGroup {
   form: FormGroup;
@@ -1858,8 +1975,7 @@ class FormArrayNestedGroup {
       <select formControlName="city">
         <option *ngFor="let c of cities" [value]="c"></option>
       </select>
-    </div>
-  `
+    </div>`
 })
 class FormControlNameSelect {
   cities = ['SF', 'NY'];
@@ -1871,8 +1987,7 @@ class FormControlNameSelect {
   template: `
    <div [formGroup]="form">
     <input type="text" formControlName="login" wrapped-value>
-  </div>
-  `
+  </div>`
 })
 class WrappedValueForm {
   form: FormGroup;
@@ -1883,8 +1998,7 @@ class WrappedValueForm {
   template: `
    <div [formGroup]="form">
       <my-input formControlName="login"></my-input>
-   </div>
-  `
+   </div>`
 })
 class MyInputForm {
   form: FormGroup;
@@ -1895,8 +2009,7 @@ class MyInputForm {
   template: `
   <div [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login">
-   </div>
-  `
+   </div>`
 })
 class FormGroupNgModel {
   form: FormGroup;
@@ -1905,9 +2018,7 @@ class FormGroupNgModel {
 
 @Component({
   selector: 'form-control-ng-model',
-  template: `
-    <input type="text" [formControl]="control" [(ngModel)]="login">
-  `
+  template: `<input type="text" [formControl]="control" [(ngModel)]="login">`
 })
 class FormControlNgModel {
   control: FormControl;
@@ -1922,8 +2033,7 @@ class FormControlNgModel {
       <input type="text" formControlName="min" minlength="3">
       <input type="text" formControlName="max" maxlength="3">
       <input type="text" formControlName="pattern" pattern=".{3,}">
-   </div>
-  `
+   </div>`
 })
 class LoginIsEmptyWrapper {
   form: FormGroup;
@@ -1937,8 +2047,7 @@ class LoginIsEmptyWrapper {
       <input name="minlength" type="text" formControlName="min" [minlength]="minLen">
       <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen">
       <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern">
-   </div>
-  `
+   </div>`
 })
 class ValidationBindingsForm {
   form: FormGroup;
@@ -1949,12 +2058,19 @@ class ValidationBindingsForm {
 }
 
 @Component({
+  selector: 'form-control-checkbox-validator',
+  template: `<input type="checkbox" [formControl]="control">`
+})
+class FormControlCheckboxRequiredValidator {
+  control: FormControl;
+}
+
+@Component({
   selector: 'uniq-login-wrapper',
   template: `
   <div [formGroup]="form">
     <input type="text" formControlName="login" uniq-login-validator="expected">
-  </div>
-  `
+  </div>`
 })
 class UniqLoginWrapper {
   form: FormGroup;

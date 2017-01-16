@@ -7,7 +7,6 @@
  */
 
 import {isPresent, scheduleMicroTask} from '../facade/lang';
-import {Math} from '../facade/math';
 
 import {AnimationPlayer} from './animation_player';
 
@@ -16,12 +15,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onStartFns: Function[] = [];
   private _finished = false;
   private _started = false;
+  private _destroyed = false;
 
   public parentPlayer: AnimationPlayer = null;
 
   constructor(private _players: AnimationPlayer[]) {
-    var count = 0;
-    var total = this._players.length;
+    let count = 0;
+    const total = this._players.length;
     if (total == 0) {
       scheduleMicroTask(() => this._onFinish());
     } else {
@@ -39,9 +39,6 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      if (!isPresent(this.parentPlayer)) {
-        this.destroy();
-      }
       this._onDoneFns.forEach(fn => fn());
       this._onDoneFns = [];
     }
@@ -77,22 +74,32 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   destroy(): void {
-    this._onFinish();
-    this._players.forEach(player => player.destroy());
+    if (!this._destroyed) {
+      this._onFinish();
+      this._players.forEach(player => player.destroy());
+      this._destroyed = true;
+    }
   }
 
-  reset(): void { this._players.forEach(player => player.reset()); }
+  reset(): void {
+    this._players.forEach(player => player.reset());
+    this._destroyed = false;
+    this._finished = false;
+    this._started = false;
+  }
 
-  setPosition(p: any /** TODO #9100 */): void {
+  setPosition(p: number): void {
     this._players.forEach(player => { player.setPosition(p); });
   }
 
   getPosition(): number {
-    var min = 0;
+    let min = 0;
     this._players.forEach(player => {
-      var p = player.getPosition();
+      const p = player.getPosition();
       min = Math.min(p, min);
     });
     return min;
   }
+
+  get players(): AnimationPlayer[] { return this._players; }
 }

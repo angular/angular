@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 
 import {resolveForwardRef} from './forward_ref';
 
@@ -32,7 +32,7 @@ export class ReflectiveKey {
    * Private
    */
   constructor(public token: Object, public id: number) {
-    if (isBlank(token)) {
+    if (!token) {
       throw new Error('Token must be defined!');
     }
   }
@@ -68,7 +68,7 @@ export class KeyRegistry {
       return this._allKeys.get(token);
     }
 
-    var newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
+    const newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
     this._allKeys.set(token, newKey);
     return newKey;
   }
@@ -76,4 +76,4 @@ export class KeyRegistry {
   get numberOfKeys(): number { return this._allKeys.size; }
 }
 
-var _globalKeyRegistry = new KeyRegistry();
+const _globalKeyRegistry = new KeyRegistry();

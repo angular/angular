@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper} from '../../src/facade/collection';
-
 const SVG_PREFIX = ':svg:';
 
 // Element | Node interfaces
@@ -60,7 +58,7 @@ export function extractSchema(): Map<string, string[]> {
   const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
   const descMap: Map<string, string[]> = new Map();
-  let visited: {[name: string]: boolean} = {};
+  const visited: {[name: string]: boolean} = {};
 
   // HTML top level
   extractProperties(Node, element, visited, descMap, ELEMENT_IF, '');
@@ -109,8 +107,9 @@ export function extractSchema(): Map<string, string[]> {
 function assertNoMissingTags(descMap: Map<string, string[]>): void {
   const extractedTags: string[] = [];
 
-  MapWrapper.keys(descMap).forEach(
-      (key: string) => { extractedTags.push(...key.split('|')[0].split('^')[0].split(',')); });
+  Array.from(descMap.keys()).forEach((key: string) => {
+    extractedTags.push(...key.split('|')[0].split('^')[0].split(','));
+  });
 
   const missingTags = ALL_HTML_TAGS.split(',').filter(tag => extractedTags.indexOf(tag) == -1);
 
@@ -180,7 +179,7 @@ function extractProperties(
   const props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
 
   const prototype = type.prototype;
-  let keys = Object.getOwnPropertyNames(prototype);
+  const keys = Object.getOwnPropertyNames(prototype);
 
   keys.sort();
   keys.forEach((name) => {

@@ -12,7 +12,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('switch', () => {
+  describe('ngPlural', () => {
     let fixture: ComponentFixture<any>;
 
     function getComponent(): TestComponent { return fixture.componentInstance; }
@@ -33,10 +33,25 @@ export function main() {
     });
 
     it('should display the template according to the exact value', async(() => {
-         const template = '<div>' +
-             '<ul [ngPlural]="switchValue">' +
+         const template = '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
              '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
+             '</ul>';
+
+         fixture = createTestComponent(template);
+
+         getComponent().switchValue = 0;
+         detectChangesAndExpectText('you have no messages.');
+
+         getComponent().switchValue = 1;
+         detectChangesAndExpectText('you have one message.');
+       }));
+
+    it('should display the template according to the exact numeric value', async(() => {
+         const template = '<div>' +
+             '<ul [ngPlural]="switchValue">' +
+             '<template ngPluralCase="0"><li>you have no messages.</li></template>' +
+             '<template ngPluralCase="1"><li>you have one message.</li></template>' +
              '</ul></div>';
 
          fixture = createTestComponent(template);
@@ -51,10 +66,9 @@ export function main() {
     // https://github.com/angular/angular/issues/9868
     // https://github.com/angular/angular/issues/9882
     it('should not throw when ngPluralCase contains expressions', async(() => {
-         const template = '<div>' +
-             '<ul [ngPlural]="switchValue">' +
+         const template = '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="=0"><li>{{ switchValue }}</li></template>' +
-             '</ul></div>';
+             '</ul>';
 
          fixture = createTestComponent(template);
 
@@ -64,11 +78,10 @@ export function main() {
 
 
     it('should be applicable to <ng-container> elements', async(() => {
-         const template = '<div>' +
-             '<ng-container [ngPlural]="switchValue">' +
+         const template = '<ng-container [ngPlural]="switchValue">' +
              '<template ngPluralCase="=0">you have no messages.</template>' +
              '<template ngPluralCase="=1">you have one message.</template>' +
-             '</ng-container></div>';
+             '</ng-container>';
 
          fixture = createTestComponent(template);
 
@@ -80,11 +93,10 @@ export function main() {
        }));
 
     it('should display the template according to the category', async(() => {
-         const template = '<div>' +
-             '<ul [ngPlural]="switchValue">' +
+         const template = '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="many"><li>you have many messages.</li></template>' +
-             '</ul></div>';
+             '</ul>';
 
          fixture = createTestComponent(template);
 
@@ -96,11 +108,10 @@ export function main() {
        }));
 
     it('should default to other when no matches are found', async(() => {
-         const template = '<div>' +
-             '<ul [ngPlural]="switchValue">' +
+         const template = '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="other"><li>default message.</li></template>' +
-             '</ul></div>';
+             '</ul>';
 
          fixture = createTestComponent(template);
 
@@ -109,11 +120,10 @@ export function main() {
        }));
 
     it('should prioritize value matches over category matches', async(() => {
-         const template = '<div>' +
-             '<ul [ngPlural]="switchValue">' +
+         const template = '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="=2">you have two messages.</template>' +
-             '</ul></div>';
+             '</ul>';
 
          fixture = createTestComponent(template);
 

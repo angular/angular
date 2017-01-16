@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {parseCookieValue} from '../../src/browser/browser_adapter';
@@ -14,7 +14,7 @@ import {parseCookieValue} from '../../src/browser/browser_adapter';
 export function main() {
   describe('cookies', () => {
     it('parses cookies', () => {
-      let cookie = 'other-cookie=false; xsrf-token=token-value; is_awesome=true; ffo=true;';
+      const cookie = 'other-cookie=false; xsrf-token=token-value; is_awesome=true; ffo=true;';
       expect(parseCookieValue(cookie, 'xsrf-token')).toBe('token-value');
     });
     it('handles encoded keys', () => {

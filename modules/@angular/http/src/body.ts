@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Json, isString} from '../src/facade/lang';
-
-import {isJsObject, stringToArrayBuffer} from './http_utils';
+import {stringToArrayBuffer} from './http_utils';
 import {URLSearchParams} from './url_search_params';
 
 
@@ -26,12 +24,12 @@ export abstract class Body {
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
   json(): any {
-    if (isString(this._body)) {
-      return Json.parse(<string>this._body);
+    if (typeof this._body === 'string') {
+      return JSON.parse(<string>this._body);
     }
 
     if (this._body instanceof ArrayBuffer) {
-      return Json.parse(this.text());
+      return JSON.parse(this.text());
     }
 
     return this._body;
@@ -49,12 +47,12 @@ export abstract class Body {
       return String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
     }
 
-    if (this._body === null) {
+    if (this._body == null) {
       return '';
     }
 
-    if (isJsObject(this._body)) {
-      return Json.stringify(this._body);
+    if (typeof this._body === 'object') {
+      return JSON.stringify(this._body, null, 2);
     }
 
     return this._body.toString();

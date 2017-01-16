@@ -5,6 +5,9 @@ import * as ts from 'typescript';
 export interface Directory { [name: string]: (Directory|string); }
 
 export class Host implements ts.LanguageServiceHost {
+  private overrides = new Map<string, string>();
+  private version = 1;
+
   constructor(private directory: Directory, private scripts: string[]) {}
 
   getCompilationSettings(): ts.CompilerOptions {
@@ -17,10 +20,10 @@ export class Host implements ts.LanguageServiceHost {
 
   getScriptFileNames(): string[] { return this.scripts; }
 
-  getScriptVersion(fileName: string): string { return '1'; }
+  getScriptVersion(fileName: string): string { return this.version.toString(); }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot {
-    let content = this.getFileContent(fileName);
+    const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
 
@@ -28,7 +31,20 @@ export class Host implements ts.LanguageServiceHost {
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
 
+  overrideFile(fileName: string, content: string) {
+    this.overrides.set(fileName, content);
+    this.version++;
+  }
+
+  addFile(fileName: string) {
+    this.scripts.push(fileName);
+    this.version++;
+  }
+
   private getFileContent(fileName: string): string {
+    if (this.overrides.has(fileName)) {
+      return this.overrides.get(fileName);
+    }
     const names = fileName.split('/');
     if (names[names.length - 1] === 'lib.d.ts') {
       return fs.readFileSync(ts.getDefaultLibFilePath(this.getCompilationSettings()), 'utf8');
@@ -109,8 +125,8 @@ export class MockSymbol implements ts.Symbol {
 
 export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
-    let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-    let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+    const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+    const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
     console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
   }
   expect(diagnostics.length).toBe(0);

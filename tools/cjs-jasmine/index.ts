@@ -1,3 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/* tslint:disable:no-var-keyword */
+
 'use strict';
 
 var glob = require('glob');
@@ -5,7 +15,6 @@ require('zone.js/dist/zone-node.js');
 var JasmineRunner = require('jasmine');
 var path = require('path');
 require('source-map-support').install();
-// require('core-js');
 require('zone.js/dist/long-stack-trace-zone.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');
@@ -43,6 +52,7 @@ var specFiles: any =
                      cwd: distAll,
                      ignore: [
                        // the following code and tests are not compatible with CJS/node environment
+                       '@angular/examples/**',
                        '@angular/platform-browser/**',
                        '@angular/platform-browser-dynamic/**',
                        '@angular/core/test/zone/**',
@@ -72,7 +82,9 @@ jrunner.specDir = '';
 require('./test-cjs-main.js');
 distAllRequire('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
 specFiles.forEach((file: string) => {
-  var r = distAllRequire(file);
-  if (r.main) r.main();
+  const r = distAllRequire(file);
+  if (r.main) {
+    r.main();
+  }
 });
 jrunner.execute();

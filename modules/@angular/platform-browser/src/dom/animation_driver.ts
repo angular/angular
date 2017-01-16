@@ -10,20 +10,26 @@ import {AnimationPlayer} from '@angular/core';
 
 import {AnimationKeyframe, AnimationStyles, NoOpAnimationPlayer} from '../private_import_core';
 
-class _NoOpAnimationDriver implements AnimationDriver {
+/**
+ * @experimental
+ */
+export class NoOpAnimationDriver implements AnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
     return new NoOpAnimationPlayer();
   }
 }
+
 
 /**
  * @experimental
  */
 export abstract class AnimationDriver {
-  static NOOP: AnimationDriver = new _NoOpAnimationDriver();
+  static NOOP: AnimationDriver = new NoOpAnimationDriver();
   abstract animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer;
+      duration: number, delay: number, easing: string,
+      previousPlayers?: AnimationPlayer[]): AnimationPlayer;
 }

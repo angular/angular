@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -106,39 +105,64 @@ function declareTests({useJit}: {useJit: boolean}) {
       }
 
       it('should support providers with an OpaqueToken that contains a `.` in the name', () => {
-        var token = new OpaqueToken('a.b');
-        var tokenValue = 1;
+        const token = new OpaqueToken('a.b');
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
       it('should support providers with string token with a `.` in it', () => {
-        var token = 'a.b';
-        var tokenValue = 1;
+        const token = 'a.b';
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      it('should support providers with an anonymous function', () => {
-        var token = () => true;
-        var tokenValue = 1;
+      it('should support providers with an anonymous function as token', () => {
+        const token = () => true;
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
       it('should support providers with an OpaqueToken that has a StringMap as value', () => {
-        var token1 = new OpaqueToken('someToken');
-        var token2 = new OpaqueToken('someToken');
-        var tokenValue1 = {'a': 1};
-        var tokenValue2 = {'a': 1};
+        const token1 = new OpaqueToken('someToken');
+        const token2 = new OpaqueToken('someToken');
+        const tokenValue1 = {'a': 1};
+        const tokenValue2 = {'a': 1};
         const injector = createInjector(
             [{provide: token1, useValue: tokenValue1}, {provide: token2, useValue: tokenValue2}]);
 
         expect(injector.get(token1)).toEqual(tokenValue1);
         expect(injector.get(token2)).toEqual(tokenValue2);
       });
+
+      it('should support providers that have a `name` property with a number value', () => {
+        class TestClass {
+          constructor(public name: number) {}
+        }
+        const data = [new TestClass(1), new TestClass(2)];
+        const injector = createInjector([{provide: 'someToken', useValue: data}]);
+        expect(injector.get('someToken')).toEqual(data);
+      });
+
+      describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
+
+        it('should support class instances', () => {
+          class SomeObject {
+            someMethod() {}
+          }
+
+          expect(
+              () => createInjector([
+                {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}
+              ]))
+              .not.toThrow();
+        });
+      });
+
     });
 
     it('should allow logging a previous elements class binding via interpolation', () => {

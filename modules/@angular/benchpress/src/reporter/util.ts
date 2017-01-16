@@ -6,28 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../facade/collection';
-import {NumberWrapper} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
 
 export function formatNum(n: number) {
-  return NumberWrapper.toFixed(n, 2);
+  return n.toFixed(2);
 }
 
 export function sortedProps(obj: {[key: string]: any}) {
-  var props: string[] = [];
-  StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
-  props.sort();
-  return props;
+  return Object.keys(obj).sort();
 }
 
 export function formatStats(validSamples: MeasureValues[], metricName: string): string {
-  var samples = validSamples.map(measureValues => measureValues.values[metricName]);
-  var mean = Statistic.calculateMean(samples);
-  var cv = Statistic.calculateCoefficientOfVariation(samples, mean);
-  var formattedMean = formatNum(mean);
+  const samples = validSamples.map(measureValues => measureValues.values[metricName]);
+  const mean = Statistic.calculateMean(samples);
+  const cv = Statistic.calculateCoefficientOfVariation(samples, mean);
+  const formattedMean = formatNum(mean);
   // Note: Don't use the unicode character for +- as it might cause
   // hickups for consoles...
-  return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
+  return isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
 }

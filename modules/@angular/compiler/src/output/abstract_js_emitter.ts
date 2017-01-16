@@ -92,7 +92,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string {
-    var fnExpr = expr.fn;
+    const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.currentClass.parent.visitExpression(this, ctx);
       ctx.print(`.call(this`);
@@ -133,7 +133,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts =
+    const catchStmts =
         [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
           o.StmtModifier.Final
         ])].concat(stmt.catchStmts);
@@ -144,11 +144,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param: any /** TODO #9100 */) => ctx.print(param.name), params, ctx, ',');
+    this.visitAllObjects(param => ctx.print(param.name), params, ctx, ',');
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name: any /** TODO #9100 */;
+    let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';

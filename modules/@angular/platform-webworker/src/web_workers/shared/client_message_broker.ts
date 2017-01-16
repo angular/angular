@@ -9,8 +9,7 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {StringMapWrapper} from '../../facade/collection';
-import {DateWrapper, StringWrapper, isPresent, print, stringify} from '../../facade/lang';
+import {isPresent, print, stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
@@ -66,15 +65,15 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     super();
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
-    var source = messageBus.from(channel);
+    const source = messageBus.from(channel);
 
     source.subscribe({next: (message: {[key: string]: any}) => this._handleMessage(message)});
   }
 
   private _generateMessageId(name: string): string {
-    var time: string = stringify(DateWrapper.toMillis(DateWrapper.now()));
-    var iteration: number = 0;
-    var id: string = name + time + stringify(iteration);
+    const time: string = stringify(new Date().getTime());
+    let iteration: number = 0;
+    let id: string = name + time + stringify(iteration);
     while (isPresent((this as any /** TODO #9100 */)._pending[id])) {
       id = `${name}${time}${iteration}`;
       iteration++;
@@ -83,7 +82,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
-    var fnArgs: any[] /** TODO #9100 */ = [];
+    const fnArgs: any[] /** TODO #9100 */ = [];
     if (isPresent(args.args)) {
       args.args.forEach(argument => {
         if (argument.type != null) {
@@ -94,8 +93,8 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
       });
     }
 
-    var promise: Promise<any>;
-    var id: string = null;
+    let promise: Promise<any>;
+    let id: string = null;
     if (returnType != null) {
       let completer: PromiseCompleter;
       promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
@@ -118,7 +117,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     }
 
     // TODO(jteplitz602): Create a class for these messages so we don't keep using StringMap #3685
-    var message = {'method': args.method, 'args': fnArgs};
+    const message = {'method': args.method, 'args': fnArgs};
     if (id != null) {
       (message as any /** TODO #9100 */)['id'] = id;
     }
@@ -128,12 +127,12 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   private _handleMessage(message: {[key: string]: any}): void {
-    var data = new MessageData(message);
+    const data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
-    if (StringWrapper.equals(data.type, 'result') || StringWrapper.equals(data.type, 'error')) {
-      var id = data.id;
+    if (data.type === 'result' || data.type === 'error') {
+      const id = data.id;
       if (this._pending.has(id)) {
-        if (StringWrapper.equals(data.type, 'result')) {
+        if (data.type === 'result') {
           this._pending.get(id).resolve(data.value);
         } else {
           this._pending.get(id).reject(data.value);
@@ -150,7 +149,7 @@ class MessageData {
   id: string;
 
   constructor(data: {[key: string]: any}) {
-    this.type = StringMapWrapper.get(data, 'type');
+    this.type = data['type'];
     this.id = this._getValueIfPresent(data, 'id');
     this.value = this._getValueIfPresent(data, 'value');
   }

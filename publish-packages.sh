@@ -14,10 +14,6 @@ fi
 
 ./build.sh
 
-echo "====== RENAMING 0.0.0-PLACEHOLDER to 2.0.0-rc.${VERSION} ======"
-find ./dist/packages-dist/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/0\\.0\\.0-PLACEHOLDER/2.0.0-rc.${VERSION}/g"
-find ./dist/packages-dist/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' "s/0\\.0\\.0-PLACEHOLDER/2.0.0-rc.${VERSION}/g"
-
 for PACKAGE in \
   core \
   compiler \

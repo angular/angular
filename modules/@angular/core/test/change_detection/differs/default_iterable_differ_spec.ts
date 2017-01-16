@@ -7,10 +7,8 @@
  */
 
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {ListWrapper} from '../../../src/facade/collection';
-import {NumberWrapper} from '../../../src/facade/lang';
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';
 
@@ -30,12 +28,12 @@ class ComplexItem {
 export function main() {
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
-      var differ: any /** TODO #9100 */;
+      let differ: any /** TODO #9100 */;
 
       beforeEach(() => { differ = new DefaultIterableDiffer(); });
 
       it('should support list and iterables', () => {
-        var f = new DefaultIterableDifferFactory();
+        const f = new DefaultIterableDifferFactory();
         expect(f.supports([])).toBeTruthy();
         expect(f.supports(new TestIterable())).toBeTruthy();
         expect(f.supports(new Map())).toBeFalsy();
@@ -43,7 +41,7 @@ export function main() {
       });
 
       it('should support iterables', () => {
-        let l = new TestIterable();
+        const l = new TestIterable();
 
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
@@ -66,7 +64,7 @@ export function main() {
       });
 
       it('should detect additions', () => {
-        let l: any[] /** TODO #9100 */ = [];
+        const l: any[] /** TODO #9100 */ = [];
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
 
@@ -108,10 +106,10 @@ export function main() {
       });
 
       it('should handle swapping element', () => {
-        let l = [1, 2];
+        const l = [1, 2];
         differ.check(l);
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push(2);
         l.push(1);
         differ.check(l);
@@ -123,11 +121,11 @@ export function main() {
       });
 
       it('should handle incremental swapping element', () => {
-        let l = ['a', 'b', 'c'];
+        const l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 1);
-        ListWrapper.insert(l, 0, 'b');
+        l.splice(1, 1);
+        l.splice(0, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
@@ -135,7 +133,7 @@ export function main() {
           moves: ['b[1->0]', 'a[0->1]']
         }));
 
-        ListWrapper.removeAt(l, 1);
+        l.splice(1, 1);
         l.push('a');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
@@ -146,7 +144,7 @@ export function main() {
       });
 
       it('should detect changes in list', () => {
-        let l: any[] /** TODO #9100 */ = [];
+        const l: any[] /** TODO #9100 */ = [];
         differ.check(l);
 
         l.push('a');
@@ -171,7 +169,7 @@ export function main() {
           additions: ['c[null->2]', 'd[null->3]']
         }));
 
-        ListWrapper.removeAt(l, 2);
+        l.splice(2, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'b', 'd[3->2]'],
@@ -180,7 +178,7 @@ export function main() {
           removals: ['c[2->null]']
         }));
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push('d');
         l.push('c');
         l.push('b');
@@ -195,11 +193,11 @@ export function main() {
       });
 
       it('should test string by value rather than by reference (Dart)', () => {
-        let l = ['a', 'boo'];
+        const l = ['a', 'boo'];
         differ.check(l);
 
-        var b = 'b';
-        var oo = 'oo';
+        const b = 'b';
+        const oo = 'oo';
         l[1] = b + oo;
         differ.check(l);
         expect(differ.toString())
@@ -207,20 +205,18 @@ export function main() {
       });
 
       it('should ignore [NaN] != [NaN] (JS)', () => {
-        let l = [NumberWrapper.NaN];
+        const l = [NaN];
         differ.check(l);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
-          collection: [NumberWrapper.NaN],
-          previous: [NumberWrapper.NaN]
-        }));
+        expect(differ.toString())
+            .toEqual(iterableChangesAsString({collection: [NaN], previous: [NaN]}));
       });
 
       it('should detect [NaN] moves', () => {
-        let l = [NumberWrapper.NaN, NumberWrapper.NaN];
+        const l: any[] = [NaN, NaN];
         differ.check(l);
 
-        ListWrapper.insert<any>(l, 0, 'foo');
+        l.unshift('foo');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
@@ -231,10 +227,10 @@ export function main() {
       });
 
       it('should remove and add same item', () => {
-        let l = ['a', 'b', 'c'];
+        const l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 1);
+        l.splice(1, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'c[2->1]'],
@@ -243,7 +239,7 @@ export function main() {
           removals: ['b[1->null]']
         }));
 
-        ListWrapper.insert(l, 1, 'b');
+        l.splice(1, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'b[null->1]', 'c[1->2]'],
@@ -255,10 +251,10 @@ export function main() {
 
 
       it('should support duplicates', () => {
-        let l = ['a', 'a', 'a', 'b', 'b'];
+        const l = ['a', 'a', 'a', 'b', 'b'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 0);
+        l.splice(0, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
@@ -269,10 +265,10 @@ export function main() {
       });
 
       it('should support insertions/moves', () => {
-        let l = ['a', 'a', 'b', 'b'];
+        const l = ['a', 'a', 'b', 'b'];
         differ.check(l);
 
-        ListWrapper.insert(l, 0, 'b');
+        l.splice(0, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
@@ -283,10 +279,10 @@ export function main() {
       });
 
       it('should not report unnecessary moves', () => {
-        let l = ['a', 'b', 'c'];
+        const l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push('b');
         l.push('a');
         l.push('c');
@@ -300,8 +296,8 @@ export function main() {
 
       describe('forEachOperation', () => {
         function stringifyItemChange(record: any, p: number, c: number, originalIndex: number) {
-          var suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
-          var value = record.item;
+          const suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
+          const value = record.item;
           if (record.currentIndex == null) {
             return `REMOVE ${value} (${p} -> VOID)${suffix}`;
           } else if (record.previousIndex == null) {
@@ -313,7 +309,7 @@ export function main() {
 
         function modifyArrayUsingOperation(
             arr: number[], endData: any[], prev: number, next: number) {
-          var value: number = null;
+          let value: number = null;
           if (prev == null) {
             value = endData[next];
             arr.splice(next, 0, value);
@@ -330,15 +326,15 @@ export function main() {
 
         it('should trigger a series of insert/move/remove changes for inputs that have been diffed',
            () => {
-             var startData = [0, 1, 2, 3, 4, 5];
-             var endData = [6, 2, 7, 0, 4, 8];
+             const startData = [0, 1, 2, 3, 4, 5];
+             const endData = [6, 2, 7, 0, 4, 8];
 
              differ = differ.diff(startData);
              differ = differ.diff(endData);
 
-             var operations: string[] = [];
+             const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -353,15 +349,15 @@ export function main() {
 
         it('should consider inserting/removing/moving items with respect to items that have not moved at all',
            () => {
-             var startData = [0, 1, 2, 3];
-             var endData = [2, 1];
+             const startData = [0, 1, 2, 3];
+             const endData = [2, 1];
 
              differ = differ.diff(startData);
              differ = differ.diff(endData);
 
-             var operations: string[] = [];
+             const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -373,15 +369,15 @@ export function main() {
            });
 
         it('should be able to manage operations within a criss/cross of move operations', () => {
-          var startData = [1, 2, 3, 4, 5, 6];
-          var endData = [3, 6, 4, 9, 1, 2];
+          const startData = [1, 2, 3, 4, 5, 6];
+          const endData = [3, 6, 4, 9, 1, 2];
 
           differ = differ.diff(startData);
           differ = differ.diff(endData);
 
-          var operations: string[] = [];
+          const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -394,15 +390,15 @@ export function main() {
         });
 
         it('should skip moves for multiple nodes that have not moved', () => {
-          var startData = [0, 1, 2, 3, 4];
-          var endData = [4, 1, 2, 3, 0, 5];
+          const startData = [0, 1, 2, 3, 4];
+          const endData = [4, 1, 2, 3, 0, 5];
 
           differ = differ.diff(startData);
           differ = differ.diff(endData);
 
-          var operations: string[] = [];
+          const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -415,15 +411,15 @@ export function main() {
         });
 
         it('should not fail', () => {
-          var startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-          var endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
+          const startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+          const endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
 
           differ = differ.diff(startData);
           differ = differ.diff(endData);
 
-          var operations: string[] = [];
+          const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -441,15 +437,15 @@ export function main() {
            () => {
              differ = new DefaultIterableDiffer((index: number) => index);
 
-             var startData = [1, 2, 3, 4];
-             var endData = [5, 6, 7, 8];
+             const startData = [1, 2, 3, 4];
+             const endData = [5, 6, 7, 8];
 
              differ = differ.diff(startData);
              differ = differ.diff(endData);
 
-             var operations: string[] = [];
+             const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -482,12 +478,11 @@ export function main() {
     });
 
     describe('trackBy function by id', function() {
-      var differ: any /** TODO #9100 */;
+      let differ: any /** TODO #9100 */;
 
-      var trackByItemId = (index: number, item: any): any => item.id;
+      const trackByItemId = (index: number, item: any): any => item.id;
 
-      var buildItemList =
-          (list: string[]) => { return list.map((val) => { return new ItemWithId(val); }); };
+      const buildItemList = (list: string[]) => list.map((val) => new ItemWithId(val));
 
       beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
 
@@ -558,10 +553,10 @@ export function main() {
       });
 
       it('should track removals normally', () => {
-        let l = buildItemList(['a', 'b', 'c']);
+        const l = buildItemList(['a', 'b', 'c']);
         differ.check(l);
 
-        ListWrapper.removeAt(l, 2);
+        l.splice(2, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['{id: a}', '{id: b}'],
@@ -571,9 +566,9 @@ export function main() {
       });
     });
     describe('trackBy function by index', function() {
-      var differ: any /** TODO #9100 */;
+      let differ: any /** TODO #9100 */;
 
-      var trackByIndex = (index: number, item: any): number => index;
+      const trackByIndex = (index: number, item: any): number => index;
 
       beforeEach(() => { differ = new DefaultIterableDiffer(trackByIndex); });
 

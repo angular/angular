@@ -7,18 +7,18 @@
  */
 
 import {DefaultKeyValueDiffer, DefaultKeyValueDifferFactory} from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {kvChangesAsString} from '../../change_detection/util';
 
 // todo(vicb): Update the code & tests for object equality
 export function main() {
   describe('keyvalue differ', function() {
     describe('DefaultKeyValueDiffer', function() {
-      var differ: DefaultKeyValueDiffer;
-      var m: Map<any, any>;
+      let differ: DefaultKeyValueDiffer<any, any>;
+      let m: Map<any, any>;
 
       beforeEach(() => {
-        differ = new DefaultKeyValueDiffer();
+        differ = new DefaultKeyValueDiffer<string, any>();
         m = new Map();
       });
 
@@ -55,7 +55,7 @@ export function main() {
       });
 
       it('should expose previous and current value', () => {
-        var previous: any /** TODO #9100 */, current: any /** TODO #9100 */;
+        let previous: any /** TODO #9100 */, current: any /** TODO #9100 */;
 
         m.set(1, 10);
         differ.check(m);
@@ -137,7 +137,7 @@ export function main() {
 
       describe('JsObject changes', () => {
         it('should support JS Object', () => {
-          var f = new DefaultKeyValueDifferFactory();
+          const f = new DefaultKeyValueDifferFactory();
           expect(f.supports({})).toBeTruthy();
           expect(f.supports('not supported')).toBeFalsy();
           expect(f.supports(0)).toBeFalsy();

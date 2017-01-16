@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export default {
   entry: '../../../dist/packages-dist/router/testing/index.js',
   dest: '../../../dist/packages-dist/router/bundles/router-testing.umd.js',
@@ -10,4 +18,4 @@ export default {
     '@angular/platform-browser': 'ng.platformBrowser',
     '@angular/router': 'ng.router'
   }
-}
+};

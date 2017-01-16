@@ -1,9 +1,17 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
 import {runBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 compiler benchmark', function() {
 
-  var URL = 'benchmarks/src/compiler/compiler_benchmark.html';
+  const URL = 'benchmarks/src/compiler/compiler_benchmark.html';
 
   afterEach(verifyNoBrowserErrors);
 
