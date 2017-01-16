@@ -667,7 +667,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
             let id = idPrefix + (idCount++);
             (<any>element[0]).id = id;
 
-            let parentInjector: Injector | ParentInjectorPromise = required[0];
+            let parentInjector: Injector|ParentInjectorPromise = required[0];
             let injectorPromise = new ParentInjectorPromise(element);
 
             const ngModel: angular.INgModelController = required[1];
@@ -701,8 +701,8 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
             function downgrade(injector: Injector) {
               const facade = new DowngradeNg2ComponentAdapter(
                   info, element, attrs, scope, ngModel, injector, parse, componentFactory);
-              facade.setupInputs();
               facade.bootstrapNg2(projectableNodes);
+              facade.setupInputs();
               facade.setupOutputs();
               facade.registerCleanup();
               injectorPromise.resolve(facade.componentRef.injector);
