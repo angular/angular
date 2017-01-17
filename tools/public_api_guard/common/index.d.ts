@@ -109,11 +109,11 @@ export declare class LowerCasePipe implements PipeTransform {
 
 /** @experimental */
 export declare class NgAttr implements DoCheck {
-  ngAttr: {
-    [attrName: string]: string;
-  };
-  constructor(_differs: KeyValueDiffers, _el: ElementRef, _renderer: Renderer);
-  ngDoCheck(): void;
+    ngAttr: {
+      [attrName: string]: string;
+    };
+    constructor(_differs: KeyValueDiffers, _el: ElementRef, _renderer: Renderer);
+    ngDoCheck(): void;
 }
 
 /** @stable */
