@@ -99,9 +99,10 @@ export class TsickleCompilerHost extends DelegatingHost {
         // Don't tsickle-process any d.ts that isn't a compilation target;
         // this means we don't process e.g. lib.d.ts.
         if (isDefinitions) return sourceFile;
-
-        let {output, externs, diagnostics} =
-            tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
+        const es2015Target = this.options.target == ts.ScriptTarget.ES2015;  // This covers ES6 too
+        let {output, externs, diagnostics} = tsickle.annotate(
+            this.oldProgram, sourceFile, {untyped: true, convertIndexImportShorthand: es2015Target},
+            this.delegate, this.options);
         this.diagnostics = diagnostics;
         return ts.createSourceFile(fileName, output, languageVersion, true);
       }

@@ -23,7 +23,8 @@ export type CodegenExtension =
         Promise<void>;
 
 export function main(
-    project: string, cliOptions: CliOptions, codegen?: CodegenExtension): Promise<any> {
+    project: string, cliOptions: CliOptions, codegen?: CodegenExtension,
+    options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
     if (fs.lstatSync(project).isFile()) {
@@ -34,7 +35,7 @@ export function main(
     const basePath = path.resolve(process.cwd(), cliOptions.basePath || projectDir);
 
     // read the configuration options from wherever you store them
-    const {parsed, ngOptions} = tsc.readConfiguration(project, basePath);
+    const {parsed, ngOptions} = tsc.readConfiguration(project, basePath, options);
     ngOptions.basePath = basePath;
     const createProgram = (host: ts.CompilerHost, oldProgram?: ts.Program) =>
         ts.createProgram(parsed.fileNames, parsed.options, host, oldProgram);
@@ -111,12 +112,17 @@ export function main(
 
 // CLI entry point
 if (require.main === module) {
-  const args = require('minimist')(process.argv.slice(2));
-  const project = args.p || args.project || '.';
-  const cliOptions = new CliOptions(args);
-  main(project, cliOptions).then((exitCode: any) => process.exit(exitCode)).catch((e: any) => {
-    console.error(e.stack);
-    console.error('Compilation failed');
-    process.exit(1);
-  });
+  const args = process.argv.slice(2);
+  let {options, fileNames, errors} = (ts as any).parseCommandLine(args);
+  check(errors);
+  const project = options.project || '.';
+  // TODO(alexeagle): command line should be TSC-compatible, remove "CliOptions" here
+  const cliOptions = new CliOptions(require('minimist')(args));
+  main(project, cliOptions, null, options)
+      .then((exitCode: any) => process.exit(exitCode))
+      .catch((e: any) => {
+        console.error(e.stack);
+        console.error('Compilation failed');
+        process.exit(1);
+      });
 }
