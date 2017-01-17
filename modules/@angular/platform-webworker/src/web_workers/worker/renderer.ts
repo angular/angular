@@ -113,8 +113,13 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     const node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
       new FnArg(parentElement, RenderStoreObject), new FnArg(name, null),
-      new FnArg(node, RenderStoreObject), new FnArg(attrs, RenderStoreObject)
+      new FnArg(node, RenderStoreObject)
     ]);
+    if (attrs) {
+      attrs.forEach(
+          (attrValue: string, attrName: string) =>
+              this.setElementAttribute(node, attrName, attrValue));
+    }
     return node;
   }
 
