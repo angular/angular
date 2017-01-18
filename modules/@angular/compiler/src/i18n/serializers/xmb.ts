@@ -9,7 +9,7 @@
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 
-import {Serializer} from './serializer';
+import {PlaceholderMapper, Serializer} from './serializer';
 import * as xml from './xml_helper';
 
 const _MESSAGES_TAG = 'messagebundle';
@@ -37,7 +37,7 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 
 <!ELEMENT ex (#PCDATA)>`;
 
-export class Xmb implements Serializer {
+export class Xmb extends Serializer {
   write(messages: i18n.Message[]): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
@@ -51,6 +51,8 @@ export class Xmb implements Serializer {
       if (visited[id]) return;
       visited[id] = true;
 
+      const mapper = this.createNameMapper(message);
+
       const attrs: {[k: string]: string} = {id};
 
       if (message.description) {
@@ -62,7 +64,8 @@ export class Xmb implements Serializer {
       }
 
       rootNode.children.push(
-          new xml.CR(2), new xml.Tag(_MESSAGE_TAG, attrs, visitor.serialize(message.nodes)));
+          new xml.CR(2),
+          new xml.Tag(_MESSAGE_TAG, attrs, visitor.serialize(message.nodes, {mapper})));
     });
 
     rootNode.children.push(new xml.CR());
@@ -82,22 +85,29 @@ export class Xmb implements Serializer {
   }
 
   digest(message: i18n.Message): string { return digest(message); }
+
+
+  createNameMapper(message: i18n.Message): PlaceholderMapper {
+    return new XmbPlaceholderMapper(message);
+  }
 }
 
 class _Visitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
+  visitText(text: i18n.Text, ctx: {mapper: PlaceholderMapper}): xml.Node[] {
+    return [new xml.Text(text.value)];
+  }
 
-  visitContainer(container: i18n.Container, context?: any): xml.Node[] {
+  visitContainer(container: i18n.Container, ctx: any): xml.Node[] {
     const nodes: xml.Node[] = [];
-    container.children.forEach((node: i18n.Node) => nodes.push(...node.visit(this)));
+    container.children.forEach((node: i18n.Node) => nodes.push(...node.visit(this, ctx)));
     return nodes;
   }
 
-  visitIcu(icu: i18n.Icu, context?: any): xml.Node[] {
+  visitIcu(icu: i18n.Icu, ctx: {mapper: PlaceholderMapper}): xml.Node[] {
     const nodes = [new xml.Text(`{${icu.expressionPlaceholder}, ${icu.type}, `)];
 
     Object.keys(icu.cases).forEach((c: string) => {
-      nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`} `));
+      nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this, ctx), new xml.Text(`} `));
     });
 
     nodes.push(new xml.Text(`}`));
@@ -105,30 +115,34 @@ class _Visitor implements i18n.Visitor {
     return nodes;
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): xml.Node[] {
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, ctx: {mapper: PlaceholderMapper}): xml.Node[] {
     const startEx = new xml.Tag(_EXEMPLE_TAG, {}, [new xml.Text(`<${ph.tag}>`)]);
-    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [startEx]);
+    let name = ctx.mapper.toPublicName(ph.startName);
+    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name}, [startEx]);
     if (ph.isVoid) {
       // void tags have no children nor closing tags
       return [startTagPh];
     }
 
     const closeEx = new xml.Tag(_EXEMPLE_TAG, {}, [new xml.Text(`</${ph.tag}>`)]);
-    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.closeName}, [closeEx]);
+    name = ctx.mapper.toPublicName(ph.closeName);
+    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name}, [closeEx]);
 
-    return [startTagPh, ...this.serialize(ph.children), closeTagPh];
+    return [startTagPh, ...this.serialize(ph.children, ctx), closeTagPh];
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
+  visitPlaceholder(ph: i18n.Placeholder, ctx: {mapper: PlaceholderMapper}): xml.Node[] {
+    const name = ctx.mapper.toPublicName(ph.name);
+    return [new xml.Tag(_PLACEHOLDER_TAG, {name})];
   }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, ctx: {mapper: PlaceholderMapper}): xml.Node[] {
+    const name = ctx.mapper.toPublicName(ph.name);
+    return [new xml.Tag(_PLACEHOLDER_TAG, {name})];
   }
 
-  serialize(nodes: i18n.Node[]): xml.Node[] {
-    return [].concat(...nodes.map(node => node.visit(this)));
+  serialize(nodes: i18n.Node[], ctx: {mapper: PlaceholderMapper}): xml.Node[] {
+    return [].concat(...nodes.map(node => node.visit(this, ctx)));
   }
 }
 
@@ -157,4 +171,70 @@ class ExampleVisitor implements xml.IVisitor {
   visitText(text: xml.Text): void {}
   visitDeclaration(decl: xml.Declaration): void {}
   visitDoctype(doctype: xml.Doctype): void {}
+}
+
+/**
+ * XMB/XTB placeholders can only contain A-Z, 0-9 and _
+ *
+ * Because such restrictions do not exist on placeholder names generated locally, the
+ * `PlaceholderMapper` is used to convert internal names to XMB names when the XMB file is
+ * serialized and back from XTB to internal names when an XTB is loaded.
+ */
+export class XmbPlaceholderMapper implements PlaceholderMapper, i18n.Visitor {
+  private internalToXmb: {[k: string]: string} = {};
+  private xmbToNextId: {[k: string]: number} = {};
+  private xmbToInternal: {[k: string]: string} = {};
+
+  // create a mapping from the message
+  constructor(message: i18n.Message) { message.nodes.forEach(node => node.visit(this)); }
+
+  toPublicName(internalName: string): string {
+    return this.internalToXmb.hasOwnProperty(internalName) ? this.internalToXmb[internalName] :
+                                                             null;
+  }
+
+  toInternalName(publicName: string): string {
+    return this.xmbToInternal.hasOwnProperty(publicName) ? this.xmbToInternal[publicName] : null;
+  }
+
+  visitText(text: i18n.Text, ctx?: any): any { return null; }
+
+  visitContainer(container: i18n.Container, ctx?: any): any {
+    container.children.forEach(child => child.visit(this));
+  }
+
+  visitIcu(icu: i18n.Icu, ctx?: any): any {
+    Object.keys(icu.cases).forEach(k => { icu.cases[k].visit(this); });
+  }
+
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, ctx?: any): any {
+    this.addPlaceholder(ph.startName);
+    ph.children.forEach(child => child.visit(this));
+    this.addPlaceholder(ph.closeName);
+  }
+
+  visitPlaceholder(ph: i18n.Placeholder, ctx?: any): any { this.addPlaceholder(ph.name); }
+
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, ctx?: any): any { this.addPlaceholder(ph.name); }
+
+  // XMB placeholders could only contains A-Z, 0-9 and _
+  private addPlaceholder(internalName: string): void {
+    if (!internalName || this.internalToXmb.hasOwnProperty(internalName)) {
+      return;
+    }
+
+    let xmbName = internalName.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
+
+    if (this.xmbToInternal.hasOwnProperty(xmbName)) {
+      // Create a new XMB when it has already been used
+      const nextId = this.xmbToNextId[xmbName];
+      this.xmbToNextId[xmbName] = nextId + 1;
+      xmbName = `${xmbName}_${nextId}`;
+    } else {
+      this.xmbToNextId[xmbName] = 1;
+    }
+
+    this.internalToXmb[internalName] = xmbName;
+    this.xmbToInternal[xmbName] = internalName;
+  }
 }
