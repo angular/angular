@@ -66,7 +66,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   private _value: any = null;
 
   /** The HTML name attribute applied to toggles in this group. */
-  private _name: string = `md-radio-group-${_uniqueIdCounter++}`;
+  private _name: string = `md-button-toggle-group-${_uniqueIdCounter++}`;
 
   /** Disables all toggles in the group. */
   private _disabled: boolean = null;
