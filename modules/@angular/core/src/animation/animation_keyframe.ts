@@ -8,6 +8,9 @@
 
 import {AnimationStyles} from './animation_styles';
 
+/**
+ * @experimental
+ */
 export class AnimationKeyframe {
   constructor(public offset: number, public styles: AnimationStyles) {}
 }
