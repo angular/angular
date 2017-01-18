@@ -113,7 +113,7 @@ describe('tsc-wrapped', () => {
           // No helpers since decorators were lowered
           expect(out).not.toContain('__decorate');
           // Expand `export *`
-          expect(out).toContain('export { A, B }');
+          expect(out).toContain(`export { A, B } from './dep/index'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           // Comments should stay multi-line
