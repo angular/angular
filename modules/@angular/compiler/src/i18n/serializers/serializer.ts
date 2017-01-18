@@ -8,10 +8,26 @@
 
 import * as i18n from '../i18n_ast';
 
-export interface Serializer {
-  write(messages: i18n.Message[]): string;
+export abstract class Serializer {
+  abstract write(messages: i18n.Message[]): string;
 
-  load(content: string, url: string): {[msgId: string]: i18n.Node[]};
+  abstract load(content: string, url: string): {[msgId: string]: i18n.Node[]};
 
-  digest(message: i18n.Message): string;
+  abstract digest(message: i18n.Message): string;
+
+  // Creates a name mapper, see `PlaceholderMapper`
+  // Returning `null` means that no name mapping is used.
+  createNameMapper(message: i18n.Message): PlaceholderMapper { return null; }
+}
+
+/**
+ * A `PlaceholderMapper` converts placeholder names from internal to serialized representation and
+ * back.
+ *
+ * It should be used for serialization format that put constraints on the placeholder names.
+ */
+export interface PlaceholderMapper {
+  toPublicName(internalName: string): string;
+
+  toInternalName(publicName: string): string;
 }

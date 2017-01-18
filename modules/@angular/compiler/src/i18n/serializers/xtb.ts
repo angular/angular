@@ -11,14 +11,14 @@ import {XmlParser} from '../../ml_parser/xml_parser';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
-import {Serializer} from './serializer';
-import {digest} from './xmb';
+import {PlaceholderMapper, Serializer} from './serializer';
+import {XmbPlaceholderMapper, digest} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
-export class Xtb implements Serializer {
+export class Xtb extends Serializer {
   write(messages: i18n.Message[]): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
@@ -43,6 +43,10 @@ export class Xtb implements Serializer {
   }
 
   digest(message: i18n.Message): string { return digest(message); }
+
+  createNameMapper(message: i18n.Message): PlaceholderMapper {
+    return new XmbPlaceholderMapper(message);
+  }
 }
 
 // Extract messages as xml nodes from the xtb file
