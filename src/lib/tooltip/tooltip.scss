@@ -3,6 +3,7 @@
 
 
 $md-tooltip-target-height: 22px;
+$md-tooltip-max-width: 250px;
 $md-tooltip-font-size: 10px;
 $md-tooltip-margin: 14px;
 $md-tooltip-horizontal-padding: 8px;
@@ -19,6 +20,7 @@ $md-tooltip-vertical-padding: ($md-tooltip-target-height - $md-tooltip-font-size
   font-family: $md-font-family;
   font-size: $md-tooltip-font-size;
   margin: $md-tooltip-margin;
+  max-width: $md-tooltip-max-width;
 
   @include cdk-high-contrast {
     outline: solid 1px;
