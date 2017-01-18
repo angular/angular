@@ -961,7 +961,7 @@ export class PreActivation {
 
     return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
       const obs = map.call(from(d.guards), (c: any) => {
-        const guard = this.getToken(c, c.node);
+        const guard = this.getToken(c, d.node);
         let observable: Observable<boolean>;
         if (guard.canActivateChild) {
           observable = wrapIntoObservable(guard.canActivateChild(future, this.future));
