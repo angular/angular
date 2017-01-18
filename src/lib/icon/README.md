@@ -38,13 +38,6 @@ For both types of font icons, you can specify the default font class to use when
 
 When an `md-icon` component displays an SVG icon, it does so by directly inlining the SVG content into the page as a child of the component. (Rather than using an <img> tag or a div background image). This makes it easier to apply CSS styles to SVG icons. For example, the default color of the SVG content is the CSS [currentColor](http://www.quirksmode.org/css/color/currentcolor.html) value. This makes SVG icons by default have the same color as surrounding text, and allows you to change the color by setting the "color" style on the `md-icon` element.
 
-### Icons from URLs
-
-SVG icons can be used either by directly specifying the icon's URL, or by associating an icon name with a URL and then referring to the name. To use a URL directly, set the `svgSrc` input:
-```html
-<md-icon svgSrc="/assets/sun.svg"></md-icon>
-```
-
 ### Named icons
 
 To associate a name with an icon URL, use the `addSvgIcon` or `addSvgIconInNamespace` methods of `MdIconRegistry`. After registering an icon, it can be displayed by setting the `svgIcon` input. For an icon in the default namespace, use the name directly. For a non-default namespace, use the format `[namespace]:[name]`. Examples:
@@ -112,7 +105,6 @@ md-icon Properties:
 
 | Name         | Type     | Description |
 | ---          | ---      | --- |
-| `svgSrc`     | string   | The URL of the SVG icon to display |
 | `svgIcon`    | string   | The name (and possibly namespace) of an icon previously registered with `MdIconRegistry.addSvgIcon` or `MdIconRegistry.addSvgIconInNamespace` |
 | `fontSet`    | string   | The font to use to display an icon glyph. The value can be either a CSS class name, or an alias previously defined with `MdIconRegistry.registerFontClassAlias` |
 | `fontIcon`   | string   | The CSS class that identifies the specific icon to use from an icon font |
