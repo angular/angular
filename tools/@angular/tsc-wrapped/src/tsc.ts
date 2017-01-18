@@ -97,7 +97,7 @@ export class Tsc implements CompilerInterface {
 
   constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
 
-  readConfiguration(project: string, basePath: string, existingOptions?: ts.CompilerOptions) {
+  readConfiguration(project: any, basePath: string, existingOptions?: ts.CompilerOptions) {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
@@ -110,7 +110,16 @@ export class Tsc implements CompilerInterface {
       // Was not a directory, continue on assuming it's a file
     }
 
-    const {config, error} = ts.readConfigFile(project, this.readFile);
+    let {config, error} = (() => {
+      // project is vinyl like file object
+      if (project.contents) {
+        return {config: JSON.parse(project.contents.toString()), error: null};
+      }
+      // project is path to project file
+      else {
+        return ts.readConfigFile(project, this.readFile);
+      }
+    })();
     check([error]);
 
     // Do not inline `host` into `parseJsonConfigFileContent` until after

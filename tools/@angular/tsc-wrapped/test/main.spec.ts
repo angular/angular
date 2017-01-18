@@ -91,6 +91,44 @@ describe('tsc-wrapped', () => {
         .catch(e => done.fail(e));
   });
 
+  it('should pre-process sources using config from vinyl like object', (done) => {
+    const config = {
+      path: basePath + '/tsconfig.json',
+      contents: new Buffer(JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          types: [],
+          outDir: 'built',
+          declaration: true,
+          module: 'es2015'
+        },
+        angularCompilerOptions: {annotateForClosureCompiler: true},
+        files: ['test.ts']
+      }))
+    };
+
+    main(config, {basePath})
+        .then(() => {
+          const out = readOut('js');
+          // No helpers since decorators were lowered
+          expect(out).not.toContain('__decorate');
+          // Expand `export *`
+          expect(out).toContain('export { A, B }');
+          // Annotated for Closure compiler
+          expect(out).toContain('* @param {?} x');
+          // Comments should stay multi-line
+          expect(out).not.toContain('Comment that is multiple lines');
+          // Decorator is now an annotation
+          expect(out).toMatch(/Comp.decorators = \[\s+\{ type: Component/);
+          const decl = readOut('d.ts');
+          expect(decl).toContain('declare class Comp');
+          const metadata = readOut('metadata.json');
+          expect(metadata).toContain('"Comp":{"__symbolic":"class"');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
   it('should allow all options disabled', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {

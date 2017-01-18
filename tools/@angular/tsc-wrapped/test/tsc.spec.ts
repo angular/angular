@@ -7,12 +7,11 @@
  */
 
 import * as ts from 'typescript';
-import {Tsc} from '../src/tsc';
+import {Tsc, tsc} from '../src/tsc';
 
 describe('options parsing', () => {
 
-  const tsc = new Tsc(
-      () => `
+  const configData = `
 {
     "angularCompilerOptions": {
         "googleClosureOutput": true
@@ -21,8 +20,10 @@ describe('options parsing', () => {
         "module": "commonjs",
         "outDir": "built"
     }
-}`,
-      () => ['tsconfig.json']);
+}`;
+
+  const tsc = new Tsc(() => configData, () => ['tsconfig.json']);
+  const config = {contents: new Buffer(configData)};
 
   it('should combine all options into ngOptions', () => {
     const {parsed, ngOptions} =
@@ -35,6 +36,18 @@ describe('options parsing', () => {
       outDir: 'basePath/built',
       configFilePath: undefined,
       target: ts.ScriptTarget.ES2015
+    });
+  });
+
+  it('should combine all options into ngOptions from vinyl like object', () => {
+    const {parsed, ngOptions} = tsc.readConfiguration(config, 'basePath');
+
+    expect(ngOptions).toEqual({
+      genDir: 'basePath',
+      googleClosureOutput: true,
+      module: ts.ModuleKind.CommonJS,
+      outDir: 'basePath/built',
+      configFilePath: undefined
     });
   });
 });

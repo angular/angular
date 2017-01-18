@@ -23,11 +23,16 @@ export type CodegenExtension =
         Promise<void>;
 
 export function main(
-    project: string, cliOptions: CliOptions, codegen?: CodegenExtension,
+    project: any, cliOptions: CliOptions, codegen?: CodegenExtension,
     options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
-    if (fs.lstatSync(project).isFile()) {
+    // project is vinyl like file object
+    if (project.path) {
+      projectDir = path.dirname(project.path);
+    }
+    // project is path to project file
+    else if (fs.lstatSync(project).isFile()) {
       projectDir = path.dirname(project);
     }
 
