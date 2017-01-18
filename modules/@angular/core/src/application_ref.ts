@@ -14,7 +14,6 @@ import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, Optional, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
