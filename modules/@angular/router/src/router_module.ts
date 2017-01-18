@@ -13,6 +13,7 @@ import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {HELMET_CONFIG} from './helmet';
 import {getDOM} from './private_import_platform-browser';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
@@ -62,6 +63,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
   NoPreloading,
   PreloadAllModules,
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}},
+  {provide: HELMET_CONFIG, useValue: {}},
 ];
 
 export function routerNgProbeToken() {

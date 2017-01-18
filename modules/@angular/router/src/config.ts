@@ -7,7 +7,9 @@
  */
 
 import {Type} from '@angular/core';
+import {MetaDefinition} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
+
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -288,13 +290,34 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
     UrlMatchResult;
 
 /**
+ * @whatItDoes Represents.
+ *
+ * ```
+ * head: {
+ *     title: 'Home page',
+ *     meta: [
+ *         {'name': 'description', 'content': 'My application'},
+ *         {'property': 'og:type', 'content': 'article'}
+ *    ]
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export interface Head {
+  title?: string;
+  meta?: MetaDefinition[];
+}
+
+/**
  * @whatItDoes Represents the static data associated with a particular route.
  * See {@link Routes} for more details.
  * @stable
  */
-export type Data = {
-  [name: string]: any
-};
+export interface Data {
+  head?: Head;
+  [name: string]: any;
+}
 
 /**
  * @whatItDoes Represents the resolved data associated with a particular route.
@@ -302,7 +325,7 @@ export type Data = {
  * @stable
  */
 export type ResolveData = {
-  [name: string]: any
+  [name: string]: any;
 };
 
 /**
