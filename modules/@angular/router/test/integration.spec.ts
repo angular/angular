@@ -1857,6 +1857,47 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/team/22');
            })));
       });
+
+      it('should find the guard provided in lazy loaded module',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
+               class AdminComponent {
+               }
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [AdminComponent, LazyLoadedComponent],
+                 imports: [RouterModule.forChild([{
+                   path: '',
+                   component: AdminComponent,
+                   children: [{
+                     path: '',
+                     canActivateChild: ['alwaysTrue'],
+                     children: [{path: '', component: LazyLoadedComponent}]
+                   }]
+                 }])],
+                 providers: [{provide: 'alwaysTrue', useValue: () => true}],
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{path: 'admin', loadChildren: 'lazy'}]);
+
+               router.navigateByUrl('/admin');
+               advance(fixture);
+
+               expect(location.path()).toEqual('/admin');
+               expect(fixture.nativeElement).toHaveText('lazy-loaded');
+             })));
     });
 
     describe('CanLoad', () => {
