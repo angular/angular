@@ -85,7 +85,7 @@ export interface ExtraOptions {
 export declare type LoadChildren = string | LoadChildrenCallback;
 
 /** @stable */
-export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
+export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>>;
 
 /** @stable */
 export declare class NavigationCancel {
