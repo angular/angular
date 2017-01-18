@@ -46,7 +46,11 @@ gulp.task('test:single-run', [':test:deps:inline'], (done: () => void) => {
   new karma.Server({
     configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
     singleRun: true
-  }, done).start();
+  }, (exitCode: number) => {
+    // Immediately exit the process if Karma reported errors, because due to
+    // potential still running tunnel-browsers gulp won't exit properly.
+    exitCode === 0 ? done() : process.exit(exitCode);
+  }).start();
 });
 
 /**
