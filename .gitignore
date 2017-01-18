@@ -33,4 +33,3 @@
 npm-debug.log
 testem.log
 /.chrome
-yarn.lock
