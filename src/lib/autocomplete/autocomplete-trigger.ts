@@ -1,10 +1,13 @@
-import {Directive, ElementRef, Input, ViewContainerRef, OnDestroy} from '@angular/core';
+import {
+  Directive, ElementRef, Input, ViewContainerRef, Optional, OnDestroy
+} from '@angular/core';
 import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
+import {Dir} from '../core/rtl/dir';
 
 /** The panel needs a slight y-offset to ensure the input underline displays. */
 export const MD_AUTOCOMPLETE_PANEL_OFFSET = 6;
@@ -27,7 +30,7 @@ export class MdAutocompleteTrigger implements OnDestroy {
   @Input('mdAutocomplete') autocomplete: MdAutocomplete;
 
   constructor(private _element: ElementRef, private _overlay: Overlay,
-              private _viewContainerRef: ViewContainerRef) {}
+              private _viewContainerRef: ViewContainerRef, @Optional() private _dir: Dir) {}
 
   ngOnDestroy() { this._destroyPanel(); }
 
@@ -95,6 +98,7 @@ export class MdAutocompleteTrigger implements OnDestroy {
     overlayState.width = this._getHostWidth();
     overlayState.hasBackdrop = true;
     overlayState.backdropClass = 'md-overlay-transparent-backdrop';
+    overlayState.direction = this._dir ? this._dir.value : 'ltr';
     return overlayState;
   }
 

@@ -4,11 +4,14 @@ import {By} from '@angular/platform-browser';
 import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
+import {Dir, LayoutDirection} from '../core/rtl/dir';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
+  let dir: LayoutDirection;
 
   beforeEach(async(() => {
+    dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [MdAutocompleteModule.forRoot(), MdInputModule.forRoot()],
       declarations: [SimpleAutocomplete],
@@ -22,6 +25,9 @@ describe('MdAutocomplete', () => {
           document.body.style.margin = '0';
 
           return {getContainerElement: () => overlayContainerElement};
+        }},
+        {provide: Dir, useFactory: () => {
+          return {value: dir};
         }},
       ]
     });
@@ -133,6 +139,19 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+  });
+
+  it('should have the correct text direction in RTL', () => {
+    dir = 'rtl';
+
+    const fixture = TestBed.createComponent(SimpleAutocomplete);
+    fixture.detectChanges();
+
+    fixture.componentInstance.trigger.openPanel();
+    fixture.detectChanges();
+
+    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
+    expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
 });
