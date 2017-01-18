@@ -9,7 +9,8 @@ import {MdDialogRef} from './dialog-ref';
   selector: 'button[md-dialog-close], button[mat-dialog-close]',
   host: {
     '(click)': 'dialogRef.close()',
-    '[attr.aria-label]': 'ariaLabel'
+    '[attr.aria-label]': 'ariaLabel',
+    'type': 'button', // Prevents accidental form submits.
   }
 })
 export class MdDialogClose {

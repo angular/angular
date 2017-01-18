@@ -343,6 +343,12 @@ describe('MdDialog', () => {
       expect(button.getAttribute('aria-label')).toBe('Best close button ever');
     });
 
+    it('should override the "type" attribute of the close button', () => {
+      let button = overlayContainerElement.querySelector('button[md-dialog-close]');
+
+      expect(button.getAttribute('type')).toBe('button');
+    });
+
   });
 });
 
