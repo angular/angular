@@ -100,7 +100,8 @@ describe('tsc-wrapped', () => {
           types: [],
           outDir: 'built',
           declaration: true,
-          module: 'es2015'
+          moduleResolution: 'node',
+          target: 'es2015'
         },
         angularCompilerOptions: {annotateForClosureCompiler: true},
         files: ['test.ts']
@@ -112,7 +113,7 @@ describe('tsc-wrapped', () => {
           const out = readOut('js');
           // No helpers since decorators were lowered
           expect(out).not.toContain('__decorate');
-          // Expand `export *`
+          // Expand `export *` and fix index import
           expect(out).toContain(`export { A, B } from './dep/index'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
