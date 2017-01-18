@@ -12,7 +12,10 @@ import {
   transition,
   AnimationTransitionEvent,
   ElementRef,
-  Optional
+  Optional,
+  ChangeDetectorRef,
+  AfterViewChecked,
+  AfterContentChecked,
 } from '@angular/core';
 import {TemplatePortal, PortalHostDirective, Dir, LayoutDirection} from '../core';
 import 'rxjs/add/operator/map';
@@ -65,7 +68,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
     ])
   ]
 })
-export class MdTabBody implements OnInit {
+export class MdTabBody implements OnInit, AfterViewChecked, AfterContentChecked {
   /** The portal host inside of this container into which the tab body content will be loaded. */
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
@@ -92,6 +95,10 @@ export class MdTabBody implements OnInit {
     }
   }
 
+  /** Whether the element is allowed to be animated. */
+  _canBeAnimated: boolean = false;
+
+  /** The origin position from which this tab should appear when it is centered into view. */
   _origin: MdTabBodyOriginState;
 
   /** The origin position from which this tab should appear when it is centered into view. */
@@ -106,7 +113,10 @@ export class MdTabBody implements OnInit {
     }
   }
 
-  constructor(private _elementRef: ElementRef, @Optional() private _dir: Dir) {}
+  constructor(
+    @Optional() private _dir: Dir,
+    private _elementRef: ElementRef,
+    private _changeDetectorRef: ChangeDetectorRef) { }
 
   /**
    * After initialized, check if the content is centered and has an origin. If so, set the
@@ -125,6 +135,28 @@ export class MdTabBody implements OnInit {
   ngAfterViewChecked() {
     if (this._isCenterPosition(this._position) && !this._portalHost.hasAttached()) {
       this._portalHost.attach(this._content);
+    }
+  }
+
+  /**
+   * After the content has been checked, determines whether the element should be allowed to
+   * animate. This has to be limited, because under a specific set of circumstances (see #2151),
+   * the animations can be triggered too early, which either crashes Chrome by putting it into an
+   * infinite loop (with Angular < 2.3.0) or throws an error because the element doesn't have a
+   * computed style (with Angular > 2.3.0). This can alternatively be determined by checking the
+   * transform: canBeAnimated = getComputedStyle(element) !== '', however document.contains should
+   * be faster since it doesn't cause a reflow.
+   *
+   * TODO: This can safely be removed after we stop supporting Angular < 2.4.2. The fix landed via
+   * https://github.com/angular/angular/commit/21030e9a1cf30e8101399d8535ed72d847a23ba6
+   */
+  ngAfterContentChecked() {
+    if (!this._canBeAnimated) {
+      this._canBeAnimated = document.body.contains(this._elementRef.nativeElement);
+
+      if (this._canBeAnimated) {
+        this._changeDetectorRef.markForCheck();
+      }
     }
   }
 
@@ -150,7 +182,6 @@ export class MdTabBody implements OnInit {
   _getLayoutDirection(): LayoutDirection {
     return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
-
 
   /** Whether the provided position state is considered center, regardless of origin. */
   private _isCenterPosition(position: MdTabBodyPositionState|string): boolean {

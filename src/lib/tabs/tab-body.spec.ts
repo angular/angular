@@ -168,6 +168,20 @@ describe('MdTabBody', () => {
       expect(fixture.componentInstance.mdTabBody._portalHost.hasAttached()).toBe(false);
     }));
   });
+
+  it('it should toggle the canBeAnimated flag', () => {
+    let fixture: ComponentFixture<SimpleTabBodyApp>;
+    let tabBody: MdTabBody;
+
+    fixture = TestBed.createComponent(SimpleTabBodyApp);
+    tabBody = fixture.componentInstance.mdTabBody;
+
+    expect(tabBody._canBeAnimated).toBe(false);
+
+    fixture.detectChanges();
+
+    expect(tabBody._canBeAnimated).toBe(true);
+  });
 });
 
 
