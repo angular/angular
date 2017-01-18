@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgModuleFactory} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -126,7 +127,8 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
   return every.call(merged$, (result: any) => result === true);
 }
 
-export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
+export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
+    Observable<T> {
   if (value instanceof Observable) {
     return value;
   }
