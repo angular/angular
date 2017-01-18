@@ -4,13 +4,16 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
 
-  md-option {
+  .md-autocomplete-panel {
     background: md-color($background, card);
     color: md-color($foreground, text);
 
-    &.md-selected {
-      background: md-color($background, card);
-      color: md-color($foreground, text);
+    md-option {
+      &.md-selected {
+        background: md-color($background, card);
+        color: md-color($foreground, text);
+      }
     }
   }
+
 }
