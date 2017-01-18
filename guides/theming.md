@@ -40,6 +40,10 @@ The actual path will depend on your server setup.
 
 You can also concatenate the file with the rest of your application's css.
 
+Finally, if your app's content **is not** placed inside of a `md-sidenav-container` element, you
+need to add the `md-app-background` class to your wrapper element (for example the `body`). This
+ensures that the proper theme background is applied to your page.
+
 ### Defining a custom theme
 When you want more customization than a pre-built theme offers, you can create your own theme file.
 
@@ -98,7 +102,7 @@ secondary dark theme:
 
   $dark-theme: md-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
-  @include angular-material-theme($dark-theme);   
+  @include angular-material-theme($dark-theme);
 }
 ```
 

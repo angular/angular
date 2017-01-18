@@ -27,4 +27,11 @@
 @mixin md-core-theme($theme) {
   @include md-ripple-theme($theme);
   @include md-option-theme($theme);
+
+  // Wrapper element that provides the theme background when the
+  // user's content isn't inside of a `md-sidenav-container`.
+  .md-app-background {
+    $background: map-get($theme, background);
+    background-color: md-color($background, background);
+  }
 }
