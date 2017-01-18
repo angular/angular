@@ -113,7 +113,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   private _setTileStyler(): void {
     if (this._rowHeight === MD_FIT_MODE) {
       this._tileStyler = new FitTileStyler();
-    } else if (this._rowHeight && this._rowHeight.match(/:/g)) {
+    } else if (this._rowHeight && this._rowHeight.indexOf(':') > -1) {
       this._tileStyler = new RatioTileStyler(this._rowHeight);
     } else {
       this._tileStyler = new FixedTileStyler(this._rowHeight);
@@ -122,16 +122,15 @@ export class MdGridList implements OnInit, AfterContentChecked {
 
   /** Computes and applies the size and position for all children grid tiles. */
   private _layoutTiles(): void {
-    let tiles = this._tiles.toArray();
-    let tracker = new TileCoordinator(this.cols, tiles);
+    let tracker = new TileCoordinator(this.cols, this._tiles);
     let direction = this._dir ? this._dir.value : 'ltr';
     this._tileStyler.init(this.gutterSize, tracker, this.cols, direction);
 
-    for (let i = 0; i < tiles.length; i++) {
-      let pos = tracker.positions[i];
-      let tile = tiles[i];
+    this._tiles.forEach((tile, index) => {
+      let pos = tracker.positions[index];
       this._tileStyler.setStyle(tile, pos.row, pos.col);
-    }
+    });
+
     this._setListStyle(this._tileStyler.getComputedHeight());
   }
 

@@ -1,3 +1,4 @@
+import {QueryList} from '@angular/core';
 import {MdGridTile} from './grid-tile';
 import {MdGridTileTooWideError} from './grid-list-errors';
 
@@ -43,7 +44,7 @@ export class TileCoordinator {
   /** The computed (row, col) position of each tile (the output). */
   positions: TilePosition[];
 
-  constructor(numColumns: number, tiles: MdGridTile[]) {
+  constructor(numColumns: number, tiles: QueryList<MdGridTile>) {
     this.tracker = new Array(numColumns);
     this.tracker.fill(0, 0, this.tracker.length);
 
