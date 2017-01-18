@@ -39,6 +39,9 @@ export class MdTabChangeEvent {
   tab: MdTab;
 }
 
+/** Possible positions for the tab header. */
+export type MdTabHeaderPosition = 'above' | 'below';
+
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
  * animated ink-bar, keyboard navigation, and screen reader.
@@ -49,7 +52,10 @@ export class MdTabChangeEvent {
   selector: 'md-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
-  host: { '[class.md-tab-group-dynamic-height]': 'dynamicHeight' }
+  host: {
+    '[class.md-tab-group-dynamic-height]': 'dynamicHeight',
+    '[class.md-tab-group-inverted-header]': 'headerPosition === "below"',
+  }
 })
 export class MdTabGroup {
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
@@ -82,6 +88,10 @@ export class MdTabGroup {
   @Input()
   set selectedIndex(value: number) { this._indexToSelect = value; }
   get selectedIndex(): number { return this._selectedIndex; }
+
+  /** Position of the tab header. */
+  @Input()
+  headerPosition: MdTabHeaderPosition = 'above';
 
   /** Output to enable support for two-way binding on `selectedIndex`. */
   @Output() get selectedIndexChange(): Observable<number> {

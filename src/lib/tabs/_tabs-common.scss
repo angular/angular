@@ -39,4 +39,9 @@ $md-tab-animation-duration: 500ms !default;
   bottom: 0;
   height: 2px;
   transition: $md-tab-animation-duration $ease-in-out-curve-function;
+
+  .md-tab-group-inverted-header & {
+    bottom: auto;
+    top: 0;
+  }
 }

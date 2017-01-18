@@ -6,6 +6,10 @@
   display: flex;
   flex-direction: column;
   font-family: $md-font-family;
+
+  &.md-tab-group-inverted-header {
+    flex-direction: column-reverse;
+  }
 }
 
 // Wraps each tab label
