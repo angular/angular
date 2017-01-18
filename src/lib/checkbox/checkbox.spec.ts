@@ -104,6 +104,39 @@ describe('MdCheckbox', () => {
       expect(inputElement.indeterminate).toBe(false);
     });
 
+    it('should set indeterminate to false when set checked', () => {
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.indeterminate).toBe(true);
+      expect(inputElement.indeterminate).toBe(true);
+      expect(testComponent.isIndeterminate).toBe(true);
+
+      testComponent.isChecked = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(inputElement.indeterminate).toBe(false);
+      expect(inputElement.checked).toBe(true);
+      expect(testComponent.isIndeterminate).toBe(false);
+
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.indeterminate).toBe(true);
+      expect(inputElement.indeterminate).toBe(true);
+      expect(inputElement.checked).toBe(true);
+      expect(testComponent.isIndeterminate).toBe(true);
+
+      testComponent.isChecked = false;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(inputElement.indeterminate).toBe(false);
+      expect(inputElement.checked).toBe(false);
+      expect(testComponent.isIndeterminate).toBe(false);
+    });
+
     it('should change native element checked when check programmatically', () => {
       expect(inputElement.checked).toBe(false);
 
@@ -627,7 +660,7 @@ describe('MdCheckbox', () => {
         [required]="isRequired"
         [labelPosition]="labelPos"
         [checked]="isChecked"
-        [indeterminate]="isIndeterminate"
+        [(indeterminate)]="isIndeterminate"
         [disabled]="isDisabled"
         [color]="checkboxColor"
         (change)="changeCount = changeCount + 1"

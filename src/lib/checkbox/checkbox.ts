@@ -147,6 +147,9 @@ export class MdCheckbox implements ControlValueAccessor {
   /** Event emitted when the checkbox's `checked` value changes. */
   @Output() change: EventEmitter<MdCheckboxChange> = new EventEmitter<MdCheckboxChange>();
 
+  /** Event emitted when the checkbox's `indeterminate` value changes. */
+  @Output() indeterminateChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   /** The native `<input type="checkbox"> element */
   @ViewChild('input') _inputElement: ElementRef;
 
@@ -186,7 +189,10 @@ export class MdCheckbox implements ControlValueAccessor {
 
   set checked(checked: boolean) {
     if (checked != this.checked) {
-      this._indeterminate = false;
+      if (this._indeterminate) {
+        this._indeterminate = false;
+        this.indeterminateChange.emit(this._indeterminate);
+      }
       this._checked = checked;
       this._transitionCheckState(
           this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
@@ -208,12 +214,16 @@ export class MdCheckbox implements ControlValueAccessor {
   }
 
   set indeterminate(indeterminate: boolean) {
+    let changed =  indeterminate != this._indeterminate;
     this._indeterminate = indeterminate;
     if (this._indeterminate) {
       this._transitionCheckState(TransitionCheckState.Indeterminate);
     } else {
       this._transitionCheckState(
           this.checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+    }
+    if (changed) {
+      this.indeterminateChange.emit(this._indeterminate);
     }
   }
 
