@@ -1,68 +1,33 @@
-import {browser, by, element, ElementFinder, ProtractorBy} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
 
 export class MenuPage {
+  constructor() { browser.get('/menu'); }
 
-  constructor() {
-    browser.get('/menu');
-  }
+  menu(): ElementFinder { return element(by.css('.md-menu-panel')); }
 
-  menu() { return element(by.css('.md-menu-panel')); }
+  start(): ElementFinder { return element(by.id('start')); }
 
-  start() { return element(by.id('start')); }
+  trigger(): ElementFinder { return element(by.id('trigger')); }
 
-  trigger() { return element(by.id('trigger')); }
+  triggerTwo(): ElementFinder { return element(by.id('trigger-two')); }
 
-  triggerTwo() { return element(by.id('trigger-two')); }
+  backdrop(): ElementFinder { return element(by.css('.cdk-overlay-backdrop')); }
 
-  backdrop() { return element(by.css('.cdk-overlay-backdrop')); }
+  items(index: number): ElementFinder { return element.all(by.css('[md-menu-item]')).get(index); }
 
-  items(index: number) { return element.all(by.css('[md-menu-item]')).get(index); }
+  textArea(): ElementFinder { return element(by.id('text')); }
 
-  textArea() { return element(by.id('text')); }
+  beforeTrigger(): ElementFinder { return element(by.id('before-t')); }
 
-  beforeTrigger() { return element(by.id('before-t')); }
+  aboveTrigger(): ElementFinder { return element(by.id('above-t')); }
 
-  aboveTrigger() { return element(by.id('above-t')); }
+  combinedTrigger(): ElementFinder { return element(by.id('combined-t')); }
 
-  combinedTrigger() { return element(by.id('combined-t')); }
+  beforeMenu(): ElementFinder { return element(by.css('.md-menu-panel.before')); }
 
-  beforeMenu() { return element(by.css('.md-menu-panel.before')); }
+  aboveMenu(): ElementFinder { return element(by.css('.md-menu-panel.above')); }
 
-  aboveMenu() { return element(by.css('.md-menu-panel.above')); }
+  combinedMenu(): ElementFinder { return element(by.css('.md-menu-panel.combined')); }
 
-  combinedMenu() { return element(by.css('.md-menu-panel.combined')); }
-
-  // TODO(kara): move to common testing utility
-  pressKey(key: string): void {
-    browser.actions().sendKeys(key).perform();
-  }
-
-  // TODO(kara): move to common testing utility
-  expectFocusOn(el: any): void {
-    expect(browser.driver.switchTo().activeElement().getId()).toBe(el.getId());
-  }
-
-  expectMenuPresent(expected: boolean) {
-    return browser.isElementPresent(by.css('.md-menu-panel') as ProtractorBy)
-        .then((isPresent: boolean) => {
-          expect(isPresent).toBe(expected);
-        });
-  }
-
-  expectMenuLocation(el: ElementFinder, {x, y}: {x: number, y: number}) {
-    el.getLocation().then(loc => {
-      expect(loc.x).toEqual(x, 'Expect the x-position to be equal');
-      expect(loc.y).toEqual(y, 'Expect the y-position to be equal');
-    });
-  }
-
-  expectMenuAlignedWith(el: ElementFinder, id: string) {
-    element(by.id(id)).getLocation().then(loc => {
-      this.expectMenuLocation(el, {x: loc.x, y: loc.y});
-    });
-  }
-
-  getResultText() {
-    return this.textArea().getText();
-  }
+  getResultText() { return this.textArea().getText(); }
 }

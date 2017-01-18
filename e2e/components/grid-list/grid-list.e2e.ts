@@ -1,14 +1,14 @@
-import {browser, by, element} from 'protractor';
+import {browser} from 'protractor';
+import {expectToExist} from '../../util/asserts';
 
 describe('grid-list', () => {
   beforeEach(() => browser.get('/grid-list'));
 
   it('should render a grid list container', () => {
-    expect(element(by.css('md-grid-list')).isPresent()).toBe(true);
+    expectToExist('md-grid-list');
   });
 
   it('should render list items inside the grid list container', () => {
-    let container = element(by.css('md-grid-list'));
-    expect(container.isElementPresent(by.css('md-grid-tile'))).toBe(true);
+    expectToExist('md-grid-list md-grid-tile');
   });
 });
