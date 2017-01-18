@@ -106,11 +106,11 @@ class Serializer extends ValueTransformer {
       this.processedSummaries.push(processedSummary);
       this.processedSummaryBySymbol.set(summary.symbol, processedSummary);
     }
-    // Note: == by purpose to compare with undefined!
+    // Note: == on purpose to compare with undefined!
     if (processedSummary.metadata == null && symbolMeta != null) {
       processedSummary.metadata = this.processValue(symbolMeta);
     }
-    // Note: == by purpose to compare with undefined!
+    // Note: == on purpose to compare with undefined!
     if (processedSummary.type == null && summary.type != null) {
       processedSummary.type = this.processValue(summary.type);
     }
@@ -130,6 +130,7 @@ class Serializer extends ValueTransformer {
         return {
           __symbol: index,
           name: symbol.name,
+          arity: symbol.arity,
           // We convert the source filenames tinto output filenames,
           // as the generated summary file will be used when teh current
           // compilation unit is used as a library
@@ -145,9 +146,10 @@ class Serializer extends ValueTransformer {
 
   visitOther(value: any, context: any): any {
     if (value instanceof StaticSymbol) {
-      const baseSymbol = this.symbolResolver.getStaticSymbol(value.filePath, value.name);
+      const baseSymbol =
+          this.symbolResolver.getStaticSymbol(value.filePath, value.name, undefined, value.arity);
       let index = this.indexBySymbol.get(baseSymbol);
-      // Note: == by purpose to compare with undefined!
+      // Note: == on purpose to compare with undefined!
       if (index == null) {
         index = this.indexBySymbol.size;
         this.indexBySymbol.set(baseSymbol, index);
@@ -169,7 +171,8 @@ class Deserializer extends ValueTransformer {
     const importAs: {symbol: StaticSymbol, importAs: string}[] = [];
     this.symbols = [];
     data.symbols.forEach((serializedSymbol) => {
-      const symbol = this.symbolCache.get(serializedSymbol.filePath, serializedSymbol.name);
+      const symbol = this.symbolCache.get(
+          serializedSymbol.filePath, serializedSymbol.name, undefined, serializedSymbol.arity);
       this.symbols.push(symbol);
       if (serializedSymbol.importAs) {
         importAs.push({symbol: symbol, importAs: serializedSymbol.importAs});
@@ -183,8 +186,9 @@ class Deserializer extends ValueTransformer {
     if ('__symbol' in map) {
       const baseSymbol = this.symbols[map['__symbol']];
       const members = map['members'];
-      return members.length ? this.symbolCache.get(baseSymbol.filePath, baseSymbol.name, members) :
-                              baseSymbol;
+      return members.length ?
+          this.symbolCache.get(baseSymbol.filePath, baseSymbol.name, members, baseSymbol.arity) :
+          baseSymbol;
     } else {
       return super.visitStringMap(map, context);
     }

@@ -290,8 +290,9 @@ export class StaticReflector implements ReflectorReader {
    * @param declarationFile the absolute path of the file where the symbol is declared
    * @param name the name of the type.
    */
-  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    return this.symbolResolver.getStaticSymbol(declarationFile, name, members);
+  getStaticSymbol(declarationFile: string, name: string, members?: string[], arity?: number):
+      StaticSymbol {
+    return this.symbolResolver.getStaticSymbol(declarationFile, name, members, arity);
   }
 
   private reportError(error: Error, context: StaticSymbol, path?: string) {

@@ -44,11 +44,7 @@ export class BuiltinType extends Type {
 }
 
 export class ExpressionType extends Type {
-  constructor(
-      public value: Expression, public typeParams: Type[] = null,
-      modifiers: TypeModifier[] = null) {
-    super(modifiers);
-  }
+  constructor(public value: Expression, modifiers: TypeModifier[] = null) { super(modifiers); }
   visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitExpressionType(this, context);
   }
@@ -881,13 +877,12 @@ export function importExpr(id: CompileIdentifierMetadata, typeParams: Type[] = n
 export function importType(
     id: CompileIdentifierMetadata, typeParams: Type[] = null,
     typeModifiers: TypeModifier[] = null): ExpressionType {
-  return isPresent(id) ? expressionType(importExpr(id), typeParams, typeModifiers) : null;
+  return isPresent(id) ? expressionType(importExpr(id, typeParams), typeModifiers) : null;
 }
 
 export function expressionType(
-    expr: Expression, typeParams: Type[] = null,
-    typeModifiers: TypeModifier[] = null): ExpressionType {
-  return isPresent(expr) ? new ExpressionType(expr, typeParams, typeModifiers) : null;
+    expr: Expression, typeModifiers: TypeModifier[] = null): ExpressionType {
+  return isPresent(expr) ? new ExpressionType(expr, typeModifiers) : null;
 }
 
 export function literalArr(values: Expression[], type: Type = null): LiteralArrayExpr {

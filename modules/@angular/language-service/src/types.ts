@@ -190,6 +190,11 @@ export enum BuiltinType {
   Null,
 
   /**
+   * the type is an unbound type parameter.
+   */
+  Unbound,
+
+  /**
    * Not a built-in type.
    */
   Other

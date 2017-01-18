@@ -429,11 +429,19 @@ export function main() {
     });
 
     it('should support expression types', () => {
+      expect(
+          emitStmt(o.variable('a').set(o.NULL_EXPR).toDeclStmt(o.expressionType(o.variable('b')))))
+          .toEqual('var a:b = (null as any);');
+    });
+
+    it('should support expressions with type parameters', () => {
       expect(emitStmt(o.variable('a')
                           .set(o.NULL_EXPR)
-                          .toDeclStmt(o.expressionType(
-                              o.variable('b'), [o.expressionType(o.variable('c'))]))))
-          .toEqual('var a:b<c> = (null as any);');
+                          .toDeclStmt(o.importType(externalModuleIdentifier, [o.STRING_TYPE]))))
+          .toEqual([
+            `import * as import0 from 'somePackage/someOtherPath';`,
+            `var a:import0.someExternalId<string> = (null as any);`
+          ].join('\n'));
     });
 
     it('should support combined types', () => {

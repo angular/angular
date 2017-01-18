@@ -10,13 +10,13 @@ import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 import {isBlank, looseIdentical, stringify} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';
+import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, TrackByFunction} from './iterable_differs';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
-  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): DefaultIterableDiffer<V> {
+  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
     return new DefaultIterableDiffer<V>(trackByFn);
   }
 }
@@ -46,7 +46,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   private _identityChangesHead: IterableChangeRecord_<V> = null;
   private _identityChangesTail: IterableChangeRecord_<V> = null;
 
-  constructor(private _trackByFn?: TrackByFn) {
+  constructor(private _trackByFn?: TrackByFunction<V>) {
     this._trackByFn = this._trackByFn || trackByIdentity;
   }
 
