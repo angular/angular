@@ -162,6 +162,23 @@ describe('MdSlider', () => {
 
       expect(sliderNativeElement.classList).not.toContain('md-slider-sliding');
     });
+
+    it('should have thumb gap when at min value', () => {
+      expect(trackFillElement.style.transform).toContain('translateX(-7px)');
+
+      dispatchClickEventSequence(sliderNativeElement, 0);
+      fixture.detectChanges();
+
+      expect(trackFillElement.style.transform).toContain('translateX(-10px)');
+    });
+
+    it('should not have thumb gap when not at min value', () => {
+      dispatchClickEventSequence(sliderNativeElement, 1);
+      fixture.detectChanges();
+
+      // Some browsers use '0' and some use '0px', so leave off the closing paren.
+      expect(trackFillElement.style.transform).toContain('translateX(0');
+    });
   });
 
   describe('disabled slider', () => {
@@ -1038,6 +1055,14 @@ describe('MdSlider', () => {
 
       expect(sliderInstance.value).toBe(1);
     });
+
+    it('should hide last tick when inverted and at min value', () => {
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList.contains('md-slider-hide-last-tick'))
+          .toBe(true, 'last tick should be hidden');
+    });
   });
 
   describe('vertical slider', () => {
@@ -1198,7 +1223,7 @@ class SliderWithChangeHandler {
 }
 
 @Component({
-  template: `<div [dir]="dir"><md-slider [invert]="invert"></md-slider></div>`,
+  template: `<div [dir]="dir"><md-slider [invert]="invert" tickInterval="5"></md-slider></div>`,
   styles: [styles],
 })
 class SliderWithDirAndInvert {

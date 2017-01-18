@@ -5,10 +5,11 @@
 @mixin md-slider-theme($theme) {
   $accent: map-get($theme, accent);
 
-  // TODO(iveysaur): Find an implementation to hide the track under a disabled thumb.
   $md-slider-off-color: rgba(black, 0.26);
-  $md-slider-focused-color: rgba(black, 0.38);
+  $md-slider-off-focused-color: rgba(black, 0.38);
   $md-slider-disabled-color: rgba(black, 0.26);
+  $md-slider-labeled-min-value-thumb-color: black;
+  $md-slider-labeled-min-value-thumb-label-color: rgba(black, 0.26);
 
   .md-slider-track-background {
     background-color: $md-slider-off-color;
@@ -30,10 +31,58 @@
     color: md-color($accent, default-contrast);
   }
 
+  md-slider:hover,
+  .md-slider-active {
+    .md-slider-track-background {
+      background-color: $md-slider-off-focused-color;
+    }
+  }
+
   .md-slider-disabled {
+    .md-slider-track-background,
     .md-slider-track-fill,
     .md-slider-thumb {
-      background-color: $md-slider-off-color;
+      background-color: $md-slider-disabled-color;
+    }
+
+    &:hover {
+      .md-slider-track-background {
+        background-color: $md-slider-disabled-color;
+      }
+    }
+  }
+
+  .md-slider-min-value {
+    &.md-slider-thumb-label-showing {
+      .md-slider-thumb,
+      .md-slider-thumb-label {
+        background-color: $md-slider-labeled-min-value-thumb-color;
+      }
+
+      &.md-slider-active {
+        .md-slider-thumb,
+        .md-slider-thumb-label {
+          background-color: $md-slider-labeled-min-value-thumb-label-color;
+        }
+      }
+    }
+
+    &:not(.md-slider-thumb-label-showing) {
+      .md-slider-thumb {
+        border-color: $md-slider-off-color;
+        background-color: transparent;
+      }
+
+      &:hover,
+      &.md-slider-active {
+        .md-slider-thumb {
+          border-color: $md-slider-off-focused-color;
+        }
+
+        &.md-slider-disabled .md-slider-thumb {
+          border-color: $md-slider-disabled-color;
+        }
+      }
     }
   }
 }

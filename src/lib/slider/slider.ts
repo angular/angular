@@ -17,7 +17,7 @@ import {
   HammerInput,
   coerceBooleanProperty,
   coerceNumberProperty,
-  DefaultStyleCompatibilityModeModule,
+  DefaultStyleCompatibilityModeModule
 } from '../core';
 import {Dir} from '../core/rtl/dir';
 import {CommonModule} from '@angular/common';
@@ -29,7 +29,7 @@ import {
   LEFT_ARROW,
   UP_ARROW,
   RIGHT_ARROW,
-  DOWN_ARROW,
+  DOWN_ARROW
 } from '../core/keyboard/keycodes';
 
 /**
@@ -40,6 +40,12 @@ const MIN_AUTO_TICK_SEPARATION = 30;
 
 /** The thumb gap size for a disabled slider. */
 const DISABLED_THUMB_GAP = 7;
+
+/** The thumb gap size for a non-active slider at its minimum value. */
+const MIN_VALUE_NONACTIVE_THUMB_GAP = 7;
+
+/** The thumb gap size for an active slider at its minimum value. */
+const MIN_VALUE_ACTIVE_THUMB_GAP = 10;
 
 /**
  * Provider Expression that allows md-slider to register as a ControlValueAccessor.
@@ -87,7 +93,8 @@ export class MdSliderChange {
     '[class.md-slider-sliding]': '_isSliding',
     '[class.md-slider-thumb-label-showing]': 'thumbLabel',
     '[class.md-slider-vertical]': 'vertical',
-    '[class.md-slider-min-value]': 'value === min',
+    '[class.md-slider-min-value]': '_isMinValue',
+    '[class.md-slider-hide-last-tick]': '_isMinValue && _thumbGap && invertAxis',
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
@@ -249,12 +256,23 @@ export class MdSlider implements ControlValueAccessor {
     return (this.direction == 'rtl' && !this.vertical) ? !this.invertAxis : this.invertAxis;
   }
 
+  /** Whether the slider is at its minimum value. */
+  get _isMinValue() {
+    return this.percent === 0;
+  }
+
   /**
    * The amount of space to leave between the slider thumb and the track fill & track background
    * elements.
    */
-  private get _thumbGap() {
-    return this.disabled ? DISABLED_THUMB_GAP : 0;
+  get _thumbGap() {
+    if (this.disabled) {
+      return DISABLED_THUMB_GAP;
+    }
+    if (this._isMinValue && !this.thumbLabel) {
+      return this._isActive ? MIN_VALUE_ACTIVE_THUMB_GAP : MIN_VALUE_NONACTIVE_THUMB_GAP;
+    }
+    return 0;
   }
 
   /** CSS styles for the track background element. */
@@ -297,11 +315,20 @@ export class MdSlider implements ControlValueAccessor {
     // ticks 180 degrees so we're really cutting off the end edge abd not the start.
     let sign = !this.vertical && this.direction == 'rtl' ? '-' : '';
     let rotate = !this.vertical && this.direction == 'rtl' ? ' rotate(180deg)' : '';
-    return {
+    let styles: { [key: string]: string } = {
       'backgroundSize': backgroundSize,
       // Without translateZ ticks sometimes jitter as the slider moves on Chrome & Firefox.
       'transform': `translateZ(0) translate${axis}(${sign}${tickSize / 2}%)${rotate}`
     };
+
+    if (this._isMinValue && this._thumbGap) {
+      let side = this.vertical ?
+          (this.invertAxis ? 'Bottom' : 'Top') :
+          (this.invertAxis ? 'Right' : 'Left');
+      styles[`padding${side}`] = `${this._thumbGap}px`;
+    }
+
+    return styles;
   }
 
   get thumbContainerStyles(): { [key: string]: string } {

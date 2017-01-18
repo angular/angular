@@ -9,6 +9,9 @@ $md-slider-padding: 8px !default;
 
 $md-slider-track-thickness: 2px !default;
 $md-slider-thumb-size: 20px !default;
+$md-slider-thumb-border-width: 3px !default;
+$md-slider-thumb-border-width-active: 2px !default;
+$md-slider-thumb-border-width-disabled: 4px !default;
 
 $md-slider-thumb-default-scale: 0.7 !default;
 $md-slider-thumb-focus-scale: 1 !default;
@@ -45,13 +48,15 @@ md-slider {
 .md-slider-track-fill {
   position: absolute;
   transform-origin: 0 0;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+              background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-track-background {
   position: absolute;
   transform-origin: 100% 100%;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+              background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-ticks-container {
@@ -62,6 +67,7 @@ md-slider {
 }
 
 .md-slider-ticks {
+  box-sizing: border-box;
   opacity: 0;
   transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 }
@@ -76,11 +82,15 @@ md-slider {
   position: absolute;
   right: -$md-slider-thumb-size / 2;
   bottom: -$md-slider-thumb-size / 2;
+  box-sizing: border-box;
   width: $md-slider-thumb-size;
   height: $md-slider-thumb-size;
+  border: $md-slider-thumb-border-width solid transparent;
   border-radius: 50%;
   transform: scale($md-slider-thumb-default-scale);
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+              background-color $swift-ease-out-duration $swift-ease-out-timing-function,
+              border-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-thumb-label {
@@ -91,8 +101,9 @@ md-slider {
   width: $md-slider-thumb-label-size;
   height: $md-slider-thumb-label-size;
   border-radius: 50%;
-  transition: 300ms $swift-ease-in-out-timing-function;
-  transition-property: transform, border-radius;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+              border-radius  $swift-ease-out-duration $swift-ease-out-timing-function,
+              background-color  $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-thumb-label-text {
@@ -100,7 +111,7 @@ md-slider {
   font-size: 12px;
   font-weight: bold;
   opacity: 0;
-  transition: opacity 300ms $swift-ease-in-out-timing-function;
+  transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 
@@ -123,13 +134,15 @@ md-slider {
     position: absolute;
     border: 0 solid $md-slider-tick-color;
     opacity: 0;
-    transition: opacity 300ms $swift-ease-in-out-timing-function;
+    transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
   }
 
   &.md-slider-active,
   &:hover {
-    .md-slider-wrapper::after {
-      opacity: 1;
+    &:not(.md-slider-hide-last-tick) {
+      .md-slider-wrapper::after {
+        opacity: 1;
+      }
     }
 
     .md-slider-ticks {
@@ -162,6 +175,7 @@ md-slider {
 // Active slider.
 .md-slider-active {
   .md-slider-thumb {
+    border-width: $md-slider-thumb-border-width-active;
     transform: scale($md-slider-thumb-focus-scale);
   }
 
@@ -182,6 +196,7 @@ md-slider {
 // Disabled slider.
 .md-slider-disabled {
   .md-slider-thumb {
+    border-width: $md-slider-thumb-border-width-disabled;
     transform: scale($md-slider-thumb-disabled-scale);
   }
 
@@ -239,6 +254,7 @@ md-slider {
     // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
     background: -moz-repeating-linear-gradient(0.0001deg, $md-slider-tick-color,
         $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    background-clip: content-box;
     height: $md-slider-track-thickness;
     width: 100%;
   }
@@ -252,7 +268,7 @@ md-slider {
   .md-slider-thumb-label {
     right: -$md-slider-thumb-label-size / 2;
     top: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
-    transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.4)
+    transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.01)
         rotate(45deg);
   }
 
@@ -312,6 +328,7 @@ md-slider {
   .md-slider-ticks {
     background: repeating-linear-gradient(to bottom, $md-slider-tick-color,
         $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    background-clip: content-box;
     width: $md-slider-track-thickness;
     height: 100%;
   }
@@ -325,8 +342,8 @@ md-slider {
   .md-slider-thumb-label {
     bottom: -$md-slider-thumb-label-size / 2;
     left: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
-    transform: translateX($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap)
-        scale(0.4) rotate(-45deg);
+    transform: translateX($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.01)
+        rotate(-45deg);
   }
 
   .md-slider-thumb-label-text {
