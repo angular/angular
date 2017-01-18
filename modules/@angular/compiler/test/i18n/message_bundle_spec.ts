@@ -42,7 +42,7 @@ export function main(): void {
   });
 }
 
-class _TestSerializer implements Serializer {
+class _TestSerializer extends Serializer {
   write(messages: i18n.Message[]): string {
     return messages.map(msg => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
         .join('//');
