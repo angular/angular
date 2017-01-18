@@ -50,8 +50,8 @@ attribute on the `input` or `textarea`, or using an `md-placeholder` element in 
 HTML can be included before, and after the input tag, as prefix or suffix. It will be underlined as
 per the Material specification, and clicking it will focus the input.
 
-Adding the `md-prefix` attribute to an element inside the `md-input-container` will designate it as
-the prefix. Similarly, adding `md-suffix` will designate it as the suffix.
+Adding the `mdPrefix` attribute to an element inside the `md-input-container` will designate it as
+the prefix. Similarly, adding `mdSuffix` will designate it as the suffix.
 
 ### Hint Labels
 

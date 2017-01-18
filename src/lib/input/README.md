@@ -68,14 +68,14 @@ attribute on the `input` or `textarea`, or using an `md-placeholder` element in 
 You can include HTML before, and after the input tag, as prefix or suffix. It will be underlined as
 per the Material specification, and clicking it will focus the input.
 
-To add a prefix, use the `md-prefix` attribute on the element. Similarly, to add a suffix, use the
-`md-suffix` attribute. For example, in a template:
+To add a prefix, use the `mdPrefix` attribute on the element. Similarly, to add a suffix, use the
+`mdSuffix` attribute. For example, in a template:
 
 ```html
 <md-input-container align="end">
   <input mdInput placeholder="amount">
-  <span md-prefix>$&nbsp;</span>
-  <span md-suffix>.00</span>
+  <span mdPrefix>$&nbsp;</span>
+  <span mdSuffix>.00</span>
 </md-input-container>
 ```
 
