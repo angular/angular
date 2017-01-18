@@ -11,7 +11,7 @@
   <div class="md-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
     (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin"
       [class.md-select-panel-done-animating]="_panelDoneAnimating">
-    <div class="md-select-content" [@fadeInContent]="'showing'">
+    <div class="md-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>
     </div>
   </div>

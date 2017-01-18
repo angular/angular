@@ -362,8 +362,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   }
 
   /**
-   * When the panel is finished animating, emits an event and focuses
-   * an option if the panel is open.
+   * When the panel element is finished transforming in (though not fading in), it
+   * emits an event and focuses an option if the panel is open.
    */
   _onPanelDone(): void {
     if (this.panelOpen) {
@@ -372,7 +372,13 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     } else {
       this.onClose.emit();
     }
+  }
 
+  /**
+   * When the panel content is done fading in, the _panelDoneAnimating property is
+   * set so the proper class can be added to the panel.
+   */
+  _onFadeInDone(): void {
     this._panelDoneAnimating = this.panelOpen;
   }
 
