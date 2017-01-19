@@ -25,16 +25,18 @@ let viewFlags = ViewFlags.DirectDom;
 
 const TreeComponent_Host: ViewDefinition = viewDef(viewFlags, [
   elementDef(NodeFlags.None, 1, 'tree'),
-  providerDef(NodeFlags.None, TreeComponent, [], null, () => TreeComponent_0),
+  providerDef(NodeFlags.None, TreeComponent, [], null, null, () => TreeComponent_0),
 ]);
 
 const TreeComponent_1: ViewDefinition = viewDef(
     viewFlags,
     [
       elementDef(NodeFlags.None, 1, 'tree'),
-      providerDef(NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, () => TreeComponent_0),
+      providerDef(
+          NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, null, () => TreeComponent_0),
     ],
-    (updater: NodeUpdater, view: ViewData, cmp: TreeComponent) => {
+    (updater: NodeUpdater, view: ViewData) => {
+      const cmp = view.component;
       updater.checkInline(view, 1, cmp.data.left);
     });
 
@@ -42,9 +44,11 @@ const TreeComponent_2: ViewDefinition = viewDef(
     viewFlags,
     [
       elementDef(NodeFlags.None, 1, 'tree'),
-      providerDef(NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, () => TreeComponent_0),
+      providerDef(
+          NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, null, () => TreeComponent_0),
     ],
-    (updater: NodeUpdater, view: ViewData, cmp: TreeComponent) => {
+    (updater: NodeUpdater, view: ViewData) => {
+      const cmp = view.component;
       updater.checkInline(view, 1, cmp.data.right);
     });
 
@@ -59,7 +63,8 @@ const TreeComponent_0: ViewDefinition = viewDef(
       anchorDef(NodeFlags.HasEmbeddedViews, 1, TreeComponent_2),
       providerDef(NodeFlags.None, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
     ],
-    (updater: NodeUpdater, view: ViewData, cmp: TreeComponent) => {
+    (updater: NodeUpdater, view: ViewData) => {
+      const cmp = view.component;
       updater.checkInline(view, 0, cmp.bgColor);
       updater.checkInline(view, 1, cmp.data.value);
       updater.checkInline(view, 3, cmp.data.left != null);

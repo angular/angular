@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn, anchorDef, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -34,12 +34,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
               new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
         }));
 
-    function compViewDef(nodes: NodeDef[], updater?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, updater, renderComponentType);
+    function compViewDef(
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
+      return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
     }
 
-    function embeddedViewDef(nodes: NodeDef[], updater?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, updater);
+    function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinition {
+      return viewDef(config.viewFlags, nodes, update);
     }
 
     function createAndGetRootNodes(
@@ -48,6 +49,23 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
+
+    it('should create embedded views with the right context', () => {
+      const parentContext = new Object();
+      const childContext = new Object();
+
+      const {view: parentView, rootNodes} = createAndGetRootNodes(
+          compViewDef([
+            elementDef(NodeFlags.None, 2, 'div'),
+            anchorDef(NodeFlags.HasEmbeddedViews, 0, embeddedViewDef([elementDef(
+                                                         NodeFlags.None, 0, 'span')])),
+          ]),
+          parentContext);
+
+      const childView = createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
+      expect(childView.component).toBe(parentContext);
+      expect(childView.context).toBe(childContext);
+    });
 
     it('should attach and detach embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
@@ -97,45 +115,35 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     it('should dirty check embedded views', () => {
       let childValue = 'v1';
-      const parentContext = new Object();
-      const childContext = new Object();
-      const updater = jasmine.createSpy('updater').and.callFake(
+      const update = jasmine.createSpy('updater').and.callFake(
           (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, childValue));
 
-      const {view: parentView, rootNodes} = createAndGetRootNodes(
-          compViewDef([
-            elementDef(NodeFlags.None, 1, 'div'),
-            anchorDef(
-                NodeFlags.HasEmbeddedViews, 0,
-                embeddedViewDef(
-                    [elementDef(
-                        NodeFlags.None, 0, 'span', null,
-                        [[BindingType.ElementAttribute, 'name', SecurityContext.NONE]])],
-                    updater))
-          ]),
-          parentContext);
+      const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
+        elementDef(NodeFlags.None, 1, 'div'),
+        anchorDef(
+            NodeFlags.HasEmbeddedViews, 0,
+            embeddedViewDef(
+                [elementDef(
+                    NodeFlags.None, 0, 'span', null,
+                    [[BindingType.ElementAttribute, 'name', SecurityContext.NONE]])],
+                update))
+      ]));
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       const rootEl = rootNodes[0];
       attachEmbeddedView(parentView.nodes[1], 0, childView0);
 
       checkAndUpdateView(parentView);
 
-      expect(updater).toHaveBeenCalled();
-      // component
-      expect(updater.calls.mostRecent().args[2]).toBe(parentContext);
-      // view context
-      expect(updater.calls.mostRecent().args[3]).toBe(childContext);
+      expect(update).toHaveBeenCalled();
+      expect(update.calls.mostRecent().args[1]).toBe(childView0);
 
-      updater.calls.reset();
+      update.calls.reset();
       checkNoChangesView(parentView);
 
-      expect(updater).toHaveBeenCalled();
-      // component
-      expect(updater.calls.mostRecent().args[2]).toBe(parentContext);
-      // view context
-      expect(updater.calls.mostRecent().args[3]).toBe(childContext);
+      expect(update).toHaveBeenCalled();
+      expect(update.calls.mostRecent().args[1]).toBe(childView0);
 
       childValue = 'v2';
       expect(() => checkNoChangesView(parentView))

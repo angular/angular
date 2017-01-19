@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, ElementRef, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -34,12 +34,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
               new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
         }));
 
-    function compViewDef(nodes: NodeDef[], updater?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, updater, renderComponentType);
+    function compViewDef(
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
+      return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
     }
 
-    function embeddedViewDef(nodes: NodeDef[], updater?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, updater);
+    function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinition {
+      return viewDef(config.viewFlags, nodes, update);
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
@@ -110,10 +111,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           createAndGetRootNodes(compViewDef([
             elementDef(NodeFlags.None, 1, 'div'),
             providerDef(
-                NodeFlags.None, Dep, [], null, () => compViewDef([
-                                                 elementDef(NodeFlags.None, 1, 'span'),
-                                                 providerDef(NodeFlags.None, SomeService, [Dep])
-                                               ])),
+                NodeFlags.None, Dep, [], null, null,
+                () => compViewDef([
+                  elementDef(NodeFlags.None, 1, 'span'),
+                  providerDef(NodeFlags.None, SomeService, [Dep])
+                ])),
           ]));
 
           expect(instance.dep instanceof Dep).toBeTruthy();
@@ -173,12 +175,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('data binding', () => {
       [{
         name: 'inline',
-        updater: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 1, 'v1', 'v2')
+        update: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 1, 'v1', 'v2')
       },
        {
          name: 'dynamic',
-         updater: (updater: NodeUpdater, view: ViewData) =>
-                      updater.checkDynamic(view, 1, ['v1', 'v2'])
+         update: (updater: NodeUpdater, view: ViewData) =>
+                     updater.checkDynamic(view, 1, ['v1', 'v2'])
        }].forEach((config) => {
         it(`should update ${config.name}`, () => {
           let instance: SomeService;
@@ -194,7 +196,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                 elementDef(NodeFlags.None, 1, 'span'),
                 providerDef(NodeFlags.None, SomeService, [], {a: [0, 'a'], b: [1, 'b']})
               ],
-              config.updater));
+              config.update));
 
           checkAndUpdateView(view);
 
@@ -223,6 +225,39 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         expect(() => checkNoChangesView(view))
             .toThrowError(
                 `Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+      });
+    });
+
+    describe('outputs', () => {
+      it('should listen to provider events', () => {
+        let emitter = new EventEmitter<any>();
+        let unsubscribeSpy: any;
+
+        class SomeService {
+          emitter = {
+            subscribe: (callback: any) => {
+              const subscription = emitter.subscribe(callback);
+              unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
+              return subscription;
+            }
+          };
+        }
+
+        const handleEvent = jasmine.createSpy('handleEvent');
+        const subscribe = spyOn(emitter, 'subscribe').and.callThrough();
+
+        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+            [
+              elementDef(NodeFlags.None, 1, 'span'),
+              providerDef(NodeFlags.None, SomeService, [], null, {emitter: 'someEventName'})
+            ],
+            null, handleEvent));
+
+        emitter.emit('someEventInstance');
+        expect(handleEvent).toHaveBeenCalledWith(view, 0, 'someEventName', 'someEventInstance');
+
+        destroyView(view);
+        expect(unsubscribeSpy).toHaveBeenCalled();
       });
     });
 
