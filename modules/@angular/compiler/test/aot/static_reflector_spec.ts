@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
+import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SyntaxError} from '@angular/compiler';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
@@ -343,6 +343,20 @@ describe('StaticReflector', () => {
         .toThrow(new Error(
             'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
+
+  it('should throw a SyntaxError without stack trace when the required resource cannot be resolved',
+     () => {
+       expect(
+           () => simplify(
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'AppModule'), ({
+                 __symbolic: 'error',
+                 message:
+                     'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts'
+               })))
+           .toThrowError(
+               SyntaxError,
+               'Error encountered resolving symbol values statically. Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts, resolving symbol AppModule in /tmp/src/function-reference.ts');
+     });
 
   it('should record data about the error in the exception', () => {
     let threw = false;
