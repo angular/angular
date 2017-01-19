@@ -30,17 +30,10 @@ const _UNIT_TAG = 'trans-unit';
 export class Xliff extends Serializer {
   write(messages: i18n.Message[]): string {
     const visitor = new _WriteVisitor();
-    const visited: {[id: string]: boolean} = {};
     const transUnits: xml.Node[] = [];
 
     messages.forEach(message => {
-      const id = this.digest(message);
-
-      // deduplicate messages
-      if (visited[id]) return;
-      visited[id] = true;
-
-      const transUnit = new xml.Tag(_UNIT_TAG, {id, datatype: 'html'});
+      const transUnit = new xml.Tag(_UNIT_TAG, {id: message.id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
           new xml.CR(8), new xml.Tag(_TARGET_TAG));

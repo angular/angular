@@ -9,6 +9,9 @@
 import * as i18n from '../i18n_ast';
 
 export abstract class Serializer {
+  // - The `placeholders` and `placeholderToMessage` properties are irrelevant in the input messages
+  // - The `id` contains the message id that the serializer is expected to use
+  // - Placeholder names are already map to public names using the provided mapper
   abstract write(messages: i18n.Message[]): string;
 
   abstract load(content: string, url: string): {[msgId: string]: i18n.Node[]};
