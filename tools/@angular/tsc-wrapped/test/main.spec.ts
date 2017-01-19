@@ -111,20 +111,10 @@ describe('tsc-wrapped', () => {
     main(config, {basePath})
         .then(() => {
           const out = readOut('js');
-          // No helpers since decorators were lowered
-          expect(out).not.toContain('__decorate');
           // Expand `export *` and fix index import
           expect(out).toContain(`export { A, B } from './dep/index'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
-          // Comments should stay multi-line
-          expect(out).not.toContain('Comment that is multiple lines');
-          // Decorator is now an annotation
-          expect(out).toMatch(/Comp.decorators = \[\s+\{ type: Component/);
-          const decl = readOut('d.ts');
-          expect(decl).toContain('declare class Comp');
-          const metadata = readOut('metadata.json');
-          expect(metadata).toContain('"Comp":{"__symbolic":"class"');
           done();
         })
         .catch(e => done.fail(e));

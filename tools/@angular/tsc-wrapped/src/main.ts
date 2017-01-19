@@ -15,6 +15,7 @@ import {check, tsc} from './tsc';
 import NgOptions from './options';
 import {MetadataWriterHost, DecoratorDownlevelCompilerHost, TsickleCompilerHost} from './compiler_host';
 import {CliOptions} from './cli_options';
+import VinylFile from './vinyl_file';
 
 export {UserError} from './tsc';
 
@@ -23,17 +24,17 @@ export type CodegenExtension =
         Promise<void>;
 
 export function main(
-    project: any, cliOptions: CliOptions, codegen?: CodegenExtension,
+    project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
     options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
     // project is vinyl like file object
-    if (project.path) {
-      projectDir = path.dirname(project.path);
+    if ((project as VinylFile).path) {
+      projectDir = path.dirname((project as VinylFile).path);
     }
     // project is path to project file
-    else if (fs.lstatSync(project).isFile()) {
-      projectDir = path.dirname(project);
+    else if (fs.lstatSync(project as string).isFile()) {
+      projectDir = path.dirname(project as string);
     }
 
     // file names in tsconfig are resolved relative to this absolute path
