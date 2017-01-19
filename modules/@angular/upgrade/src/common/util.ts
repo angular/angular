@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as angular from './angular_js';
+import {Type} from '@angular/core';
+import * as angular from './angular1';
 
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
@@ -36,6 +37,11 @@ export function getAttributesAsArray(node: Node): [string, string][] {
   return asArray || [];
 }
 
+export function getComponentName(component: Type<any>): string {
+  // Return the name of the component or the first line of its stringified version.
+  return (component as any).overriddenName || component.name || component.toString().split('\n')[0];
+}
+
 export class Deferred<R> {
   promise: Promise<R>;
   resolve: (value?: R|PromiseLike<R>) => void;
@@ -50,8 +56,9 @@ export class Deferred<R> {
 }
 
 /**
- * @return true if the passed-in component implements the subset of
- *     ControlValueAccessor needed for AngularJS ng-model compatibility.
+ * @return Whether the passed-in component implements the subset of the
+ *     `ControlValueAccessor` interface needed for AngularJS `ng-model`
+ *     compatibility.
  */
 function supportsNgModel(component: any) {
   return typeof component.writeValue === 'function' &&
@@ -59,8 +66,8 @@ function supportsNgModel(component: any) {
 }
 
 /**
- * Glue the AngularJS ngModelController if it exists to the component if it
- * implements the needed subset of ControlValueAccessor.
+ * Glue the AngularJS `NgModelController` (if it exists) to the component
+ * (if it implements the needed subset of the `ControlValueAccessor` interface).
  */
 export function hookupNgModel(ngModel: angular.INgModelController, component: any) {
   if (ngModel && supportsNgModel(component)) {

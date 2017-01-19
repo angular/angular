@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, SelectorMatcher, createElementCssSelector} from '@angular/compiler';
-import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {DirectiveResolver} from '@angular/compiler';
+import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $PARSE, $ROOT_SCOPE, COMPILER_KEY, COMPONENT_FACTORY_REF_MAP_KEY, INJECTOR_KEY, NG_ZONE_KEY, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from '../common/constants';
+import {ComponentInfo} from '../common/component_info';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
+import {ContentProjectionHelper} from '../common/content_projection_helper';
+import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {Deferred, controllerKey, getAttributesAsArray, onError} from '../common/util';
+import {Deferred, controllerKey, onError} from '../common/util';
 
-import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
-import {ComponentInfo, getComponentInfo} from './metadata';
+import {DynamicContentProjectionHelper} from './content_projection_helper';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
 let upgradeCount: number = 0;
@@ -102,7 +104,8 @@ let upgradeCount: number = 0;
  */
 export class UpgradeAdapter {
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
-  private upgradedComponents: Type<any>[] = [];
+  private directiveResolver: DirectiveResolver = new DirectiveResolver();
+  private downgradedComponents: Type<any>[] = [];
   /**
    * An internal map of ng1 components which need to up upgraded to ng2.
    *
@@ -184,10 +187,13 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  downgradeNg2Component(type: Type<any>): Function {
-    this.upgradedComponents.push(type);
-    const info: ComponentInfo = getComponentInfo(type);
-    return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
+  downgradeNg2Component(component: Type<any>): Function {
+    this.downgradedComponents.push(component);
+
+    const metadata: Directive = this.directiveResolver.resolve(component);
+    const info: ComponentInfo = {component, inputs: metadata.inputs, outputs: metadata.outputs};
+
+    return downgradeComponent(info);
   }
 
   /**
@@ -490,7 +496,6 @@ export class UpgradeAdapter {
     let original$applyFn: Function;
     let rootScopePrototype: any;
     let rootScope: angular.IRootScopeService;
-    const componentFactoryRefMap: ComponentFactoryRefMap = {};
     const upgradeAdapter = this;
     const ng1Module = this.ng1Module = angular.module(this.idPrefix, modules);
     const platformRef = platformBrowserDynamic();
@@ -499,7 +504,6 @@ export class UpgradeAdapter {
     this.ng2BootstrapDeferred = new Deferred();
     ng1Module.factory(INJECTOR_KEY, () => this.moduleRef.injector.get(Injector))
         .constant(NG_ZONE_KEY, this.ngZone)
-        .constant(COMPONENT_FACTORY_REF_MAP_KEY, componentFactoryRefMap)
         .factory(COMPILER_KEY, () => this.moduleRef.injector.get(Compiler))
         .config([
           '$provide', '$injector',
@@ -557,25 +561,18 @@ export class UpgradeAdapter {
                     providers: [
                       {provide: $INJECTOR, useFactory: () => ng1Injector},
                       {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
+                      {provide: ContentProjectionHelper, useClass: DynamicContentProjectionHelper},
                       this.upgradedProviders
                     ],
-                    imports: [this.ng2AppModule]
+                    imports: [this.ng2AppModule],
+                    entryComponents: this.downgradedComponents
                   }).Class({
                     constructor: function DynamicNgUpgradeModule() {},
                     ngDoBootstrap: function() {}
                   });
               (platformRef as any)
                   ._bootstrapModuleWithZone(
-                      DynamicNgUpgradeModule, this.compilerOptions, this.ngZone,
-                      (componentFactories: ComponentFactory<any>[]) => {
-                        componentFactories.forEach((componentFactory) => {
-                          const type: Type<any> = componentFactory.componentType;
-                          if (this.upgradedComponents.indexOf(type) !== -1) {
-                            componentFactoryRefMap[getComponentInfo(type).selector] =
-                                componentFactory;
-                          }
-                        });
-                      })
+                      DynamicNgUpgradeModule, this.compilerOptions, this.ngZone)
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
                     this.ngZone.run(() => {
@@ -601,10 +598,6 @@ export class UpgradeAdapter {
 
     return ng1Module;
   }
-}
-
-interface ComponentFactoryRefMap {
-  [selector: string]: ComponentFactory<any>;
 }
 
 /**
@@ -643,88 +636,6 @@ class ParentInjectorPromise {
   }
 }
 
-
-function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
-  (<any>directiveFactory).$inject = [$INJECTOR, $COMPILE, COMPONENT_FACTORY_REF_MAP_KEY, $PARSE];
-  function directiveFactory(
-      ng1Injector: angular.IInjectorService, ng1Compile: angular.ICompileService,
-      componentFactoryRefMap: ComponentFactoryRefMap,
-      parse: angular.IParseService): angular.IDirective {
-    let idCount = 0;
-    let dashSelector = info.selector.replace(/[A-Z]/g, char => '-' + char.toLowerCase());
-    return {
-      restrict: 'E',
-      terminal: true,
-      require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
-      compile: (templateElement: angular.IAugmentedJQuery, templateAttributes: angular.IAttributes,
-                transclude: angular.ITranscludeFunction) => {
-        // We might have compile the contents lazily, because this might have been triggered by the
-        // UpgradeNg1ComponentAdapterBuilder, when the ng2 templates have not been compiled yet
-        return {
-          post: (scope: angular.IScope, element: angular.IAugmentedJQuery,
-                 attrs: angular.IAttributes, required: any[],
-                 transclude: angular.ITranscludeFunction): void => {
-            let id = idPrefix + (idCount++);
-            (<any>element[0]).id = id;
-
-            let parentInjector: Injector | ParentInjectorPromise = required[0];
-            let injectorPromise = new ParentInjectorPromise(element);
-
-            const ngModel: angular.INgModelController = required[1];
-
-            const ng2Compiler = ng1Injector.get(COMPILER_KEY) as Compiler;
-            const ngContentSelectors = ng2Compiler.getNgContentSelectors(info.type);
-            const linkFns = compileProjectedNodes(templateElement, ngContentSelectors);
-
-            const componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
-            if (!componentFactory)
-              throw new Error('Expecting ComponentFactory for: ' + info.selector);
-
-            element.empty();
-            let projectableNodes = linkFns.map(link => {
-              let projectedClone: Node[];
-              link(scope, (clone: Node[]) => {
-                projectedClone = clone;
-                element.append(clone);
-              });
-              return projectedClone;
-            });
-
-            parentInjector = parentInjector || ng1Injector.get(INJECTOR_KEY);
-
-            if (parentInjector instanceof ParentInjectorPromise) {
-              parentInjector.then((resolvedInjector: Injector) => downgrade(resolvedInjector));
-            } else {
-              downgrade(parentInjector);
-            }
-
-            function downgrade(injector: Injector) {
-              const facade = new DowngradeNg2ComponentAdapter(
-                  info, element, attrs, scope, ngModel, injector, parse, componentFactory);
-              facade.bootstrapNg2(projectableNodes);
-              facade.setupInputs();
-              facade.setupOutputs();
-              facade.registerCleanup();
-              injectorPromise.resolve(facade.componentRef.injector);
-            }
-          }
-        };
-      }
-    };
-
-    function compileProjectedNodes(
-        templateElement: angular.IAugmentedJQuery,
-        ngContentSelectors: string[]): angular.ILinkFn[] {
-      if (!ngContentSelectors)
-        throw new Error('Expecting ngContentSelectors for: ' + info.selector);
-      // We have to sort the projected content before we compile it, hence the terminal: true
-      let projectableTemplateNodes =
-          sortProjectableNodes(ngContentSelectors, templateElement.contents());
-      return projectableTemplateNodes.map(nodes => ng1Compile(nodes));
-    }
-  }
-  return directiveFactory;
-}
 
 /**
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS / Angular application.
@@ -765,37 +676,4 @@ export class UpgradeAdapterRef {
     this.ng1Injector.get($ROOT_SCOPE).$destroy();
     this.ng2ModuleRef.destroy();
   }
-}
-
-
-/**
- * Sort a set of DOM nodes that into groups based on the given content selectors
- */
-export function sortProjectableNodes(ngContentSelectors: string[], childNodes: Node[]): Node[][] {
-  let projectableNodes: Node[][] = [];
-  let matcher = new SelectorMatcher();
-  let wildcardNgContentIndex: number;
-  for (let i = 0, ii = ngContentSelectors.length; i < ii; i++) {
-    projectableNodes[i] = [];
-    if (ngContentSelectors[i] === '*') {
-      wildcardNgContentIndex = i;
-    } else {
-      matcher.addSelectables(CssSelector.parse(ngContentSelectors[i]), i);
-    }
-  }
-  for (let node of childNodes) {
-    let ngContentIndices: number[] = [];
-    let selector =
-        createElementCssSelector(node.nodeName.toLowerCase(), getAttributesAsArray(node));
-    matcher.match(
-        selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
-    ngContentIndices.sort();
-    if (wildcardNgContentIndex !== undefined) {
-      ngContentIndices.push(wildcardNgContentIndex);
-    }
-    if (ngContentIndices.length > 0) {
-      projectableNodes[ngContentIndices[0]].push(node);
-    }
-  }
-  return projectableNodes;
 }

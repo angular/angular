@@ -11,7 +11,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angul
 import * as angular from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {controllerKey} from './util';
+import {controllerKey, getComponentName} from './util';
 
 let downgradeCount = 0;
 
@@ -86,7 +86,8 @@ export function downgradeComponent(info: /* ComponentInfo */ {
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
         // been compiled.
 
-        const parentInjector: Injector | ParentInjectorPromise = required[0] || $injector.get(INJECTOR_KEY);
+        const parentInjector: Injector|ParentInjectorPromise =
+            required[0] || $injector.get(INJECTOR_KEY);
         const ngModel: angular.INgModelController = required[1];
 
         const downgradeFn = (injector: Injector) => {
@@ -96,13 +97,14 @@ export function downgradeComponent(info: /* ComponentInfo */ {
               componentFactoryResolver.resolveComponentFactory(info.component);
 
           if (!componentFactory) {
-            throw new Error('Expecting ComponentFactory for: ' + info.component);
+            throw new Error('Expecting ComponentFactory for: ' + getComponentName(info.component));
           }
 
           const id = idPrefix + (idCount++);
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
-              id, info, element, attrs, scope, ngModel, injector, $compile, $parse, componentFactory);
+              id, info, element, attrs, scope, ngModel, injector, $injector, $compile, $parse,
+              componentFactory);
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
