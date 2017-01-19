@@ -11,7 +11,7 @@ import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
-import {UpgradeAdapter, UpgradeAdapterRef, sortProjectableNodes} from '@angular/upgrade/src/dynamic/upgrade_adapter';
+import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
 import {html, multiTrim} from './test_helpers';
 
 export function main() {
@@ -95,9 +95,7 @@ export function main() {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect((platformRef as any)._bootstrapModuleWithZone)
-                 .toHaveBeenCalledWith(
-                     jasmine.any(Function), {providers: []}, jasmine.any(Object),
-                     jasmine.any(Function));
+                 .toHaveBeenCalledWith(jasmine.any(Function), {providers: []}, jasmine.any(Object));
              ref.dispose();
            });
          }));
@@ -1876,73 +1874,4 @@ export function main() {
          }));
     });
   });
-
-  describe('sortProjectableNodes', () => {
-    it('should return an array of node collections for each selector', () => {
-      const contentNodes = nodes(
-          '<div class="x"><span>div-1 content</span></div>' +
-          '<input type="number" name="myNum">' +
-          '<input type="date" name="myDate">' +
-          '<span>span content</span>' +
-          '<div class="x"><span>div-2 content</span></div>');
-
-      const selectors = ['input[type=date]', 'span', '.x'];
-      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
-
-      expect(projectableNodes[0]).toEqual(nodes('<input type="date" name="myDate">'));
-      expect(projectableNodes[1]).toEqual(nodes('<span>span content</span>'));
-      expect(projectableNodes[2])
-          .toEqual(nodes(
-              '<div class="x"><span>div-1 content</span></div>' +
-              '<div class="x"><span>div-2 content</span></div>'));
-    });
-
-    it('should collect up unmatched nodes for the wildcard selector', () => {
-      const contentNodes = nodes(
-          '<div class="x"><span>div-1 content</span></div>' +
-          '<input type="number" name="myNum">' +
-          '<input type="date" name="myDate">' +
-          '<span>span content</span>' +
-          '<div class="x"><span>div-2 content</span></div>');
-
-      const selectors = ['.x', '*', 'input[type=date]'];
-      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
-
-      expect(projectableNodes[0])
-          .toEqual(nodes(
-              '<div class="x"><span>div-1 content</span></div>' +
-              '<div class="x"><span>div-2 content</span></div>'));
-      expect(projectableNodes[1])
-          .toEqual(nodes(
-              '<input type="number" name="myNum">' +
-              '<span>span content</span>'));
-      expect(projectableNodes[2]).toEqual(nodes('<input type="date" name="myDate">'));
-    });
-
-    it('should return an array of empty arrays if there are no nodes passed in', () => {
-      const selectors = ['.x', '*', 'input[type=date]'];
-      const projectableNodes = sortProjectableNodes(selectors, []);
-      expect(projectableNodes).toEqual([[], [], []]);
-    });
-
-    it('should return an empty array for each selector that does not match', () => {
-      const contentNodes = nodes(
-          '<div class="x"><span>div-1 content</span></div>' +
-          '<input type="number" name="myNum">' +
-          '<input type="date" name="myDate">' +
-          '<span>span content</span>' +
-          '<div class="x"><span>div-2 content</span></div>');
-
-      const noSelectorNodes = sortProjectableNodes([], contentNodes);
-      expect(noSelectorNodes).toEqual([]);
-
-      const noMatchSelectorNodes = sortProjectableNodes(['.not-there'], contentNodes);
-      expect(noMatchSelectorNodes).toEqual([[]]);
-    });
-  });
 }
-
-function nodes(html: string) {
-  const element = document.createElement('div');
-  element.innerHTML = html;
-  return Array.prototype.slice.call(element.childNodes);

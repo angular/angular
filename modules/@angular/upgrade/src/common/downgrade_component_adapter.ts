@@ -11,7 +11,8 @@ import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injecto
 import * as angular from './angular1';
 import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {hookupNgModel} from './util';
+import {ContentProjectionHelper} from './content_projection_helper';
+import {getComponentName, hookupNgModel} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -29,24 +30,32 @@ export class DowngradeComponentAdapter {
       private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
       private ngModel: angular.INgModelController, private parentInjector: Injector,
-      private $compile: angular.ICompileService, private $parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>) {
+      private $injector: angular.IInjectorService, private $compile: angular.ICompileService,
+      private $parse: angular.IParseService, private componentFactory: ComponentFactory<any>) {
     (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
   }
 
   compileContents(): Node[][] {
-    const projectableNodes: Node[][] = [];
-    const linkFn = this.$compile(this.element.contents());
+    const compiledProjectableNodes: Node[][] = [];
+
+    // The projected content has to be grouped, before it is compiled.
+    const projectionHelper: ContentProjectionHelper =
+        this.parentInjector.get(ContentProjectionHelper);
+    const projectableNodes: Node[][] = projectionHelper.groupProjectableNodes(
+        this.$injector, this.info.component, this.element.contents());
+    const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
     this.element.empty();
 
-    linkFn(this.scope, (clone: Node[]) => {
-      projectableNodes.push(clone);
-      this.element.append(clone);
+    linkFns.forEach(linkFn => {
+      linkFn(this.scope, (clone: Node[]) => {
+        compiledProjectableNodes.push(clone);
+        this.element.append(clone);
+      });
     });
 
-    return projectableNodes;
+    return compiledProjectableNodes;
   }
 
   createComponent(projectableNodes: Node[][]) {
@@ -162,7 +171,7 @@ export class DowngradeComponentAdapter {
           });
         } else {
           throw new Error(
-              `Missing emitter '${output.prop}' on component '${this.info.component}'!`);
+              `Missing emitter '${output.prop}' on component '${getComponentName(this.info.component)}'!`);
         }
       }
     }
