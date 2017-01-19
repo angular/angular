@@ -28,13 +28,12 @@ export function main(): void {
         ]);
       });
 
-      it('should extract the all messages and duplicates', () => {
+      it('should extract and dedup messages', () => {
         messages.updateFromTemplate(
-            '<p i18n="m|d">Translate Me</p><p i18n>Translate Me</p><p i18n>Translate Me</p>', 'url',
-            DEFAULT_INTERPOLATION_CONFIG);
+            '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
+            'url', DEFAULT_INTERPOLATION_CONFIG);
         expect(humanizeMessages(messages)).toEqual([
           'Translate Me (m|d)',
-          'Translate Me (|)',
           'Translate Me (|)',
         ]);
       });
@@ -50,7 +49,7 @@ class _TestSerializer extends Serializer {
 
   load(content: string, url: string): {} { return null; }
 
-  digest(msg: i18n.Message): string { return 'unused'; }
+  digest(msg: i18n.Message): string { return msg.id || `default`; }
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {
