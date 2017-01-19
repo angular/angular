@@ -58,11 +58,6 @@ if [[ ${TRAVIS} ]]; then
   # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
   export CXX=g++-4.8
 
-  # Build ES2015 distro only in the e2e job (don't need to slow down other jobs)
-  if [ "${CI_MODE}" = "e2e" ]; then
-    export EXPERIMENTAL_ES2015_DISTRO=1
-  fi
-
   # Used by karma and karma-chrome-launcher
   # In order to have a meaningful SauceLabs badge on the repo page,
   # the angular2-ci account is used only when pushing commits to master;
