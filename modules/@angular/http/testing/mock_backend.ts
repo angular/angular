@@ -228,7 +228,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: EventEmitter<MockConnection> = new EventEmitter<MockConnection>();
+  connections = new EventEmitter<MockConnection>();
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -245,7 +245,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: EventEmitter<MockConnection> = new EventEmitter<MockConnection>();
+  pendingConnections = new EventEmitter<MockConnection>();
 
   constructor() {
     this.connectionsArray = [];
