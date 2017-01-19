@@ -10,6 +10,7 @@ import {
   Output,
   QueryList,
   Renderer,
+  Self,
   ViewEncapsulation,
   ViewChild,
 } from '@angular/core';
@@ -232,7 +233,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
               private _viewportRuler: ViewportRuler, @Optional() private _dir: Dir,
-              @Optional() public _control: NgControl) {
+              @Self() @Optional() public _control: NgControl) {
     if (this._control) {
       this._control.valueAccessor = this;
     }

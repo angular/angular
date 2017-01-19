@@ -6,7 +6,9 @@ import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
+} from '@angular/forms';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 
 describe('MdSelect', () => {
@@ -22,7 +24,9 @@ describe('MdSelect', () => {
         ManySelects,
         NgIfSelect,
         SelectInitWithoutOptions,
-        SelectWithChangeEvent
+        SelectWithChangeEvent,
+        CustomSelectAccessor,
+        CompWithCustomSelect
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -538,6 +542,20 @@ describe('MdSelect', () => {
     }));
 
   });
+
+  describe('misc forms', () => {
+    it('should support use inside a custom value accessor', () => {
+      const fixture = TestBed.createComponent(CompWithCustomSelect);
+      spyOn(fixture.componentInstance.customAccessor, 'writeValue');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.customAccessor.select._control)
+          .toBe(null, 'Expected md-select NOT to inherit control from parent value accessor.');
+      expect(fixture.componentInstance.customAccessor.writeValue).toHaveBeenCalled();
+    });
+
+  });
+
 
   describe('animations', () => {
     let fixture: ComponentFixture<BasicSelect>;
@@ -1378,6 +1396,43 @@ class SelectInitWithoutOptions {
     ];
   }
 }
+
+@Component({
+  selector: 'custom-select-accessor',
+  template: `
+    <md-select></md-select>
+  `,
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: CustomSelectAccessor,
+    multi: true
+  }]
+})
+class CustomSelectAccessor implements ControlValueAccessor {
+  @ViewChild(MdSelect) select: MdSelect;
+
+  writeValue(val: any): void {}
+  registerOnChange(fn: (val: any) => void): void {}
+  registerOnTouched(fn: Function): void {}
+}
+
+@Component({
+  selector: 'comp-with-custom-select',
+  template: `
+    <custom-select-accessor [formControl]="ctrl">
+    </custom-select-accessor>
+  `,
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: CustomSelectAccessor,
+    multi: true
+  }]
+})
+class CompWithCustomSelect {
+  ctrl = new FormControl('initial value');
+  @ViewChild(CustomSelectAccessor) customAccessor: CustomSelectAccessor;
+}
+
 
 /**
  * TODO: Move this to core testing utility until Angular has event faking
