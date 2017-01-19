@@ -1,9 +1,52 @@
 <div class="demo-autocomplete">
-  <md-input-container>
-    <input mdInput placeholder="State" [mdAutocomplete]="auto">
-  </md-input-container>
+  <md-card>
+    <div>Reactive value: {{ stateCtrl.value }}</div>
+    <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
-  <md-autocomplete #auto="mdAutocomplete">
-    <md-option *ngFor="let state of states" [value]="state.code"> {{ state.name }} </md-option>
-  </md-autocomplete>
+    <md-input-container>
+      <input mdInput placeholder="State" [mdAutocomplete]="reactiveAuto" [formControl]="stateCtrl">
+    </md-input-container>
+
+    <md-card-actions>
+      <button md-button (click)="stateCtrl.reset()">RESET</button>
+      <button md-button (click)="stateCtrl.setValue('California')">SET VALUE</button>
+      <button md-button (click)="stateCtrl.enabled ? stateCtrl.disable() : stateCtrl.enable()">
+        TOGGLE DISABLED
+      </button>
+    </md-card-actions>
+
+  </md-card>
+
+  <md-card>
+    <div>Template-driven value (currentState): {{ currentState }}</div>
+    <div>Template-driven dirty: {{ modelDir.dirty }}</div>
+
+    <md-input-container>
+      <input mdInput placeholder="State" [mdAutocomplete]="tdAuto" [(ngModel)]="currentState" #modelDir="ngModel"
+        (ngModelChange)="this.tdStates = filterStates(currentState)" [disabled]="tdDisabled">
+    </md-input-container>
+
+    <md-card-actions>
+      <button md-button (click)="modelDir.reset()">RESET</button>
+      <button md-button (click)="currentState='California'">SET VALUE</button>
+      <button md-button (click)="tdDisabled=!tdDisabled">
+        TOGGLE DISABLED
+      </button>
+    </md-card-actions>
+
+  </md-card>
 </div>
+
+<md-autocomplete #reactiveAuto="mdAutocomplete">
+  <md-option *ngFor="let state of reactiveStates" [value]="state.name">
+    <span>{{ state.name }}</span>
+    <span class="demo-secondary-text"> ({{state.code}}) </span>
+  </md-option>
+</md-autocomplete>
+
+<md-autocomplete #tdAuto="mdAutocomplete">
+  <md-option *ngFor="let state of tdStates" [value]="state.name">
+    <span>{{ state.name }}</span>
+    <span class="demo-secondary-text"> ({{state.code}}) </span>
+  </md-option>
+</md-autocomplete>

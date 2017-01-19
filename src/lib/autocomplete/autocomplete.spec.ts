@@ -1,10 +1,12 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnDestroy, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {Subscription} from 'rxjs/Subscription';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -13,7 +15,9 @@ describe('MdAutocomplete', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [MdAutocompleteModule.forRoot(), MdInputModule.forRoot()],
+      imports: [
+          MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), ReactiveFormsModule
+      ],
       declarations: [SimpleAutocomplete],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -37,18 +41,18 @@ describe('MdAutocomplete', () => {
 
   describe('panel toggling', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
-    let trigger: HTMLElement;
+    let input: HTMLInputElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleAutocomplete);
       fixture.detectChanges();
 
-      trigger = fixture.debugElement.query(By.css('input')).nativeElement;
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
     });
 
     it('should open the panel when the input is focused', () => {
       expect(fixture.componentInstance.trigger.panelOpen).toBe(false);
-      dispatchEvent('focus', trigger);
+      dispatchEvent('focus', input);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.trigger.panelOpen)
@@ -73,7 +77,7 @@ describe('MdAutocomplete', () => {
     });
 
     it('should close the panel when a click occurs outside it', async(() => {
-      dispatchEvent('focus', trigger);
+      dispatchEvent('focus', input);
       fixture.detectChanges();
 
       const backdrop =
@@ -90,7 +94,7 @@ describe('MdAutocomplete', () => {
     }));
 
     it('should close the panel when an option is clicked', async(() => {
-      dispatchEvent('focus', trigger);
+      dispatchEvent('focus', input);
       fixture.detectChanges();
 
       const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
@@ -105,22 +109,47 @@ describe('MdAutocomplete', () => {
       });
     }));
 
-    it('should close the panel when a newly created option is clicked', async(() => {
-      fixture.componentInstance.states.unshift({code: 'TEST', name: 'test'});
+    it('should close the panel when a newly filtered option is clicked', async(() => {
+      dispatchEvent('focus', input);
       fixture.detectChanges();
 
-      dispatchEvent('focus', trigger);
+      // Filter down the option list to a subset of original options ('Alabama', 'California')
+      input.value = 'al';
+      dispatchEvent('input', input);
       fixture.detectChanges();
 
-      const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
-      option.click();
+      let options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[0].click();
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
         expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
+            .toBe(false, `Expected clicking a filtered option to set the panel state to closed.`);
         expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected clicking a new option to close the panel.`);
+            .toEqual('', `Expected clicking a filtered option to close the panel.`);
+
+        dispatchEvent('focus', input);
+        fixture.detectChanges();
+
+        // Changing value from 'Alabama' to 'al' to re-populate the option list,
+        // ensuring that 'California' is created new.
+        input.value = 'al';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected clicking a new option to close the panel.`);
+        });
+
       });
     }));
 
@@ -152,6 +181,59 @@ describe('MdAutocomplete', () => {
 
     const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
+
+  });
+
+  describe('forms integration', () => {
+    let fixture: ComponentFixture<SimpleAutocomplete>;
+    let input: HTMLInputElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
+    });
+
+    it('should fill the text field when an option is selected', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[1].click();
+      fixture.detectChanges();
+
+      expect(input.value)
+          .toContain('California', `Expected text field to be filled with selected value.`);
+    });
+
+    it('should mark the autocomplete control as dirty when an option is selected', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(false, `Expected control to start out pristine.`);
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[1].click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(true, `Expected control to become dirty when an option was selected.`);
+    });
+
+    it('should not mark the control dirty when the value is set programmatically', () => {
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(false, `Expected control to start out pristine.`);
+
+      fixture.componentInstance.stateCtrl.setValue('AL');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(false, `Expected control to stay pristine if value is set programmatically.`);
+    });
+
   });
 
 });
@@ -159,15 +241,21 @@ describe('MdAutocomplete', () => {
 @Component({
   template: `
     <md-input-container>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto">
+      <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
     </md-input-container>
   
     <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let state of states" [value]="state.code"> {{ state.name }} </md-option>
+      <md-option *ngFor="let state of filteredStates" [value]="state.name">
+        {{ state.name }} ({{ state.code }}) 
+      </md-option>
     </md-autocomplete>
   `
 })
-class SimpleAutocomplete {
+class SimpleAutocomplete implements OnDestroy {
+  stateCtrl = new FormControl();
+  filteredStates: any[];
+  valueSub: Subscription;
+
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
 
   states = [
@@ -183,6 +271,19 @@ class SimpleAutocomplete {
     {code: 'VA', name: 'Virginia'},
     {code: 'WY', name: 'Wyoming'},
   ];
+
+  constructor() {
+    this.filteredStates = this.states;
+    this.valueSub = this.stateCtrl.valueChanges.subscribe(val => {
+      this.filteredStates = val ? this.states.filter((s) => s.name.match(new RegExp(val, 'gi')))
+                                : this.states;
+    });
+  }
+
+  ngOnDestroy() {
+    this.valueSub.unsubscribe();
+  }
+
 }
 
 

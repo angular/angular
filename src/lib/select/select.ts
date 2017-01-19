@@ -14,7 +14,7 @@ import {
   ViewEncapsulation,
   ViewChild,
 } from '@angular/core';
-import {MdOption} from '../core/option/option';
+import {MdOption, MdOptionSelectEvent} from '../core/option/option';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {Dir} from '../core/rtl/dir';
@@ -456,8 +456,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** Listens to selection events on each option. */
   private _listenToOptions(): void {
     this.options.forEach((option: MdOption) => {
-      const sub = option.onSelect.subscribe((isUserInput: boolean) => {
-        if (isUserInput && this._selected !== option) {
+      const sub = option.onSelect.subscribe((event: MdOptionSelectEvent) => {
+        if (event.isUserInput && this._selected !== option) {
           this._emitChangeEvent(option);
         }
         this._onSelect(option);

@@ -1,1 +1,18 @@
-.demo-autocomplete {}
+.demo-autocomplete {
+  display: flex;
+  flex-flow: row wrap;
+
+  md-card {
+    width: 350px;
+    margin: 24px;
+  }
+
+  md-input-container {
+    margin-top: 16px;
+  }
+}
+
+.demo-secondary-text {
+  color: rgba(0, 0, 0, 0.54);
+  margin-left: 8px;
+}

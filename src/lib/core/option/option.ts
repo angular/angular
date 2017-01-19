@@ -20,6 +20,12 @@ import {MdRippleModule} from '../ripple/ripple';
  */
 let _uniqueIdCounter = 0;
 
+/** Event object emitted by MdOption when selected. */
+export class MdOptionSelectEvent {
+  constructor(public source: MdOption, public isUserInput = false) {}
+}
+
+
 /**
  * Single option inside of a `<md-select>` element.
  */
@@ -60,7 +66,7 @@ export class MdOption {
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
   /** Event emitted when the option is selected. */
-  @Output() onSelect = new EventEmitter();
+  @Output() onSelect = new EventEmitter<MdOptionSelectEvent>();
 
   constructor(private _element: ElementRef, private _renderer: Renderer) {}
 
@@ -81,7 +87,7 @@ export class MdOption {
   /** Selects the option. */
   select(): void {
     this._selected = true;
-    this.onSelect.emit();
+    this.onSelect.emit(new MdOptionSelectEvent(this, false));
   }
 
   /** Deselects the option. */
@@ -108,7 +114,7 @@ export class MdOption {
   _selectViaInteraction() {
     if (!this.disabled) {
       this._selected = true;
-      this.onSelect.emit(true);
+      this.onSelect.emit(new MdOptionSelectEvent(this, true));
     }
   }
 
