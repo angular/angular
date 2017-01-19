@@ -112,7 +112,7 @@ export class Request extends Body {
       case 'text/html':
         return ContentType.TEXT;
       case 'application/octet-stream':
-        return ContentType.BLOB;
+        return this._body instanceof ArrayBuffer ? ContentType.ARRAY_BUFFER : ContentType.BLOB;
       default:
         return this.detectContentTypeFromBody();
     }
@@ -132,7 +132,7 @@ export class Request extends Body {
       return ContentType.BLOB;
     } else if (this._body instanceof ArrayBuffer) {
       return ContentType.ARRAY_BUFFER;
-    } else if (this._body && typeof this._body == 'object') {
+    } else if (this._body && typeof this._body === 'object') {
       return ContentType.JSON;
     } else {
       return ContentType.TEXT;
@@ -167,4 +167,4 @@ const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
 const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
 const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
-const ArrayBuffer = (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
+export const ArrayBuffer = (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
