@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * Convenience to throw an Error with 'unimplemented' as the message.
+ */
 export function unimplemented(): any {
   throw new Error('unimplemented');
 }
