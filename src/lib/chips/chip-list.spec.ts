@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdChip, MdChipList, MdChipsModule} from './index';
-import {ListKeyManager} from '../core/a11y/list-key-manager';
+import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {FakeEvent} from '../core/a11y/list-key-manager.spec';
 import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 
@@ -21,7 +21,7 @@ describe('MdChipList', () => {
   let chipListInstance: MdChipList;
   let testComponent: StaticChipList;
   let chips: QueryList<MdChip>;
-  let manager: ListKeyManager;
+  let manager: FocusKeyManager;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -60,7 +60,7 @@ describe('MdChipList', () => {
       chipListInstance.focus();
       fixture.detectChanges();
 
-      expect(manager.focusedItemIndex).toBe(0);
+      expect(manager.activeItemIndex).toBe(0);
     });
 
     it('watches for chip focus', () => {
@@ -71,7 +71,7 @@ describe('MdChipList', () => {
       lastItem.focus();
       fixture.detectChanges();
 
-      expect(manager.focusedItemIndex).toBe(lastIndex);
+      expect(manager.activeItemIndex).toBe(lastIndex);
     });
 
     describe('on chip destroy', () => {
@@ -87,7 +87,7 @@ describe('MdChipList', () => {
         fixture.detectChanges();
 
         // It focuses the 4th item (now at index 2)
-        expect(manager.focusedItemIndex).toEqual(2);
+        expect(manager.activeItemIndex).toEqual(2);
       });
 
       it('focuses the previous item', () => {
@@ -103,7 +103,7 @@ describe('MdChipList', () => {
         fixture.detectChanges();
 
         // It focuses the next-to-last item
-        expect(manager.focusedItemIndex).toEqual(lastIndex - 1);
+        expect(manager.activeItemIndex).toEqual(lastIndex - 1);
       });
     });
   });
@@ -124,14 +124,14 @@ describe('MdChipList', () => {
 
       // Focus the last item in the array
       lastItem.focus();
-      expect(manager.focusedItemIndex).toEqual(lastIndex);
+      expect(manager.activeItemIndex).toEqual(lastIndex);
 
       // Press the LEFT arrow
       chipListInstance._keydown(LEFT_EVENT);
       fixture.detectChanges();
 
       // It focuses the next-to-last item
-      expect(manager.focusedItemIndex).toEqual(lastIndex - 1);
+      expect(manager.activeItemIndex).toEqual(lastIndex - 1);
     });
 
     it('right arrow focuses next item', () => {
@@ -144,14 +144,14 @@ describe('MdChipList', () => {
 
       // Focus the last item in the array
       firstItem.focus();
-      expect(manager.focusedItemIndex).toEqual(0);
+      expect(manager.activeItemIndex).toEqual(0);
 
       // Press the RIGHT arrow
       chipListInstance._keydown(RIGHT_EVENT);
       fixture.detectChanges();
 
       // It focuses the next-to-last item
-      expect(manager.focusedItemIndex).toEqual(1);
+      expect(manager.activeItemIndex).toEqual(1);
     });
 
     describe('when selectable is true', () => {

@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 
 import {MdChip} from './chip';
-import {ListKeyManager} from '../core/a11y/list-key-manager';
+import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 
@@ -55,8 +55,8 @@ export class MdChipList implements AfterContentInit {
   /** Whether or not the chip is selectable. */
   protected _selectable: boolean = true;
 
-  /** The ListKeyManager which handles focus. */
-  _keyManager: ListKeyManager;
+  /** The FocusKeyManager which handles focus. */
+  _keyManager: FocusKeyManager;
 
   /** The chip components contained within this chip list. */
   chips: QueryList<MdChip>;
@@ -64,7 +64,7 @@ export class MdChipList implements AfterContentInit {
   constructor(private _elementRef: ElementRef) { }
 
   ngAfterContentInit(): void {
-    this._keyManager = new ListKeyManager(this.chips).withFocusWrap();
+    this._keyManager = new FocusKeyManager(this.chips).withWrap();
 
     // Go ahead and subscribe all of the initial chips
     this._subscribeChips(this.chips);
@@ -93,7 +93,7 @@ export class MdChipList implements AfterContentInit {
    */
   focus() {
     // TODO: ARIA says this should focus the first `selected` chip.
-    this._keyManager.focusFirstItem();
+    this._keyManager.setFirstItemActive();
   }
 
   /** Passes relevant key presses to our key manager. */
@@ -113,11 +113,11 @@ export class MdChipList implements AfterContentInit {
           event.preventDefault();
           break;
         case LEFT_ARROW:
-          this._keyManager.focusPreviousItem();
+          this._keyManager.setPreviousItemActive();
           event.preventDefault();
           break;
         case RIGHT_ARROW:
-          this._keyManager.focusNextItem();
+          this._keyManager.setNextItemActive();
           event.preventDefault();
           break;
         default:
@@ -133,7 +133,7 @@ export class MdChipList implements AfterContentInit {
       return;
     }
 
-    let focusedIndex = this._keyManager.focusedItemIndex;
+    let focusedIndex = this._keyManager.activeItemIndex;
 
     if (this._isValidIndex(focusedIndex)) {
       let focusedChip: MdChip = this.chips.toArray()[focusedIndex];
@@ -173,7 +173,7 @@ export class MdChipList implements AfterContentInit {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
 
       if (this._isValidIndex(chipIndex)) {
-        this._keyManager.updateFocusedItemIndex(chipIndex);
+        this._keyManager.updateActiveItemIndex(chipIndex);
       }
     });
 
@@ -184,9 +184,9 @@ export class MdChipList implements AfterContentInit {
       if (this._isValidIndex(chipIndex)) {
         // Check whether the chip is the last item
         if (chipIndex < this.chips.length - 1) {
-          this._keyManager.setFocus(chipIndex);
+          this._keyManager.setActiveItem(chipIndex);
         } else if (chipIndex - 1 >= 0) {
-          this._keyManager.setFocus(chipIndex - 1);
+          this._keyManager.setActiveItem(chipIndex - 1);
         }
       }
 

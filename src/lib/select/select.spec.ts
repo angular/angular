@@ -135,7 +135,7 @@ describe('MdSelect', () => {
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.select._keyManager.focusedItemIndex).toEqual(0);
+        expect(fixture.componentInstance.select._keyManager.activeItemIndex).toEqual(0);
       });
     }));
 
@@ -232,7 +232,7 @@ describe('MdSelect', () => {
         // must wait for animation to finish
         fixture.whenStable().then(() => {
           fixture.detectChanges();
-          expect(fixture.componentInstance.select._keyManager.focusedItemIndex).toEqual(1);
+          expect(fixture.componentInstance.select._keyManager.activeItemIndex).toEqual(1);
         });
       });
     }));

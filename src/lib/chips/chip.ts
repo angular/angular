@@ -9,7 +9,7 @@ import {
   Renderer
 } from '@angular/core';
 
-import {Focusable} from '../core/a11y/list-key-manager';
+import {Focusable} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 export interface MdChipEvent {

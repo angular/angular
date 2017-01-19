@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import {MdOption} from '../core/option/option';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
-import {ListKeyManager} from '../core/a11y/list-key-manager';
+import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {Dir} from '../core/rtl/dir';
 import {Subscription} from 'rxjs/Subscription';
 import {transformPlaceholder, transformPanel, fadeInContent} from './select-animations';
@@ -138,7 +138,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   _selectedValueWidth: number;
 
   /** Manages keyboard events for options in the panel. */
-  _keyManager: ListKeyManager;
+  _keyManager: FocusKeyManager;
 
   /** View -> model callback called when value changes */
   _onChange = (value: any) => {};
@@ -439,7 +439,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
-    this._keyManager = new ListKeyManager(this.options);
+    this._keyManager = new FocusKeyManager(this.options);
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => {
       this.close();
     });
@@ -516,9 +516,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    */
   private _focusCorrectOption(): void {
     if (this.selected) {
-      this._keyManager.setFocus(this._getOptionIndex(this.selected));
+      this._keyManager.setActiveItem(this._getOptionIndex(this.selected));
     } else {
-      this._keyManager.focusFirstItem();
+      this._keyManager.setFirstItemActive();
     }
   }
 
