@@ -8,9 +8,10 @@
 interface VinylFile extends Object {
   // Absolute path to the virtual file
   path: string;
-  
+
   // Content of the virtual file
   contents: Buffer;
-};
+}
+;
 
 export default VinylFile;
