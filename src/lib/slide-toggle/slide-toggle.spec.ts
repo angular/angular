@@ -189,6 +189,17 @@ describe('MdSlideToggle', () => {
       expect(inputElement.id).toMatch(/md-slide-toggle-[0-9]+-input/g);
     });
 
+    it('should forward the tabIndex to the underlying input', () => {
+      fixture.detectChanges();
+
+      expect(inputElement.tabIndex).toBe(0);
+
+      testComponent.slideTabindex = 4;
+      fixture.detectChanges();
+
+      expect(inputElement.tabIndex).toBe(4);
+    });
+
     it('should forward the specified name to the input', () => {
       testComponent.slideName = 'myName';
       fixture.detectChanges();
@@ -570,8 +581,9 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
                      [id]="slideId"
                      [checked]="slideChecked"
                      [name]="slideName"
-                     [ariaLabel]="slideLabel"
-                     [ariaLabelledby]="slideLabelledBy"
+                     [aria-label]="slideLabel"
+                     [aria-labelledby]="slideLabelledBy"
+                     [tabIndex]="slideTabindex"
                      (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
 
@@ -589,6 +601,7 @@ class SlideToggleTestApp {
   slideName: string;
   slideLabel: string;
   slideLabelledBy: string;
+  slideTabindex: number;
   lastEvent: MdSlideToggleChange;
 
   onSlideClick(event: Event) {}
