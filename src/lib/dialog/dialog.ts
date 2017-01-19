@@ -42,7 +42,7 @@ export class MdDialog {
 
     let overlayRef = this._createOverlay(config);
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
-    let dialogRef = this._attachDialogContent(component, dialogContainer, overlayRef);
+    let dialogRef = this._attachDialogContent(component, dialogContainer, overlayRef, config);
 
     this._openDialogs.push(dialogRef);
     dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
@@ -96,12 +96,14 @@ export class MdDialog {
    * @param component The type of component being loaded into the dialog.
    * @param dialogContainer Reference to the wrapping MdDialogContainer.
    * @param overlayRef Reference to the overlay in which the dialog resides.
+   * @param config The dialog configuration.
    * @returns A promise resolving to the MdDialogRef that should be returned to the user.
    */
   private _attachDialogContent<T>(
       component: ComponentType<T>,
       dialogContainer: MdDialogContainer,
-      overlayRef: OverlayRef): MdDialogRef<T> {
+      overlayRef: OverlayRef,
+      config?: MdDialogConfig): MdDialogRef<T> {
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
     let dialogRef = <MdDialogRef<T>> new MdDialogRef(overlayRef);
@@ -117,7 +119,8 @@ export class MdDialog {
     // We create an injector specifically for the component we're instantiating so that it can
     // inject the MdDialogRef. This allows a component loaded inside of a dialog to close itself
     // and, optionally, to return a value.
-    let dialogInjector = new DialogInjector(dialogRef, this._injector);
+    let userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    let dialogInjector = new DialogInjector(dialogRef, userInjector || this._injector);
 
     let contentPortal = new ComponentPortal(component, null, dialogInjector);
 

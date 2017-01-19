@@ -8,7 +8,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
+import {NgModule, Component, Directive, ViewChild, ViewContainerRef, Injector} from '@angular/core';
 import {MdDialogModule} from './index';
 import {MdDialog} from './dialog';
 import {OverlayContainer} from '../core';
@@ -62,6 +62,21 @@ describe('MdDialog', () => {
     viewContainerFixture.detectChanges();
     let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+  });
+
+  it('should use injector from viewContainerRef for DialogInjector', () => {
+    let dialogRef = dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
+
+    viewContainerFixture.detectChanges();
+
+    let dialogInjector = dialogRef.componentInstance.dialogInjector;
+
+    expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
+    expect(dialogInjector.get(DirectiveWithViewContainer)).toBeTruthy(
+      'Expected the dialog component to be created with the injector from the viewContainerRef.'
+    );
   });
 
   it('should open a dialog with a component and no ViewContainerRef', () => {
@@ -435,7 +450,8 @@ class ComponentWithChildViewContainer {
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Pizza</p> <input> <button>Close</button>'})
 class PizzaMsg {
-  constructor(public dialogRef: MdDialogRef<PizzaMsg>) { }
+  constructor(public dialogRef: MdDialogRef<PizzaMsg>,
+              public dialogInjector: Injector) {}
 }
 
 @Component({
