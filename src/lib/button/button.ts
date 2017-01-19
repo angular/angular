@@ -82,7 +82,7 @@ export class MdButton {
 
   _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
+      this._renderer.setElementClass(this._getHostElement(), `md-${color}`, isAdd);
     }
   }
 
@@ -96,7 +96,7 @@ export class MdButton {
 
   /** Focuses the button. */
   focus(): void {
-    this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus');
+    this._renderer.invokeElementMethod(this._getHostElement(), 'focus');
   }
 
   _getHostElement() {
@@ -104,7 +104,7 @@ export class MdButton {
   }
 
   _isRoundButton() {
-    const el = this._elementRef.nativeElement;
+    const el = this._getHostElement();
     return el.hasAttribute('md-icon-button') ||
         el.hasAttribute('md-fab') ||
         el.hasAttribute('md-mini-fab');
