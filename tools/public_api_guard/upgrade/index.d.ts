@@ -2,7 +2,7 @@
 export declare class UpgradeAdapter {
     constructor(ng2AppModule: Type<any>, compilerOptions?: CompilerOptions);
     bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef;
-    downgradeNg2Component(type: Type<any>): Function;
+    downgradeNg2Component(component: Type<any>): Function;
     downgradeNg2Provider(token: any): Function;
     registerForNg1Tests(modules?: string[]): UpgradeAdapterRef;
     upgradeNg1Component(name: string): Type<any>;

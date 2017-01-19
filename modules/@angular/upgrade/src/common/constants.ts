@@ -21,7 +21,6 @@ export const $TEMPLATE_REQUEST = '$templateRequest';
 export const $$TESTABILITY = '$$testability';
 
 export const COMPILER_KEY = '$$angularCompiler';
-export const COMPONENT_FACTORY_REF_MAP_KEY = '$$angularComponentFactoryRefMap';
 export const INJECTOR_KEY = '$$angularInjector';
 export const NG_ZONE_KEY = '$$angularNgZone';
 
