@@ -19,6 +19,7 @@ export interface ViewDefinition {
   flags: ViewFlags;
   componentType: RenderComponentType;
   update: ViewUpdateFn;
+  handleEvent: ViewHandleEventFn;
   /**
    * Order: Depth first.
    * Especially providers are before elements / anchros.
@@ -33,10 +34,10 @@ export interface ViewDefinition {
   reverseChildNodes: NodeDef[];
   lastRootNode: number;
   bindingCount: number;
+  disposableCount: number;
 }
 
-export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData, component: any, context: any) =>
-    void;
+export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData) => void;
 
 export interface NodeUpdater {
   checkInline(
@@ -44,6 +45,9 @@ export interface NodeUpdater {
       v6?: any, v7?: any, v8?: any, v9?: any): void;
   checkDynamic(view: ViewData, nodeIndex: number, values: any[]): void;
 }
+
+export type ViewHandleEventFn =
+    (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
 
 /**
  * Bitmask for ViewDefintion.flags.
@@ -66,6 +70,8 @@ export interface NodeDef {
   childFlags: NodeFlags;
   bindingIndex: number;
   bindings: BindingDef[];
+  disposableIndex: number;
+  disposableCount: number;
   element: ElementDef;
   providerIndices: {[tokenKey: string]: number};
   provider: ProviderDef;
@@ -102,6 +108,12 @@ export enum NodeFlags {
 export interface ElementDef {
   name: string;
   attrs: {[name: string]: string};
+  outputs: ElementOutputDef[];
+}
+
+export interface ElementOutputDef {
+  target: string;
+  eventName: string;
 }
 
 /**
@@ -118,10 +130,16 @@ export interface DepDef {
   tokenKey: string;
 }
 
+export interface ProviderOutputDef {
+  propName: string;
+  eventName: string;
+}
+
 export interface ProviderDef {
   tokenKey: string;
   ctor: any;
   deps: DepDef[];
+  outputs: ProviderOutputDef[];
 }
 
 export interface TextDef { prefix: string; }
@@ -164,7 +182,10 @@ export interface ViewData {
   nodes: NodeData[];
   firstChange: boolean;
   oldValues: any[];
+  disposables: DisposableFn[];
 }
+
+export type DisposableFn = () => void;
 
 /**
  * Node instance data.

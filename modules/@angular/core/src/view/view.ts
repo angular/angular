@@ -13,14 +13,14 @@ import {createAnchor} from './anchor';
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProvider} from './provider';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn} from './types';
+import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn} from './types';
 import {checkBindingNoChanges} from './util';
 
-const NOOP_UPDATE = (): any => undefined;
+const NOOP = (): any => undefined;
 
 export function viewDef(
     flags: ViewFlags, nodesWithoutIndices: NodeDef[], update?: ViewUpdateFn,
-    componentType?: RenderComponentType): ViewDefinition {
+    handleEvent?: ViewHandleEventFn, componentType?: RenderComponentType): ViewDefinition {
   // clone nodes and set auto calculated values
   if (nodesWithoutIndices.length === 0) {
     throw new Error(`Illegal State: Views without nodes are not allowed!`);
@@ -28,6 +28,7 @@ export function viewDef(
   const nodes: NodeDef[] = new Array(nodesWithoutIndices.length);
   const reverseChildNodes: NodeDef[] = new Array(nodesWithoutIndices.length);
   let viewBindingCount = 0;
+  let viewDisposableCount = 0;
   let viewFlags = 0;
   let currentParent: NodeDef = null;
   let lastRootNode: NodeDef = null;
@@ -44,7 +45,8 @@ export function viewDef(
     const node = cloneAndModifyNode(nodesWithoutIndices[i], {
       index: i,
       parent: currentParent ? currentParent.index : undefined,
-      bindingIndex: viewBindingCount, reverseChildIndex,
+      bindingIndex: viewBindingCount,
+      disposableIndex: viewDisposableCount, reverseChildIndex,
       providerIndices: Object.create(currentParent ? currentParent.providerIndices : null)
     });
     nodes[i] = node;
@@ -53,6 +55,7 @@ export function viewDef(
 
     viewFlags |= node.flags;
     viewBindingCount += node.bindings.length;
+    viewDisposableCount += node.disposableCount;
     if (currentParent) {
       currentParent.childFlags |= node.flags;
     }
@@ -72,8 +75,10 @@ export function viewDef(
     nodeFlags: viewFlags,
     flags,
     nodes: nodes, reverseChildNodes,
-    update: update || NOOP_UPDATE, componentType,
+    update: update || NOOP,
+    handleEvent: handleEvent || NOOP, componentType,
     bindingCount: viewBindingCount,
+    disposableCount: viewDisposableCount,
     lastRootNode: lastRootNode.index
   };
 }
@@ -148,6 +153,7 @@ function cloneAndModifyNode(nodeDef: NodeDef, values: {
   reverseChildIndex: number,
   parent: number,
   bindingIndex: number,
+  disposableIndex: number,
   providerIndices: {[tokenKey: string]: number}
 }): NodeDef {
   const clonedNode: NodeDef = <any>{};
@@ -157,6 +163,7 @@ function cloneAndModifyNode(nodeDef: NodeDef, values: {
 
   clonedNode.index = values.index;
   clonedNode.bindingIndex = values.bindingIndex;
+  clonedNode.disposableIndex = values.disposableIndex;
   clonedNode.parent = values.parent;
   clonedNode.reverseChildIndex = values.reverseChildIndex;
   clonedNode.providerIndices = values.providerIndices;
@@ -188,6 +195,7 @@ function createView(
   } else {
     renderer = def.componentType ? services.renderComponent(def.componentType) : parent.renderer;
   }
+  const disposables = def.disposableCount ? new Array(def.disposableCount) : undefined;
   const view: ViewData = {
     def,
     parent,
@@ -195,7 +203,7 @@ function createView(
     context: undefined,
     component: undefined, nodes,
     firstChange: true, renderer, services,
-    oldValues: new Array(def.bindingCount)
+    oldValues: new Array(def.bindingCount), disposables
   };
   return view;
 }
@@ -232,7 +240,7 @@ function initView(view: ViewData, renderHost: any, component: any, context: any)
 }
 
 export function checkNoChangesView(view: ViewData) {
-  view.def.update(CheckNoChanges, view, view.component, view.context);
+  view.def.update(CheckNoChanges, view);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
 }
@@ -274,7 +282,7 @@ const CheckNoChanges: NodeUpdater = {
 };
 
 export function checkAndUpdateView(view: ViewData) {
-  view.def.update(CheckAndUpdate, view, view.component, view.context);
+  view.def.update(CheckAndUpdate, view);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
@@ -320,6 +328,11 @@ const CheckAndUpdate: NodeUpdater = {
 
 export function destroyView(view: ViewData) {
   callLifecycleHooksChildrenFirst(view, NodeFlags.OnDestroy);
+  if (view.disposables) {
+    for (let i = 0; i < view.disposables.length; i++) {
+      view.disposables[i]();
+    }
+  }
   execComponentViewsAction(view, ViewAction.Destroy);
   execEmbeddedViewsAction(view, ViewAction.Destroy);
 }
