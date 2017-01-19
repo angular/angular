@@ -28,12 +28,12 @@ env:
     - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-   - CI_MODE=js
-   - CI_MODE=e2e
-   - CI_MODE=saucelabs_required
-   - CI_MODE=browserstack_required
-   - CI_MODE=saucelabs_optional
-   - CI_MODE=browserstack_optional
+    - CI_MODE=e2e EXPERIMENTAL_ES2015_DISTRO=1
+    - CI_MODE=js
+    - CI_MODE=saucelabs_required
+    - CI_MODE=browserstack_required
+    - CI_MODE=saucelabs_optional
+    - CI_MODE=browserstack_optional
 
 matrix:
   fast_finish: true
