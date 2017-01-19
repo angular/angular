@@ -18,11 +18,13 @@ export function anchorDef(
     parent: undefined,
     childFlags: undefined,
     bindingIndex: undefined,
+    disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
     childCount,
     bindings: [],
+    disposableCount: 0,
     element: undefined,
     provider: undefined,
     text: undefined,

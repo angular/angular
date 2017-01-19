@@ -30,10 +30,12 @@ export function textDef(constants: string[]): NodeDef {
     parent: undefined,
     childFlags: undefined,
     bindingIndex: undefined,
+    disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags: 0,
     childCount: 0, bindings,
+    disposableCount: 0,
     element: undefined,
     provider: undefined,
     text: {prefix: constants[0]},

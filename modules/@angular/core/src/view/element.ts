@@ -8,14 +8,16 @@
 
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewFlags} from './types';
+import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewFlags} from './types';
 import {checkAndUpdateBinding, setBindingDebugInfo} from './util';
 
 export function elementDef(
     flags: NodeFlags, childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
-    bindings: ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] | [
-      BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext
-    ])[] = []): NodeDef {
+    bindings?:
+        ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
+         [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
+    outputs?: (string | [string, string])[]): NodeDef {
+  bindings = bindings || [];
   const bindingDefs = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
     const entry = bindings[i];
@@ -35,6 +37,19 @@ export function elementDef(
     }
     bindingDefs[i] = {type: bindingType, name, nonMinfiedName: name, securityContext, suffix};
   }
+  outputs = outputs || [];
+  const outputDefs: ElementOutputDef[] = new Array(outputs.length);
+  for (let i = 0; i < outputs.length; i++) {
+    const output = outputs[i];
+    let target: string;
+    let eventName: string;
+    if (Array.isArray(output)) {
+      [target, eventName] = output;
+    } else {
+      eventName = output;
+    }
+    outputDefs[i] = {eventName: eventName, target: target};
+  }
   return {
     type: NodeType.Element,
     // will bet set by the view definition
@@ -43,12 +58,14 @@ export function elementDef(
     parent: undefined,
     childFlags: undefined,
     bindingIndex: undefined,
+    disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
     childCount,
     bindings: bindingDefs,
-    element: {name, attrs: fixedAttrs},
+    disposableCount: outputDefs.length,
+    element: {name, attrs: fixedAttrs, outputs: outputDefs},
     provider: undefined,
     text: undefined,
     component: undefined,
@@ -62,20 +79,50 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
   let el: any;
   if (view.renderer) {
     el = view.renderer.createElement(parentNode, elDef.name);
-    if (elDef.attrs) {
-      for (let attrName in elDef.attrs) {
-        view.renderer.setElementAttribute(el, attrName, elDef.attrs[attrName]);
-      }
-    }
   } else {
     el = document.createElement(elDef.name);
     if (parentNode) {
       parentNode.appendChild(el);
     }
-    if (elDef.attrs) {
-      for (let attrName in elDef.attrs) {
+  }
+  if (elDef.attrs) {
+    for (let attrName in elDef.attrs) {
+      if (view.renderer) {
+        view.renderer.setElementAttribute(el, attrName, elDef.attrs[attrName]);
+      } else {
         el.setAttribute(attrName, elDef.attrs[attrName]);
       }
+    }
+  }
+  if (elDef.outputs.length) {
+    for (let i = 0; i < elDef.outputs.length; i++) {
+      const output = elDef.outputs[i];
+      let disposable: DisposableFn;
+      if (view.renderer) {
+        const handleEventClosure = renderEventHandlerClosure(view, def.index, output.eventName);
+        if (output.target) {
+          disposable =
+              <any>view.renderer.listenGlobal(output.target, output.eventName, handleEventClosure);
+        } else {
+          disposable = <any>view.renderer.listen(el, output.eventName, handleEventClosure);
+        }
+      } else {
+        let target: any;
+        switch (output.target) {
+          case 'window':
+            target = window;
+            break;
+          case 'document':
+            target = document;
+            break;
+          default:
+            target = el;
+        }
+        const handleEventClosure = directDomEventHandlerClosure(view, def.index, output.eventName);
+        target.addEventListener(output.eventName, handleEventClosure);
+        disposable = target.removeEventListener.bind(target, output.eventName, handleEventClosure);
+      }
+      view.disposables[def.disposableIndex + i] = disposable;
     }
   }
   return {
@@ -83,6 +130,21 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
     provider: undefined,
     embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined,
     componentView: undefined
+  };
+}
+
+function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
+  return (event: any) => { return view.def.handleEvent(view, index, eventName, event); };
+}
+
+
+function directDomEventHandlerClosure(view: ViewData, index: number, eventName: string) {
+  return (event: any) => {
+    const result = view.def.handleEvent(view, index, eventName, event);
+    if (result === false) {
+      event.preventDefault();
+    }
+    return result;
   };
 }
 
