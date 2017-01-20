@@ -75,9 +75,9 @@ export function providerDef(
     childCount: 0, bindings,
     disposableCount: outputDefs.length,
     element: undefined,
-    provider: {tokenKey: tokenKey(ctor), ctor, deps: depDefs, outputs: outputDefs},
-    text: undefined, component,
-    template: undefined
+    provider: {tokenKey: tokenKey(ctor), ctor, deps: depDefs, outputs: outputDefs, component},
+    text: undefined,
+    pureExpression: undefined
   };
 }
 
@@ -147,8 +147,7 @@ export function checkAndUpdateProviderInline(
   }
 }
 
-export function checkAndUpdateProviderDynamic(
-    view: ViewData, index: number, def: NodeDef, values: any[]) {
+export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, values: any[]) {
   const provider = view.nodes[def.index].provider;
   let changes: SimpleChanges;
   for (let i = 0; i < values.length; i++) {
