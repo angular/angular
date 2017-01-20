@@ -8,7 +8,8 @@
     "moduleResolution": "node",
     "outDir": "../dist/all/",
     "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true,
+    // Attention: This is only set to false for @angular/core.
+    "noFallthroughCasesInSwitch": false,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
