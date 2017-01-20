@@ -28,7 +28,7 @@ import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-chip-list',
+  selector: 'md-chip-list, mat-chip-list',
   template: `<div class="md-chip-list-wrapper"><ng-content></ng-content></div>`,
   host: {
     // Properties

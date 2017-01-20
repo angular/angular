@@ -16,7 +16,7 @@ import {MdGridTile, MdGridTileText} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
-import {Dir, MdLineModule, DefaultStyleCompatibilityModeModule} from '../core';
+import {Dir, MdLineModule, CompatibilityModule} from '../core';
 import {
   coerceToString,
   coerceToNumber,
@@ -144,13 +144,13 @@ export class MdGridList implements OnInit, AfterContentChecked {
 
 
 @NgModule({
-  imports: [MdLineModule, DefaultStyleCompatibilityModeModule],
+  imports: [MdLineModule, CompatibilityModule],
   exports: [
     MdGridList,
     MdGridTile,
     MdGridTileText,
     MdLineModule,
-    DefaultStyleCompatibilityModeModule,
+    CompatibilityModule,
   ],
   declarations: [MdGridList, MdGridTile, MdGridTileText],
 })

@@ -20,7 +20,7 @@ import {
   coerceBooleanProperty,
   GestureConfig,
   HammerInput,
-  DefaultStyleCompatibilityModeModule,
+  CompatibilityModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
 
@@ -334,8 +334,8 @@ class SlideToggleRenderer {
 
 
 @NgModule({
-  imports: [FormsModule, DefaultStyleCompatibilityModeModule],
-  exports: [MdSlideToggle, DefaultStyleCompatibilityModeModule],
+  imports: [FormsModule, CompatibilityModule],
+  exports: [MdSlideToggle, CompatibilityModule],
   declarations: [MdSlideToggle],
   providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}],
 })

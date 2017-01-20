@@ -9,7 +9,7 @@ import {MdTabLabel} from './tab-label';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-tab',
+  selector: 'md-tab, mat-tab',
   templateUrl: 'tab.html',
 })
 export class MdTab implements OnInit {

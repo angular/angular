@@ -5,7 +5,7 @@ import {
     ElementRef,
     QueryList
 } from '@angular/core';
-import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode';
+import {CompatibilityModule} from '../compatibility/compatibility';
 
 
 /**
@@ -52,8 +52,8 @@ export class MdLineSetter {
 }
 
 @NgModule({
-  imports: [DefaultStyleCompatibilityModeModule],
-  exports: [MdLine, DefaultStyleCompatibilityModeModule],
+  imports: [CompatibilityModule],
+  exports: [MdLine, CompatibilityModule],
   declarations: [MdLine],
 })
 export class MdLineModule { }

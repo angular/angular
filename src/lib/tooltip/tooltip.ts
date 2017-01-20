@@ -24,7 +24,7 @@ import {
   ComponentPortal,
   OverlayConnectionPosition,
   OriginConnectionPosition,
-  DefaultStyleCompatibilityModeModule
+  CompatibilityModule,
 } from '../core';
 import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
@@ -44,7 +44,7 @@ export const TOUCHEND_HIDE_DELAY  = 1500;
  * https://material.google.com/components/tooltips.html
  */
 @Directive({
-  selector: '[md-tooltip], [mat-tooltip], [mdTooltip]',
+  selector: '[md-tooltip], [mdTooltip], [mat-tooltip], [matTooltip]',
   host: {
     '(longpress)': 'show()',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
@@ -100,6 +100,26 @@ export class MdTooltip implements OnDestroy {
   @Input('md-tooltip')
   get _deprecatedMessage(): string { return this.message; }
   set _deprecatedMessage(v: string) { this.message = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matTooltip')
+  get _matMessage() { return this.message; }
+  set _matMessage(v) { this.message = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matTooltipPosition')
+  get _matPosition() { return this.position; }
+  set _matPosition(v) { this.position = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matTooltipHideDelay')
+  get _matHideDelay() { return this.hideDelay; }
+  set _matHideDelay(v) { this.hideDelay = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matTooltipShowDelay')
+  get _matShowDelay() { return this.showDelay; }
+  set _matShowDelay(v) { this.showDelay = v; }
 
   constructor(private _overlay: Overlay,
               private _elementRef: ElementRef,
@@ -377,8 +397,8 @@ export class TooltipComponent {
 
 
 @NgModule({
-  imports: [OverlayModule, DefaultStyleCompatibilityModeModule],
-  exports: [MdTooltip, TooltipComponent, DefaultStyleCompatibilityModeModule],
+  imports: [OverlayModule, CompatibilityModule],
+  exports: [MdTooltip, TooltipComponent, CompatibilityModule],
   declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
 })

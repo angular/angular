@@ -16,7 +16,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, MdError, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+import {Dir, MdError, coerceBooleanProperty, CompatibilityModule} from '../core';
 import {A11yModule} from '../core/a11y/index';
 import {FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
@@ -510,8 +510,8 @@ export class MdSidenavContainer implements AfterContentInit {
 
 
 @NgModule({
-  imports: [CommonModule, DefaultStyleCompatibilityModeModule, A11yModule, OverlayModule],
-  exports: [MdSidenavContainer, MdSidenav, DefaultStyleCompatibilityModeModule],
+  imports: [CommonModule, CompatibilityModule, A11yModule, OverlayModule],
+  exports: [MdSidenavContainer, MdSidenav, CompatibilityModule],
   declarations: [MdSidenavContainer, MdSidenav],
 })
 export class MdSidenavModule {

@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {MdSelect} from './select';
 import {MdOptionModule} from '../core/option/option';
 import {
-  DefaultStyleCompatibilityModeModule,
+  CompatibilityModule,
   OverlayModule,
 } from '../core';
 export * from './select';
@@ -11,8 +11,8 @@ export {fadeInContent, transformPanel, transformPlaceholder} from './select-anim
 
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, MdOptionModule, DefaultStyleCompatibilityModeModule],
-  exports: [MdSelect, MdOptionModule, DefaultStyleCompatibilityModeModule],
+  imports: [CommonModule, OverlayModule, MdOptionModule, CompatibilityModule],
+  exports: [MdSelect, MdOptionModule, CompatibilityModule],
   declarations: [MdSelect],
 })
 export class MdSelectModule {

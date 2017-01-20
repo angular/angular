@@ -16,7 +16,7 @@ import {
   ForegroundRipple,
   ForegroundRippleState,
 } from './ripple-renderer';
-import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode';
+import {CompatibilityModule} from '../compatibility/compatibility';
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '../overlay/position/viewport-ruler';
 
 
@@ -235,8 +235,8 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
 
 
 @NgModule({
-  imports: [DefaultStyleCompatibilityModeModule],
-  exports: [MdRipple, DefaultStyleCompatibilityModeModule],
+  imports: [CompatibilityModule],
+  exports: [MdRipple, CompatibilityModule],
   declarations: [MdRipple],
   providers: [VIEWPORT_RULER_PROVIDER],
 })

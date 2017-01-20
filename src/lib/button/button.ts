@@ -10,7 +10,7 @@ import {
   ModuleWithProviders,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdRippleModule, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+import {MdRippleModule, coerceBooleanProperty, CompatibilityModule} from '../core';
 
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
@@ -21,8 +21,10 @@ import {MdRippleModule, coerceBooleanProperty, DefaultStyleCompatibilityModeModu
  */
 @Component({
   moduleId: module.id,
-  selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
-            'button[md-fab], button[md-mini-fab]',
+  selector: 'button[md-button], button[md-raised-button], button[md-icon-button],' +
+            'button[md-fab], button[md-mini-fab],' +
+            'button[mat-button], button[mat-raised-button], button[mat-icon-button],' +
+            'button[mat-fab], button[mat-mini-fab]',
   host: {
     '[disabled]': 'disabled',
     '[class.md-button-focus]': '_isKeyboardFocused',
@@ -120,7 +122,8 @@ export class MdButton {
  */
 @Component({
   moduleId: module.id,
-  selector: 'a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab]',
+  selector: `a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab],
+             a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
   inputs: ['color', 'disabled', 'disableRipple'],
   host: {
     '[attr.disabled]': 'disabled',
@@ -161,8 +164,8 @@ export class MdAnchor extends MdButton {
 
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule, DefaultStyleCompatibilityModeModule],
-  exports: [MdButton, MdAnchor, DefaultStyleCompatibilityModeModule],
+  imports: [CommonModule, MdRippleModule, CompatibilityModule],
+  exports: [MdButton, MdAnchor, CompatibilityModule],
   declarations: [MdButton, MdAnchor],
 })
 export class MdButtonModule {

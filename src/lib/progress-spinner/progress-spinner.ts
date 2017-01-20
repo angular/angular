@@ -10,7 +10,7 @@ import {
   NgZone,
   Renderer
 } from '@angular/core';
-import {DefaultStyleCompatibilityModeModule} from '../core';
+import {CompatibilityModule} from '../core';
 
 
 // TODO(josephperrott): Benchpress tests.
@@ -362,8 +362,8 @@ function getSvgArc(currentValue: number, rotation: number) {
 
 
 @NgModule({
-  imports: [DefaultStyleCompatibilityModeModule],
-  exports: [MdProgressSpinner, MdSpinner, DefaultStyleCompatibilityModeModule],
+  imports: [CompatibilityModule],
+  exports: [MdProgressSpinner, MdSpinner, CompatibilityModule],
   declarations: [MdProgressSpinner, MdSpinner],
 })
 export class MdProgressSpinnerModule {

@@ -1,10 +1,23 @@
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {MdCheckboxModule} from '../../checkbox/checkbox';
-import {NoConflictStyleCompatibilityMode} from './no-conflict-mode';
+import {
+  NoConflictStyleCompatibilityMode,
+  MAT_ELEMENTS_SELECTOR,
+  MD_ELEMENTS_SELECTOR
+} from './compatibility';
 
 
 describe('Style compatibility', () => {
+
+  describe('selectors', () => {
+    it('should have the same selectors in the same order for compatibility mode', () => {
+      expect(MAT_ELEMENTS_SELECTOR.replace(/(\s|\[)mat/g, '$1md').trim())
+          .toBe(MD_ELEMENTS_SELECTOR.trim());
+      expect(MD_ELEMENTS_SELECTOR.replace(/(\s|\[)md/g, '$1mat').trim())
+          .toBe(MAT_ELEMENTS_SELECTOR.trim());
+    });
+  });
 
   describe('in default mode', () => {
     beforeEach(async(() => {
@@ -45,6 +58,26 @@ describe('Style compatibility', () => {
       }).toThrowError(/The "md-" prefix cannot be used in ng-material v1 compatibility mode/);
     });
   });
+
+  describe('with no-conflict mode at root and component module imported in app sub-module', () => {
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [TestAppSubModule, NoConflictStyleCompatibilityMode],
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    it('should throw an error when using the "md-" prefix', () => {
+       expect(() => {
+        TestBed.createComponent(ComponentWithMdCheckbox);
+      }).toThrowError(/The "md-" prefix cannot be used in ng-material v1 compatibility mode/);
+    });
+
+    it('should not throw an error when using the "mat-" prefix', () => {
+      TestBed.createComponent(ComponentWithMatCheckbox);
+    });
+  });
 });
 
 
@@ -53,3 +86,11 @@ class ComponentWithMdCheckbox { }
 
 @Component({ template: `<mat-checkbox>Hungry</mat-checkbox>` })
 class ComponentWithMatCheckbox { }
+
+
+@NgModule({
+  imports: [MdCheckboxModule.forRoot()],
+  exports: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
+  declarations: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
+})
+export class TestAppSubModule {}

@@ -6,7 +6,7 @@ import {
   ChangeDetectionStrategy,
   Directive
 } from '@angular/core';
-import {DefaultStyleCompatibilityModeModule} from '../core';
+import {CompatibilityModule} from '../core';
 
 
 /**
@@ -101,7 +101,7 @@ export class MdCardTitleGroup {}
 
 
 @NgModule({
-  imports: [DefaultStyleCompatibilityModeModule],
+  imports: [CompatibilityModule],
   exports: [
     MdCard,
     MdCardHeader,
@@ -111,7 +111,7 @@ export class MdCardTitleGroup {}
     MdCardSubtitle,
     MdCardActions,
     MdCardFooter,
-    DefaultStyleCompatibilityModeModule,
+    CompatibilityModule,
   ],
   declarations: [
     MdCard, MdCardHeader, MdCardTitleGroup, MdCardContent, MdCardTitle, MdCardSubtitle,

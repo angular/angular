@@ -23,8 +23,8 @@ import {Observable} from 'rxjs/Observable';
 import {
   UniqueSelectionDispatcher,
   coerceBooleanProperty,
-  DefaultStyleCompatibilityModeModule,
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
+  CompatibilityModule,
 } from '../core';
 
 /** Acceptable types for a button toggle. */
@@ -53,7 +53,7 @@ export class MdButtonToggleChange {
 
 /** Exclusive selection button toggle group that behaves like a radio-button group. */
 @Directive({
-  selector: 'md-button-toggle-group:not([multiple])',
+  selector: 'md-button-toggle-group:not([multiple]), mat-button-toggle-group:not([multiple])',
   providers: [MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
@@ -242,7 +242,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
 
 /** Multiple selection button-toggle group. `ngModel` is not supported in this mode. */
 @Directive({
-  selector: 'md-button-toggle-group[multiple]',
+  selector: 'md-button-toggle-group[multiple], mat-button-toggle-group[multiple]',
   exportAs: 'mdButtonToggleGroup',
   host: {
     '[class.md-button-toggle-vertical]': 'vertical'
@@ -464,12 +464,12 @@ export class MdButtonToggle implements OnInit {
 
 
 @NgModule({
-  imports: [FormsModule, DefaultStyleCompatibilityModeModule],
+  imports: [FormsModule, CompatibilityModule],
   exports: [
     MdButtonToggleGroup,
     MdButtonToggleGroupMultiple,
     MdButtonToggle,
-    DefaultStyleCompatibilityModeModule,
+    CompatibilityModule,
   ],
   declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
   providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
