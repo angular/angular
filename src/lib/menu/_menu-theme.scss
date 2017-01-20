@@ -20,6 +20,7 @@
 
     md-icon {
       color: md-color($foreground, 'icon');
+      vertical-align: middle;
     }
 
     &:hover:not([disabled]), &:focus:not([disabled]) {

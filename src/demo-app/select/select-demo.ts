@@ -24,7 +24,7 @@ export class SelectDemo {
 
   drinks = [
     {value: 'coke-0', viewValue: 'Coke'},
-    {value: 'sprite-1', viewValue: 'Sprite'},
+    {value: 'long-name-1', viewValue: 'Decaf Chocolate Brownie Vanilla Gingerbread Frappuccino'},
     {value: 'water-2', viewValue: 'Water'},
     {value: 'pepper-3', viewValue: 'Dr. Pepper'},
     {value: 'coffee-4', viewValue: 'Coffee'},

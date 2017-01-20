@@ -24,9 +24,9 @@ $md-menu-side-padding: 16px !default;
 @mixin md-menu-item-base() {
   @include md-truncate-line();
 
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  // Needs to be a block for the ellipsis to work.
+  display: block;
+  line-height: $md-menu-item-height;
   height: $md-menu-item-height;
   padding: 0 $md-menu-side-padding;
 
