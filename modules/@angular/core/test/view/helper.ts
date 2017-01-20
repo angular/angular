@@ -7,6 +7,7 @@
  */
 
 import {RootRenderer} from '@angular/core';
+import {NodeUpdater, ViewData} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -32,5 +33,23 @@ export function setupAndCheckRenderer(config: {directDom: boolean}) {
       spyOn(rootRenderer, 'renderComponent').and.callThrough();
     });
     afterEach(() => { expect(rootRenderer.renderComponent).toHaveBeenCalled(); });
+  }
+}
+
+export enum InlineDynamic {
+  Inline,
+  Dynamic
+}
+
+export const INLINE_DYNAMIC_VALUES = [InlineDynamic.Inline, InlineDynamic.Dynamic];
+
+export function callUpdater(
+    updater: NodeUpdater, inlineDynamic: InlineDynamic, view: ViewData, nodeIndex: number,
+    values: any[]): any {
+  switch (inlineDynamic) {
+    case InlineDynamic.Inline:
+      return (<any>updater.checkInline)(view, nodeIndex, ...values);
+    case InlineDynamic.Dynamic:
+      return updater.checkDynamic(view, nodeIndex, values);
   }
 }

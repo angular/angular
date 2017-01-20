@@ -8,8 +8,32 @@
 
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewFlags} from './types';
+import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, ViewFlags} from './types';
 import {checkAndUpdateBinding, setBindingDebugInfo} from './util';
+
+export function anchorDef(
+    flags: NodeFlags, childCount: number, template?: ViewDefinition): NodeDef {
+  return {
+    type: NodeType.Element,
+    // will bet set by the view definition
+    index: undefined,
+    reverseChildIndex: undefined,
+    parent: undefined,
+    childFlags: undefined,
+    bindingIndex: undefined,
+    disposableIndex: undefined,
+    providerIndices: undefined,
+    // regular values
+    flags,
+    childCount,
+    bindings: [],
+    disposableCount: 0,
+    element: {name: undefined, attrs: undefined, outputs: [], template},
+    provider: undefined,
+    text: undefined,
+    pureExpression: undefined
+  };
+}
 
 export function elementDef(
     flags: NodeFlags, childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
@@ -65,11 +89,10 @@ export function elementDef(
     childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
-    element: {name, attrs: fixedAttrs, outputs: outputDefs},
+    element: {name, attrs: fixedAttrs, outputs: outputDefs, template: undefined},
     provider: undefined,
     text: undefined,
-    component: undefined,
-    template: undefined
+    pureExpression: undefined
   };
 }
 
@@ -78,9 +101,10 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
   const elDef = def.element;
   let el: any;
   if (view.renderer) {
-    el = view.renderer.createElement(parentNode, elDef.name);
+    el = elDef.name ? view.renderer.createElement(parentNode, elDef.name) :
+                      view.renderer.createTemplateAnchor(parentNode);
   } else {
-    el = document.createElement(elDef.name);
+    el = elDef.name ? document.createElement(elDef.name) : document.createComment('');
     if (parentNode) {
       parentNode.appendChild(el);
     }
