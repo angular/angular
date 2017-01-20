@@ -106,8 +106,8 @@ export class Tsc implements CompilerInterface {
     // Allow a directory containing tsconfig.json as the project value
     // Note, TS@next returns an empty array, while earlier versions throw
     try {
-      if (!isVinylFile(project) && this.readDirectory(project as string).length > 0) {
-        project = path.join(project as string, 'tsconfig.json');
+      if (!isVinylFile(project) && this.readDirectory(project).length > 0) {
+        project = path.join(project, 'tsconfig.json');
       }
     } catch (e) {
       // Was not a directory, continue on assuming it's a file
@@ -120,7 +120,7 @@ export class Tsc implements CompilerInterface {
       }
       // project is path to project file
       else {
-        return ts.readConfigFile(project as string, this.readFile);
+        return ts.readConfigFile(project, this.readFile);
       }
     })();
     check([error]);

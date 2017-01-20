@@ -33,8 +33,8 @@ export function main(
       projectDir = path.dirname(project.path);
     }
     // project is path to project file
-    else if (fs.lstatSync(project as string).isFile()) {
-      projectDir = path.dirname(project as string);
+    else if (fs.lstatSync(project).isFile()) {
+      projectDir = path.dirname(project);
     }
 
     // file names in tsconfig are resolved relative to this absolute path
