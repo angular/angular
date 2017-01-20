@@ -11,7 +11,7 @@
     "target": "es5",
     "baseUrl": "",
     "typeRoots": [
-      "../node_modules/@types"
+      "../node_modules/@types/!(node)"
     ],
     "paths": {
       "@angular/material": [
@@ -20,6 +20,7 @@
     }
   },
   "files": [
+    "./demo-app-types.d.ts",
     "./demo-app-module.ts",
     "./main-aot.ts"
   ],
