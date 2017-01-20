@@ -216,7 +216,7 @@ export interface CanActivateChild {
  *       {
  *         path: 'team/:id',
  *         component: TeamCmp,
- *         canActivate: ['canDeactivateTeam']
+ *         canDeactivate: ['canDeactivateTeam']
  *       }
  *     ])
  *   ],
