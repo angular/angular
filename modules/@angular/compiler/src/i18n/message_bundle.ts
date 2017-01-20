@@ -72,26 +72,9 @@ export class MessageBundle {
 }
 
 // Transform an i18n AST by renaming the placeholder nodes with the given mapper
-class MapPlaceholderNames implements i18n.Visitor {
+class MapPlaceholderNames extends i18n.CloneVisitor {
   convert(nodes: i18n.Node[], mapper: PlaceholderMapper): i18n.Node[] {
     return mapper ? nodes.map(n => n.visit(this, mapper)) : nodes;
-  }
-
-  visitText(text: i18n.Text, mapper: PlaceholderMapper): i18n.Text {
-    return new i18n.Text(text.value, text.sourceSpan);
-  }
-
-  visitContainer(container: i18n.Container, mapper: PlaceholderMapper): i18n.Container {
-    const children = container.children.map(n => n.visit(this, mapper));
-    return new i18n.Container(children, container.sourceSpan);
-  }
-
-  visitIcu(icu: i18n.Icu, mapper: PlaceholderMapper): i18n.Icu {
-    const cases: {[k: string]: i18n.Node} = {};
-    Object.keys(icu.cases).forEach(key => cases[key] = icu.cases[key].visit(this, mapper));
-    const msg = new i18n.Icu(icu.expression, icu.type, cases, icu.sourceSpan);
-    msg.expressionPlaceholder = icu.expressionPlaceholder;
-    return msg;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper): i18n.TagPlaceholder {

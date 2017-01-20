@@ -291,7 +291,7 @@ export function main() {
   });
 }
 
-function _humanizeMessages(
+export function _humanizeMessages(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
   // clang-format off
@@ -322,7 +322,7 @@ function _humanizePlaceholdersToMessage(
 }
 
 
-function _extractMessages(
+export function _extractMessages(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): Message[] {
   const htmlParser = new HtmlParser();
