@@ -170,12 +170,13 @@ export class UpgradeModule {
                       const injector = this.injector;
                       // Cannot use arrow function below because we need the context
                       const newWhenStable = function(callback: Function) {
-                        originalWhenStable.call(this, function() {
+                        originalWhenStable.call(testabilityDelegate, function() {
                           const ng2Testability: Testability = injector.get(Testability);
                           if (ng2Testability.isStable()) {
-                            callback.apply(this, arguments);
+                            callback();
                           } else {
-                            ng2Testability.whenStable(newWhenStable.bind(this, callback));
+                            ng2Testability.whenStable(
+                                newWhenStable.bind(testabilityDelegate, callback));
                           }
                         });
                       };
@@ -201,9 +202,14 @@ export class UpgradeModule {
                 angular.element(element).data(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
-                const $rootScope = $injector.get('$rootScope');
-                this.ngZone.onMicrotaskEmpty.subscribe(
-                    () => this.ngZone.runOutsideAngular(() => $rootScope.$evalAsync()));
+                // We need to do this in the next tick so that we don't prevent the bootup
+                // stabilizing
+                setTimeout(() => {
+                  const $rootScope = $injector.get('$rootScope');
+                  const subscription =
+                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
+                  $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
+                }, 0);
               }
             ]);
 
