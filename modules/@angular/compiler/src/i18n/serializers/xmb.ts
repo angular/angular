@@ -9,7 +9,7 @@
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 
-import {PlaceholderMapper, Serializer} from './serializer';
+import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import * as xml from './xml_helper';
 
 const _MESSAGES_TAG = 'messagebundle';
@@ -78,7 +78,7 @@ export class Xmb extends Serializer {
 
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
-    return new XmbPlaceholderMapper(message);
+    return new SimplePlaceholderMapper(message, toPublicName);
   }
 }
 
@@ -157,68 +157,7 @@ class ExampleVisitor implements xml.IVisitor {
   visitDoctype(doctype: xml.Doctype): void {}
 }
 
-/**
- * XMB/XTB placeholders can only contain A-Z, 0-9 and _
- *
- * Because such restrictions do not exist on placeholder names generated locally, the
- * `PlaceholderMapper` is used to convert internal names to XMB names when the XMB file is
- * serialized and back from XTB to internal names when an XTB is loaded.
- */
-export class XmbPlaceholderMapper implements PlaceholderMapper, i18n.Visitor {
-  private internalToXmb: {[k: string]: string} = {};
-  private xmbToNextId: {[k: string]: number} = {};
-  private xmbToInternal: {[k: string]: string} = {};
-
-  // create a mapping from the message
-  constructor(message: i18n.Message) { message.nodes.forEach(node => node.visit(this)); }
-
-  toPublicName(internalName: string): string {
-    return this.internalToXmb.hasOwnProperty(internalName) ? this.internalToXmb[internalName] :
-                                                             null;
-  }
-
-  toInternalName(publicName: string): string {
-    return this.xmbToInternal.hasOwnProperty(publicName) ? this.xmbToInternal[publicName] : null;
-  }
-
-  visitText(text: i18n.Text, context?: any): any { return null; }
-
-  visitContainer(container: i18n.Container, context?: any): any {
-    container.children.forEach(child => child.visit(this));
-  }
-
-  visitIcu(icu: i18n.Icu, context?: any): any {
-    Object.keys(icu.cases).forEach(k => { icu.cases[k].visit(this); });
-  }
-
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): any {
-    this.addPlaceholder(ph.startName);
-    ph.children.forEach(child => child.visit(this));
-    this.addPlaceholder(ph.closeName);
-  }
-
-  visitPlaceholder(ph: i18n.Placeholder, context?: any): any { this.addPlaceholder(ph.name); }
-
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any { this.addPlaceholder(ph.name); }
-
-  // XMB placeholders could only contains A-Z, 0-9 and _
-  private addPlaceholder(internalName: string): void {
-    if (!internalName || this.internalToXmb.hasOwnProperty(internalName)) {
-      return;
-    }
-
-    let xmbName = internalName.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
-
-    if (this.xmbToInternal.hasOwnProperty(xmbName)) {
-      // Create a new XMB when it has already been used
-      const nextId = this.xmbToNextId[xmbName];
-      this.xmbToNextId[xmbName] = nextId + 1;
-      xmbName = `${xmbName}_${nextId}`;
-    } else {
-      this.xmbToNextId[xmbName] = 1;
-    }
-
-    this.internalToXmb[internalName] = xmbName;
-    this.xmbToInternal[xmbName] = internalName;
-  }
+// XMB/XTB placeholders can only contain A-Z, 0-9 and _
+export function toPublicName(internalName: string): string {
+  return internalName.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
 }
