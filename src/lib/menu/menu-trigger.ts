@@ -216,7 +216,12 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _subscribeToPositions(position: ConnectedPositionStrategy): void {
     this._positionSubscription = position.onPositionChange.subscribe((change) => {
       const posX: MenuPositionX = change.connectionPair.originX === 'start' ? 'after' : 'before';
-      const posY: MenuPositionY = change.connectionPair.originY === 'top' ? 'below' : 'above';
+      let posY: MenuPositionY = change.connectionPair.originY === 'top' ? 'below' : 'above';
+
+      if (!this.menu.overlapTrigger) {
+        posY = posY === 'below' ? 'above' : 'below';
+      }
+
       this.menu.setPositionClasses(posX, posY);
     });
   }
@@ -230,21 +235,29 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     const [posX, fallbackX]: HorizontalConnectionPos[] =
       this.menu.positionX === 'before' ? ['end', 'start'] : ['start', 'end'];
 
-    const [posY, fallbackY]: VerticalConnectionPos[] =
+    const [overlayY, fallbackOverlayY]: VerticalConnectionPos[] =
       this.menu.positionY === 'above' ? ['bottom', 'top'] : ['top', 'bottom'];
+
+    let originY = overlayY;
+    let fallbackOriginY = fallbackOverlayY;
+
+    if (!this.menu.overlapTrigger) {
+      originY = overlayY === 'top' ? 'bottom' : 'top';
+      fallbackOriginY = fallbackOverlayY === 'top' ? 'bottom' : 'top';
+    }
 
     return this._overlay.position()
       .connectedTo(this._element,
-          {originX: posX, originY: posY}, {overlayX: posX, overlayY: posY})
+          {originX: posX, originY: originY}, {overlayX: posX, overlayY: overlayY})
       .withFallbackPosition(
-          {originX: fallbackX, originY: posY},
-          {overlayX: fallbackX, overlayY: posY})
+          {originX: fallbackX, originY: originY},
+          {overlayX: fallbackX, overlayY: overlayY})
       .withFallbackPosition(
-          {originX: posX, originY: fallbackY},
-          {overlayX: posX, overlayY: fallbackY})
+          {originX: posX, originY: fallbackOriginY},
+          {overlayX: posX, overlayY: fallbackOverlayY})
       .withFallbackPosition(
-          {originX: fallbackX, originY: fallbackY},
-          {overlayX: fallbackX, overlayY: fallbackY});
+          {originX: fallbackX, originY: fallbackOriginY},
+          {overlayX: fallbackX, overlayY: fallbackOverlayY});
   }
 
   private _cleanUpSubscriptions(): void {

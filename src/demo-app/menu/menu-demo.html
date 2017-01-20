@@ -62,3 +62,54 @@
     </md-menu>
   </div>
 </div>
+
+<div class="demo-menu">
+  <div class="menu-section">
+    <p>overlapTrigger: false</p>
+
+    <md-toolbar>
+      <button md-icon-button [md-menu-trigger-for]="menuOverlay">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu [overlapTrigger]="false" #menuOverlay="mdMenu">
+      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+        {{ item.text }}
+      </button>
+    </md-menu>
+  </div>
+  <div class="menu-section">
+    <p>
+      Position x: before, overlapTrigger: false
+    </p>
+    <md-toolbar class="end-icon">
+      <button md-icon-button [md-menu-trigger-for]="posXMenuOverlay">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu x-position="before" [overlapTrigger]="false" #posXMenuOverlay="mdMenu" class="before">
+      <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
+        <md-icon>{{ item.icon }}</md-icon>
+        {{ item.text }}
+      </button>
+    </md-menu>
+  </div>
+  <div class="menu-section">
+    <p>
+      Position y: above, overlapTrigger: false
+    </p>
+    <md-toolbar>
+      <button md-icon-button [md-menu-trigger-for]="posYMenuOverlay">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu y-position="above" [overlapTrigger]="false" #posYMenuOverlay="mdMenu">
+      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+        {{ item.text }}
+      </button>
+    </md-menu>
+  </div>
+</div>

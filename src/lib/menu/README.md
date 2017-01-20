@@ -115,7 +115,8 @@ Output:
 ### Customizing menu position
 
 By default, the menu will display after and below its trigger.  You can change this display position
-using the `x-position` (`before | after`) and `y-position` (`above | below`) attributes.
+using the `x-position` (`before | after`) and `y-position` (`above | below`) attributes. The menu
+can be positioned over the menu button or outside using `overlapTrigger` (`true | false`).
 
 *my-comp.html*
 ```html
@@ -148,6 +149,7 @@ also adds `aria-hasPopup="true"` to the trigger element.
 | --- | --- | --- |
 | `x-position` | `before | after` | The horizontal position of the menu in relation to the trigger. Defaults to `after`. |
 | `y-position` | `above | below` | The vertical position of the menu in relation to the trigger. Defaults to `below`. |
+| `overlapTrigger` | `true | false` | Whether to have the menu show on top of the menu trigger or outside. Defaults to `true`. |
 
 ### Trigger Programmatic API
 
