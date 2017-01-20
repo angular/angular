@@ -20,6 +20,10 @@ echo 'travis_fold:start:test.unit.tools'
 # Run unit tests in tools
 node ./dist/tools/tsc-watch/ tools runCmdsOnly
 
+cd tools/validate-commit-message
+$(npm bin)/jasmine
+cd -
+
 echo 'travis_fold:end:test.unit.tools'
 
 
