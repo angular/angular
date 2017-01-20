@@ -1,0 +1,36 @@
+{
+  "maxLength": 100,
+  "types": [
+    "chore",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "refactor",
+    "revert",
+    "style",
+    "test"
+  ],
+  "scopes": [
+    "benchpress",
+    "build",
+    "ci",
+    "common",
+    "compiler",
+    "core",
+    "docs",
+    "forms",
+    "http",
+    "i18n",
+    "language-service",
+    "metadata-extractor",
+    "packaging",
+    "router",
+    "security",
+    "testing",
+    "upgrade/static",
+    "upgrade/dynamic",
+    "web-workers",
+    "zones"
+  ]
+}

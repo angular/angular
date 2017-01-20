@@ -18,6 +18,8 @@ require('./tools/check-environment')({
 const gulp = require('gulp');
 const path = require('path');
 const os = require('os');
+const validateCommitMessage = require('./tools/validate-commit-message');
+const exec = require('child_process').exec;
 
 // clang-format entry points
 const srcsToFmt = [
@@ -126,7 +128,7 @@ gulp.task('public-api:update', ['build.sh'], (done) => {
 });
 
 // Check the coding standards and programming errors
-gulp.task('lint', ['format:enforce', 'tools:build'], () => {
+gulp.task('lint', ['format:enforce', 'tools:build', 'tools:validate-commit-message'], () => {
   const tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://palantir.github.io/tslint/rules/
@@ -153,6 +155,39 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
         formatter: 'prose',
       }))
       .pipe(tslint.report({emitError: true}));
+});
+
+gulp.task('tools:validate-commit-message', () => {
+  exec('git log --reverse --oneline HEAD ^upstream/master', (error, stdout, stderr) => {
+    if (error) {
+      console.log(stderr);
+      process.exit(1);
+    }
+
+    let someCommitsInvalid = false;
+    let commitsByLine = stdout.trim().split(/\n/);
+
+    console.log(`Examining ${commitsByLine.length} commits between HEAD and master`);
+
+    if (commitsByLine.length == 0) {
+      console.log('There are zero new commits between this HEAD and master');
+      process.exit(1);
+    }
+
+    commitsByLine.forEach(line => {
+      // the oneline format per line is: "SHA MESSAGE"
+      const firstSpace = line.indexOf(' ');
+      const commitMessage = line.substr(firstSpace + 1);
+      if (!validateCommitMessage(commitMessage)) {
+        someCommitsInvalid = true;
+      }
+    });
+
+    if (someCommitsInvalid) {
+      console.log('Please fix the failing commit messages before continuing...');
+      process.exit(1);
+    }
+  });
 });
 
 gulp.task('tools:build', (done) => { tsc('tools/', done); });
