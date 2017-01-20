@@ -94,7 +94,7 @@ export class MdSliderChange {
     '[class.md-slider-thumb-label-showing]': 'thumbLabel',
     '[class.md-slider-vertical]': 'vertical',
     '[class.md-slider-min-value]': '_isMinValue',
-    '[class.md-slider-hide-last-tick]': '_isMinValue && _thumbGap && invertAxis',
+    '[class.md-slider-hide-last-tick]': '_isMinValue && _thumbGap && invertAxis || disabled',
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
