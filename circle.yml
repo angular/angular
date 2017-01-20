@@ -1,10 +1,10 @@
 machine:
   node:
-    version: 5.4.1
+    version: 6.6.0
 
 dependencies:
   pre:
-    - npm install -g npm@3.6.0
+    - npm install -g npm@3.5.3
 
 test:
   override:
