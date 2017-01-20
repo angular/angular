@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {Tsc, tsc as pureTsc} from '../src/tsc';
-import VinylFile from '../src/vinyl_file';
+import {VinylFile} from '../src/vinyl_file';
 
 describe('options parsing', () => {
 
@@ -24,7 +24,7 @@ describe('options parsing', () => {
 }`;
 
   const tsc = new Tsc(() => configData, () => ['tsconfig.json']);
-  const config = {contents: new Buffer(configData)};
+  const config = {path: 'basePath/tsconfig.json', contents: new Buffer(configData)};
 
   it('should combine all options into ngOptions', () => {
     const {parsed, ngOptions} =

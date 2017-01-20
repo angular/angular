@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-interface VinylFile extends Object {
+export interface VinylFile extends Object {
   // Absolute path to the virtual file
   path: string;
 
@@ -14,4 +14,6 @@ interface VinylFile extends Object {
 }
 ;
 
-export default VinylFile;
+export function isVinylFile(obj: any): obj is VinylFile {
+  return (typeof obj === 'object') && ('path' in obj) && ('contents' in obj);
+};

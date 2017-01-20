@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import AngularCompilerOptions from './options';
-import VinylFile from './vinyl_file';
+import {VinylFile, isVinylFile} from './vinyl_file';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -106,7 +106,7 @@ export class Tsc implements CompilerInterface {
     // Allow a directory containing tsconfig.json as the project value
     // Note, TS@next returns an empty array, while earlier versions throw
     try {
-      if (this.readDirectory(project as string).length > 0) {
+      if (!isVinylFile(project) && this.readDirectory(project as string).length > 0) {
         project = path.join(project as string, 'tsconfig.json');
       }
     } catch (e) {
@@ -115,8 +115,8 @@ export class Tsc implements CompilerInterface {
 
     let {config, error} = (() => {
       // project is vinyl like file object
-      if ((project as VinylFile).contents) {
-        return {config: JSON.parse((project as VinylFile).contents.toString()), error: null};
+      if (isVinylFile(project)) {
+        return {config: JSON.parse(project.contents.toString()), error: null};
       }
       // project is path to project file
       else {
