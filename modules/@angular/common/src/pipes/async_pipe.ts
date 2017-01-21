@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
+import {ChangeDetectorRef, OnDestroy, Pipe, PipeTransform, WrappedValue} from '@angular/core';
 import {EventEmitter, Observable} from '../facade/async';
 import {isPromise} from '../private_import_core';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -66,7 +66,7 @@ const _observableStrategy = new ObservableStrategy();
  * @stable
  */
 @Pipe({name: 'async', pure: false})
-export class AsyncPipe implements OnDestroy {
+export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: Object = null;
   private _latestReturnedValue: Object = null;
 
