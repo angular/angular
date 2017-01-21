@@ -2,7 +2,7 @@
 export declare const APP_BASE_HREF: OpaqueToken;
 
 /** @stable */
-export declare class AsyncPipe implements OnDestroy {
+export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
     transform(obj: Observable<any> | Promise<any> | EventEmitter<any>): any;
