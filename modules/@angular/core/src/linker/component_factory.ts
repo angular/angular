@@ -13,7 +13,6 @@ import {Type} from '../type';
 
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
-import {ViewContainer} from './view_container';
 import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
 
@@ -85,11 +84,6 @@ export class ComponentRef_<C> extends ComponentRef<C> {
   destroy(): void { this._parentView.detachAndDestroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
-
-/**
- * @experimental
- */
-const EMPTY_CONTEXT = new Object();
 
 /**
  * @stable

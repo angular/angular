@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -18,7 +18,89 @@ export function main() {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
+    describe('(basic use)', () => {
+      it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
+
+      it('should instantiate ng2 in ng1 template and project content', async(() => {
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
+                       }).Class({constructor: function() {}});
+
+           const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+             constructor: function() {}
+           });
+
+           const element =
+               html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng1[NG2(~ng-content~)]');
+             ref.dispose();
+           });
+         }));
+
+      it('should instantiate ng1 in ng2 template and project content', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
+                       }).Class({constructor: function Ng2() {}});
+
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                             }).Class({constructor: function Ng2Module() {}});
+
+           ng1Module.directive('ng1', () => {
+             return {transclude: true, template: '{{ "ng1" }}(<ng-transclude></ng-transclude>)'};
+           });
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           const element = html('<div>{{\'ng1(\'}}<ng2></ng2>{{\')\'}}</div>');
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng1(ng2(ng1(transclude)))');
+             ref.dispose();
+           });
+         }));
+
+      it('supports the compilerOptions argument', async(() => {
+           const platformRef = platformBrowserDynamic();
+           spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
+
+           const ng1Module = angular.module('ng1', []);
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: `{{ 'NG2' }}(<ng-content></ng-content>)`
+                       }).Class({constructor: function() {}});
+
+           const element =
+               html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
+
+           const Ng2AppModule =
+               NgModule({
+                 declarations: [Ng2],
+                 imports: [BrowserModule],
+               }).Class({constructor: function Ng2AppModule() {}, ngDoBootstrap: function() {}});
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect((platformRef as any)._bootstrapModuleWithZone)
+                 .toHaveBeenCalledWith(
+                     jasmine.any(Function), {providers: []}, jasmine.any(Object),
+                     jasmine.any(Function));
+             ref.dispose();
+           });
+         }));
+    });
 
     describe('bootstrap errors', () => {
       let adapter: UpgradeAdapter;
@@ -51,97 +133,17 @@ export function main() {
          }));
 
       it('should output an error message to the console and re-throw', fakeAsync(() => {
-           let consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
+           const consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
              flushMicrotasks();
            }).toThrowError();
-           let args: any[] = consoleErrorSpy.calls.mostRecent().args;
+           const args: any[] = consoleErrorSpy.calls.mostRecent().args;
            expect(consoleErrorSpy).toHaveBeenCalled();
            expect(args.length).toBeGreaterThan(0);
            expect(args[0]).toEqual(jasmine.any(Error));
          }));
     });
-
-    it('should instantiate ng2 in ng1 template and project content', async(() => {
-         const ng1Module = angular.module('ng1', []);
-
-         const Ng2 = Component({
-                       selector: 'ng2',
-                       template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
-                     }).Class({constructor: function() {}});
-
-         const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
-           constructor: function() {}
-         });
-
-         const element =
-             html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
-
-         const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
-         ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-         adapter.bootstrap(element, ['ng1']).ready((ref) => {
-           expect(document.body.textContent).toEqual('ng1[NG2(~ng-content~)]');
-           ref.dispose();
-         });
-       }));
-
-    it('should instantiate ng1 in ng2 template and project content', async(() => {
-         const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-         const ng1Module = angular.module('ng1', []);
-
-         const Ng2 = Component({
-                       selector: 'ng2',
-                       template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
-                     }).Class({constructor: function Ng2() {}});
-
-         const Ng2Module = NgModule({
-                             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                             imports: [BrowserModule],
-                           }).Class({constructor: function Ng2Module() {}});
-
-         ng1Module.directive('ng1', () => {
-           return {transclude: true, template: '{{ "ng1" }}(<ng-transclude></ng-transclude>)'};
-         });
-         ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-
-         const element = html('<div>{{\'ng1(\'}}<ng2></ng2>{{\')\'}}</div>');
-
-         adapter.bootstrap(element, ['ng1']).ready((ref) => {
-           expect(document.body.textContent).toEqual('ng1(ng2(ng1(transclude)))');
-           ref.dispose();
-         });
-       }));
-
-    it('supports the compilerOptions argument', async(() => {
-         const platformRef = platformBrowserDynamic();
-         spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
-
-         const ng1Module = angular.module('ng1', []);
-         const Ng2 = Component({
-                       selector: 'ng2',
-                       template: `{{ 'NG2' }}(<ng-content></ng-content>)`
-                     }).Class({constructor: function() {}});
-
-         const element =
-             html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
-
-         const Ng2AppModule =
-             NgModule({
-               declarations: [Ng2],
-               imports: [BrowserModule],
-             }).Class({constructor: function Ng2AppModule() {}, ngDoBootstrap: function() {}});
-
-         const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
-         ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-         adapter.bootstrap(element, ['ng1']).ready((ref) => {
-           expect((platformRef as any)._bootstrapModuleWithZone)
-               .toHaveBeenCalledWith(
-                   jasmine.any(Function), {providers: []}, jasmine.any(Object),
-                   jasmine.any(Function));
-           ref.dispose();
-         });
-       }));
 
     describe('scope/component change-detection', () => {
       it('should interleave scope and component expressions', async(() => {
@@ -184,6 +186,87 @@ export function main() {
              ref.dispose();
            });
          }));
+
+
+      it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+           let appComponent: AppComponent;
+           let upgradeRef: UpgradeAdapterRef;
+
+           @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+           class AppComponent {
+             value: number;
+             constructor() { appComponent = this; }
+           }
+
+           @Component({
+             selector: 'my-child',
+             template: '<div>{{valueFromPromise}}',
+           })
+           class ChildComponent {
+             valueFromPromise: number;
+             @Input()
+             set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
+
+             constructor(private zone: NgZone) {}
+
+             ngOnChanges(changes: SimpleChanges) {
+               if (changes['value'].isFirstChange()) return;
+
+               this.zone.onMicrotaskEmpty.subscribe(() => {
+                 expect(element.textContent).toEqual('5');
+                 upgradeRef.dispose();
+               });
+
+               Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+             }
+           }
+
+           @NgModule({declarations: [AppComponent, ChildComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []).directive(
+               'myApp', adapter.downgradeNg2Component(AppComponent));
+
+           const element = html('<my-app></my-app>');
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             upgradeRef = ref;
+             appComponent.value = 5;
+           });
+         }));
+
+      // This test demonstrates https://github.com/angular/angular/issues/6385
+      // which was invalidly fixed by https://github.com/angular/angular/pull/6386
+      // it('should not trigger $digest from an async operation in a watcher', async(() => {
+      //      @Component({selector: 'my-app', template: ''})
+      //      class AppComponent {
+      //      }
+
+      //      @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
+      //      class Ng2Module {
+      //      }
+
+      //      const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+      //      const ng1Module = angular.module('ng1', []).directive(
+      //          'myApp', adapter.downgradeNg2Component(AppComponent));
+
+      //      const element = html('<my-app></my-app>');
+
+      //      adapter.bootstrap(element, ['ng1']).ready((ref) => {
+      //        let doTimeout = false;
+      //        let timeoutId: number;
+      //        ref.ng1RootScope.$watch(() => {
+      //          if (doTimeout && !timeoutId) {
+      //            timeoutId = window.setTimeout(function() {
+      //              timeoutId = null;
+      //            }, 10);
+      //          }
+      //        });
+      //        doTimeout = true;
+      //      });
+      //    }));
     });
 
     describe('downgrade ng2 component', () => {
@@ -385,6 +468,31 @@ export function main() {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
+             ref.dispose();
+           });
+         }));
+
+      it('should allow attribute selectors for components in ng2', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
+           const ng1Module = angular.module('myExample', []);
+
+           @Component({selector: '[works]', template: 'works!'})
+           class WorksComponent {
+           }
+
+           @Component({selector: 'root-component', template: 'It <div works></div>'})
+           class RootComponent {
+           }
+
+           @NgModule({imports: [BrowserModule], declarations: [RootComponent, WorksComponent]})
+           class MyNg2Module {
+           }
+
+           ng1Module.directive('rootComponent', adapter.downgradeNg2Component(RootComponent));
+
+           document.body.innerHTML = '<root-component></root-component>';
+           adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
+             expect(multiTrim(document.body.textContent)).toEqual('It works!');
              ref.dispose();
            });
          }));
@@ -1626,31 +1734,6 @@ export function main() {
            });
          }));
     });
-
-    it('should allow attribute selectors for components in ng2', async(() => {
-         const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
-         const ng1Module = angular.module('myExample', []);
-
-         @Component({selector: '[works]', template: 'works!'})
-         class WorksComponent {
-         }
-
-         @Component({selector: 'root-component', template: 'It <div works></div>'})
-         class RootComponent {
-         }
-
-         @NgModule({imports: [BrowserModule], declarations: [RootComponent, WorksComponent]})
-         class MyNg2Module {
-         }
-
-         ng1Module.directive('rootComponent', adapter.downgradeNg2Component(RootComponent));
-
-         document.body.innerHTML = '<root-component></root-component>';
-         adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
-           expect(multiTrim(document.body.textContent)).toEqual('It works!');
-           ref.dispose();
-         });
-       }));
 
     describe('examples', () => {
       it('should verify UpgradeAdapter example', async(() => {

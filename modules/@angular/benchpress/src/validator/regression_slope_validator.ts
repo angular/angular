@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
@@ -18,8 +18,8 @@ import {Validator} from '../validator';
  */
 @Injectable()
 export class RegressionSlopeValidator extends Validator {
-  static SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
-  static METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
+  static SAMPLE_SIZE = new InjectionToken('RegressionSlopeValidator.sampleSize');
+  static METRIC = new InjectionToken('RegressionSlopeValidator.metric');
   static PROVIDERS = [
     RegressionSlopeValidator, {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: 10},
     {provide: RegressionSlopeValidator.METRIC, useValue: 'scriptTime'}

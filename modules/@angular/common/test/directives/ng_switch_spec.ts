@@ -33,11 +33,10 @@ export function main() {
 
     describe('switch value changes', () => {
       it('should switch amongst when values', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<template ngSwitchCase="a"><li>when a</li></template>' +
-            '<template ngSwitchCase="b"><li>when b</li></template>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchCase="\'a\'">when a</li>' +
+            '<li *ngSwitchCase="\'b\'">when b</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
 
@@ -51,11 +50,10 @@ export function main() {
       });
 
       it('should switch amongst when values with fallback to default', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<li template="ngSwitchCase \'a\'">when a</li>' +
-            '<li template="ngSwitchDefault">when default</li>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchCase="\'a\'">when a</li>' +
+            '<li *ngSwitchDefault>when default</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default');
@@ -71,15 +69,14 @@ export function main() {
       });
 
       it('should support multiple whens with the same value', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<template ngSwitchCase="a"><li>when a1;</li></template>' +
-            '<template ngSwitchCase="b"><li>when b1;</li></template>' +
-            '<template ngSwitchCase="a"><li>when a2;</li></template>' +
-            '<template ngSwitchCase="b"><li>when b2;</li></template>' +
-            '<template ngSwitchDefault><li>when default1;</li></template>' +
-            '<template ngSwitchDefault><li>when default2;</li></template>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchCase="\'a\'">when a1;</li>' +
+            '<li *ngSwitchCase="\'b\'">when b1;</li>' +
+            '<li *ngSwitchCase="\'a\'">when a2;</li>' +
+            '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+            '<li *ngSwitchDefault>when default1;</li>' +
+            '<li *ngSwitchDefault>when default2;</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
@@ -94,12 +91,11 @@ export function main() {
 
     describe('when values changes', () => {
       it('should switch amongst when values', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<template [ngSwitchCase]="when1"><li>when 1;</li></template>' +
-            '<template [ngSwitchCase]="when2"><li>when 2;</li></template>' +
-            '<template ngSwitchDefault><li>when default;</li></template>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchCase="when1">when 1;</li>' +
+            '<li *ngSwitchCase="when2">when 2;</li>' +
+            '<li *ngSwitchDefault>when default;</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
         getComponent().when1 = 'a';
@@ -148,11 +144,10 @@ export function main() {
       });
 
       it('should create the default case if there is no other case', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<template ngSwitchDefault><li>when default1;</li></template>' +
-            '<template ngSwitchDefault><li>when default2;</li></template>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchDefault>when default1;</li>' +
+            '<li *ngSwitchDefault>when default2;</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
@@ -160,15 +155,14 @@ export function main() {
       });
 
       it('should allow defaults before cases', () => {
-        const template = '<div>' +
-            '<ul [ngSwitch]="switchValue">' +
-            '<template ngSwitchDefault><li>when default1;</li></template>' +
-            '<template ngSwitchDefault><li>when default2;</li></template>' +
-            '<template ngSwitchCase="a"><li>when a1;</li></template>' +
-            '<template ngSwitchCase="b"><li>when b1;</li></template>' +
-            '<template ngSwitchCase="a"><li>when a2;</li></template>' +
-            '<template ngSwitchCase="b"><li>when b2;</li></template>' +
-            '</ul></div>';
+        const template = '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchDefault>when default1;</li>' +
+            '<li *ngSwitchDefault>when default2;</li>' +
+            '<li *ngSwitchCase="\'a\'">when a1;</li>' +
+            '<li *ngSwitchCase="\'b\'">when b1;</li>' +
+            '<li *ngSwitchCase="\'a\'">when a2;</li>' +
+            '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+            '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');

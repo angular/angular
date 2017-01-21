@@ -540,6 +540,7 @@ export class Router {
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
+    validateCommands(commands);
     if (typeof extras.queryParams === 'object' && extras.queryParams !== null) {
       extras.queryParams = this.removeEmptyProps(extras.queryParams);
     }
@@ -1251,4 +1252,13 @@ function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOut
     }
   }
   return outlet;
+}
+
+function validateCommands(commands: string[]): void {
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i];
+    if (cmd == null) {
+      throw new Error(`The requested path contains ${cmd} segment at index ${i}`);
+    }
+  }
 }

@@ -18,7 +18,7 @@ import AngularCompilerOptions from './options';
  * you should implement a similar interface.
  */
 export interface CompilerInterface {
-  readConfiguration(project: string, basePath: string):
+  readConfiguration(project: string, basePath: string, existingOptions?: ts.CompilerOptions):
       {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
   emit(program: ts.Program): number;
@@ -97,7 +97,7 @@ export class Tsc implements CompilerInterface {
 
   constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
 
-  readConfiguration(project: string, basePath: string) {
+  readConfiguration(project: string, basePath: string, existingOptions?: ts.CompilerOptions) {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
@@ -123,7 +123,7 @@ export class Tsc implements CompilerInterface {
       fileExists: existsSync,
       readDirectory: this.readDirectory
     };
-    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath);
+    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath, existingOptions);
 
     check(this.parsed.errors);
 

@@ -9,67 +9,125 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
-import {LanguageService, LanguageServiceHost} from './types';
+import {Completion, Diagnostic, LanguageService, LanguageServiceHost} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
-
-/** A plugin to TypeScript's langauge service that provide language services for
- * templates in string literals.
- *
- * @experimental
- */
-export class LanguageServicePlugin {
-  private serviceHost: TypeScriptServiceHost;
-  private service: LanguageService;
-  private host: ts.LanguageServiceHost;
-
-  static 'extension-kind' = 'language-service';
-
-  constructor(config: {
-    host: ts.LanguageServiceHost; service: ts.LanguageService;
-    registry?: ts.DocumentRegistry, args?: any
-  }) {
-    this.host = config.host;
-    this.serviceHost = new TypeScriptServiceHost(config.host, config.service);
-    this.service = createLanguageService(this.serviceHost);
-    this.serviceHost.setSite(this.service);
+export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
+  // Create the proxy
+  const proxy: ts.LanguageService = Object.create(null);
+  const oldLS: ts.LanguageService = info.languageService;
+  for (const k in oldLS) {
+    (<any>proxy)[k] = function() { return (oldLS as any)[k].apply(oldLS, arguments); };
   }
 
-  /**
-   * Augment the diagnostics reported by TypeScript with errors from the templates in string
-   * literals.
-   */
-  getSemanticDiagnosticsFilter(fileName: string, previous: ts.Diagnostic[]): ts.Diagnostic[] {
-    let errors = this.service.getDiagnostics(fileName);
-    if (errors && errors.length) {
-      let file = this.serviceHost.getSourceFile(fileName);
-      for (const error of errors) {
-        previous.push({
-          file,
-          start: error.span.start,
-          length: error.span.end - error.span.start,
-          messageText: error.message,
-          category: ts.DiagnosticCategory.Error,
-          code: 0
-        });
+  function completionToEntry(c: Completion): ts.CompletionEntry {
+    return {kind: c.kind, name: c.name, sortText: c.sort, kindModifiers: ''};
+  }
+
+  function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
+    return {
+      file,
+      start: d.span.start,
+      length: d.span.end - d.span.start,
+      messageText: d.message,
+      category: ts.DiagnosticCategory.Error,
+      code: 0
+    };
+  }
+
+  function tryOperation(attempting: string, callback: () => void) {
+    try {
+      callback();
+    } catch (e) {
+      info.project.projectService.logger.info(`Failed to ${attempting}: ${e.toString()}`);
+      info.project.projectService.logger.info(`Stack trace: ${e.stack}`);
+    }
+  }
+
+  const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, info.languageService);
+  const ls = createLanguageService(serviceHost);
+  serviceHost.setSite(ls);
+
+  proxy.getCompletionsAtPosition = function(fileName: string, position: number) {
+    let base = oldLS.getCompletionsAtPosition(fileName, position);
+    tryOperation('get completions', () => {
+      const results = ls.getCompletionsAt(fileName, position);
+      if (results && results.length) {
+        if (base === undefined) {
+          base = {isMemberCompletion: false, isNewIdentifierLocation: false, entries: []};
+        }
+        for (const entry of results) {
+          base.entries.push(completionToEntry(entry));
+        }
       }
-    }
-    return previous;
-  }
+    });
+    return base;
+  };
 
-  /**
-   * Get completions for angular templates if one is at the given position.
-   */
-  getCompletionsAtPosition(fileName: string, position: number): ts.CompletionInfo {
-    let result = this.service.getCompletionsAt(fileName, position);
-    if (result) {
-      return {
-        isMemberCompletion: false,
-        isNewIdentifierLocation: false,
-        entries: result.map<ts.CompletionEntry>(
-            entry =>
-                ({name: entry.name, kind: entry.kind, kindModifiers: '', sortText: entry.sort}))
-      };
+  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo {
+    let base = oldLS.getQuickInfoAtPosition(fileName, position);
+    tryOperation('get quick info', () => {
+      const ours = ls.getHoverAt(fileName, position);
+      if (ours) {
+        const displayParts: typeof base.displayParts = [];
+        for (const part of ours.text) {
+          displayParts.push({kind: part.language, text: part.text});
+        }
+        base = {
+          displayParts,
+          documentation: [],
+          kind: 'angular',
+          kindModifiers: 'what does this do?',
+          textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start}
+        };
+      }
+    });
+
+    return base;
+  };
+
+  proxy.getSemanticDiagnostics = function(fileName: string) {
+    let base = oldLS.getSemanticDiagnostics(fileName);
+    if (base === undefined) {
+      base = [];
     }
-  }
+    tryOperation('get diagnostics', () => {
+      info.project.projectService.logger.info(`Computing Angular semantic diagnostics...`);
+      const ours = ls.getDiagnostics(fileName);
+      if (ours && ours.length) {
+        const file = oldLS.getProgram().getSourceFile(fileName);
+        base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+      }
+    });
+
+    return base;
+  };
+
+  proxy.getDefinitionAtPosition = function(
+                                      fileName: string, position: number): ts.DefinitionInfo[] {
+    let base = oldLS.getDefinitionAtPosition(fileName, position);
+    if (base && base.length) {
+      return base;
+    }
+
+    tryOperation('get definition', () => {
+      const ours = ls.getDefinitionAt(fileName, position);
+      if (ours && ours.length) {
+        base = base || [];
+        for (const loc of ours) {
+          base.push({
+            fileName: loc.fileName,
+            textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
+            name: '',
+            kind: 'definition',
+            containerName: loc.fileName,
+            containerKind: 'file'
+          });
+        }
+      }
+    });
+    return base;
+  };
+
+  return proxy;
 }

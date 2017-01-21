@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, ReflectiveInjector} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional, ReflectiveInjector} from '@angular/core';
 
 export function main() {
   describe('Provider examples', () => {
@@ -113,8 +113,8 @@ export function main() {
     describe('FactoryProvider', () => {
       it('works', () => {
         // #docregion FactoryProvider
-        const Location = new OpaqueToken('location');
-        const Hash = new OpaqueToken('hash');
+        const Location = new InjectionToken('location');
+        const Hash = new InjectionToken('hash');
 
         const injector = ReflectiveInjector.resolveAndCreate([
           {provide: Location, useValue: 'http://angular.io/#someLocation'}, {
@@ -130,8 +130,8 @@ export function main() {
 
       it('supports optional dependencies', () => {
         // #docregion FactoryProviderOptionalDeps
-        const Location = new OpaqueToken('location');
-        const Hash = new OpaqueToken('hash');
+        const Location = new InjectionToken('location');
+        const Hash = new InjectionToken('hash');
 
         const injector = ReflectiveInjector.resolveAndCreate([{
           provide: Hash,

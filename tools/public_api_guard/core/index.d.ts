@@ -19,7 +19,7 @@ export declare abstract class AfterViewInit {
 }
 
 /** @experimental */
-export declare const ANALYZE_FOR_ENTRY_COMPONENTS: OpaqueToken;
+export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 /** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
@@ -90,9 +90,9 @@ export declare abstract class AnimationStateMetadata {
 
 /** @experimental */
 export declare class AnimationStateTransitionMetadata extends AnimationStateMetadata {
-    stateChangeExpr: string;
+    stateChangeExpr: string | ((fromState: string, toState: string) => boolean);
     steps: AnimationMetadata;
-    constructor(stateChangeExpr: string, steps: AnimationMetadata);
+    constructor(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata);
 }
 
 /** @experimental */
@@ -108,15 +108,19 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 
 /** @experimental */
 export declare class AnimationTransitionEvent {
+    element: ElementRef;
     fromState: string;
     phaseName: string;
     toState: string;
     totalTime: number;
-    constructor({fromState, toState, totalTime, phaseName}: {
+    triggerName: string;
+    constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
         fromState: string;
         toState: string;
         totalTime: number;
         phaseName: string;
+        element: any;
+        triggerName: string;
     });
 }
 
@@ -127,13 +131,13 @@ export declare abstract class AnimationWithStepsMetadata extends AnimationMetada
 }
 
 /** @experimental */
-export declare const APP_BOOTSTRAP_LISTENER: OpaqueToken;
+export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
 
 /** @experimental */
-export declare const APP_ID: any;
+export declare const APP_ID: InjectionToken<string>;
 
 /** @experimental */
-export declare const APP_INITIALIZER: any;
+export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare class ApplicationInitStatus {
@@ -201,14 +205,8 @@ export interface ClassProvider {
     useClass: Type<any>;
 }
 
-/** @stable */
-export declare class CollectionChangeRecord {
-    currentIndex: number;
-    item: any;
-    previousIndex: number;
-    trackById: any;
-    constructor(item: any, trackById: any);
-    toString(): string;
+/** @deprecated */
+export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 /** @stable */
@@ -223,7 +221,12 @@ export declare class Compiler {
 }
 
 /** @experimental */
-export declare const COMPILER_OPTIONS: OpaqueToken;
+export declare const COMPILER_OPTIONS: InjectionToken<{
+    useDebug?: boolean;
+    useJit?: boolean;
+    defaultEncapsulation?: ViewEncapsulation;
+    providers?: any[];
+}[]>;
 
 /** @experimental */
 export declare abstract class CompilerFactory {
@@ -354,21 +357,21 @@ export declare class DebugNode {
     constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
 }
 
-/** @stable */
-export declare class DefaultIterableDiffer implements IterableDiffer {
+/** @deprecated */
+export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     collection: any;
     isDirty: boolean;
     length: number;
     constructor(_trackByFn?: TrackByFn);
-    check(collection: any): boolean;
-    diff(collection: any): DefaultIterableDiffer;
-    forEachAddedItem(fn: Function): void;
-    forEachIdentityChange(fn: Function): void;
-    forEachItem(fn: Function): void;
-    forEachMovedItem(fn: Function): void;
-    forEachOperation(fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void): void;
-    forEachPreviousItem(fn: Function): void;
-    forEachRemovedItem(fn: Function): void;
+    check(collection: V[] | Set<V>[] | any): boolean;
+    diff(collection: V[] | Set<V>[] | any): DefaultIterableDiffer<V>;
+    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachOperation(fn: (item: IterableChangeRecord_<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
     toString(): string;
 }
@@ -494,8 +497,15 @@ export interface InjectDecorator {
 }
 
 /** @stable */
+export declare class InjectionToken<T> extends OpaqueToken {
+    constructor(desc: string);
+    toString(): string;
+}
+
+/** @stable */
 export declare abstract class Injector {
-    get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T;
+    /** @deprecated */ get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
 }
@@ -507,20 +517,38 @@ export declare const Input: InputDecorator;
 export declare function isDevMode(): boolean;
 
 /** @stable */
-export interface IterableDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface IterableChangeRecord<V> {
+    currentIndex: number;
+    item: V;
+    previousIndex: number;
+    trackById: any;
+}
+
+/** @stable */
+export interface IterableChanges<V> {
+    forEachAddedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+}
+
+/** @stable */
+export interface IterableDiffer<V> {
+    diff(object: V[] | Set<V> | any): IterableChanges<V>;
 }
 
 /** @stable */
 export interface IterableDifferFactory {
-    create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+    create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class IterableDiffers {
-    factories: IterableDifferFactory[];
+    /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
@@ -531,37 +559,46 @@ export declare class IterableDiffers {
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
-export declare class KeyValueChangeRecord {
-    currentValue: any;
-    key: any;
-    previousValue: any;
-    constructor(key: any);
-    toString(): string;
+export interface KeyValueChangeRecord<K, V> {
+    currentValue: V;
+    key: K;
+    previousValue: V;
 }
 
 /** @stable */
-export interface KeyValueDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface KeyValueChanges<K, V> {
+    forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+}
+
+/** @stable */
+export interface KeyValueDiffer<K, V> {
+    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: {
+        [key: string]: V;
+    }): KeyValueChanges<string, V>;
 }
 
 /** @stable */
 export interface KeyValueDifferFactory {
-    create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+    create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class KeyValueDiffers {
-    factories: KeyValueDifferFactory[];
+    /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
-    find(kv: Object): KeyValueDifferFactory;
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): Provider;
+    find(kv: any): KeyValueDifferFactory;
+    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
 }
 
 /** @experimental */
-export declare const LOCALE_ID: OpaqueToken;
+export declare const LOCALE_ID: InjectionToken<string>;
 
 /** @experimental */
 export declare class ModuleWithComponentFactories<T> {
@@ -647,8 +684,9 @@ export declare abstract class OnInit {
     abstract ngOnInit(): void;
 }
 
-/** @stable */
+/** @deprecated */
 export declare class OpaqueToken {
+    protected _desc: string;
     constructor(_desc: string);
     toString(): string;
 }
@@ -666,7 +704,7 @@ export interface OptionalDecorator {
 export declare const Output: OutputDecorator;
 
 /** @experimental */
-export declare const PACKAGE_ROOT_URL: any;
+export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 /** @stable */
 export declare const Pipe: PipeDecorator;
@@ -677,7 +715,7 @@ export interface PipeTransform {
 }
 
 /** @experimental */
-export declare const PLATFORM_INITIALIZER: any;
+export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
@@ -918,13 +956,13 @@ export interface TrackByFn {
 }
 
 /** @experimental */
-export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
-export declare const TRANSLATIONS: OpaqueToken;
+export declare const TRANSLATIONS: InjectionToken<string>;
 
 /** @experimental */
-export declare const TRANSLATIONS_FORMAT: OpaqueToken;
+export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;

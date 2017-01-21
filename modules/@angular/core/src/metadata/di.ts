@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '../di/opaque_token';
+import {InjectionToken} from '../di/injection_token';
 import {Type} from '../type';
 import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 
@@ -44,7 +44,7 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
  *
  * @experimental
  */
-export const ANALYZE_FOR_ENTRY_COMPONENTS = new OpaqueToken('AnalyzeForEntryComponents');
+export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
 /**
  * Type of the Attribute decorator / constructor function.

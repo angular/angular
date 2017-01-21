@@ -1,5 +1,5 @@
 /** @stable */
-export declare const APP_BASE_HREF: OpaqueToken;
+export declare const APP_BASE_HREF: InjectionToken<string>;
 
 /** @stable */
 export declare class AsyncPipe implements OnDestroy {
@@ -117,6 +117,16 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
+/** @experimental */
+export declare class NgComponentOutlet implements OnChanges {
+    componentRef: ComponentRef<any>;
+    ngComponentOutlet: Type<any>;
+    ngComponentOutletContent: any[][];
+    ngComponentOutletInjector: Injector;
+    constructor(_cmpFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef);
+    ngOnChanges(changes: SimpleChanges): void;
+}
+
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
@@ -188,8 +198,9 @@ export declare class NgSwitchDefault {
 
 /** @experimental */
 export declare class NgTemplateOutlet implements OnChanges {
-    ngOutletContext: Object;
-    ngTemplateOutlet: TemplateRef<Object>;
+    /** @deprecated */ ngOutletContext: Object;
+    ngTemplateOutlet: TemplateRef<any>;
+    ngTemplateOutletContext: Object;
     constructor(_viewContainerRef: ViewContainerRef);
     ngOnChanges(changes: SimpleChanges): void;
 }

@@ -7,9 +7,9 @@
  */
 
 
-import {CompileDiDependencyMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, identifierName, tokenName, tokenReference} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveSummary, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, tokenName, tokenReference} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
-import {DirectiveWrapperCompiler, DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
+import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier, createIdentifierToken, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -19,7 +19,7 @@ import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../templa
 import {CompileMethod} from './compile_method';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView, CompileViewRootNode} from './compile_view';
-import {InjectMethodVars, ViewProperties} from './constants';
+import {InjectMethodVars} from './constants';
 import {ComponentFactoryDependency, DirectiveWrapperDependency} from './deps';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
 
@@ -194,7 +194,7 @@ export class CompileElement extends CompileNode {
       const propName =
           `_${tokenName(resolvedProvider.token)}_${this.nodeIndex}_${this.instances.size}`;
       const instance = createProviderProperty(
-          propName, resolvedProvider, providerValueExpressions, resolvedProvider.multiProvider,
+          propName, providerValueExpressions, resolvedProvider.multiProvider,
           resolvedProvider.eager, this);
       if (isDirectiveWrapper) {
         this.directiveWrapperInstance.set(tokenReference(resolvedProvider.token), instance);
@@ -288,7 +288,7 @@ export class CompileElement extends CompileNode {
       CompileQuery {
     const propName =
         `_query_${tokenName(queryMeta.selectors[0])}_${this.nodeIndex}_${this._queryCount++}`;
-    const queryList = createQueryList(queryMeta, directiveInstance, propName, this.view);
+    const queryList = createQueryList(propName, this.view);
     const query = new CompileQuery(queryMeta, queryList, directiveInstance, this.view);
     addQueryToTokenMap(this._queries, query);
     return query;
@@ -368,8 +368,8 @@ function createInjectInternalCondition(
 }
 
 function createProviderProperty(
-    propName: string, provider: ProviderAst, providerValueExpressions: o.Expression[],
-    isMulti: boolean, isEager: boolean, compileElement: CompileElement): o.Expression {
+    propName: string, providerValueExpressions: o.Expression[], isMulti: boolean, isEager: boolean,
+    compileElement: CompileElement): o.Expression {
   const view = compileElement.view;
   let resolvedProviderValueExpr: o.Expression;
   let type: o.Type;

@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -36,12 +36,12 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterL
  * @whatItDoes Is used in DI to configure the router.
  * @stable
  */
-export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
 
 /**
  * @docsNotRequired
  */
-export const ROUTER_FORROOT_GUARD = new OpaqueToken('ROUTER_FORROOT_GUARD');
+export const ROUTER_FORROOT_GUARD = new InjectionToken<void>('ROUTER_FORROOT_GUARD');
 
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
@@ -301,7 +301,8 @@ export function initialRouterNavigation(
  *
  * @experimental
  */
-export const ROUTER_INITIALIZER = new OpaqueToken('Router Initializer');
+export const ROUTER_INITIALIZER =
+    new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
 
 export function provideRouterInitializer() {
   return [

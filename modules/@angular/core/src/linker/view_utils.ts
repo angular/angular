@@ -8,14 +8,13 @@
 
 import {AnimationQueue} from '../animation/animation_queue';
 import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
-import {Inject, Injectable} from '../di';
+import {Injectable} from '../di';
 import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 import {Type} from '../type';
 import {VERSION} from '../version';
-import {NgZone} from '../zone/ng_zone';
 
 import {ComponentFactory} from './component_factory';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
@@ -24,7 +23,6 @@ import {AppView} from './view';
 @Injectable()
 export class ViewUtils {
   sanitizer: Sanitizer;
-  private _nextCompTypeId: number = 0;
 
   constructor(
       private _renderer: RootRenderer, sanitizer: Sanitizer,

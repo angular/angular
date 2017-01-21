@@ -15,8 +15,6 @@
 import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
 import {NgModule} from '@angular/core';
 
-
-
 // We cannot depend directly to @angular/router.
 type Route = any;
 const ROUTER_MODULE_PATH = '@angular/router/src/router_config_loader';
@@ -63,29 +61,37 @@ export function listLazyRoutesOfModule(
   const className = entryRouteDef.className;
 
   // List loadChildren of this single module.
-  const staticSymbol = reflector.findDeclaration(modulePath, className, containingFile);
+  const appStaticSymbol = reflector.findDeclaration(modulePath, className, containingFile);
   const ROUTES = reflector.findDeclaration(ROUTER_MODULE_PATH, ROUTER_ROUTES_SYMBOL_NAME);
   const lazyRoutes: LazyRoute[] =
-      _extractLazyRoutesFromStaticModule(staticSymbol, reflector, host, ROUTES);
-  const routes: LazyRouteMap = {};
+      _extractLazyRoutesFromStaticModule(appStaticSymbol, reflector, host, ROUTES);
 
-  lazyRoutes.forEach((lazyRoute: LazyRoute) => {
-    const route: string = lazyRoute.routeDef.toString();
-    _assertRoute(routes, lazyRoute);
-    routes[route] = lazyRoute;
+  const allLazyRoutes = lazyRoutes.reduce(
+      function includeLazyRouteAndSubRoutes(allRoutes: LazyRouteMap, lazyRoute: LazyRoute):
+          LazyRouteMap {
+            const route: string = lazyRoute.routeDef.toString();
+            _assertRoute(allRoutes, lazyRoute);
+            allRoutes[route] = lazyRoute;
 
-    const lazyModuleSymbol = reflector.findDeclaration(
-        lazyRoute.absoluteFilePath, lazyRoute.routeDef.className || 'default');
-    const subRoutes = _extractLazyRoutesFromStaticModule(lazyModuleSymbol, reflector, host, ROUTES);
+            // StaticReflector does not support discovering annotations like `NgModule` on default
+            // exports
+            // Which means: if a default export NgModule was lazy-loaded, we can discover it, but,
+            //  we cannot parse its routes to see if they have loadChildren or not.
+            if (!lazyRoute.routeDef.className) {
+              return allRoutes;
+            }
 
-    // Populate the map using the routes we just found.
-    subRoutes.forEach(subRoute => {
-      _assertRoute(routes, subRoute);
-      routes[subRoute.routeDef.toString()] = subRoute;
-    });
-  });
+            const lazyModuleSymbol = reflector.findDeclaration(
+                lazyRoute.absoluteFilePath, lazyRoute.routeDef.className || 'default');
 
-  return routes;
+            const subRoutes =
+                _extractLazyRoutesFromStaticModule(lazyModuleSymbol, reflector, host, ROUTES);
+
+            return subRoutes.reduce(includeLazyRouteAndSubRoutes, allRoutes);
+          },
+      {});
+
+  return allLazyRoutes;
 }
 
 
@@ -192,7 +198,7 @@ function _collectRoutes(
  */
 function _collectLoadChildren(routes: Route[]): string[] {
   return routes.reduce((m, r) => {
-    if (r.loadChildren) {
+    if (r.loadChildren && typeof r.loadChildren === 'string') {
       return m.concat(r.loadChildren);
     } else if (Array.isArray(r)) {
       return m.concat(_collectLoadChildren(r));

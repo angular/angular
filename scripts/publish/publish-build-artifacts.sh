@@ -68,7 +68,11 @@ function publishRepo {
 
 # Publish all individual packages from packages-dist.
 function publishPackages {
-  for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
+  GIT_SCHEME=$1
+  PKGS_DIST=$2
+  BRANCH=$3
+
+  for dir in $PKGS_DIST/*/ dist/tools/@angular/tsc-wrapped
   do
     COMPONENT="$(basename ${dir})"
 
@@ -76,12 +80,12 @@ function publishPackages {
     COMPONENT="${COMPONENT//_/-}"
     JS_BUILD_ARTIFACTS_DIR="${dir}"
 
-    if [[ "$1" == "ssh" ]]; then
+    if [[ "$GIT_SCHEME" == "ssh" ]]; then
       REPO_URL="git@github.com:${ORG}/${COMPONENT}-builds.git"
-    elif [[ "$1" == "http" ]]; then
+    elif [[ "$GIT_SCHEME" == "http" ]]; then
       REPO_URL="https://github.com/${ORG}/${COMPONENT}-builds.git"
     else
-      die "Don't have a way to publish to scheme $1"
+      die "Don't have a way to publish to scheme $GIT_SCHEME"
     fi
     SHA=`git rev-parse HEAD`
     SHORT_SHA=`git rev-parse --short HEAD`
@@ -97,16 +101,24 @@ function publishPackages {
 }
 
 # See DEVELOPER.md for help
-BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
-  publishPackages "ssh"
+  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
+  if [[ -e dist/packages-dist-es2015 ]]; then
+    publishPackages "ssh" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
+  fi
+
 elif [[ \
     "$TRAVIS_REPO_SLUG" == "angular/angular" && \
     "$TRAVIS_PULL_REQUEST" == "false" && \
     "$CI_MODE" == "e2e" ]]; then
   ORG="angular"
-  publishPackages "http"
+  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  if [[ -e dist/packages-dist-es2015 ]]; then
+    publishPackages "http" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
+  fi
+
 else
-  echo "Not building the upstream/${BRANCH} branch, build artifacts won't be published."
+  echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
 fi

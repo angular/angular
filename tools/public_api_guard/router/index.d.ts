@@ -85,7 +85,7 @@ export interface ExtraOptions {
 export declare type LoadChildren = string | LoadChildrenCallback;
 
 /** @stable */
-export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
+export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>>;
 
 /** @stable */
 export declare class NavigationCancel {
@@ -224,10 +224,10 @@ export declare class Router {
 }
 
 /** @stable */
-export declare const ROUTER_CONFIGURATION: OpaqueToken;
+export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 
 /** @experimental */
-export declare const ROUTER_INITIALIZER: OpaqueToken;
+export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 /** @experimental */
 export declare abstract class RouteReuseStrategy {
@@ -264,10 +264,10 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     routerLinkActiveOptions: {
         exact: boolean;
     };
-    constructor(router: Router, element: ElementRef, renderer: Renderer);
+    constructor(router: Router, element: ElementRef, renderer: Renderer, cdr: ChangeDetectorRef);
     ngAfterContentInit(): void;
-    ngOnChanges(changes: {}): any;
-    ngOnDestroy(): any;
+    ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
 }
 
 /** @stable */

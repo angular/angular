@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, OpaqueToken, destroyPlatform} from '@angular/core';
+import {InjectionToken, NgModule, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -23,7 +23,7 @@ export function main() {
 
     it('should downgrade ng2 service to ng1', async(() => {
          // Tokens used in ng2 to identify services
-         const Ng2Service = new OpaqueToken('ng2-service');
+         const Ng2Service = new InjectionToken('ng2-service');
 
          // Sample ng1 NgModule for tests
          @NgModule({
@@ -49,7 +49,7 @@ export function main() {
 
     it('should upgrade ng1 service to ng2', async(() => {
          // Tokens used in ng2 to identify services
-         const Ng1Service = new OpaqueToken('ng1-service');
+         const Ng1Service = new InjectionToken('ng1-service');
 
          // Sample ng1 NgModule for tests
          @NgModule({

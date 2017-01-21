@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, OpaqueToken, Optional, SchemaMetadata} from '@angular/core';
+import {Inject, InjectionToken, Optional, SchemaMetadata} from '@angular/core';
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
@@ -67,7 +67,7 @@ const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
  *
  * This is currently an internal-only feature and not meant for general use.
  */
-export const TEMPLATE_TRANSFORMS = new OpaqueToken('TemplateTransforms');
+export const TEMPLATE_TRANSFORMS = new InjectionToken('TemplateTransforms');
 
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
@@ -276,7 +276,7 @@ class TemplateParseVisitor implements html.Visitor {
         templateBindingsSource = attr.value;
       } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
-        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
+        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length) + ':';
       }
 
       const hasTemplateBinding = isPresent(templateBindingsSource);
@@ -288,7 +288,7 @@ class TemplateParseVisitor implements html.Visitor {
         }
         hasInlineTemplates = true;
         this._bindingParser.parseInlineTemplateBinding(
-            attr.name, prefixToken, templateBindingsSource, attr.sourceSpan, templateMatchableAttrs,
+            prefixToken, templateBindingsSource, attr.sourceSpan, templateMatchableAttrs,
             templateElementOrDirectiveProps, templateElementVars);
       }
 
@@ -309,9 +309,11 @@ class TemplateParseVisitor implements html.Visitor {
     const elementProps: BoundElementPropertyAst[] =
         this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts);
     const isViewRoot = parent.isTemplateElement || hasInlineTemplates;
+
     const providerContext = new ProviderElementContext(
         this.providerViewContext, parent.providerContext, isViewRoot, directiveAsts, attrs,
         references, element.sourceSpan);
+
     const children = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(

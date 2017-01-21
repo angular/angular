@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from './di';
+import {InjectionToken} from './di';
+import {ComponentRef} from './linker/component_factory';
 
 
 /**
@@ -19,7 +20,7 @@ import {OpaqueToken} from './di';
  * using this token.
  * @experimental
  */
-export const APP_ID: any = new OpaqueToken('AppId');
+export const APP_ID = new InjectionToken<string>('AppId');
 
 export function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
@@ -43,7 +44,7 @@ function _randomChar(): string {
  * A function that will be executed when a platform is initialized.
  * @experimental
  */
-export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer');
+export const PLATFORM_INITIALIZER = new InjectionToken<Array<() => void>>('Platform Initializer');
 
 /**
  * All callbacks provided via this token will be called for every component that is bootstrapped.
@@ -53,10 +54,11 @@ export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer')
  *
  * @experimental
  */
-export const APP_BOOTSTRAP_LISTENER = new OpaqueToken('appBootstrapListener');
+export const APP_BOOTSTRAP_LISTENER =
+    new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
 
 /**
  * A token which indicates the root directory of the application
  * @experimental
  */
-export const PACKAGE_ROOT_URL: any = new OpaqueToken('Application Packages Root URL');
+export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');

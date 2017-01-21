@@ -27,6 +27,7 @@ import {AnimationTransitionEvent} from '../../src/animation/animation_transition
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {Input} from '../../src/core';
 import {isPresent} from '../../src/facade/lang';
+import {ElementRef} from '../../src/linker/element_ref';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 
@@ -154,6 +155,69 @@ function declareTests({useJit}: {useJit: boolean}) {
                expect(kf[0]).toEqual([0, {'backgroundColor': 'red'}]);
                expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
              }));
+
+      it('should allow a transition to be a user-defined function', fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngIf="exp" [@myAnimation]="exp"></div>
+              `,
+               animations: [trigger(
+                   'myAnimation',
+                   [
+                     transition(figureItOut, [animate(1000, style({'backgroundColor': 'blue'}))]),
+                     transition(
+                         '* => *', [animate(1000, style({'backgroundColor': 'black'}))])
+                   ])]
+             }
+           });
+
+           const log: string[] = [];
+           function figureItOut(stateA: string, stateB: string): boolean {
+             log.push(`${stateA} => ${stateB}`);
+             return ['one', 'three', 'five'].indexOf(stateB) >= 0;
+           }
+
+           function assertAnimatedToFirstTransition(animation: any, firstState: boolean) {
+             const expectedColor = firstState ? 'blue' : 'black';
+             expect(animation['keyframeLookup'][1]).toEqual([
+               1, {'backgroundColor': expectedColor}
+             ]);
+           }
+
+           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'one';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('void => one');
+
+           cmp.exp = 'two';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), false);
+           expect(log.pop()).toEqual('one => two');
+
+           cmp.exp = 'three';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('two => three');
+
+           cmp.exp = 'four';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), false);
+           expect(log.pop()).toEqual('three => four');
+
+           cmp.exp = 'five';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('four => five');
+         }));
 
       it('should throw an error when a provided offset for an animation step if an offset value is greater than 1',
          fakeAsync(() => {
@@ -1762,6 +1826,78 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(doneCalls[2]).toEqual(1);
            expect(doneCalls[3]).toEqual(1);
            expect(doneCalls[4]).toEqual(1);
+         }));
+
+      it('should expose the element associated with the animation within the callback event',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngFor="let item of items"
+                  (@trigger.start)="callback($event)"
+                  @trigger class="target">{{ item }}</div>
+              `,
+               animations: [trigger('trigger', [transition('* => *', [animate(1000)])])]
+             }
+           });
+
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+
+           const elements: ElementRef[] = [];
+           cmp.callback = (e: AnimationTransitionEvent) => elements.push(e.element);
+
+           cmp.items = [0, 1, 2, 3, 4];
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const targetElements =
+               <any[]>getDOM().querySelectorAll(fixture.nativeElement, '.target');
+           for (let i = 0; i < elements.length; i++) {
+             expect(elements[i].nativeElement).toBe(targetElements[i]);
+           }
+         }));
+
+      it('should expose the trigger associated with the animation within the callback event',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngIf="exp"
+                  @t1
+                  (@t1.start)="callback($event)"
+                  (@t1.done)="callback($event)"></div>
+                <div *ngIf="exp"
+                  @t2
+                  (@t2.start)="callback($event)"
+                  (@t2.done)="callback($event)"></div>
+              `,
+               animations: [
+                 trigger('t1', [transition('* => *', [animate(1000)])]),
+                 trigger('t2', [transition('* => *', [animate(1000)])])
+               ]
+             }
+           });
+
+           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+
+           let triggers: string[] = [];
+           cmp.callback = (e: AnimationTransitionEvent) =>
+               triggers.push(`${e.triggerName}-${e.phaseName}`);
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(triggers).toEqual(['t1-start', 't2-start']);
+           triggers = [];
+
+           driver.log.shift()['player'].finish();
+           driver.log.shift()['player'].finish();
+
+           expect(triggers).toEqual(['t1-done', 't2-done']);
          }));
     });
 

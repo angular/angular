@@ -21,10 +21,9 @@ import {SwitchView} from './ng_switch';
  * @howToUse
  * ```
  * <some-element [ngPlural]="value">
- *   <ng-container *ngPluralCase="'=0'">there is nothing</ng-container>
- *   <ng-container *ngPluralCase="'=1'">there is one</ng-container>
- *   <ng-container *ngPluralCase="'few'">there are a few</ng-container>
- *   <ng-container *ngPluralCase="'other'">there are exactly #</ng-container>
+ *   <template ngPluralCase="=0">there is nothing</template>
+ *   <template ngPluralCase="=1">there is one</template>
+ *   <template ngPluralCase="few">there are a few</template>
  * </some-element>
  * ```
  *
@@ -90,8 +89,8 @@ export class NgPlural {
  * @howToUse
  * ```
  * <some-element [ngPlural]="value">
- *   <ng-container *ngPluralCase="'=0'">...</ng-container>
- *   <ng-container *ngPluralCase="'other'">...</ng-container>
+ *   <template ngPluralCase="=0">...</template>
+ *   <template ngPluralCase="other">...</template>
  * </some-element>
  *```
  *
@@ -104,6 +103,7 @@ export class NgPluralCase {
   constructor(
       @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
       viewContainer: ViewContainerRef, @Host() ngPlural: NgPlural) {
-    ngPlural.addCase(value, new SwitchView(viewContainer, template));
+    const isANumber: boolean = !isNaN(Number(value));
+    ngPlural.addCase(isANumber ? `=${value}` : value, new SwitchView(viewContainer, template));
   }
 }
