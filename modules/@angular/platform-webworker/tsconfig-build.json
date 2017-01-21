@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/platform-webworker/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

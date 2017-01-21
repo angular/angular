@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "../modules/@angular/router/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

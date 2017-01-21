@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/examples/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

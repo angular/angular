@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/platform-browser/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/forms/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

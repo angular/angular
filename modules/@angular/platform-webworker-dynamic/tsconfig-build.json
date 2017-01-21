@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/platform-webworker-dynamic/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,

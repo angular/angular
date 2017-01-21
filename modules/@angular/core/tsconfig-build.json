@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/core/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
@@ -10,7 +11,7 @@
     "paths": {
       "rxjs/*": ["../../../node_modules/rxjs/*"]
     },
-    "rootDir": ".",
+    "rootDir": "./modules/@angular/core/",
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",
