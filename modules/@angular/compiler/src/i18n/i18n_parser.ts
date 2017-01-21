@@ -42,7 +42,7 @@ class _I18nVisitor implements html.Visitor {
 
   public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string):
       i18n.Message {
-    this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
+    this._isIcu = nodes.length == 1 && nodes[0] instanceof html.IcuMsg;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
@@ -88,7 +88,7 @@ class _I18nVisitor implements html.Visitor {
 
   visitComment(comment: html.Comment, context: any): i18n.Node { return null; }
 
-  visitExpansion(icu: html.Expansion, context: any): i18n.Node {
+  visitIcuMessage(icu: html.IcuMsg, context: any): i18n.Node {
     this._icuDepth++;
     const i18nIcuCases: {[k: string]: i18n.Node} = {};
     const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
@@ -120,7 +120,7 @@ class _I18nVisitor implements html.Visitor {
     return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 
-  visitExpansionCase(icuCase: html.ExpansionCase, context: any): i18n.Node {
+  visitIcuCase(icuCase: html.IcuCase, context: any): i18n.Node {
     throw new Error('Unreachable code');
   }
 

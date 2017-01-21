@@ -62,7 +62,7 @@ export class DummyHtmlParser extends HtmlParser {
   constructor() { super(); }
 
   parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
+      source: string, url: string, parseIcuMessages: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
     return new ParseTreeResult([], []);
   }

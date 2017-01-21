@@ -237,11 +237,9 @@ class TemplatePreparseVisitor implements html.Visitor {
     return null;
   }
 
-  visitExpansion(ast: html.Expansion, context: any): any { html.visitAll(this, ast.cases); }
+  visitIcuMessage(ast: html.IcuMsg, context: any): any { html.visitAll(this, ast.cases); }
 
-  visitExpansionCase(ast: html.ExpansionCase, context: any): any {
-    html.visitAll(this, ast.expression);
-  }
+  visitIcuCase(ast: html.IcuCase, context: any): any { html.visitAll(this, ast.expression); }
 
   visitComment(ast: html.Comment, context: any): any { return null; }
   visitAttribute(ast: html.Attribute, context: any): any { return null; }

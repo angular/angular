@@ -102,9 +102,9 @@ class XtbParser implements ml.Visitor {
 
   visitComment(comment: ml.Comment, context: any): any {}
 
-  visitExpansion(expansion: ml.Expansion, context: any): any {}
+  visitIcuMessage(icuMsg: ml.IcuMsg, context: any): any {}
 
-  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
@@ -125,7 +125,7 @@ class XmlToI18n implements ml.Visitor {
 
   visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
 
-  visitExpansion(icu: ml.Expansion, context: any) {
+  visitIcuMessage(icu: ml.IcuMsg, context: any) {
     const caseMap: {[value: string]: i18n.Node} = {};
 
     ml.visitAll(this, icu.cases).forEach(c => {
@@ -135,7 +135,7 @@ class XmlToI18n implements ml.Visitor {
     return new i18n.Icu(icu.switchValue, icu.type, caseMap, icu.sourceSpan);
   }
 
-  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {
     return {
       value: icuCase.value,
       nodes: ml.visitAll(this, icuCase.expression),

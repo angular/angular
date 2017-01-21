@@ -29,10 +29,9 @@ export class I18NHtmlParser implements HtmlParser {
       private _translationsFormat?: string) {}
 
   parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
+      source: string, url: string, parseIcuMessages: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    const parseResult =
-        this._htmlParser.parse(source, url, parseExpansionForms, interpolationConfig);
+    const parseResult = this._htmlParser.parse(source, url, parseIcuMessages, interpolationConfig);
 
     if (!this._translations || this._translations === '') {
       // Do not enable i18n when no translation bundle is provided

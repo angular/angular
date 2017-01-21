@@ -50,7 +50,7 @@ export class ExpansionError extends ParseError {
 }
 
 /**
- * Expand expansion forms (plural, select) to directives
+ * Expand icu messages (plural, select) to directives
  *
  * @internal
  */
@@ -70,18 +70,18 @@ class _Expander implements html.Visitor {
 
   visitComment(comment: html.Comment, context: any): any { return comment; }
 
-  visitExpansion(icu: html.Expansion, context: any): any {
+  visitIcuMessage(icu: html.IcuMsg, context: any): any {
     this.isExpanded = true;
     return icu.type == 'plural' ? _expandPluralForm(icu, this.errors) :
                                   _expandDefaultForm(icu, this.errors);
   }
 
-  visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
+  visitIcuCase(icuCase: html.IcuCase, context: any): any {
     throw new Error('Should not be reached');
   }
 }
 
-function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Element {
+function _expandPluralForm(ast: html.IcuMsg, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
       errors.push(new ExpansionError(
@@ -101,7 +101,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
 
-function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
+function _expandDefaultForm(ast: html.IcuMsg, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);

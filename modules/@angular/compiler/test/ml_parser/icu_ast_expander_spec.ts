@@ -21,7 +21,7 @@ export function main() {
       return expandNodes(res.rootNodes);
     }
 
-    it('should handle the plural expansion form', () => {
+    it('should handle the plural icu message', () => {
       const res = expand(`{messages.length, plural,=0 {zero<b>bold</b>}}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
@@ -35,7 +35,7 @@ export function main() {
       ]);
     });
 
-    it('should handle nested expansion forms', () => {
+    it('should handle nested icu messages', () => {
       const res = expand(`{messages.length, plural, =0 { {p.gender, select, =m {m}} }}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
@@ -95,7 +95,7 @@ export function main() {
       ]);
     });
 
-    it('should parse an expansion form as a tag single child', () => {
+    it('should parse an icu message as a tag single child', () => {
       const res = expand(`<div><span>{a, b, =4 {c}}</span></div>`);
 
       expect(humanizeNodes(res.nodes)).toEqual([

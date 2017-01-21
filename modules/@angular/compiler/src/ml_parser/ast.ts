@@ -18,19 +18,19 @@ export class Text implements Node {
   visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
 }
 
-export class Expansion implements Node {
+export class IcuMsg implements Node {
   constructor(
-      public switchValue: string, public type: string, public cases: ExpansionCase[],
+      public switchValue: string, public type: string, public cases: IcuCase[],
       public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
+  visit(visitor: Visitor, context: any): any { return visitor.visitIcuMessage(this, context); }
 }
 
-export class ExpansionCase implements Node {
+export class IcuCase implements Node {
   constructor(
       public value: string, public expression: Node[], public sourceSpan: ParseSourceSpan,
       public valueSourceSpan: ParseSourceSpan, public expSourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansionCase(this, context); }
+  visit(visitor: Visitor, context: any): any { return visitor.visitIcuCase(this, context); }
 }
 
 export class Attribute implements Node {
@@ -62,8 +62,8 @@ export interface Visitor {
   visitAttribute(attribute: Attribute, context: any): any;
   visitText(text: Text, context: any): any;
   visitComment(comment: Comment, context: any): any;
-  visitExpansion(expansion: Expansion, context: any): any;
-  visitExpansionCase(expansionCase: ExpansionCase, context: any): any;
+  visitIcuMessage(icuMsg: IcuMsg, context: any): any;
+  visitIcuCase(icuCase: IcuCase, context: any): any;
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {

@@ -220,9 +220,9 @@ class XliffParser implements ml.Visitor {
 
   visitComment(comment: ml.Comment, context: any): any {}
 
-  visitExpansion(expansion: ml.Expansion, context: any): any {}
+  visitIcuMessage(icuMsg: ml.IcuMsg, context: any): any {}
 
-  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
@@ -256,9 +256,9 @@ class XmlToI18n implements ml.Visitor {
     }
   }
 
-  visitExpansion(icu: ml.Expansion, context: any) {}
+  visitIcuMessage(icu: ml.IcuMsg, context: any) {}
 
-  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {}
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
 
   visitComment(comment: ml.Comment, context: any) {}
 

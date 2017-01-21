@@ -34,7 +34,7 @@ export function main() {
       expect(serializeNodes(ast.rootNodes)).toEqual([html]);
     });
 
-    it('should support expansion', () => {
+    it('should support icu messages', () => {
       const html = '{number, plural, =0 {none} =1 {one} other {many}}';
       const ast = parser.parse(html, 'url', true);
       expect(serializeNodes(ast.rootNodes)).toEqual([html]);
@@ -77,12 +77,12 @@ class _SerializerVisitor implements html.Visitor {
 
   visitComment(comment: html.Comment, context: any): any { return `<!--${comment.value}-->`; }
 
-  visitExpansion(expansion: html.Expansion, context: any): any {
-    return `{${expansion.switchValue}, ${expansion.type},${this._visitAll(expansion.cases)}}`;
+  visitIcuMessage(icuMsg: html.IcuMsg, context: any): any {
+    return `{${icuMsg.switchValue}, ${icuMsg.type},${this._visitAll(icuMsg.cases)}}`;
   }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    return ` ${expansionCase.value} {${this._visitAll(expansionCase.expression)}}`;
+  visitIcuCase(icuCase: html.IcuCase, context: any): any {
+    return ` ${icuCase.value} {${this._visitAll(icuCase.expression)}}`;
   }
 
   private _visitAll(nodes: html.Node[], join: string = ''): string {
