@@ -71,9 +71,8 @@ export function main() {
       const fn = () => b.group({units: ['', syncValidator, syncValidator]});
       // test for the specific error since without the error check it would still throw an error but
       // not a meaningful one
-      expect(fn).toThrow(new Error(`
-      expected the following validator to return Promise or Observable: ${syncValidator}. If you are using FormBuilder; did you forget to brace y
-our validators in an array?`));
+      expect(fn).toThrow(new Error(
+          `expected the following validator to return Promise or Observable: ${syncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`));
     });
   });
 }
