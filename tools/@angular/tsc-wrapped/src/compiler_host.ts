@@ -154,3 +154,16 @@ export class SyntheticIndexHost extends DelegatingHost {
             }
           }
 }
+
+export class PipeHost extends DelegatingHost {
+  public compiledSources: any[] = [];
+  constructor(delegate: ts.CompilerHost) { super(delegate); }
+
+  writeFile: ts.WriteFileCallback =
+      (fileName: string, data: string, writeByteOrderMark: boolean,
+       onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+        this.compiledSources.push({contents: new Buffer(data), path: fileName});
+
+        this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+      }
+}

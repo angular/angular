@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 import {check, tsc} from './tsc';
 
 import NgOptions from './options';
-import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
+import {MetadataWriterHost, SyntheticIndexHost, PipeHost} from './compiler_host';
 import {CliOptions} from './cli_options';
 import {VinylFile, isVinylFile} from './vinyl_file';
 import {MetadataBundler, CompilerHostAdapter} from './bundler';
@@ -107,11 +107,12 @@ export function main(
       if (!ngOptions.skipMetadataEmit) {
         definitionsHost = new MetadataWriterHost(host, ngOptions);
       }
+
       // Create a new program since codegen files were created after making the old program
       let programWithCodegen = createProgram(definitionsHost, program);
       tsc.typeCheck(host, programWithCodegen);
 
-      let preprocessHost = host;
+      let pipeHost = new PipeHost(host);
       let programForJsEmit = programWithCodegen;
 
 
@@ -130,7 +131,7 @@ export function main(
       };
 
       const tsickleCompilerHost = new tsickle.TsickleCompilerHost(
-          preprocessHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
+          pipeHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
 
       if (ngOptions.annotationsAs !== 'decorators') {
         if (diagnostics) console.time('NG downlevel');
@@ -139,7 +140,6 @@ export function main(
         // metadataWriter
         programForJsEmit = createProgram(tsickleCompilerHost);
         check(tsickleCompilerHost.diagnostics);
-        preprocessHost = tsickleCompilerHost;
         if (diagnostics) console.timeEnd('NG downlevel');
       }
 
@@ -165,6 +165,8 @@ export function main(
         (ts as any).performance.forEachMeasure(
             (name: string, duration: number) => { console.error(`TS ${name}: ${duration}ms`); });
       }
+
+      return pipeHost.compiledSources;
     });
   } catch (e) {
     return Promise.reject(e);
