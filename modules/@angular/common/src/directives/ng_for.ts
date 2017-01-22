@@ -159,7 +159,7 @@ export class NgFor implements DoCheck, OnChanges {
           }
         });
 
-    for (let i = 0; i < insertTuples.length; i++) {
+    for (let i = 0, len = insertTuples.length; i < len; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
 
