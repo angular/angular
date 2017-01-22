@@ -419,6 +419,10 @@ export abstract class AbstractControl {
     if (this.asyncValidator) {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
+      if (!(obs instanceof Observable)) {
+        throw new Error(
+            `expected the following validator to return Promise or Observable: ${this.asyncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
+      }
       this._asyncValidationSubscription =
           obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
     }
