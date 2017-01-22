@@ -40,6 +40,8 @@ export function main() {
 
   function otherAsyncValidator() { return Promise.resolve({'other': true}); }
 
+  function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
+
   describe('FormControl', () => {
     it('should default the value to null', () => {
       const c = new FormControl();
@@ -975,6 +977,15 @@ export function main() {
 
           c.disable();
           expect(logger).toEqual(['control', 'group']);
+        });
+
+        it('should throw when sync validator passed into async validator param', () => {
+          const fn = () => new FormControl('', syncValidator, syncValidator);
+          // test for the specific error since without the error check it would still throw an error
+          // but
+          // not a meaningful one
+          expect(fn).toThrowError(
+              `expected the following validator to return Promise or Observable: ${syncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
         });
 
       });
