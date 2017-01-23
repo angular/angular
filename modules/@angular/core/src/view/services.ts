@@ -48,16 +48,18 @@ class ViewContainerRef_ implements ViewContainerRef {
   get parentInjector(): Injector { return <Injector>unimplemented(); }
 
   clear(): void {
-    const len = this._data.embeddedViews.length;
+    const len = this._data.elementOrText.embeddedViews.length;
     for (let i = len - 1; i >= 0; i--) {
       const view = detachEmbeddedView(this._data, i);
       destroyView(view);
     }
   }
 
-  get(index: number): ViewRef { return new ViewRef_(this._data.embeddedViews[index]); }
+  get(index: number): ViewRef {
+    return new ViewRef_(this._data.elementOrText.embeddedViews[index]);
+  }
 
-  get length(): number { return this._data.embeddedViews.length; };
+  get length(): number { return this._data.elementOrText.embeddedViews.length; };
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
@@ -81,7 +83,7 @@ class ViewContainerRef_ implements ViewContainerRef {
   move(viewRef: ViewRef, currentIndex: number): ViewRef { return unimplemented(); }
 
   indexOf(viewRef: ViewRef): number {
-    return this._data.embeddedViews.indexOf((<ViewRef_>viewRef)._view);
+    return this._data.elementOrText.embeddedViews.indexOf((<ViewRef_>viewRef)._view);
   }
 
   remove(index?: number): void {
@@ -126,6 +128,6 @@ class TemplateRef_ implements TemplateRef<any> {
   }
 
   get elementRef(): ElementRef {
-    return new ElementRef(this._parentView.nodes[this._def.index].renderNode);
+    return new ElementRef(this._parentView.nodes[this._def.index].elementOrText.node);
   }
 }
