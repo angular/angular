@@ -391,6 +391,96 @@ describe('MdAutocomplete', () => {
 
   });
 
+  describe('aria', () => {
+      let fixture: ComponentFixture<SimpleAutocomplete>;
+      let input: HTMLInputElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
+    });
+
+    it('should set role of input to combobox', () => {
+      expect(input.getAttribute('role'))
+          .toEqual('combobox', 'Expected role of input to be combobox.');
+    });
+
+    it('should set role of autocomplete panel to listbox', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel = fixture.debugElement.query(By.css('.md-autocomplete-panel')).nativeElement;
+
+      expect(panel.getAttribute('role'))
+          .toEqual('listbox', 'Expected role of the panel to be listbox.');
+    });
+
+    it('should set aria-autocomplete to list', () => {
+      expect(input.getAttribute('aria-autocomplete'))
+          .toEqual('list', 'Expected aria-autocomplete attribute to equal list.');
+    });
+
+    it('should set aria-multiline to false', () => {
+      expect(input.getAttribute('aria-multiline'))
+          .toEqual('false', 'Expected aria-multiline attribute to equal false.');
+    });
+
+    it('should set aria-activedescendant based on the active option', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(input.hasAttribute('aria-activedescendant'))
+          .toBe(false, 'Expected aria-activedescendant to be absent if no active item.');
+
+      const DOWN_ARROW_EVENT = new FakeKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.detectChanges();
+
+      expect(input.getAttribute('aria-activedescendant'))
+          .toEqual(fixture.componentInstance.options.first.id,
+              'Expected aria-activedescendant to match the active item after 1 down arrow.');
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.detectChanges();
+
+      expect(input.getAttribute('aria-activedescendant'))
+          .toEqual(fixture.componentInstance.options.toArray()[1].id,
+              'Expected aria-activedescendant to match the active item after 2 down arrows.');
+    });
+
+    it('should set aria-expanded based on whether the panel is open', async(() => {
+      expect(input.getAttribute('aria-expanded'))
+          .toBe('false', 'Expected aria-expanded to be false while panel is closed.');
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(input.getAttribute('aria-expanded'))
+          .toBe('true', 'Expected aria-expanded to be true while panel is open.');
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(input.getAttribute('aria-expanded'))
+            .toBe('false', 'Expected aria-expanded to be false when panel closes again.');
+      });
+    }));
+
+    it('should set aria-owns based on the attached autocomplete', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel = fixture.debugElement.query(By.css('.md-autocomplete-panel')).nativeElement;
+
+      expect(input.getAttribute('aria-owns'))
+          .toEqual(panel.getAttribute('id'), 'Expected aria-owns to match attached autocomplete.');
+    });
+
+  });
+
 });
 
 @Component({
