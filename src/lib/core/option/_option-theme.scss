@@ -16,6 +16,11 @@
       color: md-color($primary);
     }
 
+    &.md-active {
+      background: md-color($background, hover);
+      color: md-color($foreground, text);
+    }
+
     &.md-option-disabled {
       color: md-color($foreground, hint-text);
     }

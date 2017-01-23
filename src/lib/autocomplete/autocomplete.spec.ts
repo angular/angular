@@ -1,5 +1,5 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
-import {Component, OnDestroy, ViewChild} from '@angular/core';
+import {Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
@@ -7,6 +7,8 @@ import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
+import {ENTER, DOWN_ARROW, SPACE} from '../core/keyboard/keycodes';
+import {MdOption} from '../core/option/option';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -205,7 +207,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       expect(input.value)
-          .toContain('California', `Expected text field to be filled with selected value.`);
+          .toContain('California', `Expected text field to fill with selected value.`);
     });
 
     it('should mark the autocomplete control as dirty when an option is selected', () => {
@@ -236,6 +238,159 @@ describe('MdAutocomplete', () => {
 
   });
 
+  describe('keyboard events', () => {
+    let fixture: ComponentFixture<SimpleAutocomplete>;
+    let input: HTMLInputElement;
+    let DOWN_ARROW_EVENT: KeyboardEvent;
+    let ENTER_EVENT: KeyboardEvent;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
+      DOWN_ARROW_EVENT = new FakeKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
+      ENTER_EVENT = new FakeKeyboardEvent(ENTER) as KeyboardEvent;
+    });
+
+    it('should should not focus the option when DOWN key is pressed', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      spyOn(fixture.componentInstance.options.first, 'focus');
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      expect(fixture.componentInstance.options.first.focus).not.toHaveBeenCalled();
+    });
+
+    it('should set the active item to the first option when DOWN key is pressed', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const optionEls =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(fixture.componentInstance.trigger.activeOption)
+            .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
+        expect(optionEls[0].classList).toContain('md-active');
+        expect(optionEls[1].classList).not.toContain('md-active');
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(fixture.componentInstance.trigger.activeOption)
+              .toBe(fixture.componentInstance.options.toArray()[1],
+                  'Expected second option to be active.');
+          expect(optionEls[0].classList).not.toContain('md-active');
+          expect(optionEls[1].classList).toContain('md-active');
+        });
+      });
+    }));
+
+    it('should set the active item properly after filtering', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        input.value = 'o';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        const optionEls =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(fixture.componentInstance.trigger.activeOption)
+              .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
+          expect(optionEls[0].classList).toContain('md-active');
+          expect(optionEls[1].classList).not.toContain('md-active');
+        });
+      });
+    }));
+
+    it('should fill the text field when an option is selected with ENTER', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+      fixture.detectChanges();
+
+      expect(input.value)
+          .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
+    });
+
+    it('should fill the text field, not select an option, when SPACE is entered', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      input.value = 'New';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      const SPACE_EVENT = new FakeKeyboardEvent(SPACE) as KeyboardEvent;
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.componentInstance.trigger._handleKeydown(SPACE_EVENT);
+      fixture.detectChanges();
+
+      expect(input.value)
+          .not.toContain('New York', `Expected option not to be selected on SPACE.`);
+    });
+
+    it('should mark the control as dirty when an option is selected from the keyboard', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(false, `Expected control to start out pristine.`);
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(true, `Expected control to become dirty when option was selected by ENTER.`);
+    });
+
+    it('should open the panel again when typing after making a selection', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected panel state to read closed after ENTER key.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected panel to close after ENTER key.`);
+
+        // 65 is the keycode for "a"
+        const A_KEY = new FakeKeyboardEvent(65) as KeyboardEvent;
+        fixture.componentInstance.trigger._handleKeydown(A_KEY);
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(true, `Expected panel state to read open when typing in input.`);
+        expect(overlayContainerElement.textContent)
+            .toContain('Alabama', `Expected panel to display when typing in input.`);
+      });
+    }));
+
+  });
+
 });
 
 @Component({
@@ -257,6 +412,7 @@ class SimpleAutocomplete implements OnDestroy {
   valueSub: Subscription;
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
 
   states = [
     {code: 'AL', name: 'Alabama'},
@@ -300,5 +456,12 @@ function dispatchEvent(eventName: string, element: HTMLElement): void {
   event.initEvent(eventName, true, true);
   element.dispatchEvent(event);
 }
+
+/** This is a mock keyboard event to test keyboard events in the autocomplete. */
+class FakeKeyboardEvent {
+  constructor(public keyCode: number) {}
+  preventDefault() {}
+}
+
 
 

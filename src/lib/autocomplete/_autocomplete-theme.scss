@@ -9,7 +9,7 @@
     color: md-color($foreground, text);
 
     md-option {
-      &.md-selected {
+      &.md-selected:not(.md-active) {
         background: md-color($background, card);
         color: md-color($foreground, text);
       }

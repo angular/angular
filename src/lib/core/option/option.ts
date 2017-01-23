@@ -36,6 +36,7 @@ export class MdOptionSelectEvent {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
     '[class.md-selected]': 'selected',
+    '[class.md-active]': 'active',
     '[id]': 'id',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -48,6 +49,7 @@ export class MdOptionSelectEvent {
 })
 export class MdOption {
   private _selected: boolean = false;
+  private _active: boolean = false;
 
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
@@ -76,6 +78,16 @@ export class MdOption {
   }
 
   /**
+   * Whether or not the option is currently active and ready to be selected.
+   * An active option displays styles as if it is focused, but the
+   * focus is actually retained somewhere else. This comes in handy
+   * for components like autocomplete where focus must remain on the input.
+   */
+  get active(): boolean {
+    return this._active;
+  }
+
+  /**
    * The displayed value of the option. It is necessary to show the selected option in the
    * select's trigger.
    */
@@ -98,6 +110,24 @@ export class MdOption {
   /** Sets focus onto this option. */
   focus(): void {
     this._renderer.invokeElementMethod(this._getHostElement(), 'focus');
+  }
+
+  /**
+   * This method sets display styles on the option to make it appear
+   * active. This is used by the ActiveDescendantKeyManager so key
+   * events will display the proper options as active on arrow key events.
+   */
+  setActiveStyles() {
+    Promise.resolve(null).then(() => this._active = true);
+  }
+
+  /**
+   * This method removes display styles on the option that made it appear
+   * active. This is used by the ActiveDescendantKeyManager so key
+   * events will display the proper options as active on arrow key events.
+   */
+  setInactiveStyles() {
+    Promise.resolve(null).then(() => this._active = false);
   }
 
   /** Ensures the option is selected when activated from the keyboard. */

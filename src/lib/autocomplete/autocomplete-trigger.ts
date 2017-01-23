@@ -1,12 +1,14 @@
 import {
-  Directive, ElementRef, Input, ViewContainerRef, Optional, OnDestroy
+    AfterContentInit, Directive, ElementRef, Input, ViewContainerRef, Optional, OnDestroy
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {Observable} from 'rxjs/Observable';
-import {MdOptionSelectEvent} from '../core/option/option';
+import {MdOptionSelectEvent, MdOption} from '../core/option/option';
+import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
+import {ENTER} from '../core/keyboard/keycodes';
 import 'rxjs/add/observable/merge';
 import {Dir} from '../core/rtl/dir';
 import 'rxjs/add/operator/startWith';
@@ -19,13 +21,18 @@ export const MD_AUTOCOMPLETE_PANEL_OFFSET = 6;
 @Directive({
   selector: 'input[mdAutocomplete], input[matAutocomplete]',
   host: {
-    '(focus)': 'openPanel()'
+    '(focus)': 'openPanel()',
+    '(keydown)': '_handleKeydown($event)',
+    'autocomplete': 'off'
   }
 })
-export class MdAutocompleteTrigger implements OnDestroy {
+export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   private _overlayRef: OverlayRef;
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
+
+  /** Manages active item in option list based on key events. */
+  private _keyManager: ActiveDescendantKeyManager;
 
   /* The autocomplete panel to be attached to this trigger. */
   @Input('mdAutocomplete') autocomplete: MdAutocomplete;
@@ -33,6 +40,10 @@ export class MdAutocompleteTrigger implements OnDestroy {
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
               @Optional() private _controlDir: NgControl, @Optional() private _dir: Dir) {}
+
+  ngAfterContentInit() {
+    this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options);
+  }
 
   ngOnDestroy() { this._destroyPanel(); }
 
@@ -69,8 +80,11 @@ export class MdAutocompleteTrigger implements OnDestroy {
    * when an option is selected and when the backdrop is clicked.
    */
   get panelClosingActions(): Observable<any> {
-    // TODO(kara): add tab event observable with keyboard event PR
-    return Observable.merge(...this.optionSelections, this._overlayRef.backdropClick());
+    return Observable.merge(
+        ...this.optionSelections,
+        this._overlayRef.backdropClick(),
+        this._keyManager.tabOut
+    );
   }
 
   /** Stream of autocomplete option selections. */
@@ -78,6 +92,19 @@ export class MdAutocompleteTrigger implements OnDestroy {
     return this.autocomplete.options.map(option => option.onSelect);
   }
 
+  /** The currently active option, coerced to MdOption type. */
+  get activeOption(): MdOption {
+    return this._keyManager.activeItem as MdOption;
+  }
+
+  _handleKeydown(event: KeyboardEvent): void {
+    if (this.activeOption && event.keyCode === ENTER) {
+      this.activeOption._selectViaInteraction();
+    } else {
+      this.openPanel();
+      this._keyManager.onKeydown(event);
+    }
+  }
 
   /**
    * This method listens to a stream of panel closing actions and resets the
@@ -90,7 +117,10 @@ export class MdAutocompleteTrigger implements OnDestroy {
         .startWith(null)
         // create a new stream of panelClosingActions, replacing any previous streams
         // that were created, and flatten it so our stream only emits closing events...
-        .switchMap(() => this.panelClosingActions)
+        .switchMap(() => {
+          this._resetActiveItem();
+          return this.panelClosingActions;
+        })
         // when the first closing event occurs...
         .first()
         // set the value, close the panel, and complete.
@@ -147,6 +177,11 @@ export class MdAutocompleteTrigger implements OnDestroy {
   /** Returns the width of the input element, so the panel width can match it. */
   private _getHostWidth(): number {
     return this._element.nativeElement.getBoundingClientRect().width;
+  }
+
+  /** Reset active item to -1 so DOWN_ARROW event will activate the first option.*/
+  private _resetActiveItem(): void {
+    this._keyManager.setActiveItem(-1);
   }
 
 }
