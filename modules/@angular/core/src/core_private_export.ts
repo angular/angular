@@ -41,7 +41,7 @@ import * as reflector_reader from './reflection/reflector_reader';
 import * as reflection_types from './reflection/types';
 import * as api from './render/api';
 import * as decorators from './util/decorators';
-import {isPromise} from './util/lang';
+import {isObservable, isPromise} from './util/lang';
 
 export const __core_private__: {
   isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
@@ -107,6 +107,7 @@ export const __core_private__: {
   _ComponentStillLoadingError?: ComponentStillLoadingError,
   ComponentStillLoadingError: typeof ComponentStillLoadingError,
   isPromise: typeof isPromise,
+  isObservable: typeof isObservable,
   AnimationTransition: typeof AnimationTransition
   view_utils: typeof view_utils,
 } = {
@@ -157,5 +158,6 @@ export const __core_private__: {
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
   ComponentStillLoadingError: ComponentStillLoadingError,
   isPromise: isPromise,
+  isObservable: isObservable,
   AnimationTransition: AnimationTransition
 };
