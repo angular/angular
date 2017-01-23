@@ -16,6 +16,7 @@ import * as l from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 
+import {isObservable, isPromise} from '../private_import_core';
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
@@ -129,11 +130,11 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
 
 export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
     Observable<T> {
-  if (value instanceof Observable) {
+  if (isObservable(value)) {
     return value;
   }
 
-  if (value instanceof Promise) {
+  if (isPromise(value)) {
     return fromPromise(value);
   }
 
