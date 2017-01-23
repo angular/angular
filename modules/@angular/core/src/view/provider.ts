@@ -241,7 +241,8 @@ function checkAndUpdateProp(
     provider[propName] = value;
 
     if (view.def.flags & ViewFlags.LogBindingUpdate) {
-      setBindingDebugInfo(view.renderer, view.nodes[def.parent].renderNode, name, value);
+      setBindingDebugInfo(
+          view.renderer, view.nodes[def.parent].renderNode, binding.nonMinifiedName, value);
     }
     if (change) {
       changes = changes || {};
