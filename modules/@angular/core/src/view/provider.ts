@@ -102,16 +102,16 @@ export function createProvider(view: ViewData, def: NodeDef, componentView: View
     }
   }
   return {
-    renderNode: undefined,
-    provider,
-    embeddedViews: undefined, componentView,
+    elementOrText: undefined,
+    provider: {instance: provider, componentView: componentView},
+    pureExpression: undefined,
   };
 }
 
 export function checkAndUpdateProviderInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
     v7: any, v8: any, v9: any) {
-  const provider = view.nodes[def.index].provider;
+  const provider = view.nodes[def.index].provider.instance;
   let changes: SimpleChanges;
   // Note: fallthrough is intended!
   switch (def.bindings.length) {
@@ -148,7 +148,7 @@ export function checkAndUpdateProviderInline(
 }
 
 export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, values: any[]) {
-  const provider = view.nodes[def.index].provider;
+  const provider = view.nodes[def.index].provider.instance;
   let changes: SimpleChanges;
   for (let i = 0; i < values.length; i++) {
     changes = checkAndUpdateProp(view, provider, def, i, values[i], changes);
@@ -217,7 +217,7 @@ export function resolveDep(
           return Injector.NULL.get(depDef.token, notFoundValue);
         }
       case ElementRefTokenKey:
-        return new ElementRef(view.nodes[elIndex].renderNode);
+        return new ElementRef(view.nodes[elIndex].elementOrText.node);
       case ViewContainerRefTokenKey:
         return view.services.createViewContainerRef(view.nodes[elIndex]);
       case TemplateRefTokenKey:
@@ -225,7 +225,7 @@ export function resolveDep(
       default:
         const providerIndex = elDef.providerIndices[tokenKey];
         if (providerIndex != null) {
-          return view.nodes[providerIndex].provider;
+          return view.nodes[providerIndex].provider.instance;
         }
     }
     elIndex = view.parentIndex;
@@ -255,7 +255,7 @@ function checkAndUpdateProp(
 
     if (view.def.flags & ViewFlags.LogBindingUpdate) {
       setBindingDebugInfo(
-          view.renderer, view.nodes[def.parent].renderNode, binding.nonMinifiedName, value);
+          view.renderer, view.nodes[def.parent].elementOrText.node, binding.nonMinifiedName, value);
     }
     if (change) {
       changes = changes || {};
@@ -276,7 +276,7 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
     const nodeIndex = nodeDef.index;
     if (nodeDef.flags & lifecycles) {
       // a leaf
-      callProviderLifecycles(view.nodes[nodeIndex].provider, nodeDef.flags & lifecycles);
+      callProviderLifecycles(view.nodes[nodeIndex].provider.instance, nodeDef.flags & lifecycles);
     } else if ((nodeDef.childFlags & lifecycles) === 0) {
       // a parent with leafs
       // no child matches one of the lifecycles,

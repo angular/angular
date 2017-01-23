@@ -97,7 +97,7 @@ export function elementDef(
 }
 
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): NodeData {
-  const parentNode = def.parent != null ? view.nodes[def.parent].renderNode : renderHost;
+  const parentNode = def.parent != null ? view.nodes[def.parent].elementOrText.node : renderHost;
   const elDef = def.element;
   let el: any;
   if (view.renderer) {
@@ -150,10 +150,10 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
     }
   }
   return {
-    renderNode: el,
+    elementOrText:
+        {node: el, embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined},
     provider: undefined,
-    embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined,
-    componentView: undefined
+    pureExpression: undefined,
   };
 }
 
@@ -213,7 +213,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 
   const binding = def.bindings[bindingIdx];
   const name = binding.name;
-  const renderNode = view.nodes[def.index].renderNode;
+  const renderNode = view.nodes[def.index].elementOrText.node;
   switch (binding.type) {
     case BindingType.ElementAttribute:
       setElementAttribute(view, binding, renderNode, name, value);
