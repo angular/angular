@@ -206,10 +206,19 @@ export type DisposableFn = () => void;
  * Attention: Adding fields to this is performance sensitive!
  */
 export interface NodeData {
-  renderNode: any;
-  provider: PureExpressionData|any;
-  componentView: ViewData;
+  elementOrText: ElementOrTextData;
+  provider: ProviderData;
+  pureExpression: PureExpressionData;
+}
+
+export interface ElementOrTextData {
+  node: any;
   embeddedViews: ViewData[];
+}
+
+export interface ProviderData {
+  instance: any;
+  componentView: ViewData;
 }
 
 export interface PureExpressionData {

@@ -13,7 +13,7 @@ import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement
 import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProvider} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderDef, PureExpressionData, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn} from './types';
+import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderData, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn} from './types';
 import {checkBindingNoChanges} from './util';
 
 const NOOP = (): any => undefined;
@@ -274,8 +274,7 @@ const CheckNoChanges: NodeUpdater = {
         checkBindingNoChanges(view, nodeDef, 0, v0);
     }
     if (nodeDef.type === NodeType.PureExpression) {
-      const data: PureExpressionData = view.nodes[index].provider;
-      return data.value;
+      return view.nodes[index].pureExpression.value;
     }
     return undefined;
   },
@@ -285,8 +284,7 @@ const CheckNoChanges: NodeUpdater = {
       checkBindingNoChanges(view, nodeDef, i, values[i]);
     }
     if (nodeDef.type === NodeType.PureExpression) {
-      const data: PureExpressionData = view.nodes[index].provider;
-      return data.value;
+      return view.nodes[index].pureExpression.value;
     }
     return undefined;
   }
@@ -321,8 +319,7 @@ const CheckAndUpdate: NodeUpdater = {
         return undefined;
       case NodeType.PureExpression:
         checkAndUpdatePureExpressionInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-        const data: PureExpressionData = view.nodes[index].provider;
-        return data.value;
+        return view.nodes[index].pureExpression.value;
     }
   },
   checkDynamic: (view: ViewData, index: number, values: any[]): void => {
@@ -339,8 +336,7 @@ const CheckAndUpdate: NodeUpdater = {
         return undefined;
       case NodeType.PureExpression:
         checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
-        const data: PureExpressionData = view.nodes[index].provider;
-        return data.value;
+        return view.nodes[index].pureExpression.value;
     }
   }
 };
@@ -374,13 +370,15 @@ function execComponentViewsAction(view: ViewData, action: ViewAction) {
       // a leaf
       const nodeData = view.nodes[i];
       if (action === ViewAction.InitComponent) {
-        let renderHost = view.nodes[nodeDef.parent].renderNode;
+        let renderHost = view.nodes[nodeDef.parent].elementOrText.node;
         if (view.renderer) {
           renderHost = view.renderer.createViewRoot(renderHost);
         }
-        initView(nodeData.componentView, renderHost, nodeData.provider, nodeData.provider);
+        initView(
+            nodeData.provider.componentView, renderHost, nodeData.provider.instance,
+            nodeData.provider.instance);
       } else {
-        callViewAction(nodeData.componentView, action);
+        callViewAction(nodeData.provider.componentView, action);
       }
     } else if ((nodeDef.childFlags & NodeFlags.HasComponent) === 0) {
       // a parent with leafs
@@ -401,7 +399,7 @@ function execEmbeddedViewsAction(view: ViewData, action: ViewAction) {
     if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
       // a leaf
       const nodeData = view.nodes[i];
-      const embeddedViews = nodeData.embeddedViews;
+      const embeddedViews = nodeData.elementOrText.embeddedViews;
       if (embeddedViews) {
         for (let k = 0; k < embeddedViews.length; k++) {
           callViewAction(embeddedViews[k], action);

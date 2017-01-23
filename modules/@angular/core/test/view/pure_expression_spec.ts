@@ -53,7 +53,7 @@ export function main() {
                   updater, inlineDynamic, view, 2,
                   [callUpdater(updater, inlineDynamic, view, 1, values)]);
             }));
-        const service = view.nodes[2].provider;
+        const service = view.nodes[2].provider.instance;
 
         values = [1, 2];
         checkAndUpdateView(view);
@@ -87,7 +87,7 @@ export function main() {
                   updater, inlineDynamic, view, 2,
                   [callUpdater(updater, inlineDynamic, view, 1, values)]);
             }));
-        const service = view.nodes[2].provider;
+        const service = view.nodes[2].provider.instance;
 
         values = [1, 2];
         checkAndUpdateView(view);
@@ -126,7 +126,7 @@ export function main() {
                   updater, inlineDynamic, view, 3,
                   [callUpdater(updater, inlineDynamic, view, 2, values)]);
             }));
-        const service = view.nodes[3].provider;
+        const service = view.nodes[3].provider.instance;
 
         values = [1, 2];
         checkAndUpdateView(view);

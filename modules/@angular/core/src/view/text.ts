@@ -44,7 +44,7 @@ export function textDef(constants: string[]): NodeDef {
 }
 
 export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeData {
-  const parentNode = def.parent != null ? view.nodes[def.parent].renderNode : renderHost;
+  const parentNode = def.parent != null ? view.nodes[def.parent].elementOrText.node : renderHost;
   let renderNode: any;
   if (view.renderer) {
     renderNode = view.renderer.createText(parentNode, def.text.prefix);
@@ -54,7 +54,11 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeD
       parentNode.appendChild(renderNode);
     }
   }
-  return {renderNode, provider: undefined, embeddedViews: undefined, componentView: undefined};
+  return {
+    elementOrText: {node: renderNode, embeddedViews: undefined},
+    provider: undefined,
+    pureExpression: undefined
+  };
 }
 
 export function checkAndUpdateTextInline(
@@ -112,7 +116,7 @@ export function checkAndUpdateTextInline(
         value = _addInterpolationPart(v0, bindings[0]) + value;
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].renderNode;
+    const renderNode = view.nodes[def.index].elementOrText.node;
     if (view.renderer) {
       view.renderer.setText(renderNode, value);
     } else {
@@ -137,7 +141,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
       value = value + _addInterpolationPart(values[i], bindings[i]);
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].renderNode;
+    const renderNode = view.nodes[def.index].elementOrText.node;
     if (view.renderer) {
       view.renderer.setText(renderNode, value);
     } else {

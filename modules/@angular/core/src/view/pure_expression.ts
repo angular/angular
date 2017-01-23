@@ -7,7 +7,7 @@
  */
 
 import {resolveDep, tokenKey} from './provider';
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, PureExpressionData, PureExpressionType, ViewData} from './types';
+import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionType, ViewData} from './types';
 import {checkAndUpdateBinding} from './util';
 
 export function purePipeDef(pipeToken: any, argCount: number): NodeDef {
@@ -62,13 +62,7 @@ export function createPureExpression(view: ViewData, def: NodeDef): NodeData {
   const pipe = def.pureExpression.pipeDep ?
       resolveDep(view, def.parent, def.pureExpression.pipeDep) :
       undefined;
-  const data: PureExpressionData = {value: undefined, pipe: pipe};
-  return {
-    renderNode: undefined,
-    provider: data,
-    embeddedViews: undefined,
-    componentView: undefined
-  };
+  return {elementOrText: undefined, provider: undefined, pureExpression: {value: undefined, pipe}};
 }
 
 export function checkAndUpdatePureExpressionInline(
@@ -101,7 +95,7 @@ export function checkAndUpdatePureExpressionInline(
   }
 
   if (changed) {
-    const data: PureExpressionData = view.nodes[def.index].provider;
+    const data = view.nodes[def.index].pureExpression;
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -206,7 +200,7 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
     }
   }
   if (changed) {
-    const data: PureExpressionData = view.nodes[def.index].provider;
+    const data = view.nodes[def.index].pureExpression;
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:

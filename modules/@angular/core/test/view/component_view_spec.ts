@@ -58,7 +58,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                                                            ])),
       ]));
 
-      const compView = view.nodes[1].componentView;
+      const compView = view.nodes[1].provider.componentView;
 
       expect(compView.context).toBe(instance);
       expect(compView.component).toBe(instance);
@@ -85,7 +85,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
             ], update
           )),
         ], jasmine.createSpy('parentUpdater')));
-      const compView = view.nodes[1].componentView;
+      const compView = view.nodes[1].provider.componentView;
 
       checkAndUpdateView(view);
 

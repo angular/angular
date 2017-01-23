@@ -84,8 +84,8 @@ export class AppModule {
   }
   bootstrap() {
     this.rootView = createRootView(new DefaultServices(null, this.sanitizer), TreeComponent_Host);
-    this.rootComp = this.rootView.nodes[1].provider;
-    this.rootEl = this.rootView.nodes[0].renderNode;
+    this.rootComp = this.rootView.nodes[1].provider.instance;
+    this.rootEl = this.rootView.nodes[0].elementOrText.node;
   }
   tick() { checkAndUpdateView(this.rootView); }
 }
