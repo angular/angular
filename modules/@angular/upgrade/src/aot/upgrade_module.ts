@@ -150,10 +150,12 @@ export class UpgradeModule {
    */
   bootstrap(
       element: Element, modules: string[] = [], config?: any /*angular.IAngularBootstrapConfig*/) {
+    const INIT_MODULE_NAME = UPGRADE_MODULE_NAME + '.init';
+
     // Create an ng1 module to bootstrap
-    const upgradeModule =
+    const initModule =
         angular
-            .module(UPGRADE_MODULE_NAME, modules)
+            .module(INIT_MODULE_NAME, [])
 
             .value(INJECTOR_KEY, this.injector)
 
@@ -204,6 +206,8 @@ export class UpgradeModule {
                     () => this.ngZone.runOutsideAngular(() => $rootScope.$evalAsync()));
               }
             ]);
+
+    const upgradeModule = angular.module(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
     const windowAngular = (window as any /** TODO #???? */)['angular'];
