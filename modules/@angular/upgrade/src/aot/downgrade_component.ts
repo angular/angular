@@ -10,7 +10,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angul
 
 import * as angular from '../angular_js';
 
-import {$INJECTOR, $PARSE, INJECTOR_KEY} from './constants';
+import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG1_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 
 let downgradeCount = 0;
@@ -77,14 +77,16 @@ export function downgradeComponent(info: /* ComponentInfo */ {
 
     return {
       restrict: 'E',
-      require: '?^' + INJECTOR_KEY,
+      require: ['?^' + INJECTOR_KEY, REQUIRE_NG1_MODEL],
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-             parentInjector: Injector, transclude: angular.ITranscludeFunction) => {
+             required: any[], transclude: angular.ITranscludeFunction) => {
 
+        let parentInjector: Injector = required[0];
         if (parentInjector === null) {
           parentInjector = $injector.get(INJECTOR_KEY);
         }
 
+        const ngModel: angular.INgModelController = required[1];
         const componentFactoryResolver: ComponentFactoryResolver =
             parentInjector.get(ComponentFactoryResolver);
         const componentFactory: ComponentFactory<any> =
@@ -95,7 +97,7 @@ export function downgradeComponent(info: /* ComponentInfo */ {
         }
 
         const facade = new DowngradeComponentAdapter(
-            idPrefix + (idCount++), info, element, attrs, scope, parentInjector, $parse,
+            idPrefix + (idCount++), info, element, attrs, scope, ngModel, parentInjector, $parse,
             componentFactory);
         facade.setupInputs();
         facade.createComponent();
