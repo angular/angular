@@ -11,6 +11,7 @@ import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injecto
 import * as angular from './angular_js';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
+import {hookupNgModel} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -27,8 +28,8 @@ export class DowngradeNg2ComponentAdapter {
   constructor(
       private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
-      private parentInjector: Injector, private parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>) {
+      private ngModel: angular.INgModelController, private parentInjector: Injector,
+      private parse: angular.IParseService, private componentFactory: ComponentFactory<any>) {
     this.componentScope = scope.$new();
   }
 
@@ -40,6 +41,8 @@ export class DowngradeNg2ComponentAdapter {
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
+
+    hookupNgModel(this.ngModel, this.component);
   }
 
   setupInputs(): void {

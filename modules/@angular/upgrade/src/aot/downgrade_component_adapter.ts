@@ -9,6 +9,7 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from '../angular_js';
+import {hookupNgModel} from '../util';
 
 import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
@@ -31,8 +32,8 @@ export class DowngradeComponentAdapter {
   constructor(
       private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
-      private parentInjector: Injector, private parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>) {
+      private ngModel: angular.INgModelController, private parentInjector: Injector,
+      private parse: angular.IParseService, private componentFactory: ComponentFactory<any>) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();
@@ -47,6 +48,8 @@ export class DowngradeComponentAdapter {
         childInjector, [[this.contentInsertionPoint]], this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
+
+    hookupNgModel(this.ngModel, this.component);
   }
 
   setupInputs(): void {
