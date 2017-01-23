@@ -434,6 +434,7 @@ export function main() {
               html.visitAll(this, icuMsg.cases);
             }
             visitIcuCase(icuCase: html.IcuCase, context: any): any {}
+            visitIcuRef(icuRef: html.IcuRef, context: any): any {}
           };
 
           html.visitAll(visitor, result.rootNodes);
@@ -454,6 +455,7 @@ export function main() {
             visitComment(comment: html.Comment, context: any): any { throw Error('Unexpected'); }
             visitIcuMessage(icuMsg: html.IcuMsg, context: any): any { throw Error('Unexpected'); }
             visitIcuCase(icuCase: html.IcuCase, context: any): any { throw Error('Unexpected'); }
+            visitIcuRef(icuRef: html.IcuRef, context: any): any { throw Error('Unexpected'); }
           };
           const result = parser.parse('<div id="foo"></div><div id="bar"></div>', 'TestComp');
           const traversal = html.visitAll(visitor, result.rootNodes);

@@ -215,6 +215,8 @@ class TemplateParseVisitor implements html.Visitor {
 
   visitIcuCase(icuCase: html.IcuCase, context: any): any { return null; }
 
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw `References are not supported`; }
+
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan);
@@ -772,6 +774,8 @@ class NonBindableVisitor implements html.Visitor {
   visitIcuMessage(icuMsg: html.IcuMsg, context: any): any { return icuMsg; }
 
   visitIcuCase(icuCase: html.IcuCase, context: any): any { return icuCase; }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw `References are not supported`; }
 }
 
 class ElementOrDirectiveRef {

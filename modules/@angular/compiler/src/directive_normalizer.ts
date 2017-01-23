@@ -241,6 +241,8 @@ class TemplatePreparseVisitor implements html.Visitor {
 
   visitIcuCase(ast: html.IcuCase, context: any): any { html.visitAll(this, ast.expression); }
 
+
+  visitIcuRef(ref: html.IcuRef, context: any): any { return null; }
   visitComment(ast: html.Comment, context: any): any { return null; }
   visitAttribute(ast: html.Attribute, context: any): any { return null; }
   visitText(ast: html.Text, context: any): any { return null; }

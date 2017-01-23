@@ -33,6 +33,12 @@ export class IcuCase implements Node {
   visit(visitor: Visitor, context: any): any { return visitor.visitIcuCase(this, context); }
 }
 
+export class IcuRef implements Node {
+  constructor(public name: string, public sourceSpan: ParseSourceSpan) {}
+
+  visit(visitor: Visitor, context: any): any { return visitor.visitIcuRef(this, context); }
+}
+
 export class Attribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
@@ -64,6 +70,7 @@ export interface Visitor {
   visitComment(comment: Comment, context: any): any;
   visitIcuMessage(icuMsg: IcuMsg, context: any): any;
   visitIcuCase(icuCase: IcuCase, context: any): any;
+  visitIcuRef(icuRef: IcuRef, context: any): any;
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {

@@ -75,6 +75,11 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
+  visitIcuRef(icuRef: html.IcuRef, context: any): any {
+    const res = this._appendContext(icuRef, [html.IcuRef, icuRef.name, this.elDepth]);
+    this.result.push(res);
+  }
+
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());

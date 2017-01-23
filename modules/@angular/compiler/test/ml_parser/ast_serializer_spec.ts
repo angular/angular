@@ -85,6 +85,8 @@ class _SerializerVisitor implements html.Visitor {
     return ` ${icuCase.value} {${this._visitAll(icuCase.expression)}}`;
   }
 
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { return `{ ${icuRef.name} }`; }
+
   private _visitAll(nodes: html.Node[], join: string = ''): string {
     if (nodes.length == 0) {
       return '';

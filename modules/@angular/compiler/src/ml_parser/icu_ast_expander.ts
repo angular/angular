@@ -79,6 +79,8 @@ class _Expander implements html.Visitor {
   visitIcuCase(icuCase: html.IcuCase, context: any): any {
     throw new Error('Should not be reached');
   }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw new Error('Should not be reached'); }
 }
 
 function _expandPluralForm(ast: html.IcuMsg, errors: ParseError[]): html.Element {

@@ -106,6 +106,8 @@ class XtbParser implements ml.Visitor {
 
   visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
 
+  visitIcuRef(icuRef: ml.IcuRef, context: any): any {}
+
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
   }
@@ -140,6 +142,10 @@ class XmlToI18n implements ml.Visitor {
       value: icuCase.value,
       nodes: ml.visitAll(this, icuCase.expression),
     };
+  }
+
+  visitIcuRef(icuRef: ml.IcuRef, context: any): any {
+    return new i18n.IcuRef(icuRef.name, icuRef.sourceSpan);
   }
 
   visitElement(el: ml.Element, context: any): i18n.Placeholder {

@@ -32,6 +32,7 @@ export enum TokenType {
   ICU_CASE_EXP_START,
   ICU_CASE_EXP_END,
   ICU_MSG_END,
+  ICU_REF,
   EOF
 }
 
@@ -155,7 +156,7 @@ class _Tokenizer {
    */
   private _tokenizeIcuMessage(): boolean {
     if (isIcuMsgStart(this._input, this._index, this._interpolationConfig)) {
-      this._consumeStartOfIcuMsg();
+      this._consumeStartOfIcuMsgOrRef();
       return true;
     }
 
@@ -258,7 +259,7 @@ class _Tokenizer {
     if (this._index + len > this._length) {
       return false;
     }
-    const initialPosition = this._savePosition();
+    const initialPosition = this._getPosition();
     for (let i = 0; i < len; i++) {
       if (!this._attemptCharCode(chars.charCodeAt(i))) {
         // If attempting to parse the string fails, we want to reset the parser
@@ -337,7 +338,7 @@ class _Tokenizer {
         throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
       }
     } else {
-      const startPosition = this._savePosition();
+      const startPosition = this._getPosition();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
       if (this._peek != chars.$SEMICOLON) {
         this._restorePosition(startPosition);
@@ -420,7 +421,7 @@ class _Tokenizer {
   }
 
   private _consumeTagOpen(start: ParseLocation) {
-    const savedPos = this._savePosition();
+    const savedPos = this._getPosition();
     let tagName: string;
     let lowercaseTagName: string;
     try {
@@ -525,17 +526,45 @@ class _Tokenizer {
     this._endToken(prefixAndName);
   }
 
-  private _consumeStartOfIcuMsg() {
+  private _attemptIcuRef(): boolean {
+    const pos = this._getPosition();
+    const start = this._getLocation();
+    this._requireCharCode(chars.$LBRACE);
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+    const refStart = this._index;
+    this._attemptCharCodeUntilFn(isIcuRefEnd);
+    const ref = this._input.substring(refStart, this._index);
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+    const found = this._attemptCharCode(chars.$RBRACE);
+
+    if (found && ref.length) {
+      this._beginToken(TokenType.ICU_REF, start);
+      this._endToken([ref]);
+      return true;
+    }
+
+    this._restorePosition(pos);
+    return false;
+  }
+
+  private _consumeStartOfIcuMsgOrRef() {
+    if (this._isInIcuCase() && this._attemptIcuRef()) {
+      // Parameter references are allowed in ICU cases
+      // `few {there are {COUNT} things}`
+      return;
+    }
+
     this._beginToken(TokenType.ICU_MSG_START, this._getLocation());
     this._requireCharCode(chars.$LBRACE);
     this._endToken([]);
-
     this._icuTokenStack.push(TokenType.ICU_MSG_START);
 
     this._beginToken(TokenType.RAW_TEXT, this._getLocation());
     const condition = this._readUntil(chars.$COMMA);
     this._endToken([condition], this._getLocation());
     this._requireCharCode(chars.$COMMA);
+
+
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
     this._beginToken(TokenType.RAW_TEXT, this._getLocation());
@@ -618,7 +647,7 @@ class _Tokenizer {
     return false;
   }
 
-  private _savePosition(): [number, number, number, number, number] {
+  private _getPosition(): [number, number, number, number, number] {
     return [this._peek, this._index, this._column, this._line, this.tokens.length];
   }
 
@@ -661,9 +690,15 @@ function isNameEnd(code: number): boolean {
 }
 
 function isPrefixEnd(code: number): boolean {
-  return (code < chars.$a || chars.$z < code) && (code < chars.$A || chars.$Z < code) &&
-      (code < chars.$0 || code > chars.$9);
+  return !(chars.isAsciiLetter(code) || chars.isAsciiHexDigit(code));
 }
+
+function isIcuRefEnd(code: number): boolean {
+  return !(
+      chars.isAsciiLetter(code) || chars.isAsciiHexDigit(code) || code === chars.$_ ||
+      code === chars.$MINUS);
+}
+
 
 function isDigitEntityEnd(code: number): boolean {
   return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiHexDigit(code);

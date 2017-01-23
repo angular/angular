@@ -158,6 +158,8 @@ class _Visitor implements html.Visitor {
     return icu;
   }
 
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw 'References are not supported'; }
+
   visitComment(comment: html.Comment, context: any): any {
     const isOpening = _isOpeningComment(comment);
 

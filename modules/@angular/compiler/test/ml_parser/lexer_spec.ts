@@ -641,7 +641,8 @@ export function main() {
 
     describe('icu messages', () => {
       it('should parse an icu messages', () => {
-        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', true))
+        expect(tokenizeAndHumanizeParts(
+                   '{one.two, three, =4 {four} =5 {five} foo {bar{ref}foo} }', true))
             .toEqual([
               [lex.TokenType.ICU_MSG_START],
               [lex.TokenType.RAW_TEXT, 'one.two'],
@@ -657,6 +658,8 @@ export function main() {
               [lex.TokenType.ICU_CASE_VALUE, 'foo'],
               [lex.TokenType.ICU_CASE_EXP_START],
               [lex.TokenType.TEXT, 'bar'],
+              [lex.TokenType.ICU_REF, 'ref'],
+              [lex.TokenType.TEXT, 'foo'],
               [lex.TokenType.ICU_CASE_EXP_END],
               [lex.TokenType.ICU_MSG_END],
               [lex.TokenType.EOF],

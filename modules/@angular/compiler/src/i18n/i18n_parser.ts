@@ -124,6 +124,10 @@ class _I18nVisitor implements html.Visitor {
     throw new Error('Unreachable code');
   }
 
+  visitIcuRef(icuRef: html.IcuRef, cpontext: any): i18n.Node {
+    throw 'References are not supported';
+  }
+
   private _visitTextWithInterpolation(text: string, sourceSpan: ParseSourceSpan): i18n.Node {
     const splitInterpolation = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);

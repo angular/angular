@@ -165,6 +165,8 @@ const XTB = `
   name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
   <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
   <translation id="4035252431381981115">FOO<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>BAR<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></translation>
+  <!-- The following simulates a message created by some other framework that supports references -->
+  <translation id="123456">{count, plural, =0 {{foo} test {BAR}} other {{ REF }}}</translation>
 </translationbundle>`;
 
 const XMB = ` <msg id="615790887472569365">i18n attribute on tags</msg>

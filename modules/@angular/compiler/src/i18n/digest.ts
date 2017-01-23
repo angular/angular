@@ -51,6 +51,8 @@ class _SerializerVisitor implements i18n.Visitor {
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return `<ph icu name="${ph.name}">${ph.value.visit(this)}</ph>`;
   }
+
+  visitIcuRef(ref: i18n.IcuRef, context?: any): any { throw `References are not supported`; }
 }
 
 const serializerVisitor = new _SerializerVisitor();
