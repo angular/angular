@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {Tsc, tsc as pureTsc} from '../src/tsc';
+import {Tsc} from '../src/tsc';
 import {VinylFile} from '../src/vinyl_file';
 
 describe('options parsing', () => {
@@ -41,7 +41,7 @@ describe('options parsing', () => {
   });
 
   it('should combine all options into ngOptions from vinyl like object', () => {
-    const {parsed, ngOptions} = pureTsc.readConfiguration(config as VinylFile, 'basePath');
+    const {parsed, ngOptions} = tsc.readConfiguration(config as VinylFile, 'basePath');
 
     expect(ngOptions).toEqual({
       genDir: 'basePath',

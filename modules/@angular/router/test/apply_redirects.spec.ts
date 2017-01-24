@@ -214,7 +214,7 @@ describe('applyRedirects', () => {
               () => { throw 'Should not reach'; },
               (e) => {
                 expect(e.message).toEqual(
-                    `Cannot load children because the guard of the route "path: 'a'" returned false`);
+                    `NavigationCancelingError: Cannot load children because the guard of the route "path: 'a'" returned false`);
               });
     });
 
