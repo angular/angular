@@ -383,6 +383,24 @@ export function main() {
         const HTML = `<div>before<p i18n="m|d">foo</p><!-- comment --></div>`;
         expect(fakeTranslate(HTML)).toEqual('<div>before<p>**foo**</p></div>');
       });
+
+      it('should merge empty messages', () => {
+        const HTML = `<div i18n>some element</div>`;
+        const htmlNodes: html.Node[] = parseHtml(HTML);
+        const messages: i18n.Message[] =
+            extractMessages(htmlNodes, DEFAULT_INTERPOLATION_CONFIG, [], {}).messages;
+
+        expect(messages.length).toEqual(1);
+        const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
+        i18nMsgMap[digest(messages[0])] = [];
+        const translations = new TranslationBundle(i18nMsgMap, digest);
+
+        const output =
+            mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
+        expect(output.errors).toEqual([]);
+
+        expect(serializeHtmlNodes(output.rootNodes).join('')).toEqual(`<div></div>`);
+      });
     });
 
     describe('blocks', () => {
@@ -422,6 +440,25 @@ export function main() {
         const HTML = `<p i18n-title="m|d" title=""></p>`;
         expect(fakeTranslate(HTML)).toEqual('<p title=""></p>');
       });
+
+      it('should merge empty attributes', () => {
+        const HTML = `<div i18n-title title="some attribute">some element</div>`;
+        const htmlNodes: html.Node[] = parseHtml(HTML);
+        const messages: i18n.Message[] =
+            extractMessages(htmlNodes, DEFAULT_INTERPOLATION_CONFIG, [], {}).messages;
+
+        expect(messages.length).toEqual(1);
+        const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
+        i18nMsgMap[digest(messages[0])] = [];
+        const translations = new TranslationBundle(i18nMsgMap, digest);
+
+        const output =
+            mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
+        expect(output.errors).toEqual([]);
+
+        expect(serializeHtmlNodes(output.rootNodes).join(''))
+            .toEqual(`<div title="">some element</div>`);
+      });
     });
   });
 }
@@ -453,12 +490,11 @@ function fakeTranslate(
 
   const translations = new TranslationBundle(i18nMsgMap, digest);
 
-  const translatedNodes =
-      mergeTranslations(
-          htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
-          .rootNodes;
+  const output = mergeTranslations(
+      htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+  expect(output.errors).toEqual([]);
 
-  return serializeHtmlNodes(translatedNodes).join('');
+  return serializeHtmlNodes(output.rootNodes).join('');
 }
 
 function extract(
