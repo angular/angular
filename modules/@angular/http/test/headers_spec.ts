@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Headers} from '../src/headers';
+import {HttpHeaders} from '../src/headers';
 
 export function main() {
   describe('Headers', () => {
-
     describe('initialization', () => {
       it('should conform to spec', () => {
         const httpHeaders = {
@@ -18,13 +17,13 @@ export function main() {
           'Accept-Charset': 'utf-8',
           'X-My-Custom-Header': 'Zeke are cool',
         };
-        const secondHeaders = new Headers(httpHeaders);
-        const secondHeadersObj = new Headers(secondHeaders);
+        const secondHeaders = new HttpHeaders(httpHeaders);
+        const secondHeadersObj = new HttpHeaders(secondHeaders);
         expect(secondHeadersObj.get('Content-Type')).toEqual('image/jpeg');
       });
 
       it('should merge values in provided dictionary', () => {
-        const headers = new Headers({'foo': 'bar'});
+        const headers = new HttpHeaders({'foo': 'bar'});
         expect(headers.get('foo')).toEqual('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
       });
@@ -32,23 +31,23 @@ export function main() {
       it('should not alter the values of a provided header template', () => {
         // Spec at https://fetch.spec.whatwg.org/#concept-headers-fill
         // test for https://github.com/angular/angular/issues/6845
-        const firstHeaders = new Headers();
-        const secondHeaders = new Headers(firstHeaders);
+        const firstHeaders = new HttpHeaders();
+        const secondHeaders = new HttpHeaders(firstHeaders);
         secondHeaders.append('Content-Type', 'image/jpeg');
         expect(firstHeaders.has('Content-Type')).toEqual(false);
       });
 
       it('should preserve the list of values', () => {
-        const src = new Headers();
+        const src = new HttpHeaders();
         src.append('foo', 'a');
         src.append('foo', 'b');
         src.append('foo', 'c');
-        const dst = new Headers(src);
+        const dst = new HttpHeaders(src);
         expect(dst.getAll('foo')).toEqual(src.getAll('foo'));
       });
 
       it('should keep the last value when initialized from an object', () => {
-        const headers = new Headers({
+        const headers = new HttpHeaders({
           'foo': 'first',
           'fOo': 'second',
         });
@@ -59,7 +58,7 @@ export function main() {
 
     describe('.set()', () => {
       it('should clear all values and re-set for the provided key', () => {
-        const headers = new Headers({'foo': 'bar'});
+        const headers = new HttpHeaders({'foo': 'bar'});
         expect(headers.get('foo')).toEqual('bar');
 
         headers.set('foo', 'baz');
@@ -70,21 +69,21 @@ export function main() {
       });
 
       it('should preserve the case of the first call', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         headers.set('fOo', 'baz');
         headers.set('foo', 'bat');
         expect(JSON.stringify(headers)).toEqual('{"fOo":["bat"]}');
       });
 
       it('should preserve cases after cloning', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         headers.set('fOo', 'baz');
         headers.set('foo', 'bat');
-        expect(JSON.stringify(new Headers(headers))).toEqual('{"fOo":["bat"]}');
+        expect(JSON.stringify(new HttpHeaders(headers))).toEqual('{"fOo":["bat"]}');
       });
 
       it('should convert input array to string', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         headers.set('foo', ['bar', 'baz']);
         expect(headers.get('foo')).toEqual('bar,baz');
         expect(headers.getAll('foo')).toEqual(['bar,baz']);
@@ -93,14 +92,14 @@ export function main() {
 
     describe('.get()', () => {
       it('should be case insensitive', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         headers.set('foo', 'baz');
         expect(headers.get('foo')).toEqual('baz');
         expect(headers.get('FOO')).toEqual('baz');
       });
 
       it('should return null if the header is not present', () => {
-        const headers = new Headers({bar: []});
+        const headers = new HttpHeaders({bar: []});
         expect(headers.get('bar')).toEqual(null);
         expect(headers.get('foo')).toEqual(null);
       });
@@ -108,20 +107,20 @@ export function main() {
 
     describe('.getAll()', () => {
       it('should be case insensitive', () => {
-        const headers = new Headers({foo: ['bar', 'baz']});
+        const headers = new HttpHeaders({foo: ['bar', 'baz']});
         expect(headers.getAll('foo')).toEqual(['bar', 'baz']);
         expect(headers.getAll('FOO')).toEqual(['bar', 'baz']);
       });
 
       it('should return null if the header is not present', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         expect(headers.getAll('foo')).toEqual(null);
       });
     });
 
     describe('.delete', () => {
       it('should be case insensitive', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
 
         headers.set('foo', 'baz');
         expect(headers.has('foo')).toEqual(true);
@@ -137,7 +136,7 @@ export function main() {
 
     describe('.append', () => {
       it('should append a value to the list', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
         headers.append('foo', 'bar');
         headers.append('foo', 'baz');
         expect(headers.get('foo')).toEqual('bar');
@@ -145,7 +144,7 @@ export function main() {
       });
 
       it('should preserve the case of the first call', () => {
-        const headers = new Headers();
+        const headers = new HttpHeaders();
 
         headers.append('FOO', 'bar');
         headers.append('foo', 'baz');
@@ -154,13 +153,13 @@ export function main() {
     });
 
     describe('.toJSON()', () => {
-      let headers: Headers;
+      let headers: HttpHeaders;
       let values: string[];
       let ref: {[name: string]: string[]};
 
       beforeEach(() => {
         values = ['application/jeisen', 'application/jason', 'application/patrickjs'];
-        headers = new Headers();
+        headers = new HttpHeaders();
         headers.set('Accept', values);
         ref = {'Accept': values};
       });
@@ -170,7 +169,7 @@ export function main() {
 
       it('should be able to recreate serializedHeaders', () => {
         const parsedHeaders = JSON.parse(JSON.stringify(headers));
-        const recreatedHeaders = new Headers(parsedHeaders);
+        const recreatedHeaders = new HttpHeaders(parsedHeaders);
         expect(JSON.stringify(parsedHeaders)).toEqual(JSON.stringify(recreatedHeaders));
       });
     });
@@ -181,7 +180,7 @@ export function main() {
             `Content-Type: application/json; charset=utf-8\n` +
             `Transfer-Encoding: chunked\n` +
             `Connection: keep-alive`;
-        const headers = Headers.fromResponseHeaderString(response);
+        const headers = HttpHeaders.fromResponseHeaderString(response);
         expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
         expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
         expect(headers.get('Transfer-Encoding')).toEqual('chunked');
