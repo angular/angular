@@ -15,6 +15,7 @@ import {check, tsc} from './tsc';
 import NgOptions from './options';
 import {MetadataWriterHost, DecoratorDownlevelCompilerHost, TsickleCompilerHost} from './compiler_host';
 import {CliOptions} from './cli_options';
+import {VinylFile, isVinylFile} from './vinyl_file';
 
 export {UserError} from './tsc';
 
@@ -23,11 +24,16 @@ export type CodegenExtension =
         Promise<void>;
 
 export function main(
-    project: string, cliOptions: CliOptions, codegen?: CodegenExtension,
+    project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
     options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
-    if (fs.lstatSync(project).isFile()) {
+    // project is vinyl like file object
+    if (isVinylFile(project)) {
+      projectDir = path.dirname(project.path);
+    }
+    // project is path to project file
+    else if (fs.lstatSync(project).isFile()) {
       projectDir = path.dirname(project);
     }
 
