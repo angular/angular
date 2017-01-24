@@ -14,7 +14,9 @@
         "sourceRoot": ".",
         "outDir": "../../../dist/packages-dist/benchpress",
         "declaration": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+        "types": []
     },
     "exclude": ["integrationtest"],
     "files": [
