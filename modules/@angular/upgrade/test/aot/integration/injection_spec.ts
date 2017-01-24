@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, NgModule, destroyPlatform} from '@angular/core';
+import {InjectionToken, Injector, NgModule, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/aot/constants';
 import {UpgradeModule, downgradeInjectable} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
@@ -75,6 +76,28 @@ export function main() {
                const ng2Injector = upgrade.injector;
                expect(ng2Injector.get(Ng1Service)).toBe('ng1 service value');
              });
+       }));
+
+    it('should initialize the upgraded injector before application run blocks are executed',
+       async(() => {
+         let runBlockTriggered = false;
+
+         const ng1Module = angular.module('ng1Module', []).run([
+           INJECTOR_KEY,
+           function(injector: Injector) {
+             runBlockTriggered = true;
+             expect(injector.get($INJECTOR)).toBeDefined();
+           }
+         ]);
+
+         @NgModule({imports: [BrowserModule, UpgradeModule]})
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then(() => {
+           expect(runBlockTriggered).toBeTruthy();
+         });
        }));
   });
 }
