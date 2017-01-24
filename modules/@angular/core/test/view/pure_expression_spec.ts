@@ -45,8 +45,8 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 2, 'span'), pureArrayDef(2),
-              providerDef(NodeFlags.None, Service, [], {data: [0, 'data']})
+              elementDef(NodeFlags.None, null, 2, 'span'), pureArrayDef(2),
+              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(
@@ -79,8 +79,8 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 2, 'span'), pureObjectDef(['a', 'b']),
-              providerDef(NodeFlags.None, Service, [], {data: [0, 'data']})
+              elementDef(NodeFlags.None, null, 2, 'span'), pureObjectDef(['a', 'b']),
+              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(
@@ -117,9 +117,9 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 3, 'span'), providerDef(NodeFlags.None, SomePipe, []),
-              purePipeDef(SomePipe, 2),
-              providerDef(NodeFlags.None, Service, [], {data: [0, 'data']})
+              elementDef(NodeFlags.None, null, 3, 'span'),
+              providerDef(NodeFlags.None, null, SomePipe, []), purePipeDef(SomePipe, 2),
+              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(

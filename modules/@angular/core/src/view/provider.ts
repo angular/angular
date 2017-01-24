@@ -10,12 +10,14 @@ import {SimpleChange, SimpleChanges} from '../change_detection/change_detection'
 import {Injector} from '../di';
 import {stringify} from '../facade/lang';
 import {ElementRef} from '../linker/element_ref';
+import {ExpressionChangedAfterItHasBeenCheckedError} from '../linker/errors';
+import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer} from '../render/api';
 
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderOutputDef, Services, ViewData, ViewDefinition, ViewFlags} from './types';
-import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, setBindingDebugInfo} from './util';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags} from './types';
+import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, declaredViewContainer, setBindingDebugInfo} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -25,9 +27,16 @@ const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
 
 export function providerDef(
-    flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[],
-    props?: {[name: string]: [number, string]}, outputs?: {[name: string]: string},
-    component?: () => ViewDefinition): NodeDef {
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ctor: any,
+    deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
+    outputs?: {[name: string]: string},
+    contentQueries?: {[name: string]: [string, QueryBindingType]}, component?: () => ViewDefinition,
+    viewQueries?: {[name: string]: [string, QueryBindingType]}, ): NodeDef {
+  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
+  if (matchedQueries) {
+    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
+  }
+
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -57,9 +66,27 @@ export function providerDef(
     }
     return {flags, token, tokenKey: tokenKey(token)};
   });
+  const contentQueryDefs: QueryDef[] = [];
+  for (let propName in contentQueries) {
+    const [id, bindingType] = contentQueries[propName];
+    contentQueryDefs.push({id, propName, bindingType});
+  }
+  const viewQueryDefs: QueryDef[] = [];
+  for (let propName in viewQueries) {
+    const [id, bindingType] = viewQueries[propName];
+    viewQueryDefs.push({id, propName, bindingType});
+  }
+
   if (component) {
     flags = flags | NodeFlags.HasComponent;
   }
+  if (contentQueryDefs.length) {
+    flags = flags | NodeFlags.HasContentQuery;
+  }
+  if (viewQueryDefs.length) {
+    flags = flags | NodeFlags.HasViewQuery;
+  }
+
   return {
     type: NodeType.Provider,
     // will bet set by the view definition
@@ -67,17 +94,26 @@ export function providerDef(
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
+    matchedQueries: matchedQueryDefs,
     childCount: 0, bindings,
     disposableCount: outputDefs.length,
     element: undefined,
-    provider: {tokenKey: tokenKey(ctor), ctor, deps: depDefs, outputs: outputDefs, component},
+    provider: {
+      tokenKey: tokenKey(ctor),
+      ctor,
+      deps: depDefs,
+      outputs: outputDefs,
+      contentQueries: contentQueryDefs,
+      viewQueries: viewQueryDefs, component
+    },
     text: undefined,
-    pureExpression: undefined
+    pureExpression: undefined,
   };
 }
 
@@ -101,9 +137,21 @@ export function createProvider(view: ViewData, def: NodeDef, componentView: View
       view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
+  let queries: {[queryId: string]: QueryList<any>};
+  if (providerDef.contentQueries.length || providerDef.viewQueries.length) {
+    queries = {};
+    for (let i = 0; i < providerDef.contentQueries.length; i++) {
+      const def = providerDef.contentQueries[i];
+      queries[def.id] = new QueryList<any>();
+    }
+    for (let i = 0; i < providerDef.viewQueries.length; i++) {
+      const def = providerDef.viewQueries[i];
+      queries[def.id] = new QueryList<any>();
+    }
+  }
   return {
     elementOrText: undefined,
-    provider: {instance: provider, componentView: componentView},
+    provider: {instance: provider, componentView: componentView, queries},
     pureExpression: undefined,
   };
 }
@@ -202,7 +250,7 @@ export function resolveDep(
     if (elDef.parent != null) {
       elIndex = elDef.parent;
     } else {
-      elIndex = view.parentIndex;
+      elIndex = view.parentDiIndex;
       view = view.parent;
     }
   }
@@ -228,7 +276,7 @@ export function resolveDep(
           return view.nodes[providerIndex].provider.instance;
         }
     }
-    elIndex = view.parentIndex;
+    elIndex = view.parentDiIndex;
     view = view.parent;
   }
   return Injector.NULL.get(depDef.token, notFoundValue);
@@ -263,6 +311,153 @@ function checkAndUpdateProp(
     }
   }
   return changes;
+}
+
+export enum QueryAction {
+  CheckNoChanges,
+  CheckAndUpdate,
+}
+
+export function execContentQueriesAction(view: ViewData, action: QueryAction) {
+  if (!(view.def.nodeFlags & NodeFlags.HasContentQuery)) {
+    return;
+  }
+  for (let i = 0; i < view.nodes.length; i++) {
+    const nodeDef = view.def.nodes[i];
+    if (nodeDef.flags & NodeFlags.HasContentQuery) {
+      execContentQuery(view, nodeDef, action);
+    } else if ((nodeDef.childFlags & NodeFlags.HasContentQuery) === 0) {
+      // no child has a content query
+      // then skip the children
+      i += nodeDef.childCount;
+    }
+  }
+}
+
+export function updateViewQueries(view: ViewData, action: QueryAction) {
+  if (!(view.def.nodeFlags & NodeFlags.HasViewQuery)) {
+    return;
+  }
+  for (let i = 0; i < view.nodes.length; i++) {
+    const nodeDef = view.def.nodes[i];
+    if (nodeDef.flags & NodeFlags.HasViewQuery) {
+      updateViewQuery(view, nodeDef, action);
+    } else if ((nodeDef.childFlags & NodeFlags.HasViewQuery) === 0) {
+      // no child has a view query
+      // then skip the children
+      i += nodeDef.childCount;
+    }
+  }
+}
+
+function execContentQuery(view: ViewData, nodeDef: NodeDef, action: QueryAction) {
+  const providerData = view.nodes[nodeDef.index].provider;
+  for (let i = 0; i < nodeDef.provider.contentQueries.length; i++) {
+    const queryDef = nodeDef.provider.contentQueries[i];
+    const queryId = queryDef.id;
+    const queryList = providerData.queries[queryId];
+    if (queryList.dirty) {
+      const elementDef = view.def.nodes[nodeDef.parent];
+      const newValues = calcQueryValues(
+          view, elementDef.index, elementDef.index + elementDef.childCount, queryId, []);
+      execQueryAction(view, providerData.instance, queryList, queryDef, newValues, action);
+    }
+  }
+}
+
+function updateViewQuery(view: ViewData, nodeDef: NodeDef, action: QueryAction) {
+  for (let i = 0; i < nodeDef.provider.viewQueries.length; i++) {
+    const queryDef = nodeDef.provider.viewQueries[i];
+    const queryId = queryDef.id;
+    const providerData = view.nodes[nodeDef.index].provider;
+    const queryList = providerData.queries[queryId];
+    if (queryList.dirty) {
+      const componentView = providerData.componentView;
+      const newValues =
+          calcQueryValues(componentView, 0, componentView.nodes.length - 1, queryId, []);
+      execQueryAction(view, providerData.instance, queryList, queryDef, newValues, action);
+    }
+  }
+}
+
+function execQueryAction(
+    view: ViewData, provider: any, queryList: QueryList<any>, queryDef: QueryDef, newValues: any[],
+    action: QueryAction) {
+  switch (action) {
+    case QueryAction.CheckAndUpdate:
+      queryList.reset(newValues);
+      let boundValue: any;
+      switch (queryDef.bindingType) {
+        case QueryBindingType.First:
+          boundValue = queryList.first;
+          break;
+        case QueryBindingType.All:
+          boundValue = queryList;
+          break;
+      }
+      provider[queryDef.propName] = boundValue;
+      break;
+    case QueryAction.CheckNoChanges:
+      // queries should always be non dirty when we go into checkNoChanges!
+      const oldValuesStr = queryList.toArray().map(v => stringify(v));
+      const newValuesStr = newValues.map(v => stringify(v));
+      throw new ExpressionChangedAfterItHasBeenCheckedError(
+          oldValuesStr, newValuesStr, view.firstChange);
+  }
+}
+
+function calcQueryValues(
+    view: ViewData, startIndex: number, endIndex: number, queryId: string, values: any[]): any[] {
+  const len = view.def.nodes.length;
+  for (let i = startIndex; i <= endIndex; i++) {
+    const nodeDef = view.def.nodes[i];
+    const queryValueType = <QueryValueType>nodeDef.matchedQueries[queryId];
+    if (queryValueType != null) {
+      // a match
+      let value: any;
+      switch (queryValueType) {
+        case QueryValueType.ElementRef:
+          value = new ElementRef(view.nodes[i].elementOrText.node);
+          break;
+        case QueryValueType.TemplateRef:
+          value = view.services.createTemplateRef(view, nodeDef);
+          break;
+        case QueryValueType.ViewContainerRef:
+          value = view.services.createViewContainerRef(view.nodes[i]);
+          break;
+        case QueryValueType.Provider:
+          value = view.nodes[i].provider.instance;
+          break;
+      }
+      values.push(value);
+    }
+    if (nodeDef.flags & NodeFlags.HasEmbeddedViews &&
+        queryId in nodeDef.element.template.nodeMatchedQueries) {
+      // check embedded views that were attached at the place of their template.
+      const nodeData = view.nodes[i];
+      const embeddedViews = nodeData.elementOrText.embeddedViews;
+      for (let k = 0; k < embeddedViews.length; k++) {
+        const embeddedView = embeddedViews[k];
+        const dvc = declaredViewContainer(embeddedView);
+        if (dvc && dvc === nodeData) {
+          calcQueryValues(embeddedView, 0, embeddedView.nodes.length - 1, queryId, values);
+        }
+      }
+      const projectedViews = nodeData.elementOrText.projectedViews;
+      if (projectedViews) {
+        for (let k = 0; k < projectedViews.length; k++) {
+          const projectedView = projectedViews[k];
+          calcQueryValues(projectedView, 0, projectedView.nodes.length - 1, queryId, values);
+        }
+      }
+    }
+    if (!(queryId in nodeDef.childMatchedQueries)) {
+      // If don't check descendants, skip the children.
+      // Or: no child matches the query, then skip the children as well.
+      i += nodeDef.childCount;
+    }
+  }
+  return values;
 }
 
 export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: NodeFlags) {

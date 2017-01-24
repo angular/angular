@@ -24,16 +24,17 @@ export class TreeComponent {
 let viewFlags = ViewFlags.DirectDom;
 
 const TreeComponent_Host: ViewDefinition = viewDef(viewFlags, [
-  elementDef(NodeFlags.None, 1, 'tree'),
-  providerDef(NodeFlags.None, TreeComponent, [], null, null, () => TreeComponent_0),
+  elementDef(NodeFlags.None, null, 1, 'tree'),
+  providerDef(NodeFlags.None, null, TreeComponent, [], null, null, null, () => TreeComponent_0),
 ]);
 
 const TreeComponent_1: ViewDefinition = viewDef(
     viewFlags,
     [
-      elementDef(NodeFlags.None, 1, 'tree'),
+      elementDef(NodeFlags.None, null, 1, 'tree'),
       providerDef(
-          NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, null, () => TreeComponent_0),
+          NodeFlags.None, null, TreeComponent, [], {data: [0, 'data']}, null, null,
+          () => TreeComponent_0),
     ],
     (updater: NodeUpdater, view: ViewData) => {
       const cmp = view.component;
@@ -43,9 +44,10 @@ const TreeComponent_1: ViewDefinition = viewDef(
 const TreeComponent_2: ViewDefinition = viewDef(
     viewFlags,
     [
-      elementDef(NodeFlags.None, 1, 'tree'),
+      elementDef(NodeFlags.None, null, 1, 'tree'),
       providerDef(
-          NodeFlags.None, TreeComponent, [], {data: [0, 'data']}, null, () => TreeComponent_0),
+          NodeFlags.None, null, TreeComponent, [], {data: [0, 'data']}, null, null,
+          () => TreeComponent_0),
     ],
     (updater: NodeUpdater, view: ViewData) => {
       const cmp = view.component;
@@ -56,12 +58,13 @@ const TreeComponent_0: ViewDefinition = viewDef(
     viewFlags,
     [
       elementDef(
-          NodeFlags.None, 1, 'span', null, [[BindingType.ElementStyle, 'backgroundColor', null]]),
+          NodeFlags.None, null, 1, 'span', null,
+          [[BindingType.ElementStyle, 'backgroundColor', null]]),
       textDef([' ', ' ']),
-      anchorDef(NodeFlags.HasEmbeddedViews, 1, TreeComponent_1),
-      providerDef(NodeFlags.None, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
-      anchorDef(NodeFlags.HasEmbeddedViews, 1, TreeComponent_2),
-      providerDef(NodeFlags.None, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+      anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_1),
+      providerDef(NodeFlags.None, null, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+      anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_2),
+      providerDef(NodeFlags.None, null, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
     ],
     (updater: NodeUpdater, view: ViewData) => {
       const cmp = view.component;

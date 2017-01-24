@@ -60,3 +60,11 @@ export function checkAndUpdateBindingWithChange(
   }
   return null;
 }
+
+export function declaredViewContainer(view: ViewData) {
+  if (view.parent) {
+    const parentView = view.parent;
+    return parentView.nodes[view.parentIndex];
+  }
+  return undefined;
+}

@@ -56,9 +56,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(
           compViewDef([
-            elementDef(NodeFlags.None, 2, 'div'),
-            anchorDef(NodeFlags.HasEmbeddedViews, 0, embeddedViewDef([elementDef(
-                                                         NodeFlags.None, 0, 'span')])),
+            elementDef(NodeFlags.None, null, 2, 'div'),
+            anchorDef(NodeFlags.HasEmbeddedViews, null, 0, embeddedViewDef([elementDef(
+                                                               NodeFlags.None, null, 0, 'span')])),
           ]),
           parentContext);
 
@@ -69,12 +69,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     it('should attach and detach embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, 2, 'div'),
+        elementDef(NodeFlags.None, null, 2, 'div'),
         anchorDef(
-            NodeFlags.HasEmbeddedViews, 0,
-            embeddedViewDef([elementDef(NodeFlags.None, 0, 'span', {'name': 'child0'})])),
-        anchorDef(NodeFlags.None, 0, embeddedViewDef([elementDef(
-                                         NodeFlags.None, 0, 'span', {'name': 'child1'})]))
+            NodeFlags.HasEmbeddedViews, null, 0,
+            embeddedViewDef([elementDef(NodeFlags.None, null, 0, 'span', {'name': 'child0'})])),
+        anchorDef(
+            NodeFlags.None, null, 0,
+            embeddedViewDef([elementDef(NodeFlags.None, null, 0, 'span', {'name': 'child1'})]))
       ]));
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
@@ -99,9 +100,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     it('should include embedded views in root nodes', () => {
       const {view: parentView} = createAndGetRootNodes(compViewDef([
         anchorDef(
-            NodeFlags.HasEmbeddedViews, 0,
-            embeddedViewDef([elementDef(NodeFlags.None, 0, 'span', {'name': 'child0'})])),
-        elementDef(NodeFlags.None, 0, 'span', {'name': 'after'})
+            NodeFlags.HasEmbeddedViews, null, 0,
+            embeddedViewDef([elementDef(NodeFlags.None, null, 0, 'span', {'name': 'child0'})])),
+        elementDef(NodeFlags.None, null, 0, 'span', {'name': 'after'})
       ]));
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[0]);
@@ -119,12 +120,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, childValue));
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, 1, 'div'),
+        elementDef(NodeFlags.None, null, 1, 'div'),
         anchorDef(
-            NodeFlags.HasEmbeddedViews, 0,
+            NodeFlags.HasEmbeddedViews, null, 0,
             embeddedViewDef(
                 [elementDef(
-                    NodeFlags.None, 0, 'span', null,
+                    NodeFlags.None, null, 0, 'span', null,
                     [[BindingType.ElementAttribute, 'name', SecurityContext.NONE]])],
                 update))
       ]));
@@ -159,10 +160,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       }
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, 1, 'div'),
-        anchorDef(NodeFlags.HasEmbeddedViews, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, 1, 'span'),
-                    providerDef(NodeFlags.OnDestroy, ChildProvider, [])
+        elementDef(NodeFlags.None, null, 1, 'div'),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, 0, embeddedViewDef([
+                    elementDef(NodeFlags.None, null, 1, 'span'),
+                    providerDef(NodeFlags.OnDestroy, null, ChildProvider, [])
                   ]))
       ]));
 
