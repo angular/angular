@@ -4631,7 +4631,7 @@
         },
         "mkdirp": {
           "version": "0.5.1",
-          "from": "mkdirp@>=0.5.0 <0.6.0",
+          "from": "mkdirp@>=0.5.1 <0.6.0",
           "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz"
         },
         "ms": {
@@ -4648,7 +4648,7 @@
         },
         "nopt": {
           "version": "3.0.6",
-          "from": "nopt@>=3.0.1 <3.1.0",
+          "from": "nopt@>=3.0.6 <3.1.0",
           "resolved": "https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz",
           "optional": true
         },
@@ -4716,7 +4716,7 @@
         },
         "rc": {
           "version": "1.1.6",
-          "from": "rc@>=1.1.0 <1.2.0",
+          "from": "rc@>=1.1.6 <1.2.0",
           "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz",
           "optional": true,
           "dependencies": {
@@ -4818,7 +4818,7 @@
         },
         "tar": {
           "version": "2.2.1",
-          "from": "tar@>=2.2.0 <2.3.0",
+          "from": "tar@>=2.2.1 <2.3.0",
           "resolved": "https://registry.npmjs.org/tar/-/tar-2.2.1.tgz"
         },
         "tar-pack": {
@@ -8988,65 +8988,29 @@
       "dev": true
     },
     "ts-api-guardian": {
-      "version": "0.1.4",
-      "from": "ts-api-guardian@0.1.4",
-      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.1.4.tgz",
+      "version": "0.2.0",
+      "from": "ts-api-guardian@0.2.0",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.2.0.tgz",
       "dev": true,
       "dependencies": {
-        "ansi-regex": {
-          "version": "2.0.0",
-          "from": "ansi-regex@>=2.0.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz",
-          "dev": true
-        },
-        "ansi-styles": {
-          "version": "2.2.1",
-          "from": "ansi-styles@>=2.2.1 <3.0.0",
-          "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-2.2.1.tgz",
-          "dev": true
-        },
-        "chalk": {
-          "version": "1.1.3",
-          "from": "chalk@>=1.1.3 <2.0.0",
-          "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
-          "dev": true
-        },
         "diff": {
           "version": "2.2.3",
           "from": "diff@>=2.2.3 <3.0.0",
           "resolved": "https://registry.npmjs.org/diff/-/diff-2.2.3.tgz",
           "dev": true
         },
-        "has-ansi": {
-          "version": "2.0.0",
-          "from": "has-ansi@>=2.0.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/has-ansi/-/has-ansi-2.0.0.tgz",
-          "dev": true
-        },
-        "strip-ansi": {
-          "version": "3.0.1",
-          "from": "strip-ansi@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-3.0.1.tgz",
-          "dev": true
-        },
-        "supports-color": {
-          "version": "2.0.0",
-          "from": "supports-color@>=2.0.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz",
-          "dev": true
-        },
         "typescript": {
-          "version": "1.7.3",
-          "from": "typescript@1.7.3",
-          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz",
+          "version": "2.0.10",
+          "from": "typescript@2.0.10",
+          "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.0.10.tgz",
           "dev": true
         }
       }
     },
     "tsickle": {
-      "version": "0.2.6",
-      "from": "tsickle@0.2.6",
-      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.2.6.tgz",
+      "version": "0.21.1",
+      "from": "tsickle@0.21.1",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.21.1.tgz",
       "dev": true,
       "dependencies": {
         "source-map": {
@@ -9161,9 +9125,9 @@
       "dev": true
     },
     "typescript": {
-      "version": "2.0.2",
-      "from": "typescript@rc",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.0.2.tgz",
+      "version": "2.1.5",
+      "from": "typescript@>=2.1.0 <2.2.0",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.1.5.tgz",
       "dev": true
     },
     "ua-parser-js": {
