@@ -37,7 +37,7 @@ class TypedefWalker extends RuleWalker {
 
   private assertInternalAnnotationPresent(node: ts.Declaration) {
     if (node.name.getText().charAt(0) !== '_') return;
-    if (node.modifiers && node.modifiers.flags & ts.NodeFlags.Private) return;
+    if (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Private) return;
 
     const ranges = ts.getLeadingCommentRanges(this.getSourceFile().text, node.pos);
     if (ranges) {
