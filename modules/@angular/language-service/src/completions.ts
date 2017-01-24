@@ -93,8 +93,9 @@ export function getTemplateCompletions(templateInfo: TemplateInfo): Completions 
             }
           },
           visitComment(ast) {},
-          visitExpansion(ast) {},
-          visitExpansionCase(ast) {}
+          visitIcuMessage(ast) {},
+          visitIcuCase(ast) {},
+          visitIcuRef(ast) {},
         },
         null);
   }

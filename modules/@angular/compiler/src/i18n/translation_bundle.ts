@@ -105,6 +105,8 @@ class I18nToHtmlVisitor implements i18n.Visitor {
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any { throw 'unreachable code'; }
 
+  visitIcuRef(ref: i18n.IcuRef, context?: any): any { return `{ ${ref.name} }`; }
+
   private _convertToText(srcMsg: i18n.Message): string {
     const digest = this._digest(srcMsg);
     if (this._i18nNodesByMsgId.hasOwnProperty(digest)) {

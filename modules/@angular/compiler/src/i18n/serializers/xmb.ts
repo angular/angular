@@ -127,6 +127,8 @@ class _Visitor implements i18n.Visitor {
     return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
   }
 
+  visitIcuRef(ref: i18n.IcuRef, context?: any): any { throw `References are not supported`; }
+
   serialize(nodes: i18n.Node[]): xml.Node[] {
     return [].concat(...nodes.map(node => node.visit(this)));
   }

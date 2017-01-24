@@ -122,18 +122,18 @@ class _Visitor implements html.Visitor {
     return new ParseTreeResult(translatedNode.children, this._errors);
   }
 
-  visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
+  visitIcuCase(icuCase: html.IcuCase, context: any): any {
     // Parse cases for translatable html attributes
     const expression = html.visitAll(this, icuCase.expression, context);
 
     if (this._mode === _VisitorMode.Merge) {
-      return new html.ExpansionCase(
+      return new html.IcuCase(
           icuCase.value, expression, icuCase.sourceSpan, icuCase.valueSourceSpan,
           icuCase.expSourceSpan);
     }
   }
 
-  visitExpansion(icu: html.Expansion, context: any): html.Expansion {
+  visitIcuMessage(icu: html.IcuMsg, context: any): html.IcuMsg {
     this._mayBeAddBlockChildren(icu);
 
     const wasInIcu = this._inIcu;
@@ -149,7 +149,7 @@ class _Visitor implements html.Visitor {
     const cases = html.visitAll(this, icu.cases, context);
 
     if (this._mode === _VisitorMode.Merge) {
-      icu = new html.Expansion(
+      icu = new html.IcuMsg(
           icu.switchValue, icu.type, cases, icu.sourceSpan, icu.switchValueSourceSpan);
     }
 
@@ -157,6 +157,8 @@ class _Visitor implements html.Visitor {
 
     return icu;
   }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw 'References are not supported'; }
 
   visitComment(comment: html.Comment, context: any): any {
     const isOpening = _isOpeningComment(comment);

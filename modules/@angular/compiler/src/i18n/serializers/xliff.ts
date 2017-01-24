@@ -149,6 +149,9 @@ class _WriteVisitor implements i18n.Visitor {
     return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name})];
   }
 
+
+  visitIcuRef(ref: i18n.IcuRef, context?: any): any { throw `References are not supported`; }
+
   serialize(nodes: i18n.Node[]): xml.Node[] {
     this._isInIcu = false;
     return [].concat(...nodes.map(node => node.visit(this)));
@@ -220,9 +223,11 @@ class XliffParser implements ml.Visitor {
 
   visitComment(comment: ml.Comment, context: any): any {}
 
-  visitExpansion(expansion: ml.Expansion, context: any): any {}
+  visitIcuMessage(icuMsg: ml.IcuMsg, context: any): any {}
 
-  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
+
+  visitIcuRef(icyRef: ml.IcuRef, context: any): any{};
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
@@ -256,13 +261,15 @@ class XmlToI18n implements ml.Visitor {
     }
   }
 
-  visitExpansion(icu: ml.Expansion, context: any) {}
+  visitIcuMessage(icu: ml.IcuMsg, context: any): any {}
 
-  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {}
+  visitIcuCase(icuCase: ml.IcuCase, context: any): any {}
 
-  visitComment(comment: ml.Comment, context: any) {}
+  visitIcuRef(icuRef: ml.IcuRef, context: any): any {}
 
-  visitAttribute(attribute: ml.Attribute, context: any) {}
+  visitComment(comment: ml.Comment, context: any): any {}
+
+  visitAttribute(attribute: ml.Attribute, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));

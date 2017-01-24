@@ -14,7 +14,7 @@ export {ParseTreeResult, TreeError} from './parser';
 export class XmlParser extends Parser {
   constructor() { super(getXmlTagDefinition); }
 
-  parse(source: string, url: string, parseExpansionForms: boolean = false): ParseTreeResult {
-    return super.parse(source, url, parseExpansionForms, null);
+  parse(source: string, url: string, parseIcuMessages: boolean = false): ParseTreeResult {
+    return super.parse(source, url, parseIcuMessages, null);
   }
 }

@@ -276,8 +276,8 @@ export function main() {
         });
       });
 
-      describe('expansion forms', () => {
-        it('should parse out expansion forms', () => {
+      describe('icu messages', () => {
+        it('should parse out icu messages', () => {
           const parsed = parser.parse(
               `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
               'TestComp', true);
@@ -285,9 +285,9 @@ export function main() {
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
             [html.Text, 'before', 1],
-            [html.Expansion, 'messages.length', 'plural', 1],
-            [html.ExpansionCase, '=0', 2],
-            [html.ExpansionCase, '=1', 2],
+            [html.IcuMsg, 'messages.length', 'plural', 1],
+            [html.IcuCase, '=0', 2],
+            [html.IcuCase, '=1', 2],
             [html.Text, 'after', 1],
           ]);
           const cases = (<any>parsed.rootNodes[0]).children[1].cases;
@@ -303,43 +303,43 @@ export function main() {
           ]))).toEqual([[html.Text, 'One {{message}}', 0]]);
         });
 
-        it('should parse out expansion forms', () => {
+        it('should parse out icu messages', () => {
           const parsed =
               parser.parse(`<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp', true);
 
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
             [html.Element, 'span', 1],
-            [html.Expansion, 'a', 'plural', 2],
-            [html.ExpansionCase, '=0', 3],
+            [html.IcuMsg, 'a', 'plural', 2],
+            [html.IcuCase, '=0', 3],
           ]);
         });
 
-        it('should parse out nested expansion forms', () => {
+        it('should parse out nested icu messages', () => {
           const parsed = parser.parse(
               `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp', true);
           expect(humanizeDom(parsed)).toEqual([
-            [html.Expansion, 'messages.length', 'plural', 0],
-            [html.ExpansionCase, '=0', 1],
+            [html.IcuMsg, 'messages.length', 'plural', 0],
+            [html.IcuCase, '=0', 1],
           ]);
 
           const firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
           expect(humanizeDom(new ParseTreeResult(firstCase.expression, []))).toEqual([
-            [html.Expansion, 'p.gender', 'select', 0],
-            [html.ExpansionCase, 'male', 1],
+            [html.IcuMsg, 'p.gender', 'select', 0],
+            [html.IcuCase, 'male', 1],
             [html.Text, ' ', 0],
           ]);
         });
 
-        it('should error when expansion form is not closed', () => {
+        it('should error when an icu message is not closed', () => {
           const p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:34']
           ]);
         });
 
-        it('should error when expansion case is not closed', () => {
+        it('should error when an icu case is not closed', () => {
           const p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:29']
@@ -378,13 +378,13 @@ export function main() {
           expect(node.endSourceSpan.end.offset).toEqual(12);
         });
 
-        it('should support expansion form', () => {
+        it('should support icu messages', () => {
           expect(humanizeDomSourceSpans(
                      parser.parse('<div>{count, plural, =0 {msg}}</div>', 'TestComp', true)))
               .toEqual([
                 [html.Element, 'div', 0, '<div>'],
-                [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
-                [html.ExpansionCase, '=0', 2, '=0 {msg}'],
+                [html.IcuMsg, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
+                [html.IcuCase, '=0', 2, '=0 {msg}'],
               ]);
         });
 
@@ -430,10 +430,11 @@ export function main() {
             visitAttribute(attribute: html.Attribute, context: any): any {}
             visitText(text: html.Text, context: any): any {}
             visitComment(comment: html.Comment, context: any): any {}
-            visitExpansion(expansion: html.Expansion, context: any): any {
-              html.visitAll(this, expansion.cases);
+            visitIcuMessage(icuMsg: html.IcuMsg, context: any): any {
+              html.visitAll(this, icuMsg.cases);
             }
-            visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {}
+            visitIcuCase(icuCase: html.IcuCase, context: any): any {}
+            visitIcuRef(icuRef: html.IcuRef, context: any): any {}
           };
 
           html.visitAll(visitor, result.rootNodes);
@@ -452,12 +453,9 @@ export function main() {
             }
             visitText(text: html.Text, context: any): any { throw Error('Unexpected'); }
             visitComment(comment: html.Comment, context: any): any { throw Error('Unexpected'); }
-            visitExpansion(expansion: html.Expansion, context: any): any {
-              throw Error('Unexpected');
-            }
-            visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-              throw Error('Unexpected');
-            }
+            visitIcuMessage(icuMsg: html.IcuMsg, context: any): any { throw Error('Unexpected'); }
+            visitIcuCase(icuCase: html.IcuCase, context: any): any { throw Error('Unexpected'); }
+            visitIcuRef(icuRef: html.IcuRef, context: any): any { throw Error('Unexpected'); }
           };
           const result = parser.parse('<div id="foo"></div><div id="bar"></div>', 'TestComp');
           const traversal = html.visitAll(visitor, result.rootNodes);

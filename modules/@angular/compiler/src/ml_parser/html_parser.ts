@@ -19,8 +19,8 @@ export class HtmlParser extends Parser {
   constructor() { super(getHtmlTagDefinition); }
 
   parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
+      source: string, url: string, parseIcuMessages: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    return super.parse(source, url, parseExpansionForms, interpolationConfig);
+    return super.parse(source, url, parseIcuMessages, interpolationConfig);
   }
 }

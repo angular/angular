@@ -50,6 +50,12 @@ export class Icu implements Node {
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
 }
 
+export class IcuRef implements Node {
+  constructor(public name: string, public sourceSpan: ParseSourceSpan) {}
+
+  visit(visitor: Visitor, context?: any): any { return visitor.visitIcuRef(this, context); }
+}
+
 export class TagPlaceholder implements Node {
   constructor(
       public tag: string, public attrs: {[k: string]: string}, public startName: string,
@@ -78,4 +84,5 @@ export interface Visitor {
   visitTagPlaceholder(ph: TagPlaceholder, context?: any): any;
   visitPlaceholder(ph: Placeholder, context?: any): any;
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any;
+  visitIcuRef(ref: IcuRef, context?: any): any;
 }

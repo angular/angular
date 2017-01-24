@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Comment, Element, Expansion, ExpansionCase, Node, Text, Visitor, visitAll} from '@angular/compiler/src/ml_parser/ast';
+import {Attribute, Comment, Element, IcuCase, IcuMsg, IcuRef, Node, Text, Visitor, visitAll} from '@angular/compiler/src/ml_parser/ast';
 
 import {AstPath} from './ast_path';
 import {inSpan, spanOf} from './utils';
@@ -35,11 +35,12 @@ export class ChildVisitor implements Visitor {
   visitText(ast: Text, context: any): any {}
   visitComment(ast: Comment, context: any): any {}
 
-  visitExpansion(ast: Expansion, context: any): any {
+  visitIcuMessage(ast: IcuMsg, context: any): any {
     return this.visitChildren(context, visit => { visit(ast.cases); });
   }
 
-  visitExpansionCase(ast: ExpansionCase, context: any): any {}
+  visitIcuCase(ast: IcuCase, context: any): any {}
+  visitIcuRef(ast: IcuRef, context: any): any {}
 
   private visitChildren<T extends Node>(
       context: any, cb: (visit: (<V extends Node>(children: V[]|undefined) => void)) => void) {

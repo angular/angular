@@ -62,17 +62,21 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any {
-    const res = this._appendContext(
-        expansion, [html.Expansion, expansion.switchValue, expansion.type, this.elDepth++]);
+  visitIcuMessage(icuMsg: html.IcuMsg, context: any): any {
+    const res =
+        this._appendContext(icuMsg, [html.IcuMsg, icuMsg.switchValue, icuMsg.type, this.elDepth++]);
     this.result.push(res);
-    html.visitAll(this, expansion.cases);
+    html.visitAll(this, icuMsg.cases);
     this.elDepth--;
   }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    const res =
-        this._appendContext(expansionCase, [html.ExpansionCase, expansionCase.value, this.elDepth]);
+  visitIcuCase(icuCase: html.IcuCase, context: any): any {
+    const res = this._appendContext(icuCase, [html.IcuCase, icuCase.value, this.elDepth]);
+    this.result.push(res);
+  }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any {
+    const res = this._appendContext(icuRef, [html.IcuRef, icuRef.name, this.elDepth]);
     this.result.push(res);
   }
 

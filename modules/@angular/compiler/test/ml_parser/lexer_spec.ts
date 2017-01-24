@@ -523,7 +523,7 @@ export function main() {
         ]);
       });
 
-      it('should treat expansion form as text when they are not parsed', () => {
+      it('should treat icu messages as text when they are not parsed', () => {
         expect(tokenizeAndHumanizeParts('<span>{a, b, =4 {c}}</span>', false)).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 'span'],
           [lex.TokenType.TAG_OPEN_END],
@@ -639,117 +639,120 @@ export function main() {
 
     });
 
-    describe('expansion forms', () => {
-      it('should parse an expansion form', () => {
-        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', true))
+    describe('icu messages', () => {
+      it('should parse an icu messages', () => {
+        expect(tokenizeAndHumanizeParts(
+                   '{one.two, three, =4 {four} =5 {five} foo {bar{ref}foo} }', true))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.ICU_MSG_START],
               [lex.TokenType.RAW_TEXT, 'one.two'],
               [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.ICU_CASE_VALUE, '=4'],
+              [lex.TokenType.ICU_CASE_EXP_START],
               [lex.TokenType.TEXT, 'four'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=5'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.ICU_CASE_EXP_END],
+              [lex.TokenType.ICU_CASE_VALUE, '=5'],
+              [lex.TokenType.ICU_CASE_EXP_START],
               [lex.TokenType.TEXT, 'five'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_CASE_VALUE, 'foo'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.ICU_CASE_EXP_END],
+              [lex.TokenType.ICU_CASE_VALUE, 'foo'],
+              [lex.TokenType.ICU_CASE_EXP_START],
               [lex.TokenType.TEXT, 'bar'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.ICU_REF, 'ref'],
+              [lex.TokenType.TEXT, 'foo'],
+              [lex.TokenType.ICU_CASE_EXP_END],
+              [lex.TokenType.ICU_MSG_END],
               [lex.TokenType.EOF],
             ]);
       });
 
-      it('should parse an expansion form with text elements surrounding it', () => {
+      it('should parse an icu message with text elements surrounding it', () => {
         expect(tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', true)).toEqual([
           [lex.TokenType.TEXT, 'before'],
-          [lex.TokenType.EXPANSION_FORM_START],
+          [lex.TokenType.ICU_MSG_START],
           [lex.TokenType.RAW_TEXT, 'one.two'],
           [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
+          [lex.TokenType.ICU_CASE_VALUE, '=4'],
+          [lex.TokenType.ICU_CASE_EXP_START],
           [lex.TokenType.TEXT, 'four'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
+          [lex.TokenType.ICU_CASE_EXP_END],
+          [lex.TokenType.ICU_MSG_END],
           [lex.TokenType.TEXT, 'after'],
           [lex.TokenType.EOF],
         ]);
       });
 
-      it('should parse an expansion form as a tag single child', () => {
+      it('should parse an icu message as a tag single child', () => {
         expect(tokenizeAndHumanizeParts('<div><span>{a, b, =4 {c}}</span></div>', true)).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 'div'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.TAG_OPEN_START, null, 'span'],
           [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EXPANSION_FORM_START],
+          [lex.TokenType.ICU_MSG_START],
           [lex.TokenType.RAW_TEXT, 'a'],
           [lex.TokenType.RAW_TEXT, 'b'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
+          [lex.TokenType.ICU_CASE_VALUE, '=4'],
+          [lex.TokenType.ICU_CASE_EXP_START],
           [lex.TokenType.TEXT, 'c'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
+          [lex.TokenType.ICU_CASE_EXP_END],
+          [lex.TokenType.ICU_MSG_END],
           [lex.TokenType.TAG_CLOSE, null, 'span'],
           [lex.TokenType.TAG_CLOSE, null, 'div'],
           [lex.TokenType.EOF],
         ]);
       });
 
-      it('should parse an expansion forms with elements in it', () => {
+      it('should parse an icu message with elements in it', () => {
         expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', true)).toEqual([
-          [lex.TokenType.EXPANSION_FORM_START],
+          [lex.TokenType.ICU_MSG_START],
           [lex.TokenType.RAW_TEXT, 'one.two'],
           [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
+          [lex.TokenType.ICU_CASE_VALUE, '=4'],
+          [lex.TokenType.ICU_CASE_EXP_START],
           [lex.TokenType.TEXT, 'four '],
           [lex.TokenType.TAG_OPEN_START, null, 'b'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.TEXT, 'a'],
           [lex.TokenType.TAG_CLOSE, null, 'b'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
+          [lex.TokenType.ICU_CASE_EXP_END],
+          [lex.TokenType.ICU_MSG_END],
           [lex.TokenType.EOF],
         ]);
       });
 
-      it('should parse an expansion forms containing an interpolation', () => {
+      it('should parse an icu message containing an interpolation', () => {
         expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', true)).toEqual([
-          [lex.TokenType.EXPANSION_FORM_START],
+          [lex.TokenType.ICU_MSG_START],
           [lex.TokenType.RAW_TEXT, 'one.two'],
           [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
+          [lex.TokenType.ICU_CASE_VALUE, '=4'],
+          [lex.TokenType.ICU_CASE_EXP_START],
           [lex.TokenType.TEXT, 'four {{a}}'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
+          [lex.TokenType.ICU_CASE_EXP_END],
+          [lex.TokenType.ICU_MSG_END],
           [lex.TokenType.EOF],
         ]);
       });
 
-      it('should parse nested expansion forms', () => {
+      it('should parse nested icu messages', () => {
         expect(tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, true))
             .toEqual([
-              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.ICU_MSG_START],
               [lex.TokenType.RAW_TEXT, 'one.two'],
               [lex.TokenType.RAW_TEXT, 'three'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
-              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.ICU_CASE_VALUE, '=4'],
+              [lex.TokenType.ICU_CASE_EXP_START],
+              [lex.TokenType.ICU_MSG_START],
               [lex.TokenType.RAW_TEXT, 'xx'],
               [lex.TokenType.RAW_TEXT, 'yy'],
-              [lex.TokenType.EXPANSION_CASE_VALUE, '=x'],
-              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.ICU_CASE_VALUE, '=x'],
+              [lex.TokenType.ICU_CASE_EXP_START],
               [lex.TokenType.TEXT, 'one'],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.ICU_CASE_EXP_END],
+              [lex.TokenType.ICU_MSG_END],
               [lex.TokenType.TEXT, ' '],
-              [lex.TokenType.EXPANSION_CASE_EXP_END],
-              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.ICU_CASE_EXP_END],
+              [lex.TokenType.ICU_MSG_END],
               [lex.TokenType.EOF],
             ]);
       });
@@ -791,10 +794,10 @@ export function main() {
 }
 
 function tokenizeWithoutErrors(
-    input: string, tokenizeExpansionForms: boolean = false,
+    input: string, tokenizeIcuMessages: boolean = false,
     interpolationConfig?: InterpolationConfig): lex.Token[] {
   const tokenizeResult = lex.tokenize(
-      input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms, interpolationConfig);
+      input, 'someUrl', getHtmlTagDefinition, tokenizeIcuMessages, interpolationConfig);
 
   if (tokenizeResult.errors.length > 0) {
     const errorString = tokenizeResult.errors.join('\n');
@@ -805,9 +808,9 @@ function tokenizeWithoutErrors(
 }
 
 function tokenizeAndHumanizeParts(
-    input: string, tokenizeExpansionForms: boolean = false,
+    input: string, tokenizeIcuMessages: boolean = false,
     interpolationConfig?: InterpolationConfig): any[] {
-  return tokenizeWithoutErrors(input, tokenizeExpansionForms, interpolationConfig)
+  return tokenizeWithoutErrors(input, tokenizeIcuMessages, interpolationConfig)
       .map(token => [<any>token.type].concat(token.parts));
 }
 
@@ -824,7 +827,7 @@ function tokenizeAndHumanizeLineColumn(input: string): any[] {
       token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
 }
 
-function tokenizeAndHumanizeErrors(input: string, tokenizeExpansionForms: boolean = false): any[] {
-  return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms)
+function tokenizeAndHumanizeErrors(input: string, tokenizeIcuMessages: boolean = false): any[] {
+  return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, tokenizeIcuMessages)
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
 }

@@ -211,9 +211,11 @@ class TemplateParseVisitor implements html.Visitor {
     });
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return null; }
+  visitIcuMessage(icuMsg: html.IcuMsg, context: any): any { return null; }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return null; }
+  visitIcuCase(icuCase: html.IcuCase, context: any): any { return null; }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw `References are not supported`; }
 
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
@@ -769,9 +771,11 @@ class NonBindableVisitor implements html.Visitor {
     return new TextAst(text.value, ngContentIndex, text.sourceSpan);
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+  visitIcuMessage(icuMsg: html.IcuMsg, context: any): any { return icuMsg; }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitIcuCase(icuCase: html.IcuCase, context: any): any { return icuCase; }
+
+  visitIcuRef(icuRef: html.IcuRef, context: any): any { throw `References are not supported`; }
 }
 
 class ElementOrDirectiveRef {
