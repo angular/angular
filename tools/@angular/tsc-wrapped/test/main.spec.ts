@@ -91,6 +91,35 @@ describe('tsc-wrapped', () => {
         .catch(e => done.fail(e));
   });
 
+  it('should pre-process sources using config from vinyl like object', (done) => {
+    const config = {
+      path: basePath + '/tsconfig.json',
+      contents: new Buffer(JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          types: [],
+          outDir: 'built',
+          declaration: true,
+          moduleResolution: 'node',
+          target: 'es2015'
+        },
+        angularCompilerOptions: {annotateForClosureCompiler: true},
+        files: ['test.ts']
+      }))
+    };
+
+    main(config, {basePath})
+        .then(() => {
+          const out = readOut('js');
+          // Expand `export *` and fix index import
+          expect(out).toContain(`export { A, B } from './dep/index'`);
+          // Annotated for Closure compiler
+          expect(out).toContain('* @param {?} x');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
   it('should allow all options disabled', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {
