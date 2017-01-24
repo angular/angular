@@ -52,10 +52,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       }
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, 1, 'div'),
-        providerDef(NodeFlags.None, AComp, [], null, null, () => compViewDef([
-                                                             elementDef(NodeFlags.None, 0, 'span'),
-                                                           ])),
+        elementDef(NodeFlags.None, null, 1, 'div'),
+        providerDef(
+            NodeFlags.None, null, AComp, [], null, null, null,
+            () => compViewDef([
+              elementDef(NodeFlags.None, null, 0, 'span'),
+            ])),
       ]));
 
       const compView = view.nodes[1].provider.componentView;
@@ -78,10 +80,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       const {view, rootNodes} = createAndGetRootNodes(
         compViewDef([
-          elementDef(NodeFlags.None, 1, 'div'),
-          providerDef(NodeFlags.None, AComp, [], null, null, () => compViewDef(
+          elementDef(NodeFlags.None, null, 1, 'div'),
+          providerDef(NodeFlags.None, null, AComp, [], null, null, null, () => compViewDef(
             [
-              elementDef(NodeFlags.None, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
+              elementDef(NodeFlags.None, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
             ], update
           )),
         ], jasmine.createSpy('parentUpdater')));
@@ -114,12 +116,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       }
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, 1, 'div'),
+        elementDef(NodeFlags.None, null, 1, 'div'),
         providerDef(
-            NodeFlags.None, AComp, [], null, null,
+            NodeFlags.None, null, AComp, [], null, null, null,
             () => compViewDef([
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(NodeFlags.OnDestroy, ChildProvider, [])
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(NodeFlags.OnDestroy, null, ChildProvider, [])
             ])),
       ]));
 

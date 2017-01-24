@@ -7,18 +7,28 @@
  */
 
 import {NodeData, NodeFlags, ViewData} from './types';
+import {declaredViewContainer} from './util';
 
 export function attachEmbeddedView(node: NodeData, viewIndex: number, view: ViewData) {
   let embeddedViews = node.elementOrText.embeddedViews;
   if (viewIndex == null) {
     viewIndex = embeddedViews.length;
   }
-  // perf: array.push is faster than array.splice!
-  if (viewIndex >= embeddedViews.length) {
-    embeddedViews.push(view);
-  } else {
-    embeddedViews.splice(viewIndex, 0, view);
+  addToArray(embeddedViews, viewIndex, view);
+  const dvc = declaredViewContainer(view);
+  if (dvc && dvc !== node) {
+    let projectedViews = dvc.elementOrText.projectedViews;
+    if (!projectedViews) {
+      projectedViews = dvc.elementOrText.projectedViews = [];
+    }
+    projectedViews.push(view);
   }
+
+  for (let queryId in view.def.nodeMatchedQueries) {
+    dirtyParentQuery(queryId, view);
+  }
+
+  // update rendering
   const prevView = viewIndex > 0 ? embeddedViews[viewIndex - 1] : null;
   const prevNode = prevView ? prevView.nodes[prevView.def.lastRootNode] : node;
   const prevRenderNode = prevNode.elementOrText.node;
@@ -41,12 +51,19 @@ export function detachEmbeddedView(node: NodeData, viewIndex: number): ViewData 
     viewIndex = embeddedViews.length;
   }
   const view = embeddedViews[viewIndex];
-  // perf: array.pop is faster than array.splice!
-  if (viewIndex >= embeddedViews.length - 1) {
-    embeddedViews.pop();
-  } else {
-    embeddedViews.splice(viewIndex, 1);
+  removeFromArray(embeddedViews, viewIndex);
+
+  const dvc = declaredViewContainer(view);
+  if (dvc && dvc !== node) {
+    const projectedViews = dvc.elementOrText.projectedViews;
+    removeFromArray(projectedViews, projectedViews.indexOf(view));
   }
+
+  for (let queryId in view.def.nodeMatchedQueries) {
+    dirtyParentQuery(queryId, view);
+  }
+
+  // update rendering
   if (view.renderer) {
     view.renderer.detachView(rootRenderNodes(view));
   } else {
@@ -57,6 +74,45 @@ export function detachEmbeddedView(node: NodeData, viewIndex: number): ViewData 
     }
   }
   return view;
+}
+
+function addToArray(arr: any[], index: number, value: any) {
+  // perf: array.push is faster than array.splice!
+  if (index >= arr.length) {
+    arr.push(value);
+  } else {
+    arr.splice(index, 0, value);
+  }
+}
+
+function removeFromArray(arr: any[], index: number) {
+  // perf: array.pop is faster than array.splice!
+  if (index >= arr.length - 1) {
+    arr.pop();
+  } else {
+    arr.splice(index, 1);
+  }
+}
+
+function dirtyParentQuery(queryId: string, view: ViewData) {
+  let nodeIndex = view.parentIndex;
+  view = view.parent;
+  let providerIdx: number;
+  while (view) {
+    const nodeDef = view.def.nodes[nodeIndex];
+    providerIdx = nodeDef.providerIndices[queryId];
+    if (providerIdx != null) {
+      break;
+    }
+    nodeIndex = view.parentIndex;
+    view = view.parent;
+  }
+  if (!view) {
+    throw new Error(
+        `Illegal State: Tried to dirty parent query ${queryId} but the query could not be found!`);
+  }
+  const providerData = view.nodes[providerIdx].provider;
+  providerData.queries[queryId].setDirty();
 }
 
 export function rootRenderNodes(view: ViewData): any[] {

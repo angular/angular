@@ -60,7 +60,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       it('should create text nodes with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, 1, 'div'),
+                            elementDef(NodeFlags.None, null, 1, 'div'),
                             textDef(['a']),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);

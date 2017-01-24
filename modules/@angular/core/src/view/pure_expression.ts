@@ -44,11 +44,13 @@ function _pureExpressionDef(
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags: 0,
+    matchedQueries: {},
     childCount: 0, bindings,
     disposableCount: 0,
     element: undefined,

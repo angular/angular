@@ -29,11 +29,13 @@ export function textDef(constants: string[]): NodeDef {
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags: 0,
+    matchedQueries: {},
     childCount: 0, bindings,
     disposableCount: 0,
     element: undefined,
@@ -55,7 +57,7 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeD
     }
   }
   return {
-    elementOrText: {node: renderNode, embeddedViews: undefined},
+    elementOrText: {node: renderNode, embeddedViews: undefined, projectedViews: undefined},
     provider: undefined,
     pureExpression: undefined
   };
