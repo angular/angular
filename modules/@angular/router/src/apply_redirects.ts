@@ -20,7 +20,7 @@ import {EmptyError} from 'rxjs/util/EmptyError';
 
 import {Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
-import {NavigationCancelingError, PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
+import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 
@@ -50,7 +50,7 @@ function namedOutletsRedirect(redirectTo: string): Observable<any> {
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
   return new Observable<LoadedRouterConfig>(
-      (obs: Observer<LoadedRouterConfig>) => obs.error(new NavigationCancelingError(
+      (obs: Observer<LoadedRouterConfig>) => obs.error(navigationCancelingError(
           `Cannot load children because the guard of the route "path: '${route.path}'" returned false`)));
 }
 

@@ -31,7 +31,7 @@ import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} fr
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
-import {NavigationCancelingError, PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
@@ -802,7 +802,7 @@ export class Router {
                 }
               },
               (e: any) => {
-                if (e instanceof NavigationCancelingError) {
+                if (isNavigationCancelingError(e)) {
                   this.resetUrlToCurrentUrlTree();
                   this.navigated = true;
                   this.routerEvents.next(

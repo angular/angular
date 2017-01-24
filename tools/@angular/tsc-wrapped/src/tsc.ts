@@ -30,17 +30,27 @@ export class UserError extends Error {
   private _nativeError: Error;
 
   constructor(message: string) {
-    // Errors don't use current this, instead they create a new instance.
-    // We have to do forward all of our api to the nativeInstance.
-    const nativeError = super(message) as any as Error;
+    super(message);
+    // Required for TS 2.1, see
+    // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    Object.setPrototypeOf(this, UserError.prototype);
+
+    const nativeError = new Error(message) as any as Error;
     this._nativeError = nativeError;
   }
 
   get message() { return this._nativeError.message; }
-  set message(message) { this._nativeError.message = message; }
-  get name() { return 'UserError'; }
+  set message(message) {
+    if (this._nativeError) this._nativeError.message = message;
+  }
+  get name() { return this._nativeError.name; }
+  set name(name) {
+    if (this._nativeError) this._nativeError.name = name;
+  }
   get stack() { return (this._nativeError as any).stack; }
-  set stack(value) { (this._nativeError as any).stack = value; }
+  set stack(value) {
+    if (this._nativeError) (this._nativeError as any).stack = value;
+  }
   toString() { return this._nativeError.toString(); }
 }
 
@@ -133,7 +143,8 @@ export class Tsc implements CompilerInterface {
     const host = {
       useCaseSensitiveFileNames: true,
       fileExists: existsSync,
-      readDirectory: this.readDirectory
+      readDirectory: this.readDirectory,
+      readFile: ts.sys.readFile
     };
     this.parsed = ts.parseJsonConfigFileContent(config, host, basePath, existingOptions);
 
