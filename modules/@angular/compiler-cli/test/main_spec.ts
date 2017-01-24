@@ -154,7 +154,8 @@ describe('compiler-cli', () => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
                   'Error at ' + path.join(basePath, 'test.ts') +
-                  ':3:7: Cannot invoke an expression whose type lacks a call signature.');
+                  ':3:7: Cannot invoke an expression whose type lacks a call signature. ' +
+                  'Type \'String\' has no compatible call signatures.');
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();

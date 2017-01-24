@@ -115,6 +115,7 @@ class Ng2AppModule {
 // #docregion Angular 1 Stuff
 // #docregion ng1-module
 // This Angular 1 module represents the AngularJS pieces of the application
+declare var angular: ng.IAngularStatic;
 const ng1AppModule = angular.module('ng1AppModule', []);
 // #enddocregion
 

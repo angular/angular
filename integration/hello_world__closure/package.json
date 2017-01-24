@@ -13,7 +13,7 @@
     "google-closure-compiler": "^20161201.0.0",
     "rxjs": "file:../../node_modules/rxjs",
     "source-map-explorer": "^1.3.3",
-    "typescript": "~2.0",
+    "typescript": "~2.1",
     "zone.js": "^0.7.6"
   },
   "devDependencies": {

@@ -89,8 +89,8 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   public _expressionBrand: any;
 
   constructor(
-      public name: string, kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, flags: ts.NodeFlags = 0,
-      pos: number = 0, end: number = 0) {
+      public name: string, public kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
+      flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
     super(kind, flags, pos, end);
     this.text = name;
   }
@@ -100,7 +100,8 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
   public _declarationBrand: any;
 
   constructor(
-      public name: ts.Identifier, kind: ts.SyntaxKind = ts.SyntaxKind.VariableDeclaration,
+      public name: ts.Identifier,
+      public kind: ts.SyntaxKind.VariableDeclaration = ts.SyntaxKind.VariableDeclaration,
       flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
     super(kind, flags, pos, end);
   }
@@ -119,6 +120,7 @@ export class MockSymbol implements ts.Symbol {
   getName(): string { return this.name; }
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
+  getJsDocTags(): ts.JSDocTagInfo[]{return []};
 
   static of (name: string): MockSymbol { return new MockSymbol(name); }
 }

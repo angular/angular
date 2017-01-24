@@ -27,13 +27,16 @@ export type Params = {
   [key: string]: any
 };
 
-export class NavigationCancelingError extends Error {
-  public stack: any;
-  constructor(public message: string) {
-    super(message);
-    this.stack = (<any>new Error(message)).stack;
-  }
-  toString(): string { return this.message; }
+const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
+
+export function navigationCancelingError(message: string) {
+  const error = Error('NavigationCancelingError: ' + message);
+  (error as any)[NAVIGATION_CANCELING_ERROR] = true;
+  return error;
+}
+
+export function isNavigationCancelingError(error: Error) {
+  return (error as any)[NAVIGATION_CANCELING_ERROR];
 }
 
 export function defaultUrlMatcher(
