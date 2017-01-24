@@ -45,6 +45,13 @@ export declare class AnimationGroupMetadata extends AnimationWithStepsMetadata {
 }
 
 /** @experimental */
+export declare class AnimationKeyframe {
+    offset: number;
+    styles: AnimationStyles;
+    constructor(offset: number, styles: AnimationStyles);
+}
+
+/** @experimental */
 export declare class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
     steps: AnimationStyleMetadata[];
     constructor(steps: AnimationStyleMetadata[]);
@@ -104,6 +111,16 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
     constructor(styles: Array<string | {
         [key: string]: string | number;
     }>, offset?: number);
+}
+
+/** @experimental */
+export declare class AnimationStyles {
+    styles: {
+        [key: string]: string | number;
+    }[];
+    constructor(styles: {
+        [key: string]: string | number;
+    }[]);
 }
 
 /** @experimental */
