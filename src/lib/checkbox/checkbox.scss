@@ -240,7 +240,6 @@ md-checkbox {
   background-color: transparent;
   border: $md-checkbox-border-width solid;
   transition: border-color $md-checkbox-transition-duration $md-linear-out-slow-in-timing-function;
-  will-change: border-color;
 }
 
 .md-checkbox-background {
@@ -252,7 +251,6 @@ md-checkbox {
   transition: background-color $md-checkbox-transition-duration
                   $md-linear-out-slow-in-timing-function,
               opacity $md-checkbox-transition-duration $md-linear-out-slow-in-timing-function;
-  will-change: background-color, opacity;
 }
 
 .md-checkbox-checkmark {
