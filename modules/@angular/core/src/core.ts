@@ -35,4 +35,6 @@ export * from './core_private_export';
 export * from './animation/metadata';
 export {AnimationTransitionEvent} from './animation/animation_transition_event';
 export {AnimationPlayer} from './animation/animation_player';
+export {AnimationStyles} from './animation/animation_styles';
+export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
