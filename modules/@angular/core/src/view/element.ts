@@ -8,11 +8,16 @@
 
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, ViewFlags} from './types';
+import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags} from './types';
 import {checkAndUpdateBinding, setBindingDebugInfo} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, childCount: number, template?: ViewDefinition): NodeDef {
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number,
+    template?: ViewDefinition): NodeDef {
+  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
+  if (matchedQueries) {
+    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
+  }
   return {
     type: NodeType.Element,
     // will bet set by the view definition
@@ -20,12 +25,13 @@ export function anchorDef(
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
-    childCount,
+    matchedQueries: matchedQueryDefs, childCount,
     bindings: [],
     disposableCount: 0,
     element: {name: undefined, attrs: undefined, outputs: [], template},
@@ -36,11 +42,16 @@ export function anchorDef(
 }
 
 export function elementDef(
-    flags: NodeFlags, childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number, name: string,
+    fixedAttrs: {[name: string]: string} = {},
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
     outputs?: (string | [string, string])[]): NodeDef {
+  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
+  if (matchedQueries) {
+    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
+  }
   bindings = bindings || [];
   const bindingDefs = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
@@ -81,12 +92,13 @@ export function elementDef(
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
-    childCount,
+    matchedQueries: matchedQueryDefs, childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
     element: {name, attrs: fixedAttrs, outputs: outputDefs, template: undefined},
@@ -150,8 +162,11 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
     }
   }
   return {
-    elementOrText:
-        {node: el, embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined},
+    elementOrText: {
+      node: el,
+      embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined,
+      projectedViews: undefined
+    },
     provider: undefined,
     pureExpression: undefined,
   };

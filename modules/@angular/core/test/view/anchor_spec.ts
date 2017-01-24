@@ -48,21 +48,21 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('create', () => {
       it('should create anchor nodes without parents', () => {
         const rootNodes =
-            createAndGetRootNodes(compViewDef([anchorDef(NodeFlags.None, 0)])).rootNodes;
+            createAndGetRootNodes(compViewDef([anchorDef(NodeFlags.None, null, 0)])).rootNodes;
         expect(rootNodes.length).toBe(1);
       });
 
       it('should create views with multiple root anchor nodes', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            anchorDef(NodeFlags.None, 0), anchorDef(NodeFlags.None, 0)
+                            anchorDef(NodeFlags.None, null, 0), anchorDef(NodeFlags.None, null, 0)
                           ])).rootNodes;
         expect(rootNodes.length).toBe(2);
       });
 
       it('should create anchor nodes with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, 1, 'div'),
-                            anchorDef(NodeFlags.None, 0),
+                            elementDef(NodeFlags.None, null, 1, 'div'),
+                            anchorDef(NodeFlags.None, null, 0),
                           ])).rootNodes;
         expect(getDOM().childNodes(rootNodes[0]).length).toBe(1);
       });

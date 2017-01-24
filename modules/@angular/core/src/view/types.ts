@@ -7,6 +7,7 @@
  */
 
 import {PipeTransform} from '../change_detection/change_detection';
+import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
@@ -36,6 +37,11 @@ export interface ViewDefinition {
   lastRootNode: number;
   bindingCount: number;
   disposableCount: number;
+  /**
+   * ids of all queries that are matched by one of the nodes.
+   * This includes query ids from templates as well.
+   */
+  nodeMatchedQueries: {[queryId: string]: boolean};
 }
 
 export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData) => void;
@@ -69,11 +75,21 @@ export interface NodeDef {
   childCount: number;
   /** aggregated NodeFlags for all children **/
   childFlags: NodeFlags;
+
   providerIndices: {[tokenKey: string]: number};
   bindingIndex: number;
   bindings: BindingDef[];
   disposableIndex: number;
   disposableCount: number;
+  /**
+   * ids and value types of all queries that are matched by this node.
+   */
+  matchedQueries: {[queryId: string]: QueryValueType};
+  /**
+   * ids of all queries that are matched by one of the child nodes.
+   * This includes query ids from templates as well.
+   */
+  childMatchedQueries: {[queryId: string]: boolean};
   element: ElementDef;
   provider: ProviderDef;
   text: TextDef;
@@ -84,7 +100,7 @@ export enum NodeType {
   Element,
   Text,
   Provider,
-  PureExpression
+  PureExpression,
 }
 
 /**
@@ -102,6 +118,8 @@ export enum NodeFlags {
   AfterViewChecked = 1 << 7,
   HasEmbeddedViews = 1 << 8,
   HasComponent = 1 << 9,
+  HasContentQuery = 1 << 10,
+  HasViewQuery = 1 << 11,
 }
 
 export interface ElementDef {
@@ -140,8 +158,28 @@ export interface ProviderDef {
   ctor: any;
   deps: DepDef[];
   outputs: ProviderOutputDef[];
+  contentQueries: QueryDef[];
+  viewQueries: QueryDef[];
   // closure to allow recursive components
   component: () => ViewDefinition;
+}
+
+export interface QueryDef {
+  id: string;
+  propName: string;
+  bindingType: QueryBindingType;
+}
+
+export enum QueryBindingType {
+  First,
+  All
+}
+
+export enum QueryValueType {
+  ElementRef,
+  TemplateRef,
+  ViewContainerRef,
+  Provider
 }
 
 export interface TextDef { prefix: string; }
@@ -190,6 +228,10 @@ export interface ViewData {
   // index of parent element / anchor. Not the index
   // of the provider with the component view.
   parentIndex: number;
+  // for component views, this is the same as parentIndex.
+  // for embedded views, this is the index of the parent node
+  // that contains the view container.
+  parentDiIndex: number;
   parent: ViewData;
   component: any;
   context: any;
@@ -214,11 +256,17 @@ export interface NodeData {
 export interface ElementOrTextData {
   node: any;
   embeddedViews: ViewData[];
+  // views that have been created from the template
+  // of this element,
+  // but inserted into the embeddedViews of another element.
+  // By default, this is undefined.
+  projectedViews: ViewData[];
 }
 
 export interface ProviderData {
   instance: any;
   componentView: ViewData;
+  queries: {[queryId: string]: QueryList<any>};
 }
 
 export interface PureExpressionData {

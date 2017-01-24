@@ -56,8 +56,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           constructor() { instances.push(this); }
         }
 
-        createAndGetRootNodes(compViewDef(
-            [elementDef(NodeFlags.None, 1, 'span'), providerDef(NodeFlags.None, SomeService, [])]));
+        createAndGetRootNodes(compViewDef([
+          elementDef(NodeFlags.None, null, 1, 'span'),
+          providerDef(NodeFlags.None, null, SomeService, [])
+        ]));
 
         expect(instances.length).toBe(1);
       });
@@ -74,8 +76,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         it('should inject deps from the same element', () => {
           createAndGetRootNodes(compViewDef([
-            elementDef(NodeFlags.None, 2, 'span'), providerDef(NodeFlags.None, Dep, []),
-            providerDef(NodeFlags.None, SomeService, [Dep])
+            elementDef(NodeFlags.None, null, 2, 'span'), providerDef(NodeFlags.None, null, Dep, []),
+            providerDef(NodeFlags.None, null, SomeService, [Dep])
           ]));
 
           expect(instance.dep instanceof Dep).toBeTruthy();
@@ -83,8 +85,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         it('should inject deps from a parent element', () => {
           createAndGetRootNodes(compViewDef([
-            elementDef(NodeFlags.None, 3, 'span'), providerDef(NodeFlags.None, Dep, []),
-            elementDef(NodeFlags.None, 1, 'span'), providerDef(NodeFlags.None, SomeService, [Dep])
+            elementDef(NodeFlags.None, null, 3, 'span'), providerDef(NodeFlags.None, null, Dep, []),
+            elementDef(NodeFlags.None, null, 1, 'span'),
+            providerDef(NodeFlags.None, null, SomeService, [Dep])
           ]));
 
           expect(instance.dep instanceof Dep).toBeTruthy();
@@ -92,8 +95,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         it('should not inject deps from sibling root elements', () => {
           const nodes = [
-            elementDef(NodeFlags.None, 1, 'span'), providerDef(NodeFlags.None, Dep, []),
-            elementDef(NodeFlags.None, 1, 'span'), providerDef(NodeFlags.None, SomeService, [Dep])
+            elementDef(NodeFlags.None, null, 1, 'span'), providerDef(NodeFlags.None, null, Dep, []),
+            elementDef(NodeFlags.None, null, 1, 'span'),
+            providerDef(NodeFlags.None, null, SomeService, [Dep])
           ];
 
           // root elements
@@ -103,18 +107,18 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           // non root elements
           expect(
               () => createAndGetRootNodes(
-                  compViewDef([elementDef(NodeFlags.None, 4, 'span')].concat(nodes))))
+                  compViewDef([elementDef(NodeFlags.None, null, 4, 'span')].concat(nodes))))
               .toThrowError('No provider for Dep!');
         });
 
         it('should inject from a parent elment in a parent view', () => {
           createAndGetRootNodes(compViewDef([
-            elementDef(NodeFlags.None, 1, 'div'),
+            elementDef(NodeFlags.None, null, 1, 'div'),
             providerDef(
-                NodeFlags.None, Dep, [], null, null,
+                NodeFlags.None, null, Dep, [], null, null, null,
                 () => compViewDef([
-                  elementDef(NodeFlags.None, 1, 'span'),
-                  providerDef(NodeFlags.None, SomeService, [Dep])
+                  elementDef(NodeFlags.None, null, 1, 'span'),
+                  providerDef(NodeFlags.None, null, SomeService, [Dep])
                 ])),
           ]));
 
@@ -124,8 +128,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         describe('builtin tokens', () => {
           it('should inject ViewContainerRef', () => {
             createAndGetRootNodes(compViewDef([
-              anchorDef(NodeFlags.HasEmbeddedViews, 1),
-              providerDef(NodeFlags.None, SomeService, [ViewContainerRef])
+              anchorDef(NodeFlags.HasEmbeddedViews, null, 1),
+              providerDef(NodeFlags.None, null, SomeService, [ViewContainerRef])
             ]));
 
             expect(instance.dep.createEmbeddedView).toBeTruthy();
@@ -133,8 +137,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
           it('should inject TemplateRef', () => {
             createAndGetRootNodes(compViewDef([
-              anchorDef(NodeFlags.None, 1, embeddedViewDef([anchorDef(NodeFlags.None, 0)])),
-              providerDef(NodeFlags.None, SomeService, [TemplateRef])
+              anchorDef(
+                  NodeFlags.None, null, 1, embeddedViewDef([anchorDef(NodeFlags.None, null, 0)])),
+              providerDef(NodeFlags.None, null, SomeService, [TemplateRef])
             ]));
 
             expect(instance.dep.createEmbeddedView).toBeTruthy();
@@ -142,8 +147,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
           it('should inject ElementRef', () => {
             createAndGetRootNodes(compViewDef([
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(NodeFlags.None, SomeService, [ElementRef])
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(NodeFlags.None, null, SomeService, [ElementRef])
             ]));
 
             expect(getDOM().nodeName(instance.dep.nativeElement).toLowerCase()).toBe('span');
@@ -152,16 +157,16 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           if (config.directDom) {
             it('should not inject Renderer when using directDom', () => {
               expect(() => createAndGetRootNodes(compViewDef([
-                       elementDef(NodeFlags.None, 1, 'span'),
-                       providerDef(NodeFlags.None, SomeService, [Renderer])
+                       elementDef(NodeFlags.None, null, 1, 'span'),
+                       providerDef(NodeFlags.None, null, SomeService, [Renderer])
                      ])))
                   .toThrowError('No provider for Renderer!');
             });
           } else {
             it('should inject Renderer when not using directDom', () => {
               createAndGetRootNodes(compViewDef([
-                elementDef(NodeFlags.None, 1, 'span'),
-                providerDef(NodeFlags.None, SomeService, [Renderer])
+                elementDef(NodeFlags.None, null, 1, 'span'),
+                providerDef(NodeFlags.None, null, SomeService, [Renderer])
               ]));
 
               expect(instance.dep.createElement).toBeTruthy();
@@ -193,8 +198,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, 1, 'span'),
-                providerDef(NodeFlags.None, SomeService, [], {a: [0, 'a'], b: [1, 'b']})
+                elementDef(NodeFlags.None, null, 1, 'span'),
+                providerDef(NodeFlags.None, null, SomeService, [], {a: [0, 'a'], b: [1, 'b']})
               ],
               config.update));
 
@@ -213,8 +218,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         let propValue = 'v1';
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(NodeFlags.None, SomeService, [], {a: [0, 'a']})
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(NodeFlags.None, null, SomeService, [], {a: [0, 'a']})
             ],
             (updater, view) => updater.checkInline(view, 1, propValue)));
 
@@ -248,8 +253,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(NodeFlags.None, SomeService, [], null, {emitter: 'someEventName'})
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(NodeFlags.None, null, SomeService, [], null, {emitter: 'someEventName'})
             ],
             null, handleEvent));
 
@@ -286,10 +291,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
             NodeFlags.AfterViewChecked | NodeFlags.OnDestroy;
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 3, 'span'),
-              providerDef(allFlags, SomeService, [], {a: [0, 'a']}),
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(allFlags, SomeService, [], {a: [0, 'a']})
+              elementDef(NodeFlags.None, null, 3, 'span'),
+              providerDef(allFlags, null, SomeService, [], {a: [0, 'a']}),
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(allFlags, null, SomeService, [], {a: [0, 'a']})
             ],
             (updater) => {
               updater.checkInline(view, 1, 'someValue');
@@ -345,8 +350,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, 1, 'span'),
-              providerDef(NodeFlags.OnChanges, SomeService, [], {a: [0, 'nonMinifiedA']})
+              elementDef(NodeFlags.None, null, 1, 'span'),
+              providerDef(NodeFlags.OnChanges, null, SomeService, [], {a: [0, 'nonMinifiedA']})
             ],
             (updater) => updater.checkInline(view, 1, currValue)));
 
