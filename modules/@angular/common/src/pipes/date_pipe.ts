@@ -24,7 +24,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  * Where:
  * - `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
  * (https://www.w3.org/TR/NOTE-datetime).
- * - `format` indicates which date/time components to include. The format can be predifined as
+ * - `format` indicates which date/time components to include. The format can be predefined as
  *   shown below or custom as shown in the table.
  *   - `'medium'`: equivalent to `'yMMMdjms'` (e.g. `Sep 3, 2010, 12:05:08 PM` for `en-US`)
  *   - `'short'`: equivalent to `'yMdjm'` (e.g. `9/3/2010, 12:05 PM` for `en-US`)
