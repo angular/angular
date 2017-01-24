@@ -126,7 +126,7 @@ gulp.task('public-api:update', ['build.sh'], (done) => {
 });
 
 // Check the coding standards and programming errors
-gulp.task('lint', ['format:enforce', 'tools:build', 'validate-commit-messages'], () => {
+gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   const tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://palantir.github.io/tslint/rules/
