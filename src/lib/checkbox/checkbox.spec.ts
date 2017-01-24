@@ -1,22 +1,10 @@
-import {
-    async,
-    fakeAsync,
-    flushMicrotasks,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
-import {
-    NgControl,
-    FormsModule,
-    ReactiveFormsModule,
-    FormControl,
-} from '@angular/forms';
+import {async, fakeAsync, flushMicrotasks, ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './checkbox';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
-
 
 
 describe('MdCheckbox', () => {
@@ -586,9 +574,19 @@ describe('MdCheckbox', () => {
   });
 
   describe('with ngModel', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let checkboxInstance: MdCheckbox;
+    let inputElement: HTMLInputElement;
+
     beforeEach(() => {
       fixture = TestBed.createComponent(CheckboxWithFormDirectives);
       fixture.detectChanges();
+
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      checkboxInstance = checkboxDebugElement.componentInstance;
+      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
     });
 
     it('should be in pristine, untouched, and valid states initially', fakeAsync(() => {
@@ -604,6 +602,20 @@ describe('MdCheckbox', () => {
       // TODO(jelbourn): test that `touched` and `pristine` state are modified appropriately.
       // This is currently blocked on issues with async() and fakeAsync().
     }));
+
+    it('should toggle checked state on click', () => {
+      expect(checkboxInstance.checked).toBe(false);
+
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+    });
   });
 
   describe('with name attribute', () => {
