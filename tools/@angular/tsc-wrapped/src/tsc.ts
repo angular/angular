@@ -30,7 +30,11 @@ export class UserError extends Error {
   constructor(message: string) {
     // Errors don't use current this, instead they create a new instance.
     // We have to do forward all of our api to the nativeInstance.
-    const nativeError = super(message) as any as Error;
+    // fix issue #14073, UserError should be implemented as the same as
+    // BaseError in @angular/common/facade, nativeError should be a
+    // new Error without initialized with current this.
+    super(message);
+    const nativeError = new Error(message) as any as Error;
     this._nativeError = nativeError;
   }
 
