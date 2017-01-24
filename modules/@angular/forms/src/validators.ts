@@ -63,13 +63,13 @@ export class Validators {
   /**
    * Validator that compares the value of the given FormControls
    */
-  static equalsTo(...fieldNames: string[]): ValidatorFn {
+  static equalsTo(...fieldPaths: string[]): ValidatorFn {
     return function(control: FormControl): {[key: string]: any} {
-      if (fieldNames.length < 1) {
+      if (fieldPaths.length < 1) {
         throw new Error('You must compare to at least 1 other field');
       }
 
-      for (let fieldName of fieldNames) {
+      for (let fieldName of fieldPaths) {
         let field = (<FormGroup>control.parent).get(fieldName);
         if (!field) {
           throw new Error(
