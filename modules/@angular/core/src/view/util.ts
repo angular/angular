@@ -12,7 +12,7 @@ import {looseIdentical} from '../facade/lang';
 import {ExpressionChangedAfterItHasBeenCheckedError} from '../linker/errors';
 import {Renderer} from '../render/api';
 
-import {NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition} from './types';
+import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, asElementData, asTextData} from './types';
 
 export function setBindingDebugInfo(
     renderer: Renderer, renderNode: any, propName: string, value: any) {
@@ -61,10 +61,19 @@ export function checkAndUpdateBindingWithChange(
   return null;
 }
 
-export function declaredViewContainer(view: ViewData) {
+export function declaredViewContainer(view: ViewData): ElementData {
   if (view.parent) {
     const parentView = view.parent;
-    return parentView.nodes[view.parentIndex];
+    return asElementData(parentView, view.parentIndex);
   }
   return undefined;
+}
+
+export function renderNode(view: ViewData, def: NodeDef): any {
+  switch (def.type) {
+    case NodeType.Element:
+      return asElementData(view, def.index).renderElement;
+    case NodeType.Text:
+      return asTextData(view, def.index).renderText;
+  }
 }

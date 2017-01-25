@@ -7,7 +7,7 @@
  */
 
 import {resolveDep, tokenKey} from './provider';
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionType, ViewData} from './types';
+import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionData, PureExpressionType, ViewData, asPureExpressionData} from './types';
 import {checkAndUpdateBinding} from './util';
 
 export function purePipeDef(pipeToken: any, argCount: number): NodeDef {
@@ -47,7 +47,6 @@ function _pureExpressionDef(
     childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
-    providerIndices: undefined,
     // regular values
     flags: 0,
     matchedQueries: {},
@@ -56,15 +55,16 @@ function _pureExpressionDef(
     element: undefined,
     provider: undefined,
     text: undefined,
-    pureExpression: {type, pipeDep}
+    pureExpression: {type, pipeDep},
+    query: undefined,
   };
 }
 
-export function createPureExpression(view: ViewData, def: NodeDef): NodeData {
+export function createPureExpression(view: ViewData, def: NodeDef): PureExpressionData {
   const pipe = def.pureExpression.pipeDep ?
       resolveDep(view, def.parent, def.pureExpression.pipeDep) :
       undefined;
-  return {elementOrText: undefined, provider: undefined, pureExpression: {value: undefined, pipe}};
+  return {value: undefined, pipe};
 }
 
 export function checkAndUpdatePureExpressionInline(
@@ -97,7 +97,7 @@ export function checkAndUpdatePureExpressionInline(
   }
 
   if (changed) {
-    const data = view.nodes[def.index].pureExpression;
+    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -202,7 +202,7 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
     }
   }
   if (changed) {
-    const data = view.nodes[def.index].pureExpression;
+    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:

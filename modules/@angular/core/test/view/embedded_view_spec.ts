@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -83,16 +83,16 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
 
       const rootChildren = getDOM().childNodes(rootNodes[0]);
-      attachEmbeddedView(parentView.nodes[1], 0, childView0);
-      attachEmbeddedView(parentView.nodes[1], 1, childView1);
+      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
+      attachEmbeddedView(asElementData(parentView, 1), 1, childView1);
 
       // 2 anchors + 2 elements
       expect(rootChildren.length).toBe(4);
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
 
-      detachEmbeddedView(parentView.nodes[1], 1);
-      detachEmbeddedView(parentView.nodes[1], 0);
+      detachEmbeddedView(asElementData(parentView, 1), 1);
+      detachEmbeddedView(asElementData(parentView, 1), 0);
 
       expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
     });
@@ -106,7 +106,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       ]));
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[0]);
-      attachEmbeddedView(parentView.nodes[0], 0, childView0);
+      attachEmbeddedView(asElementData(parentView, 0), 0, childView0);
 
       const rootNodes = rootRenderNodes(parentView);
       expect(rootNodes.length).toBe(3);
@@ -133,7 +133,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       const rootEl = rootNodes[0];
-      attachEmbeddedView(parentView.nodes[1], 0, childView0);
+      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
 
       checkAndUpdateView(parentView);
 
@@ -163,13 +163,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         elementDef(NodeFlags.None, null, 1, 'div'),
         anchorDef(NodeFlags.HasEmbeddedViews, null, 0, embeddedViewDef([
                     elementDef(NodeFlags.None, null, 1, 'span'),
-                    providerDef(NodeFlags.OnDestroy, null, ChildProvider, [])
+                    providerDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
                   ]))
       ]));
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
 
-      attachEmbeddedView(parentView.nodes[1], 0, childView0);
+      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
       destroyView(parentView);
 
       expect(log).toEqual(['ngOnDestroy']);

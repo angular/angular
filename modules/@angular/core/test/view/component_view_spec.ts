@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -54,13 +54,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, 1, 'div'),
         providerDef(
-            NodeFlags.None, null, AComp, [], null, null, null,
+            NodeFlags.None, null, 0, AComp, [], null, null,
             () => compViewDef([
               elementDef(NodeFlags.None, null, 0, 'span'),
             ])),
       ]));
 
-      const compView = view.nodes[1].provider.componentView;
+      const compView = asProviderData(view, 1).componentView;
 
       expect(compView.context).toBe(instance);
       expect(compView.component).toBe(instance);
@@ -81,13 +81,13 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const {view, rootNodes} = createAndGetRootNodes(
         compViewDef([
           elementDef(NodeFlags.None, null, 1, 'div'),
-          providerDef(NodeFlags.None, null, AComp, [], null, null, null, () => compViewDef(
+          providerDef(NodeFlags.None, null, 0, AComp, [], null, null, () => compViewDef(
             [
               elementDef(NodeFlags.None, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
             ], update
           )),
         ], jasmine.createSpy('parentUpdater')));
-      const compView = view.nodes[1].provider.componentView;
+      const compView = asProviderData(view, 1).componentView;
 
       checkAndUpdateView(view);
 
@@ -118,10 +118,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, 1, 'div'),
         providerDef(
-            NodeFlags.None, null, AComp, [], null, null, null,
+            NodeFlags.None, null, 0, AComp, [], null, null,
             () => compViewDef([
               elementDef(NodeFlags.None, null, 1, 'span'),
-              providerDef(NodeFlags.OnDestroy, null, ChildProvider, [])
+              providerDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
             ])),
       ]));
 
