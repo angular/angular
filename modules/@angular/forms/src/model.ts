@@ -1102,8 +1102,8 @@ export class FormGroup extends AbstractControl {
 }
 
 /**
- * @whatItDoes Tracks the value and validity state of an array of {@link FormControl}
- * instances.
+ * @whatItDoes Tracks the value and validity state of an array of {@link FormControl},
+ * {@link FormGroup} or {@link FormArray} instances.
  *
  * A `FormArray` aggregates the values of each child {@link FormControl} into an array.
  * It calculates its status by reducing the statuses of its children. For example, if one of
