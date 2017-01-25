@@ -391,6 +391,26 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should scroll to active options below the fold', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const scrollContainer = document.querySelector('.cdk-overlay-pane .md-autocomplete-panel');
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      fixture.detectChanges();
+      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+
+      // These down arrows will set the 6th option active, below the fold.
+      [1, 2, 3, 4, 5].forEach(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      });
+      fixture.detectChanges();
+
+      // Expect option bottom minus the panel height (288 - 256 = 32)
+      expect(scrollContainer.scrollTop).toEqual(32, `Expected panel to reveal the sixth option.`);
+    });
+
   });
 
   describe('aria', () => {
