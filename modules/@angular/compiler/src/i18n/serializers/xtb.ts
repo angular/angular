@@ -29,10 +29,19 @@ export class Xtb extends Serializer {
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
     const converter = new XmlToI18n();
+
+    // Because we should be able to load xtb files that rely on features not supported by angular,
+    // we need to delay the conversion of html to i18n nodes so that non angular messages are not
+    // converted
     Object.keys(mlNodesByMsgId).forEach(msgId => {
-      const {i18nNodes, errors: e} = converter.convert(mlNodesByMsgId[msgId]);
-      errors.push(...e);
-      i18nNodesByMsgId[msgId] = i18nNodes;
+      const valueFn = function() {
+        const {i18nNodes, errors} = converter.convert(mlNodesByMsgId[msgId]);
+        if (errors.length) {
+          throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
+        }
+        return i18nNodes;
+      };
+      createLazyProperty(i18nNodesByMsgId, msgId, valueFn);
     });
 
     if (errors.length) {
@@ -47,6 +56,19 @@ export class Xtb extends Serializer {
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
+}
+
+function createLazyProperty(messages: any, id: string, valueFn: () => any) {
+  Object.defineProperty(messages, id, {
+    configurable: true,
+    enumerable: true,
+    get: function() {
+      const value = valueFn();
+      Object.defineProperty(messages, id, {enumerable: true, value});
+      return value;
+    },
+    set: _ => { throw new Error('Could not overwrite an XTB translation'); },
+  });
 }
 
 // Extract messages as xml nodes from the xtb file
