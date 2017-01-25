@@ -34,6 +34,7 @@ env:
     - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
+    - CI_MODE=docs_test
 
 matrix:
   fast_finish: true

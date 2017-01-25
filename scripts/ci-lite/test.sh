@@ -13,6 +13,7 @@ cd ../..
 ./scripts/ci-lite/test_e2e.sh
 ./scripts/ci-lite/test_saucelabs.sh
 ./scripts/ci-lite/test_browserstack.sh
+./scripts/ci-lite/test_docs.sh
 
 echo 'travis_fold:end:test-browser'
 
