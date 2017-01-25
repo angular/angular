@@ -1,15 +1,22 @@
 {
   "name": "angular.io",
   "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:angular/angular.git",
+  "author": "Angular",
   "license": "MIT",
   "angular-cli": {},
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "build": "ng build",
     "lint": "tslint \"src/**/*.ts\" --project src/tsconfig.json --type-check && tslint \"e2e/**/*.ts\" --project e2e/tsconfig.json --type-check",
     "test": "ng test",
     "pree2e": "webdriver-manager update --standalone false --gecko false",
-    "e2e": "protractor"
+    "e2e": "protractor",
+    "deploy-staging": "firebase use staging --token \"$FIREBASE_TOKEN\" && yarn run ~~deploy",
+    "pre~~deploy": "ng build --prod",
+    "~~deploy": "firebase deploy --message \"Commit: $TRAVIS_COMMIT\" --non-interactive --token \"$FIREBASE_TOKEN\""
   },
   "private": true,
   "dependencies": {
@@ -33,6 +40,7 @@
     "@types/node": "^6.0.42",
     "angular-cli": "1.0.0-beta.26",
     "codelyzer": "~2.0.0-beta.1",
+    "firebase-tools": "^3.2.1",
     "jasmine-core": "2.5.2",
     "jasmine-spec-reporter": "2.5.0",
     "karma": "1.2.0",

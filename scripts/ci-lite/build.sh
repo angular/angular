@@ -19,4 +19,15 @@ node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/platform-brows
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/router/tsconfig-build.json
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/forms/tsconfig-build.json
 
+if [[ ${CI_MODE} == "aio" ]]; then
+  echo 'travis_fold:start:BUILD.aio'
+
+  # Build angular.io
+  cd "`dirname $0`/../../angular.io"
+  yarn run build
+  cd -
+
+  echo 'travis_fold:end:BUILD.aio'
+fi
+
 echo 'travis_fold:end:BUILD'
