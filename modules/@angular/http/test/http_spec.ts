@@ -353,7 +353,6 @@ export function main() {
                  .subscribe((res: Response) => {});
            }));
 
-
         it('should append string search params to url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              backend.connections.subscribe((c: MockConnection) => {
@@ -365,7 +364,6 @@ export function main() {
                  .subscribe((res: Response) => {});
            }));
 
-
         it('should produce valid url when url already contains a query',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              backend.connections.subscribe((c: MockConnection) => {
@@ -374,6 +372,19 @@ export function main() {
                async.done();
              });
              http.get('https://www.google.com?q=angular', new RequestOptions({search: 'as_eq=1.x'}))
+                 .subscribe((res: Response) => {});
+           }));
+      });
+
+      describe('params', () => {
+        it('should append params to url',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.url).toEqual('https://www.google.com?q=puppies');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.get('https://www.google.com', {params: {q: 'puppies'}})
                  .subscribe((res: Response) => {});
            }));
       });
