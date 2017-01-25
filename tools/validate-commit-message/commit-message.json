@@ -12,6 +12,7 @@
     "test"
   ],
   "scopes": [
+    "aio",
     "benchpress",
     "common",
     "compiler",
