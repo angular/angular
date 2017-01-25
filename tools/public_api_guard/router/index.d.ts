@@ -127,8 +127,9 @@ export declare class NavigationError {
 export interface NavigationExtras {
     fragment?: string;
     preserveFragment?: boolean;
-    preserveQueryParams?: boolean;
+    /** @deprecated */ preserveQueryParams?: boolean;
     queryParams?: Params;
+    queryParamsHandling?: QueryParamsHandling;
     relativeTo?: ActivatedRoute;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
@@ -209,7 +210,7 @@ export declare class Router {
     url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
@@ -245,6 +246,7 @@ export declare class RouterLink {
     queryParams: {
         [k: string]: any;
     };
+    queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
@@ -277,6 +279,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     queryParams: {
         [k: string]: any;
     };
+    queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;

@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type, isDevMode} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {QueryParamsHandling, ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -102,12 +102,26 @@ export interface NavigationExtras {
   /**
   * Preserves the query parameters for the next navigation.
   *
+  * deprecated, use `queryParamsHandling` instead
+  *
   * ```
   * // Preserve query params from /results?page=1 to /view?page=1
   * this.router.navigate(['/view'], { preserveQueryParams: true });
   * ```
+  *
+  * @deprecated
   */
   preserveQueryParams?: boolean;
+
+  /**
+  *  config strategy to handle the query parameters for the next navigation.
+  *
+  * ```
+  * // from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
+  * ```
+  */
+  queryParamsHandling?: QueryParamsHandling;
   /**
   * Preserves the fragment for the next navigation
   *
@@ -465,11 +479,28 @@ export class Router {
    * ```
    */
   createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
+      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
+    if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
+      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
+    }
     const a = relativeTo || this.routerState.root;
-    const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
+    let q: Params = null;
+    if (queryParamsHandling) {
+      switch (queryParamsHandling) {
+        case 'merge':
+          q = merge(this.currentUrlTree.queryParams, queryParams);
+          break;
+        case 'preserve':
+          q = this.currentUrlTree.queryParams;
+          break;
+        default:
+          q = queryParams;
+      }
+    } else {
+      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
+    }
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
 
