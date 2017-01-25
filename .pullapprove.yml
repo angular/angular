@@ -30,3 +30,11 @@ groups:
     teams:
       - compiler-owners
       - repoowners
+
+  angular.io:
+    conditions:
+      files:
+        - "angular.io/*"
+    users:
+      - IgorMinar
+      - robwormald
