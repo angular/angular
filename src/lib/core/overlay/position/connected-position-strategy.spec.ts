@@ -228,6 +228,39 @@ describe('ConnectedPositionStrategy', () => {
         expect(overlayRect.right).toBe(originRect.left);
       });
 
+      it('should recalculate and set the last position with recalculateLastPosition()', () => {
+        // Use the fake viewport ruler because we don't know *exactly* how big the viewport is.
+        fakeViewportRuler.fakeRect = {
+          top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+        };
+        positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+
+        // Push the trigger down so the overlay doesn't have room to open on the bottom.
+        originElement.style.top = '475px';
+        originRect = originElement.getBoundingClientRect();
+
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'start', overlayY: 'top'})
+            .withFallbackPosition(
+                {originX: 'start', originY: 'top'},
+                {overlayX: 'start', overlayY: 'bottom'});
+
+        // This should apply the fallback position, as the original position won't fit.
+        strategy.apply(overlayElement);
+
+        // Now make the overlay small enough to fit in the first preferred position.
+        overlayElement.style.height = '15px';
+
+        // This should only re-align in the last position, even though the first would fit.
+        strategy.recalculateLastPosition();
+
+        let overlayRect = overlayElement.getBoundingClientRect();
+        expect(overlayRect.bottom).toBe(originRect.top,
+            'Expected overlay to be re-aligned to the trigger in the previous position.');
+      });
+
       it('should position a panel properly when rtl', () => {
         // must make the overlay longer than the origin to properly test attachment
         overlayElement.style.width = `500px`;

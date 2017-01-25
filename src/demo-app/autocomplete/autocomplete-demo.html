@@ -1,3 +1,5 @@
+Space above cards: <input type="number" [formControl]="topHeightCtrl">
+<div [style.height.px]="topHeightCtrl.value"></div>
 <div class="demo-autocomplete">
   <md-card>
     <div>Reactive value: {{ stateCtrl.value }}</div>

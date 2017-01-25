@@ -53,6 +53,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /** The origin element against which the overlay will be positioned. */
   private _origin: HTMLElement;
 
+  /** The overlay pane element. */
+  private _pane: HTMLElement;
+
+  /** The last position to have been calculated as the best fit position. */
+  private _lastConnectedPosition: ConnectionPositionPair;
+
   _onPositionChange:
       Subject<ConnectedOverlayPositionChange> = new Subject<ConnectedOverlayPositionChange>();
 
@@ -89,6 +95,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @returns Resolves when the styles have been applied.
    */
   apply(element: HTMLElement): Promise<void> {
+    // Cache the overlay pane element in case re-calculating position is necessary
+    this._pane = element;
+
     // We need the bounding rects for the origin and the overlay to determine how to position
     // the overlay relative to the origin.
     const originRect = this._origin.getBoundingClientRect();
@@ -112,6 +121,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       if (overlayPoint.fitsInViewport) {
         this._setElementPosition(element, overlayPoint);
 
+        // Save the last connected position in case the position needs to be re-calculated.
+        this._lastConnectedPosition = pos;
+
         // Notify that the position has been changed along with its change properties.
         const scrollableViewProperties = this.getScrollableViewProperties(element);
         const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
@@ -128,6 +140,22 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     this._setElementPosition(element, fallbackPoint);
 
     return Promise.resolve(null);
+  }
+
+  /**
+   * This re-aligns the overlay element with the trigger in its last calculated position,
+   * even if a position higher in the "preferred positions" list would now fit. This
+   * allows one to re-align the panel without changing the orientation of the panel.
+   */
+  recalculateLastPosition(): void {
+    const originRect = this._origin.getBoundingClientRect();
+    const overlayRect = this._pane.getBoundingClientRect();
+    const viewportRect = this._viewportRuler.getViewportRect();
+
+    let originPoint = this._getOriginConnectionPoint(originRect, this._lastConnectedPosition);
+    let overlayPoint =
+        this._getOverlayPoint(originPoint, overlayRect, viewportRect, this._lastConnectedPosition);
+    this._setElementPosition(this._pane, overlayPoint);
   }
 
   /**

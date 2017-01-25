@@ -1,5 +1,5 @@
 <template>
-  <div class="md-autocomplete-panel" role="listbox" [id]="id">
+  <div class="md-autocomplete-panel" role="listbox" [id]="id" [ngClass]="_getPositionClass()">
     <ng-content></ng-content>
   </div>
 </template>

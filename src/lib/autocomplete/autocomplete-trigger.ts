@@ -5,18 +5,16 @@ import {NgControl} from '@angular/forms';
 import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
+import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
 import {Observable} from 'rxjs/Observable';
 import {MdOptionSelectEvent, MdOption} from '../core/option/option';
 import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
 import {ENTER} from '../core/keyboard/keycodes';
+import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
 import {Dir} from '../core/rtl/dir';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
-
-
-/** The panel needs a slight y-offset to ensure the input underline displays. */
-export const MD_AUTOCOMPLETE_PANEL_OFFSET = 6;
 
 @Directive({
   selector: 'input[mdAutocomplete], input[matAutocomplete]',
@@ -37,8 +35,12 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
 
+  /** The subscription to positioning changes in the autocomplete panel. */
+  private _panelPositionSub: Subscription;
+
   /** Manages active item in option list based on key events. */
   private _keyManager: ActiveDescendantKeyManager;
+  private _positionStrategy: ConnectedPositionStrategy;
 
   /* The autocomplete panel to be attached to this trigger. */
   @Input('mdAutocomplete') autocomplete: MdAutocomplete;
@@ -51,7 +53,13 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
     this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options);
   }
 
-  ngOnDestroy() { this._destroyPanel(); }
+  ngOnDestroy() {
+    if (this._panelPositionSub) {
+      this._panelPositionSub.unsubscribe();
+    }
+
+    this._destroyPanel();
+  }
 
   /* Whether or not the autocomplete panel is open. */
   get panelOpen(): boolean {
@@ -124,7 +132,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
         // create a new stream of panelClosingActions, replacing any previous streams
         // that were created, and flatten it so our stream only emits closing events...
         .switchMap(() => {
-          this._resetActiveItem();
+          this._resetPanel();
           return this.panelClosingActions;
         })
         // when the first closing event occurs...
@@ -174,10 +182,24 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   }
 
   private _getOverlayPosition(): PositionStrategy {
-    return this._overlay.position().connectedTo(
+    this._positionStrategy =  this._overlay.position().connectedTo(
         this._element,
         {originX: 'start', originY: 'bottom'}, {overlayX: 'start', overlayY: 'top'})
-        .withOffsetY(MD_AUTOCOMPLETE_PANEL_OFFSET);
+        .withFallbackPosition(
+            {originX: 'start', originY: 'top'}, {overlayX: 'start', overlayY: 'bottom'}
+        );
+    this._subscribeToPositionChanges(this._positionStrategy);
+    return this._positionStrategy;
+  }
+
+  /**
+   * This method subscribes to position changes in the autocomplete panel, so the panel's
+   * y-offset can be adjusted to match the new position.
+   */
+  private _subscribeToPositionChanges(strategy: ConnectedPositionStrategy) {
+    this._panelPositionSub = strategy.onPositionChange.subscribe(change => {
+      this.autocomplete.positionY = change.connectionPair.originY === 'top' ? 'above' : 'below';
+    });
   }
 
   /** Returns the width of the input element, so the panel width can match it. */
@@ -188,6 +210,15 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   /** Reset active item to -1 so DOWN_ARROW event will activate the first option.*/
   private _resetActiveItem(): void {
     this._keyManager.setActiveItem(-1);
+  }
+
+  /**
+   * Resets the active item and re-calculates alignment of the panel in case its size
+   * has changed due to fewer or greater number of options.
+   */
+  private _resetPanel() {
+    this._resetActiveItem();
+    this._positionStrategy.recalculateLastPosition();
   }
 
 }

@@ -12,6 +12,7 @@ import {Subscription} from 'rxjs/Subscription';
 export class AutocompleteDemo implements OnDestroy {
   stateCtrl = new FormControl();
   currentState = '';
+  topHeightCtrl = new FormControl(0);
 
   reactiveStates: any[];
   tdStates: any[];

@@ -1,5 +1,28 @@
 @import '../core/style/menu-common';
 
+/**
+ * The max-height of the panel, currently matching md-select value.
+ * TODO: Check value with MD team.
+ */
+$md-autocomplete-panel-max-height: 256px !default;
+
+/** When in "below" position, the panel needs a slight y-offset to ensure the input underline displays. */
+$md-autocomplete-panel-below-offset: 6px !default;
+
+/** When in "above" position, the panel needs a larger y-offset to ensure the label has room to display. */
+$md-autocomplete-panel-above-offset: -24px !default;
+
 .md-autocomplete-panel {
   @include md-menu-base();
+
+  max-height: $md-autocomplete-panel-max-height;
+  position: relative;
+
+  &.md-autocomplete-panel-below {
+    top: $md-autocomplete-panel-below-offset;
+  }
+
+  &.md-autocomplete-panel-above {
+    top: $md-autocomplete-panel-above-offset;
+  }
 }
