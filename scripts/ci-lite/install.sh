@@ -23,7 +23,7 @@ mkdir -p ${LOGS_DIR}
 # Install version of npm that we are locked against
 echo 'travis_fold:start:install.npm'
 npm install -g npm@${NPM_VERSION}
-echo 'travis_fold:end:install-npm'
+echo 'travis_fold:end:install.npm'
 
 
 # Install all npm dependencies according to shrinkwrap.json
@@ -32,12 +32,31 @@ node tools/npm/check-node-modules --purge || npm install
 echo 'travis_fold:end:install.node_modules'
 
 
+if [[ ${TRAVIS} && ${CI_MODE} == "aio" ]]; then
+
+  # angular.io: Install version of yarn that we are locked against
+  echo 'travis_fold:start:install.aio.yarn'
+  curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
+  echo 'travis_fold:end:install.aio.yarn'
+
+
+  # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
+  echo 'travis_fold:start:install.aio.node_modules'
+  cd "`dirname $0`/../../angular.io"
+  yarn install
+  cd -
+  echo 'travis_fold:end:install.aio.node_modules'
+
+fi
+
+
 # Install Chromium
 echo 'travis_fold:start:install.chromium'
-if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" ]]; then
+if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "aio" ]]; then
   ./scripts/ci/install_chromium.sh
 fi
-echo 'travis_fold:end:install-chromium'
+echo 'travis_fold:end:install.chromium'
+
 
 # Install Sauce Connect
 echo 'travis_fold:start:install.sauceConnect'

@@ -13,9 +13,9 @@ describe('AppComponent', () => {
   //   TestBed.compileComponents();
   // });
   it('should work', () => {
-    expect(true).toBe(true)
-  })
-})
+    expect(true).toBe(true);
+  });
+});
 
 //   it('should create the app', async(() => {
 //     const fixture = TestBed.createComponent(AppComponent);

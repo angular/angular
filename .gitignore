@@ -3,6 +3,7 @@
 /dist/
 node_modules
 bower_components
+angular.io/dist
 
 # Include when developing application packages.
 pubspec.lock

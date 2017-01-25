@@ -2,9 +2,11 @@
 
 set -e -o pipefail
 
+echo 'travis_fold:start:ENV'
 
 NODE_VERSION=5.4.1
 NPM_VERSION=3.5.3
+YARN_VERSION=0.19.1
 CHROMIUM_VERSION=403382 # Chrome 53 linux stable, see https://www.chromium.org/developers/calendar
 SAUCE_CONNECT_VERSION=4.3.11
 
@@ -45,6 +47,9 @@ fi
 
 # GLOBALS
 
+# Prepend `~/.yarn/bin` to the PATH
+export PATH=$HOME/.yarn/bin:$PATH
+
 # Append dist/all to the NODE_PATH so that cjs module resolver finds find the packages that use
 # absolute module ids (e.g. @angular/core)
 export NODE_PATH=${NODE_PATH}:$(pwd)/../../dist/all:$(pwd)/../../dist/tools
@@ -74,3 +79,4 @@ if [[ ${TRAVIS} ]]; then
   export CHROME_BIN=${HOME}/.chrome/chromium/chrome-linux/chrome
 fi
 
+echo 'travis_fold:end:ENV'
