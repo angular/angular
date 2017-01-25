@@ -30,15 +30,16 @@ export function textDef(constants: string[]): NodeDef {
     parent: undefined,
     childFlags: undefined,
     bindingIndex: undefined,
+    disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags: 0,
     childCount: 0, bindings,
+    disposableCount: 0,
     element: undefined,
     provider: undefined,
     text: {prefix: constants[0]},
-    component: undefined,
-    template: undefined
+    pureExpression: undefined
   };
 }
 
@@ -122,9 +123,13 @@ export function checkAndUpdateTextInline(
 
 export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: any[]) {
   const bindings = def.bindings;
-  let changed = view.firstChange;
-  for (let i = 0; i < values.length && !changed; i++) {
-    changed = changed || checkAndUpdateBinding(view, def, i, values[i]);
+  let changed = false;
+  for (let i = 0; i < values.length; i++) {
+    // Note: We need to loop over all values, so that
+    // the old values are updates as well!
+    if (checkAndUpdateBinding(view, def, i, values[i])) {
+      changed = true;
+    }
   }
   if (changed) {
     let value = '';

@@ -7,12 +7,12 @@
  */
 
 import * as ts from 'typescript';
-import {Tsc} from '../src/tsc';
+import {Tsc, tsc as pureTsc} from '../src/tsc';
+import {VinylFile} from '../src/vinyl_file';
 
 describe('options parsing', () => {
 
-  const tsc = new Tsc(
-      () => `
+  const configData = `
 {
     "angularCompilerOptions": {
         "googleClosureOutput": true
@@ -21,8 +21,10 @@ describe('options parsing', () => {
         "module": "commonjs",
         "outDir": "built"
     }
-}`,
-      () => ['tsconfig.json']);
+}`;
+
+  const tsc = new Tsc(() => configData, () => ['tsconfig.json']);
+  const config = {path: 'basePath/tsconfig.json', contents: new Buffer(configData)};
 
   it('should combine all options into ngOptions', () => {
     const {parsed, ngOptions} =
@@ -35,6 +37,18 @@ describe('options parsing', () => {
       outDir: 'basePath/built',
       configFilePath: undefined,
       target: ts.ScriptTarget.ES2015
+    });
+  });
+
+  it('should combine all options into ngOptions from vinyl like object', () => {
+    const {parsed, ngOptions} = pureTsc.readConfiguration(config as VinylFile, 'basePath');
+
+    expect(ngOptions).toEqual({
+      genDir: 'basePath',
+      googleClosureOutput: true,
+      module: ts.ModuleKind.CommonJS,
+      outDir: 'basePath/built',
+      configFilePath: undefined
     });
   });
 });

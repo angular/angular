@@ -142,6 +142,51 @@ export function main() {
          });
        }));
 
+    it('should bind to ng-model', async(() => {
+         const ng1Module = angular.module('ng1', []).run(
+             ($rootScope: angular.IScope) => { $rootScope['modelA'] = 'A'; });
+
+         let ng2Instance: Ng2;
+         @Component({selector: 'ng2', template: '<span>{{_value}}</span>'})
+         class Ng2 {
+           private _value: any = '';
+           private _onChangeCallback: (_: any) => void = () => {};
+           constructor() { ng2Instance = this; }
+           writeValue(value: any) { this._value = value; }
+           registerOnChange(fn: any) { this._onChangeCallback = fn; }
+           doChange(newValue: string) {
+             this._value = newValue;
+             this._onChangeCallback(newValue);
+           }
+         }
+
+         ng1Module.directive('ng2', downgradeComponent({component: Ng2}));
+
+         const element = html(`<div><ng2 ng-model="modelA"></ng2> | {{modelA}}</div>`);
+
+         @NgModule(
+             {declarations: [Ng2], entryComponents: [Ng2], imports: [BrowserModule, UpgradeModule]})
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
+           const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
+           adapter.bootstrap(element, [ng1Module.name]);
+           const $rootScope = adapter.$injector.get('$rootScope');
+
+           expect(multiTrim(document.body.textContent)).toEqual('A | A');
+
+           $rootScope.modelA = 'B';
+           $rootScope.$apply();
+           expect(multiTrim(document.body.textContent)).toEqual('B | B');
+
+           ng2Instance.doChange('C');
+           expect($rootScope.modelA).toBe('C');
+           expect(multiTrim(document.body.textContent)).toEqual('C | C');
+         });
+       }));
+
     it('should properly run cleanup when ng1 directive is destroyed', async(() => {
 
          let destroyed = false;

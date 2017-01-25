@@ -161,6 +161,37 @@ export interface ITestabilityService {
   whenStable(callback: Function): void;
 }
 
+export interface INgModelController {
+  $render(): void;
+  $isEmpty(value: any): boolean;
+  $setValidity(validationErrorKey: string, isValid: boolean): void;
+  $setPristine(): void;
+  $setDirty(): void;
+  $setUntouched(): void;
+  $setTouched(): void;
+  $rollbackViewValue(): void;
+  $validate(): void;
+  $commitViewValue(): void;
+  $setViewValue(value: any, trigger: string): void;
+
+  $viewValue: any;
+  $modelValue: any;
+  $parsers: Function[];
+  $formatters: Function[];
+  $validators: {[key: string]: Function};
+  $asyncValidators: {[key: string]: Function};
+  $viewChangeListeners: Function[];
+  $error: Object;
+  $pending: Object;
+  $untouched: boolean;
+  $touched: boolean;
+  $pristine: boolean;
+  $dirty: boolean;
+  $valid: boolean;
+  $invalid: boolean;
+  $name: string;
+}
+
 function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }

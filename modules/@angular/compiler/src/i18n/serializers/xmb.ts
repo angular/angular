@@ -9,7 +9,7 @@
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 
-import {Serializer} from './serializer';
+import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import * as xml from './xml_helper';
 
 const _MESSAGES_TAG = 'messagebundle';
@@ -37,21 +37,14 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 
 <!ELEMENT ex (#PCDATA)>`;
 
-export class Xmb implements Serializer {
+export class Xmb extends Serializer {
   write(messages: i18n.Message[]): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
-    const visited: {[id: string]: boolean} = {};
     let rootNode = new xml.Tag(_MESSAGES_TAG);
 
     messages.forEach(message => {
-      const id = this.digest(message);
-
-      // deduplicate messages
-      if (visited[id]) return;
-      visited[id] = true;
-
-      const attrs: {[k: string]: string} = {id};
+      const attrs: {[k: string]: string} = {id: message.id};
 
       if (message.description) {
         attrs['desc'] = message.description;
@@ -82,12 +75,17 @@ export class Xmb implements Serializer {
   }
 
   digest(message: i18n.Message): string { return digest(message); }
+
+
+  createNameMapper(message: i18n.Message): PlaceholderMapper {
+    return new SimplePlaceholderMapper(message, toPublicName);
+  }
 }
 
 class _Visitor implements i18n.Visitor {
   visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
-  visitContainer(container: i18n.Container, context?: any): xml.Node[] {
+  visitContainer(container: i18n.Container, context: any): xml.Node[] {
     const nodes: xml.Node[] = [];
     container.children.forEach((node: i18n.Node) => nodes.push(...node.visit(this)));
     return nodes;
@@ -157,4 +155,9 @@ class ExampleVisitor implements xml.IVisitor {
   visitText(text: xml.Text): void {}
   visitDeclaration(decl: xml.Declaration): void {}
   visitDoctype(doctype: xml.Doctype): void {}
+}
+
+// XMB/XTB placeholders can only contain A-Z, 0-9 and _
+export function toPublicName(internalName: string): string {
+  return internalName.toUpperCase().replace(/[^A-Z0-9_]/g, '_');
 }

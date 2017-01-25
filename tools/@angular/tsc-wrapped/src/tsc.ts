@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import AngularCompilerOptions from './options';
+import {VinylFile, isVinylFile} from './vinyl_file';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -18,7 +19,8 @@ import AngularCompilerOptions from './options';
  * you should implement a similar interface.
  */
 export interface CompilerInterface {
-  readConfiguration(project: string, basePath: string, existingOptions?: ts.CompilerOptions):
+  readConfiguration(
+      project: string|VinylFile, basePath: string, existingOptions?: ts.CompilerOptions):
       {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
   emit(program: ts.Program): number;
@@ -97,20 +99,30 @@ export class Tsc implements CompilerInterface {
 
   constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
 
-  readConfiguration(project: string, basePath: string, existingOptions?: ts.CompilerOptions) {
+  readConfiguration(
+      project: string|VinylFile, basePath: string, existingOptions?: ts.CompilerOptions) {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
     // Note, TS@next returns an empty array, while earlier versions throw
     try {
-      if (this.readDirectory(project).length > 0) {
+      if (!isVinylFile(project) && this.readDirectory(project).length > 0) {
         project = path.join(project, 'tsconfig.json');
       }
     } catch (e) {
       // Was not a directory, continue on assuming it's a file
     }
 
-    const {config, error} = ts.readConfigFile(project, this.readFile);
+    let {config, error} = (() => {
+      // project is vinyl like file object
+      if (isVinylFile(project)) {
+        return {config: JSON.parse(project.contents.toString()), error: null};
+      }
+      // project is path to project file
+      else {
+        return ts.readConfigFile(project, this.readFile);
+      }
+    })();
     check([error]);
 
     // Do not inline `host` into `parseJsonConfigFileContent` until after

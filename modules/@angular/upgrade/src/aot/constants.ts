@@ -8,6 +8,7 @@
 
 export const UPGRADE_MODULE_NAME = '$$UpgradeModule';
 export const INJECTOR_KEY = '$$angularInjector';
+export const REQUIRE_NG1_MODEL = '?ngModel';
 
 export const $INJECTOR = '$injector';
 export const $PARSE = '$parse';

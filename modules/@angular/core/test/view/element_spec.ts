@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -34,8 +34,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
               new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
         }));
 
-    function compViewDef(nodes: NodeDef[], updater?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, updater, renderComponentType);
+    function compViewDef(
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
+      return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
@@ -101,12 +102,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('change properties', () => {
       [{
         name: 'inline',
-        updater: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 'v1', 'v2')
+        update: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 'v1', 'v2')
       },
        {
          name: 'dynamic',
-         updater: (updater: NodeUpdater, view: ViewData) =>
-                      updater.checkDynamic(view, 0, ['v1', 'v2'])
+         update: (updater: NodeUpdater, view: ViewData) =>
+                     updater.checkDynamic(view, 0, ['v1', 'v2'])
        }].forEach((config) => {
         it(`should update ${config.name}`, () => {
 
@@ -119,7 +120,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementProperty, 'value', SecurityContext.NONE]
                     ]),
               ],
-              config.updater));
+              config.update));
 
           checkAndUpdateView(view);
 
@@ -133,12 +134,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('change attributes', () => {
       [{
         name: 'inline',
-        updater: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 'v1', 'v2')
+        update: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 'v1', 'v2')
       },
        {
          name: 'dynamic',
-         updater: (updater: NodeUpdater, view: ViewData) =>
-                      updater.checkDynamic(view, 0, ['v1', 'v2'])
+         update: (updater: NodeUpdater, view: ViewData) =>
+                     updater.checkDynamic(view, 0, ['v1', 'v2'])
        }].forEach((config) => {
         it(`should update ${config.name}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -150,7 +151,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementAttribute, 'a2', SecurityContext.NONE]
                     ]),
               ],
-              config.updater));
+              config.update));
 
           checkAndUpdateView(view);
 
@@ -192,12 +193,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('change styles', () => {
       [{
         name: 'inline',
-        updater: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 10, 'red')
+        update: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 10, 'red')
       },
        {
          name: 'dynamic',
-         updater: (updater: NodeUpdater, view: ViewData) =>
-                      updater.checkDynamic(view, 0, [10, 'red'])
+         update: (updater: NodeUpdater, view: ViewData) =>
+                     updater.checkDynamic(view, 0, [10, 'red'])
        }].forEach((config) => {
         it(`should update ${config.name}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -209,7 +210,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementStyle, 'color', null]
                     ]),
               ],
-              config.updater));
+              config.update));
 
           checkAndUpdateView(view);
 
@@ -219,5 +220,131 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         });
       });
     });
+
+    if (getDOM().supportsDOMEvents()) {
+      describe('listen to DOM events', () => {
+        let removeNodes: Node[];
+        beforeEach(() => { removeNodes = []; });
+        afterEach(() => {
+          removeNodes.forEach((node) => {
+            if (node.parentNode) {
+              node.parentNode.removeChild(node);
+            }
+          });
+        });
+
+        function createAndAttachAndGetRootNodes(viewDef: ViewDefinition):
+            {rootNodes: any[], view: ViewData} {
+          const result = createAndGetRootNodes(viewDef);
+          // Note: We need to append the node to the document.body, otherwise `click` events
+          // won't work in IE.
+          result.rootNodes.forEach((node) => {
+            document.body.appendChild(node);
+            removeNodes.push(node);
+          });
+          return result;
+        }
+
+        it('should listen to DOM events', () => {
+          const handleEventSpy = jasmine.createSpy('handleEvent');
+          const removeListenerSpy =
+              spyOn(HTMLElement.prototype, 'removeEventListener').and.callThrough();
+          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
+              [elementDef(NodeFlags.None, 0, 'button', null, null, ['click'])], null,
+              handleEventSpy));
+
+          rootNodes[0].click();
+
+          expect(handleEventSpy).toHaveBeenCalled();
+          let handleEventArgs = handleEventSpy.calls.mostRecent().args;
+          expect(handleEventArgs[0]).toBe(view);
+          expect(handleEventArgs[1]).toBe(0);
+          expect(handleEventArgs[2]).toBe('click');
+          expect(handleEventArgs[3]).toBeTruthy();
+
+          destroyView(view);
+
+          expect(removeListenerSpy).toHaveBeenCalled();
+        });
+
+        it('should listen to window events', () => {
+          const handleEventSpy = jasmine.createSpy('handleEvent');
+          const addListenerSpy = spyOn(window, 'addEventListener');
+          const removeListenerSpy = spyOn(window, 'removeEventListener');
+          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
+              [elementDef(NodeFlags.None, 0, 'button', null, null, [['window', 'windowClick']])],
+              null, handleEventSpy));
+
+          expect(addListenerSpy).toHaveBeenCalled();
+          expect(addListenerSpy.calls.mostRecent().args[0]).toBe('windowClick');
+          addListenerSpy.calls.mostRecent().args[1]({name: 'windowClick'});
+
+          expect(handleEventSpy).toHaveBeenCalled();
+          const handleEventArgs = handleEventSpy.calls.mostRecent().args;
+          expect(handleEventArgs[0]).toBe(view);
+          expect(handleEventArgs[1]).toBe(0);
+          expect(handleEventArgs[2]).toBe('windowClick');
+          expect(handleEventArgs[3]).toBeTruthy();
+
+          destroyView(view);
+
+          expect(removeListenerSpy).toHaveBeenCalled();
+        });
+
+        it('should listen to document events', () => {
+          const handleEventSpy = jasmine.createSpy('handleEvent');
+          const addListenerSpy = spyOn(document, 'addEventListener');
+          const removeListenerSpy = spyOn(document, 'removeEventListener');
+          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
+              [elementDef(
+                  NodeFlags.None, 0, 'button', null, null, [['document', 'documentClick']])],
+              null, handleEventSpy));
+
+          expect(addListenerSpy).toHaveBeenCalled();
+          expect(addListenerSpy.calls.mostRecent().args[0]).toBe('documentClick');
+          addListenerSpy.calls.mostRecent().args[1]({name: 'documentClick'});
+
+          expect(handleEventSpy).toHaveBeenCalled();
+          const handleEventArgs = handleEventSpy.calls.mostRecent().args;
+          expect(handleEventArgs[0]).toBe(view);
+          expect(handleEventArgs[1]).toBe(0);
+          expect(handleEventArgs[2]).toBe('documentClick');
+          expect(handleEventArgs[3]).toBeTruthy();
+
+          destroyView(view);
+
+          expect(removeListenerSpy).toHaveBeenCalled();
+        });
+
+        it('should preventDefault only if the handler returns false', () => {
+          let eventHandlerResult: any;
+          let preventDefaultSpy: jasmine.Spy;
+
+          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
+              [elementDef(NodeFlags.None, 0, 'button', null, null, ['click'])], null,
+              (view, index, eventName, event) => {
+                preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
+                return eventHandlerResult;
+              }));
+
+          eventHandlerResult = undefined;
+          rootNodes[0].click();
+          expect(preventDefaultSpy).not.toHaveBeenCalled();
+
+          eventHandlerResult = true;
+          rootNodes[0].click();
+          expect(preventDefaultSpy).not.toHaveBeenCalled();
+
+          eventHandlerResult = 'someString';
+          rootNodes[0].click();
+          expect(preventDefaultSpy).not.toHaveBeenCalled();
+
+          eventHandlerResult = false;
+          rootNodes[0].click();
+          expect(preventDefaultSpy).toHaveBeenCalled();
+        });
+
+      });
+    }
   });
 }

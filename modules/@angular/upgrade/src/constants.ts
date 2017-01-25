@@ -22,3 +22,4 @@ export const NG1_PARSE = '$parse';
 export const NG1_TEMPLATE_CACHE = '$templateCache';
 export const NG1_TESTABILITY = '$$testability';
 export const REQUIRE_INJECTOR = '?^^' + NG2_INJECTOR;
+export const REQUIRE_NG1_MODEL = '?ngModel';

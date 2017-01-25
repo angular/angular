@@ -14,7 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer} from '../render/api';
 
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeFlags, NodeType, Services, ViewData, ViewDefinition, ViewFlags} from './types';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderOutputDef, Services, ViewData, ViewDefinition, ViewFlags} from './types';
 import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, setBindingDebugInfo} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
@@ -26,7 +26,8 @@ const TemplateRefTokenKey = tokenKey(TemplateRef);
 
 export function providerDef(
     flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[],
-    props?: {[name: string]: [number, string]}, component?: () => ViewDefinition): NodeDef {
+    props?: {[name: string]: [number, string]}, outputs?: {[name: string]: string},
+    component?: () => ViewDefinition): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -37,6 +38,12 @@ export function providerDef(
         securityContext: undefined,
         suffix: undefined
       };
+    }
+  }
+  const outputDefs: ProviderOutputDef[] = [];
+  if (outputs) {
+    for (let propName in outputs) {
+      outputDefs.push({propName, eventName: outputs[propName]});
     }
   }
   const depDefs: DepDef[] = deps.map(value => {
@@ -61,18 +68,16 @@ export function providerDef(
     parent: undefined,
     childFlags: undefined,
     bindingIndex: undefined,
+    disposableIndex: undefined,
     providerIndices: undefined,
     // regular values
     flags,
     childCount: 0, bindings,
+    disposableCount: outputDefs.length,
     element: undefined,
-    provider: {
-      tokenKey: tokenKey(ctor),
-      ctor,
-      deps: depDefs,
-    },
-    text: undefined, component,
-    template: undefined
+    provider: {tokenKey: tokenKey(ctor), ctor, deps: depDefs, outputs: outputDefs, component},
+    text: undefined,
+    pureExpression: undefined
   };
 }
 
@@ -87,10 +92,19 @@ export function tokenKey(token: any): string {
 
 export function createProvider(view: ViewData, def: NodeDef, componentView: ViewData): NodeData {
   const providerDef = def.provider;
+  const provider = createInstance(view, def.parent, providerDef.ctor, providerDef.deps);
+  if (providerDef.outputs.length) {
+    for (let i = 0; i < providerDef.outputs.length; i++) {
+      const output = providerDef.outputs[i];
+      const subscription = provider[output.propName].subscribe(
+          view.def.handleEvent.bind(null, view, def.parent, output.eventName));
+      view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
+    }
+  }
   return {
     renderNode: undefined,
-    provider: createInstance(view, def.parent, providerDef.ctor, providerDef.deps),
-    embeddedViews: undefined, componentView
+    provider,
+    embeddedViews: undefined, componentView,
   };
 }
 
@@ -133,8 +147,7 @@ export function checkAndUpdateProviderInline(
   }
 }
 
-export function checkAndUpdateProviderDynamic(
-    view: ViewData, index: number, def: NodeDef, values: any[]) {
+export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, values: any[]) {
   const provider = view.nodes[def.index].provider;
   let changes: SimpleChanges;
   for (let i = 0; i < values.length; i++) {
@@ -241,7 +254,8 @@ function checkAndUpdateProp(
     provider[propName] = value;
 
     if (view.def.flags & ViewFlags.LogBindingUpdate) {
-      setBindingDebugInfo(view.renderer, view.nodes[def.parent].renderNode, name, value);
+      setBindingDebugInfo(
+          view.renderer, view.nodes[def.parent].renderNode, binding.nonMinifiedName, value);
     }
     if (change) {
       changes = changes || {};

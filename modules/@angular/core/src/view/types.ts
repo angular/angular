@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PipeTransform} from '../change_detection/change_detection';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
@@ -19,6 +20,7 @@ export interface ViewDefinition {
   flags: ViewFlags;
   componentType: RenderComponentType;
   update: ViewUpdateFn;
+  handleEvent: ViewHandleEventFn;
   /**
    * Order: Depth first.
    * Especially providers are before elements / anchros.
@@ -33,17 +35,20 @@ export interface ViewDefinition {
   reverseChildNodes: NodeDef[];
   lastRootNode: number;
   bindingCount: number;
+  disposableCount: number;
 }
 
-export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData, component: any, context: any) =>
-    void;
+export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData) => void;
 
 export interface NodeUpdater {
   checkInline(
       view: ViewData, nodeIndex: number, v0?: any, v1?: any, v2?: any, v3?: any, v4?: any, v5?: any,
-      v6?: any, v7?: any, v8?: any, v9?: any): void;
-  checkDynamic(view: ViewData, nodeIndex: number, values: any[]): void;
+      v6?: any, v7?: any, v8?: any, v9?: any): any;
+  checkDynamic(view: ViewData, nodeIndex: number, values: any[]): any;
 }
+
+export type ViewHandleEventFn =
+    (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
 
 /**
  * Bitmask for ViewDefintion.flags.
@@ -64,22 +69,22 @@ export interface NodeDef {
   childCount: number;
   /** aggregated NodeFlags for all children **/
   childFlags: NodeFlags;
+  providerIndices: {[tokenKey: string]: number};
   bindingIndex: number;
   bindings: BindingDef[];
+  disposableIndex: number;
+  disposableCount: number;
   element: ElementDef;
-  providerIndices: {[tokenKey: string]: number};
   provider: ProviderDef;
   text: TextDef;
-  // closure to allow recursive components
-  component: () => ViewDefinition;
-  template: ViewDefinition;
+  pureExpression: PureExpressionDef;
 }
 
 export enum NodeType {
   Element,
   Text,
-  Anchor,
-  Provider
+  Provider,
+  PureExpression
 }
 
 /**
@@ -102,6 +107,13 @@ export enum NodeFlags {
 export interface ElementDef {
   name: string;
   attrs: {[name: string]: string};
+  outputs: ElementOutputDef[];
+  template: ViewDefinition;
+}
+
+export interface ElementOutputDef {
+  target: string;
+  eventName: string;
 }
 
 /**
@@ -118,13 +130,32 @@ export interface DepDef {
   tokenKey: string;
 }
 
+export interface ProviderOutputDef {
+  propName: string;
+  eventName: string;
+}
+
 export interface ProviderDef {
   tokenKey: string;
   ctor: any;
   deps: DepDef[];
+  outputs: ProviderOutputDef[];
+  // closure to allow recursive components
+  component: () => ViewDefinition;
 }
 
 export interface TextDef { prefix: string; }
+
+export interface PureExpressionDef {
+  type: PureExpressionType;
+  pipeDep: DepDef;
+}
+
+export enum PureExpressionType {
+  Array,
+  Object,
+  Pipe
+}
 
 export enum BindingType {
   ElementAttribute,
@@ -132,7 +163,8 @@ export enum BindingType {
   ElementStyle,
   ElementProperty,
   ProviderProperty,
-  Interpolation
+  Interpolation,
+  PureExpressionProperty
 }
 
 export interface BindingDef {
@@ -164,7 +196,10 @@ export interface ViewData {
   nodes: NodeData[];
   firstChange: boolean;
   oldValues: any[];
+  disposables: DisposableFn[];
 }
+
+export type DisposableFn = () => void;
 
 /**
  * Node instance data.
@@ -172,9 +207,14 @@ export interface ViewData {
  */
 export interface NodeData {
   renderNode: any;
-  provider: any;
+  provider: PureExpressionData|any;
   componentView: ViewData;
   embeddedViews: ViewData[];
+}
+
+export interface PureExpressionData {
+  value: any;
+  pipe: PipeTransform;
 }
 
 export interface Services {

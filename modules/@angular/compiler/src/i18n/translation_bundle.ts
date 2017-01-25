@@ -11,7 +11,7 @@ import {HtmlParser} from '../ml_parser/html_parser';
 
 import * as i18n from './i18n_ast';
 import {I18nError} from './parse_util';
-import {Serializer} from './serializers/serializer';
+import {PlaceholderMapper, Serializer} from './serializers/serializer';
 
 /**
  * A container for translated messages
@@ -21,16 +21,20 @@ export class TranslationBundle {
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
-      public digest: (m: i18n.Message) => string) {
-    this._i18nToHtml = new I18nToHtmlVisitor(_i18nNodesByMsgId, digest);
+      public digest: (m: i18n.Message) => string,
+      public mapperFactory?: (m: i18n.Message) => PlaceholderMapper) {
+    this._i18nToHtml = new I18nToHtmlVisitor(_i18nNodesByMsgId, digest, mapperFactory);
   }
 
+  // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
   static load(content: string, url: string, serializer: Serializer): TranslationBundle {
     const i18nNodesByMsgId = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
-    return new TranslationBundle(i18nNodesByMsgId, digestFn);
+    const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m);
+    return new TranslationBundle(i18nNodesByMsgId, digestFn, mapperFactory);
   }
 
+  // Returns the translation as HTML nodes from the given source message.
   get(srcMsg: i18n.Message): html.Node[] {
     const html = this._i18nToHtml.convert(srcMsg);
 
@@ -46,15 +50,17 @@ export class TranslationBundle {
 
 class I18nToHtmlVisitor implements i18n.Visitor {
   private _srcMsg: i18n.Message;
-  private _srcMsgStack: i18n.Message[] = [];
+  private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
   private _errors: I18nError[] = [];
+  private _mapper: (name: string) => string;
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
-      private _digest: (m: i18n.Message) => string) {}
+      private _digest: (m: i18n.Message) => string,
+      private _mapperFactory: (m: i18n.Message) => PlaceholderMapper) {}
 
   convert(srcMsg: i18n.Message): {nodes: html.Node[], errors: I18nError[]} {
-    this._srcMsgStack.length = 0;
+    this._contextStack.length = 0;
     this._errors.length = 0;
     // i18n to text
     const text = this._convertToText(srcMsg);
@@ -88,7 +94,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): string {
-    const phName = ph.name;
+    const phName = this._mapper(ph.name);
     if (this._srcMsg.placeholders.hasOwnProperty(phName)) {
       return this._srcMsg.placeholders[phName];
     }
@@ -105,14 +111,26 @@ class I18nToHtmlVisitor implements i18n.Visitor {
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any { throw 'unreachable code'; }
 
+  /**
+   * Convert a source message to a translated text string:
+   * - text nodes are replaced with their translation,
+   * - placeholders are replaced with their content,
+   * - ICU nodes are converted to ICU expressions.
+   */
   private _convertToText(srcMsg: i18n.Message): string {
     const digest = this._digest(srcMsg);
+    const mapper = this._mapperFactory ? this._mapperFactory(srcMsg) : null;
+
     if (this._i18nNodesByMsgId.hasOwnProperty(digest)) {
-      this._srcMsgStack.push(this._srcMsg);
+      this._contextStack.push({msg: this._srcMsg, mapper: this._mapper});
       this._srcMsg = srcMsg;
+      this._mapper = (name: string) => mapper ? mapper.toInternalName(name) : name;
+
       const nodes = this._i18nNodesByMsgId[digest];
       const text = nodes.map(node => node.visit(this)).join('');
-      this._srcMsg = this._srcMsgStack.pop();
+      const context = this._contextStack.pop();
+      this._srcMsg = context.msg;
+      this._mapper = context.mapper;
       return text;
     }
 

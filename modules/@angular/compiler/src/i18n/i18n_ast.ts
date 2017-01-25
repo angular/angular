@@ -79,3 +79,56 @@ export interface Visitor {
   visitPlaceholder(ph: Placeholder, context?: any): any;
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any;
 }
+
+// Clone the AST
+export class CloneVisitor implements Visitor {
+  visitText(text: Text, context?: any): Text { return new Text(text.value, text.sourceSpan); }
+
+  visitContainer(container: Container, context?: any): Container {
+    const children = container.children.map(n => n.visit(this, context));
+    return new Container(children, container.sourceSpan);
+  }
+
+  visitIcu(icu: Icu, context?: any): Icu {
+    const cases: {[k: string]: Node} = {};
+    Object.keys(icu.cases).forEach(key => cases[key] = icu.cases[key].visit(this, context));
+    const msg = new Icu(icu.expression, icu.type, cases, icu.sourceSpan);
+    msg.expressionPlaceholder = icu.expressionPlaceholder;
+    return msg;
+  }
+
+  visitTagPlaceholder(ph: TagPlaceholder, context?: any): TagPlaceholder {
+    const children = ph.children.map(n => n.visit(this, context));
+    return new TagPlaceholder(
+        ph.tag, ph.attrs, ph.startName, ph.closeName, children, ph.isVoid, ph.sourceSpan);
+  }
+
+  visitPlaceholder(ph: Placeholder, context?: any): Placeholder {
+    return new Placeholder(ph.value, ph.name, ph.sourceSpan);
+  }
+
+  visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): IcuPlaceholder {
+    return new IcuPlaceholder(ph.value, ph.name, ph.sourceSpan);
+  }
+}
+
+// Visit all the nodes recursively
+export class RecurseVisitor implements Visitor {
+  visitText(text: Text, context?: any): any{};
+
+  visitContainer(container: Container, context?: any): any {
+    container.children.forEach(child => child.visit(this));
+  }
+
+  visitIcu(icu: Icu, context?: any): any {
+    Object.keys(icu.cases).forEach(k => { icu.cases[k].visit(this); });
+  }
+
+  visitTagPlaceholder(ph: TagPlaceholder, context?: any): any {
+    ph.children.forEach(child => child.visit(this));
+  }
+
+  visitPlaceholder(ph: Placeholder, context?: any): any{};
+
+  visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any{};
+}

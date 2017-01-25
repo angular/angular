@@ -9,18 +9,18 @@
 import {ExpressionChangedAfterItHasBeenCheckedError} from '../linker/errors';
 import {RenderComponentType, Renderer} from '../render/api';
 
-import {createAnchor} from './anchor';
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProvider} from './provider';
+import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn} from './types';
+import {ElementDef, NodeData, NodeDef, NodeFlags, NodeType, NodeUpdater, ProviderDef, PureExpressionData, Services, TextDef, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn} from './types';
 import {checkBindingNoChanges} from './util';
 
-const NOOP_UPDATE = (): any => undefined;
+const NOOP = (): any => undefined;
 
 export function viewDef(
     flags: ViewFlags, nodesWithoutIndices: NodeDef[], update?: ViewUpdateFn,
-    componentType?: RenderComponentType): ViewDefinition {
+    handleEvent?: ViewHandleEventFn, componentType?: RenderComponentType): ViewDefinition {
   // clone nodes and set auto calculated values
   if (nodesWithoutIndices.length === 0) {
     throw new Error(`Illegal State: Views without nodes are not allowed!`);
@@ -28,6 +28,7 @@ export function viewDef(
   const nodes: NodeDef[] = new Array(nodesWithoutIndices.length);
   const reverseChildNodes: NodeDef[] = new Array(nodesWithoutIndices.length);
   let viewBindingCount = 0;
+  let viewDisposableCount = 0;
   let viewFlags = 0;
   let currentParent: NodeDef = null;
   let lastRootNode: NodeDef = null;
@@ -44,7 +45,8 @@ export function viewDef(
     const node = cloneAndModifyNode(nodesWithoutIndices[i], {
       index: i,
       parent: currentParent ? currentParent.index : undefined,
-      bindingIndex: viewBindingCount, reverseChildIndex,
+      bindingIndex: viewBindingCount,
+      disposableIndex: viewDisposableCount, reverseChildIndex,
       providerIndices: Object.create(currentParent ? currentParent.providerIndices : null)
     });
     nodes[i] = node;
@@ -53,6 +55,7 @@ export function viewDef(
 
     viewFlags |= node.flags;
     viewBindingCount += node.bindings.length;
+    viewDisposableCount += node.disposableCount;
     if (currentParent) {
       currentParent.childFlags |= node.flags;
     }
@@ -72,8 +75,10 @@ export function viewDef(
     nodeFlags: viewFlags,
     flags,
     nodes: nodes, reverseChildNodes,
-    update: update || NOOP_UPDATE, componentType,
+    update: update || NOOP,
+    handleEvent: handleEvent || NOOP, componentType,
     bindingCount: viewBindingCount,
+    disposableCount: viewDisposableCount,
     lastRootNode: lastRootNode.index
   };
 }
@@ -118,16 +123,17 @@ function calculateReverseChildIndex(
 }
 
 function validateNode(parent: NodeDef, node: NodeDef) {
-  if (node.template) {
-    if (node.template.lastRootNode != null &&
-        node.template.nodes[node.template.lastRootNode].flags & NodeFlags.HasEmbeddedViews) {
+  const template = node.element && node.element.template;
+  if (template) {
+    if (template.lastRootNode != null &&
+        template.nodes[template.lastRootNode].flags & NodeFlags.HasEmbeddedViews) {
       throw new Error(
           `Illegal State: Last root node of a template can't have embedded views, at index ${node.index}!`);
     }
   }
   if (node.provider) {
     const parentType = parent ? parent.type : null;
-    if (parentType !== NodeType.Element && parentType !== NodeType.Anchor) {
+    if (parentType !== NodeType.Element) {
       throw new Error(
           `Illegal State: Provider nodes need to be children of elements or anchors, at index ${node.index}!`);
     }
@@ -148,6 +154,7 @@ function cloneAndModifyNode(nodeDef: NodeDef, values: {
   reverseChildIndex: number,
   parent: number,
   bindingIndex: number,
+  disposableIndex: number,
   providerIndices: {[tokenKey: string]: number}
 }): NodeDef {
   const clonedNode: NodeDef = <any>{};
@@ -157,6 +164,7 @@ function cloneAndModifyNode(nodeDef: NodeDef, values: {
 
   clonedNode.index = values.index;
   clonedNode.bindingIndex = values.bindingIndex;
+  clonedNode.disposableIndex = values.disposableIndex;
   clonedNode.parent = values.parent;
   clonedNode.reverseChildIndex = values.reverseChildIndex;
   clonedNode.providerIndices = values.providerIndices;
@@ -168,7 +176,7 @@ function cloneAndModifyNode(nodeDef: NodeDef, values: {
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view = createView(parent.services, parent, anchorDef.parent, anchorDef.template);
+  const view = createView(parent.services, parent, anchorDef.parent, anchorDef.element.template);
   initView(view, null, parent.component, context);
   return view;
 }
@@ -188,6 +196,7 @@ function createView(
   } else {
     renderer = def.componentType ? services.renderComponent(def.componentType) : parent.renderer;
   }
+  const disposables = def.disposableCount ? new Array(def.disposableCount) : undefined;
   const view: ViewData = {
     def,
     parent,
@@ -195,7 +204,7 @@ function createView(
     context: undefined,
     component: undefined, nodes,
     firstChange: true, renderer, services,
-    oldValues: new Array(def.bindingCount)
+    oldValues: new Array(def.bindingCount), disposables
   };
   return view;
 }
@@ -215,15 +224,15 @@ function initView(view: ViewData, renderHost: any, component: any, context: any)
       case NodeType.Text:
         nodeData = createText(view, renderHost, nodeDef);
         break;
-      case NodeType.Anchor:
-        nodeData = createAnchor(view, renderHost, nodeDef);
-        break;
       case NodeType.Provider:
         let componentView: ViewData;
-        if (nodeDef.component) {
-          componentView = createView(view.services, view, i, nodeDef.component());
+        if (nodeDef.provider.component) {
+          componentView = createView(view.services, view, i, nodeDef.provider.component());
         }
         nodeData = createProvider(view, nodeDef, componentView);
+        break;
+      case NodeType.PureExpression:
+        nodeData = createPureExpression(view, nodeDef);
         break;
     }
     nodes[i] = nodeData;
@@ -232,7 +241,7 @@ function initView(view: ViewData, renderHost: any, component: any, context: any)
 }
 
 export function checkNoChangesView(view: ViewData) {
-  view.def.update(CheckNoChanges, view, view.component, view.context);
+  view.def.update(CheckNoChanges, view);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
 }
@@ -264,17 +273,27 @@ const CheckNoChanges: NodeUpdater = {
       case 1:
         checkBindingNoChanges(view, nodeDef, 0, v0);
     }
+    if (nodeDef.type === NodeType.PureExpression) {
+      const data: PureExpressionData = view.nodes[index].provider;
+      return data.value;
+    }
+    return undefined;
   },
   checkDynamic: (view: ViewData, index: number, values: any[]): void => {
-    const oldValues = view.oldValues;
+    const nodeDef = view.def.nodes[index];
     for (let i = 0; i < values.length; i++) {
-      checkBindingNoChanges(view, view.def.nodes[index], i, values[i]);
+      checkBindingNoChanges(view, nodeDef, i, values[i]);
     }
+    if (nodeDef.type === NodeType.PureExpression) {
+      const data: PureExpressionData = view.nodes[index].provider;
+      return data.value;
+    }
+    return undefined;
   }
 };
 
 export function checkAndUpdateView(view: ViewData) {
-  view.def.update(CheckAndUpdate, view, view.component, view.context);
+  view.def.update(CheckAndUpdate, view);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
@@ -293,13 +312,17 @@ const CheckAndUpdate: NodeUpdater = {
     switch (nodeDef.type) {
       case NodeType.Element:
         checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-        break;
+        return undefined;
       case NodeType.Text:
         checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-        break;
+        return undefined;
       case NodeType.Provider:
         checkAndUpdateProviderInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-        break;
+        return undefined;
+      case NodeType.PureExpression:
+        checkAndUpdatePureExpressionInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        const data: PureExpressionData = view.nodes[index].provider;
+        return data.value;
     }
   },
   checkDynamic: (view: ViewData, index: number, values: any[]): void => {
@@ -307,19 +330,28 @@ const CheckAndUpdate: NodeUpdater = {
     switch (nodeDef.type) {
       case NodeType.Element:
         checkAndUpdateElementDynamic(view, nodeDef, values);
-        break;
+        return undefined;
       case NodeType.Text:
         checkAndUpdateTextDynamic(view, nodeDef, values);
-        break;
+        return undefined;
       case NodeType.Provider:
-        checkAndUpdateProviderDynamic(view, index, nodeDef, values);
-        break;
+        checkAndUpdateProviderDynamic(view, nodeDef, values);
+        return undefined;
+      case NodeType.PureExpression:
+        checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
+        const data: PureExpressionData = view.nodes[index].provider;
+        return data.value;
     }
   }
 };
 
 export function destroyView(view: ViewData) {
   callLifecycleHooksChildrenFirst(view, NodeFlags.OnDestroy);
+  if (view.disposables) {
+    for (let i = 0; i < view.disposables.length; i++) {
+      view.disposables[i]();
+    }
+  }
   execComponentViewsAction(view, ViewAction.Destroy);
   execEmbeddedViewsAction(view, ViewAction.Destroy);
 }
