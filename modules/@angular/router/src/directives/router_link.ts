@@ -10,11 +10,7 @@ import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
-import {NavigationEnd, Router} from '../router';
-import {ActivatedRoute} from '../router_state';
-import {UrlTree} from '../url_tree';
-
-/**
+import {queryParamsStrategy} from '../config' /**
  * @whatItDoes Lets you link to specific parts of your app.
  *
  * @howToUse
@@ -58,16 +54,19 @@ import {UrlTree} from '../url_tree';
  * RouterLink will use these to generate this link: `/user/bob#education?debug=true`.
  *
  * You can also tell the directive to preserve the current query params and fragment:
- *
+ * 
+ * @deprecated use queryParamsStrategy instead
+ * 
  * ```
  * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>
  *   link to user component
  * </a>
  * ```
- * You can tell the directive to merge current query params with new one
+ * You can tell the directive to how to handle queryParams, available options are 'merge','preserve'
+ * ,''.
  *
  * ```
- * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" mergeQueryParams>
+ * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsStrategy="merge">
  *   link to user component
  * </a>
  * ```
@@ -85,36 +84,15 @@ import {UrlTree} from '../url_tree';
  * See {@link Router.createUrlTree} for more information.
  *
  * @stable
- */
-@Directive({selector: ':not(a)[routerLink]'})
-export class RouterLink {
-  @Input() queryParams: {[k: string]: any};
-  @Input() fragment: string;
-  @Input() preserveQueryParams: boolean;
-  @Input() mergeQueryParams: boolean;
-  @Input() preserveFragment: boolean;
-  @Input() skipLocationChange: boolean;
-  @Input() replaceUrl: boolean;
-  private commands: any[] = [];
-
-  constructor(
-      private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer, el: ElementRef) {
+ */ @Directive({selector : ':not(a)[routerLink]'}) export class RouterLink {@Input() queryParams : {[k : string] : any}; @Input() fragment : string; @Input() preserveQueryParams : boolean; @Input() queryParamsStrategy : queryParamsStrategy; @Input() preserveFragment : boolean; @Input() skipLocationChange : boolean; @Input() replaceUrl : boolean; private commands : any[] =[]; constructor(private router : Router, private route : ActivatedRoute, @Attribute('tabindex') tabIndex : string, renderer : Renderer, el : ElementRef) {
     if (tabIndex == null) {
       renderer.setElementAttribute(el.nativeElement, 'tabindex', '0');
-    }
-  }
-
-  @Input()
-  set routerLink(commands: any[]|string) {
+    }} @Input() import{NavigationEnd, Router} from '../router'; import{ActivatedRoute} from '../router_state'; import{UrlTree} from '../url_tree'; set routerLink(commands : any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
       this.commands = [];
-    }
-  }
-
-  @HostListener('click')
+    }} @HostListener('click')
   onClick(): boolean {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
@@ -130,7 +108,7 @@ export class RouterLink {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
-      mergeQueryParams: attrBoolValue(this.mergeQueryParams),
+      queryParamsStrategy: this.queryParamsStrategy,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
@@ -152,7 +130,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
-  @Input() mergeQueryParams: boolean;
+  @Input() queryParamsStrategy: queryParamsStrategy;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
@@ -165,15 +143,15 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
-    this.subscription = router.events.subscribe(s => {
-      if (s instanceof NavigationEnd) {
-        this.updateTargetUrlAndHref();
-      }
-    });
+  this.subscription = router.events.subscribe(s => {
+    if (s instanceof NavigationEnd) {
+      this.updateTargetUrlAndHref();
+    }
+  });
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -181,17 +159,17 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
   }
 
-  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: {}): any{this.updateTargetUrlAndHref();} ngOnDestroy():
+      any{this.subscription.unsubscribe();}
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
     if (button !== 0 || ctrlKey || metaKey) {
-      return true;
+  return true;
     }
 
     if (typeof this.target === 'string' && this.target != '_self') {
-      return true;
+  return true;
     }
 
     const extras = {
@@ -212,7 +190,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
-      mergeQueryParams: attrBoolValue(this.mergeQueryParams),
+      queryParamsStrategy: this.queryParamsStrategy,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }

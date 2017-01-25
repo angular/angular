@@ -1088,12 +1088,34 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home?q=456#1');
        }));
 
-    it('should merge new query params with current', fakeAsync(() => {
+    it('should correctly use the preserve strategy', fakeAsync(() => {
 
          @Component({
            selector: 'someRoot',
            template:
-               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" mergeQueryParams>Link</a>`
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsStrategy="preserve">Link</a>`
+         })
+         class RootCmpWithLink {
+         }
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/home?a=123');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?a=123');
+       }));
+
+    it('should correctly use the merge strategy', fakeAsync(() => {
+
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsStrategy="merge">Link</a>`
          })
          class RootCmpWithLink {
          }

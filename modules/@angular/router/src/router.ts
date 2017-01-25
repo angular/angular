@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {ResolveData, Routes, queryParamsStrategy, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -102,6 +102,8 @@ export interface NavigationExtras {
   /**
   * Preserves the query parameters for the next navigation.
   *
+  * @deprecated use queryParamsStrategy instead
+  *
   * ```
   * // Preserve query params from /results?page=1 to /view?page=1
   * this.router.navigate(['/view'], { preserveQueryParams: true });
@@ -109,14 +111,14 @@ export interface NavigationExtras {
   */
   preserveQueryParams?: boolean;
   /**
-  * merge the query parameters for the next navigation.
+  * config strategy to handle the query parameters for the next navigation.
   *
   * ```
-  * // Preserve query params from /results?page=1 to /view?page=1&page=2
-  * this.router.navigate(['/view'], { queryParams: { page: 2 },  mergeQueryParams: true });
+  * // from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsStrategy: "merge" });
   * ```
   */
-  mergeQueryParams?: boolean;
+  queryParamsStrategy?: queryParamsStrategy;
   /**
   * Preserves the fragment for the next navigation
   *
@@ -472,13 +474,22 @@ export class Router {
    * ```
    */
   createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, mergeQueryParams,
+      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsStrategy,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params = null;
-    if (mergeQueryParams) {
-      q = merge(this.currentUrlTree.queryParams, queryParams);
+    if (queryParamsStrategy) {
+      switch (queryParamsStrategy) {
+        case 'merge':
+          q = merge(this.currentUrlTree.queryParams, queryParams);
+          break;
+        case 'preserve':
+          q = this.currentUrlTree.queryParams;
+          break;
+        default:
+          q = this.currentUrlTree.queryParams;
+      }
     } else {
       q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     }

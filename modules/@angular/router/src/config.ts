@@ -321,6 +321,13 @@ export type LoadChildrenCallback = () =>
 export type LoadChildren = string | LoadChildrenCallback;
 
 /**
+ * @whatItDoes The type of `queryParamsStrategy`.
+ * See {@link Routes} for more details.
+ * @stable
+ */
+export type queryParamsStrategy = 'preserve' | 'merge' | '';
+
+/**
  * See {@link Routes} for more details.
  * @stable
  */
