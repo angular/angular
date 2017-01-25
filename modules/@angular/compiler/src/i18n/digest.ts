@@ -13,10 +13,6 @@ export function digest(message: i18n.Message): string {
 }
 
 export function decimalDigest(message: i18n.Message): string {
-  if (message.id) {
-    return message.id;
-  }
-
   const visitor = new _SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map(a => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
