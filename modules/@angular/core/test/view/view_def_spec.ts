@@ -124,7 +124,7 @@ export function main() {
       it('should calculate childFlags for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, AService, [])
+          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([NodeFlags.AfterContentChecked, NodeFlags.None]);
@@ -133,7 +133,7 @@ export function main() {
       it('should calculate childFlags for two levels', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 2, 'span'), elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, AService, [])
+          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -144,10 +144,10 @@ export function main() {
       it('should calculate childFlags for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, AService, []),
+          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
           elementDef(NodeFlags.None, null, 2, 'span'),
-          providerDef(NodeFlags.AfterContentInit, null, AService, []),
-          providerDef(NodeFlags.AfterViewChecked, null, AService, []),
+          providerDef(NodeFlags.AfterContentInit, null, 0, AService, []),
+          providerDef(NodeFlags.AfterViewChecked, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -160,10 +160,10 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 2, 'span'),
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, AService, []),
+          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
           elementDef(NodeFlags.None, null, 2, 'span'),
-          providerDef(NodeFlags.AfterContentInit, null, AService, []),
-          providerDef(NodeFlags.AfterViewInit, null, AService, []),
+          providerDef(NodeFlags.AfterContentInit, null, 0, AService, []),
+          providerDef(NodeFlags.AfterViewInit, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -181,7 +181,7 @@ export function main() {
       it('should calculate childMatchedQueries for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], AService, [])
+          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], []]);
@@ -190,7 +190,7 @@ export function main() {
       it('should calculate childMatchedQueries for two levels', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 2, 'span'), elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], AService, [])
+          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], []]);
@@ -199,10 +199,10 @@ export function main() {
       it('should calculate childMatchedQueries for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], AService, []),
+          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, 2, 'span'),
-          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], AService, []),
-          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], AService, []),
+          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
+          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], [], ['q2', 'q3'], [], []]);
@@ -212,10 +212,10 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, 2, 'span'),
           elementDef(NodeFlags.None, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], AService, []),
+          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, 2, 'span'),
-          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], AService, []),
-          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], AService, []),
+          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
+          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], [], ['q2', 'q3'], [], []]);

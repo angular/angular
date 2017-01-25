@@ -8,7 +8,7 @@
 
 import {looseIdentical} from '../facade/lang';
 
-import {BindingDef, BindingType, NodeData, NodeDef, NodeFlags, NodeType, Services, ViewData} from './types';
+import {BindingDef, BindingType, NodeData, NodeDef, NodeFlags, NodeType, Services, TextData, ViewData, asElementData, asTextData} from './types';
 import {checkAndUpdateBinding} from './util';
 
 export function textDef(constants: string[]): NodeDef {
@@ -32,7 +32,6 @@ export function textDef(constants: string[]): NodeDef {
     childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
-    providerIndices: undefined,
     // regular values
     flags: 0,
     matchedQueries: {},
@@ -41,12 +40,14 @@ export function textDef(constants: string[]): NodeDef {
     element: undefined,
     provider: undefined,
     text: {prefix: constants[0]},
-    pureExpression: undefined
+    pureExpression: undefined,
+    query: undefined,
   };
 }
 
-export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeData {
-  const parentNode = def.parent != null ? view.nodes[def.parent].elementOrText.node : renderHost;
+export function createText(view: ViewData, renderHost: any, def: NodeDef): TextData {
+  const parentNode =
+      def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
   if (view.renderer) {
     renderNode = view.renderer.createText(parentNode, def.text.prefix);
@@ -56,11 +57,7 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeD
       parentNode.appendChild(renderNode);
     }
   }
-  return {
-    elementOrText: {node: renderNode, embeddedViews: undefined, projectedViews: undefined},
-    provider: undefined,
-    pureExpression: undefined
-  };
+  return {renderText: renderNode};
 }
 
 export function checkAndUpdateTextInline(
@@ -118,7 +115,7 @@ export function checkAndUpdateTextInline(
         value = _addInterpolationPart(v0, bindings[0]) + value;
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].elementOrText.node;
+    const renderNode = asTextData(view, def.index).renderText;
     if (view.renderer) {
       view.renderer.setText(renderNode, value);
     } else {
@@ -143,7 +140,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
       value = value + _addInterpolationPart(values[i], bindings[i]);
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].elementOrText.node;
+    const renderNode = asTextData(view, def.index).renderText;
     if (view.renderer) {
       view.renderer.setText(renderNode, value);
     } else {
