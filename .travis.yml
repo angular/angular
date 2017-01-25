@@ -17,15 +17,21 @@ branches:
     - g3_v2_0
 
 cache:
+  yarn: true
   directories:
      - ./node_modules
      - ./.chrome/chromium
+     - ./angular.io/node_modules
 
 env:
   global:
     # GITHUB_TOKEN_ANGULAR
     # This is needed for the e2e Travis matrix task to publish packages to github for continuous packages delivery.
     - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
+    # FIREBASE_TOKEN
+    # This is needed for publishing builds to the "aio-staging" firebase site.
+    # TODO(i): the token was generated using the iminar@google account, we should switch to a shared/role-base account.
+    - secure: "MPx3UM77o5IlhT75PKHL0FXoB5tSXDc3vnCXCd1sRy4XUTZ9vjcV6nNuyqEf+SOw659bGbC1FI4mACGx1Q+z7MQDR85b1mcA9uSgHDkh+IR82CnCVdaX9d1RXafdJIArahxfmorbiiPPLyPIKggo7ituRm+2c+iraoCkE/pXxYg="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - CI_MODE=e2e EXPERIMENTAL_ES2015_DISTRO=1
@@ -35,6 +41,7 @@ env:
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
     - CI_MODE=docs_test
+    - CI_MODE=aio
 
 matrix:
   fast_finish: true
@@ -47,6 +54,9 @@ install:
 
 script:
   - ./scripts/ci-lite/build.sh && ./scripts/ci-lite/test.sh
+
+after_success:
+  - ./scripts/ci-lite/deploy_aio_staging.sh
 
 after_script:
   - ./scripts/ci-lite/cleanup.sh
