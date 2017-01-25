@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../src/collector';
-import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema';
+import {ClassMetadata, ConstructorMetadata, MetadataEntry, ModuleMetadata, isClassMetadata} from '../src/schema';
 
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 
@@ -28,6 +28,7 @@ describe('Collector', () => {
       '/promise.ts',
       '/unsupported-1.ts',
       '/unsupported-2.ts',
+      'class-arity.ts',
       'import-star.ts',
       'exported-classes.ts',
       'exported-functions.ts',
@@ -666,6 +667,27 @@ describe('Collector', () => {
         }
       });
     });
+
+    function expectClass(entry: MetadataEntry): entry is ClassMetadata {
+      const result = isClassMetadata(entry);
+      expect(result).toBeTruthy();
+      return result;
+    }
+
+    it('should collect the correct arity for a class', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-arity.ts'));
+
+      const zero = metadata.metadata['Zero'];
+      if (expectClass(zero)) expect(zero.arity).toBeUndefined();
+      const one = metadata.metadata['One'];
+      if (expectClass(one)) expect(one.arity).toBe(1);
+      const two = metadata.metadata['Two'];
+      if (expectClass(two)) expect(two.arity).toBe(2);
+      const three = metadata.metadata['Three'];
+      if (expectClass(three)) expect(three.arity).toBe(3);
+      const nine = metadata.metadata['Nine'];
+      if (expectClass(nine)) expect(nine.arity).toBe(9);
+    });
   });
 
   function override(fileName: string, content: string) {
@@ -866,6 +888,13 @@ const FILES: Directory = {
     }
 
     declare var Promise: PromiseConstructor;
+  `,
+  'class-arity.ts': `
+    export class Zero {}
+    export class One<T> {}
+    export class Two<T, V> {}
+    export class Three<T1, T2, T3> {}
+    export class Nine<T1, T2, T3, T4, T5, T6, T7, T8, T9> {}
   `,
   'unsupported-1.ts': `
     export let {a, b} = {a: 1, b: 2};
