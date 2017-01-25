@@ -34,7 +34,7 @@ export interface ViewDefinition {
    * Especially providers are after elements / anchros.
    */
   reverseChildNodes: NodeDef[];
-  lastRootNode: number;
+  lastRootNode: NodeDef;
   bindingCount: number;
   disposableCount: number;
   /**
@@ -65,6 +65,12 @@ export enum ViewFlags {
   DirectDom = 1 << 1
 }
 
+/**
+ * A node definition in the view.
+ *
+ * Note: We use one type for all nodes so that loops that loop over all nodes
+ * of a ViewDefinition stay monomorphic!
+ */
 export interface NodeDef {
   type: NodeType;
   index: number;
@@ -76,7 +82,6 @@ export interface NodeDef {
   /** aggregated NodeFlags for all children **/
   childFlags: NodeFlags;
 
-  providerIndices: {[tokenKey: string]: number};
   bindingIndex: number;
   bindings: BindingDef[];
   disposableIndex: number;
@@ -94,6 +99,7 @@ export interface NodeDef {
   provider: ProviderDef;
   text: TextDef;
   pureExpression: PureExpressionDef;
+  query: QueryDef;
 }
 
 export enum NodeType {
@@ -101,6 +107,7 @@ export enum NodeType {
   Text,
   Provider,
   PureExpression,
+  Query,
 }
 
 /**
@@ -122,16 +129,63 @@ export enum NodeFlags {
   HasViewQuery = 1 << 11,
 }
 
+export interface BindingDef {
+  type: BindingType;
+  name: string;
+  nonMinifiedName: string;
+  securityContext: SecurityContext;
+  suffix: string;
+}
+
+export enum BindingType {
+  ElementAttribute,
+  ElementClass,
+  ElementStyle,
+  ElementProperty,
+  ProviderProperty,
+  Interpolation,
+  PureExpressionProperty
+}
+
+export enum QueryValueType {
+  ElementRef,
+  TemplateRef,
+  ViewContainerRef,
+  Provider
+}
+
 export interface ElementDef {
   name: string;
   attrs: {[name: string]: string};
   outputs: ElementOutputDef[];
   template: ViewDefinition;
+  /**
+   * visible providers for DI in the view,
+   * as see from this element.
+   * Note: We use protoypical inheritance
+   * to indices in parent ElementDefs.
+   */
+  providerIndices: {[tokenKey: string]: number};
 }
 
 export interface ElementOutputDef {
   target: string;
   eventName: string;
+}
+
+export interface ProviderDef {
+  tokenKey: string;
+  ctor: any;
+  deps: DepDef[];
+  outputs: ProviderOutputDef[];
+  // closure to allow recursive components
+  component: () => ViewDefinition;
+}
+
+export interface DepDef {
+  flags: DepFlags;
+  token: any;
+  tokenKey: string;
 }
 
 /**
@@ -142,44 +196,9 @@ export enum DepFlags {
   SkipSelf = 1 << 0
 }
 
-export interface DepDef {
-  flags: DepFlags;
-  token: any;
-  tokenKey: string;
-}
-
 export interface ProviderOutputDef {
   propName: string;
   eventName: string;
-}
-
-export interface ProviderDef {
-  tokenKey: string;
-  ctor: any;
-  deps: DepDef[];
-  outputs: ProviderOutputDef[];
-  contentQueries: QueryDef[];
-  viewQueries: QueryDef[];
-  // closure to allow recursive components
-  component: () => ViewDefinition;
-}
-
-export interface QueryDef {
-  id: string;
-  propName: string;
-  bindingType: QueryBindingType;
-}
-
-export enum QueryBindingType {
-  First,
-  All
-}
-
-export enum QueryValueType {
-  ElementRef,
-  TemplateRef,
-  ViewContainerRef,
-  Provider
 }
 
 export interface TextDef { prefix: string; }
@@ -195,22 +214,19 @@ export enum PureExpressionType {
   Pipe
 }
 
-export enum BindingType {
-  ElementAttribute,
-  ElementClass,
-  ElementStyle,
-  ElementProperty,
-  ProviderProperty,
-  Interpolation,
-  PureExpressionProperty
+export interface QueryDef {
+  id: string;
+  bindings: QueryBindingDef[];
 }
 
-export interface BindingDef {
-  type: BindingType;
-  name: string;
-  nonMinifiedName: string;
-  securityContext: SecurityContext;
-  suffix: string;
+export interface QueryBindingDef {
+  propName: string;
+  bindingType: QueryBindingType;
+}
+
+export enum QueryBindingType {
+  First,
+  All
 }
 
 // -------------------------------------
@@ -235,7 +251,12 @@ export interface ViewData {
   parent: ViewData;
   component: any;
   context: any;
-  nodes: NodeData[];
+  // Attention: Never loop over this, as this will
+  // create a polymorphic usage site.
+  // Instead: Always loop over ViewDefinition.nodes,
+  // and call the right accessor (e.g. `elementData`) based on
+  // the NodeType.
+  nodes: {[key: number]: NodeData};
   firstChange: boolean;
   oldValues: any[];
   disposables: DisposableFn[];
@@ -245,16 +266,38 @@ export type DisposableFn = () => void;
 
 /**
  * Node instance data.
+ *
+ * We have a separate type per NodeType to save memory
+ * (TextData | ElementData | ProviderData | PureExpressionData | QueryList<any>)
+ *
+ * To keep our code monomorphic,
+ * we prohibit using `NodeData` directly but enforce the use of accessors (`asElementData`, ...).
+ * This way, no usage site can get a `NodeData` from view.nodes and then use it for different
+ * purposes.
+ */
+export class NodeData { private __brand: any; }
+
+/**
+ * Data for an instantiated NodeType.Text.
+ *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface NodeData {
-  elementOrText: ElementOrTextData;
-  provider: ProviderData;
-  pureExpression: PureExpressionData;
+export interface TextData { renderText: any; }
+
+/**
+ * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
+ */
+export function asTextData(view: ViewData, index: number): TextData {
+  return <any>view.nodes[index];
 }
 
-export interface ElementOrTextData {
-  node: any;
+/**
+ * Data for an instantiated NodeType.Element.
+ *
+ * Attention: Adding fields to this is performance sensitive!
+ */
+export interface ElementData {
+  renderElement: any;
   embeddedViews: ViewData[];
   // views that have been created from the template
   // of this element,
@@ -263,22 +306,59 @@ export interface ElementOrTextData {
   projectedViews: ViewData[];
 }
 
+/**
+ * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
+ */
+export function asElementData(view: ViewData, index: number): ElementData {
+  return <any>view.nodes[index];
+}
+
+/**
+ * Data for an instantiated NodeType.Provider.
+ *
+ * Attention: Adding fields to this is performance sensitive!
+ */
 export interface ProviderData {
   instance: any;
   componentView: ViewData;
-  queries: {[queryId: string]: QueryList<any>};
 }
 
+/**
+ * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
+ */
+export function asProviderData(view: ViewData, index: number): ProviderData {
+  return <any>view.nodes[index];
+}
+
+/**
+ * Data for an instantiated NodeType.PureExpression.
+ *
+ * Attention: Adding fields to this is performance sensitive!
+ */
 export interface PureExpressionData {
   value: any;
   pipe: PipeTransform;
+}
+
+/**
+ * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
+ */
+export function asPureExpressionData(view: ViewData, index: number): PureExpressionData {
+  return <any>view.nodes[index];
+}
+
+/**
+ * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
+ */
+export function asQueryList(view: ViewData, index: number): QueryList<any> {
+  return <any>view.nodes[index];
 }
 
 export interface Services {
   renderComponent(rcp: RenderComponentType): Renderer;
   sanitize(context: SecurityContext, value: string): string;
   // Note: This needs to be here to prevent a cycle in source files.
-  createViewContainerRef(data: NodeData): ViewContainerRef;
+  createViewContainerRef(data: ElementData): ViewContainerRef;
   // Note: This needs to be here to prevent a cycle in source files.
   createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any>;
 }

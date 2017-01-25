@@ -8,7 +8,7 @@
 
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DisposableFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags} from './types';
+import {BindingDef, BindingType, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
 import {checkAndUpdateBinding, setBindingDebugInfo} from './util';
 
 export function anchorDef(
@@ -28,16 +28,22 @@ export function anchorDef(
     childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
-    providerIndices: undefined,
     // regular values
     flags,
     matchedQueries: matchedQueryDefs, childCount,
     bindings: [],
     disposableCount: 0,
-    element: {name: undefined, attrs: undefined, outputs: [], template},
+    element: {
+      name: undefined,
+      attrs: undefined,
+      outputs: [], template,
+      // will bet set by the view definition
+      providerIndices: undefined,
+    },
     provider: undefined,
     text: undefined,
-    pureExpression: undefined
+    pureExpression: undefined,
+    query: undefined,
   };
 }
 
@@ -95,21 +101,29 @@ export function elementDef(
     childMatchedQueries: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
-    providerIndices: undefined,
     // regular values
     flags,
     matchedQueries: matchedQueryDefs, childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
-    element: {name, attrs: fixedAttrs, outputs: outputDefs, template: undefined},
+    element: {
+      name,
+      attrs: fixedAttrs,
+      outputs: outputDefs,
+      template: undefined,
+      // will bet set by the view definition
+      providerIndices: undefined,
+    },
     provider: undefined,
     text: undefined,
-    pureExpression: undefined
+    pureExpression: undefined,
+    query: undefined,
   };
 }
 
-export function createElement(view: ViewData, renderHost: any, def: NodeDef): NodeData {
-  const parentNode = def.parent != null ? view.nodes[def.parent].elementOrText.node : renderHost;
+export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
+  const parentNode =
+      def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   const elDef = def.element;
   let el: any;
   if (view.renderer) {
@@ -162,13 +176,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): No
     }
   }
   return {
-    elementOrText: {
-      node: el,
-      embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined,
-      projectedViews: undefined
-    },
-    provider: undefined,
-    pureExpression: undefined,
+    renderElement: el,
+    embeddedViews: (def.flags & NodeFlags.HasEmbeddedViews) ? [] : undefined,
+    projectedViews: undefined
   };
 }
 
@@ -228,7 +238,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 
   const binding = def.bindings[bindingIdx];
   const name = binding.name;
-  const renderNode = view.nodes[def.index].elementOrText.node;
+  const renderNode = asElementData(view, def.index).renderElement;
   switch (binding.type) {
     case BindingType.ElementAttribute:
       setElementAttribute(view, binding, renderNode, name, value);

@@ -16,7 +16,7 @@ import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
-import {NodeData, NodeDef, Services, ViewData, ViewDefinition} from './types';
+import {ElementData, NodeData, NodeDef, Services, ViewData, ViewDefinition, asElementData} from './types';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView, rootRenderNodes} from './view_attach';
 
@@ -31,7 +31,10 @@ export class DefaultServices implements Services {
     return this._sanitizer.sanitize(context, value);
   }
   // Note: This needs to be here to prevent a cycle in source files.
-  createViewContainerRef(data: NodeData): ViewContainerRef { return new ViewContainerRef_(data); }
+  createViewContainerRef(data: ElementData): ViewContainerRef {
+    return new ViewContainerRef_(data);
+  }
+
   // Note: This needs to be here to prevent a cycle in source files.
   createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any> {
     return new TemplateRef_(parentView, def);
@@ -39,7 +42,7 @@ export class DefaultServices implements Services {
 }
 
 class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _data: NodeData) {}
+  constructor(private _data: ElementData) {}
 
   get element(): ElementRef { return <ElementRef>unimplemented(); }
 
@@ -48,18 +51,16 @@ class ViewContainerRef_ implements ViewContainerRef {
   get parentInjector(): Injector { return <Injector>unimplemented(); }
 
   clear(): void {
-    const len = this._data.elementOrText.embeddedViews.length;
+    const len = this._data.embeddedViews.length;
     for (let i = len - 1; i >= 0; i--) {
       const view = detachEmbeddedView(this._data, i);
       destroyView(view);
     }
   }
 
-  get(index: number): ViewRef {
-    return new ViewRef_(this._data.elementOrText.embeddedViews[index]);
-  }
+  get(index: number): ViewRef { return new ViewRef_(this._data.embeddedViews[index]); }
 
-  get length(): number { return this._data.elementOrText.embeddedViews.length; };
+  get length(): number { return this._data.embeddedViews.length; };
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
@@ -83,7 +84,7 @@ class ViewContainerRef_ implements ViewContainerRef {
   move(viewRef: ViewRef, currentIndex: number): ViewRef { return unimplemented(); }
 
   indexOf(viewRef: ViewRef): number {
-    return this._data.elementOrText.embeddedViews.indexOf((<ViewRef_>viewRef)._view);
+    return this._data.embeddedViews.indexOf((<ViewRef_>viewRef)._view);
   }
 
   remove(index?: number): void {
@@ -128,6 +129,6 @@ class TemplateRef_ implements TemplateRef<any> {
   }
 
   get elementRef(): ElementRef {
-    return new ElementRef(this._parentView.nodes[this._def.index].elementOrText.node);
+    return new ElementRef(asElementData(this._parentView, this._def.index).renderElement);
   }
 }

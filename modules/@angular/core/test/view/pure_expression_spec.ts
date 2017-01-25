@@ -7,7 +7,7 @@
  */
 
 import {PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 
 import {INLINE_DYNAMIC_VALUES, InlineDynamic, callUpdater} from './helper';
@@ -46,14 +46,14 @@ export function main() {
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
               elementDef(NodeFlags.None, null, 2, 'span'), pureArrayDef(2),
-              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
+              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(
                   updater, inlineDynamic, view, 2,
                   [callUpdater(updater, inlineDynamic, view, 1, values)]);
             }));
-        const service = view.nodes[2].provider.instance;
+        const service = asProviderData(view, 2).instance;
 
         values = [1, 2];
         checkAndUpdateView(view);
@@ -80,14 +80,14 @@ export function main() {
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
               elementDef(NodeFlags.None, null, 2, 'span'), pureObjectDef(['a', 'b']),
-              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
+              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(
                   updater, inlineDynamic, view, 2,
                   [callUpdater(updater, inlineDynamic, view, 1, values)]);
             }));
-        const service = view.nodes[2].provider.instance;
+        const service = asProviderData(view, 2).instance;
 
         values = [1, 2];
         checkAndUpdateView(view);
@@ -118,15 +118,15 @@ export function main() {
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
               elementDef(NodeFlags.None, null, 3, 'span'),
-              providerDef(NodeFlags.None, null, SomePipe, []), purePipeDef(SomePipe, 2),
-              providerDef(NodeFlags.None, null, Service, [], {data: [0, 'data']})
+              providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
+              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
             (updater, view) => {
               callUpdater(
                   updater, inlineDynamic, view, 3,
                   [callUpdater(updater, inlineDynamic, view, 2, values)]);
             }));
-        const service = view.nodes[3].provider.instance;
+        const service = asProviderData(view, 3).instance;
 
         values = [1, 2];
         checkAndUpdateView(view);
