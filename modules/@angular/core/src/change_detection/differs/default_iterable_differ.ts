@@ -10,13 +10,13 @@ import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 import {isBlank, looseIdentical, stringify} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';
+import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
-  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): DefaultIterableDiffer<V> {
+  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
     return new DefaultIterableDiffer<V>(trackByFn);
   }
 }
@@ -28,7 +28,7 @@ const trackByIdentity = (index: number, item: any) => item;
  */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   private _length: number = null;
-  private _collection: V[]|Set<V>[]|any /* |Iterable<V> */ = null;
+  private _collection: NgIterable<V> = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap<V> = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
@@ -46,7 +46,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   private _identityChangesHead: IterableChangeRecord_<V> = null;
   private _identityChangesTail: IterableChangeRecord_<V> = null;
 
-  constructor(private _trackByFn?: TrackByFn) {
+  constructor(private _trackByFn?: TrackByFunction<V>) {
     this._trackByFn = this._trackByFn || trackByIdentity;
   }
 
@@ -146,7 +146,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     }
   }
 
-  diff(collection: V[]|Set<V>[]|any /* |Iterable<V> */): DefaultIterableDiffer<V> {
+  diff(collection: NgIterable<V>): DefaultIterableDiffer<V> {
     if (isBlank(collection)) collection = [];
     if (!isListLikeIterable(collection)) {
       throw new Error(`Error trying to diff '${collection}'`);
@@ -162,7 +162,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   onDestroy() {}
 
   // todo(vicb): optim for UnmodifiableListView (frozen arrays)
-  check(collection: V[]|Set<V>[]|any /* |Iterable<V> */): boolean {
+  check(collection: NgIterable<V>): boolean {
     this._reset();
 
     let record: IterableChangeRecord_<V> = this._itHead;
@@ -171,11 +171,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     let item: V;
     let itemTrackBy: any;
     if (Array.isArray(collection)) {
-      const list = collection as V[];
-      this._length = list.length;
+      this._length = collection.length;
 
       for (let index = 0; index < this._length; index++) {
-        item = list[index];
+        item = collection[index];
         itemTrackBy = this._trackByFn(index, item);
         if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
           record = this._mismatch(record, item, itemTrackBy, index);

@@ -8,14 +8,15 @@
 
 import {NgModule} from '@angular/core';
 
-import {COMMON_DIRECTIVES} from './directives/index';
+import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/index';
 import {NgLocaleLocalization, NgLocalization} from './localization';
 import {COMMON_PIPES} from './pipes/index';
+
 
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
 /**
- * The module that includes all the basic Angular directives like {@link NgIf}, {@link NgFor}, ...
+ * The module that includes all the basic Angular directives like {@link NgIf}, {@link NgForOf}, ...
  *
  * @stable
  */
@@ -27,4 +28,11 @@ import {COMMON_PIPES} from './pipes/index';
   ],
 })
 export class CommonModule {
+}
+
+/**
+ * A module to contain deprecated directives.
+ */
+@NgModule({declarations: [COMMON_DEPRECATED_DIRECTIVES], exports: [COMMON_DEPRECATED_DIRECTIVES]})
+export class CommonDeprecatedModule {
 }

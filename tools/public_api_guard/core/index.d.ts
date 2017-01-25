@@ -378,12 +378,12 @@ export declare class DebugNode {
 
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-    collection: any;
+    collection: NgIterable<V>;
     isDirty: boolean;
     length: number;
-    constructor(_trackByFn?: TrackByFn);
-    check(collection: V[] | Set<V>[] | any): boolean;
-    diff(collection: V[] | Set<V>[] | any): DefaultIterableDiffer<V>;
+    constructor(_trackByFn?: TrackByFunction<V>);
+    check(collection: NgIterable<V>): boolean;
+    diff(collection: NgIterable<V>): DefaultIterableDiffer<V>;
     forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
@@ -556,12 +556,12 @@ export interface IterableChanges<V> {
 
 /** @stable */
 export interface IterableDiffer<V> {
-    diff(object: V[] | Set<V> | any): IterableChanges<V>;
+    diff(object: NgIterable<V>): IterableChanges<V>;
 }
 
 /** @stable */
 export interface IterableDifferFactory {
-    create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
+    create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
@@ -638,6 +638,9 @@ export interface ModuleWithProviders {
     ngModule: Type<any>;
     providers?: Provider[];
 }
+
+/** @stable */
+export declare type NgIterable<T> = Array<T> | Iterable<T>;
 
 /** @stable */
 export declare const NgModule: NgModuleDecorator;
@@ -976,9 +979,14 @@ export declare class TestabilityRegistry {
     registerApplication(token: any, testability: Testability): void;
 }
 
-/** @stable */
+/** @deprecated */
 export interface TrackByFn {
     (index: number, item: any): any;
+}
+
+/** @stable */
+export interface TrackByFunction<T> {
+    (index: number, item: T): any;
 }
 
 /** @experimental */
