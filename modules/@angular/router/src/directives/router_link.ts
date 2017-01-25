@@ -7,9 +7,10 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
+import {QueryParamsHandling} from '../config';
 import {NavigationEnd, Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
@@ -59,8 +60,22 @@ import {UrlTree} from '../url_tree';
  *
  * You can also tell the directive to preserve the current query params and fragment:
  *
+ * deprecated, use `queryParamsHandling` instead
+ *
  * ```
  * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>
+ *   link to user component
+ * </a>
+ * ```
+ *
+ * You can tell the directive to how to handle queryParams, available options are:
+ *  - 'merge' merge the queryParams into the current queryParams
+ *  - 'preserve' prserve the current queryParams
+ *  - default / '' use the queryParams only
+ *  same options for {@link NavigationExtras.queryParamsHandling}
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsHandling="merge">
  *   link to user component
  * </a>
  * ```
@@ -83,11 +98,12 @@ import {UrlTree} from '../url_tree';
 export class RouterLink {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
-  @Input() preserveQueryParams: boolean;
+  @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
+  private preserve: boolean;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -106,6 +122,14 @@ export class RouterLink {
     }
   }
 
+  @Input()
+  set preserveQueryParams(value: boolean) {
+    if (isDevMode() && <any>console && <any>console.warn) {
+      console.warn('preserveQueryParams is deprecated!, use queryParamsHandling instead.');
+    }
+    this.preserve = value;
+  }
+
   @HostListener('click')
   onClick(): boolean {
     const extras = {
@@ -121,7 +145,8 @@ export class RouterLink {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveQueryParams: attrBoolValue(this.preserve),
+      queryParamsHandling: this.queryParamsHandling,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
@@ -142,12 +167,13 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding('attr.target') @Input() target: string;
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
-  @Input() preserveQueryParams: boolean;
+  @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
   private subscription: Subscription;
+  private preserve: boolean;
 
   // the url displayed on the anchor element.
   @HostBinding() href: string;
@@ -169,6 +195,14 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     } else {
       this.commands = [];
     }
+  }
+
+  @Input()
+  set preserveQueryParams(value: boolean) {
+    if (isDevMode() && <any>console && <any>console.warn) {
+      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
+    }
+    this.preserve = value;
   }
 
   ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
@@ -201,7 +235,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveQueryParams: attrBoolValue(this.preserve),
+      queryParamsHandling: this.queryParamsHandling,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
