@@ -227,6 +227,7 @@ There is currently few exception to the "use package name" rule:
 
 * **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
 * **changelog**: used for updating the release notes in CHANGELOG.md
+* **aio**: used for angular.io changes within the /angular.io directory of the repo
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
 
 

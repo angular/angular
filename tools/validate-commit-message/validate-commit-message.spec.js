@@ -44,22 +44,22 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('refactor(docs): something')).toBe(INVALID);
       ['INVALID COMMIT MSG: "fix(Compiler): something"\n' +
            ' => ERROR: "Compiler" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
        'INVALID COMMIT MSG: "feat(bah): something"\n' +
            ' => ERROR: "bah" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
        'INVALID COMMIT MSG: "docs(animations): something"\n' +
            ' => ERROR: "animations" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
        'INVALID COMMIT MSG: "style(webworker): something"\n' +
            ' => ERROR: "webworker" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
        'INVALID COMMIT MSG: "refactor(security): something"\n' +
            ' => ERROR: "security" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog',
        'INVALID COMMIT MSG: "refactor(docs): something"\n' +
            ' => ERROR: "docs" is not an allowed scope.\n' +
-           ' => SCOPES: benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog']
+           ' => SCOPES: aio, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, upgrade, tsc-wrapped, packaging, changelog']
           .forEach((expectedErrorMessage, index) => {
             expect(expectedErrorMessage).toEqual(errors[index]);
           });
