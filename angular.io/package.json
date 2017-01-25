@@ -1,0 +1,12 @@
+{
+  "name": "angular.io",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:angular/angular.git",
+  "author": "Angular",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "firebase-tools": "^3.2.1"
+  }
+}
