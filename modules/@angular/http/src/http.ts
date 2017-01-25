@@ -28,6 +28,7 @@ function mergeOptions(
       method: providedOpts.method || method,
       url: providedOpts.url || url,
       search: providedOpts.search,
+      params: providedOpts.params,
       headers: providedOpts.headers,
       body: providedOpts.body,
       withCredentials: providedOpts.withCredentials,
