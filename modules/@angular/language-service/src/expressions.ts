@@ -728,7 +728,8 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
           const value = context.get(variable.value);
           if (value) {
             type = value.type;
-            if (info.template.query.getTypeKind(type) === BuiltinType.Any) {
+            let kind = info.template.query.getTypeKind(type);
+            if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
               // better.
               type = refinedVariableType(type, info, current);
@@ -753,8 +754,10 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
 function refinedVariableType(
     type: Symbol, info: TemplateInfo, templateElement: EmbeddedTemplateAst): Symbol {
   // Special case the ngFor directive
-  const ngForDirective =
-      templateElement.directives.find(d => identifierName(d.directive.type) == 'NgFor');
+  const ngForDirective = templateElement.directives.find(d => {
+    const name = identifierName(d.directive.type);
+    return name == 'NgFor' || name == 'NgForOf';
+  });
   if (ngForDirective) {
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {
