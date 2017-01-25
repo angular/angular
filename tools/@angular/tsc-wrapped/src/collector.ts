@@ -128,6 +128,12 @@ export class MetadataCollector {
         });
       }
 
+      // Add arity if the type is generic
+      const typeParameters = classDeclaration.typeParameters;
+      if (typeParameters && typeParameters.length) {
+        result.arity = typeParameters.length;
+      }
+
       // Add class decorators
       if (classDeclaration.decorators) {
         result.decorators = getDecorators(classDeclaration.decorators);
