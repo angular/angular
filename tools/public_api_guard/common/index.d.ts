@@ -128,12 +128,16 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
+/** @deprecated */
+export declare class NgFor extends NgForOf<any> {
+}
+
 /** @stable */
-export declare class NgFor implements DoCheck, OnChanges {
-    ngForOf: any;
-    ngForTemplate: TemplateRef<NgForRow>;
-    ngForTrackBy: TrackByFn;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForRow>, _differs: IterableDiffers, _cdr: ChangeDetectorRef);
+export declare class NgForOf<T> implements DoCheck, OnChanges {
+    ngForOf: NgIterable<T>;
+    ngForTemplate: TemplateRef<NgForOfRow<T>>;
+    ngForTrackBy: TrackByFunction<T>;
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfRow<T>>, _differs: IterableDiffers, _cdr: ChangeDetectorRef);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
 }
