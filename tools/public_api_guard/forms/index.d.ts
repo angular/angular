@@ -529,6 +529,7 @@ export interface ValidatorFn {
 export declare class Validators {
     static compose(validators: ValidatorFn[]): ValidatorFn;
     static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;
+    static equalsTo(...fieldNames: string[]): ValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
     static nullValidator(c: AbstractControl): {
