@@ -53,6 +53,8 @@ export function main() {
 
       it('should return null for empty string', () => expect(pipe.transform('')).toEqual(null));
 
+      it('should return null for NaN', () => expect(pipe.transform(Number.NaN)).toEqual(null));
+
       it('should support ISO string without time',
          () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
 
