@@ -252,6 +252,24 @@ gulp.task('changelog', () => {
       .pipe(gulp.dest('./'));
 });
 
+gulp.task('docs', ['doc-gen', 'docs-app']);
+gulp.task('doc-gen', () => {
+  const Dgeni = require('dgeni');
+  const angularDocsPackage = require(path.resolve(__dirname, 'tools/docs/angular.io-package'));
+  const dgeni = new Dgeni([angularDocsPackage]);
+  return dgeni.generate();
+});
+gulp.task('docs-app', () => { gulp.src('docs/src/**/*').pipe(gulp.dest('dist/docs')); });
+
+gulp.task('docs-test', ['doc-gen-test', 'docs-app-test']);
+gulp.task('doc-gen-test', () => {
+  const execSync = require('child_process').execSync;
+  execSync(
+      'node dist/tools/cjs-jasmine/index-tools ../../tools/docs/**/*.spec.js',
+      {stdio: ['inherit', 'inherit', 'inherit']});
+});
+gulp.task('docs-app-test', () => {});
+
 function tsc(projectPath, done) {
   const childProcess = require('child_process');
 

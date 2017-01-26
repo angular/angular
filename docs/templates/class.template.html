@@ -1,0 +1,161 @@
+{% import "lib/githubLinks.html" as github -%}
+{% import "lib/paramList.html" as params -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+
+
+{% include "layout/_what-it-does.html" %}
+
+{% include "layout/_security-notes.html" %}
+
+{% include "layout/_deprecated-notes.html" %}
+
+{% include "layout/_how-to-use.html" %}
+
+<div layout="row" layout-xs="column" class="ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Class Overview</h2>
+  </div>
+  <div flex="80" flex-xs="100">
+    <code class="no-bg api-doc-code openParens">class {$ doc.name $} {</code>
+    {% if doc.statics.length %}
+    <div layout="column">
+      {% for member in doc.statics %}{% if not member.internal %}
+        <pre class="prettyprint no-bg-with-indent">static
+          <a class="code-anchor" href="#{$ member.name $}-anchor">
+            <code(class="code-background api-doc-code">{$ member.name | indent(6, false) | trim $}</code>
+          </a>
+          <code class="api-doc-code">
+            {$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}
+          </code>
+      {% endif %}{% endfor %}
+    {% endif %}
+    {% if doc.constructorDoc.name %}
+    <div layout="column">
+      <pre class="prettyprint no-bg-with-indent">
+        <a class="code-anchor" href="#constructor">
+          <code class="code-background api-doc-code">{$ doc.constructorDoc.name $}</code>
+        </a>
+        <code class="api-doc-code">
+          {$ params.paramList(doc.constructorDoc.parameters) | indent(8, false) | trim $}
+        </code>
+    {% endif %}
+    {% if doc.members.length %}
+    <div layout="column">
+      {% for member in doc.members %}{% if not member.internal %}
+        <pre class="prettyprint no-bg-with-indent">
+          <a class="code-anchor" href="#{$ member.name $}-anchor">
+            <code class="code-background api-doc-code">{$ member.name | indent(6, false) | trim $}</code>
+          </a>
+          <code class="api-doc-code">{$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}</code>
+        </pre>
+      {% endif %}{% endfor %}
+    {% endif %}
+    <p class="selector endParens">
+      <code class="api-doc-code no-bg">}</code>
+    </p>
+
+{% block additional %}
+{% endblock %}
+
+<div layout="row" layout-xs="column" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Class Description</h2>
+  </div>
+  <div class="code-links" flex="80" flex-xs="100">
+    {%- if doc.description.length > 2 %}
+    {$ doc.description | trimBlankLines | marked $}
+    {% endif %}
+  </div>
+
+{%- if doc.decorators.length %}
+{% block annotations %}
+<div layout="row" layout-xs="column" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Annotations</h2>
+  </div>
+  <div flex="80" flex-xs="100">
+    {%- for decorator in doc.decorators %}
+      <pre class="prettyprint no-bg">
+        <code class="api-doc-code">
+          @{$ decorator.name $}{$ params.paramList(decorator.arguments) | indent(10, false) $}
+        </code>
+      </pre>
+      {%- if not decorator.notYetDocumented %}
+      {$ decorator.description | indentForMarkdown(8) | trimBlankLines | marked $}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}
+{% endif %}
+
+{%- if doc.constructorDoc and not doc.constructorDoc.internal %}
+<div layout="row" layout-xs="column" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Constructor</h2>
+  </div>
+  <div flex="80" flex-xs="100">
+    <a name="constructor" class="anchor-offset"></a>
+    <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ doc.constructorDoc.name $}') }">
+      <code class="api-doc-code">
+        {$ doc.constructorDoc.name $}{$ params.paramList(doc.constructorDoc.parameters) | indent(8, false) | trim $}
+      </code>
+    </pre>
+    {%- if not doc.constructorDoc.notYetDocumented %}
+    {$ doc.constructorDoc.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}
+    {% endif %}
+{% endif %}
+
+{% if doc.statics.length %}
+<div layout="row" layout-xs="column" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Static Members</h2>
+  </div>
+  <div class="code-links" flex="80" flex-xs="100">
+  {% for member in doc.statics %}{% if not member.internal %}
+    <a name="{$ member.name $}-anchor" class="anchor-offset"></a>
+    <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ member.name $}') }">
+      <code class="api-doc-code">
+        {$ member.name $}{$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}
+      </code>
+    </pre>
+    {%- if not member.notYetDocumented %}
+    {$ member.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}
+    {% endif %}
+
+    {% if not loop.last %}
+    <hr class="hr-margin">
+    {% endif %}
+
+  {% endif %}{% endfor %}
+{% endif %}
+
+{% if doc.members.length %}
+<div layout="row" layout-xs="column" class="instance-members" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Class Details</h2>
+  </div>
+  <div class="code-links" flex="80" flex-xs="100">
+    {% for member in doc.members %}{% if not member.internal %}
+    <a name="{$ member.name $}-anchor" class="anchor-offset">
+    <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ member.name $}') }">
+      <code class="api-doc-code">
+        {$ member.name $}{$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}
+      </code>
+    </pre>
+    {%- if not member.notYetDocumented %}
+    {$ member.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}
+    {% endif -%}
+
+    {% if not loop.last %}
+    <hr class="hr-margin">
+    {% endif %}
+  {% endif %}{% endfor %}
+{% endif %}
+
+<p class="location-badge">
+  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} },
+  defined in {$ github.githubViewLink(doc, versionInfo) $}
+</p>
+{% endblock %}
