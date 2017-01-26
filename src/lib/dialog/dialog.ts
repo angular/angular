@@ -1,4 +1,6 @@
 import {Injector, ComponentRef, Injectable, Optional, SkipSelf} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 import {Overlay, OverlayRef, ComponentType, OverlayState, ComponentPortal} from '../core';
 import {extendObject} from '../core/util/object-extend';
@@ -20,11 +22,29 @@ import {MdDialogContainer} from './dialog-container';
 @Injectable()
 export class MdDialog {
   private _openDialogsAtThisLevel: MdDialogRef<any>[] = [];
+  private _afterAllClosedAtThisLevel = new Subject<void>();
+  private _afterOpenAtThisLevel = new Subject<MdDialogRef<any>>();
 
   /** Keeps track of the currently-open dialogs. */
   get _openDialogs(): MdDialogRef<any>[] {
     return this._parentDialog ? this._parentDialog._openDialogs : this._openDialogsAtThisLevel;
   }
+
+  /** Subject for notifying the user that all open dialogs have finished closing. */
+  get _afterOpen(): Subject<MdDialogRef<any>> {
+    return this._parentDialog ? this._parentDialog._afterOpen : this._afterOpenAtThisLevel;
+  }
+  /** Subject for notifying the user that a dialog has opened. */
+  get _afterAllClosed(): Subject<void> {
+    return this._parentDialog ?
+      this._parentDialog._afterAllClosed : this._afterAllClosedAtThisLevel;
+  }
+
+  /** Gets an observable that is notified when a dialog has been opened. */
+  afterOpen: Observable<MdDialogRef<any>> = this._afterOpen.asObservable();
+
+  /** Gets an observable that is notified when all open dialog have finished closing. */
+  afterAllClosed: Observable<void> = this._afterAllClosed.asObservable();
 
   constructor(
       private _overlay: Overlay,
@@ -46,6 +66,7 @@ export class MdDialog {
 
     this._openDialogs.push(dialogRef);
     dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
+    this._afterOpen.next(dialogRef);
 
     return dialogRef;
   }
@@ -169,6 +190,11 @@ export class MdDialog {
 
     if (index > -1) {
       this._openDialogs.splice(index, 1);
+
+      // no open dialogs are left, call next on afterAllClosed Subject
+      if (!this._openDialogs.length) {
+        this._afterAllClosed.next();
+      }
     }
   }
 }

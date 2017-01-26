@@ -150,6 +150,35 @@ describe('MdDialog', () => {
     expect(overlayContainerElement.querySelector('md-dialog-container')).toBeFalsy();
   });
 
+  it('should notify the observers if a dialog has been opened', () => {
+    let ref: MdDialogRef<PizzaMsg>;
+    dialog.afterOpen.subscribe(r => {
+      ref = r;
+    });
+    expect(dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    })).toBe(ref);
+  });
+
+  it('should notify the observers if all open dialogs have finished closing', () => {
+    const ref1 = dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
+    const ref2 = dialog.open(ContentElementDialog, {
+      viewContainerRef: testViewContainerRef
+    });
+    let allClosed = false;
+
+    dialog.afterAllClosed.subscribe(() => {
+      allClosed = true;
+    });
+
+    ref1.close();
+    expect(allClosed).toBeFalsy();
+    ref2.close();
+    expect(allClosed).toBeTruthy();
+  });
+
   it('should should override the width of the overlay pane', () => {
     dialog.open(PizzaMsg, {
       width: '500px'
