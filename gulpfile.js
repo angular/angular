@@ -87,6 +87,7 @@ const publicApiArgs = [
   '--onStabilityMissing',
   'error',
 ].concat(entrypoints);
+const apiExamples = './modules/@angular/examples';
 
 // Build angular
 gulp.task('build.sh', (done) => {
@@ -250,6 +251,12 @@ gulp.task('changelog', () => {
         currentTag: require('./package.json').version
       }))
       .pipe(gulp.dest('./'));
+});
+
+gulp.task('build-plunkers', () => {
+  const plunkerBuilder = require('./tools/plunker-builder/plunkerBuilder');
+
+  plunkerBuilder.buildPlunkers(apiExamples);
 });
 
 function tsc(projectPath, done) {
