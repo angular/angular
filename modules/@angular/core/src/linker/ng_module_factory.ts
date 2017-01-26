@@ -7,7 +7,6 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {unimplemented} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
@@ -27,18 +26,18 @@ export abstract class NgModuleRef<T> {
   /**
    * The injector that contains all of the providers of the NgModule.
    */
-  get injector(): Injector { return unimplemented(); }
+  abstract get injector(): Injector;
 
   /**
    * The ComponentFactoryResolver to get hold of the ComponentFactories
    * declared in the `entryComponents` property of the module.
    */
-  get componentFactoryResolver(): ComponentFactoryResolver { return unimplemented(); }
+  abstract get componentFactoryResolver(): ComponentFactoryResolver;
 
   /**
    * The NgModule instance.
    */
-  get instance(): T { return unimplemented(); }
+  abstract get instance(): T;
 
   /**
    * Destroys the module instance and all of the data structures associated with it.
