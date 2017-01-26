@@ -69,6 +69,7 @@ export declare abstract class AnimationPlayer {
     abstract getPosition(): number;
     abstract hasStarted(): boolean;
     abstract init(): void;
+    abstract onDestroy(fn: () => void): void;
     abstract onDone(fn: () => void): void;
     abstract onStart(fn: () => void): void;
     abstract pause(): void;
@@ -990,6 +991,15 @@ export interface TrackByFunction<T> {
 export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
+export interface TransitionFactory {
+    match(currentState: any, nextState: any): TransitionInstruction;
+}
+
+/** @experimental */
+export interface TransitionInstruction {
+}
+
+/** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
 
 /** @experimental */
@@ -997,6 +1007,12 @@ export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
+
+/** @experimental */
+export interface Trigger {
+    name: string;
+    transitionFactories: TransitionFactory[];
+}
 
 /** @stable */
 export declare const Type: FunctionConstructor;

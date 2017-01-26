@@ -12,6 +12,7 @@ import {Provider} from './di';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';
 import {TestabilityRegistry} from './testability/testability';
+import {NoOpTransitionEngine, TransitionEngine} from './transition/transition_engine';
 
 function _reflector(): Reflector {
   return reflector;
@@ -22,6 +23,7 @@ const _CORE_PLATFORM_PROVIDERS: Provider[] = [
   {provide: PlatformRef, useExisting: PlatformRef_},
   {provide: Reflector, useFactory: _reflector, deps: []},
   {provide: ReflectorReader, useExisting: Reflector},
+  {provide: TransitionEngine, useClass: NoOpTransitionEngine},
   TestabilityRegistry,
   Console,
 ];
