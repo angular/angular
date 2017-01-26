@@ -98,6 +98,8 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.scriptNames.push(fileName);
   }
 
+  forgetAngular() { this.angularPath = undefined; }
+
   getCompilationSettings(): ts.CompilerOptions {
     return {
       target: ts.ScriptTarget.ES5,
