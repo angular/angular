@@ -327,6 +327,7 @@ class _Visitor implements html.Visitor {
   }
 
   // Translates the given message given the `TranslationBundle`
+  // This is used for translating elements / blocks - see `_translateAttributes` for attributes
   // no-op when called in extraction mode (returns [])
   private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
@@ -368,7 +369,9 @@ class _Visitor implements html.Visitor {
         const message: i18n.Message = this._createI18nMessage([attr], meaning, '', '');
         const nodes = this._translations.get(message);
         if (nodes) {
-          if (nodes[0] instanceof html.Text) {
+          if (nodes.length == 0) {
+            translatedAttributes.push(new html.Attribute(attr.name, '', attr.sourceSpan));
+          } else if (nodes[0] instanceof html.Text) {
             const value = (nodes[0] as html.Text).value;
             translatedAttributes.push(new html.Attribute(attr.name, value, attr.sourceSpan));
           } else {
