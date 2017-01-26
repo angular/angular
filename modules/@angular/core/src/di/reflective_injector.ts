@@ -523,9 +523,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(child.get(ParentProvider)).toBe(parent.get(ParentProvider));
    * ```
    */
-  createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
-    return unimplemented();
-  }
+  abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
 
   /**
    * Resolves a provider and instantiates an object in the context of the injector.
