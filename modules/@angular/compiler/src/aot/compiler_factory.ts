@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '@angular/core';
+import {MissingTranslationStrategy, ViewEncapsulation} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig} from '../config';
@@ -53,7 +53,10 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
   const staticReflector = new StaticReflector(symbolResolver);
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
-  const htmlParser = new I18NHtmlParser(new HtmlParser(), translations, options.i18nFormat);
+  const console = new Console();
+  const htmlParser = new I18NHtmlParser(
+      new HtmlParser(), translations, options.i18nFormat, MissingTranslationStrategy.Warning,
+      console);
   const config = new CompilerConfig({
     genDebugInfo: options.debug === true,
     defaultEncapsulation: ViewEncapsulation.Emulated,
@@ -64,7 +67,6 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);
   const expressionParser = new Parser(new Lexer());
   const elementSchemaRegistry = new DomElementSchemaRegistry();
-  const console = new Console();
   const tmplParser =
       new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
   const resolver = new CompileMetadataResolver(

@@ -8,13 +8,12 @@
 
 import {MissingTranslationStrategy} from '@angular/core';
 
-import {warn} from '../facade/lang';
 import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
+import {Console} from '../private_import_core';
 
-import {serializeNodes} from './digest';
 import * as i18n from './i18n_ast';
-import {I18nError, I18nWarning} from './parse_util';
+import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
 
 /**
@@ -27,29 +26,27 @@ export class TranslationBundle {
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
       public digest: (m: i18n.Message) => string,
       public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
-      missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning) {
-    this._i18nToHtml =
-        new I18nToHtmlVisitor(_i18nNodesByMsgId, digest, mapperFactory, missingTranslationStrategy);
+      missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+      console?: Console) {
+    this._i18nToHtml = new I18nToHtmlVisitor(
+        _i18nNodesByMsgId, digest, mapperFactory, missingTranslationStrategy, console);
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
   static load(
       content: string, url: string, serializer: Serializer,
-      missingTranslationStrategy: MissingTranslationStrategy): TranslationBundle {
+      missingTranslationStrategy: MissingTranslationStrategy,
+      console?: Console): TranslationBundle {
     const i18nNodesByMsgId = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
     const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m);
     return new TranslationBundle(
-        i18nNodesByMsgId, digestFn, mapperFactory, missingTranslationStrategy);
+        i18nNodesByMsgId, digestFn, mapperFactory, missingTranslationStrategy, console);
   }
 
   // Returns the translation as HTML nodes from the given source message.
   get(srcMsg: i18n.Message): html.Node[] {
     const html = this._i18nToHtml.convert(srcMsg);
-
-    if (html.warnings.length) {
-      warn(html.warnings.join('\n'));
-    }
 
     if (html.errors.length) {
       throw new Error(html.errors.join('\n'));
@@ -66,16 +63,15 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
   private _errors: I18nError[] = [];
   private _mapper: (name: string) => string;
-  private _warnings: I18nWarning[] = [];
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
       private _digest: (m: i18n.Message) => string,
       private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
-      private _missingTranslationStrategy: MissingTranslationStrategy) {}
+      private _missingTranslationStrategy: MissingTranslationStrategy, private _console?: Console) {
+  }
 
-  convert(srcMsg: i18n.Message):
-      {nodes: html.Node[], errors: I18nError[], warnings: I18nWarning[]} {
+  convert(srcMsg: i18n.Message): {nodes: html.Node[], errors: I18nError[]} {
     this._contextStack.length = 0;
     this._errors.length = 0;
 
@@ -89,7 +85,6 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     return {
       nodes: html.rootNodes,
       errors: [...this._errors, ...html.errors],
-      warnings: this._warnings
     };
   }
 
@@ -121,13 +116,30 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       return this._convertToText(this._srcMsg.placeholderToMessage[phName]);
     }
 
-    this._addError(ph, `Unknown placeholder`);
+    this._addError(ph, `Unknown placeholder "${ph.name}"`);
     return '';
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): any { throw 'unreachable code'; }
+  // Loaded message contains only placeholders (vs tag and icu placeholders).
+  // However when a translation can not be found, we need to serialize the source message
+  // which can contain tag placeholders
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): string {
+    const tag = `${ph.tag}`;
+    const attrs = Object.keys(ph.attrs).map(name => `${name}="${ph.attrs[name]}"`).join(' ');
+    if (ph.isVoid) {
+      return `<${tag} ${attrs}/>`;
+    }
+    const children = ph.children.map((c: i18n.Node) => c.visit(this)).join('');
+    return `<${tag} ${attrs}>${children}</${tag}>`;
+  }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any { throw 'unreachable code'; }
+  // Loaded message contains only placeholders (vs tag and icu placeholders).
+  // However when a translation can not be found, we need to serialize the source message
+  // which can contain tag placeholders
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): string {
+    // An ICU placeholder references the source message to be serialized
+    return this._convertToText(this._srcMsg.placeholderToMessage[ph.name]);
+  }
 
   /**
    * Convert a source message to a translated text string:
@@ -136,38 +148,41 @@ class I18nToHtmlVisitor implements i18n.Visitor {
    * - ICU nodes are converted to ICU expressions.
    */
   private _convertToText(srcMsg: i18n.Message): string {
-    const digest = this._digest(srcMsg);
+    const id = this._digest(srcMsg);
     const mapper = this._mapperFactory ? this._mapperFactory(srcMsg) : null;
+    let nodes: i18n.Node[];
 
-    if (this._i18nNodesByMsgId.hasOwnProperty(digest)) {
-      this._contextStack.push({msg: this._srcMsg, mapper: this._mapper});
-      this._srcMsg = srcMsg;
+    this._contextStack.push({msg: this._srcMsg, mapper: this._mapper});
+    this._srcMsg = srcMsg;
+
+    if (this._i18nNodesByMsgId.hasOwnProperty(id)) {
+      // When there is a translation use its nodes as the source
+      // And create a mapper to convert serialized placeholder names to internal names
+      nodes = this._i18nNodesByMsgId[id];
       this._mapper = (name: string) => mapper ? mapper.toInternalName(name) : name;
-
-      const nodes = this._i18nNodesByMsgId[digest];
-      const text = nodes.map(node => node.visit(this)).join('');
-      const context = this._contextStack.pop();
-      this._srcMsg = context.msg;
-      this._mapper = context.mapper;
-      return text;
+    } else {
+      // When no translation has been found
+      // - report an error / a warning / nothing,
+      // - use the nodes from the original message
+      // - placeholders are already internal and need no mapper
+      if (this._missingTranslationStrategy === MissingTranslationStrategy.Error) {
+        this._addError(srcMsg.nodes[0], `Missing translation for message "${id}"`);
+      } else if (
+          this._console &&
+          this._missingTranslationStrategy === MissingTranslationStrategy.Warning) {
+        this._console.warn(`Missing translation for message "${id}"`);
+      }
+      nodes = srcMsg.nodes;
+      this._mapper = (name: string) => name;
     }
-
-    // No valid translation found
-    if (this._missingTranslationStrategy === MissingTranslationStrategy.Error) {
-      this._addError(srcMsg.nodes[0], `Missing translation for message ${digest}`);
-    } else if (this._missingTranslationStrategy === MissingTranslationStrategy.Warning) {
-      this._addWarning(srcMsg.nodes[0], `Missing translation for message ${digest}`);
-    }
-
-    // In an case, Warning, Error or Ignore, return the srcMsg without translation
-    return serializeNodes(srcMsg.nodes).join('');
+    const text = nodes.map(node => node.visit(this)).join('');
+    const context = this._contextStack.pop();
+    this._srcMsg = context.msg;
+    this._mapper = context.mapper;
+    return text;
   }
 
   private _addError(el: i18n.Node, msg: string) {
     this._errors.push(new I18nError(el.sourceSpan, msg));
-  }
-
-  private _addWarning(el: i18n.Node, msg: string) {
-    this._warnings.push(new I18nWarning(el.sourceSpan, msg));
   }
 }

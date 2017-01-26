@@ -488,7 +488,7 @@ function fakeTranslate(
     i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null)];
   });
 
-  const translations = new TranslationBundle(i18nMsgMap, digest, null);
+  const translations = new TranslationBundle(i18nMsgMap, digest);
 
   const output = mergeTranslations(
       htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);

@@ -243,6 +243,7 @@ export declare const COMPILER_OPTIONS: InjectionToken<{
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: any[];
+    missingTranslation?: MissingTranslationStrategy;
 }[]>;
 
 /** @experimental */
@@ -256,6 +257,7 @@ export declare type CompilerOptions = {
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: any[];
+    missingTranslation?: MissingTranslationStrategy;
 };
 
 /** @stable */
@@ -616,9 +618,6 @@ export declare class KeyValueDiffers {
 
 /** @experimental */
 export declare const LOCALE_ID: InjectionToken<string>;
-
-/** @experimental */
-export declare const MISSING_TRANSLATION_STRATEGY: OpaqueToken;
 
 /** @experimental */
 export declare enum MissingTranslationStrategy {
