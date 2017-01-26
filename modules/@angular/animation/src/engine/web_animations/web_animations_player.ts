@@ -6,19 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE} from '@angular/core';
+import {AUTO_STYLE, AnimationPlayer} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
-import {AnimationPlayer} from '../private_import_core';
-
-import {getDOM} from './dom_adapter';
-import {DomAnimatePlayer} from './dom_animate_player';
+import {DOMAnimation} from './dom_animation';
 
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
   private _onDestroyFns: Function[] = [];
-  private _player: DomAnimatePlayer;
+  private _player: DOMAnimation;
   private _duration: number;
   private _initialized = false;
   private _finished = false;
@@ -73,7 +69,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       let startingKeyframe = keyframes[0];
       let missingStyleProps: string[] = [];
       previousStyleProps.forEach(prop => {
-        if (!isPresent(startingKeyframe[prop])) {
+        if (startingKeyframe[prop] != null) {
           missingStyleProps.push(prop);
         }
         startingKeyframe[prop] = this.previousStyles[prop];
@@ -96,10 +92,10 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   /** @internal */
-  _triggerWebAnimation(element: any, keyframes: any[], options: any): DomAnimatePlayer {
+  _triggerWebAnimation(element: any, keyframes: any[], options: any): DOMAnimation {
     // jscompiler doesn't seem to know animate is a native property because it's not fully
     // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
-    return <DomAnimatePlayer>element['animate'](keyframes, options);
+    return <DOMAnimation>element['animate'](keyframes, options);
   }
 
   get domPlayer() { return this._player; }
@@ -183,7 +179,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 }
 
 function _computeStyle(element: any, prop: string): string {
-  return getDOM().getComputedStyle(element)[prop];
+  return (<any>window.getComputedStyle(element))[prop];
 }
 
 function _copyKeyframeStyles(styles: {[style: string]: string | number}):
