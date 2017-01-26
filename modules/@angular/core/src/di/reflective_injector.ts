@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
-
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 import {Self, SkipSelf} from './metadata';
 import {Provider} from './provider';
@@ -16,307 +14,7 @@ import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
 // Threshold for the dynamic version
-const _MAX_CONSTRUCTION_COUNTER = 10;
 const UNDEFINED = new Object();
-
-export interface ReflectiveProtoInjectorStrategy {
-  getProviderAtIndex(index: number): ResolvedReflectiveProvider;
-  createInjectorStrategy(inj: ReflectiveInjector_): ReflectiveInjectorStrategy;
-}
-
-export class ReflectiveProtoInjectorInlineStrategy implements ReflectiveProtoInjectorStrategy {
-  provider0: ResolvedReflectiveProvider = null;
-  provider1: ResolvedReflectiveProvider = null;
-  provider2: ResolvedReflectiveProvider = null;
-  provider3: ResolvedReflectiveProvider = null;
-  provider4: ResolvedReflectiveProvider = null;
-  provider5: ResolvedReflectiveProvider = null;
-  provider6: ResolvedReflectiveProvider = null;
-  provider7: ResolvedReflectiveProvider = null;
-  provider8: ResolvedReflectiveProvider = null;
-  provider9: ResolvedReflectiveProvider = null;
-
-  keyId0: number = null;
-  keyId1: number = null;
-  keyId2: number = null;
-  keyId3: number = null;
-  keyId4: number = null;
-  keyId5: number = null;
-  keyId6: number = null;
-  keyId7: number = null;
-  keyId8: number = null;
-  keyId9: number = null;
-
-  constructor(protoEI: ReflectiveProtoInjector, providers: ResolvedReflectiveProvider[]) {
-    const length = providers.length;
-
-    if (length > 0) {
-      this.provider0 = providers[0];
-      this.keyId0 = providers[0].key.id;
-    }
-    if (length > 1) {
-      this.provider1 = providers[1];
-      this.keyId1 = providers[1].key.id;
-    }
-    if (length > 2) {
-      this.provider2 = providers[2];
-      this.keyId2 = providers[2].key.id;
-    }
-    if (length > 3) {
-      this.provider3 = providers[3];
-      this.keyId3 = providers[3].key.id;
-    }
-    if (length > 4) {
-      this.provider4 = providers[4];
-      this.keyId4 = providers[4].key.id;
-    }
-    if (length > 5) {
-      this.provider5 = providers[5];
-      this.keyId5 = providers[5].key.id;
-    }
-    if (length > 6) {
-      this.provider6 = providers[6];
-      this.keyId6 = providers[6].key.id;
-    }
-    if (length > 7) {
-      this.provider7 = providers[7];
-      this.keyId7 = providers[7].key.id;
-    }
-    if (length > 8) {
-      this.provider8 = providers[8];
-      this.keyId8 = providers[8].key.id;
-    }
-    if (length > 9) {
-      this.provider9 = providers[9];
-      this.keyId9 = providers[9].key.id;
-    }
-  }
-
-  getProviderAtIndex(index: number): ResolvedReflectiveProvider {
-    if (index == 0) return this.provider0;
-    if (index == 1) return this.provider1;
-    if (index == 2) return this.provider2;
-    if (index == 3) return this.provider3;
-    if (index == 4) return this.provider4;
-    if (index == 5) return this.provider5;
-    if (index == 6) return this.provider6;
-    if (index == 7) return this.provider7;
-    if (index == 8) return this.provider8;
-    if (index == 9) return this.provider9;
-    throw new OutOfBoundsError(index);
-  }
-
-  createInjectorStrategy(injector: ReflectiveInjector_): ReflectiveInjectorStrategy {
-    return new ReflectiveInjectorInlineStrategy(injector, this);
-  }
-}
-
-export class ReflectiveProtoInjectorDynamicStrategy implements ReflectiveProtoInjectorStrategy {
-  keyIds: number[];
-
-  constructor(protoInj: ReflectiveProtoInjector, public providers: ResolvedReflectiveProvider[]) {
-    const len = providers.length;
-
-    this.keyIds = new Array(len);
-
-    for (let i = 0; i < len; i++) {
-      this.keyIds[i] = providers[i].key.id;
-    }
-  }
-
-  getProviderAtIndex(index: number): ResolvedReflectiveProvider {
-    if (index < 0 || index >= this.providers.length) {
-      throw new OutOfBoundsError(index);
-    }
-    return this.providers[index];
-  }
-
-  createInjectorStrategy(ei: ReflectiveInjector_): ReflectiveInjectorStrategy {
-    return new ReflectiveInjectorDynamicStrategy(this, ei);
-  }
-}
-
-export class ReflectiveProtoInjector {
-  static fromResolvedProviders(providers: ResolvedReflectiveProvider[]): ReflectiveProtoInjector {
-    return new ReflectiveProtoInjector(providers);
-  }
-
-  /** @internal */
-  _strategy: ReflectiveProtoInjectorStrategy;
-  numberOfProviders: number;
-
-  constructor(providers: ResolvedReflectiveProvider[]) {
-    this.numberOfProviders = providers.length;
-    this._strategy = providers.length > _MAX_CONSTRUCTION_COUNTER ?
-        new ReflectiveProtoInjectorDynamicStrategy(this, providers) :
-        new ReflectiveProtoInjectorInlineStrategy(this, providers);
-  }
-
-  getProviderAtIndex(index: number): ResolvedReflectiveProvider {
-    return this._strategy.getProviderAtIndex(index);
-  }
-}
-
-
-
-export interface ReflectiveInjectorStrategy {
-  getObjByKeyId(keyId: number): any;
-  getObjAtIndex(index: number): any;
-  getMaxNumberOfObjects(): number;
-
-  resetConstructionCounter(): void;
-  instantiateProvider(provider: ResolvedReflectiveProvider): any;
-}
-
-export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrategy {
-  obj0: any = UNDEFINED;
-  obj1: any = UNDEFINED;
-  obj2: any = UNDEFINED;
-  obj3: any = UNDEFINED;
-  obj4: any = UNDEFINED;
-  obj5: any = UNDEFINED;
-  obj6: any = UNDEFINED;
-  obj7: any = UNDEFINED;
-  obj8: any = UNDEFINED;
-  obj9: any = UNDEFINED;
-
-  constructor(
-      public injector: ReflectiveInjector_,
-      public protoStrategy: ReflectiveProtoInjectorInlineStrategy) {}
-
-  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
-
-  instantiateProvider(provider: ResolvedReflectiveProvider): any {
-    return this.injector._new(provider);
-  }
-
-  getObjByKeyId(keyId: number): any {
-    const p = this.protoStrategy;
-    const inj = this.injector;
-
-    if (p.keyId0 === keyId) {
-      if (this.obj0 === UNDEFINED) {
-        this.obj0 = inj._new(p.provider0);
-      }
-      return this.obj0;
-    }
-    if (p.keyId1 === keyId) {
-      if (this.obj1 === UNDEFINED) {
-        this.obj1 = inj._new(p.provider1);
-      }
-      return this.obj1;
-    }
-    if (p.keyId2 === keyId) {
-      if (this.obj2 === UNDEFINED) {
-        this.obj2 = inj._new(p.provider2);
-      }
-      return this.obj2;
-    }
-    if (p.keyId3 === keyId) {
-      if (this.obj3 === UNDEFINED) {
-        this.obj3 = inj._new(p.provider3);
-      }
-      return this.obj3;
-    }
-    if (p.keyId4 === keyId) {
-      if (this.obj4 === UNDEFINED) {
-        this.obj4 = inj._new(p.provider4);
-      }
-      return this.obj4;
-    }
-    if (p.keyId5 === keyId) {
-      if (this.obj5 === UNDEFINED) {
-        this.obj5 = inj._new(p.provider5);
-      }
-      return this.obj5;
-    }
-    if (p.keyId6 === keyId) {
-      if (this.obj6 === UNDEFINED) {
-        this.obj6 = inj._new(p.provider6);
-      }
-      return this.obj6;
-    }
-    if (p.keyId7 === keyId) {
-      if (this.obj7 === UNDEFINED) {
-        this.obj7 = inj._new(p.provider7);
-      }
-      return this.obj7;
-    }
-    if (p.keyId8 === keyId) {
-      if (this.obj8 === UNDEFINED) {
-        this.obj8 = inj._new(p.provider8);
-      }
-      return this.obj8;
-    }
-    if (p.keyId9 === keyId) {
-      if (this.obj9 === UNDEFINED) {
-        this.obj9 = inj._new(p.provider9);
-      }
-      return this.obj9;
-    }
-
-    return UNDEFINED;
-  }
-
-  getObjAtIndex(index: number): any {
-    if (index == 0) return this.obj0;
-    if (index == 1) return this.obj1;
-    if (index == 2) return this.obj2;
-    if (index == 3) return this.obj3;
-    if (index == 4) return this.obj4;
-    if (index == 5) return this.obj5;
-    if (index == 6) return this.obj6;
-    if (index == 7) return this.obj7;
-    if (index == 8) return this.obj8;
-    if (index == 9) return this.obj9;
-    throw new OutOfBoundsError(index);
-  }
-
-  getMaxNumberOfObjects(): number { return _MAX_CONSTRUCTION_COUNTER; }
-}
-
-
-export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStrategy {
-  objs: any[];
-
-  constructor(
-      public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
-      public injector: ReflectiveInjector_) {
-    this.objs = new Array(protoStrategy.providers.length).fill(UNDEFINED);
-  }
-
-  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
-
-  instantiateProvider(provider: ResolvedReflectiveProvider): any {
-    return this.injector._new(provider);
-  }
-
-  getObjByKeyId(keyId: number): any {
-    const p = this.protoStrategy;
-
-    for (let i = 0; i < p.keyIds.length; i++) {
-      if (p.keyIds[i] === keyId) {
-        if (this.objs[i] === UNDEFINED) {
-          this.objs[i] = this.injector._new(p.providers[i]);
-        }
-
-        return this.objs[i];
-      }
-    }
-
-    return UNDEFINED;
-  }
-
-  getObjAtIndex(index: number): any {
-    if (index < 0 || index >= this.objs.length) {
-      throw new OutOfBoundsError(index);
-    }
-
-    return this.objs[index];
-  }
-
-  getMaxNumberOfObjects(): number { return this.objs.length; }
-}
 
 /**
  * A ReflectiveDependency injection container used for instantiating objects and resolving
@@ -447,8 +145,7 @@ export abstract class ReflectiveInjector implements Injector {
    */
   static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent: Injector = null):
       ReflectiveInjector {
-    return new ReflectiveInjector_(
-        ReflectiveProtoInjector.fromResolvedProviders(providers), parent);
+    return new ReflectiveInjector_(providers, parent);
   }
 
 
@@ -580,36 +277,38 @@ export abstract class ReflectiveInjector implements Injector {
 }
 
 export class ReflectiveInjector_ implements ReflectiveInjector {
-  private _strategy: ReflectiveInjectorStrategy;
   /** @internal */
   _constructionCounter: number = 0;
   /** @internal */
-  public _proto: any /* ProtoInjector */;
+  public _providers: ResolvedReflectiveProvider[];
   /** @internal */
   public _parent: Injector;
+
+  keyIds: number[];
+  objs: any[];
   /**
    * Private
    */
-  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null) {
-    this._proto = _proto;
+  constructor(_providers: ResolvedReflectiveProvider[], _parent: Injector = null) {
+    this._providers = _providers;
     this._parent = _parent;
-    this._strategy = _proto._strategy.createInjectorStrategy(this);
+
+    const len = _providers.length;
+
+    this.keyIds = new Array(len);
+    this.objs = new Array(len);
+
+    for (let i = 0; i < len; i++) {
+      this.keyIds[i] = _providers[i].key.id;
+      this.objs[i] = UNDEFINED;
+    }
   }
 
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
-    return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
+    return this._getByKey(ReflectiveKey.get(token), null, notFoundValue);
   }
 
-  getAt(index: number): any { return this._strategy.getObjAtIndex(index); }
-
   get parent(): Injector { return this._parent; }
-
-  /**
-   * @internal
-   * Internal. Do not use.
-   * We return `any` not to export the InjectorStrategy type.
-   */
-  get internalStrategy(): any { return this._strategy; }
 
   resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
@@ -617,8 +316,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
-    const proto = new ReflectiveProtoInjector(providers);
-    const inj = new ReflectiveInjector_(proto);
+    const inj = new ReflectiveInjector_(providers);
     inj._parent = this;
     return inj;
   }
@@ -631,13 +329,22 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._instantiateProvider(provider);
   }
 
+  getProviderAtIndex(index: number): ResolvedReflectiveProvider {
+    if (index < 0 || index >= this._providers.length) {
+      throw new OutOfBoundsError(index);
+    }
+    return this._providers[index];
+  }
+
   /** @internal */
   _new(provider: ResolvedReflectiveProvider): any {
-    if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
+    if (this._constructionCounter++ > this._getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(this, provider.key);
     }
     return this._instantiateProvider(provider);
   }
+
+  private _getMaxNumberOfObjects(): number { return this.objs.length; }
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
@@ -655,50 +362,11 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       provider: ResolvedReflectiveProvider,
       ResolvedReflectiveFactory: ResolvedReflectiveFactory): any {
     const factory = ResolvedReflectiveFactory.factory;
-    const deps = ResolvedReflectiveFactory.dependencies;
-    const length = deps.length;
 
-    let d0: any;
-    let d1: any;
-    let d2: any;
-    let d3: any;
-    let d4: any;
-    let d5: any;
-    let d6: any;
-    let d7: any;
-    let d8: any;
-    let d9: any;
-    let d10: any;
-    let d11: any;
-    let d12: any;
-    let d13: any;
-    let d14: any;
-    let d15: any;
-    let d16: any;
-    let d17: any;
-    let d18: any;
-    let d19: any;
+    let deps: any[];
     try {
-      d0 = length > 0 ? this._getByReflectiveDependency(provider, deps[0]) : null;
-      d1 = length > 1 ? this._getByReflectiveDependency(provider, deps[1]) : null;
-      d2 = length > 2 ? this._getByReflectiveDependency(provider, deps[2]) : null;
-      d3 = length > 3 ? this._getByReflectiveDependency(provider, deps[3]) : null;
-      d4 = length > 4 ? this._getByReflectiveDependency(provider, deps[4]) : null;
-      d5 = length > 5 ? this._getByReflectiveDependency(provider, deps[5]) : null;
-      d6 = length > 6 ? this._getByReflectiveDependency(provider, deps[6]) : null;
-      d7 = length > 7 ? this._getByReflectiveDependency(provider, deps[7]) : null;
-      d8 = length > 8 ? this._getByReflectiveDependency(provider, deps[8]) : null;
-      d9 = length > 9 ? this._getByReflectiveDependency(provider, deps[9]) : null;
-      d10 = length > 10 ? this._getByReflectiveDependency(provider, deps[10]) : null;
-      d11 = length > 11 ? this._getByReflectiveDependency(provider, deps[11]) : null;
-      d12 = length > 12 ? this._getByReflectiveDependency(provider, deps[12]) : null;
-      d13 = length > 13 ? this._getByReflectiveDependency(provider, deps[13]) : null;
-      d14 = length > 14 ? this._getByReflectiveDependency(provider, deps[14]) : null;
-      d15 = length > 15 ? this._getByReflectiveDependency(provider, deps[15]) : null;
-      d16 = length > 16 ? this._getByReflectiveDependency(provider, deps[16]) : null;
-      d17 = length > 17 ? this._getByReflectiveDependency(provider, deps[17]) : null;
-      d18 = length > 18 ? this._getByReflectiveDependency(provider, deps[18]) : null;
-      d19 = length > 19 ? this._getByReflectiveDependency(provider, deps[19]) : null;
+      deps =
+          ResolvedReflectiveFactory.dependencies.map(dep => this._getByReflectiveDependency(dep));
     } catch (e) {
       if (e instanceof AbstractProviderError || e instanceof InstantiationError) {
         e.addKey(this, provider.key);
@@ -708,104 +376,43 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
     let obj: any;
     try {
-      switch (length) {
-        case 0:
-          obj = factory();
-          break;
-        case 1:
-          obj = factory(d0);
-          break;
-        case 2:
-          obj = factory(d0, d1);
-          break;
-        case 3:
-          obj = factory(d0, d1, d2);
-          break;
-        case 4:
-          obj = factory(d0, d1, d2, d3);
-          break;
-        case 5:
-          obj = factory(d0, d1, d2, d3, d4);
-          break;
-        case 6:
-          obj = factory(d0, d1, d2, d3, d4, d5);
-          break;
-        case 7:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6);
-          break;
-        case 8:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7);
-          break;
-        case 9:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8);
-          break;
-        case 10:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9);
-          break;
-        case 11:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10);
-          break;
-        case 12:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11);
-          break;
-        case 13:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12);
-          break;
-        case 14:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13);
-          break;
-        case 15:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14);
-          break;
-        case 16:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15);
-          break;
-        case 17:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16);
-          break;
-        case 18:
-          obj = factory(
-              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17);
-          break;
-        case 19:
-          obj = factory(
-              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18);
-          break;
-        case 20:
-          obj = factory(
-              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18,
-              d19);
-          break;
-        default:
-          throw new Error(
-              `Cannot instantiate '${provider.key.displayName}' because it has more than 20 dependencies`);
-      }
+      obj = factory(...deps);
     } catch (e) {
       throw new InstantiationError(this, e, e.stack, provider.key);
     }
+
     return obj;
   }
 
-  private _getByReflectiveDependency(
-      provider: ResolvedReflectiveProvider, dep: ReflectiveDependency): any {
-    return this._getByKey(
-        dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
-        dep.optional ? null : THROW_IF_NOT_FOUND);
+  private _getByReflectiveDependency(dep: ReflectiveDependency): any {
+    return this._getByKey(dep.key, dep.visibility, dep.optional ? null : THROW_IF_NOT_FOUND);
   }
 
-  private _getByKey(
-      key: ReflectiveKey, lowerBoundVisibility: Object, upperBoundVisibility: Object,
-      notFoundValue: any): any {
+  private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf, notFoundValue: any): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
 
-    if (upperBoundVisibility instanceof Self) {
+    if (visibility instanceof Self) {
       return this._getByKeySelf(key, notFoundValue);
 
     } else {
-      return this._getByKeyDefault(key, notFoundValue, lowerBoundVisibility);
+      return this._getByKeyDefault(key, notFoundValue, visibility);
     }
+  }
+
+  private _getObjByKeyId(keyId: number): any {
+    for (let i = 0; i < this.keyIds.length; i++) {
+      if (this.keyIds[i] === keyId) {
+        if (this.objs[i] === UNDEFINED) {
+          this.objs[i] = this._new(this._providers[i]);
+        }
+
+        return this.objs[i];
+      }
+    }
+
+    return UNDEFINED;
   }
 
   /** @internal */
@@ -819,15 +426,15 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   /** @internal */
   _getByKeySelf(key: ReflectiveKey, notFoundValue: any): any {
-    const obj = this._strategy.getObjByKeyId(key.id);
+    const obj = this._getObjByKeyId(key.id);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, notFoundValue);
   }
 
   /** @internal */
-  _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, lowerBoundVisibility: Object): any {
+  _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, visibility: Self|SkipSelf): any {
     let inj: Injector;
 
-    if (lowerBoundVisibility instanceof SkipSelf) {
+    if (visibility instanceof SkipSelf) {
       inj = this._parent;
     } else {
       inj = this;
@@ -835,7 +442,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
     while (inj instanceof ReflectiveInjector_) {
       const inj_ = <ReflectiveInjector_>inj;
-      const obj = inj_._strategy.getObjByKeyId(key.id);
+      const obj = inj_._getObjByKeyId(key.id);
       if (obj !== UNDEFINED) return obj;
       inj = inj_._parent;
     }
@@ -859,9 +466,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 const INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
-  const res: any[] = new Array(injector._proto.numberOfProviders);
-  for (let i = 0; i < injector._proto.numberOfProviders; ++i) {
-    res[i] = fn(injector._proto.getProviderAtIndex(i));
+  const res: any[] = new Array(injector._providers.length);
+  for (let i = 0; i < injector._providers.length; ++i) {
+    res[i] = fn(injector.getProviderAtIndex(i));
   }
   return res;
 }
