@@ -18,7 +18,7 @@ The latest release of Angular Material can be installed from npm
 
 Playing with the latest changes from [master](https://github.com/angular/material2/tree/master) is also possible
 
-`npm install https://github.com/angular/material2-builds.git`
+`npm install --save https://github.com/angular/material2-builds.git`
 
 ### Getting started
 
