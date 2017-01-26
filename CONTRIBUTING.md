@@ -185,6 +185,8 @@ fix(release): need to depend on latest rxjs and zone.js
 The version in our package.json gets copied to the one we publish, and users need the latest of these.
 ```
 
+We use [a git hook][commitplease] to automatically validate commit messages. If you need to skip that hook, do a `git commit --no-verify` or start your commit message with "WIP".
+
 ### Revert
 If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
@@ -275,3 +277,4 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [plunker]: http://plnkr.co/edit
 [runnable]: http://runnable.com
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angular
+[commitplease]: https://github.com/jzaefferer/commitplease/
