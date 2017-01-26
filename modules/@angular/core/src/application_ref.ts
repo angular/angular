@@ -201,8 +201,9 @@ export abstract class PlatformRef {
    * ```
    * @stable
    */
-  abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
-      Promise<NgModuleRef<M>>;
+  abstract bootstrapModule<M>(
+      moduleType: Type<M>,
+      compilerOptions?: CompilerOptions|CompilerOptions[]): Promise<NgModuleRef<M>>;
 
   /**
    * Register a listener to be called when the platform is disposed.
