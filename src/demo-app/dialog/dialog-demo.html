@@ -8,20 +8,32 @@
     <h2>Dialog dimensions</h2>
 
     <p>
-      <md-input [(ngModel)]="config.width" placeholder="Width"></md-input>
-      <md-input [(ngModel)]="config.height" placeholder="Height"></md-input>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.width" placeholder="Width">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.height" placeholder="Height">
+      </md-input-container>
     </p>
 
     <h2>Dialog position</h2>
 
     <p>
-      <md-input [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top"></md-input>
-      <md-input [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom"></md-input>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom">
+      </md-input-container>
     </p>
 
     <p>
-      <md-input [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left"></md-input>
-      <md-input [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right"></md-input>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right">
+      </md-input-container>
     </p>
 
     <h2>Other options</h2>

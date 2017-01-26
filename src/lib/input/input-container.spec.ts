@@ -2,7 +2,7 @@ import {async, TestBed, inject} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {By} from '@angular/platform-browser';
-import {MdInputModule} from './input';
+import {MdInputModule} from './index';
 import {MdInputContainer, MdInputDirective} from './input-container';
 import {Platform} from '../core/platform/platform';
 import {PlatformModule} from '../core/platform/index';
@@ -443,7 +443,7 @@ class MdInputContainerPlaceholderRequiredTestComponent {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input>
+      <input mdInput>
       <md-placeholder>{{placeholder}}</md-placeholder>
     </md-input-container>`
 })
@@ -452,7 +452,7 @@ class MdInputContainerPlaceholderElementTestComponent {
 }
 
 @Component({
-  template: `<md-input-container><input md-input [formControl]="formControl"></md-input-container>`
+  template: `<md-input-container><input mdInput [formControl]="formControl"></md-input-container>`
 })
 class MdInputContainerWithFormControl {
   formControl = new FormControl();
@@ -466,14 +466,14 @@ class MdInputContainerPlaceholderAttrTestComponent {
 }
 
 @Component({
-  template: `<md-input-container><input md-input><md-hint>{{label}}</md-hint></md-input-container>`
+  template: `<md-input-container><input mdInput><md-hint>{{label}}</md-hint></md-input-container>`
 })
 class MdInputContainerHintLabel2TestController {
   label: string = '';
 }
 
 @Component({
-  template: `<md-input-container [hintLabel]="label"><input md-input></md-input-container>`
+  template: `<md-input-container [hintLabel]="label"><input mdInput></md-input-container>`
 })
 class MdInputContainerHintLabelTestController {
   label: string = '';
@@ -496,7 +496,7 @@ class MdInputContainerInvalidPlaceholderTestController {}
 @Component({
   template: `
     <md-input-container hintLabel="Hello">
-      <input md-input>
+      <input mdInput>
       <md-hint>World</md-hint>
     </md-input-container>`
 })
@@ -505,7 +505,7 @@ class MdInputContainerInvalidHint2TestController {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input>
+      <input mdInput>
       <md-hint>Hello</md-hint>
       <md-hint>World</md-hint>
     </md-input-container>`
@@ -574,7 +574,7 @@ class MdInputContainerWithValueBinding {
 @Component({
   template: `
     <md-input-container [floatingPlaceholder]="false">
-      <input md-input placeholder="Label">
+      <input mdInput placeholder="Label">
     </md-input-container>
   `
 })

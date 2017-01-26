@@ -92,7 +92,7 @@
     <h4>Input</h4>
     <p>
       <md-input-container class="demo-full-width">
-        <input md-input
+        <input mdInput
                #characterCountInputHintExample
                placeholder="Character count (100 max)"
                maxLength="100"
@@ -104,7 +104,7 @@
     <h4>Textarea</h4>
     <p>
       <md-input-container class="demo-full-width">
-        <textarea md-input
+        <textarea mdInput
                   #characterCountTextareaHintExample
                   placeholder="Character count (100 max)"
                   maxLength="100">Hello world. How are you?</textarea>
@@ -150,7 +150,7 @@
 
     <p>
       <md-input-container>
-        <input md-input>
+        <input mdInput>
         <md-placeholder>
           I <md-icon class="demo-icons">favorite</md-icon> <b>bold</b> placeholder
         </md-placeholder>
@@ -174,7 +174,7 @@
     <p>
       <md-checkbox [(ngModel)]="requiredField"> Check to make required:</md-checkbox>
       <md-input-container>
-        <input md-input
+        <input mdInput
                [required]="requiredField"
                [placeholder]="requiredField ? 'Required field' : 'Not required field'">
       </md-input-container>
@@ -210,8 +210,8 @@
     </p>
 
     <p>
-      Empty: <md-input-container><input md-input></md-input-container>
-      <label>Label: <md-input-container><input md-input></md-input-container></label>
+      Empty: <md-input-container><input mdInput></md-input-container>
+      <label>Label: <md-input-container><input mdInput></md-input-container></label>
     </p>
   </md-card-content>
 </md-card>
@@ -233,7 +233,7 @@
         <td>{{i+1}}</td>
         <td>
           <md-input-container>
-            <input md-input
+            <input mdInput
                    type="number"
                    placeholder="value"
                    aria-label="hello"

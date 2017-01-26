@@ -31,12 +31,16 @@
 
   <p>
     <strong>Show Delay (ms): </strong>
-    <md-input type="number" [(ngModel)]="showDelay"></md-input>
+    <md-input-container>
+      <input mdInput type="number" [(ngModel)]="showDelay">
+    </md-input-container>
   </p>
 
   <p>
     <strong>Hide Delay (ms): </strong>
-    <md-input type="number" [(ngModel)]="hideDelay"></md-input>
+    <md-input-container>
+      <input mdInput type="number" [(ngModel)]="hideDelay">
+    </md-input-container>
   </p>
 
   <strong>Mouse over to</strong>

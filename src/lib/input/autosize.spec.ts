@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MdInputModule} from './input';
+import {MdInputModule} from './index';
 import {MdTextareaAutosize} from './autosize';
 
 

@@ -18,7 +18,9 @@
 
 <div>
   Selected tab index:
-  <md-input type="number" [(ngModel)]="activeTabIndex"></md-input>
+  <md-input-container>
+    <input mdInput type="number" [(ngModel)]="activeTabIndex">
+  </md-input-container>
 </div>
 
 <div class="demo-dynamic-tabs">
@@ -33,7 +35,9 @@
       </md-checkbox>
       <div>
         Position:
-        <md-input type="number" [(ngModel)]="addTabPosition"></md-input>
+        <md-input-container>
+          <input mdInput type="number" [(ngModel)]="addTabPosition">
+        </md-input-container>
       </div>
       <button md-raised-button color="primary"
               (click)="addTab(createWithLongContent)">
@@ -77,7 +81,9 @@
       </div>
       <br>
       <br>
-      <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
+      <md-input-container>
+        <input mdInput placeholder="Tab Label" [(ngModel)]="tab.label">
+      </md-input-container>
       <br><br>
       <button md-raised-button
               [disabled]="dynamicTabs.length == 1"

@@ -7,7 +7,7 @@
     <md-checkbox [(ngModel)]="action">
       <p *ngIf="!action">Show button on snack bar</p>
       <md-input-container *ngIf="action">
-        <input md-input
+        <input mdInput
                type="text"
                class="demo-button-label-input"
                placeholder="Snack bar action label"
@@ -19,7 +19,7 @@
     <md-checkbox [(ngModel)]="setAutoHide">
       <p *ngIf="!setAutoHide">Auto hide after duration</p>
       <md-input-container *ngIf="setAutoHide">
-        <input md-input
+        <input mdInput
                type="number"
                class="demo-button-label-input"
                placeholder="Auto Hide Duration in ms"

@@ -68,11 +68,7 @@ export class MdHint {
 
 /** The input directive, used to mark the input that `MdInputContainer` is wrapping. */
 @Directive({
-  // TODO: remove the md-input selector after next version
-  selector: `
-    input[mdInput], textarea[mdInput], input[matInput], textarea[matInput],
-    input[md-input], textarea[md-input], input[mat-input], textarea[mat-input]
-  `,
+  selector: `input[mdInput], textarea[mdInput], input[matInput], textarea[matInput]`,
   host: {
     'class': 'md-input-element',
     // Native input properties that are overwritten by Angular inputs need to be synced with
@@ -226,7 +222,7 @@ export class MdInputDirective {
   moduleId: module.id,
   selector: 'md-input-container, mat-input-container',
   templateUrl: 'input-container.html',
-  styleUrls: ['input.css', 'input-container.css'],
+  styleUrls: ['input-container.css'],
   host: {
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',

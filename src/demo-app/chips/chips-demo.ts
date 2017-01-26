@@ -1,5 +1,4 @@
-import {Component} from '@angular/core';
-import {MdInput} from '@angular/material';
+import {Component, ElementRef} from '@angular/core';
 
 export interface Person {
   name: string;
@@ -40,10 +39,10 @@ export class ChipsDemo {
     alert(message);
   }
 
-  add(input: MdInput): void {
-    if (input.value && input.value.trim() != '') {
-      this.people.push({ name: input.value.trim() });
-      input.value = '';
+  add(input: ElementRef): void {
+    if (input.nativeElement.value && input.nativeElement.value.trim() != '') {
+      this.people.push({ name: input.nativeElement.value.trim() });
+      input.nativeElement.value = '';
     }
   }
 

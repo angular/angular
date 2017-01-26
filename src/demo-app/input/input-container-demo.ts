@@ -8,7 +8,7 @@ let max = 5;
   moduleId: module.id,
   selector: 'input-container-demo',
   templateUrl: 'input-container-demo.html',
-  styleUrls: ['input-demo.css'],
+  styleUrls: ['input-container-demo.css'],
 })
 export class InputContainerDemo {
   dividerColor: boolean;

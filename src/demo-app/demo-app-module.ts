@@ -12,7 +12,6 @@ import {JazzDialog, ContentElementDialog, DialogDemo} from './dialog/dialog-demo
 import {RippleDemo} from './ripple/ripple-demo';
 import {IconDemo} from './icon/icon-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
-import {InputDemo} from './input/input-demo';
 import {CardDemo} from './card/card-demo';
 import {ChipsDemo} from './chips/chips-demo';
 import {RadioDemo} from './radio/radio-demo';
@@ -63,7 +62,6 @@ import {InputContainerDemo} from './input/input-container-demo';
     GridListDemo,
     Home,
     IconDemo,
-    InputDemo,
     InputContainerDemo,
     JazzDialog,
     ContentElementDialog,

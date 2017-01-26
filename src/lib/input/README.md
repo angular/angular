@@ -1,6 +1,3 @@
-**NOTE: The <code>md-input</code> element is deprecated. <code>md-input-container</code> should be
-used instead.**
-
 # md-input-container
 
 Inputs are the basic input component of Material 2. The spec can be found
