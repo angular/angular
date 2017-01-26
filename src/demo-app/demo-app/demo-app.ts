@@ -4,7 +4,7 @@ import {Component, ViewEncapsulation, ElementRef} from '@angular/core';
 @Component({
   selector: 'home',
   template: `
-    <p>Welcome to the development demos for Angular Material 2!</p>
+    <p>Welcome to the development demos for Angular Material!</p>
     <p>Open the sidenav to select a demo. </p>
   `
 })

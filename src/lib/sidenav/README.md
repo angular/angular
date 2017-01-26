@@ -4,7 +4,7 @@ should be used instead.**
 
 # MdSidenav
 
-MdSidenav is the side navigation component for Material 2. It is composed of two components: `<md-sidenav-container>` and `<md-sidenav>`.
+MdSidenav is the side navigation component for Angular Material. It is composed of two components: `<md-sidenav-container>` and `<md-sidenav>`.
 
 ## Screenshots
 

@@ -1,4 +1,4 @@
-Get started with Angular Material 2 using the Angular CLI.
+Get started with Angular Material using the Angular CLI.
 
 ## Install the CLI
  
@@ -85,6 +85,6 @@ load the Material Design font in your `index.html`.
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 ```
 
-## Sample Angular Material 2 projects
-- [Material 2 Sample App](https://github.com/jelbourn/material2-app)
+## Sample Angular Material projects
+- [Material Sample App](https://github.com/jelbourn/material2-app)
 - [Angular Connect 2016 Demo](https://github.com/kara/leashed-in)

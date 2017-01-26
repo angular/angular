@@ -10,7 +10,7 @@ import {
 
 export const MATERIAL_COMPATIBILITY_MODE = new OpaqueToken('md-compatibility-mode');
 
-/** Selector that matches all elements that may have style collisions with material1. */
+/** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MAT_ELEMENTS_SELECTOR = `
   [mat-button],
   [mat-dialog-actions],
@@ -67,7 +67,7 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-toolbar,
   matTooltip`;
 
-/** Selector that matches all elements that may have style collisions with material1. */
+/** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MD_ELEMENTS_SELECTOR = `  
   [md-button],
   [md-dialog-actions],

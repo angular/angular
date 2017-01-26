@@ -13,7 +13,7 @@ a theme consists of:
 * A foreground palette: colors for text and icons.
 * A background palette: colors used for element backgrounds.
 
-In Angular Material 2, all theme styles are generated _statically_ at build-time so that your
+In Angular Material, all theme styles are generated _statically_ at build-time so that your
 app doesn't have to spend cycles generating theme styles on startup.
 
 [1]: https://material.google.com/style/color.html#color-color-palette

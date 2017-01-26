@@ -18,12 +18,12 @@ const templateDir = path.resolve(__dirname, './templates');
 // Package definition for material2 api docs. This only *defines* the package- it does not yet
 // actually *run* anything.
 //
-// A dgeni package is very similar to an Angular 1 module. Modules contain:
+// A dgeni package is very similar to an AngularJS module. Modules contain:
 //  "services" (injectables)
 //  "processors" (injectables that conform to a specific interface)
 //  "templates": nunjucks templates that can be used to render content
 //
-// A dgeni package also has a `config` method, similar to an Angular 1 module.
+// A dgeni package also has a `config` method, similar to an AngularJS module.
 // A config block can inject any services/processors and configure them before
 // docs processing begins.
 

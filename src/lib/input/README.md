@@ -1,6 +1,6 @@
 # md-input-container
 
-Inputs are the basic input component of Material 2. The spec can be found
+Inputs are the basic input component of Material. The spec can be found
 [here](https://www.google.com/design/spec/components/text-fields.html). `md-input-container` acts as
 a wrapper for native `input` and `textarea` elements. The native element wrapped by the
 `md-input-container` must be marked with the `mdInput` directive.

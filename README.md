@@ -1,9 +1,9 @@
-# Material Design for Angular 2
+# Material Design for Angular
 [![npm version](https://badge.fury.io/js/%40angular%2Fmaterial.svg)](https://www.npmjs.com/package/%40angular%2Fmaterial)
 [![Build Status](https://travis-ci.org/angular/material2.svg?branch=master)](https://travis-ci.org/angular/material2)
 [![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-This is the home for the Angular team's Material Design components built on top of Angular 2.
+This is the home for the Angular team's Material Design components built on top of Angular.
 
 #### Quick links
 [Google group](https://groups.google.com/forum/#!forum/angular-material2),
@@ -23,10 +23,10 @@ Playing with the latest changes from [master](https://github.com/angular/materia
 ### Getting started
 
 See our [Getting Started Guide][getting-started]
-if you're building your first project with Angular Material 2.
+if you're building your first project with Angular Material.
 
 ### Project status
-Angular Material 2 is currently in beta and under active development.
+Angular Material is currently in beta and under active development.
 During beta, new features will be added regularly and APIs will evolve based on user feedback.
 
 Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory)
@@ -141,7 +141,7 @@ High level items planned for January 2017:
 be missing some behaviors or polish.
 
 ## The goal of Angular Material
-Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript,
+Our goal is to build a set of high-quality UI components built with Angular and TypeScript,
 following the Material Design spec. These
 components will serve as an example of how to write Angular code following best practices.
 

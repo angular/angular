@@ -11,7 +11,7 @@ import {
  * The following are all the animations for the md-select component, with each
  * const containing the metadata for one animation.
  *
- * The values below match the implementation of the Material 1 md-select animation.
+ * The values below match the implementation of the AngularJS Material md-select animation.
  */
 
 /**

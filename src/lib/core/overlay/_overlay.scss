@@ -49,7 +49,7 @@
     pointer-events: auto;
 
     // TODO(jelbourn): figure out if there are actually spec'ed colors for both light and dark
-    // themes here. Currently using the values from Angular Material 1.
+    // themes here. Currently using the values from AngularJS Material.
     transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
     opacity: 0;
 

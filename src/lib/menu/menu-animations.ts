@@ -9,7 +9,7 @@ import{
 
 /**
  * Below are all the animations for the md-menu component.
- * Animation duration and timing values are based on Material 1.
+ * Animation duration and timing values are based on AngularJS Material.
  */
 
 

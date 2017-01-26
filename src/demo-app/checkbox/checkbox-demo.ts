@@ -25,7 +25,7 @@ export class MdCheckboxDemoNestedChecklist {
       subtasks: [
         { name: 'Cook Dinner', completed: false },
         { name: 'Read the Material Design Spec', completed: false },
-        { name: 'Upgrade Application to Angular2', completed: false }
+        { name: 'Upgrade Application to Angular', completed: false }
       ]
     },
     {

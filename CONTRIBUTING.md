@@ -1,6 +1,6 @@
-# Contributing to Angular 2 Material
+# Contributing to Angular Material
 
-We would love for you to contribute to Angular 2 Material and help make it ever better!
+We would love for you to contribute to Angular Material and help make it ever better!
 As a contributor, here are the guidelines we would like you to follow:
 
  - [Code of Conduct](#coc)
@@ -19,7 +19,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 
 If you have questions about how to *use* Angular Material, please direct them to the 
 [Google Group][material-group] discussion list or [StackOverflow][stackoverflow]. 
-Please note that Angular 2 Material is still in very early development, and the team's capacity 
+Please note that Angular Material is still in very early development, and the team's capacity 
 to answer usage questions is limited. Community chat is also available on [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
@@ -33,7 +33,7 @@ You can help the team even more and [submit a Pull Request](#submit-pr) with a f
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
 Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. Angular 2 Material is in very early 
+a proposal for your work first, to be sure that we can use it. Angular Material is in very early 
 stages and we are not ready to accept major contributions ahead of the full release.
 Please consider what kind of change it is:
 
