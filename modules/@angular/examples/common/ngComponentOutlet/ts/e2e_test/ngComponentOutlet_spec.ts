@@ -31,5 +31,13 @@ describe('ngComponentOutlet', () => {
       waitForElement('ng-component-outlet-complete-example');
       expect(element.all(by.css('complete-component')).getText()).toEqual(['Complete: Ahoj Svet!']);
     });
+
+    it('should render other module', () => {
+      browser.get(URL);
+      waitForElement('ng-component-outlet-other-module-example');
+      expect(element.all(by.css('other-module-component')).getText()).toEqual([
+        'Other Module Component!'
+      ]);
+    });
   });
 });
