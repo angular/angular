@@ -11,6 +11,7 @@ import {MissingTranslationStrategy} from '@angular/core';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
+import {Console} from '../private_import_core';
 
 import {mergeTranslations} from './extractor_merger';
 import {Serializer} from './serializers/serializer';
@@ -23,14 +24,11 @@ export class I18NHtmlParser implements HtmlParser {
   // @override
   getTagDefinition: any;
 
-  // TODO(vicb): transB.load() should not need a msgB & add transB.resolve(msgB,
-  // interpolationConfig)
-  // TODO(vicb): remove the interpolationConfig from the Xtb serializer
   constructor(
       private _htmlParser: HtmlParser, private _translations?: string,
       private _translationsFormat?: string,
-      private _missingTranslationStrategy:
-          MissingTranslationStrategy = MissingTranslationStrategy.Error) {}
+      private _missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+      private _console?: Console) {}
 
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,
@@ -51,7 +49,7 @@ export class I18NHtmlParser implements HtmlParser {
 
     const serializer = this._createSerializer();
     const translationBundle = TranslationBundle.load(
-        this._translations, url, serializer, this._missingTranslationStrategy);
+        this._translations, url, serializer, this._missingTranslation, this._console);
 
     return mergeTranslations(parseResult.rootNodes, translationBundle, interpolationConfig, [], {});
   }

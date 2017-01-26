@@ -9,6 +9,7 @@
 import {Injectable, InjectionToken} from '../di';
 import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
+import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
 
@@ -112,6 +113,7 @@ export type CompilerOptions = {
   useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
   providers?: any[],
+  missingTranslation?: MissingTranslationStrategy,
 };
 
 /**
