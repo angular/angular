@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {unimplemented} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
@@ -55,10 +54,9 @@ export abstract class Injector {
    * Injector.THROW_IF_NOT_FOUND is given
    * - Returns the `notFoundValue` otherwise
    */
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectToken<T>
    */
-  get(token: any, notFoundValue?: any): any;
-  get(token: any, notFoundValue?: any): any { return unimplemented(); }
+  abstract get(token: any, notFoundValue?: any): any;
 }

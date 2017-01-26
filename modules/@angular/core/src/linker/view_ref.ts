@@ -9,7 +9,6 @@
 import {AnimationQueue} from '../animation/animation_queue';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectorStatus} from '../change_detection/constants';
-import {unimplemented} from '../facade/errors';
 import {AppView} from './view';
 
 /**
@@ -21,7 +20,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
    */
   abstract destroy(): void;
 
-  get destroyed(): boolean { return <boolean>unimplemented(); }
+  abstract get destroyed(): boolean;
 
   abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
@@ -81,9 +80,9 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * @experimental
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
-  get context(): C { return unimplemented(); }
+  abstract get context(): C;
 
-  get rootNodes(): any[] { return <any[]>unimplemented(); };
+  abstract get rootNodes(): any[];
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
