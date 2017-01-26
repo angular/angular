@@ -8,7 +8,6 @@
 
 import {ErrorHandler} from '../src/error_handler';
 import {ListWrapper} from '../src/facade/collection';
-import {unimplemented} from '../src/facade/errors';
 import {stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
@@ -185,9 +184,7 @@ export abstract class PlatformRef {
    *
    * @experimental APIs related to application bootstrap are currently under review.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
-    throw unimplemented();
-  }
+  abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
 
   /**
    * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
@@ -217,14 +214,14 @@ export abstract class PlatformRef {
    * Retrieve the platform {@link Injector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
-  get injector(): Injector { throw unimplemented(); };
+  abstract get injector(): Injector;
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
    */
   abstract destroy(): void;
 
-  get destroyed(): boolean { throw unimplemented(); }
+  abstract get destroyed(): boolean;
 }
 
 function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () => any): any {
@@ -381,29 +378,29 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    * This list is populated even before the component is created.
    */
-  get componentTypes(): Type<any>[] { return <Type<any>[]>unimplemented(); };
+  abstract get componentTypes(): Type<any>[];
 
   /**
    * Get a list of components registered to this application.
    */
-  get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
+  abstract get components(): ComponentRef<any>[];
 
   /**
    * Attaches a view so that it will be dirty checked.
    * The view will be automatically detached when it is destroyed.
    * This will throw if the view is already attached to a ViewContainer.
    */
-  attachView(view: ViewRef): void { unimplemented(); }
+  abstract attachView(view: ViewRef): void;
 
   /**
    * Detaches a view from dirty checking again.
    */
-  detachView(view: ViewRef): void { unimplemented(); }
+  abstract detachView(view: ViewRef): void;
 
   /**
    * Returns the number of attached views.
    */
-  get viewCount() { return unimplemented(); }
+  abstract get viewCount(): number;
 }
 
 @Injectable()

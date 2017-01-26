@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
@@ -467,7 +466,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(child.parent).toBe(parent);
    * ```
    */
-  get parent(): Injector { return unimplemented(); }
+  abstract get parent(): Injector;
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.
@@ -496,7 +495,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector { return unimplemented(); }
+  abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
 
   /**
    * Creates a child injector from previously resolved providers.
@@ -549,7 +548,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Provider): any { return unimplemented(); }
+  abstract resolveAndInstantiate(provider: Provider): any;
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -575,7 +574,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.instantiateResolved(carProvider));
    * ```
    */
-  instantiateResolved(provider: ResolvedReflectiveProvider): any { return unimplemented(); }
+  abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
 
   abstract get(token: any, notFoundValue?: any): any;
 }
