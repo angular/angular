@@ -30,7 +30,7 @@ if (require.main === module) {
   const args = require('minimist')(process.argv.slice(2));
   const project = args.p || args.project || '.';
   const cliOptions = new tsc.I18nExtractionCliOptions(args);
-  tsc.main(project, cliOptions, extract)
+  tsc.main(project, cliOptions, extract, {noEmit: true})
       .then((exitCode: any) => process.exit(exitCode))
       .catch((e: any) => {
         console.error(e.stack);
