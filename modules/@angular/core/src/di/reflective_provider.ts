@@ -25,11 +25,10 @@ interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider,
  */
 export class ReflectiveDependency {
   constructor(
-      public key: ReflectiveKey, public optional: boolean, public lowerBoundVisibility: any,
-      public upperBoundVisibility: any, public properties: any[]) {}
+      public key: ReflectiveKey, public optional: boolean, public visibility: Self|SkipSelf) {}
 
   static fromKey(key: ReflectiveKey): ReflectiveDependency {
-    return new ReflectiveDependency(key, false, null, null, []);
+    return new ReflectiveDependency(key, false, null);
   }
 }
 
@@ -219,20 +218,18 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
 
 function _extractToken(
     typeOrFunc: any, metadata: any[] | any, params: any[][]): ReflectiveDependency {
-  const depProps: any[] = [];
   let token: any = null;
   let optional = false;
 
   if (!Array.isArray(metadata)) {
     if (metadata instanceof Inject) {
-      return _createDependency(metadata.token, optional, null, null, depProps);
+      return _createDependency(metadata.token, optional, null);
     } else {
-      return _createDependency(metadata, optional, null, null, depProps);
+      return _createDependency(metadata, optional, null);
     }
   }
 
-  let lowerBoundVisibility: any = null;
-  let upperBoundVisibility: any = null;
+  let visibility: Self|SkipSelf = null;
 
   for (let i = 0; i < metadata.length; ++i) {
     const paramMetadata = metadata[i];
@@ -246,29 +243,21 @@ function _extractToken(
     } else if (paramMetadata instanceof Optional) {
       optional = true;
 
-    } else if (paramMetadata instanceof Self) {
-      upperBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof Host) {
-      upperBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof SkipSelf) {
-      lowerBoundVisibility = paramMetadata;
+    } else if (paramMetadata instanceof Self || paramMetadata instanceof SkipSelf) {
+      visibility = paramMetadata;
     }
   }
 
   token = resolveForwardRef(token);
 
   if (token != null) {
-    return _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps);
+    return _createDependency(token, optional, visibility);
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
 
 function _createDependency(
-    token: any, optional: boolean, lowerBoundVisibility: any, upperBoundVisibility: any,
-    depProps: any[]): ReflectiveDependency {
-  return new ReflectiveDependency(
-      ReflectiveKey.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
+    token: any, optional: boolean, visibility: Self | SkipSelf): ReflectiveDependency {
+  return new ReflectiveDependency(ReflectiveKey.get(token), optional, visibility);
 }
