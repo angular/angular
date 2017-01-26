@@ -19,9 +19,6 @@
   }
 
   &.md-sidenav-opening, &.md-sidenav-opened {
-    // The elevation of z-16 is noted in the design specifications.
-    // See https://material.io/guidelines/patterns/navigation-drawer.html#
-    @include md-elevation(16);
     transform: translate3d($open, 0, 0);
   }
 }
@@ -124,6 +121,14 @@ md-sidenav {
       right: auto;
 
       @include md-sidenav-transition(0, -100%);
+    }
+  }
+
+  &.md-sidenav-opening, &.md-sidenav-opened {
+    &:not(.md-sidenav-side) {
+      // The elevation of z-16 is noted in the design specifications.
+      // See https://material.io/guidelines/patterns/navigation-drawer.html#
+      @include md-elevation(16);
     }
   }
 }
