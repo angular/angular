@@ -1,0 +1,1 @@
+export const {$ doc.serviceName $} = {$ doc.value | json $};

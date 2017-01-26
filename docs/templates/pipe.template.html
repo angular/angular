@@ -1,0 +1,30 @@
+{% import "lib/githubLinks.html" as github -%}
+{% import "lib/paramList.html" as params -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+
+
+{% include "layout/_what-it-does.html" %}
+
+{% include "layout/_security-notes.html" %}
+
+{% include "layout/_deprecated-notes.html" %}
+
+{% include "layout/_how-to-use.html" %}
+
+{% include "layout/_ng-module.html" %}
+
+<div layout="row" layout-xs="column" class="row-margin ng-cloak">
+  <div flex="20" flex-xs="100">
+    <h2 class="h2-api-docs">Description</h2>
+  </div>
+  <div class="code-links" flex="80" flex-xs="100">
+    {%- if doc.description.length > 2 %}{$ doc.description | trimBlankLines | marked $}{% endif %}
+  </div>
+</div>
+<p class="location-badge">
+  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
+  defined in {$ github.githubViewLink(doc, versionInfo) $}
+</p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% import "lib/githubLinks.html" as github -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body -%}
+<p class="location-badge">defined in {$ github.githubViewLink(doc, versionInfo) $}</p>
+<ul>
+  {% for page in doc.childPages -%}
+  <li>
+    <!-- TODO: convert to hovercard -->
+    <a href="{$ relativePath(doc.moduleFolder, page.exportDoc.path) $}">{$ page.title $}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
