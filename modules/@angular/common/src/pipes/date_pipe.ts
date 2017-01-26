@@ -103,7 +103,7 @@ export class DatePipe implements PipeTransform {
   transform(value: any, pattern: string = 'mediumDate'): string {
     let date: Date;
 
-    if (isBlank(value)) return null;
+    if (isBlank(value) || value !== value) return null;
 
     if (typeof value === 'string') {
       value = value.trim();
