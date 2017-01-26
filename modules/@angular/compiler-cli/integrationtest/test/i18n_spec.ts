@@ -65,6 +65,7 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 
 describe('template i18n extraction output', () => {
   const outDir = '';
+  const genDir = 'out';
 
   it('should extract i18n messages as xmb', () => {
     const xmbOutput = path.join(outDir, 'messages.xmb');
@@ -78,5 +79,10 @@ describe('template i18n extraction output', () => {
     expect(fs.existsSync(xlfOutput)).toBeTruthy();
     const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
     expect(xlf).toEqual(EXPECTED_XLIFF);
+  });
+
+  it('should not emit js', () => {
+    const genOutput = path.join(genDir, '');
+    expect(fs.existsSync(genOutput)).toBeFalsy();
   });
 });
