@@ -72,6 +72,11 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <target><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/><x id="TAG_IMG" ctype="image"/><x id="LINE_BREAK" ctype="lb"/></target>
         <note priority="1" from="description">ph names</note>
       </trans-unit>            
+      <trans-unit id="empty target" datatype="html">
+        <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
+        <target/>
+        <note priority="1" from="description">ph names</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
@@ -88,6 +93,7 @@ export function main(): void {
 
   function loadAsMap(xliff: string): {[id: string]: string} {
     const i18nNodesByMsgId = serializer.load(xliff, 'url');
+
     const msgMap: {[id: string]: string} = {};
     Object.keys(i18nNodesByMsgId)
         .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
@@ -109,6 +115,7 @@ export function main(): void {
           'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
           'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
               '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
+          'empty target': '',
         });
       });
 
