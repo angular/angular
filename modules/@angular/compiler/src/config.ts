@@ -11,10 +11,6 @@ import {MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers, createIdentifier} from './identifiers';
 
-function unimplemented(): any {
-  throw new Error('unimplemented');
-}
-
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public defaultEncapsulation: ViewEncapsulation;
@@ -55,12 +51,12 @@ export class CompilerConfig {
  * to help tree shaking.
  */
 export abstract class RenderTypes {
-  get renderer(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderText(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderElement(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderComment(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderNode(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderEvent(): CompileIdentifierMetadata { return unimplemented(); }
+  abstract get renderer(): CompileIdentifierMetadata;
+  abstract get renderText(): CompileIdentifierMetadata;
+  abstract get renderElement(): CompileIdentifierMetadata;
+  abstract get renderComment(): CompileIdentifierMetadata;
+  abstract get renderNode(): CompileIdentifierMetadata;
+  abstract get renderEvent(): CompileIdentifierMetadata;
 }
 
 export class DefaultRenderTypes implements RenderTypes {
