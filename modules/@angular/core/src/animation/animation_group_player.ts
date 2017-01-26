@@ -16,6 +16,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
+  private _onDestroyFns: Function[] = [];
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -50,6 +51,8 @@ export class AnimationGroupPlayer implements AnimationPlayer {
 
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
 
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+
   hasStarted() { return this._started; }
 
   play() {
@@ -78,6 +81,8 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       this._onFinish();
       this._players.forEach(player => player.destroy());
       this._destroyed = true;
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
     }
   }
 

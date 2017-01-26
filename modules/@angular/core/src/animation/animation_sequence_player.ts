@@ -15,6 +15,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   private _activePlayer: AnimationPlayer;
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _finished = false;
   private _started = false;
   private _destroyed = false;
@@ -60,6 +61,8 @@ export class AnimationSequencePlayer implements AnimationPlayer {
 
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
 
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+
   hasStarted() { return this._started; }
 
   play(): void {
@@ -101,6 +104,8 @@ export class AnimationSequencePlayer implements AnimationPlayer {
       this._players.forEach(player => player.destroy());
       this._destroyed = true;
       this._activePlayer = new NoOpAnimationPlayer();
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
     }
   }
 

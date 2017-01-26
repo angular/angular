@@ -356,6 +356,11 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
     this._runOnService('onDone', []);
   }
 
+  onDestroy(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onDestroy', fn);
+    this._runOnService('onDestroy', []);
+  }
+
   hasStarted(): boolean { return this._started; }
 
   init(): void { this._runOnService('init', []); }

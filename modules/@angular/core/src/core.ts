@@ -38,3 +38,4 @@ export {AnimationPlayer} from './animation/animation_player';
 export {AnimationStyles} from './animation/animation_styles';
 export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
+export {TransitionFactory, TransitionInstruction, Trigger} from './triggers';

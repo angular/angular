@@ -15,6 +15,7 @@ import {scheduleMicroTask} from '../facade/lang';
 export abstract class AnimationPlayer {
   abstract onDone(fn: () => void): void;
   abstract onStart(fn: () => void): void;
+  abstract onDestroy(fn: () => void): void;
   abstract init(): void;
   abstract hasStarted(): boolean;
   abstract play(): void;
@@ -32,16 +33,22 @@ export abstract class AnimationPlayer {
 export class NoOpAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _started = false;
+  private _destroyed = false;
+  private _finished = false;
   public parentPlayer: AnimationPlayer = null;
   constructor() { scheduleMicroTask(() => this._onFinish()); }
-  /** @internal */
-  _onFinish() {
-    this._onDoneFns.forEach(fn => fn());
-    this._onDoneFns = [];
+  private _onFinish() {
+    if (!this._finished) {
+      this._finished = true;
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
+    }
   }
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
   hasStarted(): boolean { return this._started; }
   init(): void {}
   play(): void {
@@ -54,7 +61,14 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
   pause(): void {}
   restart(): void {}
   finish(): void { this._onFinish(); }
-  destroy(): void {}
+  destroy(): void {
+    if (!this._destroyed) {
+      this._destroyed = true;
+      this.finish();
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
+    }
+  }
   reset(): void {}
   setPosition(p: number): void {}
   getPosition(): number { return 0; }

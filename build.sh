@@ -13,6 +13,7 @@ PACKAGES=(core
   platform-server
   platform-webworker
   platform-webworker-dynamic
+  animation
   http
   upgrade
   router
