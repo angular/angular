@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, isDevMode} from '@angular/core';
+import {MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers, createIdentifier} from './identifiers';
@@ -21,21 +21,24 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
+  public missingTranslation: MissingTranslationStrategy;
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true}: {
+       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
-        useJit?: boolean
+        useJit?: boolean,
+        missingTranslation?: MissingTranslationStrategy,
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
+    this.missingTranslation = missingTranslation;
   }
 
   get genDebugInfo(): boolean {
