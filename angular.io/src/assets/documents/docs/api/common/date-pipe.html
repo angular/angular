@@ -1,0 +1,239 @@
+<header class="hero background-sky"><h1 class="hero-title is-standard-case">DatePipe</h1><span
+    class="badge is-stable">Stable</span>
+  <div class="clear"></div>
+  <h2 class="hero-subtitle">Pipe</h2></header>
+<article class="l-content-small grid-fluid docs-content">
+  <div layout="row" layout-xs="column" class="row-margin">
+    <div flex="20" flex-xs="100"><h2 class="h2-api-docs">What it does</h2></div>
+    <div flex="80" flex-xs="100"><p>Formats a date according to locale rules.</p>
+    </div>
+  </div>
+  <div layout="row" layout-xs="column" class="row-margin">
+    <div flex="20" flex-xs="100"><h2 class="h2-api-docs">How to use</h2></div>
+    <div flex="80" flex-xs="100"><p><code>date_expression | date[:format]</code></p>
+    </div>
+  </div>
+  <div layout="row" layout-xs="column" class="row-margin">
+    <div flex="20" flex-xs="100"><h2 class="h2-api-docs">NgModule</h2></div>
+    <div flex="80" flex-xs="100" class="code-links">CommonModule
+
+    </div>
+  </div>
+  <div layout="row" layout-xs="column" class="row-margin">
+    <div flex="20" flex-xs="100"><h2 class="h2-api-docs">Description</h2></div>
+    <div flex="80" flex-xs="100" class="code-links"><p>Where:</p>
+      <ul>
+        <li><code>expression</code> is a date object or a number (milliseconds since UTC epoch) or
+          an ISO string
+          (<a href="https://www.w3.org/TR/NOTE-datetime">https://www.w3.org/TR/NOTE-datetime</a>).
+        </li>
+        <li><code>format</code> indicates which date/time components to include. The format can be
+          predifined as
+          shown below or custom as shown in the table.
+          <ul>
+            <li><code>&#39;medium&#39;</code>: equivalent to <code>&#39;yMMMdjms&#39;</code> (e.g.
+              <code>Sep 3, 2010, 12:05:08 PM</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;short&#39;</code>: equivalent to <code>&#39;yMdjm&#39;</code> (e.g.
+              <code>9/3/2010, 12:05 PM</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;fullDate&#39;</code>: equivalent to <code>&#39;yMMMMEEEEd&#39;</code>
+              (e.g. <code>Friday, September 3, 2010</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;longDate&#39;</code>: equivalent to <code>&#39;yMMMMd&#39;</code> (e.g.
+              <code>September 3, 2010</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;mediumDate&#39;</code>: equivalent to <code>&#39;yMMMd&#39;</code> (e.g.
+              <code>Sep 3, 2010</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;shortDate&#39;</code>: equivalent to <code>&#39;yMd&#39;</code> (e.g.
+              <code>9/3/2010</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;mediumTime&#39;</code>: equivalent to <code>&#39;jms&#39;</code> (e.g.
+              <code>12:05:08 PM</code> for <code>en-US</code>)
+            </li>
+            <li><code>&#39;shortTime&#39;</code>: equivalent to <code>&#39;jm&#39;</code> (e.g.
+              <code>12:05 PM</code> for <code>en-US</code>)
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <table>
+        <thead>
+        <tr>
+          <th>Component</th>
+          <th style="text-align:center">Symbol</th>
+          <th>Narrow</th>
+          <th>Short Form</th>
+          <th>Long Form</th>
+          <th>Numeric</th>
+          <th>2-digit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>era</td>
+          <td style="text-align:center">G</td>
+          <td>G (A)</td>
+          <td>GGG (AD)</td>
+          <td>GGGG (Anno Domini)</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>year</td>
+          <td style="text-align:center">y</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>y (2015)</td>
+          <td>yy (15)</td>
+        </tr>
+        <tr>
+          <td>month</td>
+          <td style="text-align:center">M</td>
+          <td>L (S)</td>
+          <td>MMM (Sep)</td>
+          <td>MMMM (September)</td>
+          <td>M (9)</td>
+          <td>MM (09)</td>
+        </tr>
+        <tr>
+          <td>day</td>
+          <td style="text-align:center">d</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>d (3)</td>
+          <td>dd (03)</td>
+        </tr>
+        <tr>
+          <td>weekday</td>
+          <td style="text-align:center">E</td>
+          <td>E (S)</td>
+          <td>EEE (Sun)</td>
+          <td>EEEE (Sunday)</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>hour</td>
+          <td style="text-align:center">j</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>j (13)</td>
+          <td>jj (13)</td>
+        </tr>
+        <tr>
+          <td>hour12</td>
+          <td style="text-align:center">h</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>h (1 PM)</td>
+          <td>hh (01 PM)</td>
+        </tr>
+        <tr>
+          <td>hour24</td>
+          <td style="text-align:center">H</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>H (13)</td>
+          <td>HH (13)</td>
+        </tr>
+        <tr>
+          <td>minute</td>
+          <td style="text-align:center">m</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>m (5)</td>
+          <td>mm (05)</td>
+        </tr>
+        <tr>
+          <td>second</td>
+          <td style="text-align:center">s</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>s (9)</td>
+          <td>ss (09)</td>
+        </tr>
+        <tr>
+          <td>timezone</td>
+          <td style="text-align:center">z</td>
+          <td>-</td>
+          <td>-</td>
+          <td>z (Pacific Standard Time)</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>timezone</td>
+          <td style="text-align:center">Z</td>
+          <td>-</td>
+          <td>Z (GMT-8:00)</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>timezone</td>
+          <td style="text-align:center">a</td>
+          <td>-</td>
+          <td>a (PM)</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        </tbody>
+      </table>
+      <p>In javascript, only the components specified will be respected (not the ordering,
+        punctuations, ...) and details of the formatting will be dependent on the locale.</p>
+      <p>Timezone of the formatted text will be the local system timezone of the end-user&#39;s
+        machine.</p>
+      <p>WARNINGS:</p>
+      <ul>
+        <li>this pipe is marked as pure hence it will not be re-evaluated when the input is mutated.
+          Instead users should treat the date as an immutable object and change the reference when
+          the
+          pipe needs to re-run (this is to avoid reformatting the date on every change detection run
+          which would be an expensive operation).
+        </li>
+        <li>this pipe uses the Internationalization API. Therefore it is only reliable in Chrome and
+          Opera
+          browsers.
+        </li>
+      </ul>
+      <h3 id="examples">Examples</h3>
+      <p>Assuming <code>dateObj</code> is (year: 2015, month: 6, day: 15, hour: 21, minute: 43,
+        second: 11)
+        in the <em>local</em> time and locale is &#39;en-US&#39;:</p>
+      <code-example format="linenums" language="js">{{ dateObj | date }} // output is &#039;Jun 15,
+        2015&#039;
+        {{ dateObj | date:&#039;medium&#039; }} // output is &#039;Jun 15, 2015, 9:43:11 PM&#039;
+        {{ dateObj | date:&#039;shortTime&#039; }} // output is &#039;9:43 PM&#039;
+        {{ dateObj | date:&#039;mmss&#039; }} // output is &#039;43:11&#039;
+      </code-example>
+      <div class="code-example">
+        <code-example language="ts" format="linenums">@Component({
+          selector: &#39;date-pipe&#39;,
+          template: `&lt;div&gt;
+          &lt;p&gt;Today is {{today | date}}&lt;/p&gt;
+          &lt;p&gt;Or if you prefer, {{today | date:&#39;fullDate&#39;}}&lt;/p&gt;
+          &lt;p&gt;The time is {{today | date:&#39;jmZ&#39;}}&lt;/p&gt;
+          &lt;/div&gt;`
+          })
+          export class DatePipeComponent {
+          today: number = Date.now();
+          }
+        </code-example>
+      </div>
+    </div>
+  </div>
+  <p class="location-badge">exported from <a href="index.html">@angular/common/index</a>
+    defined in <a
+        href="https://github.com/angular/angular/tree/2.2.0-beta.1/modules/@angular/common/src/pipes/date_pipe.ts#L12-L116">@angular/common/src/pipes/date_pipe.ts</a>
+  </p></article>
