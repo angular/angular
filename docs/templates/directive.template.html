@@ -1,62 +1,9 @@
-{% import "lib/githubLinks.html" as github -%}
 {% import "lib/paramList.html" as params -%}
 {% extends 'class.template.html' -%}
 
-{% block annotations %}
-{% endblock %}
-
 {% block additional -%}
-
-{%- if doc.directiveOptions.selector.split(',').length %}
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Selectors</h2>
-  <div flex="80" flex-xs="100">
-    {% for selector in doc.directiveOptions.selector.split(',') %}
-    <p class="selector">
-      <code>{$ selector $}</code>
-    </p>
-    {% endfor %}
-{% endif %}
-
-{% if doc.outputs %}
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Outputs</h2>
-  </div>
-  <div flex="80" flex-xs="100">
-  {% for binding, property in doc.outputs %}
-    <div class="code-margin">
-      <code>{$ property.bindingName $}&nbsp;bound to&nbsp;</code>
-      <code>{$ property.memberDoc.classDoc.name $}.{$ property.propertyName $}</code
-    </div>
-    {$ property.memberDoc.description | trimBlankLines | marked $}
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-
-{% if doc.inputs %}
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Inputs</h2>
-  <div flex="80" flex-xs="100">
-    {% for binding, property in doc.inputs %}
-    <div class="code-margin">
-      <code>{$ property.bindingName $}&nbsp;bound to&nbsp;</code>
-      <code>{$ property.memberDoc.classDoc.name $}.{$ property.propertyName $}</code>
-    {$ property.memberDoc.description | trimBlankLines | marked $}
-    {% endfor %}
-{% endif %}
-
-{%- if doc.directiveOptions.exportAs %}
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Exported as</h2>
-  </div>
-  <div flex="80" flex-xs="100">
-    <p class="input">
-      <code>{$ doc.directiveOptions.exportAs $}</code>
-    </p>
-{% endif %}
+  {% include "includes/_selectors.html" %}
+  {% include "includes/_outputs.html" %}
+  {% include "includes/_inputs.html" %}
+  {% include "includes/_export-as.html" %}
 {% endblock %}

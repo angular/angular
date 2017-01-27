@@ -1,72 +1,8 @@
-{% import "lib/githubLinks.html" as github -%}
 {% import "lib/paramList.html" as params -%}
-{% extends 'layout/base.template.html' -%}
+{% extends 'layout/api-base.template.html' -%}
 
-{% block body %}
-
-
-{% include "layout/_what-it-does.html" %}
-
-{% include "layout/_security-notes.html" %}
-
-{% include "layout/_deprecated-notes.html" %}
-
-{% include "layout/_how-to-use.html" %}
-
-<div layout="row" layout-xs="column" class="ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Interface Overview</h2>
-  </div>
-  <div flex="80" flex-xs="100">
-    <code class="no-bg api-doc-code openParens">interface {$ doc.name $} {</code>
-
-    {% if doc.members.length %}
-    <div layout="column">
-      {% for member in doc.members %}{% if not member.internal %}
-        <pre class="prettyprint no-bg-with-indent">
-          <a class="code-anchor" href="#{$ member.name $}-anchor">
-            <code class="code-background api-doc-code">{$ member.name | indent(6, false) | trim $}</code>
-            <code class="api-doc-code">{$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}</code>
-          </a>
-        </pre>
-      {% endif %}{% endfor %}
-    {% endif %}
-    <p class="selector endParens">
-      <code class="api-doc-code no-bg">}</code>
-    </p>
-
-{% block additional %}
-{% endblock %}
-
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Interface Description</h2>
-  </div>
-  <div class="code-links" flex="80" flex-xs="100">
-    {%- if doc.description.length > 2 %}{$ doc.description | trimBlankLines | marked $}{% endif %}
-  </div>
-{% if doc.members.length %}
-<div layout="row" layout-xs="column" class="instance-members" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Interface Details</h2>
-  </div>
-  <div class="code-links" flex="80" flex-xs="100">
-    {% for member in doc.members %}{% if not member.internal %}
-    <a name="{$ member.name $}-anchor" class="anchor-offset"></a>
-    <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ member.name $}') }">
-      <code class="api-doc-code">
-        {$ member.name $}{$ params.paramList(member.parameters) | indent(8, false) | trim $}{$ params.returnType(member.returnType) $}
-      </code>
-    </pre>
-    {%- if not member.notYetDocumented %}{$ member.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}{% endif -%}
-    {% if not loop.last %}<hr class="hr-margin">{% endif %}
-  </div>
-  {% endif %}{% endfor %}
-</div>
-{% endif %}
-
-<p class="location-badge">
-  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} },
-  defined in {$ github.githubViewLink(doc, versionInfo) $}
-</p>
+{% block main %}
+  {% include "includes/_interface-overview.html" %}
+  {% include "includes/_description.html" %}
+  {% include "includes/_members.html" %}
 {% endblock %}

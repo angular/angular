@@ -1,44 +1,7 @@
-{% import "lib/githubLinks.html" as github -%}
 {% import "lib/paramList.html" as params -%}
-{% extends 'layout/base.template.html' %}
+{% extends 'layout/api-base.template.html' %}
 
-{% block body %}
-
-
-{% include "layout/_what-it-does.html" %}
-
-{% include "layout/_security-notes.html" %}
-
-{% include "layout/_deprecated-notes.html" %}
-
-{% include "layout/_how-to-use.html" %}
-
-<div layout="row" layout-xs="column" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Description</h2>
-  <div class="code-links" flex="80" flex-xs="100">
-    {%- if not doc.notYetDocumented %}{$ doc.description | trimBlankLines | marked $}{% endif %}
-  </div>
-</div>
-{% if doc.metadataDoc and doc.metadataDoc.members.length %}
-<div layout="row" layout-xs="column" class="metadata" class="row-margin ng-cloak">
-  <div flex="20" flex-xs="100">
-    <h2 class="h2-api-docs">Metadata Properties</h2>
-  </div>
-  <div class="code-links" flex="80" flex-xs="100">
-    {% for metadata in doc.metadataDoc.members %}{% if not metadata.internal %}
-    <a name="{$ metadata.name $}-anchor" class="anchor-offset"></a>
-    <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ metadata.name $}') }">
-      <code class="api-doc-code">
-        {$ metadata.name $}{$ params.paramList(metadata.parameters) | indent(8, false) | trim $}{$ params.returnType(metadata.returnType) $}
-      </code>
-    </pre>
-    {%- if not metadata.notYetDocumented %}{$ metadata.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}{% endif -%}
-    {% if not loop.last %}<hr class="hr-margin">{% endif %}
-  {% endif %}{% endfor %}
-{% endif %}
-
-<p class="location-badge">
-  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} } defined in {$ github.githubViewLink(doc, versionInfo) $}
-</p>
+{% block main %}
+  {% include "includes/_description.html" %}
+  {% include "includes/_metadata.html" %}
 {% endblock %}
