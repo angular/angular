@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, QueryBindingType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, queryDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ElementRef, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -34,7 +34,7 @@ export function main() {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef, context);
+      const view = createRootView(services, () => viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -197,30 +197,6 @@ export function main() {
         expect(qs2.a.length).toBe(0);
       });
 
-      it('should checkNoChanges', () => {
-        const {view} = createAndGetRootNodes(compViewDef([
-          elementDef(NodeFlags.None, null, 4, 'div'),
-          ...contentQueryProviders(),
-          anchorDef(
-              NodeFlags.HasEmbeddedViews, null, 1, viewDef(
-                                                       ViewFlags.None,
-                                                       [
-                                                         elementDef(NodeFlags.None, null, 1, 'div'),
-                                                         aServiceProvider(),
-                                                       ])),
-        ]));
-
-        checkAndUpdateView(view);
-        checkNoChangesView(view);
-
-        const childView = createEmbeddedView(view, view.def.nodes[3]);
-        attachEmbeddedView(asElementData(view, 3), 0, childView);
-
-        expect(() => checkNoChangesView(view))
-            .toThrowError(
-                `Expression has changed after it was checked. Previous value: 'false'. Current value: 'true'.`);
-      });
-
       it('should update content queries if embedded views are added or removed', () => {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, 3, 'div'),
@@ -381,6 +357,68 @@ export function main() {
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.createEmbeddedView).toBeTruthy();
+      });
+    });
+
+    describe('general binding behavior', () => {
+      it('should checkNoChanges', () => {
+        const {view} = createAndGetRootNodes(compViewDef([
+          elementDef(NodeFlags.None, null, 4, 'div'),
+          ...contentQueryProviders(),
+          anchorDef(
+              NodeFlags.HasEmbeddedViews, null, 1, viewDef(
+                                                       ViewFlags.None,
+                                                       [
+                                                         elementDef(NodeFlags.None, null, 1, 'div'),
+                                                         aServiceProvider(),
+                                                       ])),
+        ]));
+
+        checkAndUpdateView(view);
+        checkNoChangesView(view);
+
+        const childView = createEmbeddedView(view, view.def.nodes[3]);
+        attachEmbeddedView(asElementData(view, 3), 0, childView);
+
+        let err: any;
+        try {
+          checkNoChangesView(view);
+        } catch (e) {
+          err = e;
+        }
+        expect(err).toBeTruthy();
+        expect(err.message)
+            .toBe(
+                `Expression has changed after it was checked. Previous value: 'Query query1 not dirty'. Current value: 'Query query1 dirty'.`);
+        const debugCtx = <DebugContext>err.context;
+        expect(debugCtx.view).toBe(view);
+        expect(debugCtx.nodeIndex).toBe(2);
+      });
+
+      it('should report debug info on binding errors', () => {
+        class QueryService {
+          set a(value: any) { throw new Error('Test'); }
+        }
+
+        const {view} = createAndGetRootNodes(compViewDef([
+          elementDef(NodeFlags.None, null, 3, 'div'),
+          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.All}),
+          aServiceProvider(),
+        ]));
+
+
+        let err: any;
+        try {
+          checkAndUpdateView(view);
+        } catch (e) {
+          err = e;
+        }
+        expect(err).toBeTruthy();
+        expect(err.message).toBe('Test');
+        const debugCtx = <DebugContext>err.context;
+        expect(debugCtx.view).toBe(view);
+        expect(debugCtx.nodeIndex).toBe(2);
       });
     });
   });

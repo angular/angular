@@ -16,7 +16,10 @@ import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
-import {ElementData, NodeData, NodeDef, Services, ViewData, ViewDefinition, asElementData} from './types';
+import {createInjector} from './provider';
+import {getQueryValue} from './query';
+import {DebugContext, ElementData, NodeData, NodeDef, NodeType, Services, ViewData, ViewDefinition, asElementData} from './types';
+import {isComponentView, renderNode} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView, rootRenderNodes} from './view_attach';
 
@@ -30,14 +33,14 @@ export class DefaultServices implements Services {
   sanitize(context: SecurityContext, value: string): string {
     return this._sanitizer.sanitize(context, value);
   }
-  // Note: This needs to be here to prevent a cycle in source files.
   createViewContainerRef(data: ElementData): ViewContainerRef {
     return new ViewContainerRef_(data);
   }
-
-  // Note: This needs to be here to prevent a cycle in source files.
   createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any> {
     return new TemplateRef_(parentView, def);
+  }
+  createDebugContext(view: ViewData, nodeIndex: number): DebugContext {
+    return new DebugContext_(view, nodeIndex);
   }
 }
 
@@ -130,5 +133,93 @@ class TemplateRef_ implements TemplateRef<any> {
 
   get elementRef(): ElementRef {
     return new ElementRef(asElementData(this._parentView, this._def.index).renderElement);
+  }
+}
+
+class DebugContext_ implements DebugContext {
+  private nodeDef: NodeDef;
+  private elDef: NodeDef;
+  constructor(public view: ViewData, public nodeIndex: number) {
+    this.nodeDef = view.def.nodes[nodeIndex];
+    this.elDef = findElementDef(view, nodeIndex);
+  }
+  get injector(): Injector { return createInjector(this.view, this.elDef.index); }
+  get component(): any { return this.view.component; }
+  get providerTokens(): any[] {
+    const tokens: any[] = [];
+    if (this.elDef) {
+      for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
+        const childDef = this.view.def.nodes[i];
+        if (childDef.type === NodeType.Provider) {
+          tokens.push(childDef.provider.token);
+        } else {
+          i += childDef.childCount;
+        }
+      }
+    }
+    return tokens;
+  }
+  get references(): {[key: string]: any} {
+    const references: {[key: string]: any} = {};
+    if (this.elDef) {
+      collectReferences(this.view, this.elDef, references);
+
+      for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
+        const childDef = this.view.def.nodes[i];
+        if (childDef.type === NodeType.Provider) {
+          collectReferences(this.view, childDef, references);
+        } else {
+          i += childDef.childCount;
+        }
+      }
+    }
+    return references;
+  }
+  get context(): any { return this.view.context; }
+  get source(): string {
+    if (this.nodeDef.type === NodeType.Text) {
+      return this.nodeDef.text.source;
+    } else {
+      return this.elDef.element.source;
+    }
+  }
+  get componentRenderElement() {
+    const elData = findHostElement(this.view);
+    return elData ? elData.renderElement : undefined;
+  }
+  get renderNode(): any {
+    let nodeDef = this.nodeDef.type === NodeType.Text ? this.nodeDef : this.elDef;
+    return renderNode(this.view, nodeDef);
+  }
+}
+
+function findHostElement(view: ViewData): ElementData {
+  while (view && !isComponentView(view)) {
+    view = view.parent;
+  }
+  if (view.parent) {
+    const hostData = asElementData(view.parent, view.parentIndex);
+    return hostData;
+  }
+  return undefined;
+}
+
+function findElementDef(view: ViewData, nodeIndex: number): NodeDef {
+  const viewDef = view.def;
+  let nodeDef = viewDef.nodes[nodeIndex];
+  while (nodeDef) {
+    if (nodeDef.type === NodeType.Element) {
+      return nodeDef;
+    }
+    nodeDef = nodeDef.parent != null ? viewDef.nodes[nodeDef.parent] : undefined;
+  }
+  return undefined;
+}
+
+function collectReferences(view: ViewData, nodeDef: NodeDef, references: {[key: string]: any}) {
+  for (let queryId in nodeDef.matchedQueries) {
+    if (queryId.startsWith('#')) {
+      references[queryId.slice(1)] = getQueryValue(view, nodeDef, queryId);
+    }
   }
 }

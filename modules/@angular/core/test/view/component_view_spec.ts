@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -40,7 +40,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef);
+      const view = createRootView(services, () => viewDef);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -75,8 +75,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         a: any;
       }
 
-      const update = jasmine.createSpy('updater').and.callFake(
-          (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, value));
+      const update = jasmine.createSpy('updater').and.callFake((view: ViewData) => {
+        setCurrentNode(view, 0);
+        checkNodeInline(value);
+      });
 
       const {view, rootNodes} = createAndGetRootNodes(
         compViewDef([
@@ -91,14 +93,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       checkAndUpdateView(view);
 
-      expect(update).toHaveBeenCalled();
-      expect(update.calls.mostRecent().args[1]).toBe(compView);
+      expect(update).toHaveBeenCalledWith(compView);
 
       update.calls.reset();
       checkNoChangesView(view);
 
-      expect(update).toHaveBeenCalled();
-      expect(update.calls.mostRecent().args[1]).toBe(compView);
+      expect(update).toHaveBeenCalledWith(compView);
 
       value = 'v2';
       expect(() => checkNoChangesView(view))
