@@ -238,4 +238,30 @@ describe('tsc-wrapped', () => {
         })
         .catch(e => done.fail(e));
   });
+
+  it('should produce valid source maps', (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": true,
+        "moduleResolution": "node",
+        "target": "es2015",
+        "sourceMap": true
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": true
+      },
+      "files": ["test.ts"]
+    }`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const out = readOut('js.map');
+          expect(out).toContain('"sources":["../test.ts"]');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
 });
