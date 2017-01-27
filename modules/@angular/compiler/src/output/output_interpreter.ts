@@ -28,7 +28,7 @@ function _executeFunctionStatements(
     childCtx.vars.set(varNames[i], varValues[i]);
   }
   const result = visitor.visitAllStatements(statements, childCtx);
-  return isPresent(result) ? result.value : null;
+  return result ? result.value : null;
 }
 
 class _ExecutionContext {
