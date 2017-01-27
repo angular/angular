@@ -8,8 +8,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
 import * as tsickle from 'tsickle';
+import * as ts from 'typescript';
 
 import {check, tsc} from './tsc';
 
@@ -92,7 +92,8 @@ export function main(
         fileNameToModuleId: (fileName) => fileName,
       };
 
-      const tsickleCompilerHost = new tsickle.TsickleCompilerHost(preprocessHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
+      const tsickleCompilerHost = new tsickle.TsickleCompilerHost(
+          preprocessHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
 
       if (ngOptions.annotationsAs !== 'decorators') {
         if (diagnostics) console.time('NG downlevel');
