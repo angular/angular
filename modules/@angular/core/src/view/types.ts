@@ -10,7 +10,7 @@ import {PipeTransform} from '../change_detection/change_detection';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
+import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 // -------------------------------------
@@ -44,14 +44,9 @@ export interface ViewDefinition {
   nodeMatchedQueries: {[queryId: string]: boolean};
 }
 
-export type ViewUpdateFn = (updater: NodeUpdater, view: ViewData) => void;
+export type ViewDefinitionFactory = () => ViewDefinition;
 
-export interface NodeUpdater {
-  checkInline(
-      view: ViewData, nodeIndex: number, v0?: any, v1?: any, v2?: any, v3?: any, v4?: any, v5?: any,
-      v6?: any, v7?: any, v8?: any, v9?: any): any;
-  checkDynamic(view: ViewData, nodeIndex: number, values: any[]): any;
-}
+export type ViewUpdateFn = (view: ViewData) => void;
 
 export type ViewHandleEventFn =
     (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
@@ -61,7 +56,6 @@ export type ViewHandleEventFn =
  */
 export enum ViewFlags {
   None = 0,
-  LogBindingUpdate = 1 << 0,
   DirectDom = 1 << 1
 }
 
@@ -149,6 +143,7 @@ export enum BindingType {
 
 export enum QueryValueType {
   ElementRef,
+  RenderElement,
   TemplateRef,
   ViewContainerRef,
   Provider
@@ -166,6 +161,7 @@ export interface ElementDef {
    * to indices in parent ElementDefs.
    */
   providerIndices: {[tokenKey: string]: number};
+  source: string;
 }
 
 export interface ElementOutputDef {
@@ -174,12 +170,13 @@ export interface ElementOutputDef {
 }
 
 export interface ProviderDef {
+  token: any;
   tokenKey: string;
   ctor: any;
   deps: DepDef[];
   outputs: ProviderOutputDef[];
   // closure to allow recursive components
-  component: () => ViewDefinition;
+  component: ViewDefinitionFactory;
 }
 
 export interface DepDef {
@@ -201,7 +198,10 @@ export interface ProviderOutputDef {
   eventName: string;
 }
 
-export interface TextDef { prefix: string; }
+export interface TextDef {
+  prefix: string;
+  source: string;
+}
 
 export interface PureExpressionDef {
   type: PureExpressionType;
@@ -361,4 +361,24 @@ export interface Services {
   createViewContainerRef(data: ElementData): ViewContainerRef;
   // Note: This needs to be here to prevent a cycle in source files.
   createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any>;
+  // Note: This needs to be here to prevent a cycle in source files.
+  createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
+}
+
+// -------------------------------------
+// Other
+// -------------------------------------
+export enum EntryAction {
+  CheckAndUpdate,
+  CheckNoChanges,
+  Create,
+  Destroy,
+  HandleEvent
+}
+
+export interface DebugContext extends RenderDebugInfo {
+  view: ViewData;
+  nodeIndex: number;
+  componentRenderElement: any;
+  renderNode: any;
 }

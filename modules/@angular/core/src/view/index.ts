@@ -11,7 +11,8 @@ export {providerDef} from './provider';
 export {pureArrayDef, pureObjectDef, purePipeDef} from './pure_expression';
 export {queryDef} from './query';
 export {textDef} from './text';
-export {checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, viewDef} from './view';
+export {setCurrentNode} from './util';
+export {checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, viewDef} from './view';
 export {attachEmbeddedView, detachEmbeddedView, rootRenderNodes} from './view_attach';
 
 export * from './types';

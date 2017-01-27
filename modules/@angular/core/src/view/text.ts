@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
-import {BindingDef, BindingType, NodeData, NodeDef, NodeFlags, NodeType, Services, TextData, ViewData, asElementData, asTextData} from './types';
-import {checkAndUpdateBinding} from './util';
+import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {checkAndUpdateBinding, sliceErrorStack} from './util';
 
 export function textDef(constants: string[]): NodeDef {
+  // skip the call to sliceErrorStack itself + the call to this function.
+  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const bindings: BindingDef[] = new Array(constants.length - 1);
   for (let i = 1; i < constants.length; i++) {
     bindings[i - 1] = {
@@ -39,7 +42,7 @@ export function textDef(constants: string[]): NodeDef {
     disposableCount: 0,
     element: undefined,
     provider: undefined,
-    text: {prefix: constants[0]},
+    text: {prefix: constants[0], source},
     pureExpression: undefined,
     query: undefined,
   };
@@ -50,7 +53,9 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): TextD
       def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
   if (view.renderer) {
-    renderNode = view.renderer.createText(parentNode, def.text.prefix);
+    const debugContext =
+        isDevMode() ? view.services.createDebugContext(view, def.index) : undefined;
+    renderNode = view.renderer.createText(parentNode, def.text.prefix, debugContext);
   } else {
     renderNode = document.createTextNode(def.text.prefix);
     if (parentNode) {

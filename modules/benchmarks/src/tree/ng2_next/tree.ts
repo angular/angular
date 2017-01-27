@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {Component, NgModule, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeFlags, NodeUpdater, ViewData, ViewDefinition, ViewFlags, anchorDef, asElementData, asProviderData, checkAndUpdateView, createRootView, elementDef, providerDef, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNodeInline, createRootView, elementDef, providerDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomSanitizer, DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 import {TreeNode, emptyTree} from '../util';
@@ -23,58 +23,66 @@ export class TreeComponent {
 
 let viewFlags = ViewFlags.DirectDom;
 
-const TreeComponent_Host: ViewDefinition = viewDef(viewFlags, [
-  elementDef(NodeFlags.None, null, 1, 'tree'),
-  providerDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, () => TreeComponent_0),
-]);
+function TreeComponent_Host(): ViewDefinition {
+  return viewDef(viewFlags, [
+    elementDef(NodeFlags.None, null, 1, 'tree'),
+    providerDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, TreeComponent_0),
+  ]);
+}
 
-const TreeComponent_1: ViewDefinition = viewDef(
-    viewFlags,
-    [
-      elementDef(NodeFlags.None, null, 1, 'tree'),
-      providerDef(
-          NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null,
-          () => TreeComponent_0),
-    ],
-    (updater: NodeUpdater, view: ViewData) => {
-      const cmp = view.component;
-      updater.checkInline(view, 1, cmp.data.left);
-    });
+function TreeComponent_0(): ViewDefinition {
+  const TreeComponent_1: ViewDefinition = viewDef(
+      viewFlags,
+      [
+        elementDef(NodeFlags.None, null, 1, 'tree'),
+        providerDef(
+            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+      ],
+      (view: ViewData) => {
+        const cmp = view.component;
+        setCurrentNode(view, 1);
+        checkNodeInline(cmp.data.left);
+      });
 
-const TreeComponent_2: ViewDefinition = viewDef(
-    viewFlags,
-    [
-      elementDef(NodeFlags.None, null, 1, 'tree'),
-      providerDef(
-          NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null,
-          () => TreeComponent_0),
-    ],
-    (updater: NodeUpdater, view: ViewData) => {
-      const cmp = view.component;
-      updater.checkInline(view, 1, cmp.data.right);
-    });
+  const TreeComponent_2: ViewDefinition = viewDef(
+      viewFlags,
+      [
+        elementDef(NodeFlags.None, null, 1, 'tree'),
+        providerDef(
+            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+      ],
+      (view: ViewData) => {
+        const cmp = view.component;
+        setCurrentNode(view, 1);
+        checkNodeInline(cmp.data.right);
+      });
 
-const TreeComponent_0: ViewDefinition = viewDef(
-    viewFlags,
-    [
-      elementDef(
-          NodeFlags.None, null, 1, 'span', null,
-          [[BindingType.ElementStyle, 'backgroundColor', null]]),
-      textDef([' ', ' ']),
-      anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_1),
-      providerDef(
-          NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
-      anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_2),
-      providerDef(
-          NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
-    ],
-    (updater: NodeUpdater, view: ViewData) => {
-      const cmp = view.component;
-      updater.checkInline(view, 0, cmp.bgColor);
-      updater.checkInline(view, 1, cmp.data.value);
-      updater.checkInline(view, 3, cmp.data.left != null);
-      updater.checkInline(view, 5, cmp.data.right != null);
-    });
+  return viewDef(
+      viewFlags,
+      [
+        elementDef(
+            NodeFlags.None, null, 1, 'span', null,
+            [[BindingType.ElementStyle, 'backgroundColor', null]]),
+        textDef([' ', ' ']),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_1),
+        providerDef(
+            NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_2),
+        providerDef(
+            NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+      ],
+      (view: ViewData) => {
+        const cmp = view.component;
+        setCurrentNode(view, 0);
+        checkNodeInline(cmp.bgColor);
+        setCurrentNode(view, 1);
+        checkNodeInline(cmp.data.value);
+        setCurrentNode(view, 3);
+        checkNodeInline(cmp.data.left != null);
+        setCurrentNode(view, 5);
+        checkNodeInline(cmp.data.right != null);
+      });
+}
 
 export class AppModule {
   public rootComp: TreeComponent;

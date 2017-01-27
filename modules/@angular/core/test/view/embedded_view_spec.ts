@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -45,7 +45,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef, context);
+      const view = createRootView(services, () => viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -116,8 +116,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     it('should dirty check embedded views', () => {
       let childValue = 'v1';
-      const update = jasmine.createSpy('updater').and.callFake(
-          (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, childValue));
+      const update = jasmine.createSpy('updater').and.callFake((view: ViewData) => {
+        setCurrentNode(view, 0);
+        checkNodeInline(childValue);
+      });
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, 1, 'div'),
@@ -137,14 +139,12 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       checkAndUpdateView(parentView);
 
-      expect(update).toHaveBeenCalled();
-      expect(update.calls.mostRecent().args[1]).toBe(childView0);
+      expect(update).toHaveBeenCalledWith(childView0);
 
       update.calls.reset();
       checkNoChangesView(parentView);
 
-      expect(update).toHaveBeenCalled();
-      expect(update.calls.mostRecent().args[1]).toBe(childView0);
+      expect(update).toHaveBeenCalledWith(childView0);
 
       childValue = 'v2';
       expect(() => checkNoChangesView(parentView))
