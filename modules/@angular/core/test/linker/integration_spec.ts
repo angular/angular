@@ -9,6 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {ComponentFactory, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
+import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {QueryList} from '@angular/core/src/linker/query_list';
@@ -1295,7 +1296,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.createComponent(MyComp);
           throw 'Should throw';
         } catch (e) {
-          const c = e.context;
+          const c = getDebugContext(e);
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
         }
@@ -1310,7 +1311,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           fixture.detectChanges();
           throw 'Should throw';
         } catch (e) {
-          const c = e.context;
+          const c = getDebugContext(e);
           expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
@@ -1330,7 +1331,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              fixture.detectChanges();
              throw 'Should throw';
            } catch (e) {
-             const c = e.context;
+             const c = getDebugContext(e);
              expect(c.renderNode).toBeTruthy();
              expect(c.source).toContain(':0:5');
            }
@@ -1353,7 +1354,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              try {
                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
              } catch (e) {
-               const c = e.context;
+               const c = getDebugContext(e);
                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
                expect((<Injector>c.injector).get).toBeTruthy();

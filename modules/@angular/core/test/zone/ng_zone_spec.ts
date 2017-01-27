@@ -10,7 +10,6 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {BaseError} from '../../src/facade/errors';
 import {isPresent, scheduleMicroTask} from '../../src/facade/lang';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
@@ -94,7 +93,7 @@ export function main() {
                setTimeout(() => {
                  setTimeout(() => {
                    resolve(null);
-                   throw new BaseError('ccc');
+                   throw new Error('ccc');
                  }, 0);
                }, 0);
              });
@@ -117,7 +116,7 @@ export function main() {
                scheduleMicroTask(() => {
                  scheduleMicroTask(() => {
                    resolve(null);
-                   throw new BaseError('ddd');
+                   throw new Error('ddd');
                  });
                });
              });
@@ -152,7 +151,7 @@ export function main() {
                setTimeout(() => {
                  setTimeout(() => {
                    resolve(null);
-                   throw new BaseError('ccc');
+                   throw new Error('ccc');
                  }, 0);
                }, 0);
              });
@@ -719,7 +718,7 @@ function commonTests() {
     it('should call the on error callback when it is invoked via zone.runGuarded',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          macroTask(() => {
-           const exception = new BaseError('sync');
+           const exception = new Error('sync');
 
            _zone.runGuarded(() => { throw exception; });
 
@@ -732,7 +731,7 @@ function commonTests() {
     it('should not call the on error callback but rethrow when it is invoked via zone.run',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          macroTask(() => {
-           const exception = new BaseError('sync');
+           const exception = new Error('sync');
            expect(() => _zone.run(() => { throw exception; })).toThrowError('sync');
 
            expect(_errors.length).toBe(0);
@@ -742,7 +741,7 @@ function commonTests() {
 
     it('should call onError for errors from microtasks',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const exception = new BaseError('async');
+         const exception = new Error('async');
 
          macroTask(() => { _zone.run(() => { scheduleMicroTask(() => { throw exception; }); }); });
 

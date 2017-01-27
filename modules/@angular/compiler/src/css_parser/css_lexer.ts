@@ -8,7 +8,6 @@
 
 
 import * as chars from '../chars';
-import {BaseError} from '../facade/errors';
 import {isPresent} from '../facade/lang';
 
 export enum CssTokenType {
@@ -42,7 +41,7 @@ export enum CssLexerMode {
 }
 
 export class LexedCssResult {
-  constructor(public error: CssScannerError, public token: CssToken) {}
+  constructor(public error: Error, public token: CssToken) {}
 }
 
 export function generateErrorMessage(
@@ -86,16 +85,22 @@ export class CssLexer {
   }
 }
 
-export class CssScannerError extends BaseError {
-  public rawMessage: string;
-  public message: string;
+export function cssScannerError(token: CssToken, message: string): Error {
+  const error = Error('CssParseError: ' + message);
+  (error as any)[ERROR_RAW_MESSAGE] = message;
+  (error as any)[ERROR_TOKEN] = token;
+  return error;
+}
 
-  constructor(public token: CssToken, message: string) {
-    super('Css Parse Error: ' + message);
-    this.rawMessage = message;
-  }
+const ERROR_TOKEN = 'ngToken';
+const ERROR_RAW_MESSAGE = 'ngRawMessage';
 
-  toString(): string { return this.message; }
+export function getRawMessage(error: Error): string {
+  return (error as any)[ERROR_RAW_MESSAGE];
+}
+
+export function getToken(error: Error): CssToken {
+  return (error as any)[ERROR_TOKEN];
 }
 
 function _trackWhitespace(mode: CssLexerMode) {
@@ -122,7 +127,7 @@ export class CssScanner {
   /** @internal */
   _currentMode: CssLexerMode = CssLexerMode.BLOCK;
   /** @internal */
-  _currentError: CssScannerError = null;
+  _currentError: Error = null;
 
   constructor(public input: string, private _trackComments: boolean = false) {
     this.length = this.input.length;
@@ -221,7 +226,7 @@ export class CssScanner {
     // mode so that the parser can recover...
     this.setMode(mode);
 
-    let error: CssScannerError = null;
+    let error: Error = null;
     if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
       let errorMessage =
           CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
@@ -230,7 +235,7 @@ export class CssScanner {
         errorMessage += ' ("' + next.strValue + '" should match "' + value + '")';
       }
 
-      error = new CssScannerError(
+      error = cssScannerError(
           next, generateErrorMessage(
                     this.input, errorMessage, next.strValue, previousIndex, previousLine,
                     previousColumn));
@@ -483,7 +488,7 @@ export class CssScanner {
     if (!doNotAdvance) {
       this.advance();
     }
-    this._currentError = new CssScannerError(invalidToken, errorMessage);
+    this._currentError = cssScannerError(invalidToken, errorMessage);
     return invalidToken;
   }
 }

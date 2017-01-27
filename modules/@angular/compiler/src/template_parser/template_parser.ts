@@ -24,7 +24,7 @@ import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer'
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {SyntaxError} from '../util';
+import {syntaxError} from '../util';
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
@@ -99,7 +99,7 @@ export class TemplateParser {
 
     if (errors.length > 0) {
       const errorString = errors.join('\n');
-      throw new SyntaxError(`Template parse errors:\n${errorString}`);
+      throw syntaxError(`Template parse errors:\n${errorString}`);
     }
 
     return result.templateAst;

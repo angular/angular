@@ -8,9 +8,11 @@
 
 import {Compiler, CompilerOptions, Component, Directive, Injector, NgModule, Pipe, Type} from '@angular/core';
 
-import {unimplemented} from './facade/errors';
 import {MetadataOverride} from './metadata_override';
 
+function unimplemented(): any {
+  throw Error('unimplemented');
+}
 
 /**
  * Special interface to the compiler only used by testing

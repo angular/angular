@@ -17,7 +17,7 @@ import {Type} from '../type';
 import {VERSION} from '../version';
 
 import {ComponentFactory} from './component_factory';
-import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
+import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
 
 @Injectable()
@@ -104,7 +104,7 @@ export function checkBinding(
   const isFirstCheck = view.numberOfChecks === 0;
   if (view.throwOnChange) {
     if (isFirstCheck || !devModeEqual(oldValue, newValue)) {
-      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue, isFirstCheck);
+      throw expressionChangedAfterItHasBeenCheckedError(oldValue, newValue, isFirstCheck);
     }
     return false;
   } else {
