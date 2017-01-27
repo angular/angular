@@ -7,7 +7,7 @@
  */
 
 import {RootRenderer} from '@angular/core';
-import {NodeUpdater, ViewData} from '@angular/core/src/view/index';
+import {checkNodeDynamic, checkNodeInline} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -43,13 +43,11 @@ export enum InlineDynamic {
 
 export const INLINE_DYNAMIC_VALUES = [InlineDynamic.Inline, InlineDynamic.Dynamic];
 
-export function callUpdater(
-    updater: NodeUpdater, inlineDynamic: InlineDynamic, view: ViewData, nodeIndex: number,
-    values: any[]): any {
+export function checkNodeInlineOrDynamic(inlineDynamic: InlineDynamic, values: any[]): any {
   switch (inlineDynamic) {
     case InlineDynamic.Inline:
-      return (<any>updater.checkInline)(view, nodeIndex, ...values);
+      return (<any>checkNodeInline)(...values);
     case InlineDynamic.Dynamic:
-      return updater.checkDynamic(view, nodeIndex, values);
+      return checkNodeDynamic(values);
   }
 }

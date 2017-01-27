@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {isBrowser, setupAndCheckRenderer} from './helper';
+import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, isBrowser, setupAndCheckRenderer} from './helper';
 
 export function main() {
   if (isBrowser()) {
@@ -39,8 +39,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
     }
 
-    function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef);
+    function createAndGetRootNodes(
+        viewDef: ViewDefinition, context?: any): {rootNodes: any[], view: ViewData} {
+      const view = createRootView(services, () => viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -67,41 +68,28 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         const textNode = getDOM().firstChild(rootNodes[0]);
         expect(getDOM().getText(textNode)).toBe('a');
       });
-    });
 
-    it('should checkNoChanges', () => {
-      let textValue = 'v1';
-      const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-          [
-            textDef(['', '']),
-          ],
-          (updater, view) => updater.checkInline(view, 0, textValue)));
-
-      checkAndUpdateView(view);
-      checkNoChangesView(view);
-
-      textValue = 'v2';
-      expect(() => checkNoChangesView(view))
-          .toThrowError(
-              `Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+      if (!config.directDom) {
+        it('should add debug information to the renderer', () => {
+          const someContext = new Object();
+          const {view, rootNodes} =
+              createAndGetRootNodes(compViewDef([textDef(['a'])]), someContext);
+          expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asTextData(view, 0).renderText);
+        });
+      }
     });
 
     describe('change text', () => {
-      [{
-        name: 'inline',
-        update: (updater: NodeUpdater, view: ViewData) => updater.checkInline(view, 0, 'a', 'b')
-      },
-       {
-         name: 'dynamic',
-         update: (updater: NodeUpdater, view: ViewData) =>
-                     updater.checkDynamic(view, 0, ['a', 'b'])
-       }].forEach((config) => {
-        it(`should update ${config.name}`, () => {
+      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
+        it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 textDef(['0', '1', '2']),
               ],
-              config.update));
+              (view: ViewData) => {
+                setCurrentNode(view, 0);
+                checkNodeInlineOrDynamic(inlineDynamic, ['a', 'b']);
+              }));
 
           checkAndUpdateView(view);
 

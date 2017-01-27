@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeFlags, NodeUpdater, QueryValueType, ViewData, ViewDefinition, ViewFlags, anchorDef, checkAndUpdateView, checkNoChangesView, elementDef, providerDef, textDef, viewDef} from '@angular/core/src/view/index';
+import {NodeFlags, QueryValueType, ViewData, ViewDefinition, ViewFlags, anchorDef, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, elementDef, providerDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 
 export function main() {
   describe('viewDef', () => {

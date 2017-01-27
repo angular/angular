@@ -7,10 +7,10 @@
  */
 
 import {PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 
-import {INLINE_DYNAMIC_VALUES, InlineDynamic, callUpdater} from './helper';
+import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic} from './helper';
 
 export function main() {
   describe(`View Pure Expressions`, () => {
@@ -30,7 +30,7 @@ export function main() {
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef);
+      const view = createRootView(services, () => viewDef);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -48,10 +48,11 @@ export function main() {
               elementDef(NodeFlags.None, null, 2, 'span'), pureArrayDef(2),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
-            (updater, view) => {
-              callUpdater(
-                  updater, inlineDynamic, view, 2,
-                  [callUpdater(updater, inlineDynamic, view, 1, values)]);
+            (view) => {
+              setCurrentNode(view, 1);
+              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+              setCurrentNode(view, 2);
+              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
             }));
         const service = asProviderData(view, 2).instance;
 
@@ -82,10 +83,11 @@ export function main() {
               elementDef(NodeFlags.None, null, 2, 'span'), pureObjectDef(['a', 'b']),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
-            (updater, view) => {
-              callUpdater(
-                  updater, inlineDynamic, view, 2,
-                  [callUpdater(updater, inlineDynamic, view, 1, values)]);
+            (view) => {
+              setCurrentNode(view, 1);
+              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+              setCurrentNode(view, 2);
+              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
             }));
         const service = asProviderData(view, 2).instance;
 
@@ -121,10 +123,11 @@ export function main() {
               providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
-            (updater, view) => {
-              callUpdater(
-                  updater, inlineDynamic, view, 3,
-                  [callUpdater(updater, inlineDynamic, view, 2, values)]);
+            (view) => {
+              setCurrentNode(view, 2);
+              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+              setCurrentNode(view, 3);
+              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
             }));
         const service = asProviderData(view, 3).instance;
 

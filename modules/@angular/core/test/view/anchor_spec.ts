@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, NodeUpdater, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, checkAndUpdateView, checkNoChangesView, createRootView, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -39,8 +39,9 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
     }
 
-    function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, viewDef);
+    function createAndGetRootNodes(
+        viewDef: ViewDefinition, ctx?: any): {rootNodes: any[], view: ViewData} {
+      const view = createRootView(services, () => viewDef, ctx);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -66,6 +67,15 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                           ])).rootNodes;
         expect(getDOM().childNodes(rootNodes[0]).length).toBe(1);
       });
+
+      if (!config.directDom) {
+        it('should add debug information to the renderer', () => {
+          const someContext = new Object();
+          const {view, rootNodes} =
+              createAndGetRootNodes(compViewDef([anchorDef(NodeFlags.None, null, 0)]), someContext);
+          expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
+        });
+      }
     });
   });
 }
