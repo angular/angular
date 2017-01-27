@@ -91,6 +91,7 @@ module.exports =
           collectExamples.exampleFolders = ['@angular/examples'];
 
           generateKeywordsProcessor.ignoreWordsFile = 'tools/docs/angular.io-package/ignore.words';
+          generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
         })
 
 
