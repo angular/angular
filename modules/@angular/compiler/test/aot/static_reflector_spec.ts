@@ -679,6 +679,30 @@ describe('StaticReflector', () => {
         'hook1', 'hook2', 'hook3'
       ])).toEqual([false, false, false]);
     });
+
+    it('should allow inheritance from expressions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export function metaClass() { return null; };
+            export class Child extends metaClass() {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
+    });
+
+    it('should allow inheritance from functions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export let ctor: {new(): T} = function() { return null; }
+            export class Child extends ctor {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
+    });
   });
 
 });
