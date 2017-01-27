@@ -151,6 +151,9 @@ do
   if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
     echo "======      COMPILING TESTING: ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
     $TSC -p ${SRCDIR}/tsconfig-testing.json
+    if [[ -n "${EXPERIMENTAL_ES2015_DISTRO}" ]]; then
+      $TSC -p ${SRCDIR}/tsconfig-testing.json --target es2015 --outDir ${ES2015_DESTDIR}
+    fi
   fi
 
   if [[ -e ${SRCDIR}/tsconfig-2015.json ]]; then

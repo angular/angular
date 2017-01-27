@@ -1,0 +1,27 @@
+{
+  "name": "angular-integration",
+  "description": "Assert that users with TypeScript 2.0 can type-check an Angular application",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist-es2015/common",
+    "@angular/compiler": "file:../../dist/packages-dist-es2015/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist-es2015/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist-es2015/core",
+    "@angular/http": "file:../../dist/packages-dist-es2015/http",
+    "@angular/platform-browser": "file:../../dist/packages-dist-es2015/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist-es2015/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist-es2015/platform-server",
+    "@angular/router": "file:../../dist/packages-dist-es2015/router",
+    "@angular/tsc-wrapped": "file:../../dist/tools/@angular/tsc-wrapped",
+    "@angular/upgrade": "file:../../dist/packages-dist-es2015/upgrade",
+    "@types/jasmine": "^2.5.41",
+    "rxjs": "file:../../node_modules/rxjs",
+    "source-map-explorer": "^1.3.3",
+    "typescript": "~2.0",
+    "zone.js": "^0.7.6"
+  },
+  "scripts": {
+    "test": "tsc"
+  }
+}

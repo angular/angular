@@ -7,7 +7,8 @@
     "outDir": "../../dist/typing-test/",
     "rootDir": ".",
     "target": "es5",
-    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"]
+    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"],
+    "types": []
   },
   "files": [
     "include-all.ts",
