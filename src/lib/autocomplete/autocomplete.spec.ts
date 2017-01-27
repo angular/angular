@@ -7,9 +7,11 @@ import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {ENTER, DOWN_ARROW, SPACE} from '../core/keyboard/keycodes';
+import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
+
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -294,6 +296,36 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should set the active item to the last option when UP key is pressed', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const optionEls =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+      const UP_ARROW_EVENT = new FakeKeyboardEvent(UP_ARROW) as KeyboardEvent;
+      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(fixture.componentInstance.trigger.activeOption)
+            .toBe(fixture.componentInstance.options.last, 'Expected last option to be active.');
+        expect(optionEls[10].classList).toContain('md-active');
+        expect(optionEls[0].classList).not.toContain('md-active');
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(fixture.componentInstance.trigger.activeOption)
+              .toBe(fixture.componentInstance.options.first,
+                  'Expected first option to be active.');
+          expect(optionEls[0].classList).toContain('md-active');
+          expect(optionEls[10].classList).not.toContain('md-active');
+        });
+      });
+    }));
+
     it('should set the active item properly after filtering', async(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -532,7 +564,7 @@ describe('MdAutocomplete', () => {
 
     it('should fall back to above position if panel cannot fit below', () => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      input.style.top = '400px';
+      input.style.top = '600px';
       input.style.position = 'relative';
 
       fixture.componentInstance.trigger.openPanel();
@@ -551,7 +583,7 @@ describe('MdAutocomplete', () => {
 
     it('should align panel properly when filtering in "above" position', () => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      input.style.top = '400px';
+      input.style.top = '600px';
       input.style.position = 'relative';
 
       fixture.componentInstance.trigger.openPanel();
@@ -645,16 +677,3 @@ class FakeKeyboardEvent {
   constructor(public keyCode: number) {}
   preventDefault() {}
 }
-
-class FakeViewportRuler {
-  getViewportRect() {
-    return {
-      left: 0, top: 0, width: 500, height: 500, bottom: 500, right: 500
-    };
-  }
-
-  getViewportScrollPosition() {
-    return {top: 0, left: 0};
-  }
-}
-

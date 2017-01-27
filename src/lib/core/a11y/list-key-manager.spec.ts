@@ -87,6 +87,17 @@ describe('Key managers', () => {
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
       });
 
+      it('should set first item active when down arrow pressed if no active item', () => {
+        keyManager.setActiveItem(null);
+        keyManager.onKeydown(DOWN_ARROW_EVENT);
+
+        expect(keyManager.activeItemIndex)
+            .toBe(0, 'Expected active item to be 0 after down key if active item was null.');
+        expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(1);
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(2);
+      });
+
       it('should set previous items as active when up arrow is pressed', () => {
         keyManager.onKeydown(DOWN_ARROW_EVENT);
 
@@ -99,6 +110,17 @@ describe('Key managers', () => {
         expect(keyManager.activeItemIndex)
             .toBe(0, 'Expected active item to be 0 after 1 down and 1 up arrow event.');
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
+      });
+
+      it('should do nothing when up arrow is pressed if no active item and not wrap', () => {
+        keyManager.setActiveItem(null);
+        keyManager.onKeydown(UP_ARROW_EVENT);
+
+        expect(keyManager.activeItemIndex)
+            .toBe(null, 'Expected nothing to happen if up arrow occurs and no active item.');
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(1);
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(2);
       });
 
       it('should skip disabled items using arrow keys', () => {
@@ -345,6 +367,22 @@ describe('Key managers', () => {
         // this up arrow moves up past the beginning of the list
         keyManager.onKeydown(UP_ARROW_EVENT);
         expect(keyManager.activeItemIndex).toBe(2, 'Expected active item to wrap to end.');
+      });
+
+      it('should set last item active when up arrow is pressed if no active item', () => {
+        keyManager.withWrap();
+        keyManager.setActiveItem(null);
+        keyManager.onKeydown(UP_ARROW_EVENT);
+
+        expect(keyManager.activeItemIndex)
+            .toBe(2, 'Expected last item to be active on up arrow if no active item.');
+        expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
+        expect(keyManager.setActiveItem).toHaveBeenCalledWith(2);
+
+        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        expect(keyManager.activeItemIndex)
+            .toBe(0, 'Expected active item to be 0 after wrapping back to beginning.');
+        expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
       });
 
     });

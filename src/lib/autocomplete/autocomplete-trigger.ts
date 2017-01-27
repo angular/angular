@@ -48,7 +48,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   private _panelOpen: boolean = false;
 
   /** The subscription to positioning changes in the autocomplete panel. */
-  private _panelPositionSub: Subscription;
+  private _panelPositionSubscription: Subscription;
 
   /** Manages active item in option list based on key events. */
   private _keyManager: ActiveDescendantKeyManager;
@@ -62,12 +62,12 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
               @Optional() private _controlDir: NgControl, @Optional() private _dir: Dir) {}
 
   ngAfterContentInit() {
-    this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options);
+    this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options).withWrap();
   }
 
   ngOnDestroy() {
-    if (this._panelPositionSub) {
-      this._panelPositionSub.unsubscribe();
+    if (this._panelPositionSubscription) {
+      this._panelPositionSubscription.unsubscribe();
     }
 
     this._destroyPanel();
@@ -225,7 +225,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
    * y-offset can be adjusted to match the new position.
    */
   private _subscribeToPositionChanges(strategy: ConnectedPositionStrategy) {
-    this._panelPositionSub = strategy.onPositionChange.subscribe(change => {
+    this._panelPositionSubscription = strategy.onPositionChange.subscribe(change => {
       this.autocomplete.positionY = change.connectionPair.originY === 'top' ? 'above' : 'below';
     });
   }
@@ -235,9 +235,9 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
     return this._element.nativeElement.getBoundingClientRect().width;
   }
 
-  /** Reset active item to -1 so DOWN_ARROW event will activate the first option.*/
+  /** Reset active item to null so arrow events will activate the correct options.*/
   private _resetActiveItem(): void {
-    this._keyManager.setActiveItem(-1);
+    this._keyManager.setActiveItem(null);
   }
 
   /**
