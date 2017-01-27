@@ -363,7 +363,7 @@ Note: 4.0.0-beta.0 release also contains all the changes present in the 2.3.1 re
 * **selector:** SelectorMatcher match elements with :not selector ([#12977](https://github.com/angular/angular/issues/12977)) ([392c9ac](https://github.com/angular/angular/commit/392c9ac))
 * **tsc-wrapped:** generate metadata for exports without module specifier ([cd03c77](https://github.com/angular/angular/commit/cd03c77)), closes [#13327](https://github.com/angular/angular/issues/13327)
 * **upgrade:** fix downgrade content projection and injector inheritance ([86c5098](https://github.com/angular/angular/commit/86c5098)), closes [#6629](https://github.com/angular/angular/issues/6629) [#7727](https://github.com/angular/angular/issues/7727) [#8729](https://github.com/angular/angular/issues/8729) [#9643](https://github.com/angular/angular/issues/9643) [#9649](https://github.com/angular/angular/issues/9649) [#12675](https://github.com/angular/angular/issues/12675)
-* **upgrade:** enable Angular 1 unit testing of upgrade module ([2fc0560](https://github.com/angular/angular/commit/2fc0560)), closes [#5462](https://github.com/angular/angular/issues/5462) [#12675](https://github.com/angular/angular/issues/12675)
+* **upgrade:** enable AngularJS unit testing of upgrade module ([2fc0560](https://github.com/angular/angular/commit/2fc0560)), closes [#5462](https://github.com/angular/angular/issues/5462) [#12675](https://github.com/angular/angular/issues/12675)
 
 
 ### Performance Improvements
@@ -402,7 +402,7 @@ We are adding more tests to our test suite to catch these kinds of problems befo
 * **router:** fix skipLocationChanges on RouterLink directives ([f562cbf](https://github.com/angular/angular/commit/f562cbf)), closes [#13156](https://github.com/angular/angular/issues/13156)
 * **router:** make setUpLocationChangeListener idempotent ([25e5b2f](https://github.com/angular/angular/commit/25e5b2f))
 * **router:** runs guards every time when unsuccessfully navigating to the same url over and over again ([#13209](https://github.com/angular/angular/issues/13209)) ([d46b8de](https://github.com/angular/angular/commit/d46b8de))
-* **router:** throw a better error message when angular 1 is not bootstraped ([c767df0](https://github.com/angular/angular/commit/c767df0))
+* **router:** throw a better error message when AngularJS is not bootstraped ([c767df0](https://github.com/angular/angular/commit/c767df0))
 * **router:** validate nested routes ([#13224](https://github.com/angular/angular/issues/13224)) ([2893c2c](https://github.com/angular/angular/commit/2893c2c)), closes [#12827](https://github.com/angular/angular/issues/12827)
 * **tsc-wrapped:** have UserError display the actual error ([393c100](https://github.com/angular/angular/commit/393c100))
 
@@ -2030,7 +2030,7 @@ The likelihood of anyone actually depending on this property is very low.
 ### Known Issues
 
 *** SECURITY WARNING ***
-Contextual escaping is not yet implemented in Angular 2. This will be fixed in the upcoming RC.
+Contextual escaping is not yet implemented in Angular. This will be fixed in the upcoming RC.
 In the meantime make sure to correctly escape all values that go into the DOM.
 *** SECURITY WARNING ***
 
@@ -2393,7 +2393,7 @@ it('should wait for returned promises', async(() => {
 * **payload:** increase payload size limit temporarily ([28e657d](https://github.com/angular/angular/commit/28e657d))
 * **RouterLink:** ignore optional parameters when checking for active routes ([5e2bc5c](https://github.com/angular/angular/commit/5e2bc5c)), closes [#6459](https://github.com/angular/angular/issues/6459) [#7834](https://github.com/angular/angular/issues/7834)
 * **select:** set value individually from ngModel ([e1e44a9](https://github.com/angular/angular/commit/e1e44a9)), closes [#7975](https://github.com/angular/angular/issues/7975) [#7978](https://github.com/angular/angular/issues/7978)
-* **upgrade:** make upgradeAdapter upgrade angular 1 components correctly ([247964a](https://github.com/angular/angular/commit/247964a)), closes [#7951](https://github.com/angular/angular/issues/7951)
+* **upgrade:** make upgradeAdapter upgrade AngularJS components correctly ([247964a](https://github.com/angular/angular/commit/247964a)), closes [#7951](https://github.com/angular/angular/issues/7951)
 
 ### Features
 
@@ -2970,7 +2970,7 @@ setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS,
   * `angular2.umd.js` -> `angular2-all.umd.js`
   * `angular2-testing.umd.js` -> `angular2-all-testing.umd.js`
 
-* RxJS used to be bundled with Angular 2 code and this is not the case
+* RxJS used to be bundled with Angular code and this is not the case
 any more. RxJS needs to be loaded explicitly.
 
 * Previously `angular2.js`, `angular2.min.js` and `angular2.dev.js` bundles
@@ -4137,8 +4137,8 @@ class HelloCmp implements OnInit {
 * **docs:** export type info for var and const exports ([9262727](https://github.com/angular/angular/commit/9262727)), closes [#3700](https://github.com/angular/angular/issues/3700)
 * **facade:** add maximum method for ListWrapper ([b5c4d8b](https://github.com/angular/angular/commit/b5c4d8b))
 * **http:** xhr error listener invokes throw on EventEmitter ([f2d3bdb](https://github.com/angular/angular/commit/f2d3bdb)), closes [#2667](https://github.com/angular/angular/issues/2667)
-* **router:** add angular 1.x router ([fde026a](https://github.com/angular/angular/commit/fde026a))
-* **router:** add reuse support for angular 1.x router ([ddb62fe](https://github.com/angular/angular/commit/ddb62fe)), closes [#3698](https://github.com/angular/angular/issues/3698)
+* **router:** add AngularJS router ([fde026a](https://github.com/angular/angular/commit/fde026a))
+* **router:** add reuse support for AngularJS router ([ddb62fe](https://github.com/angular/angular/commit/ddb62fe)), closes [#3698](https://github.com/angular/angular/issues/3698)
 * **url_resolver:** Allow a developer to customize their package prefix ([9cc1cd2](https://github.com/angular/angular/commit/9cc1cd2)), closes [#3794](https://github.com/angular/angular/issues/3794)
 
 

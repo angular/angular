@@ -1,4 +1,4 @@
-# Pushing changes into the Angular 2 tree
+# Pushing changes into the Angular tree
 
 Please see [Using git with Angular repositories](https://docs.google.com/document/d/1h8nijFSaa1jG_UE8v4WP7glh5qOUXnYtAtJh_gwOQHI/edit)
 for details about how we maintain a linear commit history, and the rules for committing.

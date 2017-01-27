@@ -28,7 +28,7 @@ Every key has an id, which we utilize to store providers and instances. So Injec
 
 ### ProtoInjector and Injector
 
-Often there is a need to create multiple instances of essentially the same injector. In Angular 2, for example, every component element type gets an injector configured in the same way.
+Often there is a need to create multiple instances of essentially the same injector. In Angular, for example, every component element type gets an injector configured in the same way.
 
 Doing the following would be very inefficient.
 
@@ -148,9 +148,9 @@ parent.get(Car); // this works
 regularChild.get(Car); // this works
 ```
 
-## Angular 2 and DI
+## Angular and DI
 
-Now let's see how Angular 2 uses DI behind the scenes.
+Now let's see how Angular uses DI behind the scenes.
 
 The right mental model is to think that every DOM element has an Injector. (In practice, only interesting elements containing directives will have an injector, but this is a performance optimization)
 

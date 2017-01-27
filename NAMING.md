@@ -1,7 +1,7 @@
-Naming Conventions in Angular2
+Naming Conventions in Angular
 ---
 
-In general Angular2 should follow TypeScript naming conventions.
+In general Angular should follow TypeScript naming conventions.
 See: https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 
 

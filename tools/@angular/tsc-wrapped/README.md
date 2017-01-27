@@ -16,7 +16,7 @@ supports specific extensions developed by the Angular team:
 ## TypeScript Decorator metadata collector
 
 The `.d.ts` format does not preserve information about the Decorators applied to symbols.
-Some tools, such as Angular 2 template compiler, need access to statically analyzable
+Some tools, such as Angular template compiler, need access to statically analyzable
 information about Decorators, so this library allows programs to produce a `foo.metadata.json`
 to accompany a `foo.d.ts` file, and preserves the information that was lost in the declaration
 emit.
