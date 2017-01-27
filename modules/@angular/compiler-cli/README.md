@@ -105,19 +105,19 @@ This program mimics the TypeScript tsc command line. It accepts a `-p` flag whic
 This CLI is intended for demos, prototyping, or for users with simple build systems
 that run bare `tsc`.
 
-Users with a build system should expect an Angular 2 template plugin. Such a plugin would be
+Users with a build system should expect an Angular template plugin. Such a plugin would be
 based on the `index.ts` in this directory, but should share the TypeScript compiler instance
 with the one already used in the plugin for TypeScript typechecking and emit.
 
 ## Design
 At a high level, this program
-- collects static metadata about the sources using the `tsc-wrapped` package in angular2
-- uses the `OfflineCompiler` from `angular2/src/compiler/compiler` to codegen additional `.ts` files
+- collects static metadata about the sources using the `tsc-wrapped` package
+- uses the `OfflineCompiler` from `@angular/compiler` to codegen additional `.ts` files
 - these `.ts` files are written to the `genDir` path, then compiled together with the application.
 
 ## For developers
 ```
-# Build angular2 and the compiler
+# Build Angular and the compiler
 ./build.sh
 
 # Copy over the package so we can test the compiler tests

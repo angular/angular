@@ -19,7 +19,7 @@ describe('MessageBroker', function() {
   });
 
   it('should bootstrap', () => {
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    // This test can't wait for Angular as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
     waitForBootstrap();
@@ -28,7 +28,7 @@ describe('MessageBroker', function() {
 
   it('should echo messages', () => {
     const VALUE = 'Hi There';
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    // This test can't wait for Angular as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
     waitForBootstrap();

@@ -49,17 +49,17 @@ type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$po
  * *Part of the [upgrade/static](/docs/ts/latest/api/#!?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allows an Angular 1 component to be used from Angular 2+.
+ * Allows an AngularJS component to be used from Angular.
  *
  * @howToUse
  *
- * Let's assume that you have an Angular 1 component called `ng1Hero` that needs
- * to be made available in Angular 2+ templates.
+ * Let's assume that you have an AngularJS component called `ng1Hero` that needs
+ * to be made available in Angular templates.
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero"}
  *
- * We must create a {@link Directive} that will make this Angular 1 component
- * available inside Angular 2+ templates.
+ * We must create a {@link Directive} that will make this AngularJS component
+ * available inside Angular templates.
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper"}
  *
@@ -70,16 +70,16 @@ type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$po
  *
  * Note that we must do the following:
  * * specify the directive's selector (`ng1-hero`)
- * * specify all inputs and outputs that the Angular 1 component expects
+ * * specify all inputs and outputs that the AngularJS component expects
  * * derive from `UpgradeComponent`
  * * call the base class from the constructor, passing
- *   * the Angular 1 name of the component (`ng1Hero`)
+ *   * the AngularJS name of the component (`ng1Hero`)
  *   * the {@link ElementRef} and {@link Injector} for the component wrapper
  *
  * @description
  *
  * A helper class that should be used as a base class for creating Angular directives
- * that wrap Angular 1 components that need to be "upgraded".
+ * that wrap AngularJS components that need to be "upgraded".
  *
  * @experimental
  */
@@ -108,7 +108,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
    *
    * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper" }
    *
-   * * The `name` parameter should be the name of the Angular 1 directive.
+   * * The `name` parameter should be the name of the AngularJS directive.
    * * The `elementRef` and `injector` parameters should be acquired from Angular by dependency
    *   injection into the base class constructor.
    *
@@ -131,7 +131,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.bindings = this.initializeBindings(this.directive);
     this.linkFn = this.compileTemplate(this.directive);
 
-    // We ask for the Angular 1 scope from the Angular 2+ injector, since
+    // We ask for the AngularJS scope from the Angular injector, since
     // we will put the new component scope onto the new injector for each component
     const $parentScope = injector.get($SCOPE);
     // QUESTION 1: Should we create an isolated scope if the scope is only true?

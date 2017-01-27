@@ -1,6 +1,6 @@
 /**
  * This file is hand tweeked based on
- * the out put of the Angular 2 template compiler
+ * the out put of the Angular template compiler
  * and then hand tweeked to show possible future output.
  */
 /* tslint:disable */

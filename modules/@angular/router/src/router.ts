@@ -326,7 +326,7 @@ export class Router {
   navigated: boolean = false;
 
   /**
-   * Extracts and merges URLs. Used for Angular 1 to Angular 2 migrations.
+   * Extracts and merges URLs. Used for AngularJS to Angular migrations.
    */
   urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
 

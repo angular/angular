@@ -266,7 +266,7 @@ function dashCase(str: string): string {
 }
 
 /*
- * A module for adding new a routing system Angular 1.
+ * A module for adding new a routing system AngularJS.
  */
 angular.module('ngComponentRouter', [])
     .directive('ngOutlet', ['$animate', '$q', '$rootRouter', ngOutletDirective])

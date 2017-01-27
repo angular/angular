@@ -56,7 +56,7 @@ export function main() {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            providers: [
-             // the following line is the "upgrade" of an Angular 1 service
+             // the following line is the "upgrade" of an AngularJS service
              {
                provide: Ng1Service,
                useFactory: (i: angular.IInjectorService) => i.get('ng1Service'),

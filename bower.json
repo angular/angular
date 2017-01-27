@@ -1,5 +1,5 @@
 {
-  "name": "angular2",
+  "name": "angular",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.6.0"
   }

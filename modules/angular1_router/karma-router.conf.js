@@ -10,7 +10,7 @@
 
 var browserProvidersConf = require('../../browser-providers.conf.js');
 
-// This runs the tests for the router in Angular 1.x
+// This runs the tests for the router in AngularJS
 
 module.exports = function (config) {
   var options = {

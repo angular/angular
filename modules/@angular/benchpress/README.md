@@ -3,7 +3,7 @@
 Benchpress is a framework for e2e performance tests.
 See [here for an example project](https://github.com/angular/benchpress-tree).
 
-The sources for this package are in the main [Angular2](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
+The sources for this package are in the main [Angular](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
 
 License: MIT
 

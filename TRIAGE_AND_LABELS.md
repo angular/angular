@@ -1,4 +1,4 @@
-# Triage Process and Github Labels for Angular 2
+# Triage Process and Github Labels for Angular
 
 This document describes how the Angular team uses labels and milestones 
 to triage issues on github. The basic idea of the process is that
@@ -71,7 +71,7 @@ issues within the component will be resolved.
 
 Several owners have adopted the issue categorization based on
 [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html)
-used by Angular 1. In this system every issue is assigned frequency and
+used by AngularJS. In this system every issue is assigned frequency and
 severity based on which the total user pain score is calculated.
 
 Following is the definition of various frequency and severity levels:

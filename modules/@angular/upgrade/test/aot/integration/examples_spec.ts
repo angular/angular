@@ -21,11 +21,11 @@ export function main() {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
+    it('should have AngularJS loaded', () => expect(angular.version.major).toBe(1));
 
     it('should verify UpgradeAdapter example', async(() => {
 
-         // This is wrapping (upgrading) an Angular 1 component to be used in an Angular 2
+         // This is wrapping (upgrading) an AngularJS component to be used in an Angular
          // component
          @Directive({selector: 'ng1'})
          class Ng1Component extends UpgradeComponent {
@@ -36,7 +36,7 @@ export function main() {
            }
          }
 
-         // This is an Angular 2 component that will be downgraded
+         // This is an Angular component that will be downgraded
          @Component({
            selector: 'ng2',
            template: 'ng2[<ng1 [title]="nameProp">transclude</ng1>](<ng-content></ng-content>)'
@@ -45,7 +45,7 @@ export function main() {
            @Input('name') nameProp: string;
          }
 
-         // This module represents the Angular 2 pieces of the application
+         // This module represents the Angular pieces of the application
          @NgModule({
            declarations: [Ng1Component, Ng2Component],
            entryComponents: [Ng2Component],
@@ -56,11 +56,11 @@ export function main() {
            }
          }
 
-         // This module represents the Angular 1 pieces of the application
+         // This module represents the AngularJS pieces of the application
          const ng1Module =
              angular
                  .module('myExample', [])
-                 // This is an Angular 1 component that will be upgraded
+                 // This is an AngularJS component that will be upgraded
                  .directive(
                      'ng1',
                      () => {
@@ -70,13 +70,13 @@ export function main() {
                          template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
                        };
                      })
-                 // This is wrapping (downgrading) an Angular 2 component to be used in Angular 1
+                 // This is wrapping (downgrading) an Angular component to be used in AngularJS
                  .directive(
                      'ng2',
                      downgradeComponent({component: Ng2Component, inputs: ['nameProp: name']}));
 
-         // This is the (Angular 1) application bootstrap element
-         // Notice that it is actually a downgraded Angular 2 component
+         // This is the (AngularJS) application bootstrap element
+         // Notice that it is actually a downgraded Angular component
          const element = html('<ng2 name="World">project</ng2>');
 
          // Let's use a helper function to make this simpler

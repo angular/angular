@@ -12,7 +12,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 /**
- * You can find the Angular 1 implementation of this example here:
+ * You can find the AngularJS implementation of this example here:
  * https://github.com/wardbell/ng1DataBinding
  */
 
