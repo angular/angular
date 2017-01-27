@@ -17,9 +17,7 @@ cp -R -v tools/typings-test/* $TMP
   cd $TMP
   # create package.json so that npm install doesn't pollute any parent node_modules's directory
   npm init --yes
-  npm install ${LINKABLE_PKGS[*]}
-  npm install @types/es6-promise @types/es6-collections @types/jasmine rxjs@5.0.0-beta.11
-  npm install typescript@2.0.2
+  npm install ${LINKABLE_PKGS[*]} @types/jasmine rxjs@5.0 zone.js@0.7 typescript@2.0.2
   $(npm bin)/tsc --version
   $(npm bin)/tsc -p tsconfig.json
 )
