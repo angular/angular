@@ -647,7 +647,7 @@ class NeedsQueryDesc {
   @ContentChildren(TextDirective, {descendants: true}) query: QueryList<TextDirective>;
 }
 
-@Component({selector: 'needs-query-by-ref-binding', template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-binding', template: '<ng-content></ng-content>'})
 class NeedsQueryByLabel {
   @ContentChildren('textLabel', {descendants: true}) query: QueryList<any>;
 }
@@ -657,7 +657,7 @@ class NeedsViewQueryByLabel {
   @ViewChildren('textLabel') query: QueryList<any>;
 }
 
-@Component({selector: 'needs-query-by-ref-bindings', template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-bindings', template: '<ng-content></ng-content>'})
 class NeedsQueryByTwoLabels {
   @ContentChildren('textLabel1,textLabel2', {descendants: true}) query: QueryList<any>;
 }

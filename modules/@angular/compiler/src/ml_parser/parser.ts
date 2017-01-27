@@ -58,9 +58,12 @@ class _TreeBuilder {
   }
 
   build(): ParseTreeResult {
+    let lastOpenTagToken: lex.Token;
+
     while (this._peek.type !== lex.TokenType.EOF) {
       if (this._peek.type === lex.TokenType.TAG_OPEN_START) {
-        this._consumeStartTag(this._advance());
+        lastOpenTagToken = this._advance();
+        this._consumeStartTag(lastOpenTagToken);
       } else if (this._peek.type === lex.TokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
       } else if (this._peek.type === lex.TokenType.CDATA_START) {
@@ -81,6 +84,17 @@ class _TreeBuilder {
         this._advance();
       }
     }
+
+    if (this._elementStack.length > 0) {
+      const fullName = this._getElementFullName(
+          lastOpenTagToken.parts[0], lastOpenTagToken.parts[1], this._getParentElement());
+      const tagDef = this.getTagDefinition(fullName);
+      if (!tagDef.isVoid) {
+        this._errors.push(TreeError.create(
+            fullName, lastOpenTagToken.sourceSpan, `Unclosed tag "${lastOpenTagToken.parts[1]}"`));
+      }
+    }
+
     return new ParseTreeResult(this._rootNodes, this._errors);
   }
 
@@ -305,7 +319,8 @@ class _TreeBuilder {
       this._errors.push(TreeError.create(
           fullName, endTagToken.sourceSpan,
           `Void elements do not have end tags "${endTagToken.parts[1]}"`));
-    } else if (!this._popElement(fullName)) {
+    }
+    if (!this._popElement(fullName)) {
       this._errors.push(TreeError.create(
           fullName, endTagToken.sourceSpan, `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }

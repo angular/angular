@@ -1554,7 +1554,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                declarations: [MyComp, DirectiveWithPropDecorators],
                schemas: [NO_ERRORS_SCHEMA],
              });
-             const template = `<with-prop-decorators (elEvent)="ctxProp='called'">`;
+             const template =
+                 `<with-prop-decorators (elEvent)="ctxProp='called'"></with-prop-decorators>`;
              TestBed.overrideComponent(MyComp, {set: {template}});
              const fixture = TestBed.createComponent(MyComp);
 

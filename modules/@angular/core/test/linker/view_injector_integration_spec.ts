@@ -220,13 +220,13 @@ export function main() {
     describe('injection', () => {
       it('should instantiate directives that have no dependencies', () => {
         TestBed.configureTestingModule({declarations: [SimpleDirective]});
-        const el = createComponent('<div simpleDirective>');
+        const el = createComponent('<div simpleDirective></div>');
         expect(el.children[0].injector.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
       it('should instantiate directives that depend on another directive', () => {
         TestBed.configureTestingModule({declarations: [SimpleDirective, NeedsDirective]});
-        const el = createComponent('<div simpleDirective needsDirective>');
+        const el = createComponent('<div simpleDirective needsDirective></div>');
 
         const d = el.children[0].injector.get(NeedsDirective);
 
@@ -480,11 +480,11 @@ export function main() {
                SimpleComponent,
                {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
            TestBed.overrideComponent(
-               SimpleComponent, {set: {template: '<div needsServiceFromHost><div>'}});
+               SimpleComponent, {set: {template: '<div needsServiceFromHost></div>'}});
 
            expect(() => createComponent('<div simpleComponent></div>'))
                .toThrowError(
-                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
+                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost></div>"): SimpleComponent@0:0`);
          });
 
       it('should not instantiate a directive in a view that has a host dependency on providers' +
@@ -496,11 +496,11 @@ export function main() {
                SimpleComponent,
                {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
            TestBed.overrideComponent(
-               SimpleComponent, {set: {template: '<div needsServiceFromHost><div>'}});
+               SimpleComponent, {set: {template: '<div needsServiceFromHost></div>'}});
 
            expect(() => createComponent('<div simpleComponent someOtherDirective></div>'))
                .toThrowError(
-                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
+                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost></div>"): SimpleComponent@0:0`);
          });
 
       it('should not instantiate a directive in a view that has a self dependency on a parent directive',
