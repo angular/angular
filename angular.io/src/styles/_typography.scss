@@ -1,0 +1,69 @@
+@mixin docs-site-typography() {
+  .docs-component-viewer-tabbed-content .docs-component-view-text-content,
+  .docs-guide-content {
+    h1 {
+      display:inline-block;
+      font-size: 20px;
+      font-weight: 400;
+      padding: 5px;
+    }
+
+    h3, h2 {
+      font-size: 20px;
+      font-weight: 400;
+      margin-bottom: 30px;
+      margin-top: 80px;
+    }
+
+    h4 {
+      margin-top: 40px;
+    }
+
+    h5 {
+      font-size: 16px;
+    }
+
+    .md-tab-body-wrapper h2 {
+      margin-top: 0px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 28px;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-radius: 2px;
+      border-spacing: 0;
+      margin: 0 0 32px 0;
+      width: 100%;
+    }
+
+    table tbody th {
+      max-width: 100px;
+      padding: 13px 32px;
+      text-align: left;
+    }
+
+    td {
+      font-weight: 400;
+      padding: 8px 30px;
+
+      p {
+        margin: 0;
+      }
+    }
+
+    th {
+      font-size: 16px;
+      font-weight: 400;
+      padding: 13px 32px;
+      text-align: left;
+    }
+  }
+}
