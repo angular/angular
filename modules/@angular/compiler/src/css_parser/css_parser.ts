@@ -11,7 +11,7 @@ import {isPresent} from '../facade/lang';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
 import {BlockType, CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst, mergeTokens} from './css_ast';
-import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './css_lexer';
+import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, getRawMessage, isNewline} from './css_lexer';
 
 const SPACE_OPERATOR = ' ';
 
@@ -378,7 +378,7 @@ export class CssParser {
     const token = output.token;
     const error = output.error;
     if (isPresent(error)) {
-      this._error(error.rawMessage, token);
+      this._error(getRawMessage(error), token);
     }
     this._lastToken = token;
     return token;
@@ -393,7 +393,7 @@ export class CssParser {
     const token = output.token;
     const error = output.error;
     if (isPresent(error)) {
-      this._error(error.rawMessage, token);
+      this._error(getRawMessage(error), token);
     }
     this._lastToken = token;
     return token;

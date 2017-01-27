@@ -7,7 +7,7 @@
  */
 
 import {describe, expect, it} from '../../../core/testing/testing_internal';
-import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../../src/css_parser/css_lexer';
+import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
 import {isPresent} from '../../src/facade/lang';
 
 export function main() {
@@ -22,7 +22,7 @@ export function main() {
     while (output != null) {
       const error = output.error;
       if (isPresent(error)) {
-        throw new CssScannerError(error.token, error.rawMessage);
+        throw cssScannerError(getToken(error), getRawMessage(error));
       }
       tokens.push(output.token);
       output = scanner.scan();
@@ -279,7 +279,7 @@ export function main() {
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
-          capturedMessage = e.rawMessage;
+          capturedMessage = getRawMessage(e);
         }
 
         expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
@@ -288,7 +288,7 @@ export function main() {
         try {
           tokenize(cssCode, false, CssLexerMode.SELECTOR);
         } catch (e) {
-          capturedMessage = e.rawMessage;
+          capturedMessage = getRawMessage(e);
         }
 
         expect(capturedMessage).toEqual(null);

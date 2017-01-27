@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * @ngModule CommonModule
@@ -60,7 +60,7 @@ export class SlicePipe implements PipeTransform {
     if (value == null) return value;
 
     if (!this.supports(value)) {
-      throw new InvalidPipeArgumentError(SlicePipe, value);
+      throw invalidPipeArgumentError(SlicePipe, value);
     }
 
     return value.slice(start, end);

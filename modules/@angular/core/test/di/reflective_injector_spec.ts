@@ -9,6 +9,7 @@
 import {Inject, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self, forwardRef} from '@angular/core';
 import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
+import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isPresent, stringify} from '../../src/facade/lang';
@@ -293,8 +294,8 @@ export function main() {
       } catch (e) {
         expect(e.message).toContain(
             `Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
-        expect(e.originalError instanceof Error).toBeTruthy();
-        expect(e.causeKey.token).toEqual(Engine);
+        expect(getOriginalError(e) instanceof Error).toBeTruthy();
+        expect(e.keys[0].token).toEqual(Engine);
       }
     });
 

@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {SyntaxError} from '@angular/compiler';
 import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
@@ -374,7 +373,7 @@ export function main() {
         describe('errors', () => {
           it('should throw error when binding to an unknown property', () => {
             expect(() => parse('<my-component [invalidProp]="bar"></my-component>', []))
-                .toThrowError(SyntaxError, `Template parse errors:
+                .toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 1. If 'my-component' is an Angular component and it has 'invalidProp' input, then verify that it is part of this module.
 2. If 'my-component' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.
@@ -382,16 +381,14 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           });
 
           it('should throw error when binding to an unknown element w/o bindings', () => {
-            expect(() => parse('<unknown></unknown>', []))
-                .toThrowError(SyntaxError, `Template parse errors:
+            expect(() => parse('<unknown></unknown>', [])).toThrowError(`Template parse errors:
 'unknown' is not a known element:
 1. If 'unknown' is an Angular component, then verify that it is part of this module.
 2. If 'unknown' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<unknown></unknown>"): TestComp@0:0`);
           });
 
           it('should throw error when binding to an unknown custom element w/o bindings', () => {
-            expect(() => parse('<un-known></un-known>', []))
-                .toThrowError(SyntaxError, `Template parse errors:
+            expect(() => parse('<un-known></un-known>', [])).toThrowError(`Template parse errors:
 'un-known' is not a known element:
 1. If 'un-known' is an Angular component, then verify that it is part of this module.
 2. If 'un-known' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<un-known></un-known>"): TestComp@0:0`);
@@ -399,13 +396,13 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 
           it('should throw error when binding to an invalid property', () => {
             expect(() => parse('<my-component [onEvent]="bar"></my-component>', []))
-                .toThrowError(SyntaxError, `Template parse errors:
+                .toThrowError(`Template parse errors:
 Binding to property 'onEvent' is disallowed for security reasons ("<my-component [ERROR ->][onEvent]="bar"></my-component>"): TestComp@0:14`);
           });
 
           it('should throw error when binding to an invalid attribute', () => {
             expect(() => parse('<my-component [attr.onEvent]="bar"></my-component>', []))
-                .toThrowError(SyntaxError, `Template parse errors:
+                .toThrowError(`Template parse errors:
 Binding to attribute 'onEvent' is disallowed for security reasons ("<my-component [ERROR ->][attr.onEvent]="bar"></my-component>"): TestComp@0:14`);
           });
         });
@@ -447,7 +444,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
            () => {
              expect(() => { parse('<div @someAnimation="value2">', [], [], []); })
                  .toThrowError(
-                     SyntaxError,
                      /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@someAnimation="value2">"\): TestComp@0:5/);
            });
 
@@ -482,7 +478,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
           expect(() => { parse('<broken></broken>', [dirA]); })
               .toThrowError(
-                  SyntaxError,
                   `Template parse errors:\nValue of the host property binding "class.foo" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
         });
 
@@ -498,7 +493,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
           expect(() => { parse('<broken></broken>', [dirA]); })
               .toThrowError(
-                  SyntaxError,
                   `Template parse errors:\nValue of the host listener "click" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
         });
 
@@ -962,8 +956,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirB = createDir('[dirB]', {providers: [provider1]});
           expect(() => parse('<div dirA dirB>', [dirA, dirB]))
               .toThrowError(
-                  SyntaxError, `Template parse errors:\n` +
-                      `Mixing multi and non multi provider is not possible for token service0 ("[ERROR ->]<div dirA dirB>"): TestComp@0:0`);
+                  `Template parse errors:\n` +
+                  `Mixing multi and non multi provider is not possible for token service0 ("[ERROR ->]<div dirA dirB>"): TestComp@0:0`);
         });
 
         it('should sort providers by their DI order', () => {
@@ -1055,7 +1049,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {deps: ['self:provider0']});
           expect(() => parse('<div dirA></div>', [dirA]))
               .toThrowError(
-                  SyntaxError,
                   'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
         });
 
@@ -1070,7 +1063,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {deps: ['host:provider0']});
           expect(() => parse('<div dirA></div>', [dirA]))
               .toThrowError(
-                  SyntaxError,
                   'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
         });
 
@@ -1122,26 +1114,23 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         });
 
         it('should report references with values that dont match a directive as errors', () => {
-          expect(() => parse('<div #a="dirA"></div>', []))
-              .toThrowError(SyntaxError, `Template parse errors:
+          expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5`);
         });
 
         it('should report invalid reference names', () => {
-          expect(() => parse('<div #a-b></div>', []))
-              .toThrowError(SyntaxError, `Template parse errors:
+          expect(() => parse('<div #a-b></div>', [])).toThrowError(`Template parse errors:
 "-" is not allowed in reference names ("<div [ERROR ->]#a-b></div>"): TestComp@0:5`);
         });
 
         it('should report variables as errors', () => {
-          expect(() => parse('<div let-a></div>', []))
-              .toThrowError(SyntaxError, `Template parse errors:
+          expect(() => parse('<div let-a></div>', [])).toThrowError(`Template parse errors:
 "let-" is only supported on template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
         });
 
         it('should report duplicate reference names', () => {
           expect(() => parse('<div #a></div><div #a></div>', []))
-              .toThrowError(SyntaxError, `Template parse errors:
+              .toThrowError(`Template parse errors:
 Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`);
 
         });
@@ -1513,8 +1502,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
       it('should report when ng-content has non WS content', () => {
         expect(() => parse('<ng-content>content</ng-content>', []))
             .toThrowError(
-                SyntaxError, `Template parse errors:\n` +
-                    `<ng-content> element cannot have content. ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
+                `Template parse errors:\n` +
+                `<ng-content> element cannot have content. ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
       });
 
       it('should treat *attr on a template element as valid',
@@ -1524,20 +1513,18 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
          () => { expect(() => parse('<template template="ngIf">', [])).not.toThrowError(); });
 
       it('should report when mutliple *attrs are used on the same element', () => {
-        expect(() => parse('<div *ngIf *ngFor>', []))
-            .toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('<div *ngIf *ngFor>', [])).toThrowError(`Template parse errors:
 Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div *ngIf [ERROR ->]*ngFor>"): TestComp@0:11`);
       });
 
       it('should report when mix of template and *attrs are used on the same element', () => {
         expect(() => parse('<span template="ngIf" *ngFor>', []))
-            .toThrowError(SyntaxError, `Template parse errors:
+            .toThrowError(`Template parse errors:
 Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<span template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:22`);
       });
 
       it('should report invalid property names', () => {
-        expect(() => parse('<div [invalidProp]></div>', []))
-            .toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('<div [invalidProp]></div>', [])).toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ERROR ->][invalidProp]></div>"): TestComp@0:5`);
       });
 
@@ -1550,13 +1537,12 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ER
                   host: {'[invalidProp]': 'someProp'}
                 })
                 .toSummary();
-        expect(() => parse('<div></div>', [dirA])).toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('<div></div>', [dirA])).toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`);
       });
 
       it('should report errors in expressions', () => {
-        expect(() => parse('<div [prop]="a b"></div>', []))
-            .toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('<div [prop]="a b"></div>', [])).toThrowError(`Template parse errors:
 Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [ERROR ->][prop]="a b"></div>"): TestComp@0:5`);
       });
 
@@ -1594,10 +1580,10 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
                 .toSummary();
         expect(() => parse('<div>', [dirB, dirA]))
             .toThrowError(
-                SyntaxError, `Template parse errors:\n` +
-                    `More than one component matched on this element.\n` +
-                    `Make sure that only one component's selector can match a given element.\n` +
-                    `Conflicting components: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
+                `Template parse errors:\n` +
+                `More than one component matched on this element.\n` +
+                `Make sure that only one component's selector can match a given element.\n` +
+                `Conflicting components: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
       });
 
       it('should not allow components or element bindings nor dom events on explicit embedded templates',
@@ -1612,7 +1598,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
                    })
                    .toSummary();
            expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
-               .toThrowError(SyntaxError, `Template parse errors:
+               .toThrowError(`Template parse errors:
 Event binding e not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("<template [a]="b" [ERROR ->](e)="f"></template>"): TestComp@0:18
 Components on an embedded template: DirA ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0
 Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0`);
@@ -1628,8 +1614,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
                   template: new CompileTemplateMetadata({ngContentSelectors: []})
                 })
                 .toSummary();
-        expect(() => parse('<div *a="b"></div>', [dirA]))
-            .toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('<div *a="b"></div>', [dirA])).toThrowError(`Template parse errors:
 Components on an embedded template: DirA ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0
 Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0`);
       });
@@ -1889,7 +1874,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
       });
 
       it('should report pipes as error that have not been defined as dependencies', () => {
-        expect(() => parse('{{a | test}}', [])).toThrowError(SyntaxError, `Template parse errors:
+        expect(() => parse('{{a | test}}', [])).toThrowError(`Template parse errors:
 The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
       });
 

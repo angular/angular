@@ -62,5 +62,5 @@ export * from './src/style_compiler';
 export * from './src/template_parser/template_parser';
 export {ViewCompiler} from './src/view_compiler/view_compiler';
 export {AnimationParser} from './src/animation/animation_parser';
-export {SyntaxError} from './src/util';
+export {isSyntaxError, syntaxError} from './src/util';
 // This file only reexports content of the `src` folder. Keep it that way.

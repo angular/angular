@@ -59,7 +59,7 @@ export function main() {
          () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
 
       it('should not support other objects',
-         () => expect(() => pipe.transform({})).toThrowError(/Invalid argument/));
+         () => expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/));
     });
 
     describe('transform', () => {

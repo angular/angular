@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {devModeEqual, looseIdentical} from '@angular/core/src/change_detection/change_detection_util';
-import {ExpressionChangedAfterItHasBeenCheckedError} from '@angular/core/src/linker/errors';
+import {expressionChangedAfterItHasBeenCheckedError} from '@angular/core/src/linker/errors';
 
 export function createElementAndAppend(parent: any, name: string) {
   const el = document.createElement(name);
@@ -29,7 +29,7 @@ export function createAnchorAndAppend(parent: any) {
 export function checkBinding(throwOnChange: boolean, oldValue: any, newValue: any): boolean {
   if (throwOnChange) {
     if (!devModeEqual(oldValue, newValue)) {
-      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue, false);
+      throw expressionChangedAfterItHasBeenCheckedError(oldValue, newValue, false);
     }
     return false;
   } else {

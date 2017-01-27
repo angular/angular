@@ -7,6 +7,7 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {getDebugContext} from '@angular/core/src/errors';
 import {BindingType, DebugContext, DepFlags, NodeDef, NodeFlags, ProviderType, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -135,7 +136,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         }
         expect(err).toBeTruthy();
         expect(err.message).toBe('Test');
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBeTruthy();
         // errors should point to the already existing element
         expect(debugCtx.nodeIndex).toBe(0);
@@ -447,7 +448,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           err = e;
         }
         expect(err).toBeTruthy();
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         // events are emitted with the index of the element, not the index of the provider.
         expect(debugCtx.nodeIndex).toBe(0);
@@ -576,7 +577,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         }
         expect(err).toBeTruthy();
         expect(err.message).toBe('Test');
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         expect(debugCtx.nodeIndex).toBe(1);
       });
@@ -599,7 +600,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         }
         expect(err).toBeTruthy();
         expect(err.message).toBe('Test');
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         expect(debugCtx.nodeIndex).toBe(1);
       });
