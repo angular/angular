@@ -6,3 +6,4 @@ vendor/
 */src/*.js
 **/*.ngfactory.ts
 **/*.ngsummary.json
+*/yarn*

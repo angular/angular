@@ -1,4 +1,15 @@
 {
+  "angularCompilerOptions": {
+    "skipMetadataEmit": true,
+    "annotationsAs": "static fields",
+    "annotateForClosureCompiler": true
+  },
+
+  /**
+   * Remaining options are copied from
+   * https://github.com/ReactiveX/rxjs/blob/cba74135810a8e6bbe0b3c7732e8544b0869589e/tsconfig.json
+   * TODO(alexeagle): use "extends" instead when Angular is on TS 2.1
+   */
   "compilerOptions": {
     "removeComments": false,
     "preserveConstEnums": true,
@@ -26,10 +37,5 @@
   },
   "files": [
     "src/Rx.ts"
-  ],
-  "angularCompilerOptions": {
-    "skipMetadataEmit": true,
-    "annotationsAs": "static fields",
-    "annotateForClosureCompiler": true
-  }
+  ]
 }

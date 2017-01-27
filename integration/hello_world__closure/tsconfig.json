@@ -12,7 +12,8 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "outDir": "built",
-    "declaration": true
+    "declaration": true,
+    "types": []
   },
 
   "exclude": [

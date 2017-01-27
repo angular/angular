@@ -4,31 +4,14 @@
 
 set -e -o pipefail
 
-if [ $# -eq 0 ]
-  then
-    echo "Angular integration test builder."
-    echo
-    echo "./build.sh <directory>"
-    echo
-    exit
-fi
-
-echo ====================================
-echo ====================================
-echo ===== Building: $1
-echo ====================================
-echo ====================================
-cd $1
-
-rm -rf node_modules
-ln -s ../node_modules/
-./node_modules/.bin/ngc tsconfig.json
-
+# The ES6 distro we built for rxjs works only in the browser, not in nodejs.
+# Since we installed rxjs in node_modules for ngc to use, we have to point
+# to the alternate distro when compiling with closure.
 rm -rf vendor
 mkdir vendor
-ln -s ../../rxjs/dist/es6 vendor/rxjs
+cp -pr ../rxjs/dist/es6 vendor/rxjs
 
-OPTS=(
+CLOSURE_ARGS=(
   "--language_in=ES6_STRICT"
   "--language_out=ES5"
   "--compilation_level=ADVANCED_OPTIMIZATIONS"
@@ -52,12 +35,11 @@ OPTS=(
   node_modules/@angular/{core,common,compiler,platform-browser}/index.js
   $(find node_modules/@angular/{core,common,compiler,platform-browser}/src -name *.js)
   "built/*.js"
-  "--entry_point=./built/main-aot"
+  "--entry_point=./built/main"
 )
 
-java -jar node_modules/google-closure-compiler/compiler.jar $(echo ${OPTS[*]})
-gzip --keep -f dist/bundle.js
-# requires brotli
-# on Mac: brew install brotli
-bro --force --quality 10 --input dist/bundle.js --output dist/bundle.js.brotli
+java -jar node_modules/google-closure-compiler/compiler.jar $(echo ${CLOSURE_ARGS[*]})
+gzip -f dist/bundle.js
 ls -alH dist/bundle*
+
+# TODO(alexeagle): add an e2e test that the application works in a browser
