@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isDevMode} from '../application_ref';
 import {SimpleChange, SimpleChanges} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {stringify} from '../facade/lang';
@@ -13,10 +14,10 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer} from '../render/api';
-import {queryDef} from './query';
 
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, setBindingDebugInfo} from './util';
+import {queryDef} from './query';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, asElementData, asProviderData} from './types';
+import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, entryAction, setBindingDebugInfo, setCurrentNode} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -82,7 +83,12 @@ export function providerDef(
     matchedQueries: matchedQueryDefs, childCount, bindings,
     disposableCount: outputDefs.length,
     element: undefined,
-    provider: {tokenKey: tokenKey(ctor), ctor, deps: depDefs, outputs: outputDefs, component},
+    provider: {
+      tokenKey: tokenKey(ctor),
+      token: ctor, ctor,
+      deps: depDefs,
+      outputs: outputDefs, component
+    },
     text: undefined,
     pureExpression: undefined,
     query: undefined
@@ -106,11 +112,18 @@ export function createProvider(
     for (let i = 0; i < providerDef.outputs.length; i++) {
       const output = providerDef.outputs[i];
       const subscription = provider[output.propName].subscribe(
-          view.def.handleEvent.bind(null, view, def.parent, output.eventName));
+          eventHandlerClosure(view, def.parent, output.eventName));
       view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
   return {instance: provider, componentView: componentView};
+}
+
+function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
+  return entryAction(EntryAction.HandleEvent, (event: any) => {
+    setCurrentNode(view, index);
+    view.def.handleEvent(view, index, eventName, event);
+  });
 }
 
 export function checkAndUpdateProviderInline(
@@ -239,6 +252,18 @@ export function resolveDep(
   return Injector.NULL.get(depDef.token, notFoundValue);
 }
 
+export function createInjector(view: ViewData, elIndex: number): Injector {
+  return new Injector_(view, elIndex);
+}
+
+class Injector_ implements Injector {
+  constructor(private view: ViewData, private elIndex: number) {}
+  get(token: any, notFoundValue?: any): any {
+    return resolveDep(
+        this.view, this.elIndex, {flags: DepFlags.None, token, tokenKey: tokenKey(token)});
+  }
+}
+
 function checkAndUpdateProp(
     view: ViewData, provider: any, def: NodeDef, bindingIdx: number, value: any,
     changes: SimpleChanges): SimpleChanges {
@@ -258,7 +283,7 @@ function checkAndUpdateProp(
     // so Closure Compiler will have renamed the property correctly already.
     provider[propName] = value;
 
-    if (view.def.flags & ViewFlags.LogBindingUpdate) {
+    if (isDevMode() && (view.def.flags & ViewFlags.DirectDom) === 0) {
       setBindingDebugInfo(
           view.renderer, asElementData(view, def.parent).renderElement, binding.nonMinifiedName,
           value);
@@ -282,6 +307,7 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
     const nodeIndex = nodeDef.index;
     if (nodeDef.flags & lifecycles) {
       // a leaf
+      setCurrentNode(view, nodeIndex);
       callProviderLifecycles(asProviderData(view, nodeIndex).instance, nodeDef.flags & lifecycles);
     } else if ((nodeDef.childFlags & lifecycles) === 0) {
       // a parent with leafs

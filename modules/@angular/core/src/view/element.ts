@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, setBindingDebugInfo} from './util';
+import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
+import {checkAndUpdateBinding, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number,
@@ -18,6 +19,8 @@ export function anchorDef(
   if (matchedQueries) {
     matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
   }
+  // skip the call to sliceErrorStack itself + the call to this function.
+  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   return {
     type: NodeType.Element,
     // will bet set by the view definition
@@ -38,7 +41,7 @@ export function anchorDef(
       attrs: undefined,
       outputs: [], template,
       // will bet set by the view definition
-      providerIndices: undefined,
+      providerIndices: undefined, source
     },
     provider: undefined,
     text: undefined,
@@ -54,6 +57,8 @@ export function elementDef(
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
     outputs?: (string | [string, string])[]): NodeDef {
+  // skip the call to sliceErrorStack itself + the call to this function.
+  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
   if (matchedQueries) {
     matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
@@ -112,7 +117,7 @@ export function elementDef(
       outputs: outputDefs,
       template: undefined,
       // will bet set by the view definition
-      providerIndices: undefined,
+      providerIndices: undefined, source
     },
     provider: undefined,
     text: undefined,
@@ -127,8 +132,10 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   const elDef = def.element;
   let el: any;
   if (view.renderer) {
-    el = elDef.name ? view.renderer.createElement(parentNode, elDef.name) :
-                      view.renderer.createTemplateAnchor(parentNode);
+    const debugContext =
+        isDevMode() ? view.services.createDebugContext(view, def.index) : undefined;
+    el = elDef.name ? view.renderer.createElement(parentNode, elDef.name, debugContext) :
+                      view.renderer.createTemplateAnchor(parentNode, debugContext);
   } else {
     el = elDef.name ? document.createElement(elDef.name) : document.createComment('');
     if (parentNode) {
@@ -183,18 +190,22 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
 }
 
 function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return (event: any) => { return view.def.handleEvent(view, index, eventName, event); };
+  return entryAction(EntryAction.HandleEvent, (event: any) => {
+    setCurrentNode(view, index);
+    return view.def.handleEvent(view, index, eventName, event);
+  });
 }
 
 
 function directDomEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return (event: any) => {
+  return entryAction(EntryAction.HandleEvent, (event: any) => {
+    setCurrentNode(view, index);
     const result = view.def.handleEvent(view, index, eventName, event);
     if (result === false) {
       event.preventDefault();
     }
     return result;
-  };
+  });
 }
 
 export function checkAndUpdateElementInline(
@@ -314,7 +325,7 @@ function setElementProperty(
   let renderValue = securityContext ? view.services.sanitize(securityContext, value) : value;
   if (view.renderer) {
     view.renderer.setElementProperty(renderNode, name, renderValue);
-    if (view.def.flags & ViewFlags.LogBindingUpdate) {
+    if (isDevMode() && (view.def.flags & ViewFlags.DirectDom) === 0) {
       setBindingDebugInfo(view.renderer, renderNode, name, renderValue);
     }
   } else {
