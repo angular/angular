@@ -12,6 +12,8 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
+import {stripSourceMap} from './abstract_emitter_spec';
+
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
@@ -48,11 +50,9 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement | o.Statement[], exportedVars: string[] = null): string {
-      if (!exportedVars) {
-        exportedVars = [];
-      }
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      return emitter.emitStatements(someModuleUrl, stmts, exportedVars);
+      const source = emitter.emitStatements(someModuleUrl, stmts, exportedVars || []);
+      return stripSourceMap(source);
     }
 
     it('should declare variables', () => {

@@ -41,26 +41,41 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
   return ctx.toSource();
 }
 
+
 export class TypeScriptEmitter implements OutputEmitter {
   constructor(private _importResolver: ImportResolver) {}
+
   emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
     const converter = new _TsEmitterVisitor(genFilePath, this._importResolver);
+
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
+
     converter.visitAllStatements(stmts, ctx);
+
     const srcParts: string[] = [];
+
     converter.reexports.forEach((reexports, exportedFilePath) => {
       const reexportsCode =
           reexports.map(reexport => `${reexport.name} as ${reexport.as}`).join(',');
       srcParts.push(
           `export {${reexportsCode}} from '${this._importResolver.fileNameToModuleName(exportedFilePath, genFilePath)}';`);
     });
+
     converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
           `ort * as ${prefix} from '${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}';`);
     });
+
     srcParts.push(ctx.toSource());
+
+    const prefixLines = converter.reexports.size + converter.importsWithPrefixes.size;
+    const sm = ctx.toSourceMapGenerator(null, prefixLines).toJsComment();
+    if (sm) {
+      srcParts.push(sm);
+    }
+
     return srcParts.join('\n');
   }
 }
@@ -81,14 +96,14 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       t.visitType(this, ctx);
       this.typeExpression--;
     } else {
-      ctx.print(defaultType);
+      ctx.print(null, defaultType);
     }
   }
 
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
     if (isBlank(value) && ast.type != o.NULL_TYPE) {
-      ctx.print(`(${value} as any)`);
+      ctx.print(ast, `(${value} as any)`);
       return null;
     }
     return super.visitLiteralExpr(ast, ctx);
@@ -101,11 +116,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   // start with [].concat. see https://github.com/angular/angular/pull/11846
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
     if (ast.entries.length === 0) {
-      ctx.print('(');
+      ctx.print(ast, '(');
     }
     const result = super.visitLiteralArrayExpr(ast, ctx);
     if (ast.entries.length === 0) {
-      ctx.print(' as any[])');
+      ctx.print(ast, ' as any[])');
     }
     return result;
   }
@@ -130,54 +145,54 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       }
     }
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.print(`export `);
+      ctx.print(stmt, `export `);
     }
     if (stmt.hasModifier(o.StmtModifier.Final)) {
-      ctx.print(`const`);
+      ctx.print(stmt, `const`);
     } else {
-      ctx.print(`var`);
+      ctx.print(stmt, `var`);
     }
-    ctx.print(` ${stmt.name}:`);
+    ctx.print(stmt, ` ${stmt.name}:`);
     this.visitType(stmt.type, ctx);
-    ctx.print(` = `);
+    ctx.print(stmt, ` = `);
     stmt.value.visitExpression(this, ctx);
-    ctx.println(`;`);
+    ctx.println(stmt, `;`);
     return null;
   }
 
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(`(<`);
+    ctx.print(ast, `(<`);
     ast.type.visitType(this, ctx);
-    ctx.print(`>`);
+    ctx.print(ast, `>`);
     ast.value.visitExpression(this, ctx);
-    ctx.print(`)`);
+    ctx.print(ast, `)`);
     return null;
   }
 
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(`new `);
+    ctx.print(ast, `new `);
     this.typeExpression++;
     ast.classExpr.visitExpression(this, ctx);
     this.typeExpression--;
-    ctx.print(`(`);
+    ctx.print(ast, `(`);
     this.visitAllExpressions(ast.args, ctx, ',');
-    ctx.print(`)`);
+    ctx.print(ast, `)`);
     return null;
   }
 
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.print(`export `);
+      ctx.print(stmt, `export `);
     }
-    ctx.print(`class ${stmt.name}`);
+    ctx.print(stmt, `class ${stmt.name}`);
     if (isPresent(stmt.parent)) {
-      ctx.print(` extends `);
+      ctx.print(stmt, ` extends `);
       this.typeExpression++;
       stmt.parent.visitExpression(this, ctx);
       this.typeExpression--;
     }
-    ctx.println(` {`);
+    ctx.println(stmt, ` {`);
     ctx.incIndent();
     stmt.fields.forEach((field) => this._visitClassField(field, ctx));
     if (isPresent(stmt.constructorMethod)) {
@@ -186,7 +201,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     stmt.getters.forEach((getter) => this._visitClassGetter(getter, ctx));
     stmt.methods.forEach((method) => this._visitClassMethod(method, ctx));
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(stmt, `}`);
     ctx.popClass();
     return null;
   }
@@ -194,88 +209,88 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   private _visitClassField(field: o.ClassField, ctx: EmitterVisitorContext) {
     if (field.hasModifier(o.StmtModifier.Private)) {
       // comment out as a workaround for #10967
-      ctx.print(`/*private*/ `);
+      ctx.print(null, `/*private*/ `);
     }
-    ctx.print(field.name);
-    ctx.print(':');
+    ctx.print(null, field.name);
+    ctx.print(null, ':');
     this.visitType(field.type, ctx);
-    ctx.println(`;`);
+    ctx.println(null, `;`);
   }
 
   private _visitClassGetter(getter: o.ClassGetter, ctx: EmitterVisitorContext) {
     if (getter.hasModifier(o.StmtModifier.Private)) {
-      ctx.print(`private `);
+      ctx.print(null, `private `);
     }
-    ctx.print(`get ${getter.name}()`);
-    ctx.print(':');
+    ctx.print(null, `get ${getter.name}()`);
+    ctx.print(null, ':');
     this.visitType(getter.type, ctx);
-    ctx.println(` {`);
+    ctx.println(null, ` {`);
     ctx.incIndent();
     this.visitAllStatements(getter.body, ctx);
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(null, `}`);
   }
 
   private _visitClassConstructor(stmt: o.ClassStmt, ctx: EmitterVisitorContext) {
-    ctx.print(`constructor(`);
+    ctx.print(stmt, `constructor(`);
     this._visitParams(stmt.constructorMethod.params, ctx);
-    ctx.println(`) {`);
+    ctx.println(stmt, `) {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.constructorMethod.body, ctx);
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(stmt, `}`);
   }
 
   private _visitClassMethod(method: o.ClassMethod, ctx: EmitterVisitorContext) {
     if (method.hasModifier(o.StmtModifier.Private)) {
-      ctx.print(`private `);
+      ctx.print(null, `private `);
     }
-    ctx.print(`${method.name}(`);
+    ctx.print(null, `${method.name}(`);
     this._visitParams(method.params, ctx);
-    ctx.print(`):`);
+    ctx.print(null, `):`);
     this.visitType(method.type, ctx, 'void');
-    ctx.println(` {`);
+    ctx.println(null, ` {`);
     ctx.incIndent();
     this.visitAllStatements(method.body, ctx);
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(null, `}`);
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(`(`);
+    ctx.print(ast, `(`);
     this._visitParams(ast.params, ctx);
-    ctx.print(`):`);
+    ctx.print(ast, `):`);
     this.visitType(ast.type, ctx, 'void');
-    ctx.println(` => {`);
+    ctx.println(ast, ` => {`);
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
-    ctx.print(`}`);
+    ctx.print(ast, `}`);
     return null;
   }
 
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.print(`export `);
+      ctx.print(stmt, `export `);
     }
-    ctx.print(`function ${stmt.name}(`);
+    ctx.print(stmt, `function ${stmt.name}(`);
     this._visitParams(stmt.params, ctx);
-    ctx.print(`):`);
+    ctx.print(stmt, `):`);
     this.visitType(stmt.type, ctx, 'void');
-    ctx.println(` {`);
+    ctx.println(stmt, ` {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.statements, ctx);
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(stmt, `}`);
     return null;
   }
 
   visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
-    ctx.println(`try {`);
+    ctx.println(stmt, `try {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.bodyStmts, ctx);
     ctx.decIndent();
-    ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
+    ctx.println(stmt, `} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
     const catchStmts =
         [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
@@ -283,7 +298,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
         ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
-    ctx.println(`}`);
+    ctx.println(stmt, `}`);
     return null;
   }
 
@@ -311,7 +326,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       default:
         throw new Error(`Unsupported builtin type ${type.name}`);
     }
-    ctx.print(typeStr);
+    ctx.print(null, typeStr);
     return null;
   }
 
@@ -322,14 +337,14 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitArrayType(type: o.ArrayType, ctx: EmitterVisitorContext): any {
     this.visitType(type.of, ctx);
-    ctx.print(`[]`);
+    ctx.print(null, `[]`);
     return null;
   }
 
   visitMapType(type: o.MapType, ctx: EmitterVisitorContext): any {
-    ctx.print(`{[key: string]:`);
+    ctx.print(null, `{[key: string]:`);
     this.visitType(type.valueType, ctx);
-    ctx.print(`}`);
+    ctx.print(null, `}`);
     return null;
   }
 
@@ -353,8 +368,8 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
     this.visitAllObjects(param => {
-      ctx.print(param.name);
-      ctx.print(':');
+      ctx.print(null, param.name);
+      ctx.print(null, ':');
       this.visitType(param.type, ctx);
     }, params, ctx, ',');
   }
@@ -383,18 +398,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(filePath, prefix);
       }
-      ctx.print(`${prefix}.`);
+      ctx.print(null, `${prefix}.`);
     }
     if (members.length) {
-      ctx.print(name);
-      ctx.print('.');
-      ctx.print(members.join('.'));
+      ctx.print(null, name);
+      ctx.print(null, '.');
+      ctx.print(null, members.join('.'));
     } else {
-      ctx.print(name);
+      ctx.print(null, name);
     }
 
     if (this.typeExpression > 0) {
-      // If we are in a type expreession that refers to a generic type then supply
+      // If we are in a type expression that refers to a generic type then supply
       // the required type parameters. If there were not enough type parameters
       // supplied, supply any as the type. Outside a type expression the reference
       // should not supply type parameters and be treated as a simple value reference
@@ -402,17 +417,17 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       const suppliedParameters = (typeParams && typeParams.length) || 0;
       const additionalParameters = (arity || 0) - suppliedParameters;
       if (suppliedParameters > 0 || additionalParameters > 0) {
-        ctx.print(`<`);
+        ctx.print(null, `<`);
         if (suppliedParameters > 0) {
           this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
         }
         if (additionalParameters > 0) {
           for (let i = 0; i < additionalParameters; i++) {
-            if (i > 0 || suppliedParameters > 0) ctx.print(',');
-            ctx.print('any');
+            if (i > 0 || suppliedParameters > 0) ctx.print(null, ',');
+            ctx.print(null, 'any');
           }
         }
-        ctx.print(`>`);
+        ctx.print(null, `>`);
       }
     }
   }
