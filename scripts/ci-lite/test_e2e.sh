@@ -21,9 +21,12 @@ echo 'travis_fold:start:test.buildPackages'
 
 echo 'travis_fold:end:test.buildPackages'
 
-
+./integration/build_rxjs_es6.sh
+./integration/run_tests.sh
+#TODO(alexeagle): move offline_compiler_test and typings-test to integration/
 ./scripts/ci-lite/offline_compiler_test.sh
 ./tools/typings-test/test.sh
+
 $(npm bin)/gulp public-api:enforce
 
 $(npm bin)/gulp check-cycle
