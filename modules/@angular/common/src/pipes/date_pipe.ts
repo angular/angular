@@ -9,7 +9,7 @@
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {NumberWrapper} from '../facade/lang';
 import {DateFormatter} from './intl';
-import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const ISO8601_DATE_REGEX =
     /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -134,7 +134,7 @@ export class DatePipe implements PipeTransform {
       if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX))) {
         date = isoStringToDate(match);
       } else {
-        throw new InvalidPipeArgumentError(DatePipe, value);
+        throw invalidPipeArgumentError(DatePipe, value);
       }
     }
 

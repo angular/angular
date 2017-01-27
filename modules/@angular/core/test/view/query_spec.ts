@@ -7,6 +7,7 @@
  */
 
 import {ElementRef, Injector, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {getDebugContext} from '@angular/core/src/errors';
 import {BindingType, DebugContext, NodeDef, NodeFlags, QueryBindingType, QueryValueType, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -395,7 +396,7 @@ export function main() {
         expect(err.message)
             .toBe(
                 `Expression has changed after it was checked. Previous value: 'Query query1 not dirty'. Current value: 'Query query1 dirty'.`);
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         expect(debugCtx.nodeIndex).toBe(2);
       });
@@ -421,7 +422,7 @@ export function main() {
         }
         expect(err).toBeTruthy();
         expect(err.message).toBe('Test');
-        const debugCtx = <DebugContext>err.context;
+        const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         expect(debugCtx.nodeIndex).toBe(2);
       });

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type} from '@angular/core';
-
+import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, __core_private__} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {stringify} from './facade/lang';
@@ -266,9 +265,9 @@ export class TestBed implements Injector {
         this._moduleWithComponentFactories =
             this._compiler.compileModuleAndAllComponentsSync(moduleType);
       } catch (e) {
-        if (e.compType) {
+        if (getComponentType(e)) {
           throw new Error(
-              `This test module uses the component ${stringify(e.compType)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+              `This test module uses the component ${stringify(getComponentType(e))} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
               `Please call "TestBed.compileComponents" before your test.`);
         } else {
           throw e;
@@ -470,4 +469,8 @@ export function withModule(moduleDef: TestModuleMetadata, fn: Function = null): 
     };
   }
   return new InjectSetupWrapper(() => moduleDef);
+}
+
+function getComponentType(error: Error): Function {
+  return (error as any)[__core_private__.ERROR_COMPONENT_TYPE];
 }
