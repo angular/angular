@@ -9,7 +9,7 @@
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {ReflectorReader} from '../private_import_core';
-import {SyntaxError} from '../util';
+import {syntaxError} from '../util';
 
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
@@ -566,7 +566,7 @@ export class StaticReflector implements ReflectorReader {
         if (e.fileName) {
           throw positionalError(message, e.fileName, e.line, e.column);
         }
-        throw new SyntaxError(message);
+        throw syntaxError(message);
       }
     }
 

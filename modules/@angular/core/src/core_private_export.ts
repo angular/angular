@@ -20,7 +20,7 @@ import * as constants from './change_detection/constants';
 import * as console from './console';
 import * as debug from './debug/debug_renderer';
 import * as reflective_provider from './di/reflective_provider';
-import {ComponentStillLoadingError} from './linker/compiler';
+import {ERROR_COMPONENT_TYPE} from './errors';
 import * as component_factory from './linker/component_factory';
 import * as component_factory_resolver from './linker/component_factory_resolver';
 import * as debug_context from './linker/debug_context';
@@ -104,12 +104,11 @@ export const __core_private__: {
   DEFAULT_STATE: typeof DEFAULT_STATE_,
   EMPTY_STATE: typeof EMPTY_STATE_,
   FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_,
-  _ComponentStillLoadingError?: ComponentStillLoadingError,
-  ComponentStillLoadingError: typeof ComponentStillLoadingError,
   isPromise: typeof isPromise,
   isObservable: typeof isObservable,
   AnimationTransition: typeof AnimationTransition
   view_utils: typeof view_utils,
+  ERROR_COMPONENT_TYPE: typeof ERROR_COMPONENT_TYPE,
 } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
@@ -156,8 +155,8 @@ export const __core_private__: {
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
-  ComponentStillLoadingError: ComponentStillLoadingError,
   isPromise: isPromise,
   isObservable: isObservable,
-  AnimationTransition: AnimationTransition
+  AnimationTransition: AnimationTransition,
+  ERROR_COMPONENT_TYPE: ERROR_COMPONENT_TYPE
 };

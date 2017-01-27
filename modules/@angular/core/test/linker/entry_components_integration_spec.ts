@@ -7,7 +7,7 @@
  */
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
-import {NoComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
+import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
 
 import {Console} from '../../src/console';
@@ -77,7 +77,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
       expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
       expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
-          .toThrow(new NoComponentFactoryError(NestedChildComp));
+          .toThrow(noComponentFactoryError(NestedChildComp));
     });
 
   });
