@@ -14,7 +14,7 @@ import {AngularTools} from './common_tools';
 const context = <any>global;
 
 /**
- * Enabled Angular 2 debug tools that are accessible via your browser's
+ * Enabled Angular debug tools that are accessible via your browser's
  * developer console.
  *
  * Usage:
@@ -32,7 +32,7 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
 }
 
 /**
- * Disables Angular 2 tools.
+ * Disables Angular tools.
  *
  * @experimental All debugging apis are currently experimental.
  */

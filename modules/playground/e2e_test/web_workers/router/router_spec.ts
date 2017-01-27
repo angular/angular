@@ -11,7 +11,7 @@ import {browser, by, element, protractor} from 'protractor';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    // This test can't wait for Angular as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get('/');
   });

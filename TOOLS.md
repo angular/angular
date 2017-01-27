@@ -1,4 +1,4 @@
-# Developer Tools for Angular 2
+# Developer Tools for Angular
 
 Here you will find a collection of tools and tips for keeping your application
 perform well and contain fewer bugs.

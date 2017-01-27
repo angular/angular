@@ -18,7 +18,7 @@ describe('WebWorkers Todo', function() {
   const URL = 'all/playground/src/web_workers/todo/index.html';
 
   it('should bootstrap', () => {
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    // This test can't wait for Angular as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
 

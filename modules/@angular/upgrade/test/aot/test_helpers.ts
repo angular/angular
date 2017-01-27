@@ -12,8 +12,8 @@ import {UpgradeModule} from '@angular/upgrade/static';
 
 export function bootstrap(
     platform: PlatformRef, Ng2Module: Type<{}>, element: Element, ng1Module: angular.IModule) {
-  // We bootstrap the Angular 2 module first; then when it is ready (async)
-  // We bootstrap the Angular 1 module on the bootstrap element
+  // We bootstrap the Angular module first; then when it is ready (async)
+  // We bootstrap the AngularJS module on the bootstrap element
   return platform.bootstrapModule(Ng2Module).then(ref => {
     const upgrade = ref.injector.get(UpgradeModule) as UpgradeModule;
     upgrade.bootstrap(element, [ng1Module.name]);
