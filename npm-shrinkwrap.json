@@ -8549,9 +8549,9 @@
       "dev": true
     },
     "source-map": {
-      "version": "0.3.0",
-      "from": "source-map@>=0.3.0 <0.4.0",
-      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.3.0.tgz",
+      "version": "0.5.6",
+      "from": "source-map@latest",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz",
       "dev": true
     },
     "source-map-support": {

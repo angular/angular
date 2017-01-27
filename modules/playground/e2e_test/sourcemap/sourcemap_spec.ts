@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as testUtil from 'e2e_util/e2e_util';
 import {$, browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 

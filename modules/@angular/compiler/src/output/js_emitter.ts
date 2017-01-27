@@ -18,10 +18,12 @@ import {ImportResolver} from './path_util';
 
 export class JavaScriptEmitter implements OutputEmitter {
   constructor(private _importResolver: ImportResolver) {}
+
   emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
     const converter = new JsEmitterVisitor(genFilePath, this._importResolver);
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
+
     const srcParts: string[] = [];
     converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
@@ -29,7 +31,15 @@ export class JavaScriptEmitter implements OutputEmitter {
           `var ${prefix} = req` +
           `uire('${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}');`);
     });
+
     srcParts.push(ctx.toSource());
+
+    const prefixLines = converter.importsWithPrefixes.size;
+    const sm = ctx.toSourceMapGenerator(null, prefixLines).toJsComment();
+    if (sm) {
+      srcParts.push(sm);
+    }
+
     return srcParts.join('\n');
   }
 }
@@ -55,29 +65,29 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(filePath, prefix);
       }
-      ctx.print(`${prefix}.`);
+      ctx.print(ast, `${prefix}.`);
     }
-    ctx.print(name);
+    ctx.print(ast, name);
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareVarStmt(stmt, ctx);
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.println(exportVar(stmt.name));
+      ctx.println(stmt, exportVar(stmt.name));
     }
     return null;
   }
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareFunctionStmt(stmt, ctx);
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.println(exportVar(stmt.name));
+      ctx.println(stmt, exportVar(stmt.name));
     }
     return null;
   }
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareClassStmt(stmt, ctx);
     if (ctx.isExportedVar(stmt.name)) {
-      ctx.println(exportVar(stmt.name));
+      ctx.println(stmt, exportVar(stmt.name));
     }
     return null;
   }

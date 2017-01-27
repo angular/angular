@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseLocation, ParseSourceFile} from '@angular/compiler';
 import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
-import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
-import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
 import {extractSourceMap} from './abstract_emitter_node_only_spec';
 
@@ -29,19 +29,14 @@ class SimpleJsImportGenerator implements ImportResolver {
 }
 
 export function main() {
-  // Not supported features of our OutputAst in TS:
-  // - real `const` like in Dart
-  // - final fields
-
-  describe('TypeScriptEmitter', () => {
+  describe('JavaScriptEmitter', () => {
     let importResolver: ImportResolver;
-    let emitter: TypeScriptEmitter;
+    let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;
 
     beforeEach(() => {
       importResolver = new SimpleJsImportGenerator();
-      emitter = new TypeScriptEmitter(importResolver);
-      someVar = o.variable('someVar');
+      emitter = new JavaScriptEmitter(importResolver);
     });
 
     function emitSourceMap(

@@ -7,7 +7,6 @@
  */
 
 import {escapeIdentifier} from '@angular/compiler/src/output/abstract_emitter';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('AbstractEmitter', () => {
@@ -31,6 +30,11 @@ export function main() {
       it('does not escape class (but it probably should)',
          () => { expect(escapeIdentifier('class', false, false)).toEqual('class'); });
     });
-
   });
+}
+
+export function stripSourceMap(source: string): string {
+  const smi = source.lastIndexOf('\n//#');
+  if (smi == -1) return source;
+  return source.slice(0, smi);
 }

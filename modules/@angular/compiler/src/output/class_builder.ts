@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseSourceSpan} from '../parse_util';
+
 import * as o from './output_ast';
+
 
 /**
  * Create a new class stmts based on the given data.
@@ -16,7 +19,9 @@ export function createClassStmt(config: {
   parent?: o.Expression,
   parentArgs?: o.Expression[],
   ctorParams?: o.FnParam[],
-  builders: ClassBuilderPart | ClassBuilderPart[], modifiers?: o.StmtModifier[]
+  builders: ClassBuilderPart | ClassBuilderPart[],
+  modifiers?: o.StmtModifier[],
+  sourceSpan?: ParseSourceSpan
 }): o.ClassStmt {
   const parentArgs = config.parentArgs || [];
   const superCtorStmts = config.parent ? [o.SUPER_EXPR.callFn(parentArgs).toStmt()] : [];
@@ -27,7 +32,7 @@ export function createClassStmt(config: {
 
   return new o.ClassStmt(
       config.name, config.parent, builder.fields, builder.getters, ctor, builder.methods,
-      config.modifiers || []);
+      config.modifiers || [], config.sourceSpan);
 }
 
 function concatClassBuilderParts(builders: ClassBuilderPart[]) {

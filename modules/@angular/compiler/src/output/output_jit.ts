@@ -7,15 +7,15 @@
  */
 
 import {identifierName} from '../compile_metadata';
-import {isPresent} from '../facade/lang';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
 
 function evalExpression(
-    sourceUrl: string, expr: string, declarations: string, vars: {[key: string]: any}): any {
-  const fnBody = `${declarations}\nreturn ${expr}\n//# sourceURL=${sourceUrl}`;
+    sourceUrl: string, expr: string, ctx: EmitterVisitorContext, vars: {[key: string]: any}): any {
+  const fnBody =
+      `${ctx.toSource()}\nreturn ${expr}\n//# sourceURL=${sourceUrl}\n${ctx.toSourceMapGenerator().toJsComment()}`;
   const fnArgNames: string[] = [];
   const fnArgValues: any[] = [];
   for (const argName in vars) {
@@ -25,13 +25,12 @@ function evalExpression(
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
 
-
 export function jitStatements(
     sourceUrl: string, statements: o.Statement[], resultVar: string): any {
   const converter = new JitEmitterVisitor();
   const ctx = EmitterVisitorContext.createRoot([resultVar]);
   converter.visitAllStatements(statements, ctx);
-  return evalExpression(sourceUrl, resultVar, ctx.toSource(), converter.getArgs());
+  return evalExpression(sourceUrl, resultVar, ctx, converter.getArgs());
 }
 
 class JitEmitterVisitor extends AbstractJsEmitterVisitor {
@@ -55,7 +54,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
       const name = identifierName(ast.value) || 'val';
       this._evalArgNames.push(`jit_${name}${id}`);
     }
-    ctx.print(this._evalArgNames[id]);
+    ctx.print(ast, this._evalArgNames[id]);
     return null;
   }
 }
