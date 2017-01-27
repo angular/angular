@@ -50,64 +50,6 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
 }
 
-export class DecoratorDownlevelCompilerHost extends DelegatingHost {
-  private ANNOTATION_SUPPORT = `
-interface DecoratorInvocation {
-  type: Function;
-  args?: any[];
-}
-`;
-  /** Error messages produced by tsickle, if any. */
-  public diagnostics: ts.Diagnostic[] = [];
-
-  constructor(delegate: ts.CompilerHost, private program: ts.Program) { super(delegate); }
-
-  getSourceFile =
-      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
-        const originalContent = this.delegate.readFile(fileName);
-        let newContent = originalContent;
-        if (!/\.d\.ts$/.test(fileName)) {
-          try {
-            const converted = tsickle.convertDecorators(
-                this.program.getTypeChecker(), this.program.getSourceFile(fileName));
-            if (converted.diagnostics) {
-              this.diagnostics.push(...converted.diagnostics);
-            }
-            newContent = converted.output + this.ANNOTATION_SUPPORT;
-          } catch (e) {
-            console.error('Cannot convertDecorators on file', fileName);
-            throw e;
-          }
-        }
-        return ts.createSourceFile(fileName, newContent, languageVersion, true);
-      }
-}
-
-export class TsickleCompilerHost extends DelegatingHost {
-  /** Error messages produced by tsickle, if any. */
-  public diagnostics: ts.Diagnostic[] = [];
-
-  constructor(
-      delegate: ts.CompilerHost, private oldProgram: ts.Program, private options: NgOptions) {
-    super(delegate);
-  }
-
-  getSourceFile =
-      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
-        let sourceFile = this.oldProgram.getSourceFile(fileName);
-        let isDefinitions = /\.d\.ts$/.test(fileName);
-        // Don't tsickle-process any d.ts that isn't a compilation target;
-        // this means we don't process e.g. lib.d.ts.
-        if (isDefinitions) return sourceFile;
-        const es2015Target = this.options.target == ts.ScriptTarget.ES2015;  // This covers ES6 too
-        let {output, externs, diagnostics} = tsickle.annotate(
-            this.oldProgram, sourceFile, {untyped: true, convertIndexImportShorthand: es2015Target},
-            this.delegate, this.options);
-        this.diagnostics = diagnostics;
-        return ts.createSourceFile(fileName, output, languageVersion, true);
-      }
-}
-
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
