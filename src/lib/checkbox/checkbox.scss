@@ -1,26 +1,21 @@
 @import '../core/theming/theming';
 @import '../core/style/elevation';
-@import '../core/style/variables';
+@import '../core/style/checkbox-common';
 @import '../core/ripple/ripple';
-
-
-// The width/height of the checkbox element.
-$md-checkbox-size: $md-toggle-size !default;
-// The width of the line used to draw the checkmark / mixedmark.
-$md-checkbox-mark-stroke-size: 2/15 * $md-checkbox-size !default;
-// The width of the checkbox border shown when the checkbox is unchecked.
-$md-checkbox-border-width: 2px;
-// The base duration used for the majority of transitions for the checkbox.
-$md-checkbox-transition-duration: 90ms;
-// The amount of spacing between the checkbox and its label.
-$md-checkbox-item-spacing: $md-toggle-padding;
 
 // Manual calculation done on SVG
 $_md-checkbox-mark-path-length: 22.910259;
 $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
 
 // The ripple size of the checkbox
-$md-checkbox-ripple-size: 15px;
+$_md-checkbox-ripple-size: 15px;
+
+// The amount of spacing between the checkbox and its label.
+$_md-checkbox-item-spacing: $md-toggle-padding;
+
+// The width of the line used to draw the checkmark / mixedmark.
+$_md-checkbox-mark-stroke-size: 2 / 15 * $md-checkbox-size !default;
+
 
 // Fades in the background of the checkbox when it goes from unchecked -> {checked,indeterminate}.
 @keyframes md-checkbox-fade-in-background {
@@ -213,7 +208,7 @@ md-checkbox {
   height: $md-checkbox-size;
   line-height: 0;
   margin: auto;
-  margin-right: $md-checkbox-item-spacing;
+  margin-right: $_md-checkbox-item-spacing;
   order: 0;
   position: relative;
   vertical-align: middle;
@@ -223,7 +218,7 @@ md-checkbox {
 
   [dir='rtl'] & {
     margin: {
-      left: $md-checkbox-item-spacing;
+      left: $_md-checkbox-item-spacing;
       right: auto;
     }
   }
@@ -264,14 +259,14 @@ md-checkbox {
   stroke: {
     dashoffset: $_md-checkbox-mark-path-length;
     dasharray: $_md-checkbox-mark-path-length;
-    width: $md-checkbox-mark-stroke-size;
+    width: $_md-checkbox-mark-stroke-size;
   }
 }
 
 .md-checkbox-mixedmark {
   @extend %md-checkbox-mark;
 
-  height: floor($md-checkbox-mark-stroke-size);
+  height: floor($_md-checkbox-mark-stroke-size);
   opacity: 0;
   transform: scaleX(0) rotate(0deg);
 }
@@ -280,14 +275,14 @@ md-checkbox {
   .md-checkbox-inner-container {
     order: 1;
     margin: {
-      left: $md-checkbox-item-spacing;
+      left: $_md-checkbox-item-spacing;
       right: auto;
     }
 
     [dir='rtl'] & {
       margin: {
         left: auto;
-        right: $md-checkbox-item-spacing;
+        right: $_md-checkbox-item-spacing;
       }
     }
   }
@@ -419,10 +414,10 @@ md-checkbox {
 
 .md-checkbox-ripple {
   position: absolute;
-  left: -$md-checkbox-ripple-size;
-  top: -$md-checkbox-ripple-size;
-  right: -$md-checkbox-ripple-size;
-  bottom: -$md-checkbox-ripple-size;
+  left: -$_md-checkbox-ripple-size;
+  top: -$_md-checkbox-ripple-size;
+  right: -$_md-checkbox-ripple-size;
+  bottom: -$_md-checkbox-ripple-size;
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;

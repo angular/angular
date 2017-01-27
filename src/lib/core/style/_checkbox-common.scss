@@ -1,0 +1,10 @@
+@import './variables';
+
+// The width/height of the checkbox element.
+$md-checkbox-size: $md-toggle-size !default;
+
+// The width of the checkbox border shown when the checkbox is unchecked.
+$md-checkbox-border-width: 2px;
+
+// The base duration used for the majority of transitions for the checkbox.
+$md-checkbox-transition-duration: 90ms;

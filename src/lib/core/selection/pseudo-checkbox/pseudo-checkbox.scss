@@ -1,0 +1,53 @@
+@import '../../style/checkbox-common';
+
+// Padding inside of a pseudo checkbox.
+$_md-pseudo-checkbox-padding: $md-checkbox-border-width * 2;
+
+// Size of the checkmark in a pseudo checkbox.
+$_md-pseudo-checkmark-size: $md-checkbox-size - (2 * $_md-pseudo-checkbox-padding);
+
+
+md-pseudo-checkbox {
+  width: $md-checkbox-size;
+  height: $md-checkbox-size;
+  border: $md-checkbox-border-width solid;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: border-box;
+  position: relative;
+  transition:
+      border-color $md-checkbox-transition-duration $md-linear-out-slow-in-timing-function,
+      background-color $md-checkbox-transition-duration $md-linear-out-slow-in-timing-function;
+
+  // Used to render the checkmark/mixedmark inside of the box.
+  &::after {
+    position: absolute;
+    opacity: 0;
+    content: '';
+    border-bottom: $md-checkbox-border-width solid currentColor;
+    transition: opacity $md-checkbox-transition-duration $md-linear-out-slow-in-timing-function;
+  }
+}
+
+.md-pseudo-checkbox-disabled {
+  cursor: default;
+}
+
+.md-pseudo-checkbox-indeterminate::after {
+  top: ($md-checkbox-size - $md-checkbox-border-width) / 2;
+  left: $md-checkbox-border-width;
+  width: $md-checkbox-size - ($md-checkbox-border-width * 2);
+  opacity: 1;
+}
+
+.md-pseudo-checkbox-checked::after {
+  top: ($md-checkbox-size / 2) - ($_md-pseudo-checkmark-size / 4) - ($md-checkbox-size / 10);
+  left: $_md-pseudo-checkbox-padding - $md-checkbox-border-width / 2;
+  width: $_md-pseudo-checkmark-size;
+  height: ($_md-pseudo-checkmark-size - $md-checkbox-border-width) / 2;
+  border-left: $md-checkbox-border-width solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 1;
+}

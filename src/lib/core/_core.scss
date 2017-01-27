@@ -5,6 +5,7 @@
 @import 'ripple/ripple';
 @import 'option/option';
 @import 'option/option-theme';
+@import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
 @mixin md-core() {
@@ -27,6 +28,7 @@
 @mixin md-core-theme($theme) {
   @include md-ripple-theme($theme);
   @include md-option-theme($theme);
+  @include md-pseudo-checkbox-theme($theme);
 
   // Wrapper element that provides the theme background when the
   // user's content isn't inside of a `md-sidenav-container`.
