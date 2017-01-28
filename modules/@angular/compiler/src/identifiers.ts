@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, RendererTypeV2, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵbalanceAnimationKeyframes, ɵclearStyles, ɵcollectAndResolveStyles, ɵdevModeEqual, ɵprepareFinalAnimationStyles, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵviewEngine, ɵview_utils} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵEMPTY_ARRAY, ɵEMPTY_INLINE_ARRAY, ɵEMPTY_MAP, ɵInlineArray16, ɵInlineArray2, ɵInlineArray4, ɵInlineArray8, ɵInlineArrayDynamic, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵViewUtils, ɵanchorDef, ɵbalanceAnimationKeyframes, ɵcastByValue, ɵcheckBinding, ɵcheckBindingChange, ɵcheckRenderAttribute, ɵcheckRenderClass, ɵcheckRenderProperty, ɵcheckRenderStyle, ɵcheckRenderText, ɵclearStyles, ɵcollectAndResolveStyles, ɵcreateRendererTypeV2, ɵcreateRenderComponentType, ɵcreateRenderElement, ɵdevModeEqual, ɵdirectiveDef, ɵelementDef, ɵinlineInterpolate, ɵinterpolate, ɵngContentDef, ɵnodeValue, ɵnoop, ɵpipeDef, ɵprepareFinalAnimationStyles, ɵproviderDef, ɵpureArrayDef, ɵpureObjectDef, ɵpurePipeDef, ɵpureProxy1, ɵpureProxy10, ɵpureProxy2, ɵpureProxy3, ɵpureProxy4, ɵpureProxy5, ɵpureProxy6, ɵpureProxy7, ɵpureProxy8, ɵpureProxy9, ɵqueryDef, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵselectOrCreateRenderHostElement, ɵsetBindingDebugInfo, ɵsetBindingDebugInfoForChanges, ɵsubscribeToRenderElement, ɵtextDef, ɵunwrapValue, ɵviewDef} from '@angular/core';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 
@@ -16,7 +16,6 @@ const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
 export interface IdentifierSpec {
   name: string;
   moduleUrl: string;
-  member?: string;
   runtime: any;
 }
 
@@ -26,8 +25,7 @@ export class Identifiers {
     moduleUrl: CORE,
     runtime: ANALYZE_FOR_ENTRY_COMPONENTS
   };
-  static ViewUtils: IdentifierSpec =
-      {name: 'ɵview_utils', moduleUrl: CORE, member: 'ViewUtils', runtime: ɵview_utils.ViewUtils};
+  static ViewUtils: IdentifierSpec = {name: 'ɵViewUtils', moduleUrl: CORE, runtime: ɵViewUtils};
   static AppView: IdentifierSpec = {name: 'ɵAppView', moduleUrl: CORE, runtime: ɵAppView};
   static DebugAppView:
       IdentifierSpec = {name: 'ɵDebugAppView', moduleUrl: CORE, runtime: ɵDebugAppView};
@@ -101,100 +99,59 @@ export class Identifiers {
     moduleUrl: CORE,
     runtime: ɵChangeDetectorStatus
   };
-  static checkBinding: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'checkBinding',
-    runtime: ɵview_utils.checkBinding
-  };
-  static checkBindingChange: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'checkBindingChange',
-    runtime: ɵview_utils.checkBindingChange
-  };
-  static checkRenderText: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'checkRenderText',
-    runtime: ɵview_utils.checkRenderText
-  };
+  static checkBinding:
+      IdentifierSpec = {name: 'ɵcheckBinding', moduleUrl: CORE, runtime: ɵcheckBinding};
+  static checkBindingChange:
+      IdentifierSpec = {name: 'ɵcheckBindingChange', moduleUrl: CORE, runtime: ɵcheckBindingChange};
+  static checkRenderText:
+      IdentifierSpec = {name: 'ɵcheckRenderText', moduleUrl: CORE, runtime: ɵcheckRenderText};
   static checkRenderProperty: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵcheckRenderProperty',
     moduleUrl: CORE,
-    member: 'checkRenderProperty',
-    runtime: ɵview_utils.checkRenderProperty
+    runtime: ɵcheckRenderProperty
   };
   static checkRenderAttribute: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵcheckRenderAttribute',
     moduleUrl: CORE,
-    member: 'checkRenderAttribute',
-    runtime: ɵview_utils.checkRenderAttribute
+    runtime: ɵcheckRenderAttribute
   };
-  static checkRenderClass: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'checkRenderClass',
-    runtime: ɵview_utils.checkRenderClass
-  };
-  static checkRenderStyle: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'checkRenderStyle',
-    runtime: ɵview_utils.checkRenderStyle
-  };
+  static checkRenderClass:
+      IdentifierSpec = {name: 'ɵcheckRenderClass', moduleUrl: CORE, runtime: ɵcheckRenderClass};
+  static checkRenderStyle:
+      IdentifierSpec = {name: 'ɵcheckRenderStyle', moduleUrl: CORE, runtime: ɵcheckRenderStyle};
   static devModeEqual:
       IdentifierSpec = {name: 'ɵdevModeEqual', moduleUrl: CORE, runtime: ɵdevModeEqual};
-  static inlineInterpolate: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'inlineInterpolate',
-    runtime: ɵview_utils.inlineInterpolate
-  };
-  static interpolate: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'interpolate',
-    runtime: ɵview_utils.interpolate
-  };
-  static castByValue: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'castByValue',
-    runtime: ɵview_utils.castByValue
-  };
-  static EMPTY_ARRAY: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'EMPTY_ARRAY',
-    runtime: ɵview_utils.EMPTY_ARRAY
-  };
-  static EMPTY_MAP: IdentifierSpec =
-      {name: 'ɵview_utils', moduleUrl: CORE, member: 'EMPTY_MAP', runtime: ɵview_utils.EMPTY_MAP};
+  static inlineInterpolate:
+      IdentifierSpec = {name: 'ɵinlineInterpolate', moduleUrl: CORE, runtime: ɵinlineInterpolate};
+  static interpolate:
+      IdentifierSpec = {name: 'ɵinterpolate', moduleUrl: CORE, runtime: ɵinterpolate};
+  static castByValue:
+      IdentifierSpec = {name: 'ɵcastByValue', moduleUrl: CORE, runtime: ɵcastByValue};
+  static EMPTY_ARRAY:
+      IdentifierSpec = {name: 'ɵEMPTY_ARRAY', moduleUrl: CORE, runtime: ɵEMPTY_ARRAY};
+  static EMPTY_MAP: IdentifierSpec = {name: 'ɵEMPTY_MAP', moduleUrl: CORE, runtime: ɵEMPTY_MAP};
   static createRenderElement: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵcreateRenderElement',
     moduleUrl: CORE,
-    member: 'createRenderElement',
-    runtime: ɵview_utils.createRenderElement
+    runtime: ɵcreateRenderElement
   };
   static selectOrCreateRenderHostElement: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵselectOrCreateRenderHostElement',
     moduleUrl: CORE,
-    member: 'selectOrCreateRenderHostElement',
-    runtime: ɵview_utils.selectOrCreateRenderHostElement
+    runtime: ɵselectOrCreateRenderHostElement
   };
   static pureProxies: IdentifierSpec[] = [
     null,
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy1', runtime: ɵview_utils.pureProxy1},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy2', runtime: ɵview_utils.pureProxy2},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy3', runtime: ɵview_utils.pureProxy3},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy4', runtime: ɵview_utils.pureProxy4},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy5', runtime: ɵview_utils.pureProxy5},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy6', runtime: ɵview_utils.pureProxy6},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy7', runtime: ɵview_utils.pureProxy7},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy8', runtime: ɵview_utils.pureProxy8},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy9', runtime: ɵview_utils.pureProxy9},
-    {name: 'ɵview_utils', moduleUrl: CORE, member: 'pureProxy10', runtime: ɵview_utils.pureProxy10},
+    {name: 'ɵpureProxy1', moduleUrl: CORE, runtime: ɵpureProxy1},
+    {name: 'ɵpureProxy2', moduleUrl: CORE, runtime: ɵpureProxy2},
+    {name: 'ɵpureProxy3', moduleUrl: CORE, runtime: ɵpureProxy3},
+    {name: 'ɵpureProxy4', moduleUrl: CORE, runtime: ɵpureProxy4},
+    {name: 'ɵpureProxy5', moduleUrl: CORE, runtime: ɵpureProxy5},
+    {name: 'ɵpureProxy6', moduleUrl: CORE, runtime: ɵpureProxy6},
+    {name: 'ɵpureProxy7', moduleUrl: CORE, runtime: ɵpureProxy7},
+    {name: 'ɵpureProxy8', moduleUrl: CORE, runtime: ɵpureProxy8},
+    {name: 'ɵpureProxy9', moduleUrl: CORE, runtime: ɵpureProxy9},
+    {name: 'ɵpureProxy10', moduleUrl: CORE, runtime: ɵpureProxy10},
   ];
   static SecurityContext: IdentifierSpec = {
     name: 'SecurityContext',
@@ -243,16 +200,14 @@ export class Identifiers {
   static TRANSLATIONS_FORMAT:
       IdentifierSpec = {name: 'TRANSLATIONS_FORMAT', moduleUrl: CORE, runtime: TRANSLATIONS_FORMAT};
   static setBindingDebugInfo: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵsetBindingDebugInfo',
     moduleUrl: CORE,
-    member: 'setBindingDebugInfo',
-    runtime: ɵview_utils.setBindingDebugInfo
+    runtime: ɵsetBindingDebugInfo
   };
   static setBindingDebugInfoForChanges: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵsetBindingDebugInfoForChanges',
     moduleUrl: CORE,
-    member: 'setBindingDebugInfoForChanges',
-    runtime: ɵview_utils.setBindingDebugInfoForChanges
+    runtime: ɵsetBindingDebugInfoForChanges
   };
   static AnimationTransition: IdentifierSpec = {
     name: 'ɵAnimationTransition',
@@ -264,127 +219,55 @@ export class Identifiers {
   static InlineArray:
       IdentifierSpec = {name: 'InlineArray', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: null};
   static inlineArrays: IdentifierSpec[] = [
-    {
-      name: 'ɵview_utils',
-      moduleUrl: CORE,
-      member: 'InlineArray2',
-      runtime: ɵview_utils.InlineArray2
-    },
-    {
-      name: 'ɵview_utils',
-      moduleUrl: CORE,
-      member: 'InlineArray2',
-      runtime: ɵview_utils.InlineArray2
-    },
-    {
-      name: 'ɵview_utils',
-      moduleUrl: CORE,
-      member: 'InlineArray4',
-      runtime: ɵview_utils.InlineArray4
-    },
-    {
-      name: 'ɵview_utils',
-      moduleUrl: CORE,
-      member: 'InlineArray8',
-      runtime: ɵview_utils.InlineArray8
-    },
-    {
-      name: 'ɵview_utils',
-      moduleUrl: CORE,
-      member: 'InlineArray16',
-      runtime: ɵview_utils.InlineArray16
-    },
+    {name: 'ɵInlineArray2', moduleUrl: CORE, runtime: ɵInlineArray2},
+    {name: 'ɵInlineArray2', moduleUrl: CORE, runtime: ɵInlineArray2},
+    {name: 'ɵInlineArray4', moduleUrl: CORE, runtime: ɵInlineArray4},
+    {name: 'ɵInlineArray8', moduleUrl: CORE, runtime: ɵInlineArray8},
+    {name: 'ɵInlineArray16', moduleUrl: CORE, runtime: ɵInlineArray16},
   ];
-  static EMPTY_INLINE_ARRAY: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'EMPTY_INLINE_ARRAY',
-    runtime: ɵview_utils.EMPTY_INLINE_ARRAY
-  };
-  static InlineArrayDynamic: IdentifierSpec = {
-    name: 'ɵview_utils',
-    moduleUrl: CORE,
-    member: 'InlineArrayDynamic',
-    runtime: ɵview_utils.InlineArrayDynamic
-  };
+  static EMPTY_INLINE_ARRAY:
+      IdentifierSpec = {name: 'ɵEMPTY_INLINE_ARRAY', moduleUrl: CORE, runtime: ɵEMPTY_INLINE_ARRAY};
+  static InlineArrayDynamic:
+      IdentifierSpec = {name: 'ɵInlineArrayDynamic', moduleUrl: CORE, runtime: ɵInlineArrayDynamic};
   static subscribeToRenderElement: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵsubscribeToRenderElement',
     moduleUrl: CORE,
-    member: 'subscribeToRenderElement',
-    runtime: ɵview_utils.subscribeToRenderElement
+    runtime: ɵsubscribeToRenderElement
   };
   static createRenderComponentType: IdentifierSpec = {
-    name: 'ɵview_utils',
+    name: 'ɵcreateRenderComponentType',
     moduleUrl: CORE,
-    member: 'createRenderComponentType',
-    runtime: ɵview_utils.createRenderComponentType
+    runtime: ɵcreateRenderComponentType
   };
 
 
-  static noop: IdentifierSpec =
-      {name: 'ɵview_utils', moduleUrl: CORE, member: 'noop', runtime: ɵview_utils.noop};
+  static noop: IdentifierSpec = {name: 'ɵnoop', moduleUrl: CORE, runtime: ɵnoop};
 
-  static viewDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'viewDef', runtime: ɵviewEngine.viewDef};
-  static elementDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'elementDef', runtime: ɵviewEngine.elementDef};
-  static anchorDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'anchorDef', runtime: ɵviewEngine.anchorDef};
-  static textDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'textDef', runtime: ɵviewEngine.textDef};
-  static directiveDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'directiveDef',
-    runtime: ɵviewEngine.directiveDef
-  };
-  static providerDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'providerDef',
-    runtime: ɵviewEngine.providerDef
-  };
-  static queryDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'queryDef', runtime: ɵviewEngine.queryDef};
-  static pureArrayDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'pureArrayDef',
-    runtime: ɵviewEngine.pureArrayDef
-  };
-  static pureObjectDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'pureObjectDef',
-    runtime: ɵviewEngine.pureObjectDef
-  };
-  static purePipeDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'purePipeDef',
-    runtime: ɵviewEngine.purePipeDef
-  };
-  static pipeDef: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'pipeDef', runtime: ɵviewEngine.pipeDef};
-  static nodeValue: IdentifierSpec =
-      {name: 'ɵviewEngine', moduleUrl: CORE, member: 'nodeValue', runtime: ɵviewEngine.nodeValue};
-  static ngContentDef: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'ngContentDef',
-    runtime: ɵviewEngine.ngContentDef
-  };
-  static unwrapValue: IdentifierSpec = {
-    name: 'ɵviewEngine',
-    moduleUrl: CORE,
-    member: 'unwrapValue',
-    runtime: ɵviewEngine.unwrapValue
-  };
+  static viewDef: IdentifierSpec = {name: 'ɵviewDef', moduleUrl: CORE, runtime: ɵviewDef};
+  static elementDef: IdentifierSpec = {name: 'ɵelementDef', moduleUrl: CORE, runtime: ɵelementDef};
+  static anchorDef: IdentifierSpec = {name: 'ɵanchorDef', moduleUrl: CORE, runtime: ɵanchorDef};
+  static textDef: IdentifierSpec = {name: 'ɵtextDef', moduleUrl: CORE, runtime: ɵtextDef};
+  static directiveDef:
+      IdentifierSpec = {name: 'ɵdirectiveDef', moduleUrl: CORE, runtime: ɵdirectiveDef};
+  static providerDef:
+      IdentifierSpec = {name: 'ɵproviderDef', moduleUrl: CORE, runtime: ɵproviderDef};
+  static queryDef: IdentifierSpec = {name: 'ɵqueryDef', moduleUrl: CORE, runtime: ɵqueryDef};
+  static pureArrayDef:
+      IdentifierSpec = {name: 'ɵpureArrayDef', moduleUrl: CORE, runtime: ɵpureArrayDef};
+  static pureObjectDef:
+      IdentifierSpec = {name: 'ɵpureObjectRef', moduleUrl: CORE, runtime: ɵpureObjectDef};
+  static purePipeDef:
+      IdentifierSpec = {name: 'ɵpurePipeDef', moduleUrl: CORE, runtime: ɵpurePipeDef};
+  static pipeDef: IdentifierSpec = {name: 'ɵpipeDef', moduleUrl: CORE, runtime: ɵpipeDef};
+  static nodeValue: IdentifierSpec = {name: 'ɵnodeValue', moduleUrl: CORE, runtime: ɵnodeValue};
+  static ngContentDef:
+      IdentifierSpec = {name: 'ɵngContentDef', moduleUrl: CORE, runtime: ɵngContentDef};
+  static unwrapValue:
+      IdentifierSpec = {name: 'ɵunwrapValue', moduleUrl: CORE, runtime: ɵunwrapValue};
   static createRendererTypeV2: IdentifierSpec = {
-    name: 'ɵviewEngine',
+    name: 'ɵcreateRendererTypeV2',
     moduleUrl: CORE,
-    member: 'createRendererTypeV2',
-    runtime: ɵviewEngine.createRendererTypeV2
+    runtime: ɵcreateRendererTypeV2
   };
   static RendererTypeV2: IdentifierSpec = {
     name: 'RendererTypeV2',
@@ -417,8 +300,7 @@ export function assetUrl(pkg: string, path: string = null, type: string = 'src')
 
 export function resolveIdentifier(identifier: IdentifierSpec) {
   let name = identifier.name;
-  let members = identifier.member && [identifier.member];
-  return ɵreflector.resolveIdentifier(name, identifier.moduleUrl, members, identifier.runtime);
+  return ɵreflector.resolveIdentifier(name, identifier.moduleUrl, null, identifier.runtime);
 }
 
 export function createIdentifier(identifier: IdentifierSpec): CompileIdentifierMetadata {

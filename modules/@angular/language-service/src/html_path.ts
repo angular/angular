@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Comment, Element, Expansion, ExpansionCase, Node, Text, Visitor, visitAll} from '@angular/compiler/src/ml_parser/ast';
+import {Attribute, Comment, Element, Expansion, ExpansionCase, Node, Text, Visitor, visitAll} from '@angular/compiler';
 
 import {AstPath} from './ast_path';
 import {inSpan, spanOf} from './utils';

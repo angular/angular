@@ -2,9 +2,10 @@
   "name": "@angular/platform-browser",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser",
-  "main": "bundles/platform-browser.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/platform-browser.umd.js",
+  "module": "./@angular/platform-browser.es5.js",
+  "es2015": "./@angular/platform-browser.js",
+  "typings": "./typings/platform-browser.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
