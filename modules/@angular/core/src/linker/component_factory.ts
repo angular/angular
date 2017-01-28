@@ -101,9 +101,13 @@ export class ComponentFactory<C> {
   /**
    * Creates a new component.
    */
-  create(injector: Injector, projectableNodes: any[][] = [], rootSelectorOrNode: string|any = null):
-      ComponentRef<C> {
+  create(
+      injector: Injector, projectableNodes: any[][] = null,
+      rootSelectorOrNode: string|any = null): ComponentRef<C> {
     const vu: ViewUtils = injector.get(ViewUtils);
+    if (!projectableNodes) {
+      projectableNodes = [];
+    }
     const hostView: AppView<any> = new this._viewClass(vu, null, null, null);
     return hostView.createHostView(rootSelectorOrNode, injector, projectableNodes);
   }
