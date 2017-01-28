@@ -22,8 +22,8 @@ import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
 import {AppView} from './linker/view';
 import {ViewRef, ViewRef_} from './linker/view_ref';
-import {getDOM} from './private_import_platform-browser';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
+import {DirectRenderer, Renderer} from './render/api';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
 import {NgZone} from './zone/ng_zone';
@@ -458,11 +458,13 @@ export class ApplicationRef_ extends ApplicationRef {
       componentFactory = this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
     }
     this._rootComponentTypes.push(componentFactory.componentType);
-    const rootNode = getDOM().query(componentFactory.selector);
+    const renderer: Renderer = this._injector.get(Renderer);
+    const directRenderer: DirectRenderer = (renderer as any).directRenderer;
+    const rootNode = directRenderer.querySelector(componentFactory.selector);
     if (!rootNode) {
       throw new Error(`The selector "${componentFactory.selector}" did not match any elements`);
     }
-    const childNodes = Array.prototype.slice.call(getDOM().childNodes(rootNode));
+    const childNodes = directRenderer.childNodes(rootNode);
     const compRef = componentFactory.create(this._injector, [childNodes], rootNode);
     compRef.onDestroy(() => { this._unloadComponent(compRef); });
     const testability = compRef.injector.get(Testability, null);

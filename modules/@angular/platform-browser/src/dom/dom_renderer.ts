@@ -63,7 +63,9 @@ export const DIRECT_DOM_RENDERER: DirectRenderer = {
   appendChild(node: Node, parent: Element) { parent.appendChild(node);},
   insertBefore(node: Node, refNode: Node) { refNode.parentNode.insertBefore(node, refNode);},
   nextSibling(node: Node) { return node.nextSibling;},
-  parentElement(node: Node): Element{return node.parentNode as Element;}
+  parentElement(node: Node): Element{return node.parentNode as Element;},
+  querySelector(selector: string): Node{return document.querySelector(selector);},
+  childNodes(node: Node): Node[]{return Array.prototype.slice.call(node.childNodes);}
 };
 
 export class DomRenderer implements Renderer {
