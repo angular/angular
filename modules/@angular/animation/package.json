@@ -2,9 +2,10 @@
   "name": "@angular/animation",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - animation integration with web-animations",
-  "main": "bundles/animation.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/animation.umd.js",
+  "module": "./@angular/animation.es5.js",
+  "es2015": "./@angular/animation.js",
+  "typings": "./typings/animation.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

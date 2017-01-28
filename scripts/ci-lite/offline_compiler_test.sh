@@ -16,6 +16,9 @@ PKGS=(
   jasmine@2.4.1
   webpack@2.1.0-beta.21
   @angular2-material/{core,button}@2.0.0-alpha.8-1
+  babel-core@6.23.1
+  babel-loader@6.3.0
+  babel-preset-es2015@6.22.0
 )
 
 TMPDIR=${TMPDIR:-.}

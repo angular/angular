@@ -7,13 +7,16 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/common/index.js',
-  dest: '../../../dist/packages-dist/common/bundles/common.umd.js',
+  entry: '../../../dist/packages-dist/compiler/es5/index.js',
+  dest: '../../../dist/packages-dist/compiler/bundles/compiler.umd.js',
   format: 'umd',
-  moduleName: 'ng.common',
+  moduleName: 'ng.compiler',
   globals: {
     '@angular/core': 'ng.core',
     'rxjs/Observable': 'Rx',
     'rxjs/Subject': 'Rx',
-  }
+  },
+  plugins: [
+    //    nodeResolve({ jsnext: true, main: true }),
+  ]
 };

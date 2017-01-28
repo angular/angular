@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig-build",
   "compilerOptions": {
+    "outDir": "../../../dist/packages-dist/http",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/http": ["../../../dist/packages-dist/http"],
