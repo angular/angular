@@ -2,6 +2,7 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  Input,
   QueryList,
   TemplateRef,
   ViewChild,
@@ -33,6 +34,9 @@ export class MdAutocomplete {
   @ViewChild('panel') panel: ElementRef;
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
+  /** Function that maps an option's control value to its display value in the trigger. */
+  @Input() displayWith: (value: any) => string;
+
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `md-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
@@ -41,7 +45,9 @@ export class MdAutocomplete {
    * options below the fold, as they are not actually being focused when active.
    */
   _setScrollTop(scrollTop: number): void {
-    this.panel.nativeElement.scrollTop = scrollTop;
+    if (this.panel) {
+      this.panel.nativeElement.scrollTop = scrollTop;
+    }
   }
 
   /** Sets a class on the panel based on its position (used to set y-offset). */

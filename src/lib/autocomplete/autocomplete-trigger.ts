@@ -1,7 +1,14 @@
 import {
-    AfterContentInit, Directive, ElementRef, Input, ViewContainerRef, Optional, OnDestroy
+    AfterContentInit,
+    Directive,
+    ElementRef,
+    forwardRef,
+    Input,
+    Optional,
+    OnDestroy,
+    ViewContainerRef,
 } from '@angular/core';
-import {NgControl} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
@@ -28,6 +35,16 @@ export const AUTOCOMPLETE_OPTION_HEIGHT = 48;
 /** The total height of the autocomplete panel. */
 export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
+/**
+ * Provider that allows the autocomplete to register as a ControlValueAccessor.
+ * @docs-private
+ */
+export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MdAutocompleteTrigger),
+  multi: true
+};
+
 @Directive({
   selector: 'input[mdAutocomplete], input[matAutocomplete]',
   host: {
@@ -39,10 +56,13 @@ export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
     '[attr.aria-expanded]': 'panelOpen.toString()',
     '[attr.aria-owns]': 'autocomplete?.id',
     '(focus)': 'openPanel()',
+    '(blur)': '_onTouched()',
+    '(input)': '_onChange($event.target.value)',
     '(keydown)': '_handleKeydown($event)',
-  }
+  },
+  providers: [MD_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
-export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
+export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef;
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
@@ -54,12 +74,18 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
   private _keyManager: ActiveDescendantKeyManager;
   private _positionStrategy: ConnectedPositionStrategy;
 
+  /** View -> model callback called when value changes */
+  _onChange: (value: any) => {};
+
+  /** View -> model callback called when autocomplete has been touched */
+  _onTouched = () => {};
+
   /* The autocomplete panel to be attached to this trigger. */
   @Input('mdAutocomplete') autocomplete: MdAutocomplete;
 
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
-              @Optional() private _controlDir: NgControl, @Optional() private _dir: Dir) {}
+              @Optional() private _dir: Dir) {}
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options).withWrap();
@@ -123,6 +149,38 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
     return this._keyManager.activeItem as MdOption;
   }
 
+  /**
+   * Sets the autocomplete's value. Part of the ControlValueAccessor interface
+   * required to integrate with Angular's core forms API.
+   *
+   * @param value New value to be written to the model.
+   */
+  writeValue(value: any): void {
+    Promise.resolve(null).then(() => this._setTriggerValue(value));
+  }
+
+  /**
+   * Saves a callback function to be invoked when the autocomplete's value
+   * changes from user input. Part of the ControlValueAccessor interface
+   * required to integrate with Angular's core forms API.
+   *
+   * @param fn Callback to be triggered when the value changes.
+   */
+  registerOnChange(fn: (value: any) => {}): void {
+    this._onChange = fn;
+  }
+
+  /**
+   * Saves a callback function to be invoked when the autocomplete is blurred
+   * by the user. Part of the ControlValueAccessor interface required
+   * to integrate with Angular's core forms API.
+   *
+   * @param fn Callback to be triggered when the component has been touched.
+   */
+  registerOnTouched(fn: () => {}) {
+    this._onTouched = fn;
+  }
+
   _handleKeydown(event: KeyboardEvent): void {
     if (this.activeOption && event.keyCode === ENTER) {
       this.activeOption._selectViaInteraction();
@@ -178,6 +236,11 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
     }
   }
 
+  private _setTriggerValue(value: any): void {
+    this._element.nativeElement.value =
+        this.autocomplete.displayWith ? this.autocomplete.displayWith(value) : value;
+  }
+
    /**
    * This method closes the panel, and if a value is specified, also sets the associated
    * control to that value. It will also mark the control as dirty if this interaction
@@ -185,10 +248,8 @@ export class MdAutocompleteTrigger implements AfterContentInit, OnDestroy {
    */
   private _setValueAndClose(event: MdOptionSelectEvent | null): void {
     if (event) {
-      this._controlDir.control.setValue(event.source.value);
-      if (event.isUserInput) {
-        this._controlDir.control.markAsDirty();
-      }
+      this._setTriggerValue(event.source.value);
+      this._onChange(event.source.value);
     }
 
     this.closePanel();

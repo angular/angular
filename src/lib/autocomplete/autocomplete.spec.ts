@@ -11,6 +11,7 @@ import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
+import {MdAutocomplete} from './autocomplete';
 
 
 describe('MdAutocomplete', () => {
@@ -201,7 +202,26 @@ describe('MdAutocomplete', () => {
       input = fixture.debugElement.query(By.css('input')).nativeElement;
     });
 
-    it('should fill the text field when an option is selected', () => {
+    it('should update control value as user types with input value', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      input.value = 'a';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.value)
+          .toEqual('a', 'Expected control value to be updated as user types.');
+
+      input.value = 'al';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.value)
+          .toEqual('al', 'Expected control value to be updated as user types.');
+    });
+
+    it('should update control value when option is selected with option value', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
@@ -210,8 +230,126 @@ describe('MdAutocomplete', () => {
       options[1].click();
       fixture.detectChanges();
 
-      expect(input.value)
-          .toContain('California', `Expected text field to fill with selected value.`);
+      expect(fixture.componentInstance.stateCtrl.value)
+          .toEqual({code: 'CA', name: 'California'}, 'Expected control value to be option value.');
+    });
+
+    it('should update control back to string if user types after option is selected', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[1].click();
+      fixture.detectChanges();
+
+      input.value = 'Californi';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.value)
+          .toEqual('Californi', 'Expected control value to revert back to string.');
+    });
+
+    it('should fill the text field with display value when an option is selected', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(input.value)
+              .toContain('California', `Expected text field to fill with selected value.`);
+        });
+      });
+    }));
+
+    it('should fill the text field with value if displayWith is not set', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+
+        fixture.componentInstance.panel.displayWith = null;
+        fixture.componentInstance.options.toArray()[1].value = 'test value';
+        fixture.detectChanges();
+
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(input.value)
+              .toContain('test value', `Expected input to fall back to selected option's value.`);
+        });
+      });
+    }));
+
+    it('should fill the text field correctly if value is set to obj programmatically', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        fixture.componentInstance.stateCtrl.setValue({code: 'AL', name: 'Alabama'});
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(input.value)
+              .toContain('Alabama', `Expected input to fill with matching option's viewValue.`);
+        });
+      });
+    }));
+
+    it('should clear the text field if value is reset programmatically', async(() => {
+      fixture.whenStable().then(() => {
+        input.value = 'Alabama';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        expect(input.value).toEqual('Alabama', `Expected input to start out with a value.`);
+        fixture.componentInstance.stateCtrl.reset();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(input.value).toEqual('', `Expected input value to be empty after reset.`);
+        });
+      });
+    }));
+
+    it('should disable input in view when disabled programmatically', () => {
+      const inputUnderline =
+          fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+
+      expect(input.disabled)
+          .toBe(false, `Expected input to start out enabled in view.`);
+      expect(inputUnderline.classList.contains('md-disabled'))
+          .toBe(false, `Expected input underline to start out with normal styles.`);
+
+      fixture.componentInstance.stateCtrl.disable();
+      fixture.detectChanges();
+
+      expect(input.disabled)
+          .toBe(true, `Expected input to be disabled in view when disabled programmatically.`);
+      expect(inputUnderline.classList.contains('md-disabled'))
+          .toBe(true, `Expected input underline to display disabled styles.`);
+    });
+
+
+    it('should mark the autocomplete control as dirty as user types', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(false, `Expected control to start out pristine.`);
+
+      input.value = 'a';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.dirty)
+          .toBe(true, `Expected control to become dirty when the user types into the input.`);
     });
 
     it('should mark the autocomplete control as dirty when an option is selected', () => {
@@ -238,6 +376,19 @@ describe('MdAutocomplete', () => {
 
       expect(fixture.componentInstance.stateCtrl.dirty)
           .toBe(false, `Expected control to stay pristine if value is set programmatically.`);
+    });
+
+    it('should mark the autocomplete control as touched on blur', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.stateCtrl.touched)
+          .toBe(false, `Expected control to start out untouched.`);
+
+      dispatchEvent('blur', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.touched)
+          .toBe(true, `Expected control to become touched on blur.`);
     });
 
   });
@@ -353,17 +504,21 @@ describe('MdAutocomplete', () => {
       });
     }));
 
-    it('should fill the text field when an option is selected with ENTER', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
+    it('should fill the text field when an option is selected with ENTER', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
-      fixture.detectChanges();
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
 
-      expect(input.value)
-          .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
-    });
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(input.value)
+              .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
+        });
+      });
+    }));
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
       fixture.componentInstance.trigger.openPanel();
@@ -614,9 +769,9 @@ describe('MdAutocomplete', () => {
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
     </md-input-container>
   
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let state of filteredStates" [value]="state.name">
-        {{ state.name }} ({{ state.code }}) 
+    <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
+      <md-option *ngFor="let state of filteredStates" [value]="state">
+        <span> {{ state.code }}: {{ state.name }}  </span>
       </md-option>
     </md-autocomplete>
   `
@@ -627,6 +782,7 @@ class SimpleAutocomplete implements OnDestroy {
   valueSub: Subscription;
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChild(MdAutocomplete) panel: MdAutocomplete;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 
   states = [
@@ -643,6 +799,7 @@ class SimpleAutocomplete implements OnDestroy {
     {code: 'WY', name: 'Wyoming'},
   ];
 
+
   constructor() {
     this.filteredStates = this.states;
     this.valueSub = this.stateCtrl.valueChanges.subscribe(val => {
@@ -651,11 +808,16 @@ class SimpleAutocomplete implements OnDestroy {
     });
   }
 
+  displayFn(value: any): string {
+    return value ? value.name : value;
+  }
+
   ngOnDestroy() {
     this.valueSub.unsubscribe();
   }
 
 }
+
 
 
 /**

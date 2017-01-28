@@ -2,7 +2,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 <div [style.height.px]="topHeightCtrl.value"></div>
 <div class="demo-autocomplete">
   <md-card>
-    <div>Reactive value: {{ stateCtrl.value }}</div>
+    Reactive length: {{ reactiveStates.length }}
+    <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
     <md-input-container>
@@ -11,7 +12,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
     <md-card-actions>
       <button md-button (click)="stateCtrl.reset()">RESET</button>
-      <button md-button (click)="stateCtrl.setValue('California')">SET VALUE</button>
+      <button md-button (click)="stateCtrl.setValue(states[10])">SET VALUE</button>
       <button md-button (click)="stateCtrl.enabled ? stateCtrl.disable() : stateCtrl.enable()">
         TOGGLE DISABLED
       </button>
@@ -39,8 +40,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   </md-card>
 </div>
 
-<md-autocomplete #reactiveAuto="mdAutocomplete">
-  <md-option *ngFor="let state of reactiveStates" [value]="state.name">
+<md-autocomplete #reactiveAuto="mdAutocomplete" [displayWith]="displayFn">
+  <md-option *ngFor="let state of reactiveStates | async" [value]="state">
     <span>{{ state.name }}</span>
     <span class="demo-secondary-text"> ({{state.code}}) </span>
   </md-option>
@@ -49,6 +50,5 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 <md-autocomplete #tdAuto="mdAutocomplete">
   <md-option *ngFor="let state of tdStates" [value]="state.name">
     <span>{{ state.name }}</span>
-    <span class="demo-secondary-text"> ({{state.code}}) </span>
   </md-option>
 </md-autocomplete>

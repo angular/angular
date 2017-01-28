@@ -1,6 +1,7 @@
-import {Component, OnDestroy, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/startWith';
 
 @Component({
   moduleId: module.id,
@@ -9,15 +10,14 @@ import {Subscription} from 'rxjs/Subscription';
   styleUrls: ['autocomplete-demo.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class AutocompleteDemo implements OnDestroy {
-  stateCtrl = new FormControl();
+export class AutocompleteDemo {
+  stateCtrl: FormControl;
   currentState = '';
   topHeightCtrl = new FormControl(0);
 
-  reactiveStates: any[];
+  reactiveStates: Observable<any>;
   tdStates: any[];
 
-  reactiveValueSub: Subscription;
   tdDisabled = false;
 
   states = [
@@ -74,19 +74,20 @@ export class AutocompleteDemo implements OnDestroy {
   ];
 
   constructor() {
-    this.reactiveStates = this.states;
     this.tdStates = this.states;
-    this.reactiveValueSub =
-        this.stateCtrl.valueChanges.subscribe(val => this.reactiveStates = this.filterStates(val));
+    this.stateCtrl = new FormControl({code: 'CA', name: 'California'});
+    this.reactiveStates = this.stateCtrl.valueChanges
+        .startWith(this.stateCtrl.value)
+        .map(val => this.displayFn(val))
+        .map(name => this.filterStates(name));
+  }
 
+  displayFn(value: any): string {
+    return value && typeof value === 'object' ? value.name : value;
   }
 
   filterStates(val: string) {
     return val ? this.states.filter((s) => s.name.match(new RegExp(val, 'gi'))) : this.states;
-  }
-
-  ngOnDestroy() {
-    this.reactiveValueSub.unsubscribe();
   }
 
 }
