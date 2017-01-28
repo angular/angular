@@ -1,6 +1,24 @@
 # Configuration for pullapprove.com
-# See ownership spreadsheet:
+#
+# Approval access and primary role is determined by info in the project ownership spreadsheet:
 # https://docs.google.com/spreadsheets/d/1-HIlzfbPYGsPr9KuYMe6bLfc4LXzPjpoALqtYRYTZB0/edit?pli=1#gid=0&vpid=A5
+#
+# === GitHub username to Full name map ===
+#
+# alexeagle - Alex Eagle
+# alxhub - Alex Rickabaugh
+# chuckjaz - Chuck Jazdzewski
+# gkalpak - George Kalpakas
+# IgorMinar - Igor Minar
+# kara - Kara Erickson
+# matsko - Matias Niemelä
+# mhevery - Misko Hevery
+# petebacondarwin - Pete Bacon Darwin
+# pkozlowski-opensource - Pawel Kozlowski
+# robwormald - Rob Wormald
+# tbosch - Tobias Bosch
+# vicb - Victor Berchet
+# vikerman - Vikram Subramanian
 
 version: 2
 
@@ -9,27 +27,153 @@ group_defaults:
   reset_on_reopened:
     enabled: true
   approve_by_comment:
-    enabled: true
-    approve_regex: '^(Approved|:\+1:|LGTM)'
+    enabled: false
 
 groups:
-  config:
+  root:
+    conditions:
+      files:
+        - "*"
+    users:
+      - IgorMinar
+      - mhevery
+
+  build-and-ci:
     conditions:
       files:
         - "*.yml"
         - "*.json"
-    teams:
-      - repoowners
+        - "*.lock"
+    users:
+      - IgorMinar #primary
+      - mhevery
+
+
+
+  core:
+    conditions:
+      files:
+        - "modules/@angular/core/*"
+    users:
+      - mhevery
+      - tbosch #primary
+      - vicb
+
+  compiler/animations:
+    conditions:
+      files:
+        - "modules/@angular/compiler/src/animation/*"
+    users:
+      - matsko #primary
+      - tbosch
+
+  compiler/i18n:
+      conditions:
+        files:
+          - "modules/@angular/compiler/src/i18n/*"
+      users:
+        - tbosch
+        - vicb #primary
 
   compiler:
     conditions:
       files:
-        - "tools/@angular/tsc-wrapped/*"
         - "modules/@angular/compiler/*"
-        - "modules/@angular/compiler-cli/*"
-    teams:
-      - compiler-owners
-      - repoowners
+    users:
+      - mhevery
+      - tbosch #primary
+
+  compiler-cli:
+    conditions:
+      files:
+        - "tools/@angular/tsc-wrapped/*"
+        - "modules/@angular/compiler-cli"
+    users:
+      - alexeagle
+      - chuckjaz
+      - tbosch
+
+  common:
+    conditions:
+      files:
+        - "modules/@angular/common/*"
+    users:
+      - pkozlowski-opensource #primary
+      - vicb
+
+  forms:
+    conditions:
+      files:
+        - "modules/@angular/forms/*"
+    users:
+      - kara #primary
+      # needs secondary
+
+  http:
+    conditions:
+      files:
+        - "modules/@angular/http/*"
+    users:
+      - alxhub
+      - vikerman #primary
+
+  language-service:
+    conditions:
+      files:
+        - "modules/@angular/language-service/*"
+    users:
+      - chuckjaz #primary
+      # needs secondary
+
+  router:
+    conditions:
+      files:
+        - "modules/@angular/router/*"
+    users:
+      - vicb #primary
+      # needs secondary
+
+  upgrade:
+    conditions:
+      files:
+        - "modules/@angular/upgrade/*"
+    users:
+      - gkalpak
+      - petebacondarwin #primary
+
+  platform-browser:
+    conditions:
+      files:
+        - "modules/@angular/platform-browser/*"
+    users:
+      - tbosch #primary
+      - vicb
+
+  platform-server:
+    conditions:
+      files:
+        - "modules/@angular/platform-server/*"
+    users:
+      - alxhub
+      - vikerman #primary
+
+  platform-webworker:
+    conditions:
+      files:
+        - "modules/@angular/platform-webworker/*"
+    users:
+      - vicb #primary
+      # needs secondary
+
+
+
+  benchpress:
+    conditions:
+      files:
+        - "modules/@angular/benchpress/*"
+    users:
+      - tbosch #primary
+      # needs secondary
 
   angular.io:
     conditions:
