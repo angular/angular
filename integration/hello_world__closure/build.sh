@@ -15,6 +15,7 @@ CLOSURE_ARGS=(
   "--language_in=ES6_STRICT"
   "--language_out=ES5"
   "--compilation_level=ADVANCED_OPTIMIZATIONS"
+  "--warning_level=QUIET"
   "--js_output_file=dist/bundle.js"
   "--create_source_map=%outname%.map"
   "--variable_renaming_report=dist/variable_renaming_report"
