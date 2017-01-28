@@ -2,9 +2,10 @@
   "name": "@angular/platform-browser-dynamic",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with JIT compilation",
-  "main": "bundles/platform-browser-dynamic.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/platform-browser-dynamic.umd.js",
+  "module": "./@angular/platform-browser-dynamic.es5.js",
+  "es2015": "./@angular/platform-browser-dynamic.js",
+  "typings": "./typings/platform-browser-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
