@@ -77,9 +77,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       });
 
       if (missingStyleProps.length) {
-        for (let i = 1; i < keyframes.length; i++) {
+        const self = this;
+        // tslint:disable-next-line
+        for (var i = 1; i < keyframes.length; i++) {
           let kf = keyframes[i];
-          missingStyleProps.forEach(prop => { kf[prop] = _computeStyle(this.element, prop); });
+          // tslint:disable-next-line
+          missingStyleProps.forEach(function(prop) {
+            kf[prop] = _computeStyle(self.element, prop);
+          });
         }
       }
     }

@@ -29,7 +29,7 @@ export type CodegenExtension =
 
 export function main(
     project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
-    options?: ts.CompilerOptions): Promise<any> {
+    options?: ts.CompilerOptions, skipImportRename?: boolean): Promise<any> {
   try {
     let projectDir = project;
     // project is vinyl like file object
@@ -118,7 +118,7 @@ export function main(
       const tsickleCompilerHostOptions: tsickle.Options = {
         googmodule: false,
         untyped: true,
-        convertIndexImportShorthand:
+        convertIndexImportShorthand: !skipImportRename &&
             ngOptions.target === ts.ScriptTarget.ES2015,  // This covers ES6 too
       };
 
@@ -173,13 +173,19 @@ export function main(
 
 // CLI entry point
 if (require.main === module) {
-  const args = process.argv.slice(2);
+  let args = process.argv.slice(2);
+  let idx = args.indexOf('--skipImportRename');
+  let skipImportRename = false;
+  if (idx !== -1) {
+    args.splice(idx, 1);
+    skipImportRename = true;
+  }
   let {options, fileNames, errors} = (ts as any).parseCommandLine(args);
   check(errors);
   const project = options.project || '.';
   // TODO(alexeagle): command line should be TSC-compatible, remove "CliOptions" here
   const cliOptions = new CliOptions(require('minimist')(args));
-  main(project, cliOptions, null, options)
+  main(project, cliOptions, null, options, skipImportRename)
       .then((exitCode: any) => process.exit(exitCode))
       .catch((e: any) => {
         console.error(e.stack);
