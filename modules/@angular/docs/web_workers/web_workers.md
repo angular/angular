@@ -214,7 +214,7 @@ You can obtain the MessageBus on both the render and worker thread through DI.
 To use the MessageBus you need to initialize a new channel on both the UI and WebWorker.
 In TypeScript that would look like this:
 ```TypeScript
-// index.ts, which is running on the UI.
+// public_api.ts, which is running on the UI.
 import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, MessageBus} from "angular2/platform/worker_render";
 import {platform} from "angular2/core";
 
@@ -238,7 +238,7 @@ export class MyComponent {
 Once the channel has been initialized either side can use the `from` and `to` methods on the MessageBus to send
 and receive messages. Both methods return EventEmitter. Expanding on the example from earlier:
 ```TypeScript
-// index.ts, which is running on the UI.
+// public_api.ts, which is running on the UI.
 import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, MessageBus} from "angular2/platform/worker_render";
 import {platform} from "angular2/core";
 
@@ -334,7 +334,7 @@ during bootstrap like so:
 
 In TypeScript:
 ```TypeScript
-// index.ts, running on the UI side
+// public_api.ts, running on the UI side
 import {platform, APP_INITIALIZER, Injector} from 'angular2/core';
 import {
     WORKER_RENDER_PLATFORM,
@@ -401,7 +401,7 @@ MessageBrokers in an application. For a more complete example, check out the `We
 
 #### Using the MessageBroker in TypeScript
 ```TypeScript
-// index.ts, which is running on the UI with a method that we want to expose to a WebWorker
+// public_api.ts, which is running on the UI with a method that we want to expose to a WebWorker
 import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, ServiceMessageBrokerFactory} from "angular2/platform/worker_render";
 import {platform} from "angular2/core";
 

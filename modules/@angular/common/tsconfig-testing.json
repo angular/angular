@@ -2,11 +2,11 @@
   "extends": "./tsconfig-build",
 
   "compilerOptions": {
+    "outDir": "../../../dist/packages-dist/common",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/"],
       "@angular/common": ["../../../dist/packages-dist/common"]
-    },
-    "target": "es5"
+    }
   },
   "files": [
     "testing/index.ts",

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation, ɵLifecycleHooks as LifecycleHooks, ɵviewEngine as viewEngine} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingType as BindingType, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵProviderType as ProviderType, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
@@ -130,12 +130,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         // Note: queries start with id 1 so we can use the number in a Bloom filter!
         const queryId = queryIndex + 1;
         const bindingType =
-            query.first ? viewEngine.QueryBindingType.First : viewEngine.QueryBindingType.All;
-        let flags = viewEngine.NodeFlags.HasViewQuery;
+            query.first ? QueryBindingType.First : QueryBindingType.All;
+        let flags = NodeFlags.HasViewQuery;
         if (queryIds.staticQueryIds.has(queryId)) {
-          flags |= viewEngine.NodeFlags.HasStaticQuery;
+          flags |= NodeFlags.HasStaticQuery;
         } else {
-          flags |= viewEngine.NodeFlags.HasDynamicQuery;
+          flags |= NodeFlags.HasDynamicQuery;
         }
         this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
           o.literal(flags), o.literal(queryId),
@@ -149,7 +149,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       // if the view is empty, or an embedded view has a view container as last root nde,
       // create an additional root node.
       this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
-        o.literal(viewEngine.NodeFlags.None), o.NULL_EXPR, o.NULL_EXPR, o.literal(0)
+        o.literal(NodeFlags.None), o.NULL_EXPR, o.NULL_EXPR, o.literal(0)
       ]));
     }
   }
@@ -161,9 +161,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     const updateRendererFn = this._createUpdateFn(this.updateRendererExpressions);
 
 
-    let viewFlags = viewEngine.ViewFlags.None;
+    let viewFlags = ViewFlags.None;
     if (!this.parent && this.component.changeDetection === ChangeDetectionStrategy.OnPush) {
-      viewFlags |= viewEngine.ViewFlags.OnPush;
+      viewFlags |= ViewFlags.OnPush;
     }
     const viewFactory = new o.DeclareFunctionStmt(
         this.viewName, [],
@@ -342,19 +342,17 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     hostBindings: {value: AST, context: o.Expression}[],
     hostEvents: {context: o.Expression, eventAst: BoundEventAst}[],
   } {
-    let flags = viewEngine.NodeFlags.None;
+    let flags = NodeFlags.None;
     if (ast.hasViewContainer) {
-      flags |= viewEngine.NodeFlags.HasEmbeddedViews;
+      flags |= NodeFlags.HasEmbeddedViews;
     }
     const usedEvents = new Map<string, [string, string]>();
     ast.outputs.forEach((event) => {
-      usedEvents.set(
-          viewEngine.elementEventFullName(event.target, event.name), [event.target, event.name]);
+      usedEvents.set(elementEventFullName(event.target, event.name), [event.target, event.name]);
     });
     ast.directives.forEach((dirAst) => {
       dirAst.hostEvents.forEach((event) => {
-        usedEvents.set(
-            viewEngine.elementEventFullName(event.target, event.name), [event.target, event.name]);
+        usedEvents.set(elementEventFullName(event.target, event.name), [event.target, event.name]);
       });
     });
     const hostBindings: {value: AST, context: o.Expression}[] = [];
@@ -388,11 +386,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     ast.queryMatches.forEach((match) => {
       let valueType: number;
       if (tokenReference(match.value) === resolveIdentifier(Identifiers.ElementRef)) {
-        valueType = viewEngine.QueryValueType.ElementRef;
+        valueType = QueryValueType.ElementRef;
       } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.ViewContainerRef)) {
-        valueType = viewEngine.QueryValueType.ViewContainerRef;
+        valueType = QueryValueType.ViewContainerRef;
       } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.TemplateRef)) {
-        valueType = viewEngine.QueryValueType.TemplateRef;
+        valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
         queryMatchExprs.push(o.literalArr([o.literal(match.queryId), o.literal(valueType)]));
@@ -401,9 +399,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     ast.references.forEach((ref) => {
       let valueType: number;
       if (!ref.value) {
-        valueType = viewEngine.QueryValueType.RenderElement;
+        valueType = QueryValueType.RenderElement;
       } else if (tokenReference(ref.value) === resolveIdentifier(Identifiers.TemplateRef)) {
-        valueType = viewEngine.QueryValueType.TemplateRef;
+        valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
         this.refNodeIndices[ref.name] = nodeIndex;
@@ -434,15 +432,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     this.nodeDefs.push(null);
 
     directiveAst.directive.queries.forEach((query, queryIndex) => {
-      let flags = viewEngine.NodeFlags.HasContentQuery;
+      let flags = NodeFlags.HasContentQuery;
       const queryId = directiveAst.contentQueryStartId + queryIndex;
       if (queryIds.staticQueryIds.has(queryId)) {
-        flags |= viewEngine.NodeFlags.HasStaticQuery;
+        flags |= NodeFlags.HasStaticQuery;
       } else {
-        flags |= viewEngine.NodeFlags.HasDynamicQuery;
+        flags |= NodeFlags.HasDynamicQuery;
       }
       const bindingType =
-          query.first ? viewEngine.QueryBindingType.First : viewEngine.QueryBindingType.All;
+          query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
         o.literal(flags), o.literal(queryId),
         new o.LiteralMapExpr([new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
@@ -462,7 +460,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       if (ref.value && tokenReference(ref.value) === tokenReference(providerAst.token)) {
         this.refNodeIndices[ref.name] = nodeIndex;
         queryMatchExprs.push(
-            o.literalArr([o.literal(ref.name), o.literal(viewEngine.QueryValueType.Provider)]));
+            o.literalArr([o.literal(ref.name), o.literal(QueryValueType.Provider)]));
       }
     });
 
@@ -489,7 +487,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       }
     });
     if (directiveAst.inputs.length ||
-        (flags & (viewEngine.NodeFlags.DoCheck | viewEngine.NodeFlags.OnInit)) > 0) {
+        (flags & (NodeFlags.DoCheck | NodeFlags.OnInit)) > 0) {
       this._addUpdateExpressions(
           nodeIndex,
           directiveAst.inputs.map((input) => { return {context: COMP_VAR, value: input.value}; }),
@@ -551,12 +549,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     providerType: number,
     depsExpr: o.Expression
   } {
-    let flags = viewEngine.NodeFlags.None;
+    let flags = NodeFlags.None;
     if (!providerAst.eager) {
-      flags |= viewEngine.NodeFlags.LazyProvider;
+      flags |= NodeFlags.LazyProvider;
     }
     if (providerAst.providerType === ProviderAstType.PrivateService) {
-      flags |= viewEngine.NodeFlags.PrivateProvider;
+      flags |= NodeFlags.PrivateProvider;
     }
     providerAst.lifecycleHooks.forEach((lifecycleHook) => {
       // for regular providers, we only support ngOnDestroy
@@ -570,8 +568,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
     queryMatches.forEach((match) => {
       if (tokenReference(match.value) === tokenReference(providerAst.token)) {
-        queryMatchExprs.push(o.literalArr(
-            [o.literal(match.queryId), o.literal(viewEngine.QueryValueType.Provider)]));
+        queryMatchExprs.push(
+            o.literalArr([o.literal(match.queryId), o.literal(QueryValueType.Provider)]));
       }
     });
     const {providerExpr, providerType, depsExpr} = providerDef(providerAst);
@@ -672,7 +670,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
   private _createPipe(pipe: CompilePipeSummary): number {
     const nodeIndex = this.nodeDefs.length;
-    let flags = viewEngine.NodeFlags.None;
+    let flags = NodeFlags.None;
     pipe.type.lifecycleHooks.forEach((lifecycleHook) => {
       // for pipes, we only support ngOnDestroy
       if (lifecycleHook === LifecycleHooks.OnDestroy) {
@@ -782,7 +780,7 @@ function multiProviderDef(providers: CompileProviderMetadata[]):
       o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
   return {
     providerExpr,
-    providerType: viewEngine.ProviderType.Factory,
+    providerType: ProviderType.Factory,
     depsExpr: o.literalArr(allDepDefs)
   };
 
@@ -803,19 +801,19 @@ function singleProviderDef(providerMeta: CompileProviderMetadata):
   let deps: CompileDiDependencyMetadata[];
   if (providerMeta.useClass) {
     providerExpr = o.importExpr(providerMeta.useClass);
-    providerType = viewEngine.ProviderType.Class;
+    providerType = ProviderType.Class;
     deps = providerMeta.deps || providerMeta.useClass.diDeps;
   } else if (providerMeta.useFactory) {
     providerExpr = o.importExpr(providerMeta.useFactory);
-    providerType = viewEngine.ProviderType.Factory;
+    providerType = ProviderType.Factory;
     deps = providerMeta.deps || providerMeta.useFactory.diDeps;
   } else if (providerMeta.useExisting) {
     providerExpr = o.NULL_EXPR;
-    providerType = viewEngine.ProviderType.UseExisting;
+    providerType = ProviderType.UseExisting;
     deps = [{token: providerMeta.useExisting}];
   } else {
     providerExpr = convertValueToOutputAst(providerMeta.useValue);
-    providerType = viewEngine.ProviderType.Value;
+    providerType = ProviderType.Value;
     deps = [];
   }
   const depsExpr = o.literalArr(deps.map(dep => depDef(dep)));
@@ -830,17 +828,17 @@ function depDef(dep: CompileDiDependencyMetadata): o.Expression {
   // Note: the following fields have already been normalized out by provider_analyzer:
   // - isAttribute, isSelf, isHost
   const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token);
-  let flags = viewEngine.DepFlags.None;
+  let flags = DepFlags.None;
   if (dep.isSkipSelf) {
-    flags |= viewEngine.DepFlags.SkipSelf;
+    flags |= DepFlags.SkipSelf;
   }
   if (dep.isOptional) {
-    flags |= viewEngine.DepFlags.Optional;
+    flags |= DepFlags.Optional;
   }
   if (dep.isValue) {
-    flags |= viewEngine.DepFlags.Value;
+    flags |= DepFlags.Value;
   }
-  return flags === viewEngine.DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
+  return flags === DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
 }
 
 function needsAdditionalRootNode(ast: TemplateAst): boolean {
@@ -859,31 +857,31 @@ function needsAdditionalRootNode(ast: TemplateAst): boolean {
 }
 
 function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): number {
-  let nodeFlag = viewEngine.NodeFlags.None;
+  let nodeFlag = NodeFlags.None;
   switch (lifecycleHook) {
     case LifecycleHooks.AfterContentChecked:
-      nodeFlag = viewEngine.NodeFlags.AfterContentChecked;
+      nodeFlag = NodeFlags.AfterContentChecked;
       break;
     case LifecycleHooks.AfterContentInit:
-      nodeFlag = viewEngine.NodeFlags.AfterContentInit;
+      nodeFlag = NodeFlags.AfterContentInit;
       break;
     case LifecycleHooks.AfterViewChecked:
-      nodeFlag = viewEngine.NodeFlags.AfterViewChecked;
+      nodeFlag = NodeFlags.AfterViewChecked;
       break;
     case LifecycleHooks.AfterViewInit:
-      nodeFlag = viewEngine.NodeFlags.AfterViewInit;
+      nodeFlag = NodeFlags.AfterViewInit;
       break;
     case LifecycleHooks.DoCheck:
-      nodeFlag = viewEngine.NodeFlags.DoCheck;
+      nodeFlag = NodeFlags.DoCheck;
       break;
     case LifecycleHooks.OnChanges:
-      nodeFlag = viewEngine.NodeFlags.OnChanges;
+      nodeFlag = NodeFlags.OnChanges;
       break;
     case LifecycleHooks.OnDestroy:
-      nodeFlag = viewEngine.NodeFlags.OnDestroy;
+      nodeFlag = NodeFlags.OnDestroy;
       break;
     case LifecycleHooks.OnInit:
-      nodeFlag = viewEngine.NodeFlags.OnInit;
+      nodeFlag = NodeFlags.OnInit;
       break;
   }
   return nodeFlag;
@@ -894,12 +892,12 @@ function elementBindingDefs(inputAsts: BoundElementPropertyAst[]): o.Expression[
     switch (inputAst.type) {
       case PropertyBindingType.Attribute:
         return o.literalArr([
-          o.literal(viewEngine.BindingType.ElementAttribute), o.literal(inputAst.name),
+          o.literal(BindingType.ElementAttribute), o.literal(inputAst.name),
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Property:
         return o.literalArr([
-          o.literal(viewEngine.BindingType.ElementProperty), o.literal(inputAst.name),
+          o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Animation:
@@ -908,12 +906,10 @@ function elementBindingDefs(inputAsts: BoundElementPropertyAst[]): o.Expression[
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Class:
-        return o.literalArr(
-            [o.literal(viewEngine.BindingType.ElementClass), o.literal(inputAst.name)]);
+        return o.literalArr([o.literal(BindingType.ElementClass), o.literal(inputAst.name)]);
       case PropertyBindingType.Style:
         return o.literalArr([
-          o.literal(viewEngine.BindingType.ElementStyle), o.literal(inputAst.name),
-          o.literal(inputAst.unit)
+          o.literal(BindingType.ElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
         ]);
     }
   });
@@ -947,13 +943,11 @@ function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: s
 
 function callCheckStmt(nodeIndex: number, exprs: o.Expression[]): o.Expression {
   if (exprs.length > 10) {
-    return CHECK_VAR.callFn([
-      VIEW_VAR, o.literal(nodeIndex), o.literal(viewEngine.ArgumentType.Dynamic),
-      o.literalArr(exprs)
-    ]);
+    return CHECK_VAR.callFn(
+        [VIEW_VAR, o.literal(nodeIndex), o.literal(ArgumentType.Dynamic), o.literalArr(exprs)]);
   } else {
     return CHECK_VAR.callFn(
-        [VIEW_VAR, o.literal(nodeIndex), o.literal(viewEngine.ArgumentType.Inline), ...exprs]);
+        [VIEW_VAR, o.literal(nodeIndex), o.literal(ArgumentType.Inline), ...exprs]);
   }
 }
 

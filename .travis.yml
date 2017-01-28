@@ -34,7 +34,7 @@ env:
     - secure: "MPx3UM77o5IlhT75PKHL0FXoB5tSXDc3vnCXCd1sRy4XUTZ9vjcV6nNuyqEf+SOw659bGbC1FI4mACGx1Q+z7MQDR85b1mcA9uSgHDkh+IR82CnCVdaX9d1RXafdJIArahxfmorbiiPPLyPIKggo7ituRm+2c+iraoCkE/pXxYg="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - CI_MODE=e2e EXPERIMENTAL_ES2015_DISTRO=1
+    - CI_MODE=e2e
     - CI_MODE=js
     - CI_MODE=saucelabs_required
     - CI_MODE=browserstack_required

@@ -35,7 +35,6 @@ Angular's `node_modules` is installed.
 The first time you run the tests, you'll need some setup:
 
 ```shell
-$ EXPERIMENTAL_ES2015_DISTRO=1 ./build.sh
 $ ./integration/build_rxjs_es6.sh
 ```
 
@@ -44,7 +43,7 @@ See the `package.json` of the test(s) you're debugging, to see which dist/ folde
 Then run the right `tsc --watch` command to keep those dist folders up-to-date, for example:
 
 ```
-$ ./node_modules/.bin/tsc -p modules/@angular/core/tsconfig-build.json --target es2015 --outDir dist/packages-dist-es2015/core --watch
+$ ./node_modules/.bin/tsc -p modules/@angular/core/tsconfig-build.json --outDir dist/packages-dist/core --watch
 ```
 
 Now you can run the integration test, it will re-install from the dist/ folder on each run.

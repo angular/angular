@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol, identifierName, tokenReference} from '@angular/compiler';
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler/src/expression_parser/ast';
-import {ElementAst, EmbeddedTemplateAst, ReferenceAst, TemplateAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, ElementAst, EmbeddedTemplateAst, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, ReferenceAst, SafeMethodCall, SafePropertyRead, StaticSymbol, TemplateAst, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
 
 import {AstPath as AstPathBase} from './ast_path';
 import {TemplateInfo} from './common';

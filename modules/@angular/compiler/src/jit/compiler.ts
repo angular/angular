@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentRenderTypeV2, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵview_utils as view_utils} from '@angular/core';
+import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentFactoryViewClass as getComponentFactoryViewClass} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
@@ -221,7 +221,7 @@ export class JitCompiler implements Compiler {
       const componentFactory = <ComponentFactory<any>>compMeta.componentFactory;
       const hostClass = this._metadataResolver.getHostComponentType(compType);
       const hostMeta = createHostComponentMeta(
-          hostClass, compMeta, <any>view_utils.getComponentFactoryViewClass(componentFactory));
+          hostClass, compMeta, <any>getComponentFactoryViewClass(componentFactory));
       compiledTemplate =
           new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);

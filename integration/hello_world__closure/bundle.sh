@@ -25,7 +25,10 @@ CLOSURE_ARGS=(
   "--rewrite_polyfills=false"
 
   # List of path prefixes to be removed from ES6 & CommonJS modules.
-  "--js_module_root=node_modules"
+  "--js_module_root=node_modules/@angular/core"
+  "--js_module_root=node_modules/@angular/common"
+  "--js_module_root=node_modules/@angular/compiler"
+  "--js_module_root=node_modules/@angular/platform-browser"
   "--js_module_root=vendor"
 
   # Uncomment for easier debugging
@@ -34,9 +37,10 @@ CLOSURE_ARGS=(
   e2e/testability.externs.js
   node_modules/zone.js/dist/zone.js
   $(find -L vendor/rxjs -name *.js)
-  node_modules/@angular/{core,common,compiler,platform-browser}/index.js
-  node_modules/@angular/{core,common}/public_api.js
-  $(find node_modules/@angular/{core,common,compiler,platform-browser}/src -name *.js)
+  node_modules/@angular/core/@angular/core.js
+  node_modules/@angular/common/@angular/common.js
+  node_modules/@angular/compiler/@angular/compiler.js
+  node_modules/@angular/platform-browser/@angular/platform-browser.js
   "built/src/*.js"
   "--entry_point=./built/src/main"
 )

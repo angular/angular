@@ -1,21 +1,26 @@
 const entrypoints = [
-  'dist/packages-dist/core/index.d.ts', 'dist/packages-dist/core/testing/index.d.ts',
-  'dist/packages-dist/common/index.d.ts', 'dist/packages-dist/common/testing/index.d.ts',
+  'dist/packages-dist/core/typings/core.d.ts',
+  'dist/packages-dist/core/typings/testing/testing.d.ts',
+  'dist/packages-dist/common/typings/common.d.ts',
+  'dist/packages-dist/common/typings/testing/testing.d.ts',
   // The API surface of the compiler is currently unstable - all of the important APIs are exposed
   // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
-  'dist/packages-dist/upgrade/index.d.ts', 'dist/packages-dist/upgrade/static.d.ts',
-  'dist/packages-dist/platform-browser/index.d.ts',
-  'dist/packages-dist/platform-browser/testing/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/testing/index.d.ts',
-  'dist/packages-dist/platform-webworker/index.d.ts',
-  'dist/packages-dist/platform-webworker-dynamic/index.d.ts',
-  'dist/packages-dist/platform-server/index.d.ts',
-  'dist/packages-dist/platform-server/testing/index.d.ts', 'dist/packages-dist/http/index.d.ts',
-  'dist/packages-dist/http/testing/index.d.ts', 'dist/packages-dist/forms/index.d.ts',
-  'dist/packages-dist/router/index.d.ts', 'dist/packages-dist/animation/index.d.ts'
+  'dist/packages-dist/upgrade/typings/upgrade.d.ts',
+  'dist/packages-dist/upgrade/typings/static/static.d.ts',
+  'dist/packages-dist/platform-browser/typings/platform-browser.d.ts',
+  'dist/packages-dist/platform-browser/typings/testing/testing.d.ts',
+  'dist/packages-dist/platform-browser-dynamic/typings/platform-browser-dynamic.d.ts',
+  'dist/packages-dist/platform-browser-dynamic/typings/testing/testing.d.ts',
+  'dist/packages-dist/platform-webworker/typings/platform-webworker.d.ts',
+  'dist/packages-dist/platform-webworker-dynamic/typings/platform-webworker-dynamic.d.ts',
+  'dist/packages-dist/platform-server/typings/platform-server.d.ts',
+  'dist/packages-dist/platform-server/typings/testing/testing.d.ts',
+  'dist/packages-dist/http/typings/http.d.ts',
+  'dist/packages-dist/http/typings/testing/testing.d.ts',
+  'dist/packages-dist/forms/typings/forms.d.ts', 'dist/packages-dist/router/typings/router.d.ts',
+  'dist/packages-dist/animation/typings/animation.d.ts'
 ];
 
 const publicApiDir = 'tools/public_api_guard';

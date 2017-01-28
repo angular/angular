@@ -6,20 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileDirectiveMetadata, CompilerConfig, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, componentModuleUrl, createOfflineCompileUrlResolver} from '@angular/compiler';
-import {NgAnalyzedModules, analyzeNgModules, extractProgramSymbols} from '@angular/compiler/src/aot/compiler';
-import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
-import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
-import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
-import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler/src/ml_parser/interpolation_config';
-import {ParseTreeResult, Parser} from '@angular/compiler/src/ml_parser/parser';
-import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
-import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {ResourceLoader} from '@angular/compiler/src/resource_loader';
-import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {SummaryResolver} from '@angular/compiler/src/summary_resolver';
-import {UrlResolver} from '@angular/compiler/src/url_resolver';
+import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {Type, ViewEncapsulation} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -28,6 +15,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+
 
 // In TypeScript 2.1 these flags moved
 // These helpers work for both 2.0 and 2.1.
@@ -76,7 +64,7 @@ export class DummyResourceLoader extends ResourceLoader {
 }
 
 /**
- * An implemntation of a `LanguageSerivceHost` for a TypeScript project.
+ * An implemntation of a `LanguageServiceHost` for a TypeScript project.
  *
  * The `TypeScriptServiceHost` implements the Angular `LanguageServiceHost` using
  * the TypeScript language services.

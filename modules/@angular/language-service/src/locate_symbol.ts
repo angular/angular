@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {tokenReference} from '@angular/compiler';
-import {AST} from '@angular/compiler/src/expression_parser/ast';
-import {Attribute} from '@angular/compiler/src/ml_parser/ast';
-import {BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst} from '@angular/compiler/src/template_parser/template_ast';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, tokenReference} from '@angular/compiler';
 
 import {TemplateInfo} from './common';
 import {getExpressionScope, getExpressionSymbol} from './expressions';

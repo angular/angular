@@ -1,0 +1,14 @@
+
+{
+  "presets": ["es2015"],
+  "plugins": [["transform-es2015-modules-umd", {
+    "globals": {
+      "@angular/language-service": "ng.language_service",
+      "typescript": "ts",
+      "path": "path",
+      "fs": "fs"
+    },
+    "exactGlobals": true
+  }]],
+  "moduleId": "@angular/language-service"
+}

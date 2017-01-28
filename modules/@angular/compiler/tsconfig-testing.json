@@ -4,6 +4,7 @@
   "compilerOptions": {
     // Test that we rely on decorator downleveling
     "emitDecoratorMetadata": false,
+    "outDir": "../../../dist/packages-dist/compiler",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],

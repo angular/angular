@@ -10,12 +10,6 @@ if [ ! -d "rxjs/dist/es6" ]; then
   exit 1
 fi
 
-if [ ! -d "../dist/packages-dist-es2015" ]; then
-  echo "You must build the ES2015 distro for some tests:"
-  echo "EXPERIMENTAL_ES2015_DISTRO=1 ./build.sh"
-  exit 1
-fi
-
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
 readonly cache=.yarn_local_cache

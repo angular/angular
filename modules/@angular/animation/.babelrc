@@ -1,0 +1,14 @@
+
+{
+  "presets": ["es2015"],
+  "plugins": [["transform-es2015-modules-umd", {
+    "globals": {
+      "@angular/core": "ng.core",
+      "@angular/animation": "ng.animation",
+      "rxjs/Observable": "Rx",
+      "rxjs/Subject": "Rx"
+    },
+    "exactGlobals": true
+  }]],
+  "moduleId": "@angular/animation"
+}

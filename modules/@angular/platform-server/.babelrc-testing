@@ -1,0 +1,18 @@
+
+{
+  "presets": ["es2015"],
+  "plugins": [["transform-es2015-modules-umd", {
+    "globals": {
+      "@angular/core": "ng.core",
+      "@angular/common": "ng.common",
+      "@angular/compiler": "ng.compiler",
+      "@angular/compiler/testing": "ng.compiler.testing",
+      "@angular/platform-browser": "ng.platformBrowser",
+      "@angular/platform-server": "ng.platformServer",
+      "@angular/platform-server/testing": "ng.platformServer.testing",
+      "@angular/platform-browser-dynamic/testing": "ng.platformBrowserDynamic.testing"
+    },
+    "exactGlobals": true
+  }]],
+  "moduleId": "@angular/platform-server/testing"
+}

@@ -1,22 +1,12 @@
 {
+  "extends": "./tsconfig-build",
+
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
-    "experimentalDecorators": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/animation/",
+    "outDir": "../../../dist/packages-dist/animation",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/"],
       "@angular/animation": ["../../../dist/packages-dist/animation/"]
-    },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "lib": ["es6", "dom"],
-    "target": "es5",
-    "skipLibCheck": true
+    }
   },
   "files": [
     "testing/index.ts",

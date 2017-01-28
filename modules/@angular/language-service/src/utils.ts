@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, CompileTypeMetadata, identifierName} from '@angular/compiler';
-import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
-import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
+import {CompileDirectiveSummary, CompileTypeMetadata, CssSelector, ParseSourceSpan, SelectorMatcher, identifierName} from '@angular/compiler';
 
 import {SelectorInfo, TemplateInfo} from './common';
 import {Span} from './types';

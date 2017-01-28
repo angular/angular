@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, ComponentRenderTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
+import {
+  ChangeDetectionStrategy, ComponentFactory, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector,
+  RendererTypeV2
+} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
