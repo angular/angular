@@ -22,11 +22,11 @@ import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
 import {AppView} from './linker/view';
 import {ViewRef, ViewRef_} from './linker/view_ref';
+import {getDOM} from './private_import_platform-browser';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
 import {NgZone} from './zone/ng_zone';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
