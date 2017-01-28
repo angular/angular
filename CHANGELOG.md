@@ -98,7 +98,7 @@ function myTest(injector: Injector) {
 
 ### BREAKING CHANGES
 
-* core: - Because `injector.get()` is now parameterize it is possible that code
+* core: - Because `injector.get()` is now parameterized it is possible that code
   which used to work no longer type checks. Example would be if one
   injects `Foo` but configures it as `{provide: Foo, useClass: MockFoo}`.
   The injection instance will be that of `MockFoo` but the type will be
