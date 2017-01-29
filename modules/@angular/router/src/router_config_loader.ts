@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactoryResolver, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -16,6 +16,16 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
+const UNDEFINED: any = {};
+
+export class MergeInjector implements Injector {
+  constructor(private componentInjector: Injector, private moduleInjector: Injector) {}
+
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T {
+    const value: T = this.componentInjector.get(token, UNDEFINED);
+    return value !== UNDEFINED ? value : this.moduleInjector.get(token, notFoundValue);
+  }
+}
 
 /**
  * @experimental
@@ -34,7 +44,7 @@ export class RouterConfigLoader {
   load(parentInjector: Injector, loadChildren: LoadChildren): Observable<LoadedRouterConfig> {
     return map.call(this.loadModuleFactory(loadChildren), (r: NgModuleFactory<any>) => {
       const ref = r.create(parentInjector);
-      const injectorFactory = (parent: Injector) => r.create(parent).injector;
+      const injectorFactory = (parent: Injector) => new MergeInjector(parent, ref.injector);
       return new LoadedRouterConfig(
           flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver,
           injectorFactory);
