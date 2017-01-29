@@ -47,6 +47,15 @@ export function main() {
       expect(styleWithImports.styleUrls).not.toContain('http://ng.io/2.css');
     });
 
+    it('should keep /*# ... */ comments', () => {
+      const css =
+          `@import '1.css';\n/*@import '2.css';*/\n/*# sourceURL=2.scss */\n/*# sourceMappingURL=data:x */`;
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      expect(styleWithImports.style.trim())
+          .toEqual('/*# sourceURL=2.scss */\n/*# sourceMappingURL=data:x */');
+      expect(styleWithImports.styleUrls).not.toContain('http://ng.io/2.css');
+    });
+
     it('should extract "@import url()" urls', () => {
       const css = `
       @import url('3.css');

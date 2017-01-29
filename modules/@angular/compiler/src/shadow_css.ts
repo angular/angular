@@ -146,10 +146,18 @@ export class ShadowCss {
   * - hostSelector is the attribute added to the host itself.
   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
-    const sourceMappingUrl: string = extractSourceMappingUrl(cssText);
+    const commentsWithHash: string[] = extractCommentsWithHash(cssText);
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector, hostSelector) + sourceMappingUrl;
+
+    const scopedCssText = this._scopeCssText(cssText, selector, hostSelector);
+    if (!commentsWithHash) {
+      return scopedCssText;
+    }
+    return [scopedCssText]
+        .concat(containsSourceUrl(commentsWithHash) ? [] : ['/*# sourceURL=any-name.css */'])
+        .concat(commentsWithHash)
+        .join('\n');
   }
 
   private _insertDirectives(cssText: string): string {
@@ -313,7 +321,7 @@ export class ShadowCss {
   /*
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
-  */
+   */
   private _convertShadowDOMSelectors(cssText: string): string {
     return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
@@ -525,12 +533,16 @@ function stripComments(input: string): string {
   return input.replace(_commentRe, '');
 }
 
-// all comments except inline source mapping
-const _sourceMappingUrlRe = /\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\//;
+const _commentWithHashRe = /\/\*#[\s\S]+?\*\//g;
 
-function extractSourceMappingUrl(input: string): string {
-  const matcher = input.match(_sourceMappingUrlRe);
-  return matcher ? matcher[0] : '';
+function extractCommentsWithHash(input: string): string[] {
+  return input.match(_commentWithHashRe);
+}
+
+const _sourceUrlRe = /\/\*#\s*sourceURL=[\s\S]+?\*\//;
+function containsSourceUrl(hashComments: string[]): boolean {
+  return hashComments.reduce(
+      (result, comment) => { return result || _sourceUrlRe.test(comment); }, false);
 }
 
 const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
