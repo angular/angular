@@ -33,7 +33,13 @@ groups:
   root:
     conditions:
       files:
-        - "*"
+        includes:
+          - "*"
+        excludes:
+          - "angular.io/*"
+          - "integration/*"
+          - "modules/*"
+          - "tools/*"
     users:
       - IgorMinar
       - mhevery
@@ -41,13 +47,27 @@ groups:
   build-and-ci:
     conditions:
       files:
-        - "*.yml"
-        - "*.json"
-        - "*.lock"
+        includes:
+          - "*.yml"
+          - "*.json"
+          - "*.lock"
+          - "tools/*"
+        excludes:
+          - "tools/@angular/tsc-wrapped/*"
     users:
       - IgorMinar #primary
       - mhevery
 
+  integration:
+    conditions:
+      files:
+        - "integration/*"
+    users:
+      - alexeagle
+      - mhevery
+      - tbosch
+      - vicb
+      - IgorMinar #fallback
 
 
   core:
@@ -55,9 +75,10 @@ groups:
       files:
         - "modules/@angular/core/*"
     users:
-      - mhevery
       - tbosch #primary
+      - mhevery
       - vicb
+      - IgorMinar #fallback
 
   compiler/animations:
     conditions:
@@ -66,22 +87,28 @@ groups:
     users:
       - matsko #primary
       - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   compiler/i18n:
-      conditions:
-        files:
-          - "modules/@angular/compiler/src/i18n/*"
-      users:
-        - tbosch
-        - vicb #primary
+    conditions:
+      files:
+        - "modules/@angular/compiler/src/i18n/*"
+    users:
+      - vicb #primary
+      - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   compiler:
     conditions:
       files:
         - "modules/@angular/compiler/*"
     users:
-      - mhevery
       - tbosch #primary
+      - mhevery
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   compiler-cli:
     conditions:
@@ -92,6 +119,8 @@ groups:
       - alexeagle
       - chuckjaz
       - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   common:
     conditions:
@@ -100,6 +129,8 @@ groups:
     users:
       - pkozlowski-opensource #primary
       - vicb
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   forms:
     conditions:
@@ -108,14 +139,18 @@ groups:
     users:
       - kara #primary
       # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   http:
     conditions:
       files:
         - "modules/@angular/http/*"
     users:
-      - alxhub
       - vikerman #primary
+      - alxhub
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   language-service:
     conditions:
@@ -124,6 +159,8 @@ groups:
     users:
       - chuckjaz #primary
       # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   router:
     conditions:
@@ -132,14 +169,18 @@ groups:
     users:
       - vicb #primary
       # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   upgrade:
     conditions:
       files:
         - "modules/@angular/upgrade/*"
     users:
-      - gkalpak
       - petebacondarwin #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   platform-browser:
     conditions:
@@ -148,14 +189,18 @@ groups:
     users:
       - tbosch #primary
       - vicb
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   platform-server:
     conditions:
       files:
         - "modules/@angular/platform-server/*"
     users:
-      - alxhub
       - vikerman #primary
+      - alxhub
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   platform-webworker:
     conditions:
@@ -164,6 +209,8 @@ groups:
     users:
       - vicb #primary
       # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
 
 
 
@@ -174,6 +221,8 @@ groups:
     users:
       - tbosch #primary
       # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   angular.io:
     conditions:
@@ -182,3 +231,4 @@ groups:
     users:
       - IgorMinar
       - robwormald
+      - mhevery #fallback
