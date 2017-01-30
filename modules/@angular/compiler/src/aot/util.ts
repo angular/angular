@@ -7,6 +7,7 @@
  */
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
+const NG_FACTORY = /\.ngfactory\./;
 
 export function ngfactoryFilePath(filePath: string): string {
   const urlWithSuffix = splitTypescriptSuffix(filePath);
@@ -14,7 +15,11 @@ export function ngfactoryFilePath(filePath: string): string {
 }
 
 export function stripNgFactory(filePath: string): string {
-  return filePath.replace(/\.ngfactory\./, '.');
+  return filePath.replace(NG_FACTORY, '.');
+}
+
+export function isNgFactoryFile(filePath: string): boolean {
+  return NG_FACTORY.test(filePath);
 }
 
 export function splitTypescriptSuffix(path: string): string[] {
