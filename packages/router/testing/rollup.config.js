@@ -10,6 +10,7 @@ export default {
   entry: '../../../dist/packages-dist/router/@angular/router/testing.es5.js',
   dest: '../../../dist/packages-dist/router/bundles/router-testing.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.router.testing',
   globals: {
     '@angular/core': 'ng.core',

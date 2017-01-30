@@ -10,6 +10,7 @@ export default {
   entry: '../../../dist/packages-dist/compiler/@angular/compiler/testing.es5.js',
   dest: '../../../dist/packages-dist/compiler/bundles/compiler-testing.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.compiler.testing',
   globals: {
     '@angular/core': 'ng.core',

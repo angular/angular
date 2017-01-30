@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/core/@angular/core.es5.js',
   dest: '../../dist/packages-dist/core/bundles/core.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.core',
   globals: {
     'rxjs/Observable': 'Rx',
