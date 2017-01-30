@@ -43,7 +43,7 @@ export function main() {
          }));
 
       it('should ngModel hold ime events until compositionend', fakeAsync(() => {
-           const fixture = TestBed.createComponent(StandaloneNgModel);
+           const fixture = initTest(StandaloneNgModel);
            // model -> view
            const inputEl = fixture.debugElement.query(By.css('input'));
            const inputNativeEl = inputEl.nativeElement;
