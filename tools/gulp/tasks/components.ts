@@ -37,7 +37,7 @@ task(':watch:components', () => {
 
 
 /** Builds component typescript only (ESM output). */
-task(':build:components:ts', tsBuildTask(COMPONENTS_DIR, 'tsconfig-srcs.json'));
+task(':build:components:ts', tsBuildTask(path.join(COMPONENTS_DIR, 'tsconfig-srcs.json')));
 
 /** Builds components typescript for tests (CJS output). */
 task(':build:components:spec', tsBuildTask(COMPONENTS_DIR));

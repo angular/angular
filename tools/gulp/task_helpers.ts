@@ -1,7 +1,6 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
-import * as gulpTs from 'gulp-typescript';
 import * as path from 'path';
 
 import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT, SASS_AUTOPREFIXER_OPTIONS} from './constants';
@@ -34,34 +33,9 @@ function _globify(maybeGlob: string, suffix = '**/*') {
 }
 
 
-/** Create a TS Build Task, based on the options. */
-export function tsBuildTask(tsConfigPath: string, tsConfigName = 'tsconfig.json') {
-  let tsConfigDir = tsConfigPath;
-  if (fs.existsSync(path.join(tsConfigDir, tsConfigName))) {
-    // Append tsconfig.json
-    tsConfigPath = path.join(tsConfigDir, tsConfigName);
-  } else {
-    tsConfigDir = path.dirname(tsConfigDir);
-  }
-
-  return () => {
-    const tsConfig: any = JSON.parse(fs.readFileSync(tsConfigPath, 'utf-8'));
-    const dest: string = path.join(tsConfigDir, tsConfig['compilerOptions']['outDir']);
-
-    const tsProject = gulpTs.createProject(tsConfigPath);
-
-    let pipe = tsProject.src()
-      .pipe(gulpSourcemaps.init())
-      .pipe(tsProject());
-    let dts = pipe.dts.pipe(gulp.dest(dest));
-
-    return gulpMerge([
-      dts,
-      pipe
-        .pipe(gulpSourcemaps.write('.'))
-        .pipe(gulp.dest(dest))
-    ]);
-  };
+/** Creates a task that runs the TypeScript compiler */
+export function tsBuildTask(tsConfigPath: string) {
+  return execNodeTask('typescript', 'tsc', ['-p', tsConfigPath]);
 }
 
 
