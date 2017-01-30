@@ -264,4 +264,5 @@ export class SimpleJsImportGenerator implements ImportResolver {
     return importedUrlStr;
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
+  getTypeArity(symbol: StaticSymbol): number /*|null*/ { return null; }
 }
