@@ -7,13 +7,13 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-
 import {NumberWrapper} from '../facade/lang';
-
 import {DateFormatter} from './intl';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-
+const ISO8601_DATE_REGEX =
+    /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
+//    1        2       3         4          5          6          7          8  9     10      11
 
 /**
  * @ngModule CommonModule
@@ -130,7 +130,12 @@ export class DatePipe implements PipeTransform {
     }
 
     if (!isDate(date)) {
-      throw new InvalidPipeArgumentError(DatePipe, value);
+      let match: RegExpMatchArray;
+      if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX))) {
+        date = isoStringToDate(match);
+      } else {
+        throw new InvalidPipeArgumentError(DatePipe, value);
+      }
     }
 
     return DateFormatter.format(date, this._locale, DatePipe._ALIASES[pattern] || pattern);
@@ -143,4 +148,28 @@ function isBlank(obj: any): boolean {
 
 function isDate(obj: any): obj is Date {
   return obj instanceof Date && !isNaN(obj.valueOf());
+}
+
+function isoStringToDate(match: RegExpMatchArray): Date {
+  const date = new Date(0);
+  let tzHour = 0;
+  let tzMin = 0;
+  const dateSetter = match[8] ? date.setUTCFullYear : date.setFullYear;
+  const timeSetter = match[8] ? date.setUTCHours : date.setHours;
+
+  if (match[9]) {
+    tzHour = toInt(match[9] + match[10]);
+    tzMin = toInt(match[9] + match[11]);
+  }
+  dateSetter.call(date, toInt(match[1]), toInt(match[2]) - 1, toInt(match[3]));
+  const h = toInt(match[4] || '0') - tzHour;
+  const m = toInt(match[5] || '0') - tzMin;
+  const s = toInt(match[6] || '0');
+  const ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
+  timeSetter.call(date, h, m, s, ms);
+  return date;
+}
+
+function toInt(str: string): number {
+  return parseInt(str, 10);
 }
