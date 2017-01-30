@@ -147,12 +147,21 @@ export class MdSlider implements ControlValueAccessor {
    */
   _isActive: boolean = false;
 
+  /** Decimal places to round to, based on the step amount. */
+  private _roundLabelTo: number;
+
   private _step: number = 1;
 
   /** The values at which the thumb will snap. */
   @Input()
   get step() { return this._step; }
-  set step(v) { this._step = coerceNumberProperty(v, this._step); }
+  set step(v) {
+    this._step = coerceNumberProperty(v, this._step);
+
+    if (this._step % 1 !== 0) {
+      this._roundLabelTo = this._step.toString().split('.').pop().length;
+    }
+  }
 
   private _tickInterval: 'auto' | number = 0;
 
@@ -237,6 +246,18 @@ export class MdSlider implements ControlValueAccessor {
   get vertical() { return this._vertical; }
   set vertical(value: any) { this._vertical = coerceBooleanProperty(value); }
   private _vertical = false;
+
+  /** The value to be used for display purposes. */
+  get displayValue(): string|number {
+    // Note that this could be improved further by rounding something like 0.999 to 1 or
+    // 0.899 to 0.9, however it is very performance sensitive, because it gets called on
+    // every change detection cycle.
+    if (this._roundLabelTo && this.value % 1 !== 0) {
+      return this.value.toFixed(this._roundLabelTo);
+    }
+
+    return this.value;
+  }
 
   /**
    * Whether the axis of the slider is inverted.
