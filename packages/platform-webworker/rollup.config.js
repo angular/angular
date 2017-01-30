@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/platform-webworker/@angular/platform-webworker.es5.js',
   dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.platformWebworker',
   globals: {
     '@angular/core': 'ng.core',

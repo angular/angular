@@ -12,6 +12,7 @@ export default {
   dest:
       '../../../dist/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.platformBrowserDynamic.testing',
   globals: {
     '@angular/core': 'ng.core',

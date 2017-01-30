@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/router/@angular/router.es5.js',
   dest: '../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.router',
   globals: {
     '@angular/core': 'ng.core',
