@@ -21,7 +21,8 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
     string {
   const converter = new _TsEmitterVisitor(_debugFilePath, {
     fileNameToModuleName(filePath: string, containingFilePath: string) { return filePath; },
-    getImportAs(symbol: StaticSymbol) { return null; }
+    getImportAs(symbol: StaticSymbol) { return null; },
+    getTypeArity: symbol => null
   });
   const ctx = EmitterVisitorContext.createRoot([]);
   const asts: any[] = Array.isArray(ast) ? ast : [ast];
@@ -65,6 +66,8 @@ export class TypeScriptEmitter implements OutputEmitter {
 }
 
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
+  private typeExpression = 0;
+
   constructor(private _genFilePath: string, private _importResolver: ImportResolver) {
     super(false);
   }
@@ -74,7 +77,9 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitType(t: o.Type, ctx: EmitterVisitorContext, defaultType: string = 'any') {
     if (isPresent(t)) {
+      this.typeExpression++;
       t.visitType(this, ctx);
+      this.typeExpression--;
     } else {
       ctx.print(defaultType);
     }
@@ -149,6 +154,17 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
+  visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(`new `);
+    this.typeExpression++;
+    ast.classExpr.visitExpression(this, ctx);
+    this.typeExpression--;
+    ctx.print(`(`);
+    this.visitAllExpressions(ast.args, ctx, ',');
+    ctx.print(`)`);
+    return null;
+  }
+
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     if (ctx.isExportedVar(stmt.name)) {
@@ -157,7 +173,9 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(`class ${stmt.name}`);
     if (isPresent(stmt.parent)) {
       ctx.print(` extends `);
+      this.typeExpression++;
       stmt.parent.visitExpression(this, ctx);
+      this.typeExpression--;
     }
     ctx.println(` {`);
     ctx.incIndent();
@@ -299,11 +317,6 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitExpressionType(ast: o.ExpressionType, ctx: EmitterVisitorContext): any {
     ast.value.visitExpression(this, ctx);
-    if (isPresent(ast.typeParams) && ast.typeParams.length > 0) {
-      ctx.print(`<`);
-      this.visitAllObjects(type => type.visitType(this, ctx), ast.typeParams, ctx, ',');
-      ctx.print(`>`);
-    }
     return null;
   }
 
@@ -346,17 +359,24 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }, params, ctx, ',');
   }
 
-  private _resolveStaticSymbol(value: CompileIdentifierMetadata): StaticSymbol {
+  private _resolveStaticSymbol(value: CompileIdentifierMetadata):
+      {name: string, filePath: string, members?: string[], arity?: number} {
     const reference = value.reference;
     if (!(reference instanceof StaticSymbol)) {
       throw new Error(`Internal error: unknown identifier ${JSON.stringify(value)}`);
     }
-    return this._importResolver.getImportAs(reference) || reference;
+    const arity = this._importResolver.getTypeArity(reference) || undefined;
+    const importReference = this._importResolver.getImportAs(reference) || reference;
+    return {
+      name: importReference.name,
+      filePath: importReference.filePath,
+      members: importReference.members, arity
+    };
   }
 
   private _visitIdentifier(
       value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
-    const {name, filePath, members} = this._resolveStaticSymbol(value);
+    const {name, filePath, members, arity} = this._resolveStaticSymbol(value);
     if (filePath != this._genFilePath) {
       let prefix = this.importsWithPrefixes.get(filePath);
       if (isBlank(prefix)) {
@@ -372,10 +392,28 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     } else {
       ctx.print(name);
     }
-    if (isPresent(typeParams) && typeParams.length > 0) {
-      ctx.print(`<`);
-      this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
-      ctx.print(`>`);
+
+    if (this.typeExpression > 0) {
+      // If we are in a type expreession that refers to a generic type then supply
+      // the required type parameters. If there were not enough type parameters
+      // supplied, supply any as the type. Outside a type expression the reference
+      // should not supply type parameters and be treated as a simple value reference
+      // to the constructor function itself.
+      const suppliedParameters = (typeParams && typeParams.length) || 0;
+      const additionalParameters = (arity || 0) - suppliedParameters;
+      if (suppliedParameters > 0 || additionalParameters > 0) {
+        ctx.print(`<`);
+        if (suppliedParameters > 0) {
+          this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
+        }
+        if (additionalParameters > 0) {
+          for (let i = 0; i < additionalParameters; i++) {
+            if (i > 0 || suppliedParameters > 0) ctx.print(',');
+            ctx.print('any');
+          }
+        }
+        ctx.print(`>`);
+      }
     }
   }
 }
