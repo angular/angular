@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/platform-browser/@angular/platform-browser.es5.js',
   dest: '../../dist/packages-dist/platform-browser/bundles/platform-browser.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.platformBrowser',
   globals: {
     '@angular/core': 'ng.core',
