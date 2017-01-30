@@ -108,13 +108,12 @@ groups:
       - tbosch #primary
       - mhevery
       - IgorMinar #fallback
-      - mhevery #fallback
 
   compiler-cli:
     conditions:
       files:
         - "tools/@angular/tsc-wrapped/*"
-        - "modules/@angular/compiler-cli"
+        - "modules/@angular/compiler-cli/*"
     users:
       - alexeagle
       - chuckjaz
