@@ -13,6 +13,7 @@ import {ParseTreeResult} from '../ml_parser/parser';
 import {mergeTranslations} from './extractor_merger';
 import {Serializer} from './serializers/serializer';
 import {Xliff} from './serializers/xliff';
+import {Xliff2} from './serializers/xliff2';
 import {Xmb} from './serializers/xmb';
 import {Xtb} from './serializers/xtb';
 import {TranslationBundle} from './translation_bundle';
@@ -62,6 +63,9 @@ function createSerializer(format?: string): Serializer {
       return new Xmb();
     case 'xtb':
       return new Xtb();
+    case 'xliff2':
+    case 'xlf2':
+      return new Xliff2();
     case 'xliff':
     case 'xlf':
     default:
