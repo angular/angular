@@ -7,7 +7,7 @@
 # Use OVERVIEW.html when possible. If there's no OVERVIEW file exists, use README.html
 
 usage='Usage: copy-docs.sh $destinationFolder'
-if [ $# -ne 1 ]; then 
+if [ $# -ne 1 ]; then
   echo "Missing destination folder. $usage"
   exit
 fi
@@ -23,7 +23,7 @@ fi
 for file in $originFolder*
 do
   name=${file#$originFolder}
-  overviewFile=$originFolder$name/OVERVIEW.html
+  overviewFile=$originFolder$name/$name.html
   readmeFile=$originFolder$name/README.html
   destFile=$destFolder/$name.html
   if [ -f $overviewFile ]; then
