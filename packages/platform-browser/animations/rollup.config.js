@@ -10,6 +10,7 @@ export default {
   entry: '../../../dist/packages-dist/platform-browser/@angular/platform-browser/animations.es5.js',
   dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.platformBrowser.animations',
   globals: {
     '@angular/core': 'ng.core',

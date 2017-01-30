@@ -12,6 +12,7 @@ export default {
   dest:
       '../../dist/packages-dist/platform-webworker-dynamic/bundles/platform-webworker-dynamic.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.platformWebworkerDynamic',
   globals: {
     '@angular/core': 'ng.core',

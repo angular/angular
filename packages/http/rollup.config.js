@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/http/@angular/http.es5.js',
   dest: '../../dist/packages-dist/http/bundles/http.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.http',
   globals: {
     '@angular/core': 'ng.core',

@@ -10,6 +10,7 @@ export default {
   entry: '../../dist/packages-dist/forms/@angular/forms.es5.js',
   dest: '../../dist/packages-dist/forms/bundles/forms.umd.js',
   format: 'umd',
+  exports: 'named',
   moduleName: 'ng.forms',
   globals: {
     '@angular/core': 'ng.core',
