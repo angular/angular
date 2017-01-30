@@ -8,7 +8,7 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 
-import {NumberWrapper, isDate} from '../facade/lang';
+import {NumberWrapper} from '../facade/lang';
 
 import {DateFormatter} from './intl';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -139,4 +139,8 @@ export class DatePipe implements PipeTransform {
 
 function isBlank(obj: any): boolean {
   return obj == null || obj === '';
+}
+
+function isDate(obj: any): obj is Date {
+  return obj instanceof Date && !isNaN(obj.valueOf());
 }
