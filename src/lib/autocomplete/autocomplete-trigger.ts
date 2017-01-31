@@ -4,8 +4,10 @@ import {
     ElementRef,
     forwardRef,
     Input,
+    NgZone,
     Optional,
     OnDestroy,
+    QueryList,
     ViewContainerRef,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -18,6 +20,7 @@ import {MdOptionSelectEvent, MdOption} from '../core/option/option';
 import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
 import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
 import {Subscription} from 'rxjs/Subscription';
+import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/merge';
 import {Dir} from '../core/rtl/dir';
 import 'rxjs/add/operator/startWith';
@@ -57,7 +60,7 @@ export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
     '[attr.aria-owns]': 'autocomplete?.id',
     '(focus)': 'openPanel()',
     '(blur)': '_onTouched()',
-    '(input)': '_onChange($event.target.value)',
+    '(input)': '_handleInput($event.target.value)',
     '(keydown)': '_handleKeydown($event)',
   },
   providers: [MD_AUTOCOMPLETE_VALUE_ACCESSOR]
@@ -85,7 +88,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
 
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
-              @Optional() private _dir: Dir) {}
+              @Optional() private _dir: Dir, private _zone: NgZone) {}
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options).withWrap();
@@ -131,7 +134,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected and when the backdrop is clicked.
    */
-  get panelClosingActions(): Observable<any> {
+  get panelClosingActions(): Observable<MdOptionSelectEvent> {
     return Observable.merge(
         ...this.optionSelections,
         this._overlayRef.backdropClick(),
@@ -140,7 +143,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   }
 
   /** Stream of autocomplete option selections. */
-  get optionSelections(): Observable<any>[] {
+  get optionSelections(): Observable<MdOptionSelectEvent>[] {
     return this.autocomplete.options.map(option => option.onSelect);
   }
 
@@ -185,12 +188,17 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     if (this.activeOption && event.keyCode === ENTER) {
       this.activeOption._selectViaInteraction();
     } else {
-      this.openPanel();
       this._keyManager.onKeydown(event);
       if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {
+        this.openPanel();
         this._scrollToOption();
       }
     }
+  }
+
+  _handleInput(value: string): void {
+    this._onChange(value);
+    this.openPanel();
   }
 
   /**
@@ -211,20 +219,31 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): void {
-    // Every time the option list changes...
-    this.autocomplete.options.changes
-    // and also at initialization, before there are any option changes...
-        .startWith(null)
+    const initialOptions = this._getStableOptions();
+
+    // When the zone is stable initially, and when the option list changes...
+    Observable.merge(initialOptions, this.autocomplete.options.changes)
         // create a new stream of panelClosingActions, replacing any previous streams
         // that were created, and flatten it so our stream only emits closing events...
-        .switchMap(() => {
+        .switchMap(options => {
           this._resetPanel();
-          return this.panelClosingActions;
+          // If the options list is empty, emit close event immediately.
+          // Otherwise, listen for panel closing actions...
+          return options.length ? this.panelClosingActions : Observable.of(null);
         })
         // when the first closing event occurs...
         .first()
         // set the value, close the panel, and complete.
         .subscribe(event => this._setValueAndClose(event));
+  }
+
+  /**
+   * Retrieves the option list once the zone stabilizes. It's important to wait until
+   * stable so that change detection can run first and update the query list
+   * with the options available under the current filter.
+   */
+  private _getStableOptions(): Observable<QueryList<MdOption>> {
+    return this._zone.onStable.first().map(() => this.autocomplete.options);
   }
 
   /** Destroys the autocomplete suggestion panel. */

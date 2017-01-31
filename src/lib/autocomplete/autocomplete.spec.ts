@@ -58,7 +58,8 @@ describe('MdAutocomplete', () => {
     });
 
     it('should open the panel when the input is focused', () => {
-      expect(fixture.componentInstance.trigger.panelOpen).toBe(false);
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected panel state to start out closed.`);
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
@@ -71,7 +72,8 @@ describe('MdAutocomplete', () => {
     });
 
     it('should open the panel programmatically', () => {
-      expect(fixture.componentInstance.trigger.panelOpen).toBe(false);
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected panel state to start out closed.`);
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
@@ -87,16 +89,18 @@ describe('MdAutocomplete', () => {
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
-      const backdrop =
-          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
-      backdrop.click();
-      fixture.detectChanges();
-
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected clicking outside the panel to close the panel.`);
+        const backdrop =
+            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+        backdrop.click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected clicking outside the panel to close the panel.`);
+        });
       });
     }));
 
@@ -104,40 +108,33 @@ describe('MdAutocomplete', () => {
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
-      const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
-      option.click();
-      fixture.detectChanges();
-
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected clicking an option to set the panel state to closed.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected clicking an option to close the panel.`);
+        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
+        option.click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected clicking an option to set the panel state to closed.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected clicking an option to close the panel.`);
+        });
       });
     }));
 
-    it('should close the panel when a newly filtered option is clicked', async(() => {
+    it('should close the panel when a newly created option is clicked', async(() => {
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
-      // Filter down the option list to a subset of original options ('Alabama', 'California')
-      input.value = 'al';
-      dispatchEvent('input', input);
-      fixture.detectChanges();
-
-      let options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[0].click();
-      fixture.detectChanges();
-
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected clicking a filtered option to set the panel state to closed.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected clicking a filtered option to close the panel.`);
-
-        dispatchEvent('focus', input);
+        // Filter down the option list to a subset of original options ('Alabama', 'California')
+        input.value = 'al';
+        dispatchEvent('input', input);
         fixture.detectChanges();
+
+        let options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[0].click();
 
         // Changing value from 'Alabama' to 'al' to re-populate the option list,
         // ensuring that 'California' is created new.
@@ -145,18 +142,19 @@ describe('MdAutocomplete', () => {
         dispatchEvent('input', input);
         fixture.detectChanges();
 
-        options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-        options[1].click();
-        fixture.detectChanges();
-
         fixture.whenStable().then(() => {
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
-          expect(overlayContainerElement.textContent)
-              .toEqual('', `Expected clicking a new option to close the panel.`);
-        });
+          options =
+              overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          options[1].click();
+          fixture.detectChanges();
 
+          fixture.whenStable().then(() => {
+            expect(fixture.componentInstance.trigger.panelOpen)
+                .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
+            expect(overlayContainerElement.textContent)
+                .toEqual('', `Expected clicking a new option to close the panel.`);
+          });
+        });
       });
     }));
 
@@ -172,6 +170,25 @@ describe('MdAutocomplete', () => {
             .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
         expect(overlayContainerElement.textContent)
             .toEqual('', `Expected closing programmatically to close the panel.`);
+      });
+
+    }));
+
+    it('should close the panel when the options list is empty', async(() => {
+      dispatchEvent('focus', input);
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        // Filter down the option list such that no options match the value
+        input.value = 'af';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected panel to close when options list is empty.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected panel to close when options list is empty.`);
+        });
       });
     }));
 
@@ -221,59 +238,61 @@ describe('MdAutocomplete', () => {
           .toEqual('al', 'Expected control value to be updated as user types.');
     });
 
-    it('should update control value when option is selected with option value', () => {
+    it('should update control value when option is selected with option value', async(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      const options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[1].click();
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.stateCtrl.value)
-          .toEqual({code: 'CA', name: 'California'}, 'Expected control value to be option value.');
-    });
-
-    it('should update control back to string if user types after option is selected', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[1].click();
-      fixture.detectChanges();
-
-      input.value = 'Californi';
-      dispatchEvent('input', input);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.stateCtrl.value)
-          .toEqual('Californi', 'Expected control value to revert back to string.');
-    });
-
-    it('should fill the text field with display value when an option is selected', async(() => {
       fixture.whenStable().then(() => {
-        fixture.componentInstance.trigger.openPanel();
-        fixture.detectChanges();
-
         const options =
             overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(input.value)
-              .toContain('California', `Expected text field to fill with selected value.`);
-        });
+        expect(fixture.componentInstance.stateCtrl.value)
+            .toEqual({code: 'CA', name: 'California'},
+                'Expected control value to equal the selected option value.');
+      });
+    }));
+
+    it('should update control back to string if user types after option is selected', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        input.value = 'Californi';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.stateCtrl.value)
+            .toEqual('Californi', 'Expected control value to revert back to string.');
+      });
+    }));
+
+    it('should fill the text field with display value when an option is selected', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(input.value)
+            .toContain('California', `Expected text field to fill with selected value.`);
       });
     }));
 
     it('should fill the text field with value if displayWith is not set', async(() => {
-      fixture.whenStable().then(() => {
-        fixture.componentInstance.trigger.openPanel();
-        fixture.detectChanges();
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
 
+      fixture.whenStable().then(() => {
         fixture.componentInstance.panel.displayWith = null;
         fixture.componentInstance.options.toArray()[1].value = 'test value';
         fixture.detectChanges();
@@ -282,18 +301,16 @@ describe('MdAutocomplete', () => {
             overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
         options[1].click();
 
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(input.value)
-              .toContain('test value', `Expected input to fall back to selected option's value.`);
+        fixture.detectChanges();
+        expect(input.value)
+            .toContain('test value', `Expected input to fall back to selected option's value.`);
         });
-      });
     }));
 
     it('should fill the text field correctly if value is set to obj programmatically', async(() => {
       fixture.whenStable().then(() => {
-        fixture.detectChanges();
         fixture.componentInstance.stateCtrl.setValue({code: 'AL', name: 'Alabama'});
+        fixture.detectChanges();
 
         fixture.whenStable().then(() => {
           fixture.detectChanges();
@@ -304,12 +321,11 @@ describe('MdAutocomplete', () => {
     }));
 
     it('should clear the text field if value is reset programmatically', async(() => {
-      fixture.whenStable().then(() => {
-        input.value = 'Alabama';
-        dispatchEvent('input', input);
-        fixture.detectChanges();
+      input.value = 'Alabama';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
 
-        expect(input.value).toEqual('Alabama', `Expected input to start out with a value.`);
+      fixture.whenStable().then(() => {
         fixture.componentInstance.stateCtrl.reset();
 
         fixture.whenStable().then(() => {
@@ -339,8 +355,6 @@ describe('MdAutocomplete', () => {
 
 
     it('should mark the autocomplete control as dirty as user types', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
       expect(fixture.componentInstance.stateCtrl.dirty)
           .toBe(false, `Expected control to start out pristine.`);
 
@@ -352,20 +366,23 @@ describe('MdAutocomplete', () => {
           .toBe(true, `Expected control to become dirty when the user types into the input.`);
     });
 
-    it('should mark the autocomplete control as dirty when an option is selected', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
+    it('should mark the autocomplete control as dirty when an option is selected', async(() => {
       expect(fixture.componentInstance.stateCtrl.dirty)
           .toBe(false, `Expected control to start out pristine.`);
 
-      const options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[1].click();
+      fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(true, `Expected control to become dirty when an option was selected.`);
-    });
+      fixture.whenStable().then(() => {
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.stateCtrl.dirty)
+            .toBe(true, `Expected control to become dirty when an option was selected.`);
+      });
+    }));
 
     it('should not mark the control dirty when the value is set programmatically', () => {
       expect(fixture.componentInstance.stateCtrl.dirty)
@@ -406,197 +423,186 @@ describe('MdAutocomplete', () => {
       input = fixture.debugElement.query(By.css('input')).nativeElement;
       DOWN_ARROW_EVENT = new FakeKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
       ENTER_EVENT = new FakeKeyboardEvent(ENTER) as KeyboardEvent;
-    });
 
-    it('should should not focus the option when DOWN key is pressed', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
-
-      spyOn(fixture.componentInstance.options.first, 'focus');
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      expect(fixture.componentInstance.options.first.focus).not.toHaveBeenCalled();
     });
+
+    it('should should not focus the option when DOWN key is pressed', async(() => {
+      fixture.whenStable().then(() => {
+        spyOn(fixture.componentInstance.options.first, 'focus');
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        expect(fixture.componentInstance.options.first.focus).not.toHaveBeenCalled();
+      });
+    }));
 
     it('should set the active item to the first option when DOWN key is pressed', async(() => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const optionEls =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-
       fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(fixture.componentInstance.trigger.activeOption)
-            .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
-        expect(optionEls[0].classList).toContain('md-active');
-        expect(optionEls[1].classList).not.toContain('md-active');
-
-        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(fixture.componentInstance.trigger.activeOption)
-              .toBe(fixture.componentInstance.options.toArray()[1],
-                  'Expected second option to be active.');
-          expect(optionEls[0].classList).not.toContain('md-active');
-          expect(optionEls[1].classList).toContain('md-active');
-        });
-      });
-    }));
-
-    it('should set the active item to the last option when UP key is pressed', async(() => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const optionEls =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-
-      const UP_ARROW_EVENT = new FakeKeyboardEvent(UP_ARROW) as KeyboardEvent;
-      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
-
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(fixture.componentInstance.trigger.activeOption)
-            .toBe(fixture.componentInstance.options.last, 'Expected last option to be active.');
-        expect(optionEls[10].classList).toContain('md-active');
-        expect(optionEls[0].classList).not.toContain('md-active');
-
-        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(fixture.componentInstance.trigger.activeOption)
-              .toBe(fixture.componentInstance.options.first,
-                  'Expected first option to be active.');
-          expect(optionEls[0].classList).toContain('md-active');
-          expect(optionEls[10].classList).not.toContain('md-active');
-        });
-      });
-    }));
-
-    it('should set the active item properly after filtering', async(() => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        input.value = 'o';
-        dispatchEvent('input', input);
-        fixture.detectChanges();
-
         const optionEls =
             overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
 
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-
         fixture.whenStable().then(() => {
           fixture.detectChanges();
           expect(fixture.componentInstance.trigger.activeOption)
               .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
           expect(optionEls[0].classList).toContain('md-active');
           expect(optionEls[1].classList).not.toContain('md-active');
+
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+          fixture.whenStable().then(() => {
+            fixture.detectChanges();
+            expect(fixture.componentInstance.trigger.activeOption)
+                .toBe(fixture.componentInstance.options.toArray()[1],
+                    'Expected second option to be active.');
+            expect(optionEls[0].classList).not.toContain('md-active');
+            expect(optionEls[1].classList).toContain('md-active');
+          });
+        });
+      });
+    }));
+
+    it('should set the active item to the last option when UP key is pressed', async(() => {
+      fixture.whenStable().then(() => {
+        const optionEls =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+        const UP_ARROW_EVENT = new FakeKeyboardEvent(UP_ARROW) as KeyboardEvent;
+        fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(fixture.componentInstance.trigger.activeOption)
+              .toBe(fixture.componentInstance.options.last, 'Expected last option to be active.');
+          expect(optionEls[10].classList).toContain('md-active');
+          expect(optionEls[0].classList).not.toContain('md-active');
+
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+          fixture.whenStable().then(() => {
+            fixture.detectChanges();
+            expect(fixture.componentInstance.trigger.activeOption)
+                .toBe(fixture.componentInstance.options.first,
+                    'Expected first option to be active.');
+            expect(optionEls[0].classList).toContain('md-active');
+            expect(optionEls[10].classList).not.toContain('md-active');
+          });
+        });
+      });
+    }));
+
+    it('should set the active item properly after filtering', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          input.value = 'o';
+          dispatchEvent('input', input);
+          fixture.detectChanges();
+
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+          fixture.whenStable().then(() => {
+            fixture.detectChanges();
+            const optionEls =
+                overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+            expect(fixture.componentInstance.trigger.activeOption)
+                .toBe(fixture.componentInstance.options.first,
+                    'Expected first option to be active.');
+            expect(optionEls[0].classList).toContain('md-active');
+            expect(optionEls[1].classList).not.toContain('md-active');
+          });
         });
       });
     }));
 
     it('should fill the text field when an option is selected with ENTER', async(() => {
       fixture.whenStable().then(() => {
-        fixture.componentInstance.trigger.openPanel();
-        fixture.detectChanges();
-
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
 
+        fixture.detectChanges();
+        expect(input.value)
+            .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
+      });
+    }));
+
+    it('should fill the text field, not select an option, when SPACE is entered', async(() => {
+      fixture.whenStable().then(() => {
+        input.value = 'New';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        const SPACE_EVENT = new FakeKeyboardEvent(SPACE) as KeyboardEvent;
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.componentInstance.trigger._handleKeydown(SPACE_EVENT);
+        fixture.detectChanges();
+
+        expect(input.value)
+            .not.toContain('New York', `Expected option not to be selected on SPACE.`);
+      });
+    }));
+
+    it('should mark the control dirty when selecting an option from the keyboard', async(() => {
+      fixture.whenStable().then(() => {
+        expect(fixture.componentInstance.stateCtrl.dirty)
+            .toBe(false, `Expected control to start out pristine.`);
+
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.stateCtrl.dirty)
+            .toBe(true, `Expected control to become dirty when option was selected by ENTER.`);
+      });
+    }));
+
+    it('should open the panel again when typing after making a selection', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+        fixture.detectChanges();
+
         fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected panel state to read closed after ENTER key.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected panel to close after ENTER key.`);
+
+          input.value = 'Alabam';
+          dispatchEvent('input', input);
           fixture.detectChanges();
-          expect(input.value)
-              .toContain('Alabama', `Expected text field to fill with selected value on ENTER.`);
+
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(true, `Expected panel state to read open when typing in input.`);
+          expect(overlayContainerElement.textContent)
+              .toContain('Alabama', `Expected panel to display when typing in input.`);
         });
       });
     }));
 
-    it('should fill the text field, not select an option, when SPACE is entered', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      input.value = 'New';
-      dispatchEvent('input', input);
-      fixture.detectChanges();
-
-      const SPACE_EVENT = new FakeKeyboardEvent(SPACE) as KeyboardEvent;
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.componentInstance.trigger._handleKeydown(SPACE_EVENT);
-      fixture.detectChanges();
-
-      expect(input.value)
-          .not.toContain('New York', `Expected option not to be selected on SPACE.`);
-    });
-
-    it('should mark the control as dirty when an option is selected from the keyboard', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(false, `Expected control to start out pristine.`);
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.stateCtrl.dirty)
-          .toBe(true, `Expected control to become dirty when option was selected by ENTER.`);
-    });
-
-    it('should open the panel again when typing after making a selection', async(() => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
-      fixture.detectChanges();
-
+    it('should scroll to active options below the fold', async(() => {
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected panel state to read closed after ENTER key.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected panel to close after ENTER key.`);
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .md-autocomplete-panel');
 
-        // 65 is the keycode for "a"
-        const A_KEY = new FakeKeyboardEvent(65) as KeyboardEvent;
-        fixture.componentInstance.trigger._handleKeydown(A_KEY);
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.detectChanges();
+        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+
+        // These down arrows will set the 6th option active, below the fold.
+        [1, 2, 3, 4, 5].forEach(() => {
+          fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        });
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(true, `Expected panel state to read open when typing in input.`);
-        expect(overlayContainerElement.textContent)
-            .toContain('Alabama', `Expected panel to display when typing in input.`);
+        // Expect option bottom minus the panel height (288 - 256 = 32)
+        expect(scrollContainer.scrollTop).toEqual(32, `Expected panel to reveal the sixth option.`);
       });
     }));
-
-    it('should scroll to active options below the fold', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const scrollContainer = document.querySelector('.cdk-overlay-pane .md-autocomplete-panel');
-
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.detectChanges();
-      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
-
-      // These down arrows will set the 6th option active, below the fold.
-      [1, 2, 3, 4, 5].forEach(() => {
-        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      });
-      fixture.detectChanges();
-
-      // Expect option bottom minus the panel height (288 - 256 = 32)
-      expect(scrollContainer.scrollTop).toEqual(32, `Expected panel to reveal the sixth option.`);
-    });
 
   });
 
@@ -636,28 +642,29 @@ describe('MdAutocomplete', () => {
           .toEqual('false', 'Expected aria-multiline attribute to equal false.');
     });
 
-    it('should set aria-activedescendant based on the active option', () => {
+    it('should set aria-activedescendant based on the active option', async(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(input.hasAttribute('aria-activedescendant'))
+            .toBe(false, 'Expected aria-activedescendant to be absent if no active item.');
 
-      expect(input.hasAttribute('aria-activedescendant'))
-          .toBe(false, 'Expected aria-activedescendant to be absent if no active item.');
+        const DOWN_ARROW_EVENT = new FakeKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.detectChanges();
 
-      const DOWN_ARROW_EVENT = new FakeKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.detectChanges();
+        expect(input.getAttribute('aria-activedescendant'))
+            .toEqual(fixture.componentInstance.options.first.id,
+                'Expected aria-activedescendant to match the active item after 1 down arrow.');
 
-      expect(input.getAttribute('aria-activedescendant'))
-          .toEqual(fixture.componentInstance.options.first.id,
-              'Expected aria-activedescendant to match the active item after 1 down arrow.');
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        fixture.detectChanges();
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
-      fixture.detectChanges();
-
-      expect(input.getAttribute('aria-activedescendant'))
-          .toEqual(fixture.componentInstance.options.toArray()[1].id,
-              'Expected aria-activedescendant to match the active item after 2 down arrows.');
-    });
+        expect(input.getAttribute('aria-activedescendant'))
+            .toEqual(fixture.componentInstance.options.toArray()[1].id,
+                'Expected aria-activedescendant to match the active item after 2 down arrows.');
+      });
+    }));
 
     it('should set aria-expanded based on whether the panel is open', async(() => {
       expect(input.getAttribute('aria-expanded'))
@@ -736,7 +743,7 @@ describe('MdAutocomplete', () => {
           .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
     });
 
-    it('should align panel properly when filtering in "above" position', () => {
+    it('should align panel properly when filtering in "above" position', async(() => {
       // Push the autocomplete trigger down so it won't have room to open "below"
       input.style.top = '600px';
       input.style.position = 'relative';
@@ -744,20 +751,22 @@ describe('MdAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      input.value = 'f';
-      dispatchEvent('input', input);
-      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        input.value = 'f';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
 
-      const inputTop = input.getBoundingClientRect().top;
-      const panel = overlayContainerElement.querySelector('.md-autocomplete-panel');
-      const panelBottom = panel.getBoundingClientRect().bottom;
+        const inputTop = input.getBoundingClientRect().top;
+        const panel = overlayContainerElement.querySelector('.md-autocomplete-panel');
+        const panelBottom = panel.getBoundingClientRect().bottom;
 
-      // Panel is offset by 24px in styles so that the label has room to display.
-      expect((inputTop - 24).toFixed(2))
-          .toEqual(panelBottom.toFixed(2), `Expected panel to stay aligned after filtering.`);
-      expect(fixture.componentInstance.trigger.autocomplete.positionY)
-          .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
-    });
+        // Panel is offset by 24px in styles so that the label has room to display.
+        expect((inputTop - 24).toFixed(2))
+            .toEqual(panelBottom.toFixed(2), `Expected panel to stay aligned after filtering.`);
+        expect(fixture.componentInstance.trigger.autocomplete.positionY)
+            .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
+      });
+    }));
 
   });
 
