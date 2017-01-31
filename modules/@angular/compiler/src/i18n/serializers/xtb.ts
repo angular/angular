@@ -24,7 +24,7 @@ export class Xtb extends Serializer {
   load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
     // xtb to xml nodes
     const xtbParser = new XtbParser();
-    const {mlNodesByMsgId, errors} = xtbParser.parse(content, url);
+    const {msgIdToHtml, errors} = xtbParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
@@ -33,9 +33,9 @@ export class Xtb extends Serializer {
     // Because we should be able to load xtb files that rely on features not supported by angular,
     // we need to delay the conversion of html to i18n nodes so that non angular messages are not
     // converted
-    Object.keys(mlNodesByMsgId).forEach(msgId => {
+    Object.keys(msgIdToHtml).forEach(msgId => {
       const valueFn = function() {
-        const {i18nNodes, errors} = converter.convert(mlNodesByMsgId[msgId]);
+        const {i18nNodes, errors} = converter.convert(msgIdToHtml[msgId], url);
         if (errors.length) {
           throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
         }
@@ -75,19 +75,21 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
 class XtbParser implements ml.Visitor {
   private _bundleDepth: number;
   private _errors: I18nError[];
-  private _mlNodesByMsgId: {[msgId: string]: ml.Node[]};
+  private _msgIdToHtml: {[msgId: string]: string};
 
   parse(xtb: string, url: string) {
     this._bundleDepth = 0;
-    this._mlNodesByMsgId = {};
+    this._msgIdToHtml = {};
 
-    const xml = new XmlParser().parse(xtb, url, true);
+    // We can not parse the ICU messages at this point as some messages might not originate
+    // from Angular that could not be lex'd.
+    const xml = new XmlParser().parse(xtb, url, false);
 
     this._errors = xml.errors;
     ml.visitAll(this, xml.rootNodes);
 
     return {
-      mlNodesByMsgId: this._mlNodesByMsgId,
+      msgIdToHtml: this._msgIdToHtml,
       errors: this._errors,
     };
   }
@@ -109,10 +111,14 @@ class XtbParser implements ml.Visitor {
           this._addError(element, `<${_TRANSLATION_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._mlNodesByMsgId.hasOwnProperty(id)) {
+          if (this._msgIdToHtml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
-            this._mlNodesByMsgId[id] = element.children;
+            const innerTextStart = element.startSourceSpan.end.offset;
+            const innerTextEnd = element.endSourceSpan.start.offset;
+            const content = element.startSourceSpan.start.file.content;
+            const innerText = content.slice(innerTextStart, innerTextEnd);
+            this._msgIdToHtml[id] = innerText;
           }
         }
         break;
@@ -141,10 +147,16 @@ class XtbParser implements ml.Visitor {
 class XmlToI18n implements ml.Visitor {
   private _errors: I18nError[];
 
-  convert(nodes: ml.Node[]) {
-    this._errors = [];
+  convert(message: string, url: string) {
+    const xmlIcu = new XmlParser().parse(message, url, true);
+    this._errors = xmlIcu.errors;
+
+    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
+        [] :
+        ml.visitAll(this, xmlIcu.rootNodes);
+
     return {
-      i18nNodes: ml.visitAll(this, nodes),
+      i18nNodes,
       errors: this._errors,
     };
   }
