@@ -333,6 +333,21 @@ describe('MdIcon', () => {
       expect(mdIconElement.getAttribute('aria-label')).toBe('hand');
     });
 
+    it('should not set aria label unless it actually changed', () => {
+      let fixture = TestBed.createComponent(MdIconLigatureTestApp);
+
+      const testComponent = fixture.componentInstance;
+      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      testComponent.iconName = 'home';
+
+      fixture.detectChanges();
+      expect(mdIconElement.getAttribute('aria-label')).toBe('home');
+
+      mdIconElement.removeAttribute('aria-label');
+      fixture.detectChanges();
+      expect(mdIconElement.getAttribute('aria-label')).toBeFalsy();
+    });
+
     it('should use alt tag if aria label is not specified', () => {
       let fixture = TestBed.createComponent(MdIconLigatureWithAriaBindingTestApp);
 

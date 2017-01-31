@@ -96,6 +96,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;
+  private _previousAriaLabel: string;
 
   constructor(
       private _elementRef: ElementRef,
@@ -176,7 +177,8 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   private _updateAriaLabel() {
       const ariaLabel = this._getAriaLabel();
-      if (ariaLabel) {
+      if (ariaLabel && ariaLabel !== this._previousAriaLabel) {
+        this._previousAriaLabel = ariaLabel;
         this._renderer.setElementAttribute(this._elementRef.nativeElement, 'aria-label', ariaLabel);
       }
   }
