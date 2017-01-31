@@ -7,7 +7,7 @@
  */
 
 import {isDevMode} from '../application_ref';
-import {devModeEqual} from '../change_detection/change_detection';
+import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SimpleChange} from '../change_detection/change_detection_util';
 import {looseIdentical} from '../facade/lang';
 import {Renderer} from '../render/api';
@@ -61,6 +61,13 @@ export function checkAndUpdateBindingWithChange(
     return new SimpleChange(oldValue, value, view.firstChange);
   }
   return null;
+}
+
+export function unwrapValue(value: any): any {
+  if (value instanceof WrappedValue) {
+    value = value.wrapped;
+  }
+  return value;
 }
 
 export function declaredViewContainer(view: ViewData): ElementData {
