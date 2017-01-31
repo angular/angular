@@ -42,6 +42,10 @@ export abstract class TemplateRef<C> {
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 export class TemplateRef_<C> extends TemplateRef<C> {
   constructor(
       private _parentView: AppView<any>, private _nodeIndex: number, private _nativeElement: any) {
