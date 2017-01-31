@@ -1,0 +1,22 @@
+/* #docregion */
+div.absolute {
+  background: beige;
+  border: 1px solid darkred;
+  color: red;
+  margin: 8px;
+  max-width: 20em;
+  padding: 4px;
+  text-align: center;
+}
+
+div.relative {
+  background: powderblue;
+  border: 1px solid darkblue;
+  color: Blue;
+  font-style: italic;
+  margin: 8px;
+  max-width: 20em;
+  padding: 4px;
+  text-align: center;
+}
+
