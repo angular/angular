@@ -52,11 +52,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       }
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null, 1, 'div'),
+        elementDef(NodeFlags.None, null, null, 1, 'div'),
         providerDef(
             NodeFlags.None, null, 0, AComp, [], null, null,
             () => compViewDef([
-              elementDef(NodeFlags.None, null, 0, 'span'),
+              elementDef(NodeFlags.None, null, null, 0, 'span'),
             ])),
       ]));
 
@@ -82,10 +82,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       const {view, rootNodes} = createAndGetRootNodes(
         compViewDef([
-          elementDef(NodeFlags.None, null, 1, 'div'),
+          elementDef(NodeFlags.None, null, null, 1, 'div'),
           providerDef(NodeFlags.None, null, 0, AComp, [], null, null, () => compViewDef(
             [
-              elementDef(NodeFlags.None, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
+              elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
             ], update
           )),
         ], jasmine.createSpy('parentUpdater')));
@@ -116,11 +116,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       }
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null, 1, 'div'),
+        elementDef(NodeFlags.None, null, null, 1, 'div'),
         providerDef(
             NodeFlags.None, null, 0, AComp, [], null, null,
             () => compViewDef([
-              elementDef(NodeFlags.None, null, 1, 'span'),
+              elementDef(NodeFlags.None, null, null, 1, 'span'),
               providerDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
             ])),
       ]));

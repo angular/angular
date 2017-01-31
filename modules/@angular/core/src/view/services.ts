@@ -19,9 +19,9 @@ import {Sanitizer, SecurityContext} from '../security';
 import {createInjector} from './provider';
 import {getQueryValue} from './query';
 import {DebugContext, ElementData, NodeData, NodeDef, NodeType, Services, ViewData, ViewDefinition, asElementData} from './types';
-import {isComponentView, renderNode} from './util';
+import {isComponentView, renderNode, rootRenderNodes} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, destroyView} from './view';
-import {attachEmbeddedView, detachEmbeddedView, rootRenderNodes} from './view_attach';
+import {attachEmbeddedView, detachEmbeddedView} from './view_attach';
 
 @Injectable()
 export class DefaultServices implements Services {
@@ -140,6 +140,10 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elDef: NodeDef;
   constructor(public view: ViewData, public nodeIndex: number) {
+    if (nodeIndex == null) {
+      this.nodeIndex = nodeIndex = view.parentIndex;
+      this.view = view = view.parent;
+    }
     this.nodeDef = view.def.nodes[nodeIndex];
     this.elDef = findElementDef(view, nodeIndex);
   }

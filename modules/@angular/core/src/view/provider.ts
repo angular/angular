@@ -80,7 +80,8 @@ export function providerDef(
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, childCount, bindings,
+    matchedQueries: matchedQueryDefs,
+    ngContentIndex: undefined, childCount, bindings,
     disposableCount: outputDefs.length,
     element: undefined,
     provider: {
@@ -91,7 +92,8 @@ export function providerDef(
     },
     text: undefined,
     pureExpression: undefined,
-    query: undefined
+    query: undefined,
+    ngContent: undefined
   };
 }
 
