@@ -147,6 +147,11 @@ md-card-title-group {
     padding: $md-card-mobile-padding;
   }
 
+  md-card-actions {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+  
   [md-card-image] {
     width: calc(100% + 32px);
     margin: 16px -16px;
