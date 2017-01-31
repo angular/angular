@@ -1,6 +1,7 @@
-import {TestBed, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {MdRipple, MdRippleModule} from './ripple';
+import {ViewportRuler} from '../overlay/position/viewport-ruler';
 
 
 /** Creates a DOM event to indicate that a CSS transition for the given property ended. */
@@ -60,6 +61,7 @@ describe('MdRipple', () => {
   let rippleElement: HTMLElement;
   let rippleBackground: Element;
   let originalBodyMargin: string;
+  let viewportRuler: ViewportRuler;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -72,11 +74,13 @@ describe('MdRipple', () => {
     });
   });
 
-  beforeEach(() => {
+  beforeEach(inject([ViewportRuler], (ruler: ViewportRuler) => {
+    viewportRuler = ruler;
+
     // Set body margin to 0 during tests so it doesn't mess up position calculations.
     originalBodyMargin = document.body.style.margin;
     document.body.style.margin = '0';
-  });
+  }));
 
   afterEach(() => {
     document.body.style.margin = originalBodyMargin;
@@ -228,6 +232,9 @@ describe('MdRipple', () => {
         document.documentElement.scrollTop = pageScrollTop;
         // Mobile safari
         window.scrollTo(pageScrollLeft, pageScrollTop);
+        // Force an update of the cached viewport geometries because IE11 emits the
+        // scroll event later.
+        viewportRuler._cacheViewportGeometry();
       });
 
       afterEach(() => {
@@ -239,6 +246,9 @@ describe('MdRipple', () => {
         document.documentElement.scrollTop = 0;
         // Mobile safari
         window.scrollTo(0, 0);
+        // Force an update of the cached viewport geometries because IE11 emits the
+        // scroll event later.
+        viewportRuler._cacheViewportGeometry();
       });
 
       it('create ripple with correct position', () => {

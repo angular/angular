@@ -28,6 +28,7 @@ import {MdTab} from './tab';
 import {MdTabBody} from './tab-body';
 import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
 import {MdTabHeader} from './tab-header';
+import {SCROLL_DISPATCHER_PROVIDER} from '../core/overlay/scroll/scroll-dispatcher';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -214,7 +215,7 @@ export class MdTabGroup {
   exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink, MdTabLinkRipple],
   declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
     MdTabNavBar, MdTabLink, MdTabBody, MdTabLinkRipple, MdTabHeader],
-  providers: [VIEWPORT_RULER_PROVIDER],
+  providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER],
 })
 export class MdTabsModule {
   /** @deprecated */
