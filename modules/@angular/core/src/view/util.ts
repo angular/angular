@@ -12,8 +12,8 @@ import {SimpleChange} from '../change_detection/change_detection_util';
 import {looseIdentical} from '../facade/lang';
 import {Renderer} from '../render/api';
 
-import {expressionChangedAfterItHasBeenCheckedError, isViewError, viewWrappedError} from './errors';
-import {ElementData, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, ViewDefinitionFactory, asElementData, asTextData} from './types';
+import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
+import {ElementData, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
 
 export function setBindingDebugInfo(
     renderer: Renderer, renderNode: any, propName: string, value: any) {
@@ -36,31 +36,41 @@ function camelCaseToDashCase(input: string): string {
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if (view.firstChange || !devModeEqual(oldValue, value)) {
+  if (view.state === ViewState.FirstCheck || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
-        view.services.createDebugContext(view, def.index), oldValue, value, view.firstChange);
+        view.services.createDebugContext(view, def.index), oldValue, value,
+        view.state === ViewState.FirstCheck);
   }
 }
 
 export function checkAndUpdateBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
-  if (view.firstChange || !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
+  if (view.state === ViewState.FirstCheck ||
+      !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
     oldValues[def.bindingIndex + bindingIdx] = value;
+    if (def.flags & NodeFlags.HasComponent) {
+      const compView = asProviderData(view, def.index).componentView;
+      if (compView.state === ViewState.ChecksDisabled && compView.def.flags & ViewFlags.OnPush) {
+        compView.state = ViewState.ChecksEnabled;
+      }
+    }
     return true;
   }
   return false;
 }
 
-export function checkAndUpdateBindingWithChange(
-    view: ViewData, def: NodeDef, bindingIdx: number, value: any): SimpleChange {
-  const oldValues = view.oldValues;
-  const oldValue = oldValues[def.bindingIndex + bindingIdx];
-  if (view.firstChange || !looseIdentical(oldValue, value)) {
-    oldValues[def.bindingIndex + bindingIdx] = value;
-    return new SimpleChange(oldValue, value, view.firstChange);
+export function dispatchEvent(
+    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
+  setCurrentNode(view, nodeIndex);
+  let currView = view;
+  while (currView) {
+    if (currView.state === ViewState.ChecksDisabled && currView.def.flags & ViewFlags.OnPush) {
+      currView.state = ViewState.ChecksEnabled;
+    }
+    currView = currView.parent;
   }
-  return null;
+  return view.def.handleEvent(view, nodeIndex, eventName, event);
 }
 
 export function unwrapValue(value: any): any {
@@ -141,6 +151,9 @@ export function currentAction() {
  * or code of the framework that might throw as a valid use case.
  */
 export function setCurrentNode(view: ViewData, nodeIndex: number) {
+  if (view.state === ViewState.Destroyed) {
+    throw viewDestroyedError(_currentAction);
+  }
   _currentView = view;
   _currentNodeIndex = nodeIndex;
 }
@@ -170,14 +183,13 @@ function callWithTryCatch(fn: (a: any) => any, arg: any): any {
   try {
     return fn(arg);
   } catch (e) {
-    if (isViewError(e) || !_currentView) {
+    if (isViewDebugError(e) || !_currentView) {
       throw e;
     }
     const debugContext = _currentView.services.createDebugContext(_currentView, _currentNodeIndex);
-    throw viewWrappedError(e, debugContext);
+    throw viewWrappedDebugError(e, debugContext);
   }
 }
-
 
 export function rootRenderNodes(view: ViewData): any[] {
   const renderNodes: any[] = [];

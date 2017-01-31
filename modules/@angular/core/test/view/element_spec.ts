@@ -207,7 +207,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                 elementDef(
                     NodeFlags.None, null, null, 0, 'input', null,
                     [
-                      [BindingType.ElementProperty, 'title', SecurityContext.NONE],
+                      [BindingType.ElementProperty, 'someProp', SecurityContext.NONE],
                     ]),
               ],
               (view) => {
@@ -216,7 +216,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
               }));
 
           const setterSpy = jasmine.createSpy('set');
-          Object.defineProperty(rootNodes[0], 'title', {set: setterSpy});
+          Object.defineProperty(rootNodes[0], 'someProp', {set: setterSpy});
 
           bindingValue = 'v1';
           checkAndUpdateView(view);
@@ -234,7 +234,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       });
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (isBrowser()) {
       describe('listen to DOM events', () => {
         let removeNodes: Node[];
         beforeEach(() => { removeNodes = []; });

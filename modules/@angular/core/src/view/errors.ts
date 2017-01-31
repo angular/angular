@@ -8,10 +8,10 @@
 
 import {BaseError, WrappedError} from '../facade/errors';
 
-import {DebugContext} from './types';
+import {DebugContext, EntryAction, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
-    context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): ViewError {
+    context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): ViewDebugError {
   let msg =
       `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
   if (isFirstCheck) {
@@ -19,25 +19,30 @@ export function expressionChangedAfterItHasBeenCheckedError(
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
         ` Has it been created in a change detection hook ?`;
   }
-  return viewError(msg, context);
+  return viewDebugError(msg, context);
 }
 
-export function viewWrappedError(originalError: any, context: DebugContext): WrappedError&
-    ViewError {
-  const err = viewError(originalError.message, context) as WrappedError & ViewError;
+export function viewWrappedDebugError(originalError: any, context: DebugContext): WrappedError&
+    ViewDebugError {
+  const err = viewDebugError(originalError.message, context) as WrappedError & ViewDebugError;
   err.originalError = originalError;
   return err;
 }
 
-export interface ViewError { context: DebugContext; }
+export interface ViewDebugError { context: DebugContext; }
 
-export function viewError(msg: string, context: DebugContext): ViewError {
+export function viewDebugError(msg: string, context: DebugContext): ViewDebugError {
   const err = new Error(msg) as any;
   err.context = context;
   err.stack = context.source;
+  context.view.state = ViewState.Errored;
   return err;
 }
 
-export function isViewError(err: any): boolean {
+export function isViewDebugError(err: any): boolean {
   return err.context;
+}
+
+export function viewDestroyedError(action: EntryAction): Error {
+  return new Error(`View has been used after destroy for ${EntryAction[action]}`);
 }

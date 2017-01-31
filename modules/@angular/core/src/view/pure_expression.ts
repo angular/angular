@@ -132,7 +132,7 @@ export function checkAndUpdatePureExpressionInline(
           case 4:
             value[3] = v3;
           case 3:
-            value[3] = v2;
+            value[2] = v2;
           case 2:
             value[1] = v1;
           case 1:
@@ -235,7 +235,7 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
         for (let i = 0; i < values.length; i++) {
           params[i] = unwrapValue(values[i]);
         }
-        value = data.pipe.transform(params[0], ...params.slice(1));
+        value = (<any>data.pipe.transform)(...params);
         break;
     }
     data.value = value;

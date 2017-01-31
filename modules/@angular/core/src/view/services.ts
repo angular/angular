@@ -18,7 +18,7 @@ import {Sanitizer, SecurityContext} from '../security';
 
 import {createInjector} from './provider';
 import {getQueryValue} from './query';
-import {DebugContext, ElementData, NodeData, NodeDef, NodeType, Services, ViewData, ViewDefinition, asElementData} from './types';
+import {DebugContext, ElementData, NodeData, NodeDef, NodeType, Services, ViewData, ViewDefinition, ViewState, asElementData} from './types';
 import {isComponentView, renderNode, rootRenderNodes} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView} from './view_attach';
@@ -112,13 +112,22 @@ class ViewRef_ implements EmbeddedViewRef<any> {
 
   get context() { return this._view.context; }
 
-  get destroyed(): boolean { return unimplemented(); }
+  get destroyed(): boolean { return this._view.state === ViewState.Destroyed; }
 
-  markForCheck(): void { unimplemented(); }
-  detach(): void { unimplemented(); }
+  markForCheck(): void { this.reattach(); }
+  detach(): void {
+    if (this._view.state === ViewState.ChecksEnabled) {
+      this._view.state = ViewState.ChecksDisabled;
+    }
+  }
   detectChanges(): void { checkAndUpdateView(this._view); }
   checkNoChanges(): void { checkNoChangesView(this._view); }
-  reattach(): void { unimplemented(); }
+
+  reattach(): void {
+    if (this._view.state === ViewState.ChecksDisabled) {
+      this._view.state = ViewState.ChecksEnabled;
+    }
+  }
   onDestroy(callback: Function) { unimplemented(); }
 
   destroy() { unimplemented(); }

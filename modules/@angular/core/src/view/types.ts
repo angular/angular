@@ -56,7 +56,8 @@ export type ViewHandleEventFn =
  */
 export enum ViewFlags {
   None = 0,
-  DirectDom = 1 << 1
+  DirectDom = 1 << 1,
+  OnPush = 1 << 2
 }
 
 /**
@@ -271,9 +272,17 @@ export interface ViewData {
   // and call the right accessor (e.g. `elementData`) based on
   // the NodeType.
   nodes: {[key: number]: NodeData};
-  firstChange: boolean;
+  state: ViewState;
   oldValues: any[];
   disposables: DisposableFn[];
+}
+
+export enum ViewState {
+  FirstCheck,
+  ChecksEnabled,
+  ChecksDisabled,
+  Errored,
+  Destroyed
 }
 
 export type DisposableFn = () => void;

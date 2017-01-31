@@ -16,8 +16,8 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer} from '../render/api';
 
 import {queryDef} from './query';
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, entryAction, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {checkAndUpdateBinding, dispatchEvent, entryAction, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -122,10 +122,8 @@ export function createProvider(
 }
 
 function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return entryAction(EntryAction.HandleEvent, (event: any) => {
-    setCurrentNode(view, index);
-    view.def.handleEvent(view, index, eventName, event);
-  });
+  return entryAction(
+      EntryAction.HandleEvent, (event: any) => dispatchEvent(view, index, eventName, event));
 }
 
 export function checkAndUpdateProviderInline(
@@ -159,7 +157,7 @@ export function checkAndUpdateProviderInline(
   if (changes) {
     provider.ngOnChanges(changes);
   }
-  if (view.firstChange && (def.flags & NodeFlags.OnInit)) {
+  if (view.state === ViewState.FirstCheck && (def.flags & NodeFlags.OnInit)) {
     provider.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -176,7 +174,7 @@ export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, valu
   if (changes) {
     provider.ngOnChanges(changes);
   }
-  if (view.firstChange && (def.flags & NodeFlags.OnInit)) {
+  if (view.state === ViewState.FirstCheck && (def.flags & NodeFlags.OnInit)) {
     provider.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -272,8 +270,10 @@ function checkAndUpdateProp(
   let change: SimpleChange;
   let changed: boolean;
   if (def.flags & NodeFlags.OnChanges) {
-    change = checkAndUpdateBindingWithChange(view, def, bindingIdx, value);
-    changed = !!change;
+    const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
+    changed = checkAndUpdateBinding(view, def, bindingIdx, value);
+    change =
+        changed ? new SimpleChange(oldValue, value, view.state === ViewState.FirstCheck) : null;
   } else {
     changed = checkAndUpdateBinding(view, def, bindingIdx, value);
   }
