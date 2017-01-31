@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef, isDevMode} from '@angular/core';
+import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, isDevMode} from '@angular/core';
 
 import {getTypeNameForDebugging} from '../facade/lang';
 
-export class NgForRow {
-  constructor(public $implicit: any, public index: number, public count: number) {}
+export class NgForRow<T> {
+  constructor(public $implicit: T, public index: number, public count: number) {}
 
   get first(): boolean { return this.index === 0; }
 
@@ -87,10 +87,10 @@ export class NgForRow {
  * @stable
  */
 @Directive({selector: '[ngFor][ngForOf]'})
-export class NgFor implements DoCheck, OnChanges {
-  @Input() ngForOf: any;
+export class NgFor<T> implements DoCheck, OnChanges {
+  @Input() ngForOf: NgIterable<T>;
   @Input()
-  set ngForTrackBy(fn: TrackByFn) {
+  set ngForTrackBy(fn: TrackByFunction<T>) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
       // TODO(vicb): use a log service once there is a public one available
       if (<any>console && <any>console.warn) {
@@ -102,17 +102,17 @@ export class NgFor implements DoCheck, OnChanges {
     this._trackByFn = fn;
   }
 
-  get ngForTrackBy(): TrackByFn { return this._trackByFn; }
+  get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  private _differ: IterableDiffer<any> = null;
-  private _trackByFn: TrackByFn;
+  private _differ: IterableDiffer<T> = null;
+  private _trackByFn: TrackByFunction<T>;
 
   constructor(
-      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow>,
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow<T>>,
       private _differs: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
   @Input()
-  set ngForTemplate(value: TemplateRef<NgForRow>) {
+  set ngForTemplate(value: TemplateRef<NgForRow<T>>) {  // TODO: TemplateRef<Partial<NgForRow<T>>>
     if (value) {
       this._template = value;
     }
@@ -140,8 +140,8 @@ export class NgFor implements DoCheck, OnChanges {
     }
   }
 
-  private _applyChanges(changes: IterableChanges<any>) {
-    const insertTuples: RecordViewTuple[] = [];
+  private _applyChanges(changes: IterableChanges<T>) {
+    const insertTuples: RecordViewTuple<T>[] = [];
     changes.forEachOperation(
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
@@ -154,7 +154,7 @@ export class NgFor implements DoCheck, OnChanges {
           } else {
             const view = this._viewContainer.get(adjustedPreviousIndex);
             this._viewContainer.move(view, currentIndex);
-            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow>>view);
+            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow<T>>>view);
             insertTuples.push(tuple);
           }
         });
@@ -164,22 +164,22 @@ export class NgFor implements DoCheck, OnChanges {
     }
 
     for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      const viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
+      const viewRef = <EmbeddedViewRef<NgForRow<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
     changes.forEachIdentityChange((record: any) => {
-      const viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
+      const viewRef = <EmbeddedViewRef<NgForRow<T>>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
   }
 
-  private _perViewChange(view: EmbeddedViewRef<NgForRow>, record: IterableChangeRecord<any>) {
+  private _perViewChange(view: EmbeddedViewRef<NgForRow<T>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
   }
 }
 
-class RecordViewTuple {
-  constructor(public record: any, public view: EmbeddedViewRef<NgForRow>) {}
+class RecordViewTuple<T> {
+  constructor(public record: any, public view: EmbeddedViewRef<NgForRow<T>>) {}
 }

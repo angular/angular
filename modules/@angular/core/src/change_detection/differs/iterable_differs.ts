@@ -10,6 +10,7 @@ import {Optional, Provider, SkipSelf} from '../../di';
 import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
+export type NgIterable<T> = Array<T>| Iterable<T>;
 
 /**
  * A strategy for tracking changes over time to an iterable. Used by {@link NgFor} to
@@ -112,13 +113,19 @@ export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
 
 
 /**
- * An optional function passed into {@link NgFor} that defines how to track
- * items in an iterable (e.g. by index or id)
+ * Nolonger used.
  *
- * @stable
+ * @deprecated v4.0.0 - Use TrackByFunction instead
  */
 export interface TrackByFn { (index: number, item: any): any; }
 
+/**
+ * An optional function passed into {@link NgForOf} that defines how to track
+ * items in an iterable (e.g. fby index or id)
+ *
+ * @stable
+ */
+export interface TrackByFunction<T> { (index: number, item: T): any; }
 
 /**
  * Provides a factory for {@link IterableDiffer}.
@@ -127,7 +134,7 @@ export interface TrackByFn { (index: number, item: any): any; }
  */
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
-  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
+  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
 }
 
 /**

@@ -728,7 +728,8 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
           const value = context.get(variable.value);
           if (value) {
             type = value.type;
-            if (info.template.query.getTypeKind(type) === BuiltinType.Any) {
+            let kind = info.template.query.getTypeKind(type);
+            if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
               // better.
               type = refinedVariableType(type, info, current);

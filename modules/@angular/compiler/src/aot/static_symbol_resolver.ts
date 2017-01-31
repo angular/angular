@@ -83,12 +83,22 @@ export class StaticSymbolResolver {
     return result;
   }
 
+  /**
+   * getImportAs produces a symbol that can be used to import the given symbol.
+   * The import might be different than the symbol if the symbol is exported from
+   * a library with a summary; in which case we want to import the symbol from the
+   * summaries re-export instead of directly to avoid introducing a direct dependency
+   * on an otherwise indirect dependency.
+   *
+   * @param statiSymbol the symbol for which to generate a import symbol
+   */
   getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
     if (staticSymbol.members.length) {
       const baseSymbol = this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name);
       const baseImportAs = this.getImportAs(baseSymbol);
       return baseImportAs ?
-          this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
+          this.getStaticSymbol(
+              baseImportAs.filePath, baseImportAs.name, staticSymbol.members, baseImportAs.arity) :
           null;
     }
     let result = this.summaryResolver.getImportAs(staticSymbol);
@@ -100,15 +110,16 @@ export class StaticSymbolResolver {
 
   private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol {
     const members = staticSymbol.members;
-    const baseResolvedSymbol =
-        this.resolveSymbol(this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name));
+    const baseResolvedSymbol = this.resolveSymbol(this.getStaticSymbol(
+        staticSymbol.filePath, staticSymbol.name, undefined, staticSymbol.arity));
     if (!baseResolvedSymbol) {
       return null;
     }
     const baseMetadata = baseResolvedSymbol.metadata;
     if (baseMetadata instanceof StaticSymbol) {
       return new ResolvedStaticSymbol(
-          staticSymbol, this.getStaticSymbol(baseMetadata.filePath, baseMetadata.name, members));
+          staticSymbol, this.getStaticSymbol(
+                            baseMetadata.filePath, baseMetadata.name, members, baseMetadata.arity));
     } else if (baseMetadata && baseMetadata.__symbolic === 'class') {
       if (baseMetadata.statics && members.length === 1) {
         return new ResolvedStaticSymbol(staticSymbol, baseMetadata.statics[members[0]]);
@@ -134,9 +145,12 @@ export class StaticSymbolResolver {
    *
    * @param declarationFile the absolute path of the file where the symbol is declared
    * @param name the name of the type.
+   * @param members a symbol for a static member of the named type
+   * @param arity the number of generic type parameters or undefined if there are none
    */
-  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    return this.staticSymbolCache.get(declarationFile, name, members);
+  getStaticSymbol(declarationFile: string, name: string, members?: string[], arity?: number):
+      StaticSymbol {
+    return this.staticSymbolCache.get(declarationFile, name, members, arity);
   }
 
   getSymbolsOf(filePath: string): StaticSymbol[] {
@@ -167,8 +181,10 @@ export class StaticSymbolResolver {
       Object.keys(metadata['metadata']).forEach((metadataKey) => {
         const symbolMeta = metadata['metadata'][metadataKey];
         resolvedSymbols.push(this.createResolvedSymbol(
-            this.getStaticSymbol(filePath, unescapeIdentifier(metadataKey)), topLevelSymbolNames,
-            symbolMeta));
+            this.getStaticSymbol(
+                filePath, unescapeIdentifier(metadataKey), undefined,
+                symbolMeta && symbolMeta.arity),
+            topLevelSymbolNames, symbolMeta));
       });
     }
 

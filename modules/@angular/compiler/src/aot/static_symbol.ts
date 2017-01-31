@@ -12,7 +12,9 @@
  * This token is unique for a filePath and name and can be used as a hash table key.
  */
 export class StaticSymbol {
-  constructor(public filePath: string, public name: string, public members: string[]) {}
+  constructor(
+      public filePath: string, public name: string, public members: string[],
+      public arity?: number) {}
 
   assertNoMembers() {
     if (this.members.length) {
@@ -29,13 +31,13 @@ export class StaticSymbol {
 export class StaticSymbolCache {
   private cache = new Map<string, StaticSymbol>();
 
-  get(declarationFile: string, name: string, members?: string[]): StaticSymbol {
+  get(declarationFile: string, name: string, members?: string[], arity?: number): StaticSymbol {
     members = members || [];
     const memberSuffix = members.length ? `.${ members.join('.')}` : '';
     const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.cache.get(key);
     if (!result) {
-      result = new StaticSymbol(declarationFile, name, members);
+      result = new StaticSymbol(declarationFile, name, members, arity);
       this.cache.set(key, result);
     }
     return result;
