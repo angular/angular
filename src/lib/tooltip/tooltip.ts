@@ -14,7 +14,8 @@ import {
   AnimationTransitionEvent,
   NgZone,
   Optional,
-  OnDestroy
+  OnDestroy,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   Overlay,
@@ -306,7 +307,7 @@ export class TooltipComponent {
   /** Subject for notifying that the tooltip has been hidden from the view */
   private _onHide: Subject<any> = new Subject();
 
-  constructor(@Optional() private _dir: Dir) {}
+  constructor(@Optional() private _dir: Dir, private _changeDetectorRef: ChangeDetectorRef) {}
 
   /**
    * Shows the tooltip with an animation originating from the provided origin
@@ -329,6 +330,10 @@ export class TooltipComponent {
       // If this was set to true immediately, then a body click that triggers show() would
       // trigger interaction and close the tooltip right after it was displayed.
       this._closeOnInteraction = false;
+
+      // Mark for check so if any parent component has set the 
+      // ChangeDetectionStrategy to OnPush it will be checked anyways
+      this._changeDetectorRef.markForCheck();
       setTimeout(() => { this._closeOnInteraction = true; }, 0);
     }, delay);
   }
@@ -346,6 +351,10 @@ export class TooltipComponent {
     this._hideTimeoutId = setTimeout(() => {
       this._visibility = 'hidden';
       this._closeOnInteraction = false;
+
+      // Mark for check so if any parent component has set the 
+      // ChangeDetectionStrategy to OnPush it will be checked anyways
+      this._changeDetectorRef.markForCheck();
     }, delay);
   }
 

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {TooltipPosition} from '@angular/material';
 
 
@@ -7,6 +7,7 @@ import {TooltipPosition} from '@angular/material';
   selector: 'tooltip-demo',
   templateUrl: 'tooltip-demo.html',
   styleUrls: ['tooltip-demo.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush // make sure tooltip also works OnPush
 })
 export class TooltipDemo {
   position: TooltipPosition = 'below';
