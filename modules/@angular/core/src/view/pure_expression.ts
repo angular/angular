@@ -8,7 +8,7 @@
 
 import {resolveDep, tokenKey} from './provider';
 import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionData, PureExpressionType, ViewData, asPureExpressionData} from './types';
-import {checkAndUpdateBinding} from './util';
+import {checkAndUpdateBinding, unwrapValue} from './util';
 
 export function purePipeDef(pipeToken: any, argCount: number): NodeDef {
   return _pureExpressionDef(
@@ -99,6 +99,17 @@ export function checkAndUpdatePureExpressionInline(
   }
 
   if (changed) {
+    v0 = unwrapValue(v0);
+    v1 = unwrapValue(v1);
+    v2 = unwrapValue(v2);
+    v3 = unwrapValue(v3);
+    v4 = unwrapValue(v4);
+    v5 = unwrapValue(v5);
+    v6 = unwrapValue(v6);
+    v7 = unwrapValue(v7);
+    v8 = unwrapValue(v8);
+    v9 = unwrapValue(v9);
+
     const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
@@ -121,7 +132,7 @@ export function checkAndUpdatePureExpressionInline(
           case 4:
             value[3] = v3;
           case 3:
-            value[2] = v2;
+            value[3] = v2;
           case 2:
             value[1] = v1;
           case 1:
@@ -208,16 +219,23 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
-        value = values;
+        value = new Array(values.length);
+        for (let i = 0; i < values.length; i++) {
+          value[i] = unwrapValue(values[i]);
+        }
         break;
       case PureExpressionType.Object:
         value = {};
         for (let i = 0; i < values.length; i++) {
-          value[bindings[i].name] = values[i];
+          value[bindings[i].name] = unwrapValue(values[i]);
         }
         break;
       case PureExpressionType.Pipe:
-        value = data.pipe.transform(values[0], ...values.slice(1));
+        const params = new Array(values.length);
+        for (let i = 0; i < values.length; i++) {
+          params[i] = unwrapValue(values[i]);
+        }
+        value = data.pipe.transform(params[0], ...params.slice(1));
         break;
     }
     data.value = value;

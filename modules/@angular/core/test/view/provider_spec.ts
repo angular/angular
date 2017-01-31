@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -233,6 +233,39 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
             const el = rootNodes[0];
             expect(getDOM().getAttribute(el, 'ng-reflect-a')).toBe('v1');
           }
+        });
+
+        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+          let bindingValue: any;
+          let setterSpy = jasmine.createSpy('set');
+
+          class SomeService {
+            set a(value: any) { setterSpy(value); }
+          }
+
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 1, 'span'),
+                providerDef(NodeFlags.None, null, 0, SomeService, [], {a: [0, 'a']})
+              ],
+              (view) => {
+                setCurrentNode(view, 1);
+                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              }));
+
+          bindingValue = 'v1';
+          checkAndUpdateView(view);
+          expect(setterSpy).toHaveBeenCalledWith('v1');
+
+          setterSpy.calls.reset();
+          checkAndUpdateView(view);
+          expect(setterSpy).not.toHaveBeenCalled();
+
+          setterSpy.calls.reset();
+          bindingValue = WrappedValue.wrap('v1');
+          checkAndUpdateView(view);
+          expect(setterSpy).toHaveBeenCalledWith('v1');
+
         });
       });
     });
