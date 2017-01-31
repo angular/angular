@@ -24,14 +24,14 @@ export interface ViewDefinition {
   handleEvent: ViewHandleEventFn;
   /**
    * Order: Depth first.
-   * Especially providers are before elements / anchros.
+   * Especially providers are before elements / anchors.
    */
   nodes: NodeDef[];
   /** aggregated NodeFlags for all nodes **/
   nodeFlags: NodeFlags;
   /**
    * Order: parents before children, but children in reverse order.
-   * Especially providers are after elements / anchros.
+   * Especially providers are after elements / anchors.
    */
   reverseChildNodes: NodeDef[];
   lastRootNode: NodeDef;
@@ -71,6 +71,8 @@ export interface NodeDef {
   reverseChildIndex: number;
   flags: NodeFlags;
   parent: number;
+  /** this is checked against NgContentDef.index to find matched nodes */
+  ngContentIndex: number;
   /** number of transitive children */
   childCount: number;
   /** aggregated NodeFlags for all children **/
@@ -94,6 +96,7 @@ export interface NodeDef {
   text: TextDef;
   pureExpression: PureExpressionDef;
   query: QueryDef;
+  ngContent: NgContentDef;
 }
 
 export enum NodeType {
@@ -102,6 +105,7 @@ export enum NodeType {
   Provider,
   PureExpression,
   Query,
+  NgContent
 }
 
 /**
@@ -227,6 +231,16 @@ export interface QueryBindingDef {
 export enum QueryBindingType {
   First,
   All
+}
+
+export interface NgContentDef {
+  /**
+   * this index is checked against NodeDef.ngContentIndex to find the nodes
+   * that are matched by this ng-content.
+   * Note that a NodeDef with an ng-content can be reprojected, i.e.
+   * have a ngContentIndex on its own.
+   */
+  index: number;
 }
 
 // -------------------------------------

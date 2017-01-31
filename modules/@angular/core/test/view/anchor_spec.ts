@@ -48,22 +48,24 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     describe('create', () => {
       it('should create anchor nodes without parents', () => {
-        const rootNodes =
-            createAndGetRootNodes(compViewDef([anchorDef(NodeFlags.None, null, 0)])).rootNodes;
+        const rootNodes = createAndGetRootNodes(compViewDef([
+                            anchorDef(NodeFlags.None, null, null, 0)
+                          ])).rootNodes;
         expect(rootNodes.length).toBe(1);
       });
 
       it('should create views with multiple root anchor nodes', () => {
-        const rootNodes = createAndGetRootNodes(compViewDef([
-                            anchorDef(NodeFlags.None, null, 0), anchorDef(NodeFlags.None, null, 0)
-                          ])).rootNodes;
+        const rootNodes =
+            createAndGetRootNodes(compViewDef([
+              anchorDef(NodeFlags.None, null, null, 0), anchorDef(NodeFlags.None, null, null, 0)
+            ])).rootNodes;
         expect(rootNodes.length).toBe(2);
       });
 
       it('should create anchor nodes with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 1, 'div'),
-                            anchorDef(NodeFlags.None, null, 0),
+                            elementDef(NodeFlags.None, null, null, 1, 'div'),
+                            anchorDef(NodeFlags.None, null, null, 0),
                           ])).rootNodes;
         expect(getDOM().childNodes(rootNodes[0]).length).toBe(1);
       });
@@ -71,8 +73,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       if (!config.directDom) {
         it('should add debug information to the renderer', () => {
           const someContext = new Object();
-          const {view, rootNodes} =
-              createAndGetRootNodes(compViewDef([anchorDef(NodeFlags.None, null, 0)]), someContext);
+          const {view, rootNodes} = createAndGetRootNodes(
+              compViewDef([anchorDef(NodeFlags.None, null, null, 0)]), someContext);
           expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
         });
       }

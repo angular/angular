@@ -48,21 +48,22 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     describe('create', () => {
       it('should create text nodes without parents', () => {
-        const rootNodes = createAndGetRootNodes(compViewDef([textDef(['a'])])).rootNodes;
+        const rootNodes = createAndGetRootNodes(compViewDef([textDef(null, ['a'])])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().getText(rootNodes[0])).toBe('a');
       });
 
       it('should create views with multiple root text nodes', () => {
-        const rootNodes =
-            createAndGetRootNodes(compViewDef([textDef(['a']), textDef(['b'])])).rootNodes;
+        const rootNodes = createAndGetRootNodes(compViewDef([
+                            textDef(null, ['a']), textDef(null, ['b'])
+                          ])).rootNodes;
         expect(rootNodes.length).toBe(2);
       });
 
       it('should create text nodes with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 1, 'div'),
-                            textDef(['a']),
+                            elementDef(NodeFlags.None, null, null, 1, 'div'),
+                            textDef(null, ['a']),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         const textNode = getDOM().firstChild(rootNodes[0]);
@@ -73,7 +74,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         it('should add debug information to the renderer', () => {
           const someContext = new Object();
           const {view, rootNodes} =
-              createAndGetRootNodes(compViewDef([textDef(['a'])]), someContext);
+              createAndGetRootNodes(compViewDef([textDef(null, ['a'])]), someContext);
           expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asTextData(view, 0).renderText);
         });
       }
@@ -84,7 +85,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                textDef(['0', '1', '2']),
+                textDef(null, ['0', '1', '2']),
               ],
               (view: ViewData) => {
                 setCurrentNode(view, 0);

@@ -44,12 +44,12 @@ export function main() {
 
       function createViewWithData() {
         const {view} = createAndGetRootNodes(compViewDef([
-          elementDef(NodeFlags.None, null, 1, 'div'),
+          elementDef(NodeFlags.None, null, null, 1, 'div'),
           providerDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef([
-                elementDef(NodeFlags.None, [['#ref', QueryValueType.ElementRef]], 2, 'span'),
-                providerDef(NodeFlags.None, null, 0, AService, []), textDef(['a'])
+                elementDef(NodeFlags.None, [['#ref', QueryValueType.ElementRef]], null, 2, 'span'),
+                providerDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
               ])),
         ]));
         return view;

@@ -34,6 +34,7 @@ export function queryDef(
     disposableIndex: undefined,
     // regular values
     flags,
+    ngContentIndex: undefined,
     matchedQueries: {},
     childCount: 0,
     bindings: [],
@@ -42,7 +43,8 @@ export function queryDef(
     provider: undefined,
     text: undefined,
     pureExpression: undefined,
-    query: {id, bindings: bindingDefs}
+    query: {id, bindings: bindingDefs},
+    ngContent: undefined
   };
 }
 

@@ -13,8 +13,8 @@ import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, Elemen
 import {checkAndUpdateBinding, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number,
-    template?: ViewDefinition): NodeDef {
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
+    childCount: number, template?: ViewDefinition): NodeDef {
   const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
   if (matchedQueries) {
     matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
@@ -33,7 +33,7 @@ export function anchorDef(
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, childCount,
+    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
     bindings: [],
     disposableCount: 0,
     element: {
@@ -41,18 +41,19 @@ export function anchorDef(
       attrs: undefined,
       outputs: [], template,
       // will bet set by the view definition
-      providerIndices: undefined, source
+      providerIndices: undefined, source,
     },
     provider: undefined,
     text: undefined,
     pureExpression: undefined,
     query: undefined,
+    ngContent: undefined
   };
 }
 
 export function elementDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number, name: string,
-    fixedAttrs: {[name: string]: string} = {},
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
+    childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
@@ -108,7 +109,7 @@ export function elementDef(
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, childCount,
+    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
     element: {
@@ -117,12 +118,13 @@ export function elementDef(
       outputs: outputDefs,
       template: undefined,
       // will bet set by the view definition
-      providerIndices: undefined, source
+      providerIndices: undefined, source,
     },
     provider: undefined,
     text: undefined,
     pureExpression: undefined,
     query: undefined,
+    ngContent: undefined
   };
 }
 

@@ -12,7 +12,7 @@ import {looseIdentical} from '../facade/lang';
 import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
 import {checkAndUpdateBinding, sliceErrorStack} from './util';
 
-export function textDef(constants: string[]): NodeDef {
+export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const bindings: BindingDef[] = new Array(constants.length - 1);
@@ -37,7 +37,7 @@ export function textDef(constants: string[]): NodeDef {
     disposableIndex: undefined,
     // regular values
     flags: 0,
-    matchedQueries: {},
+    matchedQueries: {}, ngContentIndex,
     childCount: 0, bindings,
     disposableCount: 0,
     element: undefined,
@@ -45,6 +45,7 @@ export function textDef(constants: string[]): NodeDef {
     text: {prefix: constants[0], source},
     pureExpression: undefined,
     query: undefined,
+    ngContent: undefined
   };
 }
 
