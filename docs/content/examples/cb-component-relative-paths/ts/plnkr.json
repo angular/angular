@@ -1,0 +1,8 @@
+{
+	"description": "Module-relative Paths",
+	"files": [
+		"!**/*.d.ts",
+		"!**/*.js"
+	],
+	"tags": [ "cookbook" ]
+}
