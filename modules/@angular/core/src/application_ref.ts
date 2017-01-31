@@ -243,6 +243,10 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
   }
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 @Injectable()
 export class PlatformRef_ extends PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
@@ -404,6 +408,10 @@ export abstract class ApplicationRef {
   abstract get viewCount(): number;
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 @Injectable()
 export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
