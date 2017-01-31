@@ -106,7 +106,7 @@ export function main(): void {
         const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
   <translation id="angular">is great</translation>
-  <translation id="non angular">is <invalid>less</invalid> great</translation>
+  <translation id="non angular">is <invalid>less</invalid> {count, plural, =0 {{GREAT}}}</translation>
 </translationbundle>`;
 
         // Invalid messages should not cause the parser to throw
