@@ -8,6 +8,7 @@
 
 import {Provider} from '@angular/core';
 
+import {NgAttr} from './ng_attr';
 import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgFor} from './ng_for';
@@ -18,6 +19,7 @@ import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
 
 export {
+  NgAttr,
   NgClass,
   NgComponentOutlet,
   NgFor,
@@ -28,7 +30,7 @@ export {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  NgTemplateOutlet
+  NgTemplateOutlet,
 };
 
 
@@ -37,6 +39,7 @@ export {
  * application.
  */
 export const COMMON_DIRECTIVES: Provider[] = [
+  NgAttr,
   NgClass,
   NgComponentOutlet,
   NgFor,
