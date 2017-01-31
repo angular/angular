@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue} from '@angular/core';
+import {DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 
 import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic} from './helper';
@@ -39,113 +39,209 @@ export function main() {
       data: any;
     }
 
-    INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-      it(`should support pure arrays in ${InlineDynamic[inlineDynamic]} bindings`, () => {
-        let values: any[];
+    describe('pure arrays', () => {
 
-        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-            [
-              elementDef(NodeFlags.None, null, null, 2, 'span'), pureArrayDef(2),
-              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
-            ],
-            (view) => {
-              setCurrentNode(view, 1);
-              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
-              setCurrentNode(view, 2);
-              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
-            }));
-        const service = asProviderData(view, 2).instance;
+      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
+        it(`should support ${InlineDynamic[inlineDynamic]} bindings`, () => {
+          let values: any[];
 
-        values = [1, 2];
-        checkAndUpdateView(view);
-        const arr0 = service.data;
-        expect(arr0).toEqual([1, 2]);
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 2, 'span'), pureArrayDef(2),
+                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+              ],
+              (view) => {
+                setCurrentNode(view, 1);
+                const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+                setCurrentNode(view, 2);
+                checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
+              }));
+          const service = asProviderData(view, 2).instance;
 
-        // instance should not change
-        // if the values don't change
-        checkAndUpdateView(view);
-        expect(service.data).toBe(arr0);
+          values = [1, 2];
+          checkAndUpdateView(view);
+          const arr0 = service.data;
+          expect(arr0).toEqual([1, 2]);
 
-        values = [3, 2];
-        checkAndUpdateView(view);
-        const arr1 = service.data;
-        expect(arr1).not.toBe(arr0);
-        expect(arr1).toEqual([3, 2]);
+          // instance should not change
+          // if the values don't change
+          checkAndUpdateView(view);
+          expect(service.data).toBe(arr0);
+
+          values = [3, 2];
+          checkAndUpdateView(view);
+          const arr1 = service.data;
+          expect(arr1).not.toBe(arr0);
+          expect(arr1).toEqual([3, 2]);
+        });
+
+        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+          let bindingValue: any;
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 1, 'span'),
+                pureArrayDef(1),
+              ],
+              (view) => {
+                setCurrentNode(view, 1);
+                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              }));
+
+          const exprData = asPureExpressionData(view, 1);
+
+          bindingValue = 'v1';
+          checkAndUpdateView(view);
+          const v1Arr = exprData.value;
+          expect(v1Arr).toEqual(['v1']);
+
+          checkAndUpdateView(view);
+          expect(exprData.value).toBe(v1Arr);
+
+          bindingValue = WrappedValue.wrap('v1');
+          checkAndUpdateView(view);
+          expect(exprData.value).not.toBe(v1Arr);
+          expect(exprData.value).toEqual(['v1']);
+        });
+      });
+
+    });
+
+    describe('pure objects', () => {
+      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
+        it(`should support ${InlineDynamic[inlineDynamic]} bindings`, () => {
+          let values: any[];
+
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 2, 'span'), pureObjectDef(['a', 'b']),
+                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+              ],
+              (view) => {
+                setCurrentNode(view, 1);
+                const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+                setCurrentNode(view, 2);
+                checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
+              }));
+          const service = asProviderData(view, 2).instance;
+
+          values = [1, 2];
+          checkAndUpdateView(view);
+          const obj0 = service.data;
+          expect(obj0).toEqual({a: 1, b: 2});
+
+          // instance should not change
+          // if the values don't change
+          checkAndUpdateView(view);
+          expect(service.data).toBe(obj0);
+
+          values = [3, 2];
+          checkAndUpdateView(view);
+          const obj1 = service.data;
+          expect(obj1).not.toBe(obj0);
+          expect(obj1).toEqual({a: 3, b: 2});
+        });
+
+        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+          let bindingValue: any;
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 1, 'span'),
+                pureObjectDef(['a']),
+              ],
+              (view) => {
+                setCurrentNode(view, 1);
+                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              }));
+
+          const exprData = asPureExpressionData(view, 1);
+
+          bindingValue = 'v1';
+          checkAndUpdateView(view);
+          const v1Obj = exprData.value;
+          expect(v1Obj).toEqual({'a': 'v1'});
+
+          checkAndUpdateView(view);
+          expect(exprData.value).toBe(v1Obj);
+
+          bindingValue = WrappedValue.wrap('v1');
+          checkAndUpdateView(view);
+          expect(exprData.value).not.toBe(v1Obj);
+          expect(exprData.value).toEqual({'a': 'v1'});
+        });
       });
     });
 
-    INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-      it(`should support pure objects in ${InlineDynamic[inlineDynamic]} bindings`, () => {
-        let values: any[];
+    describe('pure pipes', () => {
+      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
+        it(`should support ${InlineDynamic[inlineDynamic]} bindings`, () => {
+          class SomePipe implements PipeTransform {
+            transform(v1: any, v2: any) { return [v1 + 10, v2 + 20]; }
+          }
 
-        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-            [
-              elementDef(NodeFlags.None, null, null, 2, 'span'), pureObjectDef(['a', 'b']),
-              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
-            ],
-            (view) => {
-              setCurrentNode(view, 1);
-              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
-              setCurrentNode(view, 2);
-              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
-            }));
-        const service = asProviderData(view, 2).instance;
+          let values: any[];
 
-        values = [1, 2];
-        checkAndUpdateView(view);
-        const obj0 = service.data;
-        expect(obj0).toEqual({a: 1, b: 2});
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 3, 'span'),
+                providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
+                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+              ],
+              (view) => {
+                setCurrentNode(view, 2);
+                const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
+                setCurrentNode(view, 3);
+                checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
+              }));
+          const service = asProviderData(view, 3).instance;
 
-        // instance should not change
-        // if the values don't change
-        checkAndUpdateView(view);
-        expect(service.data).toBe(obj0);
+          values = [1, 2];
+          checkAndUpdateView(view);
+          const obj0 = service.data;
+          expect(obj0).toEqual([11, 22]);
 
-        values = [3, 2];
-        checkAndUpdateView(view);
-        const obj1 = service.data;
-        expect(obj1).not.toBe(obj0);
-        expect(obj1).toEqual({a: 3, b: 2});
-      });
-    });
+          // instance should not change
+          // if the values don't change
+          checkAndUpdateView(view);
+          expect(service.data).toBe(obj0);
 
-    INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-      it(`should support pure pipes in ${InlineDynamic[inlineDynamic]} bindings`, () => {
-        class SomePipe implements PipeTransform {
-          transform(v1: any, v2: any) { return [v1 + 10, v2 + 20]; }
-        }
+          values = [3, 2];
+          checkAndUpdateView(view);
+          const obj1 = service.data;
+          expect(obj1).not.toBe(obj0);
+          expect(obj1).toEqual([13, 22]);
+        });
 
-        let values: any[];
+        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+          let bindingValue: any;
+          let transformSpy = jasmine.createSpy('transform');
 
-        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-            [
-              elementDef(NodeFlags.None, null, null, 3, 'span'),
-              providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
-              providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
-            ],
-            (view) => {
-              setCurrentNode(view, 2);
-              const pureValue = checkNodeInlineOrDynamic(inlineDynamic, values);
-              setCurrentNode(view, 3);
-              checkNodeInlineOrDynamic(inlineDynamic, [pureValue]);
-            }));
-        const service = asProviderData(view, 3).instance;
+          class SomePipe implements PipeTransform {
+            transform = transformSpy;
+          }
 
-        values = [1, 2];
-        checkAndUpdateView(view);
-        const obj0 = service.data;
-        expect(obj0).toEqual([11, 22]);
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 2, 'span'),
+                providerDef(NodeFlags.None, null, 0, SomePipe, []),
+                purePipeDef(SomePipe, 1),
+              ],
+              (view) => {
+                setCurrentNode(view, 2);
+                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              }));
 
-        // instance should not change
-        // if the values don't change
-        checkAndUpdateView(view);
-        expect(service.data).toBe(obj0);
+          bindingValue = 'v1';
+          checkAndUpdateView(view);
+          expect(transformSpy).toHaveBeenCalledWith('v1');
 
-        values = [3, 2];
-        checkAndUpdateView(view);
-        const obj1 = service.data;
-        expect(obj1).not.toBe(obj0);
-        expect(obj1).toEqual([13, 22]);
+          transformSpy.calls.reset();
+          checkAndUpdateView(view);
+          expect(transformSpy).not.toHaveBeenCalled();
+
+          bindingValue = WrappedValue.wrap('v1');
+          checkAndUpdateView(view);
+          expect(transformSpy).toHaveBeenCalledWith('v1');
+        });
       });
     });
   });

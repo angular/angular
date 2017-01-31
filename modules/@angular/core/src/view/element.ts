@@ -10,7 +10,7 @@ import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack} from './util';
+import {checkAndUpdateBinding, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack, unwrapValue} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
@@ -248,6 +248,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
   if (!checkAndUpdateBinding(view, def, bindingIdx, value)) {
     return;
   }
+  value = unwrapValue(value);
 
   const binding = def.bindings[bindingIdx];
   const name = binding.name;

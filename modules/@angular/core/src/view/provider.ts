@@ -17,7 +17,7 @@ import {Renderer} from '../render/api';
 
 import {queryDef} from './query';
 import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, entryAction, setBindingDebugInfo, setCurrentNode} from './util';
+import {checkAndUpdateBinding, checkAndUpdateBindingWithChange, entryAction, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -278,6 +278,7 @@ function checkAndUpdateProp(
     changed = checkAndUpdateBinding(view, def, bindingIdx, value);
   }
   if (changed) {
+    value = unwrapValue(value);
     const binding = def.bindings[bindingIdx];
     const propName = binding.name;
     // Note: This is still safe with Closure Compiler as
