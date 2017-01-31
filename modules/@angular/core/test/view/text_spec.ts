@@ -98,34 +98,42 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           expect(getDOM().getText(rootNodes[0])).toBe('0a1b2');
         });
 
-        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
-          let bindingValue: any;
+        if (isBrowser()) {
+          it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+            let bindingValue: any;
+            const setterSpy = jasmine.createSpy('set');
 
-          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-              [
-                textDef(null, ['', '']),
-              ],
-              (view: ViewData) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
-              }));
+            class FakeTextNode {
+              set nodeValue(value: any) { setterSpy(value); }
+            }
 
-          const setterSpy = jasmine.createSpy('set');
-          Object.defineProperty(rootNodes[0], 'nodeValue', {set: setterSpy});
+            spyOn(document, 'createTextNode').and.returnValue(new FakeTextNode());
 
-          bindingValue = 'v1';
-          checkAndUpdateView(view);
-          expect(setterSpy).toHaveBeenCalledWith('v1');
+            const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+                [
+                  textDef(null, ['', '']),
+                ],
+                (view: ViewData) => {
+                  setCurrentNode(view, 0);
+                  checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+                }));
 
-          setterSpy.calls.reset();
-          checkAndUpdateView(view);
-          expect(setterSpy).not.toHaveBeenCalled();
+            Object.defineProperty(rootNodes[0], 'nodeValue', {set: setterSpy});
 
-          setterSpy.calls.reset();
-          bindingValue = WrappedValue.wrap('v1');
-          checkAndUpdateView(view);
-          expect(setterSpy).toHaveBeenCalledWith('v1');
-        });
+            bindingValue = 'v1';
+            checkAndUpdateView(view);
+            expect(setterSpy).toHaveBeenCalledWith('v1');
+
+            setterSpy.calls.reset();
+            checkAndUpdateView(view);
+            expect(setterSpy).not.toHaveBeenCalled();
+
+            setterSpy.calls.reset();
+            bindingValue = WrappedValue.wrap('v1');
+            checkAndUpdateView(view);
+            expect(setterSpy).toHaveBeenCalledWith('v1');
+          });
+        }
       });
     });
 

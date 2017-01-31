@@ -16,7 +16,7 @@ import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAnd
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ElementDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
+import {ElementDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
 import {checkBindingNoChanges, currentAction, currentNodeIndex, currentView, entryAction, isComponentView, resolveViewDefinition, setCurrentNode} from './util';
 
 const NOOP = (): any => undefined;
@@ -260,7 +260,7 @@ function createView(
     parentDiIndex,
     context: undefined,
     component: undefined, nodes,
-    firstChange: true, renderer, services,
+    state: ViewState.FirstCheck, renderer, services,
     oldValues: new Array(def.bindingCount), disposables
   };
   return view;
@@ -348,13 +348,22 @@ function _checkAndUpdateView(view: ViewData) {
   execQueriesAction(view, NodeFlags.HasContentQuery, QueryAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterContentChecked | (view.firstChange ? NodeFlags.AfterContentInit : 0));
+      view, NodeFlags.AfterContentChecked |
+          (view.state === ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(view, NodeFlags.HasViewQuery, QueryAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterViewChecked | (view.firstChange ? NodeFlags.AfterViewInit : 0));
-  view.firstChange = false;
+      view, NodeFlags.AfterViewChecked |
+          (view.state === ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
+
+  if (view.state === ViewState.FirstCheck || view.state === ViewState.ChecksEnabled) {
+    if (view.def.flags & ViewFlags.OnPush) {
+      view.state = ViewState.ChecksDisabled;
+    } else {
+      view.state = ViewState.ChecksEnabled;
+    }
+  }
 }
 
 export function checkNodeInline(
@@ -465,7 +474,8 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
   if (queryList.dirty) {
     throw expressionChangedAfterItHasBeenCheckedError(
         view.services.createDebugContext(view, nodeDef.index),
-        `Query ${nodeDef.query.id} not dirty`, `Query ${nodeDef.query.id} dirty`, view.firstChange);
+        `Query ${nodeDef.query.id} not dirty`, `Query ${nodeDef.query.id} dirty`,
+        view.state === ViewState.FirstCheck);
   }
 }
 
@@ -480,6 +490,7 @@ function _destroyView(view: ViewData) {
   }
   execComponentViewsAction(view, ViewAction.Destroy);
   execEmbeddedViewsAction(view, ViewAction.Destroy);
+  view.state = ViewState.Destroyed;
 }
 
 enum ViewAction {
@@ -536,10 +547,14 @@ function execEmbeddedViewsAction(view: ViewData, action: ViewAction) {
 function callViewAction(view: ViewData, action: ViewAction) {
   switch (action) {
     case ViewAction.CheckNoChanges:
-      _checkNoChangesView(view);
+      if (view.state === ViewState.ChecksEnabled || view.state === ViewState.FirstCheck) {
+        _checkNoChangesView(view);
+      }
       break;
     case ViewAction.CheckAndUpdate:
-      _checkAndUpdateView(view);
+      if (view.state === ViewState.ChecksEnabled || view.state === ViewState.FirstCheck) {
+        _checkAndUpdateView(view);
+      }
       break;
     case ViewAction.Destroy:
       _destroyView(view);
