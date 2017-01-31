@@ -45,7 +45,7 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, null, 2, 'span'), pureArrayDef(2),
+              elementDef(NodeFlags.None, null, null, 2, 'span'), pureArrayDef(2),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
             (view) => {
@@ -80,7 +80,7 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, null, 2, 'span'), pureObjectDef(['a', 'b']),
+              elementDef(NodeFlags.None, null, null, 2, 'span'), pureObjectDef(['a', 'b']),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],
             (view) => {
@@ -119,7 +119,7 @@ export function main() {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef(
             [
-              elementDef(NodeFlags.None, null, 3, 'span'),
+              elementDef(NodeFlags.None, null, null, 3, 'span'),
               providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
               providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
             ],

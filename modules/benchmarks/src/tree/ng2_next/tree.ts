@@ -25,7 +25,7 @@ let viewFlags = ViewFlags.DirectDom;
 
 function TreeComponent_Host(): ViewDefinition {
   return viewDef(viewFlags, [
-    elementDef(NodeFlags.None, null, 1, 'tree'),
+    elementDef(NodeFlags.None, null, null, 1, 'tree'),
     providerDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, TreeComponent_0),
   ]);
 }
@@ -34,7 +34,7 @@ function TreeComponent_0(): ViewDefinition {
   const TreeComponent_1: ViewDefinition = viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, 1, 'tree'),
+        elementDef(NodeFlags.None, null, null, 1, 'tree'),
         providerDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
@@ -47,7 +47,7 @@ function TreeComponent_0(): ViewDefinition {
   const TreeComponent_2: ViewDefinition = viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, 1, 'tree'),
+        elementDef(NodeFlags.None, null, null, 1, 'tree'),
         providerDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
@@ -61,13 +61,13 @@ function TreeComponent_0(): ViewDefinition {
       viewFlags,
       [
         elementDef(
-            NodeFlags.None, null, 1, 'span', null,
+            NodeFlags.None, null, null, 1, 'span', null,
             [[BindingType.ElementStyle, 'backgroundColor', null]]),
-        textDef([' ', ' ']),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_1),
+        textDef(null, [' ', ' ']),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_1),
         providerDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, 1, TreeComponent_2),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_2),
         providerDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
       ],

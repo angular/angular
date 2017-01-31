@@ -11,6 +11,7 @@ import {RenderComponentType, Renderer} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
+import {appendNgContent} from './ng_content';
 import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProvider} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
@@ -315,6 +316,11 @@ function _createViewNodes(view: ViewData) {
         break;
       case NodeType.Query:
         nodeData = createQuery();
+        break;
+      case NodeType.NgContent:
+        appendNgContent(view, renderHost, nodeDef);
+        // no runtime data needed for NgContent...
+        nodeData = undefined;
         break;
     }
     nodes[i] = nodeData;

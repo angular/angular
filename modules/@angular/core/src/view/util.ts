@@ -170,3 +170,82 @@ function callWithTryCatch(fn: (a: any) => any, arg: any): any {
     throw viewWrappedError(e, debugContext);
   }
 }
+
+
+export function rootRenderNodes(view: ViewData): any[] {
+  const renderNodes: any[] = [];
+  visitRootRenderNodes(view, RenderNodeAction.Collect, undefined, undefined, renderNodes);
+  return renderNodes;
+}
+
+export enum RenderNodeAction {
+  Collect,
+  AppendChild,
+  InsertBefore,
+  RemoveChild
+}
+
+export function visitRootRenderNodes(
+    view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
+  const len = view.def.nodes.length;
+  for (let i = 0; i < len; i++) {
+    const nodeDef = view.def.nodes[i];
+    visitRenderNode(view, nodeDef, action, parentNode, nextSibling, target);
+    // jump to next sibling
+    i += nodeDef.childCount;
+  }
+}
+
+export function visitProjectedRenderNodes(
+    view: ViewData, ngContentIndex: number, action: RenderNodeAction, parentNode: any,
+    nextSibling: any, target: any[]) {
+  let compView = view;
+  while (!isComponentView(compView)) {
+    compView = compView.parent;
+  }
+  const hostView = compView.parent;
+  const hostElDef = hostView.def.nodes[compView.parentIndex];
+  const startIndex = hostElDef.index + 1;
+  const endIndex = hostElDef.index + hostElDef.childCount;
+  for (let i = startIndex; i <= endIndex; i++) {
+    const nodeDef = hostView.def.nodes[i];
+    if (nodeDef.ngContentIndex === ngContentIndex) {
+      visitRenderNode(hostView, nodeDef, action, parentNode, nextSibling, target);
+    }
+    // jump to next sibling
+    i += nodeDef.childCount;
+  }
+}
+
+function visitRenderNode(
+    view: ViewData, nodeDef: NodeDef, action: RenderNodeAction, parentNode: any, nextSibling: any,
+    target: any[]) {
+  if (nodeDef.type === NodeType.NgContent) {
+    visitProjectedRenderNodes(
+        view, nodeDef.ngContent.index, action, parentNode, nextSibling, target);
+  } else {
+    const rn = renderNode(view, nodeDef);
+    switch (action) {
+      case RenderNodeAction.AppendChild:
+        parentNode.appendChild(rn);
+        break;
+      case RenderNodeAction.InsertBefore:
+        parentNode.insertBefore(rn, nextSibling);
+        break;
+      case RenderNodeAction.RemoveChild:
+        parentNode.removeChild(rn);
+        break;
+      case RenderNodeAction.Collect:
+        target.push(rn);
+        break;
+    }
+    if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
+      const embeddedViews = asElementData(view, nodeDef.index).embeddedViews;
+      if (embeddedViews) {
+        for (let k = 0; k < embeddedViews.length; k++) {
+          visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
+        }
+      }
+    }
+  }
+}

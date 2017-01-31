@@ -50,6 +50,7 @@ function _pureExpressionDef(
     // regular values
     flags: 0,
     matchedQueries: {},
+    ngContentIndex: undefined,
     childCount: 0, bindings,
     disposableCount: 0,
     element: undefined,
@@ -57,6 +58,7 @@ function _pureExpressionDef(
     text: undefined,
     pureExpression: {type, pipeDep},
     query: undefined,
+    ngContent: undefined
   };
 }
 

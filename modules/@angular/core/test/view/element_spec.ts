@@ -49,7 +49,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     describe('create', () => {
       it('should create elements without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 0, 'span')
+                            elementDef(NodeFlags.None, null, null, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().nodeName(rootNodes[0]).toLowerCase()).toBe('span');
@@ -57,16 +57,16 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       it('should create views with multiple root elements', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 0, 'span'),
-                            elementDef(NodeFlags.None, null, 0, 'span')
+                            elementDef(NodeFlags.None, null, null, 0, 'span'),
+                            elementDef(NodeFlags.None, null, null, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(2);
       });
 
       it('should create elements with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 1, 'div'),
-                            elementDef(NodeFlags.None, null, 0, 'span'),
+                            elementDef(NodeFlags.None, null, null, 1, 'div'),
+                            elementDef(NodeFlags.None, null, null, 0, 'span'),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         const spanEl = getDOM().childNodes(rootNodes[0])[0];
@@ -75,7 +75,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       it('should set fixed attributes', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, 0, 'div', {'title': 'a'}),
+                            elementDef(NodeFlags.None, null, null, 0, 'div', {'title': 'a'}),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
@@ -85,7 +85,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         it('should add debug information to the renderer', () => {
           const someContext = new Object();
           const {view, rootNodes} = createAndGetRootNodes(
-              compViewDef([elementDef(NodeFlags.None, null, 0, 'div')]), someContext);
+              compViewDef([elementDef(NodeFlags.None, null, null, 0, 'div')]), someContext);
           expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
         });
       }
@@ -98,7 +98,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, 0, 'input', null,
+                    NodeFlags.None, null, null, 0, 'input', null,
                     [
                       [BindingType.ElementProperty, 'title', SecurityContext.NONE],
                       [BindingType.ElementProperty, 'value', SecurityContext.NONE]
@@ -128,7 +128,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, 0, 'div', null,
+                    NodeFlags.None, null, null, 0, 'div', null,
                     [
                       [BindingType.ElementAttribute, 'a1', SecurityContext.NONE],
                       [BindingType.ElementAttribute, 'a2', SecurityContext.NONE]
@@ -154,7 +154,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, 0, 'div', null,
+                    NodeFlags.None, null, null, 0, 'div', null,
                     [[BindingType.ElementClass, 'c1'], [BindingType.ElementClass, 'c2']]),
               ],
               (view) => {
@@ -177,7 +177,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, 0, 'div', null,
+                    NodeFlags.None, null, null, 0, 'div', null,
                     [
                       [BindingType.ElementStyle, 'width', 'px'],
                       [BindingType.ElementStyle, 'color', null]
@@ -226,7 +226,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const removeListenerSpy =
               spyOn(HTMLElement.prototype, 'removeEventListener').and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
-              [elementDef(NodeFlags.None, null, 0, 'button', null, null, ['click'])], null,
+              [elementDef(NodeFlags.None, null, null, 0, 'button', null, null, ['click'])], null,
               handleEventSpy));
 
           rootNodes[0].click();
@@ -249,7 +249,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const removeListenerSpy = spyOn(window, 'removeEventListener');
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
               [elementDef(
-                  NodeFlags.None, null, 0, 'button', null, null, [['window', 'windowClick']])],
+                  NodeFlags.None, null, null, 0, 'button', null, null,
+                  [['window', 'windowClick']])],
               null, handleEventSpy));
 
           expect(addListenerSpy).toHaveBeenCalled();
@@ -274,7 +275,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const removeListenerSpy = spyOn(document, 'removeEventListener');
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
               [elementDef(
-                  NodeFlags.None, null, 0, 'button', null, null, [['document', 'documentClick']])],
+                  NodeFlags.None, null, null, 0, 'button', null, null,
+                  [['document', 'documentClick']])],
               null, handleEventSpy));
 
           expect(addListenerSpy).toHaveBeenCalled();
@@ -298,7 +300,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           let preventDefaultSpy: jasmine.Spy;
 
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
-              [elementDef(NodeFlags.None, null, 0, 'button', null, null, ['click'])], null,
+              [elementDef(NodeFlags.None, null, null, 0, 'button', null, null, ['click'])], null,
               (view, index, eventName, event) => {
                 preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
                 return eventHandlerResult;
@@ -324,7 +326,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         it('should report debug info on event errors', () => {
           const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
-              [elementDef(NodeFlags.None, null, 0, 'button', null, null, ['click'])], null,
+              [elementDef(NodeFlags.None, null, null, 0, 'button', null, null, ['click'])], null,
               () => { throw new Error('Test'); }));
 
           let err: any;

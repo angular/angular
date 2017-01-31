@@ -7,8 +7,8 @@
  */
 
 import {dirtyParentQuery} from './query';
-import {ElementData, NodeData, NodeFlags, NodeType, ViewData, asElementData, asProviderData, asTextData} from './types';
-import {declaredViewContainer, renderNode} from './util';
+import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, ViewData, asElementData, asProviderData, asTextData} from './types';
+import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, rootRenderNodes, visitProjectedRenderNodes, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(elementData: ElementData, viewIndex: number, view: ViewData) {
   let embeddedViews = elementData.embeddedViews;
@@ -39,8 +39,8 @@ export function attachEmbeddedView(elementData: ElementData, viewIndex: number, 
     const parentNode = prevRenderNode.parentNode;
     const nextSibling = prevRenderNode.nextSibling;
     if (parentNode) {
-      const action = nextSibling ? DirectDomAction.InsertBefore : DirectDomAction.AppendChild;
-      directDomAttachDetachSiblingRenderNodes(view, 0, action, parentNode, nextSibling);
+      const action = nextSibling ? RenderNodeAction.InsertBefore : RenderNodeAction.AppendChild;
+      visitRootRenderNodes(view, action, parentNode, nextSibling, undefined);
     }
   }
 }
@@ -69,8 +69,7 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
   } else {
     const parentNode = elementData.renderElement.parentNode;
     if (parentNode) {
-      directDomAttachDetachSiblingRenderNodes(
-          view, 0, DirectDomAction.RemoveChild, parentNode, null);
+      visitRootRenderNodes(view, RenderNodeAction.RemoveChild, parentNode, null, undefined);
     }
   }
   return view;
@@ -91,67 +90,5 @@ function removeFromArray(arr: any[], index: number) {
     arr.pop();
   } else {
     arr.splice(index, 1);
-  }
-}
-
-export function rootRenderNodes(view: ViewData): any[] {
-  const renderNodes: any[] = [];
-  collectSiblingRenderNodes(view, 0, renderNodes);
-  return renderNodes;
-}
-
-function collectSiblingRenderNodes(view: ViewData, startIndex: number, target: any[]) {
-  const nodeCount = view.def.nodes.length;
-  for (let i = startIndex; i < nodeCount; i++) {
-    const nodeDef = view.def.nodes[i];
-    target.push(renderNode(view, nodeDef));
-    if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
-      const embeddedViews = asElementData(view, i).embeddedViews;
-      if (embeddedViews) {
-        for (let k = 0; k < embeddedViews.length; k++) {
-          collectSiblingRenderNodes(embeddedViews[k], 0, target);
-        }
-      }
-    }
-    // jump to next sibling
-    i += nodeDef.childCount;
-  }
-}
-
-enum DirectDomAction {
-  AppendChild,
-  InsertBefore,
-  RemoveChild
-}
-
-function directDomAttachDetachSiblingRenderNodes(
-    view: ViewData, startIndex: number, action: DirectDomAction, parentNode: any,
-    nextSibling: any) {
-  const nodeCount = view.def.nodes.length;
-  for (let i = startIndex; i < nodeCount; i++) {
-    const nodeDef = view.def.nodes[i];
-    const rn = renderNode(view, nodeDef);
-    switch (action) {
-      case DirectDomAction.AppendChild:
-        parentNode.appendChild(rn);
-        break;
-      case DirectDomAction.InsertBefore:
-        parentNode.insertBefore(rn, nextSibling);
-        break;
-      case DirectDomAction.RemoveChild:
-        parentNode.removeChild(rn);
-        break;
-    }
-    if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
-      const embeddedViews = asElementData(view, i).embeddedViews;
-      if (embeddedViews) {
-        for (let k = 0; k < embeddedViews.length; k++) {
-          directDomAttachDetachSiblingRenderNodes(
-              embeddedViews[k], 0, action, parentNode, nextSibling);
-        }
-      }
-    }
-    // jump to next sibling
-    i += nodeDef.childCount;
   }
 }
