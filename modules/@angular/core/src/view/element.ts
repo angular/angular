@@ -10,7 +10,7 @@ import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack, unwrapValue} from './util';
+import {checkAndUpdateBinding, dispatchEvent, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack, unwrapValue} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
@@ -192,17 +192,14 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
 }
 
 function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return entryAction(EntryAction.HandleEvent, (event: any) => {
-    setCurrentNode(view, index);
-    return view.def.handleEvent(view, index, eventName, event);
-  });
+  return entryAction(
+      EntryAction.HandleEvent, (event: any) => dispatchEvent(view, index, eventName, event));
 }
 
 
 function directDomEventHandlerClosure(view: ViewData, index: number, eventName: string) {
   return entryAction(EntryAction.HandleEvent, (event: any) => {
-    setCurrentNode(view, index);
-    const result = view.def.handleEvent(view, index, eventName, event);
+    const result = dispatchEvent(view, index, eventName, event);
     if (result === false) {
       event.preventDefault();
     }
