@@ -650,7 +650,7 @@ export class Router {
       url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
       id: number, precreatedState: RouterStateSnapshot): Promise<boolean> {
     if (id !== this.navigationId) {
-      this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
+      this.location.pushState(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(
           id, this.serializeUrl(url),
           `Navigation ID ${id} is not equal to the current navigation id ${this.navigationId}`));
@@ -748,7 +748,7 @@ export class Router {
               if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
                 this.location.replaceState(path);
               } else {
-                this.location.go(path);
+                this.location.pushState(path);
               }
             }
 

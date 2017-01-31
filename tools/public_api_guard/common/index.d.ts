@@ -68,11 +68,12 @@ export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
     forward(): void;
-    go(path: string, query?: string): void;
+    /** @deprecated */ go(path: string, query?: string): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
+    pushState(path: string, query?: string): void;
     replaceState(path: string, query?: string): void;
     subscribe(onNext: (value: any) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
     static joinWithSlash(start: string, end: string): string;

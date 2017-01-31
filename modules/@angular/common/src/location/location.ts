@@ -91,14 +91,18 @@ export class Location {
     return this._platformStrategy.prepareExternalUrl(url);
   }
 
-  // TODO: rename this method to pushState
   /**
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(path: string, query: string = ''): void {
+  pushState(path: string, query: string = ''): void {
     this._platformStrategy.pushState(null, '', path, query);
   }
+
+  /**
+   * @deprecated use pushState instead
+   */
+  go(path: string, query: string = ''): void { this.pushState(path, query); }
 
   /**
    * Changes the browsers URL to the normalized version of the given URL, and replaces

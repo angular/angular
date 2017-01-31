@@ -57,7 +57,7 @@ export class SpyLocation implements Location {
     return this._baseHref + url;
   }
 
-  go(path: string, query: string = '') {
+  pushState(path: string, query: string = ''): void {
     path = this.prepareExternalUrl(path);
 
     if (this._historyIndex > 0) {
@@ -76,7 +76,10 @@ export class SpyLocation implements Location {
     this._subject.emit({'url': url, 'pop': false});
   }
 
-  replaceState(path: string, query: string = '') {
+  /** @deprecated use pushState instead */
+  go(path: string, query: string = ''): void { this.pushState(path, query); }
+
+  replaceState(path: string, query: string = ''): void {
     path = this.prepareExternalUrl(path);
 
     const history = this._history[this._historyIndex];
@@ -91,7 +94,7 @@ export class SpyLocation implements Location {
     this.urlChanges.push('replace: ' + url);
   }
 
-  forward() {
+  forward(): void {
     if (this._historyIndex < (this._history.length - 1)) {
       this._historyIndex++;
       this._subject.emit({'url': this.path(), 'pop': true});
