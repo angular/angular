@@ -12,10 +12,8 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-
 import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
-
 
 /**
  * @docsNotRequired
@@ -30,14 +28,18 @@ export class LoadedRouterConfig {
 }
 
 export class RouterConfigLoader {
-  constructor(private loader: NgModuleFactoryLoader, private compiler: Compiler) {}
+  constructor(
+      private loader: NgModuleFactoryLoader, private compiler: Compiler,
+      private onLoadListener: (r: Route) => void) {}
 
-  load(parentInjector: Injector, loadChildren: LoadChildren): Observable<LoadedRouterConfig> {
-    return map.call(this.loadModuleFactory(loadChildren), (r: NgModuleFactory<any>) => {
-      const ref = r.create(parentInjector);
-      const injectorFactory = (parent: Injector) => r.create(parent).injector;
+  load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
+    const moduleFactory$ = this.loadModuleFactory(route.loadChildren);
+    return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
+      const module = factory.create(parentInjector);
+      const injectorFactory = (parent: Injector) => factory.create(parent).injector;
+      this.onLoadListener(route);
       return new LoadedRouterConfig(
-          flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver,
+          flatten(module.injector.get(ROUTES)), module.injector, module.componentFactoryResolver,
           injectorFactory);
     });
   }

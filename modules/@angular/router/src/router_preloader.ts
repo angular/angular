@@ -16,9 +16,9 @@ import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-
 import {Route, Routes} from './config';
-import {NavigationEnd, Router} from './router';
+import {NavigationEnd, RouteConfigLoaded} from './events';
+import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 
 /**
@@ -80,17 +80,18 @@ export class RouterPreloader {
   constructor(
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
       private injector: Injector, private preloadingStrategy: PreloadingStrategy) {
-    this.loader = new RouterConfigLoader(moduleLoader, compiler);
+    this.loader = new RouterConfigLoader(
+        moduleLoader, compiler, (r: Route) => router.routerEvents.next(new RouteConfigLoaded(r)));
   };
 
   setUpPreloading(): void {
     const navigations = filter.call(this.router.events, (e: any) => e instanceof NavigationEnd);
-    this.subscription = concatMap.call(navigations, () => this.preload()).subscribe((v: any) => {});
+    this.subscription = concatMap.call(navigations, () => this.preload()).subscribe(() => {});
   }
 
   preload(): Observable<any> { return this.processRoutes(this.injector, this.router.config); }
 
-  ngOnDestroy() { this.subscription.unsubscribe(); }
+  ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
   private processRoutes(injector: Injector, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];
@@ -114,7 +115,7 @@ export class RouterPreloader {
 
   private preloadConfig(injector: Injector, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
-      const loaded = this.loader.load(injector, route.loadChildren);
+      const loaded = this.loader.load(injector, route);
       return mergeMap.call(loaded, (config: any): any => {
         const c: any = route;
         c._loadedConfig = config;
