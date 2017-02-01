@@ -11,7 +11,8 @@ import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnCh
 import {Subscription} from 'rxjs/Subscription';
 
 import {QueryParamsHandling} from '../config';
-import {NavigationEnd, Router} from '../router';
+import {NavigationEnd} from '../events';
+import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
 

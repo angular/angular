@@ -233,7 +233,7 @@ class ApplyRedirects {
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
-        return map.call(this.configLoader.load(injector, route.loadChildren), (r: any) => {
+        return map.call(this.configLoader.load(injector, route), (r: any) => {
           (<any>route)._loadedConfig = r;
           return new UrlSegmentGroup(segments, {});
         });
@@ -281,7 +281,7 @@ class ApplyRedirects {
           if ((<any>route)._loadedConfig) {
             return of ((<any>route)._loadedConfig);
           } else {
-            return map.call(this.configLoader.load(injector, route.loadChildren), (r: any) => {
+            return map.call(this.configLoader.load(injector, route), (r: any) => {
               (<any>route)._loadedConfig = r;
               return r;
             });

@@ -22,10 +22,11 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {QueryParamsHandling, ResolveData, Routes, validateConfig} from './config';
+import {QueryParamsHandling, ResolveData, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
+import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoaded, RoutesRecognized} from './events';
 import {recognize} from './recognize';
 import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
@@ -152,119 +153,6 @@ export interface NavigationExtras {
 }
 
 /**
- * @whatItDoes Represents an event triggered when a navigation starts.
- *
- * @stable
- */
-export class NavigationStart {
-  // TODO: vsavkin: make internal
-  constructor(
-      /** @docsNotRequired */
-      public id: number,
-      /** @docsNotRequired */
-      public url: string) {}
-
-  /** @docsNotRequired */
-  toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
-}
-
-/**
- * @whatItDoes Represents an event triggered when a navigation ends successfully.
- *
- * @stable
- */
-export class NavigationEnd {
-  // TODO: vsavkin: make internal
-  constructor(
-      /** @docsNotRequired */
-      public id: number,
-      /** @docsNotRequired */
-      public url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string) {}
-
-  /** @docsNotRequired */
-  toString(): string {
-    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
-  }
-}
-
-/**
- * @whatItDoes Represents an event triggered when a navigation is canceled.
- *
- * @stable
- */
-export class NavigationCancel {
-  // TODO: vsavkin: make internal
-  constructor(
-      /** @docsNotRequired */
-      public id: number,
-      /** @docsNotRequired */
-      public url: string,
-      /** @docsNotRequired */
-      public reason: string) {}
-
-  /** @docsNotRequired */
-  toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
-}
-
-/**
- * @whatItDoes Represents an event triggered when a navigation fails due to an unexpected error.
- *
- * @stable
- */
-export class NavigationError {
-  // TODO: vsavkin: make internal
-  constructor(
-      /** @docsNotRequired */
-      public id: number,
-      /** @docsNotRequired */
-      public url: string,
-      /** @docsNotRequired */
-      public error: any) {}
-
-  /** @docsNotRequired */
-  toString(): string {
-    return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
-  }
-}
-
-/**
- * @whatItDoes Represents an event triggered when routes are recognized.
- *
- * @stable
- */
-export class RoutesRecognized {
-  // TODO: vsavkin: make internal
-  constructor(
-      /** @docsNotRequired */
-      public id: number,
-      /** @docsNotRequired */
-      public url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
-
-  /** @docsNotRequired */
-  toString(): string {
-    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
-  }
-}
-
-/**
- * @whatItDoes Represents a router event.
- *
- * Please see {@link NavigationStart}, {@link NavigationEnd}, {@link NavigationCancel}, {@link
- * NavigationError},
- * {@link RoutesRecognized} for more information.
- *
- * @stable
- */
-export type Event =
-    NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
-
-/**
  * @whatItDoes Error handler that is invoked when a navigation errors.
  *
  * @description
@@ -320,7 +208,8 @@ export class Router {
   private rawUrlTree: UrlTree;
 
   private navigations = new BehaviorSubject<NavigationParams>(null);
-  private routerEvents = new Subject<Event>();
+  /** @internal */
+  routerEvents = new Subject<Event>();
 
   private currentRouterState: RouterState;
   private locationSubscription: Subscription;
@@ -357,7 +246,8 @@ export class Router {
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
-    this.configLoader = new RouterConfigLoader(loader, compiler);
+    this.configLoader = new RouterConfigLoader(
+        loader, compiler, (r: Route) => this.routerEvents.next(new RouteConfigLoaded(r)));
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
     this.processNavigations();
   }
