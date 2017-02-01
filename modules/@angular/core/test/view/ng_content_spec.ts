@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, detachEmbeddedView, elementDef, ngContentDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, detachEmbeddedView, directiveDef, elementDef, ngContentDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -50,7 +50,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       return [
         elementDef(NodeFlags.None, null, null, 1 + contentNodes.length, 'acomp'),
-        providerDef(NodeFlags.None, null, 0, AComp, [], null, null, () => aCompViewDef),
+        directiveDef(NodeFlags.None, null, 0, AComp, [], null, null, () => aCompViewDef),
         ...contentNodes
       ];
     }
@@ -106,7 +106,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           [
             anchorDef(
                 NodeFlags.HasEmbeddedViews, null, 0, 1, embeddedViewDef([textDef(null, ['a'])])),
-            providerDef(
+            directiveDef(
                 NodeFlags.None, null, 0, CreateViewService, [TemplateRef, ViewContainerRef])
           ],
           [elementDef(NodeFlags.None, null, null, 1, 'div'), ngContentDef(null, 0)])));

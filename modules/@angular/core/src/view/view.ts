@@ -12,7 +12,7 @@ import {RenderComponentType, Renderer} from '../render/api';
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
-import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProvider} from './provider';
+import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProviderInstance} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
@@ -58,6 +58,7 @@ export function viewDef(
     });
     if (node.element) {
       node.element = cloneAndModifyElement(node.element, {
+        // Use protoypical inheritance to not get O(n^2) complexity...
         providerIndices:
             Object.create(currentParent ? currentParent.element.providerIndices : null),
       });
@@ -284,43 +285,49 @@ function _createViewNodes(view: ViewData) {
   const nodes = view.nodes;
   for (let i = 0; i < def.nodes.length; i++) {
     const nodeDef = def.nodes[i];
-    let nodeData: any;
     // As the current node is being created, we have to use
     // the parent node as the current node for error messages, ...
     setCurrentNode(view, nodeDef.parent);
     switch (nodeDef.type) {
       case NodeType.Element:
-        nodeData = createElement(view, renderHost, nodeDef);
+        nodes[i] = createElement(view, renderHost, nodeDef) as any;
         break;
       case NodeType.Text:
-        nodeData = createText(view, renderHost, nodeDef);
+        nodes[i] = createText(view, renderHost, nodeDef) as any;
         break;
       case NodeType.Provider:
-        let componentView: ViewData;
         if (nodeDef.provider.component) {
-          const hostElIndex = nodeDef.parent;
-          componentView = createView(
-              view.services, view, hostElIndex, resolveViewDefinition(nodeDef.provider.component));
-        }
-        const providerData = nodeData = createProvider(view, nodeDef, componentView);
-        if (componentView) {
-          initView(componentView, providerData.instance, providerData.instance);
+          // Components can inject a ChangeDetectorRef that needs a references to
+          // the component view. Therefore, we create the component view first
+          // and set the ProviderData in ViewData, and then instantiate the provider.
+          const componentView = createView(
+              view.services, view, nodeDef.parent,
+              resolveViewDefinition(nodeDef.provider.component));
+          const providerData = <ProviderData>{componentView, instance: undefined};
+          nodes[i] = providerData as any;
+          const instance = providerData.instance = createProviderInstance(view, nodeDef);
+          initView(componentView, instance, instance);
+        } else {
+          const instance = createProviderInstance(view, nodeDef);
+          const providerData = <ProviderData>{componentView: undefined, instance};
+          nodes[i] = providerData as any;
         }
         break;
       case NodeType.PureExpression:
-        nodeData = createPureExpression(view, nodeDef);
+        nodes[i] = createPureExpression(view, nodeDef) as any;
         break;
       case NodeType.Query:
-        nodeData = createQuery();
+        nodes[i] = createQuery() as any;
         break;
       case NodeType.NgContent:
         appendNgContent(view, renderHost, nodeDef);
         // no runtime data needed for NgContent...
-        nodeData = undefined;
+        nodes[i] = undefined;
         break;
     }
-    nodes[i] = nodeData;
   }
+  // Create the ViewData.nodes of component views after we created everything else,
+  // so that e.g. ng-content works
   execComponentViewsAction(view, ViewAction.CreateViewNodes);
 }
 

@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {DebugContext, DefaultServices, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {DebugContext, DefaultServices, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -45,11 +45,11 @@ export function main() {
       function createViewWithData() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div'),
-          providerDef(
+          directiveDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef([
                 elementDef(NodeFlags.None, [['#ref', QueryValueType.ElementRef]], null, 2, 'span'),
-                providerDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
+                directiveDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
               ])),
         ]));
         return view;

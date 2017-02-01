@@ -64,7 +64,7 @@ function _pureExpressionDef(
 
 export function createPureExpression(view: ViewData, def: NodeDef): PureExpressionData {
   const pipe = def.pureExpression.pipeDep ?
-      resolveDep(view, def.parent, def.pureExpression.pipeDep) :
+      resolveDep(view, def.index, def.parent, def.pureExpression.pipeDep) :
       undefined;
   return {value: undefined, pipe};
 }

@@ -10,6 +10,7 @@ import {PipeTransform} from '../change_detection/change_detection';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
+import {ViewRef} from '../linker/view_ref';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
@@ -126,6 +127,7 @@ export enum NodeFlags {
   HasComponent = 1 << 9,
   HasContentQuery = 1 << 10,
   HasViewQuery = 1 << 11,
+  LazyProvider = 1 << 12
 }
 
 export interface BindingDef {
@@ -162,8 +164,6 @@ export interface ElementDef {
   /**
    * visible providers for DI in the view,
    * as see from this element.
-   * Note: We use protoypical inheritance
-   * to indices in parent ElementDefs.
    */
   providerIndices: {[tokenKey: string]: number};
   source: string;
@@ -175,13 +175,21 @@ export interface ElementOutputDef {
 }
 
 export interface ProviderDef {
+  type: ProviderType;
   token: any;
   tokenKey: string;
-  ctor: any;
+  value: any;
   deps: DepDef[];
   outputs: ProviderOutputDef[];
   // closure to allow recursive components
   component: ViewDefinitionFactory;
+}
+
+export enum ProviderType {
+  Value,
+  Class,
+  Factory,
+  UseExisting
 }
 
 export interface DepDef {
@@ -195,7 +203,8 @@ export interface DepDef {
  */
 export enum DepFlags {
   None = 0,
-  SkipSelf = 1 << 0
+  SkipSelf = 1 << 0,
+  Optional = 1 << 1
 }
 
 export interface ProviderOutputDef {
@@ -376,6 +385,8 @@ export function asQueryList(view: ViewData, index: number): QueryList<any> {
 export interface Services {
   renderComponent(rcp: RenderComponentType): Renderer;
   sanitize(context: SecurityContext, value: string): string;
+  // Note: This needs to be here to prevent a cycle in source files.
+  createViewRef(data: ViewData): ViewRef;
   // Note: This needs to be here to prevent a cycle in source files.
   createViewContainerRef(data: ElementData): ViewContainerRef;
   // Note: This needs to be here to prevent a cycle in source files.

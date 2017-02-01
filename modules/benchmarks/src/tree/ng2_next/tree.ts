@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {Component, NgModule, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNodeInline, createRootView, elementDef, providerDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNodeInline, createRootView, directiveDef, elementDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomSanitizer, DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 import {TreeNode, emptyTree} from '../util';
@@ -26,7 +26,7 @@ let viewFlags = ViewFlags.DirectDom;
 function TreeComponent_Host(): ViewDefinition {
   return viewDef(viewFlags, [
     elementDef(NodeFlags.None, null, null, 1, 'tree'),
-    providerDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, TreeComponent_0),
+    directiveDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, TreeComponent_0),
   ]);
 }
 
@@ -35,7 +35,7 @@ function TreeComponent_0(): ViewDefinition {
       viewFlags,
       [
         elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        providerDef(
+        directiveDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
       (view: ViewData) => {
@@ -48,7 +48,7 @@ function TreeComponent_0(): ViewDefinition {
       viewFlags,
       [
         elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        providerDef(
+        directiveDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
       (view: ViewData) => {
@@ -65,10 +65,10 @@ function TreeComponent_0(): ViewDefinition {
             [[BindingType.ElementStyle, 'backgroundColor', null]]),
         textDef(null, [' ', ' ']),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_1),
-        providerDef(
+        directiveDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_2),
-        providerDef(
+        directiveDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
       ],
       (view: ViewData) => {
