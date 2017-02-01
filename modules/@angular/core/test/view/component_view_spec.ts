@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -54,7 +54,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 1, 'div'),
-        providerDef(
+        directiveDef(
             NodeFlags.None, null, 0, AComp, [], null, null,
             () => compViewDef([
               elementDef(NodeFlags.None, null, null, 0, 'span'),
@@ -85,7 +85,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         const {view, rootNodes} = createAndGetRootNodes(
           compViewDef([
             elementDef(NodeFlags.None, null, null, 1, 'div'),
-            providerDef(NodeFlags.None, null, 0, AComp, [], null, null, () => compViewDef(
+            directiveDef(NodeFlags.None, null, 0, AComp, [], null, null, () => compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
               ], update
@@ -118,7 +118,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div'),
-          providerDef(
+          directiveDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef(
                   [
@@ -156,7 +156,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                   compViewDef(
                       [
                         elementDef(NodeFlags.None, null, null, 1, 'div'),
-                        providerDef(
+                        directiveDef(
                             NodeFlags.None, null, 0, AComp, [], {a: [0, 'a']}, null,
                             () =>
                                 compViewDef(
@@ -212,7 +212,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div'),
-          providerDef(
+          directiveDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef(
                   [
@@ -249,11 +249,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div'),
-          providerDef(
+          directiveDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef([
                 elementDef(NodeFlags.None, null, null, 1, 'span'),
-                providerDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
+                directiveDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
               ])),
         ]));
 

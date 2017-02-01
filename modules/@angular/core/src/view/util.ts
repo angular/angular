@@ -88,6 +88,18 @@ export function declaredViewContainer(view: ViewData): ElementData {
   return undefined;
 }
 
+export function findElementDef(view: ViewData, nodeIndex: number): NodeDef {
+  const viewDef = view.def;
+  let nodeDef = viewDef.nodes[nodeIndex];
+  while (nodeDef) {
+    if (nodeDef.type === NodeType.Element) {
+      return nodeDef;
+    }
+    nodeDef = nodeDef.parent != null ? viewDef.nodes[nodeDef.parent] : undefined;
+  }
+  return undefined;
+}
+
 export function renderNode(view: ViewData, def: NodeDef): any {
   switch (def.type) {
     case NodeType.Element:
