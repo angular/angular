@@ -320,6 +320,18 @@ describe('MdSnackBar', () => {
       flushMicrotasks();
       expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
     }));
+
+    it('should add extra classes to the container', () => {
+      snackBar.open(simpleMessage, simpleActionLabel, {
+        viewContainerRef: testViewContainerRef,
+        extraClasses: ['one', 'two']
+      });
+
+      let containerClasses = overlayContainerElement.querySelector('snack-bar-container').classList;
+
+      expect(containerClasses).toContain('one');
+      expect(containerClasses).toContain('two');
+    });
 });
 
 describe('MdSbackBar with parent MdSnackBar', () => {

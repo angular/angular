@@ -1,3 +1,17 @@
-.demo-button-label-input {
-  display: inline-block;
+.party {
+  animation: party 5000ms infinite;
+}
+
+@keyframes party {
+  0% { background: #00f; }
+  10% { background: #8e44ad; }
+  20% { background: #1abc9c; }
+  30% { background: #d35400; }
+  40% { background: #00f; }
+  50% { background: #34495e; }
+  60% { background: #00f; }
+  70% { background: #2980b9; }
+  80% { background: #f1c40f; }
+  90% { background: #2980b9; }
+  100% { background: #0ff; }
 }
