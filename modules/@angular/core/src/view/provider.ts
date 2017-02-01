@@ -220,7 +220,7 @@ export function resolveDep(
     if (elDef.parent != null) {
       elIndex = elDef.parent;
     } else {
-      elIndex = view.parentDiIndex;
+      elIndex = parentDiIndex(view);
       view = view.parent;
     }
   }
@@ -246,10 +246,24 @@ export function resolveDep(
           return asProviderData(view, providerIndex).instance;
         }
     }
-    elIndex = view.parentDiIndex;
+    elIndex = parentDiIndex(view);
     view = view.parent;
   }
   return Injector.NULL.get(depDef.token, notFoundValue);
+}
+
+/**
+ * for component views, this is the same as parentIndex.
+ * for embedded views, this is the index of the parent node
+ * that contains the view container.
+ */
+function parentDiIndex(view: ViewData): number {
+  if (view.parent) {
+    const parentNodeDef = view.def.nodes[view.parentIndex];
+    return parentNodeDef.element && parentNodeDef.element.template ? parentNodeDef.parent :
+                                                                     parentNodeDef.index;
+  }
+  return view.parentIndex;
 }
 
 export function createInjector(view: ViewData, elIndex: number): Injector {

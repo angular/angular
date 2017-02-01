@@ -259,10 +259,6 @@ export interface ViewData {
   // index of parent element / anchor. Not the index
   // of the provider with the component view.
   parentIndex: number;
-  // for component views, this is the same as parentIndex.
-  // for embedded views, this is the index of the parent node
-  // that contains the view container.
-  parentDiIndex: number;
   parent: ViewData;
   component: any;
   context: any;

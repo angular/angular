@@ -223,8 +223,7 @@ function cloneAndModifyElement(
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view = createView(
-      parent.services, parent, anchorDef.index, anchorDef.parent, anchorDef.element.template);
+  const view = createView(parent.services, parent, anchorDef.index, anchorDef.element.template);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
@@ -236,15 +235,14 @@ export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context
  */
 export function createRootView(
     services: Services, defFactory: ViewDefinitionFactory, context?: any): ViewData {
-  const view = createView(services, null, null, null, resolveViewDefinition(defFactory));
+  const view = createView(services, null, null, resolveViewDefinition(defFactory));
   initView(view, context, context);
   createViewNodes(view);
   return view;
 }
 
 function createView(
-    services: Services, parent: ViewData, parentIndex: number, parentDiIndex: number,
-    def: ViewDefinition): ViewData {
+    services: Services, parent: ViewData, parentIndex: number, def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   let renderer: Renderer;
   if (def.flags != null && (def.flags & ViewFlags.DirectDom)) {
@@ -257,7 +255,6 @@ function createView(
     def,
     parent,
     parentIndex,
-    parentDiIndex,
     context: undefined,
     component: undefined, nodes,
     state: ViewState.FirstCheck, renderer, services,
@@ -303,8 +300,7 @@ function _createViewNodes(view: ViewData) {
         if (nodeDef.provider.component) {
           const hostElIndex = nodeDef.parent;
           componentView = createView(
-              view.services, view, hostElIndex, hostElIndex,
-              resolveViewDefinition(nodeDef.provider.component));
+              view.services, view, hostElIndex, resolveViewDefinition(nodeDef.provider.component));
         }
         const providerData = nodeData = createProvider(view, nodeDef, componentView);
         if (componentView) {
