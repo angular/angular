@@ -79,7 +79,7 @@ export function main() {
              // <keygen> - obsolete
              ['<map><area></map>', '<div><br></div>', '<colgroup><col></colgroup>',
               '<div><embed></div>', '<div><hr></div>', '<div><img></div>', '<div><input></div>',
-              '<object><param>/<object>', '<audio><source></audio>', '<audio><track></audio>',
+              '<object><param></object>', '<audio><source></audio>', '<audio><track></audio>',
               '<p><wbr></p>',
              ].forEach((html) => { expect(parser.parse(html, 'TestComp').errors).toEqual([]); });
            });
@@ -193,10 +193,11 @@ export function main() {
 
         it('should match closing tags case sensitive', () => {
           const errors = parser.parse('<DiV><P></p></dIv>', 'TestComp').errors;
-          expect(errors.length).toEqual(2);
+          expect(errors.length).toEqual(3);
           expect(humanizeErrors(errors)).toEqual([
             ['p', 'Unexpected closing tag "p"', '0:8'],
             ['dIv', 'Unexpected closing tag "dIv"', '0:12'],
+            ['P', 'Unclosed tag "P"', '0:5'],
           ]);
         });
 
@@ -476,6 +477,12 @@ export function main() {
           const errors = parser.parse('<div</div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([['div', 'Unexpected closing tag "div"', '0:4']]);
+        });
+
+        it('should report missing closing tag', () => {
+          const errors = parser.parse('<div>', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([['div', 'Unclosed tag "div"', '0:0']]);
         });
 
         it('should report closing tag for void elements', () => {

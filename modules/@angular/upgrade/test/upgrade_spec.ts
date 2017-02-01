@@ -200,7 +200,7 @@ export function main() {
 
            @Component({
              selector: 'my-child',
-             template: '<div>{{valueFromPromise}}',
+             template: '<div>{{valueFromPromise}}</div>',
            })
            class ChildComponent {
              valueFromPromise: number;
