@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RootRenderer} from '@angular/core';
-import {checkNodeDynamic, checkNodeInline} from '@angular/core/src/view/index';
+import {Injector, RootRenderer, Sanitizer} from '@angular/core';
+import {RootData, checkNodeDynamic, checkNodeInline} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -51,3 +51,19 @@ export function checkNodeInlineOrDynamic(inlineDynamic: InlineDynamic, values: a
       return checkNodeDynamic(values);
   }
 }
+
+export function createRootData(projectableNodes?: any[][], rootSelectorOrNode?: any): RootData {
+  const injector = TestBed.get(Injector);
+  const renderer = injector.get(RootRenderer);
+  const sanitizer = injector.get(Sanitizer);
+  projectableNodes = projectableNodes || [];
+  return <RootData>{
+    injector,
+    projectableNodes,
+    selectorOrNode: rootSelectorOrNode, sanitizer, renderer
+  };
+}
+
+export let removeNodes: Node[];
+beforeEach(() => { removeNodes = []; });
+afterEach(() => { removeNodes.forEach((node) => getDOM().remove(node)); });

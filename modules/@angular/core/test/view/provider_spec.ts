@@ -7,11 +7,11 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
-import {BindingType, DebugContext, DefaultServices, DepFlags, NodeDef, NodeFlags, ProviderType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DebugContext, DepFlags, NodeDef, NodeFlags, ProviderType, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, isBrowser, setupAndCheckRenderer} from './helper';
+import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, createRootData, isBrowser, setupAndCheckRenderer} from './helper';
 
 export function main() {
   if (isBrowser()) {
@@ -24,15 +24,14 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
   describe(`View Providers, directDom: ${config.directDom}`, () => {
     setupAndCheckRenderer(config);
 
-    let services: Services;
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
@@ -44,7 +43,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef);
+      const view = createRootView(rootData, viewDef);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -227,6 +226,18 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                 NodeFlags.None, null, 0, SomeService, [[DepFlags.SkipSelf, 'someToken']])
           ]));
           expect(instance.dep).toBe('someParentValue');
+        });
+
+        it('should ask the root injector', () => {
+          const getSpy = spyOn(rootData.injector, 'get');
+          getSpy.and.returnValue('rootValue');
+          createAndGetRootNodes(compViewDef([
+            elementDef(NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(NodeFlags.None, null, 0, SomeService, ['rootDep'])
+          ]));
+
+          expect(instance.dep).toBe('rootValue');
+          expect(getSpy).toHaveBeenCalledWith('rootDep', Injector.THROW_IF_NOT_FOUND);
         });
 
         describe('builtin tokens', () => {
