@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -97,6 +97,43 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           const node = rootNodes[0];
           expect(getDOM().getText(rootNodes[0])).toBe('0a1b2');
         });
+
+        if (isBrowser()) {
+          it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+            let bindingValue: any;
+            const setterSpy = jasmine.createSpy('set');
+
+            class FakeTextNode {
+              set nodeValue(value: any) { setterSpy(value); }
+            }
+
+            spyOn(document, 'createTextNode').and.returnValue(new FakeTextNode());
+
+            const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+                [
+                  textDef(null, ['', '']),
+                ],
+                (view: ViewData) => {
+                  setCurrentNode(view, 0);
+                  checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+                }));
+
+            Object.defineProperty(rootNodes[0], 'nodeValue', {set: setterSpy});
+
+            bindingValue = 'v1';
+            checkAndUpdateView(view);
+            expect(setterSpy).toHaveBeenCalledWith('v1');
+
+            setterSpy.calls.reset();
+            checkAndUpdateView(view);
+            expect(setterSpy).not.toHaveBeenCalled();
+
+            setterSpy.calls.reset();
+            bindingValue = WrappedValue.wrap('v1');
+            checkAndUpdateView(view);
+            expect(setterSpy).toHaveBeenCalledWith('v1');
+          });
+        }
       });
     });
 

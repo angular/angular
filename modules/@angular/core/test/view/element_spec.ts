@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -197,7 +197,44 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       });
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    describe('general binding behavior', () => {
+      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
+        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+          let bindingValue: any;
+
+          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(
+                    NodeFlags.None, null, null, 0, 'input', null,
+                    [
+                      [BindingType.ElementProperty, 'someProp', SecurityContext.NONE],
+                    ]),
+              ],
+              (view) => {
+                setCurrentNode(view, 0);
+                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              }));
+
+          const setterSpy = jasmine.createSpy('set');
+          Object.defineProperty(rootNodes[0], 'someProp', {set: setterSpy});
+
+          bindingValue = 'v1';
+          checkAndUpdateView(view);
+          expect(setterSpy).toHaveBeenCalledWith('v1');
+
+          setterSpy.calls.reset();
+          checkAndUpdateView(view);
+          expect(setterSpy).not.toHaveBeenCalled();
+
+          setterSpy.calls.reset();
+          bindingValue = WrappedValue.wrap('v1');
+          checkAndUpdateView(view);
+          expect(setterSpy).toHaveBeenCalledWith('v1');
+        });
+      });
+    });
+
+    if (isBrowser()) {
       describe('listen to DOM events', () => {
         let removeNodes: Node[];
         beforeEach(() => { removeNodes = []; });
