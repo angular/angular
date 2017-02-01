@@ -242,7 +242,7 @@ export declare abstract class RouteReuseStrategy {
 export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
-    preserveQueryParams: boolean;
+    /** @deprecated */ preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
