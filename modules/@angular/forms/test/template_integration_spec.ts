@@ -973,6 +973,40 @@ export function main() {
            expect(control.hasError('email')).toBe(true);
          }));
 
+      it('should validate url', fakeAsync(() => {
+           const fixture = initTest(NgModelUrlValidator);
+           fixture.detectChanges();
+           tick();
+
+           const control = fixture.debugElement.children[0].injector.get(NgForm).control.get('url');
+
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(control.hasError('url')).toBe(false);
+
+           fixture.componentInstance.validatorEnabled = true;
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('');
+           expect(control.hasError('url')).toBe(true);
+
+           input.nativeElement.value = 'http://google.com';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('http://google.com');
+           expect(control.hasError('url')).toBe(false);
+
+           input.nativeElement.value = 'invalidurl';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('invalidurl');
+           expect(control.hasError('url')).toBe(true);
+         }));
+
       it('should support dir validators using bindings', fakeAsync(() => {
            const fixture = initTest(NgModelValidationBindings);
            fixture.componentInstance.required = true;
@@ -1484,6 +1518,14 @@ class NgModelCheckboxRequiredValidator {
   template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email"></form>`
 })
 class NgModelEmailValidator {
+  validatorEnabled: boolean = false;
+}
+
+@Component({
+  selector: 'ng-model-url',
+  template: `<form><input type="url" ngModel [url]="validatorEnabled" name="url"></form>`
+})
+class NgModelUrlValidator {
   validatorEnabled: boolean = false;
 }
 

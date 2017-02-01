@@ -523,6 +523,15 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     writeValue(value: any): void;
 }
 
+/** @experimental */
+export declare class UrlValidator implements Validator {
+    url: boolean | string;
+    registerOnValidatorChange(fn: () => void): void;
+    validate(c: AbstractControl): {
+        [key: string]: any;
+    };
+}
+
 /** @stable */
 export interface Validator {
     registerOnValidatorChange?(fn: () => void): void;
@@ -556,6 +565,9 @@ export declare class Validators {
         [key: string]: boolean;
     };
     static requiredTrue(control: AbstractControl): {
+        [key: string]: boolean;
+    };
+    static url(control: AbstractControl): {
         [key: string]: boolean;
     };
 }
