@@ -1,3 +1,5 @@
+@import '../core/style/variables';
+
 md-simple-snackbar {
   display: flex;
   justify-content: space-between;
@@ -7,7 +9,7 @@ md-simple-snackbar {
   box-sizing: border-box;
   border: none;
   color: white;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: $md-font-family;
   font-size: 14px;
   line-height: 20px;
   outline: none;
