@@ -17,8 +17,8 @@ import {Renderer} from '../render/api';
 import {Type} from '../type';
 
 import {queryDef} from './query';
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, entryAction, findElementDef, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, Refs, RootData, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {checkAndUpdateBinding, dispatchEvent, entryAction, findElementDef, parentDiIndex, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -169,7 +169,7 @@ export function checkAndUpdateProviderInline(
   if (changes) {
     provider.ngOnChanges(changes);
   }
-  if (view.state === ViewState.FirstCheck && (def.flags & NodeFlags.OnInit)) {
+  if ((view.state & ViewState.FirstCheck) && (def.flags & NodeFlags.OnInit)) {
     provider.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -186,7 +186,7 @@ export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, valu
   if (changes) {
     provider.ngOnChanges(changes);
   }
-  if (view.state === ViewState.FirstCheck && (def.flags & NodeFlags.OnInit)) {
+  if ((view.state & ViewState.FirstCheck) && (def.flags & NodeFlags.OnInit)) {
     provider.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -290,16 +290,18 @@ function callFactory(
 }
 
 export function resolveDep(
-    view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef): any {
-  const notFoundValue = depDef.flags & DepFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND;
+    view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef,
+    notFoundValue = Injector.THROW_IF_NOT_FOUND): any {
+  const startView = view;
+  if (depDef.flags & DepFlags.Optional) {
+    notFoundValue = null;
+  }
   const tokenKey = depDef.tokenKey;
 
   if (depDef.flags & DepFlags.SkipSelf) {
     requestNodeIndex = null;
-    const elDef = view.def.nodes[elIndex];
-    if (elDef.parent != null) {
-      elIndex = elDef.parent;
-    } else {
+    elIndex = view.def.nodes[elIndex].parent;
+    while (elIndex == null && view) {
       elIndex = parentDiIndex(view);
       view = view.parent;
     }
@@ -317,9 +319,9 @@ export function resolveDep(
       case ElementRefTokenKey:
         return new ElementRef(asElementData(view, elIndex).renderElement);
       case ViewContainerRefTokenKey:
-        return view.services.createViewContainerRef(asElementData(view, elIndex));
+        return Refs.createViewContainerRef(view, elIndex);
       case TemplateRefTokenKey:
-        return view.services.createTemplateRef(view, elDef);
+        return Refs.createTemplateRef(view, elDef);
       case ChangeDetectorRefTokenKey:
         let cdView = view;
         // If we are still checking dependencies on the initial element...
@@ -330,9 +332,9 @@ export function resolveDep(
           }
         }
         // A ViewRef is also a ChangeDetectorRef
-        return view.services.createViewRef(cdView);
+        return Refs.createViewRef(cdView);
       case InjectorRefTokenKey:
-        return createInjector(view, elIndex);
+        return Refs.createInjector(view, elIndex);
       default:
         const providerIndex = elDef.element.providerIndices[tokenKey];
         if (providerIndex != null) {
@@ -347,34 +349,7 @@ export function resolveDep(
     elIndex = parentDiIndex(view);
     view = view.parent;
   }
-  return Injector.NULL.get(depDef.token, notFoundValue);
-}
-
-/**
- * for component views, this is the same as parentIndex.
- * for embedded views, this is the index of the parent node
- * that contains the view container.
- */
-function parentDiIndex(view: ViewData): number {
-  if (view.parent) {
-    const parentNodeDef = view.def.nodes[view.parentIndex];
-    return parentNodeDef.element && parentNodeDef.element.template ? parentNodeDef.parent :
-                                                                     parentNodeDef.index;
-  }
-  return view.parentIndex;
-}
-
-export function createInjector(view: ViewData, elIndex: number): Injector {
-  return new Injector_(view, elIndex);
-}
-
-class Injector_ implements Injector {
-  constructor(private view: ViewData, private elIndex: number) {}
-  get(token: any, notFoundValue?: any): any {
-    return resolveDep(
-        this.view, undefined, this.elIndex,
-        {flags: DepFlags.None, token, tokenKey: tokenKey(token)});
-  }
+  return startView.root.injector.get(depDef.token, notFoundValue);
 }
 
 function checkAndUpdateProp(
@@ -385,8 +360,9 @@ function checkAndUpdateProp(
   if (def.flags & NodeFlags.OnChanges) {
     const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
     changed = checkAndUpdateBinding(view, def, bindingIdx, value);
-    change =
-        changed ? new SimpleChange(oldValue, value, view.state === ViewState.FirstCheck) : null;
+    change = changed ?
+        new SimpleChange(oldValue, value, (view.state & ViewState.FirstCheck) !== 0) :
+        null;
   } else {
     changed = checkAndUpdateBinding(view, def, bindingIdx, value);
   }

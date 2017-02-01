@@ -43,10 +43,7 @@ export function main() {
   enableProdMode();
   appMod = new AppModule();
   appMod.bootstrap();
-  tree = appMod.rootComp;
-  const rootEl = document.querySelector('#root');
-  rootEl.textContent = '';
-  rootEl.appendChild(appMod.rootEl);
+  tree = appMod.componentRef.instance;
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);

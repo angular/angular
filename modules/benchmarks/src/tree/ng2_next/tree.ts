@@ -7,9 +7,9 @@
  */
 
 import {NgIf} from '@angular/common';
-import {Component, NgModule, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, asElementData, asProviderData, checkAndUpdateView, checkNodeInline, createRootView, directiveDef, elementDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
-import {DomSanitizer, DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {Component, ComponentFactory, ComponentRef, Injector, NgModule, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {BindingType, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, checkNodeInline, createComponentFactory, directiveDef, elementDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 import {TreeNode, emptyTree} from '../util';
 
@@ -84,21 +84,28 @@ function TreeComponent_0(): ViewDefinition {
       });
 }
 
-export class AppModule {
-  public rootComp: TreeComponent;
-  public rootEl: any;
-  private rootView: ViewData;
-  private sanitizer: DomSanitizer;
+export class AppModule implements Injector {
+  private sanitizer: DomSanitizerImpl;
+  private componentFactory: ComponentFactory<TreeComponent>;
+  componentRef: ComponentRef<TreeComponent>;
 
   constructor() {
     this.sanitizer = new DomSanitizerImpl();
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
+    this.componentFactory = createComponentFactory('#root', TreeComponent_Host);
   }
-  bootstrap() {
-    this.rootView = createRootView(new DefaultServices(null, this.sanitizer), TreeComponent_Host);
-    this.rootComp = asProviderData(this.rootView, 1).instance;
-    this.rootEl = asElementData(this.rootView, 0).renderElement;
+
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+    switch (token) {
+      case Sanitizer:
+        return this.sanitizer;
+      case RootRenderer:
+        return null;
+    }
+    return Injector.NULL.get(token, notFoundValue);
   }
-  tick() { checkAndUpdateView(this.rootView); }
+
+  bootstrap() { this.componentRef = this.componentFactory.create(this); }
+  tick() { this.componentRef.changeDetectorRef.detectChanges(); }
 }

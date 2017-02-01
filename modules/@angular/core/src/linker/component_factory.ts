@@ -95,11 +95,9 @@ export class ComponentFactory<C> {
   /** @internal */
   _viewClass: Type<AppView<any>>;
   constructor(
-      public selector: string, _viewClass: Type<AppView<any>>, private _componentType: Type<any>) {
+      public selector: string, _viewClass: Type<AppView<any>>, public componentType: Type<any>) {
     this._viewClass = _viewClass;
   }
-
-  get componentType(): Type<any> { return this._componentType; }
 
   /**
    * Creates a new component.

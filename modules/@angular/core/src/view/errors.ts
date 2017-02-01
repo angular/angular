@@ -35,7 +35,7 @@ export function viewDebugError(msg: string, context: DebugContext): ViewDebugErr
   const err = new Error(msg) as any;
   err.context = context;
   err.stack = context.source;
-  context.view.state = ViewState.Errored;
+  context.view.state |= ViewState.Errored;
   return err;
 }
 

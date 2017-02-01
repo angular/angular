@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
+import {BindingType, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asProviderData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {isBrowser, setupAndCheckRenderer} from './helper';
+import {createRootData, isBrowser, removeNodes, setupAndCheckRenderer} from './helper';
 
 export function main() {
   if (isBrowser()) {
@@ -24,15 +24,14 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
   describe(`Component Views, directDom: ${config.directDom}`, () => {
     setupAndCheckRenderer(config);
 
-    let services: Services;
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
@@ -41,7 +40,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef);
+      const view = createRootView(rootData, viewDef);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -69,6 +68,54 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       const compRootEl = getDOM().childNodes(rootNodes[0])[0];
       expect(getDOM().nodeName(compRootEl).toLowerCase()).toBe('span');
     });
+
+    if (isBrowser()) {
+      describe('root views', () => {
+        let rootNode: HTMLElement;
+        beforeEach(() => {
+          rootNode = document.createElement('root');
+          document.body.appendChild(rootNode);
+          removeNodes.push(rootNode);
+        });
+
+        it('should select root elements based on a selector', () => {
+          rootData.selectorOrNode = 'root';
+          const view = createRootView(rootData, compViewDef([
+                                        elementDef(NodeFlags.None, null, null, 1, 'div'),
+                                      ]));
+          const rootNodes = rootRenderNodes(view);
+          expect(rootNodes).toEqual([rootNode]);
+        });
+
+        it('should select root elements based on a node', () => {
+          rootData.selectorOrNode = rootNode;
+          const view = createRootView(rootData, compViewDef([
+                                        elementDef(NodeFlags.None, null, null, 1, 'div'),
+                                      ]));
+          const rootNodes = rootRenderNodes(view);
+          expect(rootNodes).toEqual([rootNode]);
+        });
+
+        it('should set attributes on the root node', () => {
+          rootData.selectorOrNode = rootNode;
+          const view =
+              createRootView(rootData, compViewDef([
+                               elementDef(NodeFlags.None, null, null, 1, 'div', {'a': 'b'}),
+                             ]));
+          expect(rootNode.getAttribute('a')).toBe('b');
+        });
+
+        it('should clear the content of the root node', () => {
+          rootData.selectorOrNode = rootNode;
+          rootNode.appendChild(document.createElement('div'));
+          const view =
+              createRootView(rootData, compViewDef([
+                               elementDef(NodeFlags.None, null, null, 1, 'div', {'a': 'b'}),
+                             ]));
+          expect(rootNode.childNodes.length).toBe(0);
+        });
+      });
+    }
 
     describe('data binding', () => {
       it('should dirty check component views', () => {
@@ -132,11 +179,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         checkAndUpdateView(view);
         update.calls.reset();
 
-        compView.state = ViewState.ChecksDisabled;
+        compView.state &= ~ViewState.ChecksEnabled;
         checkAndUpdateView(view);
         expect(update).not.toHaveBeenCalled();
 
-        compView.state = ViewState.ChecksEnabled;
+        compView.state |= ViewState.ChecksEnabled;
         checkAndUpdateView(view);
         expect(update).toHaveBeenCalled();
       });
