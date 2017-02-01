@@ -58,9 +58,8 @@ import {UrlTree} from '../url_tree';
  * ```
  * RouterLink will use these to generate this link: `/user/bob#education?debug=true`.
  *
- * You can also tell the directive to preserve the current query params and fragment:
- *
- * deprecated, use `queryParamsHandling` instead
+ * (Deprecated in v4.0.0 use `queryParamsHandling` instead) You can also tell the
+ * directive to preserve the current query params and fragment:
  *
  * ```
  * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>
@@ -121,6 +120,9 @@ export class RouterLink {
     }
   }
 
+  /**
+   * @deprecated 4.0.0 use `queryParamsHandling` instead.
+   */
   @Input()
   set preserveQueryParams(value: boolean) {
     if (isDevMode() && <any>console && <any>console.warn) {
