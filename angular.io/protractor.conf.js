@@ -6,6 +6,7 @@ var SpecReporter = require('jasmine-spec-reporter');
 
 exports.config = {
   allScriptsTimeout: 11000,
+  getPageTimeout: 30000,
   specs: [
     './e2e/**/*.e2e-spec.ts'
   ],
@@ -14,7 +15,7 @@ exports.config = {
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
-  framework: 'jasmine',
+  framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
@@ -30,3 +31,9 @@ exports.config = {
     jasmine.getEnv().addReporter(new SpecReporter());
   }
 };
+
+if (process.env.TRAVIS) {
+  exports.config.capabilities.chromeOptions = {
+    binary: process.env.CHROME_BIN
+  };
+}
