@@ -230,9 +230,6 @@ There is currently few exception to the "use package name" rule:
 * **aio**: used for angular.io changes within the /angular.io directory of the repo
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
 
-
-Packaging
-
 ### Subject
 The subject contains succinct description of the change:
 
