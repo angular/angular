@@ -11,7 +11,8 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {isPromise} from './private_import_core';
+import {isObservable, isPromise} from './private_import_core';
+
 
 
 /**
@@ -419,7 +420,7 @@ export abstract class AbstractControl {
     if (this.asyncValidator) {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
-      if (!(obs instanceof Observable)) {
+      if (!(isObservable(obs))) {
         throw new Error(
             `expected the following validator to return Promise or Observable: ${this.asyncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
       }
