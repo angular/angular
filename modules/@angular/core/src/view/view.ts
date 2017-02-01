@@ -16,7 +16,7 @@ import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAnd
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ElementDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
+import {ElementDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, Refs, RootData, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
 import {checkBindingNoChanges, currentAction, currentNodeIndex, currentView, entryAction, isComponentView, resolveViewDefinition, setCurrentNode} from './util';
 
 const NOOP = (): any => undefined;
@@ -224,32 +224,28 @@ function cloneAndModifyElement(
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view = createView(parent.services, parent, anchorDef.index, anchorDef.element.template);
+  const view = createView(parent.root, parent, anchorDef.index, anchorDef.element.template);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
 }
 
-/**
- * We take in a ViewDefinitionFactory, so that we can initialize the debug/prod mode first,
- * and then know whether to capture error stacks in ElementDefs.
- */
-export function createRootView(
-    services: Services, defFactory: ViewDefinitionFactory, context?: any): ViewData {
-  const view = createView(services, null, null, resolveViewDefinition(defFactory));
+export function createRootView(root: RootData, def: ViewDefinition, context?: any): ViewData {
+  const view = createView(root, null, null, def);
   initView(view, context, context);
   createViewNodes(view);
   return view;
 }
 
 function createView(
-    services: Services, parent: ViewData, parentIndex: number, def: ViewDefinition): ViewData {
+    root: RootData, parent: ViewData, parentIndex: number, def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   let renderer: Renderer;
   if (def.flags != null && (def.flags & ViewFlags.DirectDom)) {
     renderer = null;
   } else {
-    renderer = def.componentType ? services.renderComponent(def.componentType) : parent.renderer;
+    renderer =
+        def.componentType ? root.renderer.renderComponent(def.componentType) : parent.renderer;
   }
   const disposables = def.disposableCount ? new Array(def.disposableCount) : undefined;
   const view: ViewData = {
@@ -258,7 +254,7 @@ function createView(
     parentIndex,
     context: undefined,
     component: undefined, nodes,
-    state: ViewState.FirstCheck, renderer, services,
+    state: ViewState.FirstCheck | ViewState.ChecksEnabled, renderer, root,
     oldValues: new Array(def.bindingCount), disposables
   };
   return view;
@@ -301,8 +297,7 @@ function _createViewNodes(view: ViewData) {
           // the component view. Therefore, we create the component view first
           // and set the ProviderData in ViewData, and then instantiate the provider.
           const componentView = createView(
-              view.services, view, nodeDef.parent,
-              resolveViewDefinition(nodeDef.provider.component));
+              view.root, view, nodeDef.parent, resolveViewDefinition(nodeDef.provider.component));
           const providerData = <ProviderData>{componentView, instance: undefined};
           nodes[i] = providerData as any;
           const instance = providerData.instance = createProviderInstance(view, nodeDef);
@@ -352,21 +347,18 @@ function _checkAndUpdateView(view: ViewData) {
 
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterContentChecked |
-          (view.state === ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
+          (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(view, NodeFlags.HasViewQuery, QueryAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterViewChecked |
-          (view.state === ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
+          (view.state & ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
 
-  if (view.state === ViewState.FirstCheck || view.state === ViewState.ChecksEnabled) {
-    if (view.def.flags & ViewFlags.OnPush) {
-      view.state = ViewState.ChecksDisabled;
-    } else {
-      view.state = ViewState.ChecksEnabled;
-    }
+  if (view.def.flags & ViewFlags.OnPush) {
+    view.state &= ~ViewState.ChecksEnabled;
   }
+  view.state &= ~ViewState.FirstCheck;
 }
 
 export function checkNodeInline(
@@ -476,9 +468,8 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
   const queryList = asQueryList(view, nodeDef.index);
   if (queryList.dirty) {
     throw expressionChangedAfterItHasBeenCheckedError(
-        view.services.createDebugContext(view, nodeDef.index),
-        `Query ${nodeDef.query.id} not dirty`, `Query ${nodeDef.query.id} dirty`,
-        view.state === ViewState.FirstCheck);
+        Refs.createDebugContext(view, nodeDef.index), `Query ${nodeDef.query.id} not dirty`,
+        `Query ${nodeDef.query.id} dirty`, (view.state & ViewState.FirstCheck) !== 0);
   }
 }
 
@@ -493,7 +484,7 @@ function _destroyView(view: ViewData) {
   }
   execComponentViewsAction(view, ViewAction.Destroy);
   execEmbeddedViewsAction(view, ViewAction.Destroy);
-  view.state = ViewState.Destroyed;
+  view.state |= ViewState.Destroyed;
 }
 
 enum ViewAction {
@@ -548,14 +539,17 @@ function execEmbeddedViewsAction(view: ViewData, action: ViewAction) {
 }
 
 function callViewAction(view: ViewData, action: ViewAction) {
+  const viewState = view.state;
   switch (action) {
     case ViewAction.CheckNoChanges:
-      if (view.state === ViewState.ChecksEnabled || view.state === ViewState.FirstCheck) {
+      if ((viewState & ViewState.ChecksEnabled) &&
+          (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
         _checkNoChangesView(view);
       }
       break;
     case ViewAction.CheckAndUpdate:
-      if (view.state === ViewState.ChecksEnabled || view.state === ViewState.FirstCheck) {
+      if ((viewState & ViewState.ChecksEnabled) &&
+          (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
         _checkAndUpdateView(view);
       }
       break;

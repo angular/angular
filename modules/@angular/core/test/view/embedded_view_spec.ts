@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
+import {BindingType, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {isBrowser, setupAndCheckRenderer} from './helper';
+import {createRootData, isBrowser, setupAndCheckRenderer} from './helper';
 
 export function main() {
   if (isBrowser()) {
@@ -24,15 +24,14 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
   describe(`Embedded Views, directDom: ${config.directDom}`, () => {
     setupAndCheckRenderer(config);
 
-    let services: Services;
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
@@ -45,7 +44,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef, context);
+      const view = createRootView(rootData, viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -78,24 +77,52 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                     elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child1'})
                   ]))
       ]));
+      const viewContainerData = asElementData(parentView, 1);
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
-
       const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
 
-      const rootChildren = getDOM().childNodes(rootNodes[0]);
-      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
-      attachEmbeddedView(asElementData(parentView, 1), 1, childView1);
+      attachEmbeddedView(viewContainerData, 0, childView0);
+      attachEmbeddedView(viewContainerData, 1, childView1);
 
       // 2 anchors + 2 elements
+      const rootChildren = getDOM().childNodes(rootNodes[0]);
       expect(rootChildren.length).toBe(4);
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
 
-      detachEmbeddedView(asElementData(parentView, 1), 1);
-      detachEmbeddedView(asElementData(parentView, 1), 0);
+      detachEmbeddedView(viewContainerData, 1);
+      detachEmbeddedView(viewContainerData, 0);
 
       expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
+    });
+
+    it('should move embedded views', () => {
+      const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
+        elementDef(NodeFlags.None, null, null, 2, 'div'),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
+                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child0'})
+                  ])),
+        anchorDef(NodeFlags.None, null, null, 0, embeddedViewDef([
+                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child1'})
+                  ]))
+      ]));
+      const viewContainerData = asElementData(parentView, 1);
+
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
+
+      attachEmbeddedView(viewContainerData, 0, childView0);
+      attachEmbeddedView(viewContainerData, 1, childView1);
+
+      moveEmbeddedView(viewContainerData, 0, 1);
+
+      expect(viewContainerData.embeddedViews).toEqual([childView1, childView0]);
+      // 2 anchors + 2 elements
+      const rootChildren = getDOM().childNodes(rootNodes[0]);
+      expect(rootChildren.length).toBe(4);
+      expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child1');
+      expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child0');
     });
 
     it('should include embedded views in root nodes', () => {

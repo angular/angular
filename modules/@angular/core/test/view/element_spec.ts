@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
-import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {BindingType, DebugContext, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, isBrowser, setupAndCheckRenderer} from './helper';
+import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, createRootData, isBrowser, removeNodes, setupAndCheckRenderer} from './helper';
 
 export function main() {
   if (isBrowser()) {
@@ -24,15 +24,14 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
   describe(`View Elements, directDom: ${config.directDom}`, () => {
     setupAndCheckRenderer(config);
 
-    let services: Services;
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
@@ -41,7 +40,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context?: any): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef, context);
+      const view = createRootView(rootData, viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -236,16 +235,6 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     if (isBrowser()) {
       describe('listen to DOM events', () => {
-        let removeNodes: Node[];
-        beforeEach(() => { removeNodes = []; });
-        afterEach(() => {
-          removeNodes.forEach((node) => {
-            if (node.parentNode) {
-              node.parentNode.removeChild(node);
-            }
-          });
-        });
-
         function createAndAttachAndGetRootNodes(viewDef: ViewDefinition):
             {rootNodes: any[], view: ViewData} {
           const result = createAndGetRootNodes(viewDef);

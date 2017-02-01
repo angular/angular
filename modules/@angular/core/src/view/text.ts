@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
-import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, Refs, RootData, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
 import {checkAndUpdateBinding, sliceErrorStack, unwrapValue} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
@@ -54,8 +54,7 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): TextD
       def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
   if (view.renderer) {
-    const debugContext =
-        isDevMode() ? view.services.createDebugContext(view, def.index) : undefined;
+    const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
     renderNode = view.renderer.createText(parentNode, def.text.prefix, debugContext);
   } else {
     renderNode = document.createTextNode(def.text.prefix);

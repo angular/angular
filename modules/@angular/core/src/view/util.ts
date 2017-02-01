@@ -9,11 +9,15 @@
 import {isDevMode} from '../application_ref';
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SimpleChange} from '../change_detection/change_detection_util';
+import {Injector} from '../di';
 import {looseIdentical} from '../facade/lang';
+import {TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef} from '../linker/view_container_ref';
+import {ViewRef} from '../linker/view_ref';
 import {Renderer} from '../render/api';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {ElementData, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {DebugContext, ElementData, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, Refs, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
 
 export function setBindingDebugInfo(
     renderer: Renderer, renderNode: any, propName: string, value: any) {
@@ -36,23 +40,23 @@ function camelCaseToDashCase(input: string): string {
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if (view.state === ViewState.FirstCheck || !devModeEqual(oldValue, value)) {
+  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
-        view.services.createDebugContext(view, def.index), oldValue, value,
-        view.state === ViewState.FirstCheck);
+        Refs.createDebugContext(view, def.index), oldValue, value,
+        (view.state & ViewState.FirstCheck) !== 0);
   }
 }
 
 export function checkAndUpdateBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
-  if (view.state === ViewState.FirstCheck ||
+  if ((view.state & ViewState.FirstCheck) ||
       !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
     oldValues[def.bindingIndex + bindingIdx] = value;
     if (def.flags & NodeFlags.HasComponent) {
       const compView = asProviderData(view, def.index).componentView;
-      if (compView.state === ViewState.ChecksDisabled && compView.def.flags & ViewFlags.OnPush) {
-        compView.state = ViewState.ChecksEnabled;
+      if (compView.def.flags & ViewFlags.OnPush) {
+        compView.state |= ViewState.ChecksEnabled;
       }
     }
     return true;
@@ -65,8 +69,8 @@ export function dispatchEvent(
   setCurrentNode(view, nodeIndex);
   let currView = view;
   while (currView) {
-    if (currView.state === ViewState.ChecksDisabled && currView.def.flags & ViewFlags.OnPush) {
-      currView.state = ViewState.ChecksEnabled;
+    if (currView.def.flags & ViewFlags.OnPush) {
+      currView.state |= ViewState.ChecksEnabled;
     }
     currView = currView.parent;
   }
@@ -86,6 +90,20 @@ export function declaredViewContainer(view: ViewData): ElementData {
     return asElementData(parentView, view.parentIndex);
   }
   return undefined;
+}
+
+/**
+ * for component views, this is the same as parentIndex.
+ * for embedded views, this is the index of the parent node
+ * that contains the view container.
+ */
+export function parentDiIndex(view: ViewData): number {
+  if (view.parent) {
+    const parentNodeDef = view.def.nodes[view.parentIndex];
+    return parentNodeDef.element && parentNodeDef.element.template ? parentNodeDef.parent :
+                                                                     parentNodeDef.index;
+  }
+  return view.parentIndex;
 }
 
 export function findElementDef(view: ViewData, nodeIndex: number): NodeDef {
@@ -163,7 +181,7 @@ export function currentAction() {
  * or code of the framework that might throw as a valid use case.
  */
 export function setCurrentNode(view: ViewData, nodeIndex: number) {
-  if (view.state === ViewState.Destroyed) {
+  if (view.state & ViewState.Destroyed) {
     throw viewDestroyedError(_currentAction);
   }
   _currentView = view;
@@ -198,7 +216,7 @@ function callWithTryCatch(fn: (a: any) => any, arg: any): any {
     if (isViewDebugError(e) || !_currentView) {
       throw e;
     }
-    const debugContext = _currentView.services.createDebugContext(_currentView, _currentNodeIndex);
+    const debugContext = Refs.createDebugContext(_currentView, _currentNodeIndex);
     throw viewWrappedDebugError(e, debugContext);
   }
 }
@@ -231,7 +249,7 @@ export function visitProjectedRenderNodes(
     view: ViewData, ngContentIndex: number, action: RenderNodeAction, parentNode: any,
     nextSibling: any, target: any[]) {
   let compView = view;
-  while (!isComponentView(compView)) {
+  while (compView && !isComponentView(compView)) {
     compView = compView.parent;
   }
   const hostView = compView.parent;
@@ -246,6 +264,15 @@ export function visitProjectedRenderNodes(
     // jump to next sibling
     i += nodeDef.childCount;
   }
+  if (!hostView.parent) {
+    // a root view
+    const projectedNodes = view.root.projectableNodes[ngContentIndex];
+    if (projectedNodes) {
+      for (let i = 0; i < projectedNodes.length; i++) {
+        execRenderNodeAction(projectedNodes[i], action, parentNode, nextSibling, target);
+      }
+    }
+  }
 }
 
 function visitRenderNode(
@@ -256,20 +283,7 @@ function visitRenderNode(
         view, nodeDef.ngContent.index, action, parentNode, nextSibling, target);
   } else {
     const rn = renderNode(view, nodeDef);
-    switch (action) {
-      case RenderNodeAction.AppendChild:
-        parentNode.appendChild(rn);
-        break;
-      case RenderNodeAction.InsertBefore:
-        parentNode.insertBefore(rn, nextSibling);
-        break;
-      case RenderNodeAction.RemoveChild:
-        parentNode.removeChild(rn);
-        break;
-      case RenderNodeAction.Collect:
-        target.push(rn);
-        break;
-    }
+    execRenderNodeAction(rn, action, parentNode, nextSibling, target);
     if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
       const embeddedViews = asElementData(view, nodeDef.index).embeddedViews;
       if (embeddedViews) {
@@ -278,5 +292,23 @@ function visitRenderNode(
         }
       }
     }
+  }
+}
+
+function execRenderNodeAction(
+    renderNode: any, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
+  switch (action) {
+    case RenderNodeAction.AppendChild:
+      parentNode.appendChild(renderNode);
+      break;
+    case RenderNodeAction.InsertBefore:
+      parentNode.insertBefore(renderNode, nextSibling);
+      break;
+    case RenderNodeAction.RemoveChild:
+      parentNode.removeChild(renderNode);
+      break;
+    case RenderNodeAction.Collect:
+      target.push(renderNode);
+      break;
   }
 }
