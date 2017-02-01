@@ -2099,9 +2099,8 @@ class FormControlSelectNgValue {
     </div>`
 })
 class FormControlSelectWithCompareFn {
-  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
-    return o1 && o2 ? o1.id === o2.id : o1 === o2;
-  };
+  compareFn:
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
@@ -2144,9 +2143,8 @@ class FormControlSelectMultipleNgValue {
     </div>`
 })
 class FormControlSelectMultipleWithCompareFn {
-  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
-    return o1 && o2 ? o1.id === o2.id : o1 === o2;
-  };
+  compareFn:
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
