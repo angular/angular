@@ -357,6 +357,16 @@ describe('MdSlideToggle', () => {
       expect(document.activeElement).toBe(inputElement);
       expect(slideToggleElement.classList).toContain('md-slide-toggle-focused');
     });
+
+    it('should set a element class if labelPosition is set to before', () => {
+      expect(slideToggleElement.classList).not.toContain('md-slide-toggle-label-before');
+
+      testComponent.labelPosition = 'before';
+      fixture.detectChanges();
+
+      expect(slideToggleElement.classList).toContain('md-slide-toggle-label-before');
+    });
+
   });
 
   describe('custom template', () => {
@@ -584,6 +594,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
                      [aria-label]="slideLabel"
                      [aria-labelledby]="slideLabelledBy"
                      [tabIndex]="slideTabindex"
+                     [labelPosition]="labelPosition"
                      (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
 
@@ -603,6 +614,7 @@ class SlideToggleTestApp {
   slideLabelledBy: string;
   slideTabindex: number;
   lastEvent: MdSlideToggleChange;
+  labelPosition: string;
 
   onSlideClick(event: Event) {}
   onSlideChange(event: MdSlideToggleChange) {

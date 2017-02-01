@@ -66,6 +66,12 @@ md-slide-toggle {
   cursor: pointer;
 }
 
+/* If the label should be placed before the thumb then we just change the orders. */
+.md-slide-toggle-label-before {
+  .md-slide-toggle-label { order: 1; }
+  .md-slide-toggle-container { order: 2; }
+}
+
 // Container for the composition of the slide-toggle / switch indicator.
 .md-slide-toggle-container {
   cursor: grab;
@@ -73,10 +79,17 @@ md-slide-toggle {
   height: $md-slide-toggle-height;
 
   position: relative;
+}
 
+/* Apply the margin for slide-toggles and revert it for RTL toggles with labelPosition before. */
+[dir='rtl'] .md-slide-toggle-label-before .md-slide-toggle-container, .md-slide-toggle-container {
   margin-right: $md-slide-toggle-spacing;
+  margin-left: 0;
+}
 
-  [dir='rtl'] & {
+/* Switch the margins in RTL mode and also switch it if the labelPosition is set to before. */
+[dir='rtl'], .md-slide-toggle-label-before {
+  .md-slide-toggle-container {
     margin-left: $md-slide-toggle-spacing;
     margin-right: 0;
   }

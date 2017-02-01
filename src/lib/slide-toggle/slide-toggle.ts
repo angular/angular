@@ -51,6 +51,7 @@ let nextId = 0;
     '[class.md-disabled]': 'disabled',
     // This md-slide-toggle prefix will change, once the temporary ripple is removed.
     '[class.md-slide-toggle-focused]': '_hasFocus',
+    '[class.md-slide-toggle-label-before]': 'labelPosition == "before"',
     '(mousedown)': '_setMousedown()'
   },
   templateUrl: 'slide-toggle.html',
@@ -84,6 +85,9 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   /** Used to specify the tabIndex value for the underlying input element. */
   @Input() tabIndex: number = 0;
+
+  /** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
+  @Input() labelPosition: 'before' | 'after' = 'after';
 
   /** Used to set the aria-label attribute on the underlying input element. */
   @Input('aria-label') ariaLabel: string = null;
