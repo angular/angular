@@ -19,7 +19,7 @@ import {Sanitizer, SecurityContext} from '../security';
 import {createInjector} from './provider';
 import {getQueryValue} from './query';
 import {DebugContext, ElementData, NodeData, NodeDef, NodeType, Services, ViewData, ViewDefinition, ViewState, asElementData} from './types';
-import {isComponentView, renderNode, rootRenderNodes} from './util';
+import {findElementDef, isComponentView, renderNode, rootRenderNodes} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView} from './view_attach';
 
@@ -33,6 +33,7 @@ export class DefaultServices implements Services {
   sanitize(context: SecurityContext, value: string): string {
     return this._sanitizer.sanitize(context, value);
   }
+  createViewRef(data: ViewData): ViewRef { return new ViewRef_(data); }
   createViewContainerRef(data: ElementData): ViewContainerRef {
     return new ViewContainerRef_(data);
   }
@@ -120,8 +121,16 @@ class ViewRef_ implements EmbeddedViewRef<any> {
       this._view.state = ViewState.ChecksDisabled;
     }
   }
-  detectChanges(): void { checkAndUpdateView(this._view); }
-  checkNoChanges(): void { checkNoChangesView(this._view); }
+  detectChanges(): void {
+    if (this._view.state !== ViewState.FirstCheck) {
+      checkAndUpdateView(this._view);
+    }
+  }
+  checkNoChanges(): void {
+    if (this._view.state !== ViewState.FirstCheck) {
+      checkNoChangesView(this._view);
+    }
+  }
 
   reattach(): void {
     if (this._view.state === ViewState.ChecksDisabled) {
@@ -213,18 +222,6 @@ function findHostElement(view: ViewData): ElementData {
   if (view.parent) {
     const hostData = asElementData(view.parent, view.parentIndex);
     return hostData;
-  }
-  return undefined;
-}
-
-function findElementDef(view: ViewData, nodeIndex: number): NodeDef {
-  const viewDef = view.def;
-  let nodeDef = viewDef.nodes[nodeIndex];
-  while (nodeDef) {
-    if (nodeDef.type === NodeType.Element) {
-      return nodeDef;
-    }
-    nodeDef = nodeDef.parent != null ? viewDef.nodes[nodeDef.parent] : undefined;
   }
   return undefined;
 }

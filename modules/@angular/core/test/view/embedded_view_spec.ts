@@ -7,7 +7,7 @@
  */
 
 import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -164,7 +164,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         elementDef(NodeFlags.None, null, null, 1, 'div'),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 1, 'span'),
-                    providerDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
+                    directiveDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
                   ]))
       ]));
 

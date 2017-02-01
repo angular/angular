@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, elementDef, providerDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -47,20 +47,20 @@ export function main() {
 
     function contentQueryProviders() {
       return [
-        providerDef(NodeFlags.None, null, 1, QueryService, []),
+        directiveDef(NodeFlags.None, null, 1, QueryService, []),
         queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.All})
       ];
     }
 
     function viewQueryProviders(compView: ViewDefinition) {
       return [
-        providerDef(NodeFlags.None, null, 1, QueryService, [], null, null, () => compView),
+        directiveDef(NodeFlags.None, null, 1, QueryService, [], null, null, () => compView),
         queryDef(NodeFlags.HasViewQuery, 'query1', {'a': QueryBindingType.All})
       ];
     }
 
     function aServiceProvider() {
-      return providerDef(NodeFlags.None, [['query1', QueryValueType.Provider]], 0, AService, []);
+      return directiveDef(NodeFlags.None, [['query1', QueryValueType.Provider]], 0, AService, []);
     }
 
     describe('content queries', () => {
@@ -272,7 +272,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 4, 'div'),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.All}),
           aServiceProvider(),
           aServiceProvider(),
@@ -295,7 +295,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 4, 'div'),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
           aServiceProvider(),
           aServiceProvider(),
@@ -316,7 +316,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, [['query1', QueryValueType.ElementRef]], null, 2, 'div'),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
@@ -335,7 +335,7 @@ export function main() {
           anchorDef(
               NodeFlags.None, [['query1', QueryValueType.TemplateRef]], null, 2,
               viewDef(ViewFlags.None, [anchorDef(NodeFlags.None, null, null, 0)])),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
@@ -352,7 +352,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           anchorDef(NodeFlags.None, [['query1', QueryValueType.ViewContainerRef]], null, 2),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
@@ -406,7 +406,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
-          providerDef(NodeFlags.None, null, 1, QueryService, []),
+          directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.All}),
           aServiceProvider(),
         ]));

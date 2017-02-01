@@ -7,17 +7,18 @@
  */
 
 import {isDevMode} from '../application_ref';
-import {SimpleChange, SimpleChanges} from '../change_detection/change_detection';
+import {ChangeDetectorRef, SimpleChange, SimpleChanges} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {stringify} from '../facade/lang';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer} from '../render/api';
+import {Type} from '../type';
 
 import {queryDef} from './query';
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, entryAction, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {checkAndUpdateBinding, dispatchEvent, entryAction, findElementDef, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -25,11 +26,31 @@ const RendererTokenKey = tokenKey(Renderer);
 const ElementRefTokenKey = tokenKey(ElementRef);
 const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
+const ChangeDetectorRefTokenKey = tokenKey(ChangeDetectorRef);
+const InjectorRefTokenKey = tokenKey(Injector);
 
-export function providerDef(
+const NOT_CREATED = new Object();
+
+export function directiveDef(
     flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number, ctor: any,
     deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
     outputs?: {[name: string]: string}, component?: () => ViewDefinition): NodeDef {
+  return _providerDef(
+      flags, matchedQueries, childCount, ProviderType.Class, ctor, ctor, deps, props, outputs,
+      component);
+}
+
+export function providerDef(
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], type: ProviderType, token: any,
+    value: any, deps: ([DepFlags, any] | any)[]): NodeDef {
+  return _providerDef(flags, matchedQueries, 0, type, token, value, deps);
+}
+
+export function _providerDef(
+    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number,
+    type: ProviderType, token: any, value: any, deps: ([DepFlags, any] | any)[],
+    props?: {[name: string]: [number, string]}, outputs?: {[name: string]: string},
+    component?: () => ViewDefinition): NodeDef {
   const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
   if (matchedQueries) {
     matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
@@ -85,8 +106,9 @@ export function providerDef(
     disposableCount: outputDefs.length,
     element: undefined,
     provider: {
-      tokenKey: tokenKey(ctor),
-      token: ctor, ctor,
+      type,
+      token,
+      tokenKey: tokenKey(token), value,
       deps: depDefs,
       outputs: outputDefs, component
     },
@@ -106,19 +128,9 @@ export function tokenKey(token: any): string {
   return key;
 }
 
-export function createProvider(
-    view: ViewData, def: NodeDef, componentView: ViewData): ProviderData {
+export function createProviderInstance(view: ViewData, def: NodeDef): any {
   const providerDef = def.provider;
-  const provider = createInstance(view, def.parent, providerDef.ctor, providerDef.deps);
-  if (providerDef.outputs.length) {
-    for (let i = 0; i < providerDef.outputs.length; i++) {
-      const output = providerDef.outputs[i];
-      const subscription = provider[output.propName].subscribe(
-          eventHandlerClosure(view, def.parent, output.eventName));
-      view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
-    }
-  }
-  return {instance: provider, componentView: componentView};
+  return def.flags & NodeFlags.LazyProvider ? NOT_CREATED : createInstance(view, def);
 }
 
 function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
@@ -182,7 +194,38 @@ export function checkAndUpdateProviderDynamic(view: ViewData, def: NodeDef, valu
   }
 }
 
-function createInstance(view: ViewData, elIndex: number, ctor: any, deps: DepDef[]): any {
+function createInstance(view: ViewData, nodeDef: NodeDef): any {
+  const providerDef = nodeDef.provider;
+  let injectable: any;
+  switch (providerDef.type) {
+    case ProviderType.Class:
+      injectable =
+          createClass(view, nodeDef.index, nodeDef.parent, providerDef.value, providerDef.deps);
+      break;
+    case ProviderType.Factory:
+      injectable =
+          callFactory(view, nodeDef.index, nodeDef.parent, providerDef.value, providerDef.deps);
+      break;
+    case ProviderType.UseExisting:
+      injectable = resolveDep(view, nodeDef.index, nodeDef.parent, providerDef.deps[0]);
+      break;
+    case ProviderType.Value:
+      injectable = providerDef.value;
+      break;
+  }
+  if (providerDef.outputs.length) {
+    for (let i = 0; i < providerDef.outputs.length; i++) {
+      const output = providerDef.outputs[i];
+      const subscription = injectable[output.propName].subscribe(
+          eventHandlerClosure(view, nodeDef.parent, output.eventName));
+      view.disposables[nodeDef.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
+    }
+  }
+  return injectable;
+}
+
+function createClass(
+    view: ViewData, requestorNodeIndex: number, elIndex: number, ctor: any, deps: DepDef[]): any {
   const len = deps.length;
   let injectable: any;
   switch (len) {
@@ -190,32 +233,69 @@ function createInstance(view: ViewData, elIndex: number, ctor: any, deps: DepDef
       injectable = new ctor();
       break;
     case 1:
-      injectable = new ctor(resolveDep(view, elIndex, deps[0]));
+      injectable = new ctor(resolveDep(view, requestorNodeIndex, elIndex, deps[0]));
       break;
     case 2:
-      injectable = new ctor(resolveDep(view, elIndex, deps[0]), resolveDep(view, elIndex, deps[1]));
+      injectable = new ctor(
+          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[1]));
       break;
     case 3:
       injectable = new ctor(
-          resolveDep(view, elIndex, deps[0]), resolveDep(view, elIndex, deps[1]),
-          resolveDep(view, elIndex, deps[2]));
+          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[1]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[2]));
       break;
     default:
       const depValues = new Array(len);
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, elIndex, deps[i]);
+        depValues[i] = resolveDep(view, requestorNodeIndex, elIndex, deps[i]);
       }
       injectable = new ctor(...depValues);
   }
   return injectable;
 }
 
+function callFactory(
+    view: ViewData, requestorNodeIndex: number, elIndex: number, factory: any,
+    deps: DepDef[]): any {
+  const len = deps.length;
+  let injectable: any;
+  switch (len) {
+    case 0:
+      injectable = factory();
+      break;
+    case 1:
+      injectable = factory(resolveDep(view, requestorNodeIndex, elIndex, deps[0]));
+      break;
+    case 2:
+      injectable = factory(
+          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[1]));
+      break;
+    case 3:
+      injectable = factory(
+          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[1]),
+          resolveDep(view, requestorNodeIndex, elIndex, deps[2]));
+      break;
+    default:
+      const depValues = Array(len);
+      for (let i = 0; i < len; i++) {
+        depValues[i] = resolveDep(view, requestorNodeIndex, elIndex, deps[i]);
+      }
+      injectable = factory(...depValues);
+  }
+  return injectable;
+}
+
 export function resolveDep(
-    view: ViewData, elIndex: number, depDef: DepDef,
-    notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+    view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef): any {
+  const notFoundValue = depDef.flags & DepFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND;
   const tokenKey = depDef.tokenKey;
 
   if (depDef.flags & DepFlags.SkipSelf) {
+    requestNodeIndex = null;
     const elDef = view.def.nodes[elIndex];
     if (elDef.parent != null) {
       elIndex = elDef.parent;
@@ -240,12 +320,30 @@ export function resolveDep(
         return view.services.createViewContainerRef(asElementData(view, elIndex));
       case TemplateRefTokenKey:
         return view.services.createTemplateRef(view, elDef);
+      case ChangeDetectorRefTokenKey:
+        let cdView = view;
+        // If we are still checking dependencies on the initial element...
+        if (requestNodeIndex != null) {
+          const requestorNodeDef = view.def.nodes[requestNodeIndex];
+          if (requestorNodeDef.flags & NodeFlags.HasComponent) {
+            cdView = asProviderData(view, requestNodeIndex).componentView;
+          }
+        }
+        // A ViewRef is also a ChangeDetectorRef
+        return view.services.createViewRef(cdView);
+      case InjectorRefTokenKey:
+        return createInjector(view, elIndex);
       default:
         const providerIndex = elDef.element.providerIndices[tokenKey];
         if (providerIndex != null) {
-          return asProviderData(view, providerIndex).instance;
+          const providerData = asProviderData(view, providerIndex);
+          if (providerData.instance === NOT_CREATED) {
+            providerData.instance = createInstance(view, view.def.nodes[providerIndex]);
+          }
+          return providerData.instance;
         }
     }
+    requestNodeIndex = null;
     elIndex = parentDiIndex(view);
     view = view.parent;
   }
@@ -274,7 +372,8 @@ class Injector_ implements Injector {
   constructor(private view: ViewData, private elIndex: number) {}
   get(token: any, notFoundValue?: any): any {
     return resolveDep(
-        this.view, this.elIndex, {flags: DepFlags.None, token, tokenKey: tokenKey(token)});
+        this.view, undefined, this.elIndex,
+        {flags: DepFlags.None, token, tokenKey: tokenKey(token)});
   }
 }
 

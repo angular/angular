@@ -7,7 +7,7 @@
  */
 
 import {PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue} from '@angular/core';
-import {DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, elementDef, providerDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {DefaultServices, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, directiveDef, elementDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 
 import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic} from './helper';
@@ -48,7 +48,7 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 2, 'span'), pureArrayDef(2),
-                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
               ],
               (view) => {
                 setCurrentNode(view, 1);
@@ -114,7 +114,7 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 2, 'span'), pureObjectDef(['a', 'b']),
-                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
               ],
               (view) => {
                 setCurrentNode(view, 1);
@@ -183,8 +183,8 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 3, 'span'),
-                providerDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
-                providerDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                directiveDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
+                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
               ],
               (view) => {
                 setCurrentNode(view, 2);
@@ -222,7 +222,7 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 2, 'span'),
-                providerDef(NodeFlags.None, null, 0, SomePipe, []),
+                directiveDef(NodeFlags.None, null, 0, SomePipe, []),
                 purePipeDef(SomePipe, 1),
               ],
               (view) => {
