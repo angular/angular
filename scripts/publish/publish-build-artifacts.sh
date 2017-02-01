@@ -2,6 +2,30 @@
 set -e -x
 
 
+# Find the most recent tag that is reachable from the current commit.
+# This is shallow clone of the repo, so we might need to fetch more commits to
+# find the tag.
+function getLatestTag {
+  local depth=`git log --oneline | wc -l`
+  local latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
+
+  while [ "$latestTag" == "NOT_FOUND" ]; do
+    # Avoid infinite loop.
+    if [ "$depth" -gt "1000" ]; then
+      echo "Error: Unable to find the latest tag." 1>&2
+      exit 1;
+    fi
+
+    # Increase the clone depth and look for a tag.
+    depth=$((depth + 50))
+    echo "Looking for latest tag at depth $depth..."
+    git fetch --depth=$depth
+    latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
+  done
+
+  echo $latestTag;
+}
+
 function publishRepo {
   COMPONENT=$1
   ARTIFACTS_DIR=$2
@@ -92,7 +116,7 @@ function publishPackages {
     COMMIT_MSG=`git log --oneline | head -n1`
     COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
     COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
-    LATEST_TAG=`git describe --tags --abbrev=0`
+    LATEST_TAG=`getLatestTag`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
