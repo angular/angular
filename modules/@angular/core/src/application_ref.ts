@@ -310,7 +310,7 @@ export class PlatformRef_ extends PlatformRef {
 
   private _bootstrapModuleWithZone<M>(
       moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
-      ngZone: NgZone): Promise<NgModuleRef<M>> {
+      ngZone: NgZone = null): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const compiler = compilerFactory.createCompiler(
         Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
