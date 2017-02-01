@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeFlags, QueryValueType, ViewData, ViewDefinition, ViewFlags, anchorDef, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, elementDef, providerDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {NodeFlags, QueryValueType, ViewData, ViewDefinition, ViewFlags, anchorDef, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, directiveDef, elementDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 
 export function main() {
   describe('viewDef', () => {
@@ -124,7 +124,7 @@ export function main() {
       it('should calculate childFlags for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
+          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([NodeFlags.AfterContentChecked, NodeFlags.None]);
@@ -134,7 +134,7 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
+          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -145,10 +145,10 @@ export function main() {
       it('should calculate childFlags for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          providerDef(NodeFlags.AfterContentInit, null, 0, AService, []),
-          providerDef(NodeFlags.AfterViewChecked, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterContentInit, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterViewChecked, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -161,10 +161,10 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          providerDef(NodeFlags.AfterContentInit, null, 0, AService, []),
-          providerDef(NodeFlags.AfterViewInit, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterContentInit, null, 0, AService, []),
+          directiveDef(NodeFlags.AfterViewInit, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -182,7 +182,7 @@ export function main() {
       it('should calculate childMatchedQueries for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
+          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], []]);
@@ -192,7 +192,7 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
+          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], []]);
@@ -201,10 +201,10 @@ export function main() {
       it('should calculate childMatchedQueries for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
-          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], [], ['q2', 'q3'], [], []]);
@@ -214,10 +214,10 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          providerDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          providerDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
-          providerDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], [], ['q2', 'q3'], [], []]);
