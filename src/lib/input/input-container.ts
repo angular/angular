@@ -58,11 +58,15 @@ export class MdPlaceholder {}
   host: {
     'class': 'md-hint',
     '[class.md-right]': 'align == "end"',
+    '[attr.id]': 'id',
   }
 })
 export class MdHint {
   // Whether to align the hint label at the start or end of the line.
   @Input() align: 'start' | 'end' = 'start';
+
+  // Unique ID for the hint. Used for the aria-describedby on the input.
+  @Input() id: string = `md-input-hint-${nextUniqueId++}`;
 }
 
 
@@ -77,9 +81,10 @@ export class MdHint {
     '[placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
+    '[attr.aria-describedby]': 'ariaDescribedby',
     '(blur)': '_onBlur()',
     '(focus)': '_onFocus()',
-    '(input)': '_onInput()'
+    '(input)': '_onInput()',
   }
 })
 export class MdInputDirective {
@@ -94,6 +99,9 @@ export class MdInputDirective {
 
   /** Whether the element is focused or not. */
   focused = false;
+
+  /** Sets the aria-describedby attribute on the input for improved a11y. */
+  ariaDescribedby: string;
 
   /** Whether the element is disabled. */
   @Input()
@@ -119,6 +127,7 @@ export class MdInputDirective {
       this._placeholderChange.emit(this._placeholder);
     }
   }
+
   /** Whether the element is required. */
   @Input()
   get required() { return this._required; }
@@ -249,9 +258,12 @@ export class MdInputContainer implements AfterContentInit {
   get hintLabel() { return this._hintLabel; }
   set hintLabel(value: string) {
     this._hintLabel = value;
-    this._validateHints();
+    this._processHints();
   }
   private _hintLabel = '';
+
+  // Unique id for the hint label.
+  _hintLabelId: string = `md-input-hint-${nextUniqueId++}`;
 
   /** Text or the floating placeholder. */
   @Input()
@@ -270,11 +282,11 @@ export class MdInputContainer implements AfterContentInit {
       throw new MdInputContainerMissingMdInputError();
     }
 
-    this._validateHints();
+    this._processHints();
     this._validatePlaceholders();
 
     // Re-validate when things change.
-    this._hintChildren.changes.subscribe(() => this._validateHints());
+    this._hintChildren.changes.subscribe(() => this._processHints());
     this._mdInputChild._placeholderChange.subscribe(() => this._validatePlaceholders());
   }
 
@@ -287,6 +299,7 @@ export class MdInputContainer implements AfterContentInit {
   /** Whether the input has a placeholder. */
   _hasPlaceholder() { return !!(this._mdInputChild.placeholder || this._placeholderChild); }
 
+  /** Focuses the underlying input. */
   _focusInput() { this._mdInputChild.focus(); }
 
   /**
@@ -297,6 +310,14 @@ export class MdInputContainer implements AfterContentInit {
     if (this._mdInputChild.placeholder && this._placeholderChild) {
       throw new MdInputContainerPlaceholderConflictError();
     }
+  }
+
+  /**
+   * Does any extra processing that is required when handling the hints.
+   */
+  private _processHints() {
+    this._validateHints();
+    this._syncAriaDescribedby();
   }
 
   /**
@@ -321,5 +342,29 @@ export class MdInputContainer implements AfterContentInit {
         }
       });
     }
+  }
+
+  /**
+   * Sets the child input's `aria-describedby` to a space-separated list of the ids
+   * of the currently-specified hints, as well as a generated id for the hint label.
+   */
+  private _syncAriaDescribedby() {
+    let ids: string[] = [];
+    let startHint = this._hintChildren ?
+        this._hintChildren.find(hint => hint.align === 'start') : null;
+    let endHint = this._hintChildren ?
+        this._hintChildren.find(hint => hint.align === 'end') : null;
+
+    if (startHint) {
+      ids.push(startHint.id);
+    } else if (this._hintLabel) {
+      ids.push(this._hintLabelId);
+    }
+
+    if (endHint) {
+      ids.push(endHint.id);
+    }
+
+    this._mdInputChild.ariaDescribedby = ids.join(' ');
   }
 }

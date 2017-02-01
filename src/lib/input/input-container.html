@@ -30,6 +30,6 @@
           [class.md-warn]="dividerColor == 'warn'"></span>
   </div>
 
-  <div *ngIf="hintLabel != ''" class="md-hint">{{hintLabel}}</div>
+  <div *ngIf="hintLabel != ''" [attr.id]="_hintLabelId" class="md-hint">{{hintLabel}}</div>
   <ng-content select="md-hint"></ng-content>
 </div>
