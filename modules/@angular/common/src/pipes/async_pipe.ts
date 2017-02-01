@@ -82,6 +82,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
+  transform<T>(obj: Observable<T>): T|null;
+  transform<T>(obj: Promise<T>): T|null;
+  transform<T>(obj: EventEmitter<T>): T|null;
   transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (!this._obj) {
       if (obj) {
@@ -93,7 +96,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj);
+      return this.transform(obj as any);
     }
 
     if (this._latestValue === this._latestReturnedValue) {
