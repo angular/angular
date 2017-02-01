@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
+import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Refs, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
 import {checkAndUpdateBinding, dispatchEvent, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack, unwrapValue} from './util';
 
 export function anchorDef(
@@ -129,19 +129,30 @@ export function elementDef(
 }
 
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
-  const parentNode =
-      def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   const elDef = def.element;
+  const rootSelectorOrNode = view.root.selectorOrNode;
   let el: any;
-  if (view.renderer) {
-    const debugContext =
-        isDevMode() ? view.services.createDebugContext(view, def.index) : undefined;
-    el = elDef.name ? view.renderer.createElement(parentNode, elDef.name, debugContext) :
-                      view.renderer.createTemplateAnchor(parentNode, debugContext);
+  if (view.parent || !rootSelectorOrNode) {
+    const parentNode =
+        def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
+    if (view.renderer) {
+      const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
+      el = elDef.name ? view.renderer.createElement(parentNode, elDef.name, debugContext) :
+                        view.renderer.createTemplateAnchor(parentNode, debugContext);
+    } else {
+      el = elDef.name ? document.createElement(elDef.name) : document.createComment('');
+      if (parentNode) {
+        parentNode.appendChild(el);
+      }
+    }
   } else {
-    el = elDef.name ? document.createElement(elDef.name) : document.createComment('');
-    if (parentNode) {
-      parentNode.appendChild(el);
+    if (view.renderer) {
+      const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
+      el = view.renderer.selectRootElement(rootSelectorOrNode, debugContext);
+    } else {
+      el = typeof rootSelectorOrNode === 'string' ? document.querySelector(rootSelectorOrNode) :
+                                                    rootSelectorOrNode;
+      el.textContent = '';
     }
   }
   if (elDef.attrs) {
@@ -269,7 +280,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 function setElementAttribute(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
-  let renderValue = securityContext ? view.services.sanitize(securityContext, value) : value;
+  let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
   if (view.renderer) {
     view.renderer.setElementAttribute(renderNode, name, renderValue);
@@ -296,7 +307,7 @@ function setElementClass(view: ViewData, renderNode: any, name: string, value: b
 
 function setElementStyle(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
-  let renderValue = view.services.sanitize(SecurityContext.STYLE, value);
+  let renderValue = view.root.sanitizer.sanitize(SecurityContext.STYLE, value);
   if (renderValue != null) {
     renderValue = renderValue.toString();
     const unit = binding.suffix;
@@ -322,7 +333,7 @@ function setElementStyle(
 function setElementProperty(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
-  let renderValue = securityContext ? view.services.sanitize(securityContext, value) : value;
+  let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   if (view.renderer) {
     view.renderer.setElementProperty(renderNode, name, renderValue);
     if (isDevMode() && (view.def.flags & ViewFlags.DirectDom) === 0) {

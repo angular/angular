@@ -6,22 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {BindingType, DebugContext, DefaultServices, NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {ElementRef, Injector, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {BindingType, DebugContext, NodeDef, NodeFlags, QueryBindingType, QueryValueType, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
+import {createRootData} from './helper';
+
 export function main() {
   describe(`Query Views`, () => {
-    let services: Services;
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
@@ -34,7 +35,7 @@ export function main() {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef, context);
+      const view = createRootView(rootData, viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }

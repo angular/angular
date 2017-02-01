@@ -6,24 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {DebugContext, DefaultServices, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
+import {DebugContext, NodeDef, NodeFlags, QueryValueType, Refs, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, directiveDef, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {isBrowser, setupAndCheckRenderer} from './helper';
+import {createRootData, isBrowser, setupAndCheckRenderer} from './helper';
 
 export function main() {
-  describe('View Services', () => {
-    let services: Services;
+  describe('View References', () => {
+    let rootData: RootData;
     let renderComponentType: RenderComponentType;
 
-    beforeEach(
-        inject([RootRenderer, Sanitizer], (rootRenderer: RootRenderer, sanitizer: Sanitizer) => {
-          services = new DefaultServices(rootRenderer, sanitizer);
-          renderComponentType =
-              new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-        }));
+    beforeEach(() => {
+      rootData = createRootData();
+      renderComponentType =
+          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
+    });
 
     function compViewDef(
         nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
@@ -32,7 +31,7 @@ export function main() {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(services, () => viewDef, context);
+      const view = createRootView(rootData, viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -59,7 +58,7 @@ export function main() {
         const view = createViewWithData();
         const compView = asProviderData(view, 1).componentView;
 
-        const debugCtx = view.services.createDebugContext(compView, 0);
+        const debugCtx = Refs.createDebugContext(compView, 0);
 
         expect(debugCtx.componentRenderElement).toBe(asElementData(view, 0).renderElement);
         expect(debugCtx.renderNode).toBe(asElementData(compView, 0).renderElement);
@@ -76,7 +75,7 @@ export function main() {
         const view = createViewWithData();
         const compView = asProviderData(view, 1).componentView;
 
-        const debugCtx = view.services.createDebugContext(compView, 2);
+        const debugCtx = Refs.createDebugContext(compView, 2);
 
         expect(debugCtx.componentRenderElement).toBe(asElementData(view, 0).renderElement);
         expect(debugCtx.renderNode).toBe(asTextData(compView, 2).renderText);
@@ -90,7 +89,7 @@ export function main() {
         const view = createViewWithData();
         const compView = asProviderData(view, 1).componentView;
 
-        const debugCtx = view.services.createDebugContext(compView, 1);
+        const debugCtx = Refs.createDebugContext(compView, 1);
 
         expect(debugCtx.renderNode).toBe(asElementData(compView, 0).renderElement);
       });

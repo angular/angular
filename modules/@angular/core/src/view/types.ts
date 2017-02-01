@@ -7,6 +7,8 @@
  */
 
 import {PipeTransform} from '../change_detection/change_detection';
+import {Injector} from '../di';
+import {ComponentFactory} from '../linker/component_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -264,7 +266,7 @@ export interface NgContentDef {
 export interface ViewData {
   def: ViewDefinition;
   renderer: Renderer;
-  services: Services;
+  root: RootData;
   // index of parent element / anchor. Not the index
   // of the provider with the component view.
   parentIndex: number;
@@ -282,12 +284,14 @@ export interface ViewData {
   disposables: DisposableFn[];
 }
 
+/**
+ * Bitmask of states
+ */
 export enum ViewState {
-  FirstCheck,
-  ChecksEnabled,
-  ChecksDisabled,
-  Errored,
-  Destroyed
+  FirstCheck = 1 << 0,
+  ChecksEnabled = 1 << 1,
+  Errored = 1 << 2,
+  Destroyed = 1 << 3
 }
 
 export type DisposableFn = () => void;
@@ -382,17 +386,12 @@ export function asQueryList(view: ViewData, index: number): QueryList<any> {
   return <any>view.nodes[index];
 }
 
-export interface Services {
-  renderComponent(rcp: RenderComponentType): Renderer;
-  sanitize(context: SecurityContext, value: string): string;
-  // Note: This needs to be here to prevent a cycle in source files.
-  createViewRef(data: ViewData): ViewRef;
-  // Note: This needs to be here to prevent a cycle in source files.
-  createViewContainerRef(data: ElementData): ViewContainerRef;
-  // Note: This needs to be here to prevent a cycle in source files.
-  createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any>;
-  // Note: This needs to be here to prevent a cycle in source files.
-  createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
+export interface RootData {
+  injector: Injector;
+  projectableNodes: any[][];
+  selectorOrNode: string|any;
+  renderer: RootRenderer;
+  sanitizer: Sanitizer;
 }
 
 // -------------------------------------
@@ -411,4 +410,38 @@ export interface DebugContext extends RenderDebugInfo {
   nodeIndex: number;
   componentRenderElement: any;
   renderNode: any;
+}
+
+/**
+ * This class is used to prevent cycles in the source files.
+ */
+export abstract class Refs {
+  private static instance: Refs;
+
+  static setInstance(instance: Refs) { Refs.instance = instance; }
+  static createComponentFactory(selector: string, viewDefFactory: ViewDefinitionFactory):
+      ComponentFactory<any> {
+    return Refs.instance.createComponentFactory(selector, viewDefFactory);
+  }
+  static createViewRef(data: ViewData): ViewRef { return Refs.instance.createViewRef(data); }
+  static createViewContainerRef(view: ViewData, elIndex: number): ViewContainerRef {
+    return Refs.instance.createViewContainerRef(view, elIndex);
+  }
+  static createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any> {
+    return Refs.instance.createTemplateRef(parentView, def);
+  }
+  static createInjector(view: ViewData, elIndex: number): Injector {
+    return Refs.instance.createInjector(view, elIndex);
+  }
+  static createDebugContext(view: ViewData, nodeIndex: number): DebugContext {
+    return Refs.instance.createDebugContext(view, nodeIndex);
+  }
+
+  abstract createComponentFactory(selector: string, viewDefFactory: ViewDefinitionFactory):
+      ComponentFactory<any>;
+  abstract createViewRef(data: ViewData): ViewRef;
+  abstract createViewContainerRef(view: ViewData, elIndex: number): ViewContainerRef;
+  abstract createTemplateRef(parentView: ViewData, def: NodeDef): TemplateRef<any>;
+  abstract createInjector(view: ViewData, elIndex: number): Injector;
+  abstract createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
 }
