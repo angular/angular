@@ -8,12 +8,9 @@
 
 import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-
-import {NavigationEnd, Router} from '../router';
-
+import {NavigationEnd} from '../events';
+import {Router} from '../router';
 import {RouterLink, RouterLinkWithHref} from './router_link';
-
-
 
 /**
  * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.

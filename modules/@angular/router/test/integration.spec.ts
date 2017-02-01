@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoaded, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -2011,8 +2011,8 @@ describe('Integration', () => {
                  expect(location.path()).toEqual('/lazyTrue/loaded');
 
                  expectEvents(recordedEvents, [
-                   [NavigationStart, '/lazyTrue/loaded'], [RoutesRecognized, '/lazyTrue/loaded'],
-                   [NavigationEnd, '/lazyTrue/loaded']
+                   [NavigationStart, '/lazyTrue/loaded'], [RouteConfigLoaded, undefined],
+                   [RoutesRecognized, '/lazyTrue/loaded'], [NavigationEnd, '/lazyTrue/loaded']
                  ]);
                })));
 
@@ -2297,6 +2297,51 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/lazy/loaded/child');
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
+           })));
+
+    it('should emit RouteConfigLoaded event when route is lazy loaded',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({
+               selector: 'lazy',
+               template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
+             })
+             class ParentLazyLoadedComponent {
+             }
+
+             @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+             class ChildLazyLoadedComponent {
+             }
+
+             @NgModule({
+               declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
+               imports: [RouterModule.forChild([{
+                 path: 'loaded',
+                 component: ParentLazyLoadedComponent,
+                 children: [{path: 'child', component: ChildLazyLoadedComponent}]
+               }])]
+             })
+             class LoadedModule {
+             }
+
+             const events: RouteConfigLoaded[] = [];
+
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoaded) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {expected: LoadedModule};
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+             router.navigateByUrl('/lazy/loaded/child');
+             advance(fixture);
+
+             expect(events.length).toEqual(1);
+             expect(events[0].route.path).toEqual('lazy');
            })));
 
     it('throws an error when forRoot() is used in a lazy context',
