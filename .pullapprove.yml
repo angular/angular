@@ -33,9 +33,9 @@ groups:
   root:
     conditions:
       files:
-        includes:
+        include:
           - "*"
-        excludes:
+        exclude:
           - "angular.io/*"
           - "integration/*"
           - "modules/*"
@@ -47,12 +47,12 @@ groups:
   build-and-ci:
     conditions:
       files:
-        includes:
+        include:
           - "*.yml"
           - "*.json"
           - "*.lock"
           - "tools/*"
-        excludes:
+        exclude:
           - "tools/@angular/tsc-wrapped/*"
     users:
       - IgorMinar #primary
