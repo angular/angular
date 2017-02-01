@@ -27,3 +27,6 @@ export declare class UpgradeModule {
         ngZone: NgZone);
     bootstrap(element: Element, modules?: string[], config?: any): void;
 }
+
+/** @stable */
+export declare const VERSION: Version;
