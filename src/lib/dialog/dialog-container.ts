@@ -5,6 +5,7 @@ import {
   ViewEncapsulation,
   NgZone,
   OnDestroy,
+  Renderer,
 } from '@angular/core';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
@@ -46,7 +47,7 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   /** Reference to the open dialog. */
   dialogRef: MdDialogRef<any>;
 
-  constructor(private _ngZone: NgZone) {
+  constructor(private _ngZone: NgZone, private _renderer: Renderer) {
     super();
   }
 
@@ -90,9 +91,12 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   ngOnDestroy() {
     // When the dialog is destroyed, return focus to the element that originally had it before
     // the dialog was opened. Wait for the DOM to finish settling before changing the focus so
-    // that it doesn't end up back on the <body>.
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
-      (this._elementFocusedBeforeDialogWasOpened as HTMLElement).focus();
-    });
+    // that it doesn't end up back on the <body>. Also note that we need the extra check, because
+    // IE can set the `activeElement` to null in some cases.
+    if (this._elementFocusedBeforeDialogWasOpened) {
+      this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
+        this._renderer.invokeElementMethod(this._elementFocusedBeforeDialogWasOpened, 'focus');
+      });
+    }
   }
 }
