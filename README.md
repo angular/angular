@@ -39,6 +39,7 @@ Also see our [`Good for community contribution`](https://github.com/angular/mate
 label.
 
 High level items planned for January 2017:
+
 * Initial version of md-autocomplete
 * Prototyping for data-table
 * Improvements to https://material.angular.io
