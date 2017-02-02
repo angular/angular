@@ -1,0 +1,7 @@
+<md-chip-list class="md-chip-list-stacked">
+  <md-chip *ngFor="let chipColor of availableColors"
+      selected="true"
+      color="{{chipColor.color}}">
+    {{chipColor.name}}
+  </md-chip>
+</md-chip-list>

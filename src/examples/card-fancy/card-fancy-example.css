@@ -1,0 +1,8 @@
+.example-card {
+  width: 400px;
+}
+
+.example-header-image {
+  background-image: url('assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}

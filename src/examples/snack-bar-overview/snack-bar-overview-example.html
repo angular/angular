@@ -1,0 +1,9 @@
+<md-input-container>
+  <input md-input value="Disco party!" placeholder="Message" #message>
+</md-input-container>
+
+<md-input-container>
+  <input md-input value="Dance" placeholder="Action" #action>
+</md-input-container>
+
+<button md-button (click)="openSnackBar(message.value, action.value)">Show snack-bar</button>
