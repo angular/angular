@@ -262,7 +262,7 @@ export function main() {
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
           expect(handleEventArgs[0]).toBe(view);
           expect(handleEventArgs[1]).toBe(0);
-          expect(handleEventArgs[2]).toBe('windowClick');
+          expect(handleEventArgs[2]).toBe('window:windowClick');
           expect(handleEventArgs[3]).toBeTruthy();
 
           Services.destroyView(view);
@@ -288,7 +288,7 @@ export function main() {
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
           expect(handleEventArgs[0]).toBe(view);
           expect(handleEventArgs[1]).toBe(0);
-          expect(handleEventArgs[2]).toBe('documentClick');
+          expect(handleEventArgs[2]).toBe('document:documentClick');
           expect(handleEventArgs[3]).toBeTruthy();
 
           Services.destroyView(view);

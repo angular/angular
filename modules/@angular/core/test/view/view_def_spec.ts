@@ -228,10 +228,10 @@ export function main() {
           elementDef(NodeFlags.None, null, null, 1, 'span'),
           anchorDef(
               NodeFlags.None, null, null, 0,
-              viewDef(
+              () => viewDef(
                   ViewFlags.None,
                   [
-                    elementDef(NodeFlags.None, [['q1', QueryValueType.Provider]], null, 1, 'span'),
+                    elementDef(NodeFlags.None, [['q1', QueryValueType.Provider]], null, 0, 'span'),
                   ]))
         ]);
 

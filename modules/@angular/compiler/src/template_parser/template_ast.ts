@@ -126,9 +126,9 @@ export class ElementAst implements TemplateAst {
       public name: string, public attrs: AttrAst[], public inputs: BoundElementPropertyAst[],
       public outputs: BoundEventAst[], public references: ReferenceAst[],
       public directives: DirectiveAst[], public providers: ProviderAst[],
-      public hasViewContainer: boolean, public children: TemplateAst[],
-      public ngContentIndex: number, public sourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan) {}
+      public hasViewContainer: boolean, public queryMatches: QueryMatch[],
+      public children: TemplateAst[], public ngContentIndex: number,
+      public sourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);
@@ -143,8 +143,8 @@ export class EmbeddedTemplateAst implements TemplateAst {
       public attrs: AttrAst[], public outputs: BoundEventAst[], public references: ReferenceAst[],
       public variables: VariableAst[], public directives: DirectiveAst[],
       public providers: ProviderAst[], public hasViewContainer: boolean,
-      public children: TemplateAst[], public ngContentIndex: number,
-      public sourceSpan: ParseSourceSpan) {}
+      public queryMatches: QueryMatch[], public children: TemplateAst[],
+      public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEmbeddedTemplate(this, context);
@@ -239,6 +239,20 @@ export enum PropertyBindingType {
    * A binding to an animation reference (e.g. `[animate.key]="expression"`).
    */
   Animation
+}
+
+/**
+ * This id differentiates a query on an element from any query on any child.
+ */
+export interface QueryId {
+  elementDepth: number;
+  directiveIndex: number;
+  queryIndex: number;
+}
+
+export interface QueryMatch {
+  query: QueryId;
+  value: CompileTokenMetadata;
 }
 
 /**

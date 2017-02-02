@@ -42,6 +42,7 @@ import * as reflection_types from './reflection/types';
 import * as api from './render/api';
 import * as decorators from './util/decorators';
 import {isObservable, isPromise} from './util/lang';
+import * as viewEngine from './view/index';
 
 export const __core_private__: {
   isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
@@ -109,6 +110,7 @@ export const __core_private__: {
   AnimationTransition: typeof AnimationTransition
   view_utils: typeof view_utils,
   ERROR_COMPONENT_TYPE: typeof ERROR_COMPONENT_TYPE,
+  viewEngine: typeof viewEngine,
 } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
@@ -125,6 +127,7 @@ export const __core_private__: {
   registerModuleFactory: ng_module_factory_loader.registerModuleFactory,
   ViewType: view_type.ViewType,
   view_utils: view_utils,
+  viewEngine: viewEngine,
   ViewMetadata: metadata_view.ViewMetadata,
   DebugContext: debug_context.DebugContext,
   StaticNodeDebugInfo: debug_context.StaticNodeDebugInfo,

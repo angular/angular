@@ -12,6 +12,7 @@ import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
+import {USE_VIEW_ENGINE} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
 import {stringify} from './facade/lang';
@@ -20,7 +21,7 @@ import {CompilerInjectable} from './injectable';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ERROR_COMPONENT_TYPE, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from './private_import_core';
+import {ERROR_COMPONENT_TYPE, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector, viewEngine} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
@@ -53,7 +54,8 @@ export class CompileMetadataResolver {
       private _directiveNormalizer: DirectiveNormalizer,
       @Optional() private _staticSymbolCache: StaticSymbolCache,
       private _reflector: ReflectorReader = reflector,
-      @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector) {}
+      @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector,
+      @Optional() @Inject(USE_VIEW_ENGINE) private _useViewEngine?: boolean) {}
 
   clearCacheFor(type: Type<any>) {
     const dirMeta = this._directiveCache.get(type);
@@ -135,7 +137,11 @@ export class CompileMetadataResolver {
           ngfactoryFilePath(dirType.filePath), cpl.componentFactoryName(dirType));
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
-      return new ComponentFactory(selector, <any>hostView, dirType);
+      if (this._useViewEngine) {
+        return viewEngine.createComponentFactory(selector, dirType, <any>hostView);
+      } else {
+        return new ComponentFactory(selector, <any>hostView, dirType);
+      }
     }
   }
 

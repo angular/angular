@@ -9,19 +9,24 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenName, tokenReference} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';
-import {Identifiers, resolveIdentifier} from './identifiers';
+import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
-import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
+import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, QueryId, QueryMatch, ReferenceAst} from './template_parser/template_ast';
 
 export class ProviderError extends ParseError {
   constructor(message: string, span: ParseSourceSpan) { super(span, message); }
+}
+
+export interface QueryWithId {
+  meta: CompileQueryMetadata;
+  id: QueryId;
 }
 
 export class ProviderViewContext {
   /**
    * @internal
    */
-  viewQueries: Map<any, CompileQueryMetadata[]>;
+  viewQueries: Map<any, QueryWithId[]>;
   /**
    * @internal
    */
@@ -40,13 +45,14 @@ export class ProviderViewContext {
 }
 
 export class ProviderElementContext {
-  private _contentQueries: Map<any, CompileQueryMetadata[]>;
+  private _contentQueries: Map<any, QueryWithId[]>;
 
   private _transformedProviders = new Map<any, ProviderAst>();
   private _seenProviders = new Map<any, boolean>();
   private _allProviders: Map<any, ProviderAst>;
   private _attrs: {[key: string]: string};
   private _hasViewContainer: boolean = false;
+  private _queriedTokens = new Map<any, QueryMatch[]>();
 
   constructor(
       public viewContext: ProviderViewContext, private _parent: ProviderElementContext,
@@ -57,19 +63,21 @@ export class ProviderElementContext {
     const directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
     this._allProviders =
         _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, viewContext.errors);
-    this._contentQueries = _getContentQueries(directivesMeta);
-    const queriedTokens = new Map<any, boolean>();
+    this._contentQueries = _getContentQueries(this.depth, directivesMeta);
     Array.from(this._allProviders.values()).forEach((provider) => {
-      this._addQueryReadsTo(provider.token, queriedTokens);
+      this._addQueryReadsTo(provider.token, provider.token, this._queriedTokens);
     });
-    refs.forEach((refAst) => { this._addQueryReadsTo({value: refAst.name}, queriedTokens); });
-    if (isPresent(queriedTokens.get(resolveIdentifier(Identifiers.ViewContainerRef)))) {
+    refs.forEach((refAst) => {
+      let defaultQueryValue = refAst.value || createIdentifierToken(Identifiers.ElementRef);
+      this._addQueryReadsTo({value: refAst.name}, defaultQueryValue, this._queriedTokens);
+    });
+    if (this._queriedTokens.get(resolveIdentifier(Identifiers.ViewContainerRef))) {
       this._hasViewContainer = true;
     }
 
     // create the providers that we know are eager first
     Array.from(this._allProviders.values()).forEach((provider) => {
-      const eager = provider.eager || isPresent(queriedTokens.get(tokenReference(provider.token)));
+      const eager = provider.eager || this._queriedTokens.get(tokenReference(provider.token));
       if (eager) {
         this._getOrCreateLocalProvider(provider.providerType, provider.token, true);
       }
@@ -81,6 +89,16 @@ export class ProviderElementContext {
     Array.from(this._allProviders.values()).forEach((provider) => {
       this._getOrCreateLocalProvider(provider.providerType, provider.token, false);
     });
+  }
+
+  get depth(): number {
+    let d = 0;
+    let current: ProviderElementContext = this;
+    while (current._parent) {
+      d++;
+      current = current._parent;
+    }
+    return d;
   }
 
   get transformProviders(): ProviderAst[] {
@@ -98,24 +116,36 @@ export class ProviderElementContext {
 
   get transformedHasViewContainer(): boolean { return this._hasViewContainer; }
 
-  private _addQueryReadsTo(token: CompileTokenMetadata, queryReadTokens: Map<any, boolean>) {
+  get queryMatches(): QueryMatch[] {
+    const allMatches: QueryMatch[] = [];
+    this._queriedTokens.forEach((matches: QueryMatch[]) => { allMatches.push(...matches); });
+    return allMatches;
+  }
+
+  private _addQueryReadsTo(
+      token: CompileTokenMetadata, defaultValue: CompileTokenMetadata,
+      queryReadTokens: Map<any, QueryMatch[]>) {
     this._getQueriesFor(token).forEach((query) => {
-      const queryReadToken = query.read || token;
-      if (isBlank(queryReadTokens.get(tokenReference(queryReadToken)))) {
-        queryReadTokens.set(tokenReference(queryReadToken), true);
+      const queryValue = query.meta.read || defaultValue;
+      const tokenRef = tokenReference(queryValue);
+      let queryMatches = queryReadTokens.get(tokenRef);
+      if (!queryMatches) {
+        queryMatches = [];
+        queryReadTokens.set(tokenRef, queryMatches);
       }
+      queryMatches.push({query: query.id, value: queryValue});
     });
   }
 
-  private _getQueriesFor(token: CompileTokenMetadata): CompileQueryMetadata[] {
-    const result: CompileQueryMetadata[] = [];
+  private _getQueriesFor(token: CompileTokenMetadata): QueryWithId[] {
+    const result: QueryWithId[] = [];
     let currentEl: ProviderElementContext = this;
     let distance = 0;
-    let queries: CompileQueryMetadata[];
+    let queries: QueryWithId[];
     while (currentEl !== null) {
       queries = currentEl._contentQueries.get(tokenReference(token));
       if (queries) {
-        result.push(...queries.filter((query) => query.descendants || distance <= 1));
+        result.push(...queries.filter((query) => query.meta.descendants || distance <= 1));
       }
       if (currentEl._directiveAsts.length > 0) {
         distance++;
@@ -452,27 +482,32 @@ function _resolveProviders(
 }
 
 
-function _getViewQueries(component: CompileDirectiveMetadata): Map<any, CompileQueryMetadata[]> {
-  const viewQueries = new Map<any, CompileQueryMetadata[]>();
+function _getViewQueries(component: CompileDirectiveMetadata): Map<any, QueryWithId[]> {
+  const viewQueries = new Map<any, QueryWithId[]>();
   if (component.viewQueries) {
-    component.viewQueries.forEach((query) => _addQueryToTokenMap(viewQueries, query));
+    component.viewQueries.forEach(
+        (query, queryIndex) => _addQueryToTokenMap(
+            viewQueries,
+            {meta: query, id: {elementDepth: null, directiveIndex: null, queryIndex: queryIndex}}));
   }
   return viewQueries;
 }
 
-function _getContentQueries(directives: CompileDirectiveSummary[]):
-    Map<any, CompileQueryMetadata[]> {
-  const contentQueries = new Map<any, CompileQueryMetadata[]>();
-  directives.forEach(directive => {
+function _getContentQueries(
+    elementDepth: number, directives: CompileDirectiveSummary[]): Map<any, QueryWithId[]> {
+  const contentQueries = new Map<any, QueryWithId[]>();
+  directives.forEach((directive, directiveIndex) => {
     if (directive.queries) {
-      directive.queries.forEach((query) => _addQueryToTokenMap(contentQueries, query));
+      directive.queries.forEach(
+          (query, queryIndex) => _addQueryToTokenMap(
+              contentQueries, {meta: query, id: {elementDepth, directiveIndex, queryIndex}}));
     }
   });
   return contentQueries;
 }
 
-function _addQueryToTokenMap(map: Map<any, CompileQueryMetadata[]>, query: CompileQueryMetadata) {
-  query.selectors.forEach((token: CompileTokenMetadata) => {
+function _addQueryToTokenMap(map: Map<any, QueryWithId[]>, query: QueryWithId) {
+  query.meta.selectors.forEach((token: CompileTokenMetadata) => {
     let entry = map.get(tokenReference(token));
     if (!entry) {
       entry = [];

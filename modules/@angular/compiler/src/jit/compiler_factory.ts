@@ -9,7 +9,7 @@
 import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
-import {CompilerConfig} from '../config';
+import {CompilerConfig, USE_VIEW_ENGINE} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
@@ -31,6 +31,7 @@ import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
 import {DEFAULT_PACKAGE_URL_PROVIDER, UrlResolver} from '../url_resolver';
 import {ViewCompiler} from '../view_compiler/view_compiler';
+import {ViewCompilerNext} from '../view_compiler_next/view_compiler';
 
 import {JitCompiler} from './compiler';
 
@@ -41,6 +42,11 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
 };
 
 const baseHtmlParser = new InjectionToken('HtmlParser');
+
+function viewCompilerFactory(
+    useViewEngine: boolean, cc: CompilerConfig, sr: ElementSchemaRegistry) {
+  return useViewEngine ? new ViewCompilerNext(cc, sr) : new ViewCompiler(cc, sr);
+}
 
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
@@ -81,7 +87,12 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   CompileMetadataResolver,
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
-  ViewCompiler,
+  {provide: USE_VIEW_ENGINE, useValue: false},
+  {
+    provide: ViewCompiler,
+    useFactory: viewCompilerFactory,
+    deps: [USE_VIEW_ENGINE, CompilerConfig, ElementSchemaRegistry]
+  },
   NgModuleCompiler,
   DirectiveWrapperCompiler,
   {provide: CompilerConfig, useValue: new CompilerConfig()},

@@ -95,25 +95,12 @@ export function declaredViewContainer(view: ViewData): ElementData {
  * for embedded views, this is the index of the parent node
  * that contains the view container.
  */
-export function parentDiIndex(view: ViewData): number {
-  if (view.parent) {
-    const parentNodeDef = view.def.nodes[view.parentIndex];
-    return parentNodeDef.element && parentNodeDef.element.template ? parentNodeDef.parent :
-                                                                     parentNodeDef.index;
+export function viewParentDiIndex(view: ViewData): number {
+  if (view.parent && view.context !== view.component) {
+    const parentNodeDef = view.parent.def.nodes[view.parentIndex];
+    return parentNodeDef.parent;
   }
   return view.parentIndex;
-}
-
-export function findElementDef(view: ViewData, nodeIndex: number): NodeDef {
-  const viewDef = view.def;
-  let nodeDef = viewDef.nodes[nodeIndex];
-  while (nodeDef) {
-    if (nodeDef.type === NodeType.Element) {
-      return nodeDef;
-    }
-    nodeDef = nodeDef.parent != null ? viewDef.nodes[nodeDef.parent] : undefined;
-  }
-  return undefined;
 }
 
 export function renderNode(view: ViewData, def: NodeDef): any {
@@ -123,6 +110,27 @@ export function renderNode(view: ViewData, def: NodeDef): any {
     case NodeType.Text:
       return asTextData(view, def.index).renderText;
   }
+}
+
+export function nodeValue(view: ViewData, index: number): any {
+  const def = view.def.nodes[index];
+  switch (def.type) {
+    case NodeType.Element:
+      return asElementData(view, def.index).renderElement;
+    case NodeType.Text:
+      return asTextData(view, def.index).renderText;
+    case NodeType.Provider:
+      return asProviderData(view, def.index).instance;
+  }
+  return undefined;
+}
+
+export function queryIdIsReference(queryId: string): boolean {
+  return queryId.startsWith('#');
+}
+
+export function elementEventFullName(target: string, name: string): string {
+  return target ? `${target}:${name}` : name;
 }
 
 export function isComponentView(view: ViewData): boolean {

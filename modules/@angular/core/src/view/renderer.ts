@@ -40,6 +40,8 @@ export class DirectDomRenderer implements RendererV2 {
   nextSibling(node: any): any { return node.nextSiblibng; }
   setAttribute(el: any, name: string, value: string): void { return el.setAttribute(name, value); }
   removeAttribute(el: any, name: string): void { el.removeAttribute(name); }
+  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {}
+  removeBindingDebugInfo(el: any, propertyName: string): void {}
   addClass(el: any, name: string): void { el.classList.add(name); }
   removeClass(el: any, name: string): void { el.classList.remove(name); }
   setStyle(el: any, style: string, value: any): void { el.style[style] = value; }
@@ -97,8 +99,11 @@ export class LegacyRendererAdapter implements RendererV2 {
   }
   appendChild(parent: any, newChild: any): void { this._delegate.projectNodes(parent, [newChild]); }
   insertBefore(parent: any, newChild: any, refChild: any): void {
-    const beforeSibling = refChild.nextSiblingOf ? refChild.nextSiblingOf : refChild;
-    this._delegate.attachViewAfter(beforeSibling, [newChild]);
+    if (refChild) {
+      this._delegate.attachViewAfter(refChild.previousSibling, [newChild]);
+    } else {
+      this.appendChild(parent, newChild);
+    }
   }
   removeChild(parent: any, oldChild: any): void {
     if (parent) {
@@ -108,13 +113,19 @@ export class LegacyRendererAdapter implements RendererV2 {
   selectRootElement(selectorOrNode: any, debugInfo?: DebugContext): any {
     return this._delegate.selectRootElement(selectorOrNode, debugInfo);
   }
-  parentNode(node: any): any { return {parentOf: node}; }
-  nextSibling(node: any): any { return {nextSiblingOf: node}; }
+  parentNode(node: any): any { return node.parentNode; }
+  nextSibling(node: any): any { return node.nextSibling; }
   setAttribute(el: any, name: string, value: string): void {
     this._delegate.setElementAttribute(el, name, value);
   }
   removeAttribute(el: any, name: string): void {
     this._delegate.setElementAttribute(el, name, null);
+  }
+  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
+    this._delegate.setBindingDebugInfo(el, propertyName, propertyValue);
+  }
+  removeBindingDebugInfo(el: any, propertyName: string): void {
+    this._delegate.setBindingDebugInfo(el, propertyName, null);
   }
   addClass(el: any, name: string): void { this._delegate.setElementClass(el, name, true); }
   removeClass(el: any, name: string): void { this._delegate.setElementClass(el, name, false); }
