@@ -1,7 +1,10 @@
 <md-toolbar color="primary" class="app-toolbar">
-  <span>Angular</span>
-
+    <span>Angular</span>
+    <span><a class="nav-link" navLink="home"> Home </a></span>
+    <span><a class="nav-link" navLink="news"> News</a></span>
+    <span><a class="nav-link" navLink="features"> Features</a></span>
+    <span class="fill-remaining-space"></span>
 </md-toolbar>
 <section class="app-content">
-  <router-outlet></router-outlet>
+  <app-doc-viewer [doc]="navEngine.currentDoc"></app-doc-viewer>
 </section>

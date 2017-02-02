@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { NavEngine } from './nav-engine/nav-engine'
 @Component({
   selector: 'app-shell',
   templateUrl: './app.component.html',
@@ -7,4 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app works!';
+  constructor(public navEngine:NavEngine){}
 }
