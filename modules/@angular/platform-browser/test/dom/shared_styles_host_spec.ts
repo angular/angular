@@ -55,5 +55,25 @@ export function main() {
       ssh.ngOnDestroy();
       expect(getDOM().getInnerHTML(someHost)).toEqual('');
     });
+
+    it(`should remove style if there're no references to it`, () => {
+      const style = 'a {};';
+      ssh.addHost(someHost);
+      ssh.addStyles([style]);
+      ssh.addStyles([style]);
+      ssh.removeStyles([style]);
+      ssh.removeStyles([style]);
+      expect(getDOM().getInnerHTML(someHost)).toEqual('');
+    });
+
+    it(`should not remove style if there're references to it`, () => {
+      const style = 'a {};';
+      ssh.addHost(someHost);
+      ssh.addStyles([style]);
+      ssh.addStyles([style]);
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+      ssh.removeStyles([style]);
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+    });
   });
 }

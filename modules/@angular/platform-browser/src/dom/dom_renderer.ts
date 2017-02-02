@@ -77,9 +77,6 @@ export class DomRenderer implements Renderer {
       private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
       private _animationDriver: AnimationDriver, styleShimId: string) {
     this._styles = flattenStyles(styleShimId, componentProto.styles, []);
-    if (componentProto.encapsulation !== ViewEncapsulation.Native) {
-      this._rootRenderer.sharedStylesHost.addStyles(this._styles);
-    }
     if (this.componentProto.encapsulation === ViewEncapsulation.Emulated) {
       this._contentAttr = shimContentAttribute(styleShimId);
       this._hostAttr = shimHostAttribute(styleShimId);
@@ -134,6 +131,7 @@ export class DomRenderer implements Renderer {
         nodesParent.appendChild(styleEl);
       }
     } else {
+      this._rootRenderer.sharedStylesHost.addStyles(this._styles);
       if (this._hostAttr) {
         hostElement.setAttribute(this._hostAttr, '');
       }
@@ -177,8 +175,12 @@ export class DomRenderer implements Renderer {
   }
 
   destroyView(hostElement: Element|DocumentFragment, viewAllNodes: Node[]) {
-    if (this.componentProto.encapsulation === ViewEncapsulation.Native && hostElement) {
-      this._rootRenderer.sharedStylesHost.removeHost((hostElement as any).shadowRoot);
+    if (hostElement) {
+      if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
+        this._rootRenderer.sharedStylesHost.removeHost((hostElement as any).shadowRoot);
+      } else {
+        this._rootRenderer.sharedStylesHost.removeStyles(this._styles);
+      }
     }
   }
 
