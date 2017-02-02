@@ -15,6 +15,11 @@ module.exports = new Package('content', [jsdocPackage, linksPackage])
                        readFilesProcessor.fileReaders.push(contentFileReader);
                      })
 
+                     .config(function(parseTagsProcessor, getInjectables) {
+                       parseTagsProcessor.tagDefinitions = parseTagsProcessor.tagDefinitions.concat(
+                           getInjectables(requireFolder('./tag-defs')));
+                     })
+
                      // Configure ids and paths
                      .config(function(computeIdsProcessor, computePathsProcessor) {
 
@@ -33,3 +38,10 @@ module.exports = new Package('content', [jsdocPackage, linksPackage])
                          getAliases: function(doc) { return [doc.id]; }
                        });
                      });
+
+function requireFolder(folderPath) {
+  const absolutePath = path.resolve(__dirname, folderPath);
+  return fs.readdirSync(absolutePath)
+      .filter(p => !/[._]spec\.js$/.test(p))  // ignore spec files
+      .map(p => require(path.resolve(absolutePath, p)));
+}

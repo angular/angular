@@ -42,19 +42,24 @@ function regionParserImpl(contents, fileType) {
       // start region processing
       if (startRegion) {
         // open up the specified region
-        const regionName = getRegionName(startRegion[1]);
-        const region = regionMap[regionName];
-        if (region) {
-          if (region.open) {
-            throw new RegionParserError(
-                `Tried to open a region, named "${regionName}", that is already open`, index);
-          }
-          region.open = true;
-          region.lines.push(plaster);
-        } else {
-          regionMap[regionName] = {lines: [], open: true};
+        const regionNames = getRegionNames(startRegion[1]);
+        if (regionNames.length === 0) {
+          regionNames.push('');
         }
-        openRegions.push(regionName);
+        regionNames.forEach(regionName => {
+          const region = regionMap[regionName];
+          if (region) {
+            if (region.open) {
+              throw new RegionParserError(
+                  `Tried to open a region, named "${regionName}", that is already open`, index);
+            }
+            region.open = true;
+            region.lines.push(plaster);
+          } else {
+            regionMap[regionName] = {lines: [], open: true};
+          }
+          openRegions.push(regionName);
+        });
 
         // end region processing
       } else if (endRegion) {
@@ -62,14 +67,20 @@ function regionParserImpl(contents, fileType) {
           throw new RegionParserError('Tried to close a region when none are open', index);
         }
         // close down the specified region (or most recent if no name is given)
-        const regionName = getRegionName(endRegion[1]) || openRegions[openRegions.length - 1];
-        const region = regionMap[regionName];
-        if (!region || !region.open) {
-          throw new RegionParserError(
-              `Tried to close a region, named "${regionName}", that is not open`, index);
+        const regionNames = getRegionNames(endRegion[1]);
+        if (regionNames.length === 0) {
+          regionNames.push(openRegions[openRegions.length - 1]);
         }
-        region.open = false;
-        removeLast(openRegions, regionName);
+
+        regionNames.forEach(regionName => {
+          const region = regionMap[regionName];
+          if (!region || !region.open) {
+            throw new RegionParserError(
+                `Tried to close a region, named "${regionName}", that is not open`, index);
+          }
+          region.open = false;
+          removeLast(openRegions, regionName);
+        });
 
         // doc plaster processing
       } else if (updatePlaster) {
@@ -94,8 +105,8 @@ function regionParserImpl(contents, fileType) {
   }
 }
 
-function getRegionName(input) {
-  return input.trim();
+function getRegionNames(input) {
+  return input.split(',').map(name => name.trim()).filter(name => name.length > 0);
 }
 
 function removeLast(array, item) {
