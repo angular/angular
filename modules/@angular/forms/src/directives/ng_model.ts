@@ -7,11 +7,9 @@
  */
 
 import {Directive, Host, HostListener, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
-
 import {EventEmitter} from '../facade/async';
 import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
-
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -221,8 +219,9 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _updateValue(value: any): void {
-                resolvedPromise.then(
-                    () => { this.control.setValue(value, {emitViewToModelChange: false}); });
+                resolvedPromise
+                    .then(() => this.control.setValue(value, {emitViewToModelChange: false}))
+                    .catch(error => setTimeout(() => { throw error; }));
               }
 
               private _updateDisabled(changes: SimpleChanges) {
