@@ -6,14 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-
 import {NavigationEnd, Router} from '../router';
-
 import {RouterLink, RouterLinkWithHref} from './router_link';
-
-
 
 /**
  * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.
@@ -93,9 +89,7 @@ export class RouterLinkActive implements OnChanges,
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
-  constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer,
-      private cdr: ChangeDetectorRef) {
+  constructor(private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
         this.update();
@@ -126,10 +120,11 @@ export class RouterLinkActive implements OnChanges,
 
     // react only when status has changed to prevent unnecessary dom updates
     if (this.active !== hasActiveLinks) {
-      this.active = hasActiveLinks;
-      this.classes.forEach(
-          c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
-      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.active = hasActiveLinks;
+        this.classes.forEach(
+            c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
+      });
     }
   }
 

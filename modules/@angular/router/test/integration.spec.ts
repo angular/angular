@@ -2256,35 +2256,6 @@ describe('Integration', () => {
          expect(paragraph.textContent).toEqual('false');
        }));
 
-    it('should call ngOnInit once', fakeAsync(() => {
-      let calledTimes: number = 0;
-      @Component({
-        template: `<div *ngIf="visible"><user></user><a routerLink="/" routerLinkActive="active"></a></div><router-outlet></router-outlet>`
-      })
-      class ComponentWithRouterLink {
-        visible = false;
-
-        toggle(): void {
-          this.visible = true;
-        }
-      }
-
-      @Component({selector: 'user', template: 'user'})
-      class UserCmp {
-        ngOnInit(): void {
-          calledTimes++;
-        }
-      }
-
-      TestBed.configureTestingModule({declarations: [ComponentWithRouterLink, UserCmp]});
-      const fixture = TestBed.createComponent(ComponentWithRouterLink);
-      advance(fixture);
-      fixture.componentInstance.toggle();
-      advance(fixture);
-
-      expect(calledTimes).toEqual(1);
-    }));
-
   });
 
   describe('lazy loading', () => {
