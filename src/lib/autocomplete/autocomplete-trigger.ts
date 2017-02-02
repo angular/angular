@@ -19,10 +19,11 @@ import {Observable} from 'rxjs/Observable';
 import {MdOptionSelectEvent, MdOption} from '../core/option/option';
 import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
 import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
+import {Dir} from '../core/rtl/dir';
 import {Subscription} from 'rxjs/Subscription';
+import {Subject} from 'rxjs/Subject';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/merge';
-import {Dir} from '../core/rtl/dir';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
 
@@ -59,7 +60,7 @@ export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
     '[attr.aria-expanded]': 'panelOpen.toString()',
     '[attr.aria-owns]': 'autocomplete?.id',
     '(focus)': 'openPanel()',
-    '(blur)': '_onTouched()',
+    '(blur)': '_handleBlur($event.relatedTarget?.tagName)',
     '(input)': '_handleInput($event.target.value)',
     '(keydown)': '_handleKeydown($event)',
   },
@@ -76,6 +77,9 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   /** Manages active item in option list based on key events. */
   private _keyManager: ActiveDescendantKeyManager;
   private _positionStrategy: ConnectedPositionStrategy;
+
+  /** Stream of blur events that should close the panel. */
+  private _blurStream = new Subject<any>();
 
   /** View -> model callback called when value changes */
   _onChange: (value: any) => {};
@@ -132,12 +136,12 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
 
   /**
    * A stream of actions that should close the autocomplete panel, including
-   * when an option is selected and when the backdrop is clicked.
+   * when an option is selected, on blur, and when TAB is pressed.
    */
   get panelClosingActions(): Observable<MdOptionSelectEvent> {
     return Observable.merge(
         ...this.optionSelections,
-        this._overlayRef.backdropClick(),
+        this._blurStream.asObservable(),
         this._keyManager.tabOut
     );
   }
@@ -199,6 +203,15 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   _handleInput(value: string): void {
     this._onChange(value);
     this.openPanel();
+  }
+
+  _handleBlur(newlyFocusedTag: string): void {
+    this._onTouched();
+
+    // Only emit blur event if the new focus is *not* on an option.
+    if (newlyFocusedTag !== 'MD-OPTION') {
+      this._blurStream.next(null);
+    }
   }
 
   /**
@@ -283,8 +296,6 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     const overlayState = new OverlayState();
     overlayState.positionStrategy = this._getOverlayPosition();
     overlayState.width = this._getHostWidth();
-    overlayState.hasBackdrop = true;
-    overlayState.backdropClass = 'md-overlay-transparent-backdrop';
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
     return overlayState;
   }

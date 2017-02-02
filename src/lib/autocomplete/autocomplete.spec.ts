@@ -60,6 +60,7 @@ describe('MdAutocomplete', () => {
     it('should open the panel when the input is focused', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to start out closed.`);
+
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
@@ -74,6 +75,7 @@ describe('MdAutocomplete', () => {
     it('should open the panel programmatically', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to start out closed.`);
+
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
@@ -85,22 +87,18 @@ describe('MdAutocomplete', () => {
           .toContain('California', `Expected panel to display when opened programmatically.`);
     });
 
-    it('should close the panel when a click occurs outside it', async(() => {
+    it('should close the panel when blurred', async(() => {
       dispatchEvent('focus', input);
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        const backdrop =
-            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
-        backdrop.click();
+        dispatchEvent('blur', input);
         fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
-          expect(overlayContainerElement.textContent)
-              .toEqual('', `Expected clicking outside the panel to close the panel.`);
-        });
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected clicking outside the panel to close the panel.`);
       });
     }));
 
@@ -113,12 +111,10 @@ describe('MdAutocomplete', () => {
         option.click();
         fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(false, `Expected clicking an option to set the panel state to closed.`);
-          expect(overlayContainerElement.textContent)
-              .toEqual('', `Expected clicking an option to close the panel.`);
-        });
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected clicking an option to set the panel state to closed.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected clicking an option to close the panel.`);
       });
     }));
 
@@ -148,31 +144,26 @@ describe('MdAutocomplete', () => {
           options[1].click();
           fixture.detectChanges();
 
-          fixture.whenStable().then(() => {
-            expect(fixture.componentInstance.trigger.panelOpen)
-                .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
-            expect(overlayContainerElement.textContent)
-                .toEqual('', `Expected clicking a new option to close the panel.`);
-          });
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected clicking a new option to close the panel.`);
         });
       });
     }));
 
-    it('should close the panel programmatically', async(() => {
+    it('should close the panel programmatically', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.closePanel();
       fixture.detectChanges();
 
-      fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected closing programmatically to close the panel.`);
-      });
-
-    }));
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
+      expect(overlayContainerElement.textContent)
+          .toEqual('', `Expected closing programmatically to close the panel.`);
+    });
 
     it('should close the panel when the options list is empty', async(() => {
       dispatchEvent('focus', input);
@@ -183,15 +174,13 @@ describe('MdAutocomplete', () => {
         input.value = 'af';
         dispatchEvent('input', input);
         fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(false, `Expected panel to close when options list is empty.`);
-          expect(overlayContainerElement.textContent)
-              .toEqual('', `Expected panel to close when options list is empty.`);
-        });
+
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected panel to close when options list is empty.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected panel to close when options list is empty.`);
       });
     }));
-
   });
 
   it('should have the correct text direction in RTL', () => {
@@ -428,12 +417,25 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
     });
 
-    it('should should not focus the option when DOWN key is pressed', async(() => {
+    it('should not focus the option when DOWN key is pressed', async(() => {
       fixture.whenStable().then(() => {
         spyOn(fixture.componentInstance.options.first, 'focus');
 
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         expect(fixture.componentInstance.options.first.focus).not.toHaveBeenCalled();
+      });
+    }));
+
+    it('should not close the panel when DOWN key is pressed', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(true, `Expected panel state to stay open when DOWN key is pressed.`);
+      expect(overlayContainerElement.textContent)
+          .toContain('Alabama', `Expected panel to keep displaying when DOWN key is pressed.`);
+      expect(overlayContainerElement.textContent)
+          .toContain('California', `Expected panel to keep displaying when DOWN key is pressed.`);
       });
     }));
 
@@ -443,6 +445,7 @@ describe('MdAutocomplete', () => {
             overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
 
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
         fixture.whenStable().then(() => {
           fixture.detectChanges();
           expect(fixture.componentInstance.trigger.activeOption)
@@ -567,22 +570,20 @@ describe('MdAutocomplete', () => {
         fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
         fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(false, `Expected panel state to read closed after ENTER key.`);
-          expect(overlayContainerElement.textContent)
-              .toEqual('', `Expected panel to close after ENTER key.`);
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected panel state to read closed after ENTER key.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected panel to close after ENTER key.`);
 
-          input.value = 'Alabam';
-          dispatchEvent('input', input);
-          fixture.detectChanges();
+        input.value = 'Alabam';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
 
-          expect(fixture.componentInstance.trigger.panelOpen)
-              .toBe(true, `Expected panel state to read open when typing in input.`);
-          expect(overlayContainerElement.textContent)
-              .toContain('Alabama', `Expected panel to display when typing in input.`);
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(true, `Expected panel state to read open when typing in input.`);
+        expect(overlayContainerElement.textContent)
+            .toContain('Alabama', `Expected panel to display when typing in input.`);
         });
-      });
     }));
 
     it('should scroll to active options below the fold', async(() => {
