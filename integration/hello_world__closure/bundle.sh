@@ -31,6 +31,7 @@ CLOSURE_ARGS=(
   # Uncomment for easier debugging
   # "--formatting=PRETTY_PRINT"
 
+  angular.externs.js
   node_modules/zone.js/dist/zone.js
   $(find -L vendor/rxjs -name *.js)
   node_modules/@angular/{core,common,compiler,platform-browser}/index.js
