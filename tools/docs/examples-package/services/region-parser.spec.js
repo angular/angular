@@ -70,6 +70,11 @@ describe('regionParser service', () => {
     expect(output.regions['Y']).toEqual(t('ghi'));
   });
 
+  it('should open a region with a null name if there is no region name', () => {
+    const output = regionParser(t('/* #docregion */', 'abc', '/* #enddocregion */'), 'test-type');
+    expect(output.regions['']).toEqual('abc');
+  });
+
   it('should close the most recently opened region if there is no region name', () => {
     const output = regionParser(
         t('/* #docregion X*/', 'abc', '/* #docregion Y */', 'def', '/* #enddocregion */', 'ghi',
@@ -136,6 +141,16 @@ describe('regionParser service', () => {
     expect(output.regions['']).toEqual(t('abc', '/* . . . */', 'ghi'));
     expect(output.regions['A']).toEqual(t('jkl', '/* ... elided ... */', 'pqr'));
   });
+
+  it('should parse multiple region names separated by commas', () => {
+    const output = regionParser(
+        t('/* #docregion , A, B */', 'abc', '/* #enddocregion B */', '/* #docregion C */', 'xyz',
+          '/* #enddocregion A, C, */'),
+        'test-type');
+    expect(output.regions['A']).toEqual(t('abc', 'xyz'));
+    expect(output.regions['B']).toEqual(t('abc'));
+    expect(output.regions['C']).toEqual(t('xyz'));
+  })
 });
 
 function t() {

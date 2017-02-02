@@ -20,7 +20,7 @@ module.exports = function contentFileReader() {
     getDocs: function(fileInfo) {
 
       // We return a single element array because content files only contain one document
-      return [{docType: 'guide', content: fileInfo.content, startingLine: 1}];
+      return [{docType: 'content', content: fileInfo.content, startingLine: 1}];
     }
   };
 };

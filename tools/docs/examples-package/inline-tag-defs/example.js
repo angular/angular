@@ -22,22 +22,27 @@ module.exports = function exampleInlineTagDef(
 
 
     handler: function(doc, tagName, tagDescription) {
-      const EXAMPLES_FOLDER = collectExamples.exampleFolders[0];
+      const EXAMPLES_FOLDERS = collectExamples.exampleFolders;
 
       var tagArgs = parseArgString(entities.decodeHTML(tagDescription));
-
       var unnamedArgs = tagArgs._;
       var relativePath = unnamedArgs[0];
-      var regionName = tagArgs.region || (unnamedArgs.length > 1 ? unnamedArgs[1] : null);
+      var regionName = tagArgs.region || (unnamedArgs.length > 1 ? unnamedArgs[1] : '');
       var title = tagArgs.title || (unnamedArgs.length > 2 ? unnamedArgs[2] : null);
       var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
 
-      var exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath];
+      // Find the example in the folders
+      var exampleFile;
+      EXAMPLES_FOLDERS.some(
+          EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath]; });
+
       if (!exampleFile) {
         log.error(
             createDocMessage('Missing example file... relativePath: "' + relativePath + '".', doc));
         log.error(
-            'Example files available are:', Object.keys(exampleMap[EXAMPLES_FOLDER]).join('\n'));
+            'Example files available are:',
+            EXAMPLES_FOLDERS.map(
+                EXAMPLES_FOLDER => Object.keys(exampleMap[EXAMPLES_FOLDER]).join('\n')));
         return '';
       }
 

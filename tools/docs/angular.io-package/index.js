@@ -17,6 +17,7 @@ const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
 const cheatsheetPackage = require('../cheatsheet-package');
+const rhoPackage = require('../rho-package');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'modules');
@@ -28,7 +29,7 @@ module.exports =
         'angular.io',
         [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
-          gitPackage, targetPackage, cheatsheetPackage
+          gitPackage, targetPackage, cheatsheetPackage, rhoPackage
         ])
 
         // Register the processors
@@ -81,14 +82,25 @@ module.exports =
 
           readFilesProcessor.basePath = PROJECT_ROOT;
           readFilesProcessor.sourceFiles = [
-            {basePath: CONTENTS_PATH, include: CONTENTS_PATH + '/cheatsheet/*.md'}, {
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/cookbook/**/*.md',
+              fileReader: 'contentFileReader'
+            },
+            {basePath: CONTENTS_PATH, include: CONTENTS_PATH + '/cheatsheet/*.md'},
+            {
               basePath: API_SOURCE_PATH,
               include: API_SOURCE_PATH + '/@angular/examples/**/*',
               fileReader: 'exampleFileReader'
-            }
+            },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/examples/**/*',
+              fileReader: 'exampleFileReader'
+            },
           ];
 
-          collectExamples.exampleFolders = ['@angular/examples'];
+          collectExamples.exampleFolders = ['@angular/examples', 'examples'];
 
           generateKeywordsProcessor.ignoreWordsFile = 'tools/docs/angular.io-package/ignore.words';
           generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
@@ -113,7 +125,7 @@ module.exports =
 
 
         // Configure jsdoc-style tag parsing
-        .config(function(parseTagsProcessor, getInjectables) {
+        .config(function(parseTagsProcessor, getInjectables, inlineTagProcessor) {
           // Load up all the tag definitions in the tag-defs folder
           parseTagsProcessor.tagDefinitions =
               parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder('./tag-defs')));
@@ -127,6 +139,8 @@ module.exports =
               tagDef.transforms = [];
             }
           });
+
+          inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/anchor'));
         })
 
 
@@ -212,7 +226,8 @@ module.exports =
               pathTemplate: GUIDE_SEGMENT + '/cheatsheet.json',
               outputPathTemplate: '${path}'
             },
-            {docTypes: ['example-region'], getOutputPath: function() {}}
+            {docTypes: ['example-region'], getOutputPath: function() {}},
+            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.html'}
           ];
         });
 

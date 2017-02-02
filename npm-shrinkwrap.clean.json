@@ -3351,6 +3351,10 @@
       "version": "0.1.7",
       "dev": true
     },
+    "has-color": {
+      "version": "0.1.7",
+      "dev": true
+    },
     "has-cors": {
       "version": "1.1.0",
       "dev": true
@@ -3385,6 +3389,10 @@
     },
     "hosted-git-info": {
       "version": "2.1.4",
+      "dev": true
+    },
+    "html": {
+      "version": "1.0.0",
       "dev": true
     },
     "htmlparser2": {
@@ -4439,6 +4447,28 @@
       "version": "0.3.4",
       "dev": true
     },
+    "nomnom": {
+      "version": "1.8.1",
+      "dev": true,
+      "dependencies": {
+        "ansi-styles": {
+          "version": "1.0.0",
+          "dev": true
+        },
+        "chalk": {
+          "version": "0.4.0",
+          "dev": true
+        },
+        "strip-ansi": {
+          "version": "0.1.1",
+          "dev": true
+        },
+        "underscore": {
+          "version": "1.6.0",
+          "dev": true
+        }
+      }
+    },
     "nopt": {
       "version": "3.0.6",
       "dev": true
@@ -5040,6 +5070,10 @@
     },
     "rewire": {
       "version": "2.5.1",
+      "dev": true
+    },
+    "rho": {
+      "version": "0.3.0",
       "dev": true
     },
     "right-align": {
