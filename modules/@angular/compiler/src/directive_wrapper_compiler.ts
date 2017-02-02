@@ -288,8 +288,8 @@ function addHandleEventMethod(hostListeners: BoundEventAst[], builder: Directive
         builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostListener.handler,
         `sub_${eventIdx}`);
     const trueStmts = evalResult.stmts;
-    if (evalResult.preventDefault) {
-      trueStmts.push(resultVar.set(evalResult.preventDefault.and(resultVar)).toStmt());
+    if (evalResult.allowDefault) {
+      trueStmts.push(resultVar.set(evalResult.allowDefault.and(resultVar)).toStmt());
     }
     // TODO(tbosch): convert this into a `switch` once our OutputAst supports it.
     actionStmts.push(
