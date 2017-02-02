@@ -92,14 +92,14 @@ export function main() {
           new class extends NullVisitor{
             visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any) { return ast; }
           },
-          new EmbeddedTemplateAst([], [], [], [], [], [], false, [], 0, null));
+          new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null));
     });
 
     it('should visit ElementAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitElement(ast: ElementAst, context: any) { return ast; }},
-          new ElementAst('foo', [], [], [], [], [], [], false, [], 0, null, null));
+          new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null, null));
     });
 
     it('should visit RefererenceAst', () => {
@@ -171,8 +171,8 @@ export function main() {
       };
       const nodes: TemplateAst[] = [
         new NgContentAst(0, 0, null),
-        new EmbeddedTemplateAst([], [], [], [], [], [], false, [], 0, null),
-        new ElementAst('foo', [], [], [], [], [], [], false, [], 0, null, null),
+        new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null),
+        new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null, null),
         new ReferenceAst('foo', null, null), new VariableAst('foo', 'bar', null),
         new BoundEventAst('foo', 'bar', 'goo', null, null),
         new BoundElementPropertyAst('foo', null, null, false, null, 'bar', null),
@@ -2088,7 +2088,7 @@ class FooAstTransformer extends ThrowingVisitor {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'div') return ast;
     return new ElementAst(
-        'foo', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
+        'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
         ast.endSourceSpan);
   }
 }
@@ -2097,7 +2097,7 @@ class BarAstTransformer extends FooAstTransformer {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'foo') return ast;
     return new ElementAst(
-        'bar', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
+        'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
         ast.endSourceSpan);
   }
 }

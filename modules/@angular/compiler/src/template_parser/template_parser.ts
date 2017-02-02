@@ -341,8 +341,9 @@ class TemplateParseVisitor implements html.Visitor {
 
       parsedElement = new EmbeddedTemplateAst(
           attrs, events, references, elementVars, providerContext.transformedDirectiveAsts,
-          providerContext.transformProviders, providerContext.transformedHasViewContainer, children,
-          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
+          providerContext.transformProviders, providerContext.transformedHasViewContainer,
+          providerContext.queryMatches, children, hasInlineTemplates ? null : ngContentIndex,
+          element.sourceSpan);
     } else {
       this._assertElementExists(matchElement, element);
       this._assertOnlyOneComponent(directiveAsts, element.sourceSpan);
@@ -352,7 +353,7 @@ class TemplateParseVisitor implements html.Visitor {
       parsedElement = new ElementAst(
           nodeName, attrs, elementProps, events, references,
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
-          providerContext.transformedHasViewContainer, children,
+          providerContext.transformedHasViewContainer, providerContext.queryMatches, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan, element.endSourceSpan);
 
       this._findComponentDirectives(directiveAsts)
@@ -386,8 +387,8 @@ class TemplateParseVisitor implements html.Visitor {
       parsedElement = new EmbeddedTemplateAst(
           [], [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
           templateProviderContext.transformProviders,
-          templateProviderContext.transformedHasViewContainer, [parsedElement], ngContentIndex,
-          element.sourceSpan);
+          templateProviderContext.transformedHasViewContainer, templateProviderContext.queryMatches,
+          [parsedElement], ngContentIndex, element.sourceSpan);
     }
 
     return parsedElement;
@@ -755,7 +756,7 @@ class NonBindableVisitor implements html.Visitor {
     const ngContentIndex = parent.findNgContentIndex(selector);
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
     return new ElementAst(
-        ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, children,
+        ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, [], children,
         ngContentIndex, ast.sourceSpan, ast.endSourceSpan);
   }
   visitComment(comment: html.Comment, context: any): any { return null; }

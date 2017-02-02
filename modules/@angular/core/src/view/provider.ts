@@ -16,7 +16,7 @@ import {Type} from '../type';
 
 import {createChangeDetectorRef, createInjector, createTemplateRef, createViewContainerRef} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, findElementDef, isComponentView, parentDiIndex, tokenKey, unwrapValue} from './util';
+import {checkAndUpdateBinding, dispatchEvent, isComponentView, tokenKey, unwrapValue, viewParentDiIndex} from './util';
 
 const RendererV1TokenKey = tokenKey(v1renderer.Renderer);
 const ElementRefTokenKey = tokenKey(ElementRef);
@@ -278,6 +278,9 @@ function callFactory(
 export function resolveDep(
     view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef,
     notFoundValue = Injector.THROW_IF_NOT_FOUND): any {
+  if (depDef.flags & DepFlags.Value) {
+    return depDef.token;
+  }
   const startView = view;
   if (depDef.flags & DepFlags.Optional) {
     notFoundValue = null;
@@ -288,7 +291,7 @@ export function resolveDep(
     requestNodeIndex = null;
     elIndex = view.def.nodes[elIndex].parent;
     while (elIndex == null && view) {
-      elIndex = parentDiIndex(view);
+      elIndex = viewParentDiIndex(view);
       view = view.parent;
     }
   }
@@ -337,7 +340,7 @@ export function resolveDep(
         }
     }
     requestNodeIndex = null;
-    elIndex = parentDiIndex(view);
+    elIndex = viewParentDiIndex(view);
     view = view.parent;
   }
   return startView.root.injector.get(depDef.token, notFoundValue);

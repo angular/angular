@@ -29,6 +29,7 @@ export const registerModuleFactory: typeof r.registerModuleFactory = r.registerM
 export type ViewType = typeof r._ViewType;
 export const ViewType: typeof r.ViewType = r.ViewType;
 export const view_utils: typeof r.view_utils = r.view_utils;
+export const viewEngine: typeof r.viewEngine = r.viewEngine;
 export const DebugContext: typeof r.DebugContext = r.DebugContext;
 export const StaticNodeDebugInfo: typeof r.StaticNodeDebugInfo = r.StaticNodeDebugInfo;
 export const devModeEqual: typeof r.devModeEqual = r.devModeEqual;
