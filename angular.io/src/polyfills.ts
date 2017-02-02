@@ -15,6 +15,7 @@
 // import 'core-js/es6/regexp';
 // import 'core-js/es6/map';
 // import 'core-js/es6/set';
+import 'reflect-metadata';
 
 
 // If you need to support the browsers/features below, uncomment the import

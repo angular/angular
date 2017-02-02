@@ -1,7 +1,10 @@
 <md-toolbar color="primary" class="app-toolbar">
-  <span>Angular</span>
-
+    <span>Angular</span>
+    <span><a class="nav-link" aioNavLink="home"> Home </a></span>
+    <span><a class="nav-link" aioNavLink="news"> News</a></span>
+    <span><a class="nav-link" aioNavLink="features"> Features</a></span>
+    <span class="fill-remaining-space"></span>
 </md-toolbar>
 <section class="app-content">
-  <router-outlet></router-outlet>
+  <aio-doc-viewer [doc]="navEngine.currentDoc"></aio-doc-viewer>
 </section>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-ngio-docs',
+  selector: 'aio-ngio-docs',
   templateUrl: './docs-app.component.html',
   styleUrls: ['./docs-app.component.css']
 })
