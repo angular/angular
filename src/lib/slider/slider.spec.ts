@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormControl} from '@angular/forms';
+import {ReactiveFormsModule, FormControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './slider';
@@ -22,7 +22,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule.forRoot(), RtlModule.forRoot(), ReactiveFormsModule],
+      imports: [MdSliderModule.forRoot(), RtlModule.forRoot(), ReactiveFormsModule, FormsModule],
       declarations: [
         StandardSlider,
         DisabledSlider,
@@ -33,7 +33,8 @@ describe('MdSlider', () => {
         SliderWithSetTickInterval,
         SliderWithThumbLabel,
         SliderWithOneWayBinding,
-        SliderWithTwoWayBinding,
+        SliderWithFormControl,
+        SliderWithNgModel,
         SliderWithValueSmallerThanMin,
         SliderWithValueGreaterThanMax,
         SliderWithChangeHandler,
@@ -585,15 +586,15 @@ describe('MdSlider', () => {
   });
 
   describe('slider as a custom form control', () => {
-    let fixture: ComponentFixture<SliderWithTwoWayBinding>;
+    let fixture: ComponentFixture<SliderWithFormControl>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
     let sliderWrapperElement: HTMLElement;
-    let testComponent: SliderWithTwoWayBinding;
+    let testComponent: SliderWithFormControl;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SliderWithTwoWayBinding);
+      fixture = TestBed.createComponent(SliderWithFormControl);
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
@@ -684,7 +685,54 @@ describe('MdSlider', () => {
       expect(sliderControl.pristine).toBe(false);
       expect(sliderControl.touched).toBe(true);
     });
+  });
 
+  describe('slider with ngModel', () => {
+    let fixture: ComponentFixture<SliderWithNgModel>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderWrapperElement: HTMLElement;
+    let testComponent: SliderWithNgModel;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithNgModel);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
+    });
+
+    it('should update the model on click', () => {
+      expect(testComponent.val).toBe(0);
+
+      dispatchClickEventSequence(sliderNativeElement, 0.76);
+      fixture.detectChanges();
+
+      expect(testComponent.val).toBe(76);
+    });
+
+    it('should update the model on slide', () => {
+      expect(testComponent.val).toBe(0);
+
+      dispatchSlideEventSequence(sliderNativeElement, 0, 0.19, gestureConfig);
+      fixture.detectChanges();
+
+      expect(testComponent.val).toBe(19);
+    });
+
+    it('should update the model on keydown', () => {
+      expect(testComponent.val).toBe(0);
+
+      dispatchKeydownEvent(sliderNativeElement, UP_ARROW);
+      fixture.detectChanges();
+
+      expect(testComponent.val).toBe(1);
+    });
   });
 
   describe('slider with value property binding', () => {
@@ -1222,8 +1270,16 @@ class SliderWithOneWayBinding {
   template: `<md-slider [formControl]="control"></md-slider>`,
   styles: [styles],
 })
-class SliderWithTwoWayBinding {
+class SliderWithFormControl {
   control = new FormControl(0);
+}
+
+@Component({
+  template: `<md-slider [(ngModel)]="val"></md-slider>`,
+  styles: [styles],
+})
+class SliderWithNgModel {
+  val = 0;
 }
 
 @Component({

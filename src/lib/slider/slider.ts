@@ -75,6 +75,7 @@ export class MdSliderChange {
     '(blur)': '_onBlur()',
     '(click)': '_onClick($event)',
     '(keydown)': '_onKeydown($event)',
+    '(keyup)': '_onKeyup()',
     '(mouseenter)': '_onMouseenter()',
     '(slide)': '_onSlide($event)',
     '(slideend)': '_onSlideEnd()',
@@ -485,12 +486,19 @@ export class MdSlider implements ControlValueAccessor {
         return;
     }
 
+    this._isSliding = true;
     event.preventDefault();
+  }
+
+  _onKeyup() {
+    this._isSliding = false;
   }
 
   /** Increments the slider by the given number of steps (negative number decrements). */
   private _increment(numSteps: number) {
     this.value = this._clamp(this.value + this.step * numSteps, this.min, this.max);
+    this._emitInputEvent();
+    this._emitValueIfChanged();
   }
 
   /** Calculate the new value from the new physical location. The value will always be snapped. */
