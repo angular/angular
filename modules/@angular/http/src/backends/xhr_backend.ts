@@ -42,7 +42,7 @@ export class XHRConnection implements Connection {
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
-      const _xhr: XMLHttpRequest = browserXHR.build();
+      const _xhr: XMLHttpRequest = browserXHR.build(req);
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
       if (req.withCredentials != null) {
         _xhr.withCredentials = req.withCredentials;

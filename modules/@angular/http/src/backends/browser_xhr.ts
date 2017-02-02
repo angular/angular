@@ -7,6 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
+import {Request} from '../static_request';
 
 /**
  * A backend for http that uses the `XMLHttpRequest` browser API.
@@ -17,6 +18,5 @@ import {Injectable} from '@angular/core';
  */
 @Injectable()
 export class BrowserXhr {
-  constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(request?: Request): any { return <any>(new XMLHttpRequest()); }
 }
