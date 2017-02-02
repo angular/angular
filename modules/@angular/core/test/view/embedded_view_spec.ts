@@ -7,7 +7,7 @@
  */
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {ArgumentType, BindingType, NodeCheckFn, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingType, NodeCheckFn, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -21,8 +21,8 @@ export function main() {
       return viewDef(viewFlags, nodes, update, handleEvent);
     }
 
-    function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinition {
-      return viewDef(ViewFlags.None, nodes, update);
+    function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinitionFactory {
+      return () => viewDef(ViewFlags.None, nodes, update);
     }
 
     function createAndGetRootNodes(
@@ -38,7 +38,7 @@ export function main() {
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(
           compViewDef([
-            elementDef(NodeFlags.None, null, null, 2, 'div'),
+            elementDef(NodeFlags.None, null, null, 1, 'div'),
             anchorDef(
                 NodeFlags.HasEmbeddedViews, null, null, 0,
                 embeddedViewDef([elementDef(NodeFlags.None, null, null, 0, 'span')])),

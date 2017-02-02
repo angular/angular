@@ -30,31 +30,35 @@ function TreeComponent_Host(): ViewDefinition {
   ]);
 }
 
+function TreeComponent_1() {
+  return viewDef(
+      viewFlags,
+      [
+        elementDef(NodeFlags.None, null, null, 1, 'tree'),
+        directiveDef(
+            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+      ],
+      (check, view) => {
+        const cmp = view.component;
+        check(view, 1, ArgumentType.Inline, cmp.data.left);
+      });
+}
+
+function TreeComponent_2() {
+  return viewDef(
+      viewFlags,
+      [
+        elementDef(NodeFlags.None, null, null, 1, 'tree'),
+        directiveDef(
+            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+      ],
+      (check, view) => {
+        const cmp = view.component;
+        check(view, 1, ArgumentType.Inline, cmp.data.left);
+      });
+}
+
 function TreeComponent_0(): ViewDefinition {
-  const TreeComponent_1: ViewDefinition = viewDef(
-      viewFlags,
-      [
-        elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        directiveDef(
-            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
-      ],
-      (check, view) => {
-        const cmp = view.component;
-        check(view, 1, ArgumentType.Inline, cmp.data.left);
-      });
-
-  const TreeComponent_2: ViewDefinition = viewDef(
-      viewFlags,
-      [
-        elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        directiveDef(
-            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
-      ],
-      (check, view) => {
-        const cmp = view.component;
-        check(view, 1, ArgumentType.Inline, cmp.data.left);
-      });
-
   return viewDef(
       viewFlags,
       [

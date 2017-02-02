@@ -6,10 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
+import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers, createIdentifier} from './identifiers';
+
+
+/**
+ * Temporal switch for the compiler to use the new view engine,
+ * until it is fully integrated.
+ *
+ * Only works in Jit for now.
+ */
+export const USE_VIEW_ENGINE = new InjectionToken<boolean>('UseViewEngine');
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;

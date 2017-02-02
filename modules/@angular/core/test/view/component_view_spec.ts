@@ -63,7 +63,7 @@ export function main() {
         it('should select root elements based on a selector', () => {
           const view = createRootView(
               compViewDef([
-                elementDef(NodeFlags.None, null, null, 1, 'div'),
+                elementDef(NodeFlags.None, null, null, 0, 'div'),
               ]),
               {}, [], 'root');
           const rootNodes = rootRenderNodes(view);
@@ -73,7 +73,7 @@ export function main() {
         it('should select root elements based on a node', () => {
           const view = createRootView(
               compViewDef([
-                elementDef(NodeFlags.None, null, null, 1, 'div'),
+                elementDef(NodeFlags.None, null, null, 0, 'div'),
               ]),
               {}, [], rootNode);
           const rootNodes = rootRenderNodes(view);
@@ -83,7 +83,7 @@ export function main() {
         it('should set attributes on the root node', () => {
           const view = createRootView(
               compViewDef([
-                elementDef(NodeFlags.None, null, null, 1, 'div', {'a': 'b'}),
+                elementDef(NodeFlags.None, null, null, 0, 'div', {'a': 'b'}),
               ]),
               {}, [], rootNode);
           expect(rootNode.getAttribute('a')).toBe('b');
@@ -93,7 +93,7 @@ export function main() {
           rootNode.appendChild(document.createElement('div'));
           const view = createRootView(
               compViewDef([
-                elementDef(NodeFlags.None, null, null, 1, 'div', {'a': 'b'}),
+                elementDef(NodeFlags.None, null, null, 0, 'div', {'a': 'b'}),
               ]),
               {}, [], rootNode);
           expect(rootNode.childNodes.length).toBe(0);
