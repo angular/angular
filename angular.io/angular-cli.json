@@ -16,7 +16,7 @@
       "polyfills": "polyfills.ts",
       "test": "test.ts",
       "tsconfig": "tsconfig.json",
-      "prefix": "app",
+      "prefix": "aio",
       "styles": [
         "styles.scss"
       ],
