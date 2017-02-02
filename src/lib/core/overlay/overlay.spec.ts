@@ -62,6 +62,23 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
+  it('should disable pointer events of the pane element if detached', () => {
+    let overlayRef = overlay.create();
+    let paneElement = overlayRef.overlayElement;
+
+    overlayRef.attach(componentPortal);
+
+    expect(paneElement.childNodes.length).not.toBe(0);
+    expect(paneElement.style.pointerEvents)
+      .toBeFalsy('Expected the overlay pane to enable pointerEvents when attached.');
+
+    overlayRef.detach();
+
+    expect(paneElement.childNodes.length).toBe(0);
+    expect(paneElement.style.pointerEvents)
+      .toBe('none', 'Expected the overlay pane to disable pointerEvents when detached.');
+  });
+
   it('should open multiple overlays', () => {
     let pizzaOverlayRef = overlay.create();
     pizzaOverlayRef.attach(componentPortal);
