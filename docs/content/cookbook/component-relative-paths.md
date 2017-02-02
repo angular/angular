@@ -88,12 +88,20 @@ The result looks like this:
 and download the source code from there
 or simply read the pertinent source here.
 
-{@tabs}
-  {@example 'cb-component-relative-paths/ts/app/some.component.ts' -title='app/some.component.ts'}
-  {@example 'cb-component-relative-paths/ts/app/some.component.html' -title='app/some.component.html'}
-  {@example 'cb-component-relative-paths/ts/app/some.component.css' -title='app/some.component.css'}
-  {@example 'cb-component-relative-paths/ts/app/app.component.ts' -title='app/app.component.ts'}
-{@endtabs}
+<md-tab-group>
+  <md-tab label="app/some.component.ts">
+    {@example 'cb-component-relative-paths/ts/app/some.component.ts'}
+  </md-tab>
+  <md-tab label="app/some.component.html">
+    {@example 'cb-component-relative-paths/ts/app/some.component.html'}
+  </md-tab>
+  <md-tab label="app/some.component.css">
+    {@example 'cb-component-relative-paths/ts/app/some.component.css'}
+  </md-tab>
+  <md-tab label="app/app.component.ts">
+    {@example 'cb-component-relative-paths/ts/app/app.component.ts'}
+  </md-tab>
+<md-tab-group>
 
 
 {@a why-default}
