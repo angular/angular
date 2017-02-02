@@ -21,6 +21,10 @@ echo 'travis_fold:start:test.buildPackages'
 
 echo 'travis_fold:end:test.buildPackages'
 
+if [[ ${TRAVIS} ]]; then
+  sh -e /etc/init.d/xvfb start
+fi
+
 ./integration/build_rxjs_es6.sh
 ./integration/run_tests.sh
 #TODO(alexeagle): move offline_compiler_test to integration/
@@ -35,9 +39,6 @@ cd dist/
 $(npm bin)/gulp serve &
 $(npm bin)/gulp serve-examples &
 cd ..
-if [[ ${TRAVIS} ]]; then
-  sh -e /etc/init.d/xvfb start
-fi
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-e2e.conf.js --bundles=true
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-examples-e2e.conf.js --bundles=true
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-perf.conf.js --bundles=true --dryrun

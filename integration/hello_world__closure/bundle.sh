@@ -31,16 +31,18 @@ CLOSURE_ARGS=(
   # Uncomment for easier debugging
   # "--formatting=PRETTY_PRINT"
 
+  e2e/testability.externs.js
   node_modules/zone.js/dist/zone.js
   $(find -L vendor/rxjs -name *.js)
   node_modules/@angular/{core,common,compiler,platform-browser}/index.js
   $(find node_modules/@angular/{core,common,compiler,platform-browser}/src -name *.js)
-  "built/*.js"
-  "--entry_point=./built/main"
+  "built/src/*.js"
+  "--entry_point=./built/src/main"
 )
 
 java -jar node_modules/google-closure-compiler/compiler.jar $(echo ${CLOSURE_ARGS[*]})
+# gzip on Travis doesn't have --keep option so copy the original file first
+cp dist/bundle.js dist/bundle.tmp
 gzip -f dist/bundle.js
+mv dist/bundle.tmp dist/bundle.js
 ls -alH dist/bundle*
-
-# TODO(alexeagle): add an e2e test that the application works in a browser
