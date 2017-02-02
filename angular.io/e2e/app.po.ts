@@ -1,11 +1,14 @@
 import { browser, element, by } from 'protractor';
 
 export class SitePage {
+
+  featureLink = element(by.css('md-toolbar a[aioNavLink=features]'));
+
   navigateTo() {
     return browser.get('/');
   }
 
-  getParagraphText() {
-    return element(by.css('app-home-page p')).getText();
+  getDocViewerText() {
+    return element(by.css('aio-doc-viewer')).getText();
   }
 }

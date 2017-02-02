@@ -7,8 +7,10 @@ describe('site App', function() {
     page = new SitePage();
   });
 
-  it('should display message saying app works', () => {
+  it('should show features text after clicking "Features"', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('home-page works!');
+    page.featureLink.click().then(() => {
+      expect(page.getDocViewerText()).toContain('Progressive web apps');
+    });
   });
 });
