@@ -1,3 +1,33 @@
+<a name="2.4.6"></a>
+## [2.4.6](https://github.com/angular/angular/compare/2.4.5...2.4.6) (2017-02-02)
+
+
+### Bug Fixes
+
+* **common:** add PopStateEvent interface ([#13400](https://github.com/angular/angular/issues/13400)) ([e740bff](https://github.com/angular/angular/commit/e740bff)), closes [#13378](https://github.com/angular/angular/issues/13378)
+* **common:** DatePipe should not throw for NaN ([#14117](https://github.com/angular/angular/issues/14117)) ([32cc675](https://github.com/angular/angular/commit/32cc675)), closes [#14103](https://github.com/angular/angular/issues/14103)
+* **common:** DatePipe parses input string if it's not a valid date in browser ([#13895](https://github.com/angular/angular/issues/13895)) ([71adb70](https://github.com/angular/angular/commit/71adb70)), closes [#12334](https://github.com/angular/angular/issues/12334) [#13874](https://github.com/angular/angular/issues/13874)
+* **common:** introduce isObservable method ([#14067](https://github.com/angular/angular/issues/14067)) ([3226562](https://github.com/angular/angular/commit/3226562)), closes [#8848](https://github.com/angular/angular/issues/8848)
+* **compiler:** allow empty translations for attributes ([#14085](https://github.com/angular/angular/issues/14085)) ([f3d5506](https://github.com/angular/angular/commit/f3d5506)), closes [#13897](https://github.com/angular/angular/issues/13897)
+* **core:** add bootstrapped modules into platform modules list ([#13740](https://github.com/angular/angular/issues/13740)) ([32870d8](https://github.com/angular/angular/commit/32870d8)), closes [#12015](https://github.com/angular/angular/issues/12015)
+* **core:** ViewContainerRef.indexOf doesn't throw error when empty ([#13220](https://github.com/angular/angular/issues/13220)) ([d4b9669](https://github.com/angular/angular/commit/d4b9669))
+* **forms:** async validator cancels previous subscription when input has changed ([#13222](https://github.com/angular/angular/issues/13222)) ([5f2e6c9](https://github.com/angular/angular/commit/5f2e6c9)), closes [#12709](https://github.com/angular/angular/issues/12709) [#9120](https://github.com/angular/angular/issues/9120) [#10074](https://github.com/angular/angular/issues/10074) [#8923](https://github.com/angular/angular/issues/8923)
+* **forms:** select shows blank line when nothing is selected in IE/Edge ([#13903](https://github.com/angular/angular/issues/13903)) ([85def06](https://github.com/angular/angular/commit/85def06)), closes [#10010](https://github.com/angular/angular/issues/10010)
+* **forms:** Verify functions passed into async validators returns Observable or Promise ([#14053](https://github.com/angular/angular/issues/14053)) ([b00b038](https://github.com/angular/angular/commit/b00b038))
+* **http:** remove dots from jsonp callback name ([#13219](https://github.com/angular/angular/issues/13219)) ([2c42887](https://github.com/angular/angular/commit/2c42887))
+* **http:** use params without RequestOptions ([#14101](https://github.com/angular/angular/issues/14101)) ([fa18c83](https://github.com/angular/angular/commit/fa18c83)), closes [#14100](https://github.com/angular/angular/issues/14100)
+* **i18n:** parse ICU messages while normalizing templates ([#14153](https://github.com/angular/angular/issues/14153)) ([8d4aa82](https://github.com/angular/angular/commit/8d4aa82))
+* **language-service:** do not crash when Angular cannot be located ([#14123](https://github.com/angular/angular/issues/14123)) ([4de425a](https://github.com/angular/angular/commit/4de425a)), closes [#14122](https://github.com/angular/angular/issues/14122)
+* **platform-browser:** remove style nodes on destroy ([#13744](https://github.com/angular/angular/issues/13744)) ([664262b](https://github.com/angular/angular/commit/664262b)), closes [#11746](https://github.com/angular/angular/issues/11746)
+* **router:** fix CanActivate redirect to the root on initial load ([#13929](https://github.com/angular/angular/issues/13929)) ([91f450d](https://github.com/angular/angular/commit/91f450d)), closes [#13530](https://github.com/angular/angular/issues/13530)
+* ngModel should use rxjs/symbol/observable to detect observable ([#14236](https://github.com/angular/angular/issues/14236)) ([e168baa](https://github.com/angular/angular/commit/e168baa))
+* **router:** fix CanActivateChild guard provided in a lazy loaded module ([#13989](https://github.com/angular/angular/issues/13989)) ([52b3d2c](https://github.com/angular/angular/commit/52b3d2c)), closes [#12275](https://github.com/angular/angular/issues/12275)
+* **router:** fix navigation from the root component ngOnInit hook ([#13932](https://github.com/angular/angular/issues/13932)) ([96c61a1](https://github.com/angular/angular/commit/96c61a1)), closes [#13795](https://github.com/angular/angular/issues/13795)
+* **testing:** async/fakeAsync/inject/withModule helpers should pass through context to callback functions ([#13718](https://github.com/angular/angular/issues/13718)) ([f787f5c](https://github.com/angular/angular/commit/f787f5c))
+* **upgrade:** detect async downgrade component changes ([#14039](https://github.com/angular/angular/issues/14039)) ([117fa79](https://github.com/angular/angular/commit/117fa79)), closes [#6385](https://github.com/angular/angular/issues/6385) [#6385](https://github.com/angular/angular/issues/6385)
+
+
+
 <a name="2.4.5"></a>
 ## [2.4.5](https://github.com/angular/angular/compare/2.4.4...2.4.5) (2017-01-25)
 
