@@ -24,6 +24,7 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
 };
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
+const VALUE_PROP = 'value';
 
 export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
@@ -194,7 +195,12 @@ export class DomRenderer implements Renderer {
 
   setElementProperty(
       renderElement: Element|DocumentFragment, propertyName: string, propertyValue: any): void {
-    (renderElement as any)[propertyName] = propertyValue;
+    if (propertyValue == null && propertyName === VALUE_PROP) {
+      // IE requires '' instead of null
+      (renderElement as any)[propertyName] = '';
+    } else {
+      (renderElement as any)[propertyName] = propertyValue;
+    }
   }
 
   setElementAttribute(renderElement: Element, attributeName: string, attributeValue: string): void {
