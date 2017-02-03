@@ -44,13 +44,11 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
  */
 @NgModule({
   providers: [
-    // TODO(pascal): use factory type annotations once supported in DI
-    // issue: https://github.com/angular/angular/issues/3183
-    {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
     BrowserXhr,
+    XHRBackend,
     {provide: RequestOptions, useClass: BaseRequestOptions},
     {provide: ResponseOptions, useClass: BaseResponseOptions},
-    XHRBackend,
+    {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
     {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
   ],
 })
@@ -64,10 +62,8 @@ export class HttpModule {
  */
 @NgModule({
   providers: [
-    // TODO(pascal): use factory type annotations once supported in DI
-    // issue: https://github.com/angular/angular/issues/3183
-    {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
     BrowserJsonp,
+    {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
     {provide: RequestOptions, useClass: BaseRequestOptions},
     {provide: ResponseOptions, useClass: BaseResponseOptions},
     {provide: JSONPBackend, useClass: JSONPBackend_},
