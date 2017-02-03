@@ -44,6 +44,15 @@ groups:
       - IgorMinar
       - mhevery
 
+  public-api:
+    conditions:
+      files:
+        include:
+          - "tools/public_api_guard/*"
+    users:
+      - IgorMinar
+      - mhevery
+
   build-and-ci:
     conditions:
       files:
@@ -54,6 +63,7 @@ groups:
           - "tools/*"
         exclude:
           - "tools/@angular/tsc-wrapped/*"
+          - "tools/public_api_guard/*"
     users:
       - IgorMinar #primary
       - mhevery
