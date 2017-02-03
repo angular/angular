@@ -8,9 +8,12 @@ describe('site App', function() {
   });
 
   it('should show features text after clicking "Features"', () => {
-    page.navigateTo();
-    page.featureLink.click().then(() => {
-      expect(page.getDocViewerText()).toContain('Progressive web apps');
-    });
+    page.navigateTo()
+      .then(() => {
+        return page.featureLink.click();
+      })
+      .then(() => {
+        expect(page.getDocViewerText()).toContain('Progressive web apps');
+      });
   });
 });
