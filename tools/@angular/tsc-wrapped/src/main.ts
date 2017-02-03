@@ -82,7 +82,7 @@ export function main(
       const tsickleCompilerHostOptions: tsickle.Options = {
         googmodule: false,
         untyped: true,
-        convertIndexImportShorthand: ngOptions.target === ts.ScriptTarget.ES2015,
+        convertIndexImportShorthand: ngOptions.target === ts.ScriptTarget.ES2015, // This covers ES6 too
       };
 
       const tsickleHost: tsickle.TsickleHost = {
