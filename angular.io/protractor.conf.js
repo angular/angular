@@ -11,11 +11,14 @@ exports.config = {
     './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome'
+    browserName: 'chrome',
+    chromeOptions: {
+      binary: process.env.CHROME_BIN
+    }
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
-  framework: 'jasmine2',
+  framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
@@ -31,9 +34,3 @@ exports.config = {
     jasmine.getEnv().addReporter(new SpecReporter());
   }
 };
-
-if (process.env.TRAVIS) {
-  exports.config.capabilities.chromeOptions = {
-    binary: process.env.CHROME_BIN
-  };
-}
