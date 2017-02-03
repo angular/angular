@@ -70,7 +70,8 @@ export class Xmb extends Serializer {
     ]);
   }
 
-  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
+  load(content: string, url: string):
+      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     throw new Error('Unsupported');
   }
 

@@ -31,7 +31,7 @@ export function main() {
 
     // https://github.com/angular/angular/issues/14322
     it('should parse the translations only once', () => {
-      const transBundle = new TranslationBundle({}, () => 'id');
+      const transBundle = new TranslationBundle({}, null, () => 'id');
       spyOn(TranslationBundle, 'load').and.returnValue(transBundle);
       const htmlParser = new HtmlParser();
       const i18nHtmlParser = new I18NHtmlParser(htmlParser, 'translations');

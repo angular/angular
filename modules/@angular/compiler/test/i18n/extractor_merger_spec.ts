@@ -393,7 +393,7 @@ export function main() {
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
         i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, digest);
+        const translations = new TranslationBundle(i18nMsgMap, null, digest);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -450,7 +450,7 @@ export function main() {
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
         i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, digest);
+        const translations = new TranslationBundle(i18nMsgMap, null, digest);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -488,7 +488,7 @@ function fakeTranslate(
     i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null)];
   });
 
-  const translations = new TranslationBundle(i18nMsgMap, digest);
+  const translations = new TranslationBundle(i18nMsgMap, null, digest);
 
   const output = mergeTranslations(
       htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
