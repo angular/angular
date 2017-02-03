@@ -2,9 +2,10 @@
 
 set -e -o pipefail
 
+echo 'travis_fold:start:ENV'
 
-NODE_VERSION=5.4.1
-NPM_VERSION=3.5.3
+NODE_VERSION=6.9.5
+NPM_VERSION=3.10.7 # do not upgrade to >3.10.8 unless https://github.com/npm/npm/issues/14042 is resolved
 CHROMIUM_VERSION=403382 # Chrome 53 linux stable, see https://www.chromium.org/developers/calendar
 SAUCE_CONNECT_VERSION=4.3.11
 
@@ -74,3 +75,4 @@ if [[ ${TRAVIS} ]]; then
   export CHROME_BIN=${HOME}/.chrome/chromium/chrome-linux/chrome
 fi
 
+echo 'travis_fold:end:ENV'

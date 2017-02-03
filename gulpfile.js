@@ -11,8 +11,8 @@
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 require('./tools/check-environment')({
-  requiredNpmVersion: '>=3.5.3 <4.0.0',
-  requiredNodeVersion: '>=5.4.1 <7.0.0',
+  requiredNpmVersion: '>=3.10.7 <4.0.0',
+  requiredNodeVersion: '>=6.9.5 <7.0.0',
 });
 
 const gulp = require('gulp');
