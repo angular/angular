@@ -1,13 +1,12 @@
-import { Component, OnInit, Input, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ElementRef, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'aio-doc-viewer',
-  templateUrl: './doc-viewer.component.html',
-  styleUrls: ['./doc-viewer.component.css'],
+  template: ''
   // TODO(robwormald): shadow DOM and emulated don't work here (?!)
   // encapsulation: ViewEncapsulation.Native
 })
-export class DocViewerComponent implements OnInit {
+export class DocViewerComponent {
 
   @Input()
   set doc(currentDoc) {
@@ -17,8 +16,5 @@ export class DocViewerComponent implements OnInit {
   }
 
   constructor(private element: ElementRef) { }
-
-  ngOnInit() {
-  }
 
 }
