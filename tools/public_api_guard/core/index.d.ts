@@ -171,6 +171,7 @@ export declare class ApplicationModule {
 export declare abstract class ApplicationRef {
     readonly abstract componentTypes: Type<any>[];
     readonly abstract components: ComponentRef<any>[];
+    readonly abstract isStable: Observable<boolean>;
     readonly abstract viewCount: number;
     abstract attachView(view: ViewRef): void;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;

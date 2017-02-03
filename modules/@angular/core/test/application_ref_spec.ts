@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {ServerModule} from '@angular/platform-server';
 
-import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
+import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
 @Component({selector: 'comp', template: 'hello'})
 class SomeComponent {
@@ -123,7 +124,6 @@ export function main() {
                          'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
                })));
       });
-
     });
 
     describe('bootstrapModule', () => {
@@ -363,10 +363,143 @@ export function main() {
          });
     });
   });
-}
 
-@Component({selector: 'my-comp', template: ''})
-class MyComp6 {
+  describe('AppRef', () => {
+    @Component({selector: 'sync-comp', template: `<span>{{text}}</span>`})
+    class SyncComp {
+      text: string = '1';
+    }
+
+    @Component({selector: 'click-comp', template: `<span (click)="onClick()">{{text}}</span>`})
+    class ClickComp {
+      text: string = '1';
+
+      onClick() { this.text += '1'; }
+    }
+
+    @Component({selector: 'micro-task-comp', template: `<span>{{text}}</span>`})
+    class MicroTaskComp {
+      text: string = '1';
+
+      ngOnInit() {
+        Promise.resolve(null).then((_) => { this.text += '1'; });
+      }
+    }
+
+    @Component({selector: 'macro-task-comp', template: `<span>{{text}}</span>`})
+    class MacroTaskComp {
+      text: string = '1';
+
+      ngOnInit() {
+        setTimeout(() => { this.text += '1'; }, 10);
+      }
+    }
+
+    @Component({selector: 'micro-macro-task-comp', template: `<span>{{text}}</span>`})
+    class MicroMacroTaskComp {
+      text: string = '1';
+
+      ngOnInit() {
+        Promise.resolve(null).then((_) => {
+          this.text += '1';
+          setTimeout(() => { this.text += '1'; }, 10);
+        });
+      }
+    }
+
+    @Component({selector: 'macro-micro-task-comp', template: `<span>{{text}}</span>`})
+    class MacroMicroTaskComp {
+      text: string = '1';
+
+      ngOnInit() {
+        setTimeout(() => {
+          this.text += '1';
+          Promise.resolve(null).then((_: any) => { this.text += '1'; });
+        }, 10);
+      }
+    }
+
+    let stableCalled = false;
+
+    beforeEach(() => {
+      stableCalled = false;
+      TestBed.configureTestingModule({
+        declarations: [
+          SyncComp, MicroTaskComp, MacroTaskComp, MicroMacroTaskComp, MacroMicroTaskComp, ClickComp
+        ],
+      });
+    });
+
+    afterEach(() => { expect(stableCalled).toBe(true, 'isStable did not emit true on stable'); });
+
+    function expectStableTexts(component: Type<any>, expected: string[]) {
+      const fixture = TestBed.createComponent(component);
+      const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+      const zone: NgZone = TestBed.get(NgZone);
+      appRef.attachView(fixture.componentRef.hostView);
+      zone.run(() => appRef.tick());
+
+      let i = 0;
+      appRef.isStable.subscribe({
+        next: (stable: boolean) => {
+          if (stable) {
+            expect(i).toBeLessThan(expected.length);
+            expect(fixture.nativeElement).toHaveText(expected[i++]);
+            stableCalled = true;
+          }
+        }
+      });
+    }
+
+    it('isStable should fire on synchronous component loading',
+       async(() => { expectStableTexts(SyncComp, ['1']); }));
+
+    it('isStable should fire after a microtask on init is completed',
+       async(() => { expectStableTexts(MicroTaskComp, ['11']); }));
+
+    it('isStable should fire after a macrotask on init is completed',
+       async(() => { expectStableTexts(MacroTaskComp, ['11']); }));
+
+    it('isStable should fire only after chain of micro and macrotasks on init are completed',
+       async(() => { expectStableTexts(MicroMacroTaskComp, ['111']); }));
+
+    it('isStable should fire only after chain of macro and microtasks on init are completed',
+       async(() => { expectStableTexts(MacroMicroTaskComp, ['111']); }));
+
+    describe('unstable', () => {
+      let unstableCalled = false;
+
+      afterEach(
+          () => { expect(unstableCalled).toBe(true, 'isStable did not emit false on unstable'); });
+
+      function expectUnstable(appRef: ApplicationRef) {
+        appRef.isStable.subscribe({
+          next: (stable: boolean) => {
+            if (stable) {
+              stableCalled = true;
+            }
+            if (!stable) {
+              unstableCalled = true;
+            }
+          }
+        });
+      }
+
+      it('should be fired after app becomes unstable', async(() => {
+           const fixture = TestBed.createComponent(ClickComp);
+           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+           const zone: NgZone = TestBed.get(NgZone);
+           appRef.attachView(fixture.componentRef.hostView);
+           zone.run(() => appRef.tick());
+
+           fixture.whenStable().then(() => {
+             expectUnstable(appRef);
+             const element = fixture.debugElement.children[0];
+             dispatchEvent(element.nativeElement, 'click');
+           });
+         }));
+    });
+  });
 }
 
 class MockConsole {
