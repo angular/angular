@@ -3,25 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { DocViewerComponent } from './doc-viewer.component';
-import { DocBuilderService } from '../nav-engine';
+import { CodeExampleComponent } from './code-example.component';
 
-describe('DocViewerComponent', () => {
-  let component: DocViewerComponent;
-  let fixture: ComponentFixture<DocViewerComponent>;
+describe('CodeExampleComponent', () => {
+  let component: CodeExampleComponent;
+  let fixture: ComponentFixture<CodeExampleComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DocViewerComponent ],
-      providers: [
-        {provide: DocBuilderService, useValue: {}} // not ready to test yet
-      ]
+      declarations: [ CodeExampleComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DocViewerComponent);
+    fixture = TestBed.createComponent(CodeExampleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

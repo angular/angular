@@ -2,13 +2,18 @@ import { browser, element, by } from 'protractor';
 
 export class SitePage {
 
-  featureLink = element(by.css('md-toolbar a[aioNavLink=features]'));
+  links = element.all(by.css('md-toolbar a'));
+  datePipeLink = element(by.css('md-toolbar a[aioNavLink="docs/api/common/date-pipe"]'));
+  docViewer = element(by.css('aio-doc-viewer'));
+  codeExample = element.all(by.css('aio-doc-viewer code-example > pre > code'));
+  featureLink = element(by.css('md-toolbar a[aioNavLink="features"]'));
 
   navigateTo() {
     return browser.get('/');
   }
 
   getDocViewerText() {
-    return element(by.css('aio-doc-viewer')).getText();
+    return this.docViewer.getText();
   }
+
 }
