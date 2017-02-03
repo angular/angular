@@ -21,6 +21,7 @@ const _XMLNS = 'urn:oasis:names:tc:xliff:document:1.2';
 const _SOURCE_LANG = 'en';
 const _PLACEHOLDER_TAG = 'x';
 
+const _FILE_TAG = 'file';
 const _SOURCE_TAG = 'source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
@@ -68,10 +69,11 @@ export class Xliff extends Serializer {
     ]);
   }
 
-  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
+  load(content: string, url: string):
+      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliffParser = new XliffParser();
-    const {mlNodesByMsgId, errors} = xliffParser.parse(content, url);
+    const {locale, mlNodesByMsgId, errors} = xliffParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
@@ -86,7 +88,7 @@ export class Xliff extends Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return i18nNodesByMsgId;
+    return {locale, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return digest(message); }
@@ -154,6 +156,7 @@ class XliffParser implements ml.Visitor {
   private _unitMlNodes: ml.Node[];
   private _errors: I18nError[];
   private _mlNodesByMsgId: {[msgId: string]: ml.Node[]};
+  private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
     this._unitMlNodes = [];
@@ -167,6 +170,7 @@ class XliffParser implements ml.Visitor {
     return {
       mlNodesByMsgId: this._mlNodesByMsgId,
       errors: this._errors,
+      locale: this._locale,
     };
   }
 
@@ -198,6 +202,14 @@ class XliffParser implements ml.Visitor {
 
       case _TARGET_TAG:
         this._unitMlNodes = element.children;
+        break;
+
+      case _FILE_TAG:
+        const localeAttr = element.attrs.find((attr) => attr.name === 'target-language');
+        if (localeAttr) {
+          this._locale = localeAttr.value;
+        }
+        ml.visitAll(this, element.children, null);
         break;
 
       default:
