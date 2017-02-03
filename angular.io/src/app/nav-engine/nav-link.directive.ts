@@ -1,5 +1,5 @@
 import { Directive, HostListener, Input } from '@angular/core';
-import { NavEngine } from './nav-engine';
+import { NavEngine } from './nav-engine.service';
 
 @Directive({
   selector: '[aioNavLink]'
