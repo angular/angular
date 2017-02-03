@@ -14,7 +14,8 @@ export abstract class Serializer {
   // - Placeholder names are already map to public names using the provided mapper
   abstract write(messages: i18n.Message[]): string;
 
-  abstract load(content: string, url: string): {[msgId: string]: i18n.Node[]};
+  abstract load(content: string, url: string):
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}};
 
   abstract digest(message: i18n.Message): string;
 

@@ -63,7 +63,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 
 const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" datatype="plaintext" original="ng2.template">
+  <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
         <source>translatable attribute</source>
@@ -114,7 +114,7 @@ export function main(): void {
   }
 
   function loadAsMap(xliff: string): {[id: string]: string} {
-    const i18nNodesByMsgId = serializer.load(xliff, 'url');
+    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
 
     const msgMap: {[id: string]: string} = {};
     Object.keys(i18nNodesByMsgId)
@@ -142,6 +142,10 @@ export function main(): void {
           'empty target': '',
         });
       });
+
+      it('should return the target locale',
+         () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
+
 
       describe('structure errors', () => {
         it('should throw when a trans-unit has no translation', () => {

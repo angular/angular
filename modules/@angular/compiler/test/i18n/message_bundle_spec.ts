@@ -47,7 +47,10 @@ class _TestSerializer extends Serializer {
         .join('//');
   }
 
-  load(content: string, url: string): {} { return null; }
+  load(content: string, url: string):
+      {locale: string | null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
+    return {locale: null, i18nNodesByMsgId: {}};
+  }
 
   digest(msg: i18n.Message): string { return msg.id || `default`; }
 }

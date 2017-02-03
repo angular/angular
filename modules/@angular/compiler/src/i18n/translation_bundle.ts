@@ -23,13 +23,13 @@ export class TranslationBundle {
   private _i18nToHtml: I18nToHtmlVisitor;
 
   constructor(
-      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
+      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, locale: string|null,
       public digest: (m: i18n.Message) => string,
       public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
       missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
       console?: Console) {
     this._i18nToHtml = new I18nToHtmlVisitor(
-        _i18nNodesByMsgId, digest, mapperFactory, missingTranslationStrategy, console);
+        _i18nNodesByMsgId, locale, digest, mapperFactory, missingTranslationStrategy, console);
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
@@ -37,11 +37,11 @@ export class TranslationBundle {
       content: string, url: string, serializer: Serializer,
       missingTranslationStrategy: MissingTranslationStrategy,
       console?: Console): TranslationBundle {
-    const i18nNodesByMsgId = serializer.load(content, url);
+    const {locale, i18nNodesByMsgId} = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
     const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m);
     return new TranslationBundle(
-        i18nNodesByMsgId, digestFn, mapperFactory, missingTranslationStrategy, console);
+        i18nNodesByMsgId, locale, digestFn, mapperFactory, missingTranslationStrategy, console);
   }
 
   // Returns the translation as HTML nodes from the given source message.
@@ -65,7 +65,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   private _mapper: (name: string) => string;
 
   constructor(
-      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
+      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, private _locale: string|null,
       private _digest: (m: i18n.Message) => string,
       private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
       private _missingTranslationStrategy: MissingTranslationStrategy, private _console?: Console) {
@@ -166,11 +166,13 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       // - use the nodes from the original message
       // - placeholders are already internal and need no mapper
       if (this._missingTranslationStrategy === MissingTranslationStrategy.Error) {
-        this._addError(srcMsg.nodes[0], `Missing translation for message "${id}"`);
+        const ctx = this._locale ? ` for locale "${this._locale}"` : '';
+        this._addError(srcMsg.nodes[0], `Missing translation for message "${id}"${ctx}`);
       } else if (
           this._console &&
           this._missingTranslationStrategy === MissingTranslationStrategy.Warning) {
-        this._console.warn(`Missing translation for message "${id}"`);
+        const ctx = this._locale ? ` for locale "${this._locale}"` : '';
+        this._console.warn(`Missing translation for message "${id}"${ctx}`);
       }
       nodes = srcMsg.nodes;
       this._mapper = (name: string) => name;

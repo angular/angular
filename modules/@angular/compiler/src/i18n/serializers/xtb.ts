@@ -21,10 +21,11 @@ const _PLACEHOLDER_TAG = 'ph';
 export class Xtb extends Serializer {
   write(messages: i18n.Message[]): string { throw new Error('Unsupported'); }
 
-  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
+  load(content: string, url: string):
+      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xtb to xml nodes
     const xtbParser = new XtbParser();
-    const {msgIdToHtml, errors} = xtbParser.parse(content, url);
+    const {locale, msgIdToHtml, errors} = xtbParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
@@ -48,7 +49,7 @@ export class Xtb extends Serializer {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    return i18nNodesByMsgId;
+    return {locale, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return digest(message); }
@@ -76,6 +77,7 @@ class XtbParser implements ml.Visitor {
   private _bundleDepth: number;
   private _errors: I18nError[];
   private _msgIdToHtml: {[msgId: string]: string};
+  private _locale: string|null = null;
 
   parse(xtb: string, url: string) {
     this._bundleDepth = 0;
@@ -91,6 +93,7 @@ class XtbParser implements ml.Visitor {
     return {
       msgIdToHtml: this._msgIdToHtml,
       errors: this._errors,
+      locale: this._locale,
     };
   }
 
@@ -100,6 +103,10 @@ class XtbParser implements ml.Visitor {
         this._bundleDepth++;
         if (this._bundleDepth > 1) {
           this._addError(element, `<${_TRANSLATIONS_TAG}> elements can not be nested`);
+        }
+        const langAttr = element.attrs.find((attr) => attr.name === 'lang');
+        if (langAttr) {
+          this._locale = langAttr.value;
         }
         ml.visitAll(this, element.children, null);
         this._bundleDepth--;
