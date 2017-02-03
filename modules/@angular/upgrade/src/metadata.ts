@@ -10,7 +10,6 @@ import {DirectiveResolver} from '@angular/compiler';
 import {Directive, Type} from '@angular/core';
 
 const COMPONENT_SELECTOR = /^[\w|-]*$/;
-const SKEWER_CASE = /-(\w)/g;
 const directiveResolver = new DirectiveResolver();
 
 export interface AttrProp {
@@ -33,12 +32,7 @@ export interface ComponentInfo {
 
 export function getComponentInfo(type: Type<any>): ComponentInfo {
   const resolvedMetadata: Directive = directiveResolver.resolve(type);
-  let selector = resolvedMetadata.selector;
-  if (!selector.match(COMPONENT_SELECTOR)) {
-    throw new Error('Only selectors matching element names are supported, got: ' + selector);
-  }
-  selector = selector.replace(
-      SKEWER_CASE, (all: any /** TODO #9100 */, letter: string) => letter.toUpperCase());
+  const selector = resolvedMetadata.selector;
   return {
     type: type,
     selector: selector,
