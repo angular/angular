@@ -11,16 +11,11 @@ export {ngContentDef} from './ng_content';
 export {directiveDef, providerDef} from './provider';
 export {pureArrayDef, pureObjectDef, purePipeDef} from './pure_expression';
 export {queryDef} from './query';
+export {createComponentFactory} from './refs';
+export {initServicesIfNeeded} from './services';
 export {textDef} from './text';
-export {rootRenderNodes, setCurrentNode} from './util';
-export {checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, viewDef} from './view';
+export {rootRenderNodes} from './util';
+export {viewDef} from './view';
 export {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
+
 export * from './types';
-
-import {createRefs} from './refs';
-import {Refs} from './types';
-
-Refs.setInstance(createRefs());
-
-export const createComponentFactory: typeof Refs.createComponentFactory =
-    Refs.createComponentFactory;

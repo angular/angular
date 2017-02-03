@@ -46,13 +46,6 @@ export function appendNgContent(view: ViewData, renderHost: any, def: NodeDef) {
     return;
   }
   const ngContentIndex = def.ngContent.index;
-  if (view.renderer) {
-    const projectedNodes: any[] = [];
-    visitProjectedRenderNodes(
-        view, ngContentIndex, RenderNodeAction.Collect, undefined, undefined, projectedNodes);
-    view.renderer.projectNodes(parentEl, projectedNodes);
-  } else {
-    visitProjectedRenderNodes(
-        view, ngContentIndex, RenderNodeAction.AppendChild, parentEl, undefined, undefined);
-  }
+  visitProjectedRenderNodes(
+      view, ngContentIndex, RenderNodeAction.AppendChild, parentEl, undefined, undefined);
 }
