@@ -20,6 +20,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cli": "^1.0.0-beta.29",
     "@angular/common": "^2.3.1",
     "@angular/compiler": "^2.3.1",
     "@angular/core": "^2.3.1",
@@ -38,7 +39,6 @@
     "@angular/compiler-cli": "^2.3.1",
     "@types/jasmine": "2.5.38",
     "@types/node": "^6.0.42",
-    "angular-cli": "1.0.0-beta.26",
     "codelyzer": "~2.0.0-beta.1",
     "firebase-tools": "^3.2.1",
     "jasmine-core": "2.5.2",
