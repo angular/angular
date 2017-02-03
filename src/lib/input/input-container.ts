@@ -38,6 +38,8 @@ const MD_INPUT_INVALID_TYPES = [
   'submit'
 ];
 
+/** Type for the available floatPlaceholder values. */
+export type FloatPlaceholderType = 'always' | 'never' | 'auto';
 
 let nextUniqueId = 0;
 
@@ -253,6 +255,12 @@ export class MdInputContainer implements AfterContentInit {
   /** Color of the input divider, based on the theme. */
   @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
 
+  /** Whether the floating label should always float or not. */
+  get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; };
+
+  /** Whether the placeholder can float or not. */
+  get _canPlaceholderFloat() { return this._floatPlaceholder !== 'never'; }
+
   /** Text for the input hint. */
   @Input()
   get hintLabel() { return this._hintLabel; }
@@ -265,11 +273,13 @@ export class MdInputContainer implements AfterContentInit {
   // Unique id for the hint label.
   _hintLabelId: string = `md-input-hint-${nextUniqueId++}`;
 
-  /** Text or the floating placeholder. */
+  /** Whether the placeholder should always float, never float or float as the user types. */
   @Input()
-  get floatingPlaceholder(): boolean { return this._floatingPlaceholder; }
-  set floatingPlaceholder(value) { this._floatingPlaceholder = coerceBooleanProperty(value); }
-  private _floatingPlaceholder: boolean = true;
+  get floatPlaceholder() { return this._floatPlaceholder; }
+  set floatPlaceholder(value: FloatPlaceholderType) {
+    this._floatPlaceholder = value || 'auto';
+  }
+  private _floatPlaceholder: FloatPlaceholderType = 'auto';
 
   @ContentChild(MdInputDirective) _mdInputChild: MdInputDirective;
 

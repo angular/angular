@@ -11,9 +11,9 @@ let max = 5;
   styleUrls: ['input-container-demo.css'],
 })
 export class InputContainerDemo {
+  floatingLabel: string = 'auto';
   dividerColor: boolean;
   requiredField: boolean;
-  floatingLabel: boolean;
   ctrlDisabled = false;
 
   name: string;

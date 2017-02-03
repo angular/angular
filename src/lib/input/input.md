@@ -38,8 +38,10 @@ be used with `md-input-container`:
 A placeholder is an indicative text displayed in the input zone when the input does not contain
 text. When text is present, the indicative text will float above this input zone.
 
-The `floatingPlaceholder` attribute of `md-input-container` can be set to `false` to hide the
+The `floatPlaceholder` attribute of `md-input-container` can be set to `never` to hide the
 indicative text instead when text is present in the input.
+
+When setting `floatPlaceholder` to `always` the floating label will always show above the input.
 
 A placeholder for the input can be specified in one of two ways: either using the `placeholder`
 attribute on the `input` or `textarea`, or using an `md-placeholder` element in the
