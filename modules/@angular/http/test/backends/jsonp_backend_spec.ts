@@ -70,6 +70,11 @@ export function main() {
       expect(instance).toBeAnInstanceOf(JSONPConnection);
     });
 
+    it('callback name should not contain dots', () => {
+      const domJsonp = new MockBrowserJsonp();
+      const callback: string = domJsonp.requestCallback(domJsonp.nextRequestID());
+      expect(callback.indexOf('.') === -1).toBeTruthy();
+    });
 
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',

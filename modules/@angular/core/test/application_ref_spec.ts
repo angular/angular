@@ -212,6 +212,11 @@ export function main() {
                  expect(mockConsole.res[0]).toEqual('EXCEPTION: ' + expectedErrMsg);
                });
          }));
+
+      it('should add bootstrapped module into platform modules list', async(() => {
+           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+               .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
+         }));
     });
 
     describe('bootstrapModuleFactory', () => {

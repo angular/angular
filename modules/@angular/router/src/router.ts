@@ -364,7 +364,9 @@ export class Router {
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
-    this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+    if (this.navigationId === 0) {
+      this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+    }
   }
 
   /**
@@ -757,8 +759,8 @@ export class Router {
           })
           .then(
               () => {
-                this.navigated = true;
                 if (navigationIsSuccessful) {
+                  this.navigated = true;
                   this.routerEvents.next(new NavigationEnd(
                       id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
@@ -959,7 +961,7 @@ export class PreActivation {
 
     return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
       const obs = map.call(from(d.guards), (c: any) => {
-        const guard = this.getToken(c, c.node);
+        const guard = this.getToken(c, d.node);
         let observable: Observable<boolean>;
         if (guard.canActivateChild) {
           observable = wrapIntoObservable(guard.canActivateChild(future, this.future));

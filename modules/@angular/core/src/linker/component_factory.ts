@@ -8,7 +8,6 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
 import {ElementRef} from './element_ref';
@@ -30,32 +29,32 @@ export abstract class ComponentRef<C> {
   /**
    * Location of the Host Element of this Component Instance.
    */
-  get location(): ElementRef { return unimplemented(); }
+  abstract get location(): ElementRef;
 
   /**
    * The injector on which the component instance exists.
    */
-  get injector(): Injector { return unimplemented(); }
+  abstract get injector(): Injector;
 
   /**
    * The instance of the Component.
    */
-  get instance(): C { return unimplemented(); };
+  abstract get instance(): C;
 
   /**
    * The {@link ViewRef} of the Host View of this Component instance.
    */
-  get hostView(): ViewRef { return unimplemented(); };
+  abstract get hostView(): ViewRef;
 
   /**
    * The {@link ChangeDetectorRef} of the Component instance.
    */
-  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); }
+  abstract get changeDetectorRef(): ChangeDetectorRef;
 
   /**
    * The component type.
    */
-  get componentType(): Type<any> { return unimplemented(); }
+  abstract get componentType(): Type<any>;
 
   /**
    * Destroys the component instance and all of the data structures associated with it.

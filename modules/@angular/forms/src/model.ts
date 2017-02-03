@@ -11,7 +11,8 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {isPromise} from './private_import_core';
+import {isObservable, isPromise} from './private_import_core';
+
 
 
 /**
@@ -419,6 +420,10 @@ export abstract class AbstractControl {
       this._status = PENDING;
       this._cancelExistingSubscription();
       const obs = toObservable(this.asyncValidator(this));
+      if (!(isObservable(obs))) {
+        throw new Error(
+            `expected the following validator to return Promise or Observable: ${this.asyncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
+      }
       this._asyncValidationSubscription =
           obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
     }
@@ -1098,8 +1103,8 @@ export class FormGroup extends AbstractControl {
 }
 
 /**
- * @whatItDoes Tracks the value and validity state of an array of {@link FormControl}
- * instances.
+ * @whatItDoes Tracks the value and validity state of an array of {@link FormControl},
+ * {@link FormGroup} or {@link FormArray} instances.
  *
  * A `FormArray` aggregates the values of each child {@link FormControl} into an array.
  * It calculates its status by reducing the statuses of its children. For example, if one of

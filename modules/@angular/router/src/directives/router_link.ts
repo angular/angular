@@ -72,7 +72,6 @@ import {UrlTree} from '../url_tree';
  * Then the following link `<a [routerLink]="['/user/jim']">Jim</a>` will generate the link
  * `/user/(jim//aux:team)`.
  *
- * @selector ':not(a)[routerLink]'
  * @ngModule RouterModule
  *
  * See {@link Router.createUrlTree} for more information.
@@ -126,7 +125,6 @@ export class RouterLink {
  *
  * See {@link RouterLink} for more information.
  *
- * @selector 'a[routerLink]'
  * @ngModule RouterModule
  *
  * @stable
