@@ -70,10 +70,11 @@ export function main() {
       expect(instance).toBeAnInstanceOf(JSONPConnection);
     });
 
-    it('callback name should not contain dots', () => {
+    it('callback name should be a function name', () => {
+      const funcNameReg = /^[$A-Za-z_][$A-Za-z_\d]*$/i;
       const domJsonp = new MockBrowserJsonp();
       const callback: string = domJsonp.requestCallback(domJsonp.nextRequestID());
-      expect(callback.indexOf('.') === -1).toBeTruthy();
+      expect(funcNameReg.test(callback)).toBeTruthy();
     });
 
     describe('JSONPConnection', () => {
