@@ -16,271 +16,29 @@ require('./tools/check-environment')({
 });
 
 const gulp = require('gulp');
-const path = require('path');
-const os = require('os');
 
-// clang-format entry points
-const srcsToFmt = [
-  'modules/@angular/**/*.{js,ts}',
-  'modules/benchmarks/**/*.{js,ts}',
-  'modules/e2e_util/**/*.{js,ts}',
-  'modules/playground/**/*.{js,ts}',
-  'tools/**/*.{js,ts}',
-  '!tools/public_api_guard/**/*.d.ts',
-  './*.{js,ts}',
-  '!shims_for_IE.js',
-];
+// See `tools/gulp-tasks/README.md` for information about task loading.
+function loadTask(fileName, taskName) {
+  const taskModule = require('./tools/gulp-tasks/' + fileName);
+  const task = taskName ? taskModule[taskName] : taskModule;
+  return task(gulp);
+}
 
-// Check source code for formatting errors (clang-format)
-gulp.task('format:enforce', () => {
-  const format = require('gulp-clang-format');
-  const clangFormat = require('clang-format');
-  return gulp.src(srcsToFmt).pipe(
-      format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
-});
-
-// Format the source code with clang-format (see .clang-format)
-gulp.task('format', () => {
-  const format = require('gulp-clang-format');
-  const clangFormat = require('clang-format');
-  return gulp.src(srcsToFmt, {base: '.'})
-      .pipe(format.format('file', clangFormat))
-      .pipe(gulp.dest('.'));
-});
-
-const entrypoints = [
-  'dist/packages-dist/core/index.d.ts',
-  'dist/packages-dist/core/testing/index.d.ts',
-  'dist/packages-dist/common/index.d.ts',
-  'dist/packages-dist/common/testing/index.d.ts',
-  // The API surface of the compiler is currently unstable - all of the important APIs are exposed
-  // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
-  //'dist/packages-dist/compiler/index.d.ts',
-  //'dist/packages-dist/compiler/testing.d.ts',
-  'dist/packages-dist/upgrade/index.d.ts',
-  'dist/packages-dist/upgrade/static.d.ts',
-  'dist/packages-dist/platform-browser/index.d.ts',
-  'dist/packages-dist/platform-browser/testing/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/testing/index.d.ts',
-  'dist/packages-dist/platform-webworker/index.d.ts',
-  'dist/packages-dist/platform-webworker-dynamic/index.d.ts',
-  'dist/packages-dist/platform-server/index.d.ts',
-  'dist/packages-dist/platform-server/testing/index.d.ts',
-  'dist/packages-dist/http/index.d.ts',
-  'dist/packages-dist/http/testing/index.d.ts',
-  'dist/packages-dist/forms/index.d.ts',
-  'dist/packages-dist/router/index.d.ts',
-];
-const publicApiDir = path.normalize('tools/public_api_guard');
-const publicApiArgs = [
-  '--rootDir',
-  'dist/packages-dist',
-  '--stripExportPattern',
-  '^__',
-  '--allowModuleIdentifiers',
-  'jasmine',
-  '--allowModuleIdentifiers',
-  'protractor',
-  '--allowModuleIdentifiers',
-  'angular',
-  '--onStabilityMissing',
-  'error',
-].concat(entrypoints);
-
-// Build angular
-gulp.task('build.sh', (done) => {
-  const childProcess = require('child_process');
-
-  childProcess.exec(path.join(__dirname, 'build.sh'), done);
-});
-
-// Enforce that the public API matches the golden files
-// Note that these two commands work on built d.ts files instead of the source
-gulp.task('public-api:enforce', (done) => {
-  const childProcess = require('child_process');
-
-  childProcess
-      .spawn(
-          path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
-          ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-      .on('close', (errorCode) => {
-        if (errorCode !== 0) {
-          done(new Error(
-              'Public API differs from golden file. Please run `gulp public-api:update`.'));
-        } else {
-          done();
-        }
-      });
-});
-
-// Generate the public API golden files
-gulp.task('public-api:update', ['build.sh'], (done) => {
-  const childProcess = require('child_process');
-
-  childProcess
-      .spawn(
-          path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
-          ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-      .on('close', done);
-});
-
-// Check the coding standards and programming errors
-gulp.task('lint', ['format:enforce', 'tools:build'], () => {
-  const tslint = require('gulp-tslint');
-  // Built-in rules are at
-  // https://palantir.github.io/tslint/rules/
-  const tslintConfig = require('./tslint.json');
-  return gulp
-      .src([
-        // todo(vicb): add .js files when supported
-        // see https://github.com/palantir/tslint/pull/1515
-        './modules/**/*.ts',
-        './tools/**/*.ts',
-        './*.ts',
-
-        // Ignore TypeScript mocks because it's not managed by us
-        '!./tools/@angular/tsc-wrapped/test/typescript.mocks.ts',
-
-        // Ignore generated files due to lack of copyright header
-        // todo(alfaproject): make generated files lintable
-        '!**/*.d.ts',
-        '!**/*.ngfactory.ts',
-      ])
-      .pipe(tslint({
-        tslint: require('tslint').default,
-        configuration: tslintConfig,
-        formatter: 'prose',
-      }))
-      .pipe(tslint.report({emitError: true}));
-});
-
-gulp.task('validate-commit-messages', () => {
-  const validateCommitMessage = require('./tools/validate-commit-message');
-  const childProcess = require('child_process');
-
-  // We need to fetch origin explicitly because it might be stale.
-  // I couldn't find a reliable way to do this without fetch.
-  childProcess.exec(
-      'git fetch origin master && git log --reverse --format=%s HEAD ^origin/master',
-      (error, stdout, stderr) => {
-        if (error) {
-          console.log(stderr);
-          process.exit(1);
-        }
-
-        let someCommitsInvalid = false;
-        let commitsByLine = stdout.trim().split(/\n/);
-
-        console.log(`Examining ${commitsByLine.length} commits between HEAD and master`);
-
-        if (commitsByLine.length == 0) {
-          console.log('There are zero new commits between this HEAD and master');
-        }
-
-        someCommitsInvalid = !commitsByLine.every(validateCommitMessage);
-
-        if (someCommitsInvalid) {
-          console.log('Please fix the failing commit messages before continuing...');
-          console.log(
-              'Commit message guidelines: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines');
-          process.exit(1);
-        }
-      });
-});
-
-gulp.task('tools:build', (done) => { tsc('tools/', done); });
-
-// Check for circular dependency in the source code
-gulp.task('check-cycle', (done) => {
-  const madge = require('madge');
-
-  const dependencyObject = madge(['dist/all/'], {
-    format: 'cjs',
-    extensions: ['.js'],
-    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, '//'); }
-  });
-  const circularDependencies = dependencyObject.circular().getArray();
-  if (circularDependencies.length > 0) {
-    console.log('Found circular dependencies!');
-    console.log(circularDependencies);
-    process.exit(1);
-  }
-  done();
-});
-
-// Serve the built files
-gulp.task('serve', () => {
-  const connect = require('gulp-connect');
-  const cors = require('cors');
-
-  connect.server({
-    root: `${__dirname}/dist`,
-    port: 8000,
-    livereload: false,
-    open: false,
-    middleware: (connect, opt) => [cors()],
-  });
-});
-
-// Serve the examples
-gulp.task('serve-examples', () => {
-  const connect = require('gulp-connect');
-  const cors = require('cors');
-
-  connect.server({
-    root: `${__dirname}/dist/examples`,
-    port: 8001,
-    livereload: false,
-    open: false,
-    middleware: (connect, opt) => [cors()],
-  });
-});
-
-
-// Update the changelog with the latest changes
-gulp.task('changelog', () => {
-  const conventionalChangelog = require('gulp-conventional-changelog');
-
-  return gulp.src('CHANGELOG.md')
-      .pipe(conventionalChangelog({preset: 'angular', releaseCount: 1}, {
-        // Conventional Changelog Context
-        // We have to manually set version number so it doesn't get prefixed with `v`
-        // See https://github.com/conventional-changelog/conventional-changelog-core/issues/10
-        currentTag: require('./package.json').version
-      }))
-      .pipe(gulp.dest('./'));
-});
-
+gulp.task('format:enforce', loadTask('format', 'enforce'));
+gulp.task('format', loadTask('format', 'format'));
+gulp.task('build.sh', loadTask('build'));
+gulp.task('public-api:enforce', loadTask('public-api', 'enforce'));
+gulp.task('public-api:update', ['build.sh'], loadTask('public-api', 'update'));
+gulp.task('lint', ['format:enforce', 'tools:build'], loadTask('lint'));
+gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
+gulp.task('tools:build', loadTask('tools-build'));
+gulp.task('check-cycle', loadTask('check-cycle'));
+gulp.task('serve', loadTask('serve', 'default'));
+gulp.task('serve-examples', loadTask('serve', 'examples'));
+gulp.task('changelog', loadTask('changelog'));
 gulp.task('docs', ['doc-gen', 'docs-app']);
-gulp.task('doc-gen', () => {
-  const Dgeni = require('dgeni');
-  const angularDocsPackage = require(path.resolve(__dirname, 'tools/docs/angular.io-package'));
-  const dgeni = new Dgeni([angularDocsPackage]);
-  return dgeni.generate();
-});
-gulp.task('docs-app', () => { gulp.src('docs/src/**/*').pipe(gulp.dest('dist/docs')); });
-
-gulp.task('docs-test', ['doc-gen-test', 'docs-app-test']);
-gulp.task('doc-gen-test', () => {
-  const execSync = require('child_process').execSync;
-  execSync(
-      'node dist/tools/cjs-jasmine/index-tools ../../tools/docs/**/*.spec.js',
-      {stdio: ['inherit', 'inherit', 'inherit']});
-});
+gulp.task('doc-gen', loadTask('docs', 'generate'));
+gulp.task('doc-gen-test', loadTask('docs', 'test'));
+gulp.task('docs-app', loadTask('docs-app'));
 gulp.task('docs-app-test', () => {});
-
-function tsc(projectPath, done) {
-  const childProcess = require('child_process');
-
-  childProcess
-      .spawn(
-          path.normalize(platformScriptPath(`${__dirname}/node_modules/.bin/tsc`)),
-          ['-p', path.join(__dirname, projectPath)], {stdio: 'inherit'})
-      .on('close', done);
-}
-
-// returns the script path for the current platform
-function platformScriptPath(path) {
-  return /^win/.test(os.platform()) ? `${path}.cmd` : path;
-}
+gulp.task('docs-test', ['doc-gen-test', 'docs-app-test']);
