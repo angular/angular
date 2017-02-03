@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {resolveDep, tokenKey} from './provider';
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionData, PureExpressionType, ViewData, asPureExpressionData} from './types';
-import {checkAndUpdateBinding, unwrapValue} from './util';
+import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionData, PureExpressionType, Services, ViewData, asPureExpressionData} from './types';
+import {checkAndUpdateBinding, tokenKey, unwrapValue} from './util';
 
 export function purePipeDef(pipeToken: any, argCount: number): NodeDef {
   return _pureExpressionDef(
@@ -64,7 +63,7 @@ function _pureExpressionDef(
 
 export function createPureExpression(view: ViewData, def: NodeDef): PureExpressionData {
   const pipe = def.pureExpression.pipeDep ?
-      resolveDep(view, def.index, def.parent, def.pureExpression.pipeDep) :
+      Services.resolveDep(view, def.index, def.parent, def.pureExpression.pipeDep) :
       undefined;
   return {value: undefined, pipe};
 }
@@ -98,6 +97,7 @@ export function checkAndUpdatePureExpressionInline(
       if (checkAndUpdateBinding(view, def, 0, v0)) changed = true;
   }
 
+  const data = asPureExpressionData(view, def.index);
   if (changed) {
     v0 = unwrapValue(v0);
     v1 = unwrapValue(v1);
@@ -110,7 +110,6 @@ export function checkAndUpdatePureExpressionInline(
     v8 = unwrapValue(v8);
     v9 = unwrapValue(v9);
 
-    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -202,6 +201,7 @@ export function checkAndUpdatePureExpressionInline(
     }
     data.value = value;
   }
+  return data.value;
 }
 
 export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef, values: any[]) {
@@ -214,8 +214,8 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
       changed = true;
     }
   }
+  const data = asPureExpressionData(view, def.index);
   if (changed) {
-    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -240,4 +240,5 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
     }
     data.value = value;
   }
+  return data.value;
 }

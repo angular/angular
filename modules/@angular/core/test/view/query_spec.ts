@@ -8,26 +8,18 @@
 
 import {ElementRef, Injector, QueryList, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, TemplateRef, ViewContainerRef, ViewEncapsulation, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {BindingType, DebugContext, NodeDef, NodeFlags, QueryBindingType, QueryValueType, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {BindingType, DebugContext, NodeDef, NodeFlags, QueryBindingType, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, queryDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootData} from './helper';
+import {createRootView} from './helper';
 
 export function main() {
   describe(`Query Views`, () => {
-    let rootData: RootData;
-    let renderComponentType: RenderComponentType;
-
-    beforeEach(() => {
-      rootData = createRootData();
-      renderComponentType =
-          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-    });
-
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
-      return viewDef(ViewFlags.None, nodes, update, handleEvent, renderComponentType);
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, update, handleEvent);
     }
 
     function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinition {
@@ -36,7 +28,7 @@ export function main() {
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(rootData, viewDef, context);
+      const view = createRootView(viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -79,7 +71,7 @@ export function main() {
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a).toBeUndefined();
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const as = qs.a.toArray();
         expect(as.length).toBe(2);
@@ -97,7 +89,7 @@ export function main() {
           aServiceProvider(),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 3).instance;
         expect(qs.a.length).toBe(0);
@@ -114,7 +106,7 @@ export function main() {
           ])),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const comp: QueryService = asProviderData(view, 1).instance;
         const compView = asProviderData(view, 1).componentView;
@@ -131,7 +123,7 @@ export function main() {
           aServiceProvider(),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
         const comp: QueryService = asProviderData(view, 1).instance;
         expect(comp.a.length).toBe(0);
       });
@@ -153,9 +145,9 @@ export function main() {
           ...contentQueryProviders(),
         ]));
 
-        const childView = createEmbeddedView(view, view.def.nodes[3]);
+        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
         attachEmbeddedView(asElementData(view, 3), 0, childView);
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         // queries on parent elements of anchors
         const qs1: QueryService = asProviderData(view, 1).instance;
@@ -185,11 +177,11 @@ export function main() {
           anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0),
         ]));
 
-        const childView = createEmbeddedView(view, view.def.nodes[3]);
+        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
         // attach at a different place than the one where the template was defined
         attachEmbeddedView(asElementData(view, 7), 0, childView);
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         // query on the declaration place
         const qs1: QueryService = asProviderData(view, 1).instance;
@@ -215,19 +207,19 @@ export function main() {
                   ])),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.length).toBe(0);
 
-        const childView = createEmbeddedView(view, view.def.nodes[3]);
+        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
         attachEmbeddedView(asElementData(view, 3), 0, childView);
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         expect(qs.a.length).toBe(1);
 
         detachEmbeddedView(asElementData(view, 3), 0);
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         expect(qs.a.length).toBe(0);
       });
@@ -247,20 +239,20 @@ export function main() {
           ])),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const comp: QueryService = asProviderData(view, 1).instance;
         expect(comp.a.length).toBe(0);
 
         const compView = asProviderData(view, 1).componentView;
-        const childView = createEmbeddedView(compView, compView.def.nodes[0]);
+        const childView = Services.createEmbeddedView(compView, compView.def.nodes[0]);
         attachEmbeddedView(asElementData(compView, 0), 0, childView);
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         expect(comp.a.length).toBe(1);
 
         detachEmbeddedView(asElementData(compView, 0), 0);
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         expect(comp.a.length).toBe(0);
       });
@@ -280,7 +272,7 @@ export function main() {
           aServiceProvider(),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a instanceof QueryList).toBeTruthy();
@@ -303,7 +295,7 @@ export function main() {
           aServiceProvider(),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a).toBe(asProviderData(view, 3).instance);
@@ -322,7 +314,7 @@ export function main() {
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.nativeElement).toBe(asElementData(view, 0).renderElement);
@@ -341,7 +333,7 @@ export function main() {
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.createEmbeddedView).toBeTruthy();
@@ -358,7 +350,7 @@ export function main() {
           queryDef(NodeFlags.HasContentQuery, 'query1', {'a': QueryBindingType.First}),
         ]));
 
-        checkAndUpdateView(view);
+        Services.checkAndUpdateView(view);
 
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.createEmbeddedView).toBeTruthy();
@@ -380,22 +372,22 @@ export function main() {
                   ])),
         ]));
 
-        checkAndUpdateView(view);
-        checkNoChangesView(view);
+        Services.checkAndUpdateView(view);
+        Services.checkNoChangesView(view);
 
-        const childView = createEmbeddedView(view, view.def.nodes[3]);
+        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
         attachEmbeddedView(asElementData(view, 3), 0, childView);
 
         let err: any;
         try {
-          checkNoChangesView(view);
+          Services.checkNoChangesView(view);
         } catch (e) {
           err = e;
         }
         expect(err).toBeTruthy();
         expect(err.message)
             .toBe(
-                `Expression has changed after it was checked. Previous value: 'Query query1 not dirty'. Current value: 'Query query1 dirty'.`);
+                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'Query query1 not dirty'. Current value: 'Query query1 dirty'.`);
         const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);
         expect(debugCtx.nodeIndex).toBe(2);
@@ -416,7 +408,7 @@ export function main() {
 
         let err: any;
         try {
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
         } catch (e) {
           err = e;
         }

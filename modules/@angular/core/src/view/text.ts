@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
-import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, Refs, RootData, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
 import {checkAndUpdateBinding, sliceErrorStack, unwrapValue} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
@@ -53,14 +53,10 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): TextD
   const parentNode =
       def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
-  if (view.renderer) {
-    const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
-    renderNode = view.renderer.createText(parentNode, def.text.prefix, debugContext);
-  } else {
-    renderNode = document.createTextNode(def.text.prefix);
-    if (parentNode) {
-      parentNode.appendChild(renderNode);
-    }
+  const renderer = view.root.renderer;
+  renderNode = renderer.createText(def.text.prefix);
+  if (parentNode) {
+    renderer.appendChild(parentNode, renderNode);
   }
   return {renderText: renderNode};
 }
@@ -121,11 +117,7 @@ export function checkAndUpdateTextInline(
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    if (view.renderer) {
-      view.renderer.setText(renderNode, value);
-    } else {
-      renderNode.nodeValue = value;
-    }
+    view.root.renderer.setText(renderNode, value);
   }
 }
 
@@ -146,11 +138,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    if (view.renderer) {
-      view.renderer.setText(renderNode, value);
-    } else {
-      renderNode.nodeValue = value;
-    }
+    view.root.renderer.setText(renderNode, value);
   }
 }
 

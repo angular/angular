@@ -9,8 +9,8 @@
 import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Refs, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, entryAction, setBindingDebugInfo, setCurrentNode, sliceErrorStack, unwrapValue} from './util';
+import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewFlags, asElementData} from './types';
+import {checkAndUpdateBinding, dispatchEvent, sliceErrorStack, unwrapValue} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
@@ -65,7 +65,7 @@ export function elementDef(
     matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
   }
   bindings = bindings || [];
-  const bindingDefs = new Array(bindings.length);
+  const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
     const entry = bindings[i];
     let bindingDef: BindingDef;
@@ -82,7 +82,7 @@ export function elementDef(
         securityContext = <SecurityContext>entry[2];
         break;
     }
-    bindingDefs[i] = {type: bindingType, name, nonMinfiedName: name, securityContext, suffix};
+    bindingDefs[i] = {type: bindingType, name, nonMinifiedName: name, securityContext, suffix};
   }
   outputs = outputs || [];
   const outputDefs: ElementOutputDef[] = new Array(outputs.length);
@@ -130,68 +130,30 @@ export function elementDef(
 
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
   const elDef = def.element;
-  const rootSelectorOrNode = view.root.selectorOrNode;
+  const rootElement = view.root.element;
+  const renderer = view.root.renderer;
   let el: any;
-  if (view.parent || !rootSelectorOrNode) {
+  if (view.parent || !rootElement) {
     const parentNode =
         def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
-    if (view.renderer) {
-      const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
-      el = elDef.name ? view.renderer.createElement(parentNode, elDef.name, debugContext) :
-                        view.renderer.createTemplateAnchor(parentNode, debugContext);
-    } else {
-      el = elDef.name ? document.createElement(elDef.name) : document.createComment('');
-      if (parentNode) {
-        parentNode.appendChild(el);
-      }
+    el = elDef.name ? renderer.createElement(elDef.name) : renderer.createComment('');
+    if (parentNode) {
+      renderer.appendChild(parentNode, el);
     }
   } else {
-    if (view.renderer) {
-      const debugContext = isDevMode() ? Refs.createDebugContext(view, def.index) : undefined;
-      el = view.renderer.selectRootElement(rootSelectorOrNode, debugContext);
-    } else {
-      el = typeof rootSelectorOrNode === 'string' ? document.querySelector(rootSelectorOrNode) :
-                                                    rootSelectorOrNode;
-      el.textContent = '';
-    }
+    el = rootElement;
   }
   if (elDef.attrs) {
     for (let attrName in elDef.attrs) {
-      if (view.renderer) {
-        view.renderer.setElementAttribute(el, attrName, elDef.attrs[attrName]);
-      } else {
-        el.setAttribute(attrName, elDef.attrs[attrName]);
-      }
+      renderer.setAttribute(el, attrName, elDef.attrs[attrName]);
     }
   }
   if (elDef.outputs.length) {
     for (let i = 0; i < elDef.outputs.length; i++) {
       const output = elDef.outputs[i];
-      let disposable: DisposableFn;
-      if (view.renderer) {
-        const handleEventClosure = renderEventHandlerClosure(view, def.index, output.eventName);
-        if (output.target) {
-          disposable =
-              <any>view.renderer.listenGlobal(output.target, output.eventName, handleEventClosure);
-        } else {
-          disposable = <any>view.renderer.listen(el, output.eventName, handleEventClosure);
-        }
-      } else {
-        let target: any;
-        switch (output.target) {
-          case 'window':
-            target = window;
-            break;
-          case 'document':
-            target = document;
-            break;
-          default:
-            target = el;
-        }
-        const handleEventClosure = directDomEventHandlerClosure(view, def.index, output.eventName);
-        target.addEventListener(output.eventName, handleEventClosure);
-        disposable = target.removeEventListener.bind(target, output.eventName, handleEventClosure);
-      }
+      const handleEventClosure = renderEventHandlerClosure(view, def.index, output.eventName);
+      const disposable =
+          <any>renderer.listen(output.target || el, output.eventName, handleEventClosure);
       view.disposables[def.disposableIndex + i] = disposable;
     }
   }
@@ -203,20 +165,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
 }
 
 function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return entryAction(
-      EntryAction.HandleEvent, (event: any) => dispatchEvent(view, index, eventName, event));
+  return (event: any) => dispatchEvent(view, index, eventName, event);
 }
 
-
-function directDomEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return entryAction(EntryAction.HandleEvent, (event: any) => {
-    const result = dispatchEvent(view, index, eventName, event);
-    if (result === false) {
-      event.preventDefault();
-    }
-    return result;
-  });
-}
 
 export function checkAndUpdateElementInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
@@ -282,26 +233,20 @@ function setElementAttribute(
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
-  if (view.renderer) {
-    view.renderer.setElementAttribute(renderNode, name, renderValue);
+  const renderer = view.root.renderer;
+  if (value != null) {
+    renderer.setAttribute(renderNode, name, renderValue);
   } else {
-    if (value != null) {
-      renderNode.setAttribute(name, renderValue);
-    } else {
-      renderNode.removeAttribute(name);
-    }
+    renderer.removeAttribute(renderNode, name);
   }
 }
 
 function setElementClass(view: ViewData, renderNode: any, name: string, value: boolean) {
-  if (view.renderer) {
-    view.renderer.setElementClass(renderNode, name, value);
+  const renderer = view.root.renderer;
+  if (value) {
+    renderer.addClass(renderNode, name);
   } else {
-    if (value) {
-      renderNode.classList.add(name);
-    } else {
-      renderNode.classList.remove(name);
-    }
+    renderer.removeClass(renderNode, name);
   }
 }
 
@@ -317,16 +262,11 @@ function setElementStyle(
   } else {
     renderValue = null;
   }
-  if (view.renderer) {
-    view.renderer.setElementStyle(renderNode, name, renderValue);
+  const renderer = view.root.renderer;
+  if (renderValue != null) {
+    renderer.setStyle(renderNode, name, renderValue);
   } else {
-    if (renderValue != null) {
-      renderNode.style[name] = renderValue;
-    } else {
-      // IE requires '' instead of null
-      // see https://github.com/angular/angular/issues/7916
-      (renderNode.style as any)[name] = '';
-    }
+    renderer.removeStyle(renderNode, name);
   }
 }
 
@@ -334,12 +274,5 @@ function setElementProperty(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
-  if (view.renderer) {
-    view.renderer.setElementProperty(renderNode, name, renderValue);
-    if (isDevMode() && (view.def.flags & ViewFlags.DirectDom) === 0) {
-      setBindingDebugInfo(view.renderer, renderNode, name, renderValue);
-    }
-  } else {
-    renderNode[name] = renderValue;
-  }
+  view.root.renderer.setProperty(renderNode, name, renderValue);
 }

@@ -11,7 +11,8 @@ import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 
-import {NodeDef, NodeFlags, NodeType, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Refs, ViewData, asElementData, asProviderData, asQueryList} from './types';
+import {createTemplateRef, createViewContainerRef} from './refs';
+import {NodeDef, NodeFlags, NodeType, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
 import {declaredViewContainer} from './util';
 
 export function queryDef(
@@ -158,10 +159,10 @@ export function getQueryValue(view: ViewData, nodeDef: NodeDef, queryId: string)
         value = new ElementRef(asElementData(view, nodeDef.index).renderElement);
         break;
       case QueryValueType.TemplateRef:
-        value = Refs.createTemplateRef(view, nodeDef);
+        value = createTemplateRef(view, nodeDef);
         break;
       case QueryValueType.ViewContainerRef:
-        value = Refs.createViewContainerRef(view, nodeDef.index);
+        value = createViewContainerRef(view, nodeDef.index);
         break;
       case QueryValueType.Provider:
         value = asProviderData(view, nodeDef.index).instance;

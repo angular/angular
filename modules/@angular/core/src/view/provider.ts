@@ -6,23 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {ChangeDetectorRef, SimpleChange, SimpleChanges} from '../change_detection/change_detection';
 import {Injector} from '../di';
-import {stringify} from '../facade/lang';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {Renderer} from '../render/api';
+import * as v1renderer from '../render/api';
 import {Type} from '../type';
 
-import {queryDef} from './query';
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, EntryAction, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, Refs, RootData, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, entryAction, findElementDef, parentDiIndex, setBindingDebugInfo, setCurrentNode, unwrapValue} from './util';
+import {createChangeDetectorRef, createInjector, createTemplateRef, createViewContainerRef} from './refs';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderOutputDef, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {checkAndUpdateBinding, dispatchEvent, findElementDef, isComponentView, parentDiIndex, tokenKey, unwrapValue} from './util';
 
-const _tokenKeyCache = new Map<any, string>();
-
-const RendererTokenKey = tokenKey(Renderer);
+const RendererV1TokenKey = tokenKey(v1renderer.Renderer);
 const ElementRefTokenKey = tokenKey(ElementRef);
 const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
@@ -119,23 +115,13 @@ export function _providerDef(
   };
 }
 
-export function tokenKey(token: any): string {
-  let key = _tokenKeyCache.get(token);
-  if (!key) {
-    key = stringify(token) + '_' + _tokenKeyCache.size;
-    _tokenKeyCache.set(token, key);
-  }
-  return key;
-}
-
 export function createProviderInstance(view: ViewData, def: NodeDef): any {
   const providerDef = def.provider;
   return def.flags & NodeFlags.LazyProvider ? NOT_CREATED : createInstance(view, def);
 }
 
 function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return entryAction(
-      EntryAction.HandleEvent, (event: any) => dispatchEvent(view, index, eventName, event));
+  return (event: any) => dispatchEvent(view, index, eventName, event);
 }
 
 export function checkAndUpdateProviderInline(
@@ -310,18 +296,24 @@ export function resolveDep(
   while (view) {
     const elDef = view.def.nodes[elIndex];
     switch (tokenKey) {
-      case RendererTokenKey:
-        if (view.renderer) {
-          return view.renderer;
-        } else {
-          return Injector.NULL.get(depDef.token, notFoundValue);
+      case RendererV1TokenKey: {
+        let compView = view;
+        while (compView && !isComponentView(compView)) {
+          compView = compView.parent;
         }
+        const rootRenderer: v1renderer.RootRenderer =
+            view.root.injector.get(v1renderer.RootRenderer);
+
+        // Note: Don't fill in the styles as they have been installed already!
+        return rootRenderer.renderComponent(new v1renderer.RenderComponentType(
+            view.def.component.id, '', 0, view.def.component.encapsulation, [], {}));
+      }
       case ElementRefTokenKey:
         return new ElementRef(asElementData(view, elIndex).renderElement);
       case ViewContainerRefTokenKey:
-        return Refs.createViewContainerRef(view, elIndex);
+        return createViewContainerRef(view, elIndex);
       case TemplateRefTokenKey:
-        return Refs.createTemplateRef(view, elDef);
+        return createTemplateRef(view, elDef);
       case ChangeDetectorRefTokenKey:
         let cdView = view;
         // If we are still checking dependencies on the initial element...
@@ -331,10 +323,9 @@ export function resolveDep(
             cdView = asProviderData(view, requestNodeIndex).componentView;
           }
         }
-        // A ViewRef is also a ChangeDetectorRef
-        return Refs.createViewRef(cdView);
+        return createChangeDetectorRef(cdView);
       case InjectorRefTokenKey:
-        return Refs.createInjector(view, elIndex);
+        return createInjector(view, elIndex);
       default:
         const providerIndex = elDef.element.providerIndices[tokenKey];
         if (providerIndex != null) {
@@ -374,12 +365,6 @@ function checkAndUpdateProp(
     // the user passed in the property name as an object has to `providerDef`,
     // so Closure Compiler will have renamed the property correctly already.
     provider[propName] = value;
-
-    if (isDevMode() && (view.def.flags & ViewFlags.DirectDom) === 0) {
-      setBindingDebugInfo(
-          view.renderer, asElementData(view, def.parent).renderElement, binding.nonMinifiedName,
-          value);
-    }
     if (change) {
       changes = changes || {};
       changes[binding.nonMinifiedName] = change;
@@ -399,7 +384,7 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
     const nodeIndex = nodeDef.index;
     if (nodeDef.flags & lifecycles) {
       // a leaf
-      setCurrentNode(view, nodeIndex);
+      Services.setCurrentNode(view, nodeIndex);
       callProviderLifecycles(asProviderData(view, nodeIndex).instance, nodeDef.flags & lifecycles);
     } else if ((nodeDef.childFlags & lifecycles) === 0) {
       // a parent with leafs

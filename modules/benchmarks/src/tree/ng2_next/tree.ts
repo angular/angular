@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {Component, ComponentFactory, ComponentRef, Injector, NgModule, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {BindingType, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, checkNodeInline, createComponentFactory, directiveDef, elementDef, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingType, NodeFlags, ViewData, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 import {TreeNode, emptyTree} from '../util';
@@ -21,7 +21,7 @@ export class TreeComponent {
   get bgColor() { return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor; }
 }
 
-let viewFlags = ViewFlags.DirectDom;
+let viewFlags = ViewFlags.None;
 
 function TreeComponent_Host(): ViewDefinition {
   return viewDef(viewFlags, [
@@ -38,10 +38,9 @@ function TreeComponent_0(): ViewDefinition {
         directiveDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
-      (view: ViewData) => {
+      (check, view) => {
         const cmp = view.component;
-        setCurrentNode(view, 1);
-        checkNodeInline(cmp.data.left);
+        check(view, 1, ArgumentType.Inline, cmp.data.left);
       });
 
   const TreeComponent_2: ViewDefinition = viewDef(
@@ -51,10 +50,9 @@ function TreeComponent_0(): ViewDefinition {
         directiveDef(
             NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
       ],
-      (view: ViewData) => {
+      (check, view) => {
         const cmp = view.component;
-        setCurrentNode(view, 1);
-        checkNodeInline(cmp.data.right);
+        check(view, 1, ArgumentType.Inline, cmp.data.left);
       });
 
   return viewDef(
@@ -71,16 +69,12 @@ function TreeComponent_0(): ViewDefinition {
         directiveDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
       ],
-      (view: ViewData) => {
+      (check, view) => {
         const cmp = view.component;
-        setCurrentNode(view, 0);
-        checkNodeInline(cmp.bgColor);
-        setCurrentNode(view, 1);
-        checkNodeInline(cmp.data.value);
-        setCurrentNode(view, 3);
-        checkNodeInline(cmp.data.left != null);
-        setCurrentNode(view, 5);
-        checkNodeInline(cmp.data.right != null);
+        check(view, 0, ArgumentType.Inline, cmp.bgColor);
+        check(view, 1, ArgumentType.Inline, cmp.data.value);
+        check(view, 3, ArgumentType.Inline, cmp.data.left != null);
+        check(view, 5, ArgumentType.Inline, cmp.data.right != null);
       });
 }
 
@@ -90,10 +84,11 @@ export class AppModule implements Injector {
   componentRef: ComponentRef<TreeComponent>;
 
   constructor() {
+    initServicesIfNeeded();
     this.sanitizer = new DomSanitizerImpl();
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
-    this.componentFactory = createComponentFactory('#root', TreeComponent_Host);
+    this.componentFactory = createComponentFactory('#root', TreeComponent, TreeComponent_Host);
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
@@ -106,6 +101,8 @@ export class AppModule implements Injector {
     return Injector.NULL.get(token, notFoundValue);
   }
 
-  bootstrap() { this.componentRef = this.componentFactory.create(this); }
+  bootstrap() {
+    this.componentRef = this.componentFactory.create(this, [], this.componentFactory.selector);
+  }
   tick() { this.componentRef.changeDetectorRef.detectChanges(); }
 }

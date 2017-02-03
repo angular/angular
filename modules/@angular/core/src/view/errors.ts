@@ -7,12 +7,12 @@
  */
 
 import {ERROR_DEBUG_CONTEXT, ERROR_ORIGINAL_ERROR, getDebugContext} from '../errors';
-import {DebugContext, EntryAction, ViewState} from './types';
+import {DebugContext, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
     context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
   let msg =
-      `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
   if (isFirstCheck) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -39,6 +39,6 @@ export function isViewDebugError(err: Error): boolean {
   return !!getDebugContext(err);
 }
 
-export function viewDestroyedError(action: EntryAction): Error {
-  return new Error(`View has been used after destroy for ${EntryAction[action]}`);
+export function viewDestroyedError(action: string): Error {
+  return new Error(`ViewDestroyedError: Attempt to use a destroyed view: ${action}`);
 }
