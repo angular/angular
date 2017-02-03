@@ -182,24 +182,23 @@ describe('MdAutocomplete', () => {
       });
     }));
 
-    it('should keep the label floating until the panel closes', () => {
+    it('should keep the label floating until the panel closes', async(() => {
       fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      dispatchEvent('blur', input);
-      fixture.detectChanges();
-
       expect(fixture.componentInstance.inputContainer.floatPlaceholder)
-          .toEqual('always', 'Expected placeholder to keep floating on blur.');
+          .toEqual('always', 'Expected placeholder to float as soon as panel opens.');
 
-      const backdrop =
-          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
-      backdrop.click();
-      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
 
-      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
-          .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
-    });
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+            .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
+      });
+    }));
 
   });
 
@@ -739,8 +738,8 @@ describe('MdAutocomplete', () => {
       const panelTop = panel.getBoundingClientRect().top;
 
       // Panel is offset by 6px in styles so that the underline has room to display.
-      expect((inputBottom + 6).toFixed(2))
-          .toEqual(panelTop.toFixed(2), `Expected panel top to match input bottom by default.`);
+      expect((inputBottom + 6).toFixed(1))
+          .toEqual(panelTop.toFixed(1), `Expected panel top to match input bottom by default.`);
       expect(fixture.componentInstance.trigger.autocomplete.positionY)
           .toEqual('below', `Expected autocomplete positionY to default to below.`);
     });
@@ -758,8 +757,8 @@ describe('MdAutocomplete', () => {
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       // Panel is offset by 24px in styles so that the label has room to display.
-      expect((inputTop - 24).toFixed(2))
-          .toEqual(panelBottom.toFixed(2), `Expected panel to fall back to above position.`);
+      expect((inputTop - 24).toFixed(1))
+          .toEqual(panelBottom.toFixed(1), `Expected panel to fall back to above position.`);
       expect(fixture.componentInstance.trigger.autocomplete.positionY)
           .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
     });
@@ -782,8 +781,8 @@ describe('MdAutocomplete', () => {
         const panelBottom = panel.getBoundingClientRect().bottom;
 
         // Panel is offset by 24px in styles so that the label has room to display.
-        expect((inputTop - 24).toFixed(2))
-            .toEqual(panelBottom.toFixed(2), `Expected panel to stay aligned after filtering.`);
+        expect((inputTop - 24).toFixed(1))
+            .toEqual(panelBottom.toFixed(1), `Expected panel to stay aligned after filtering.`);
         expect(fixture.componentInstance.trigger.autocomplete.positionY)
             .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
       });

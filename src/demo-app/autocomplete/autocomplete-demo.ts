@@ -1,6 +1,5 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';
 
 @Component({
@@ -15,7 +14,7 @@ export class AutocompleteDemo {
   currentState = '';
   topHeightCtrl = new FormControl(0);
 
-  reactiveStates: Observable<any>;
+  reactiveStates: any;
   tdStates: any[];
 
   tdDisabled = false;

@@ -9,13 +9,14 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {MdOption} from '../core';
-import {MenuPositionY} from '../menu/menu-positions';
 
 /**
  * Autocomplete IDs need to be unique across components, so this counter exists outside of
  * the component definition.
  */
 let _uniqueAutocompleteIdCounter = 0;
+
+export type AutocompletePositionY = 'above' | 'below';
 
 @Component({
   moduleId: module.id,
@@ -28,7 +29,7 @@ let _uniqueAutocompleteIdCounter = 0;
 export class MdAutocomplete {
 
   /** Whether the autocomplete panel displays above or below its trigger. */
-  positionY: MenuPositionY = 'below';
+  positionY: AutocompletePositionY = 'below';
 
   @ViewChild(TemplateRef) template: TemplateRef<any>;
   @ViewChild('panel') panel: ElementRef;
