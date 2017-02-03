@@ -240,4 +240,5 @@ groups:
     users:
       - IgorMinar
       - robwormald
+      - petebacondarwin
       - mhevery #fallback
