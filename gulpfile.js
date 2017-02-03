@@ -18,6 +18,7 @@ require('./tools/check-environment')({
 const gulp = require('gulp');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
 // clang-format entry points
 const srcsToFmt = [
@@ -284,3 +285,47 @@ function tsc(projectPath, done) {
 function platformScriptPath(path) {
   return /^win/.test(os.platform()) ? `${path}.cmd` : path;
 }
+
+
+// Scrape the guide contents from the compiled HTML in the angular.io site
+//
+// Inside the angular.io project run:
+// ```
+// gulp build-docs
+// gulp harp-compile
+// ```
+// Then inside this project run:
+// ```
+// gulp scrape-guides
+// ```
+//
+gulp.task('scrape-guides', () => {
+  const dom = require('gulp-dom');
+  const tap = require('gulp-tap');
+
+  // As we process each guide we will collect up a map of paths to titles
+  let currentFile;
+  const pathToTitleMap = {};
+
+  // The `angular.io` project must be located next to this project
+  gulp.src('../angular.io/www/docs/ts/latest/guide/*.html')
+
+      // Capture this file's relative path
+      .pipe(tap(function(file) { currentFile = file.relative; }))
+
+      // Transform the HTML to extract the article containing the guide
+      .pipe(dom(function() {
+        const article = this.querySelector('article');
+        pathToTitleMap[currentFile] = this.title.replace(' - ts - GUIDE', '');
+        return article ? ('<article>' + article.innerHTML + '</article>') : '';
+      }))
+
+      // Write the scraped guide to the file system
+      .pipe(gulp.dest('./docs/content/guide'))
+
+      // Now write the map to the file-system
+      .on('end', function() {
+        fs.writeFileSync('./docs/content/guides.json', JSON.stringify(pathToTitleMap, null, 2));
+      });
+  ;
+});
