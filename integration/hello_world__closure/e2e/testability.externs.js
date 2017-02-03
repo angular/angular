@@ -1,6 +1,6 @@
 /** @externs */
 // Workaround for #11119
-// externs from modules/@angular/facade/src/lang.ts
+// TODO(alexeagle): these externs ought to be distributed with Angular.
 /**
  * @externs
  * @suppress {duplicate}
