@@ -68,7 +68,7 @@
     }
   }
 
-  .md-checkbox:not(.md-checkbox-disabled) {
+  md-checkbox:not(.md-checkbox-disabled) {
     &.md-primary .md-checkbox-ripple .md-ripple-foreground {
       background-color: md-color($primary, 0.26);
     }
