@@ -86,7 +86,7 @@ export function main(
       };
 
       const tsickleHost: tsickle.TsickleHost = {
-        shouldSkipTsickleProcessing: (fileName) => false,
+        shouldSkipTsickleProcessing: (fileName) => parsed.fileNames.indexOf(fileName) === -1,
         pathToModuleName: (context, importPath) => '',
         shouldIgnoreWarningsForPath: (filePath) => false,
         fileNameToModuleId: (fileName) => fileName,
