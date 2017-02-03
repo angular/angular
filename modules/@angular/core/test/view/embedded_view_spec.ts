@@ -7,44 +7,27 @@
  */
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {BindingType, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createEmbeddedView, createRootView, destroyView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingType, NodeCheckFn, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootData, isBrowser, setupAndCheckRenderer} from './helper';
+import {createRootView, isBrowser} from './helper';
 
 export function main() {
-  if (isBrowser()) {
-    defineTests({directDom: true, viewFlags: ViewFlags.DirectDom});
-  }
-  defineTests({directDom: false, viewFlags: 0});
-}
-
-function defineTests(config: {directDom: boolean, viewFlags: number}) {
-  describe(`Embedded Views, directDom: ${config.directDom}`, () => {
-    setupAndCheckRenderer(config);
-
-    let rootData: RootData;
-    let renderComponentType: RenderComponentType;
-
-    beforeEach(() => {
-      rootData = createRootData();
-      renderComponentType =
-          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-    });
-
+  describe(`Embedded Views`, () => {
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, update, handleEvent);
     }
 
     function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, update);
+      return viewDef(ViewFlags.None, nodes, update);
     }
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(rootData, viewDef, context);
+      const view = createRootView(viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -62,7 +45,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           ]),
           parentContext);
 
-      const childView = createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
+      const childView =
+          Services.createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
       expect(childView.component).toBe(parentContext);
       expect(childView.context).toBe(childContext);
     });
@@ -79,8 +63,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       ]));
       const viewContainerData = asElementData(parentView, 1);
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
-      const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
+      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
 
       attachEmbeddedView(viewContainerData, 0, childView0);
       attachEmbeddedView(viewContainerData, 1, childView1);
@@ -109,8 +93,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
       ]));
       const viewContainerData = asElementData(parentView, 1);
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
-      const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
+      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
 
       attachEmbeddedView(viewContainerData, 0, childView0);
       attachEmbeddedView(viewContainerData, 1, childView1);
@@ -133,7 +117,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'after'})
       ]));
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[0]);
+      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[0]);
       attachEmbeddedView(asElementData(parentView, 0), 0, childView0);
 
       const rootNodes = rootRenderNodes(parentView);
@@ -144,10 +128,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
 
     it('should dirty check embedded views', () => {
       let childValue = 'v1';
-      const update = jasmine.createSpy('updater').and.callFake((view: ViewData) => {
-        setCurrentNode(view, 0);
-        checkNodeInline(childValue);
-      });
+      const update =
+          jasmine.createSpy('updater').and.callFake((check: NodeCheckFn, view: ViewData) => {
+            check(view, 0, ArgumentType.Inline, childValue);
+          });
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 1, 'div'),
@@ -160,24 +144,24 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                 update))
       ]));
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       const rootEl = rootNodes[0];
       attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
 
-      checkAndUpdateView(parentView);
+      Services.checkAndUpdateView(parentView);
 
-      expect(update).toHaveBeenCalledWith(childView0);
+      expect(update.calls.mostRecent().args[1]).toBe(childView0);
 
       update.calls.reset();
-      checkNoChangesView(parentView);
+      Services.checkNoChangesView(parentView);
 
-      expect(update).toHaveBeenCalledWith(childView0);
+      expect(update.calls.mostRecent().args[1]).toBe(childView0);
 
       childValue = 'v2';
-      expect(() => checkNoChangesView(parentView))
+      expect(() => Services.checkNoChangesView(parentView))
           .toThrowError(
-              `Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+              `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
     });
 
     it('should destroy embedded views', () => {
@@ -195,10 +179,10 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                   ]))
       ]));
 
-      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
-      destroyView(parentView);
+      Services.destroyView(parentView);
 
       expect(log).toEqual(['ngOnDestroy']);
     });

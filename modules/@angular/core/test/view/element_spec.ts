@@ -8,40 +8,23 @@
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {BindingType, DebugContext, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingType, DebugContext, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {INLINE_DYNAMIC_VALUES, InlineDynamic, checkNodeInlineOrDynamic, createRootData, isBrowser, removeNodes, setupAndCheckRenderer} from './helper';
+import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, removeNodes} from './helper';
 
 export function main() {
-  if (isBrowser()) {
-    defineTests({directDom: true, viewFlags: ViewFlags.DirectDom});
-  }
-  defineTests({directDom: false, viewFlags: 0});
-}
-
-function defineTests(config: {directDom: boolean, viewFlags: number}) {
-  describe(`View Elements, directDom: ${config.directDom}`, () => {
-    setupAndCheckRenderer(config);
-
-    let rootData: RootData;
-    let renderComponentType: RenderComponentType;
-
-    beforeEach(() => {
-      rootData = createRootData();
-      renderComponentType =
-          new RenderComponentType('1', 'someUrl', 0, ViewEncapsulation.None, [], {});
-    });
-
+  describe(`View Elements`, () => {
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
-      return viewDef(config.viewFlags, nodes, update, handleEvent, renderComponentType);
+        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, update, handleEvent);
     }
 
     function createAndGetRootNodes(
         viewDef: ViewDefinition, context?: any): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(rootData, viewDef, context);
+      const view = createRootView(viewDef, context);
       const rootNodes = rootRenderNodes(view);
       return {rootNodes, view};
     }
@@ -81,19 +64,17 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
         expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
       });
 
-      if (!config.directDom) {
-        it('should add debug information to the renderer', () => {
-          const someContext = new Object();
-          const {view, rootNodes} = createAndGetRootNodes(
-              compViewDef([elementDef(NodeFlags.None, null, null, 0, 'div')]), someContext);
-          expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
-        });
-      }
+      it('should add debug information to the renderer', () => {
+        const someContext = new Object();
+        const {view, rootNodes} = createAndGetRootNodes(
+            compViewDef([elementDef(NodeFlags.None, null, null, 0, 'div')]), someContext);
+        expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
+      });
     });
 
     describe('change properties', () => {
-      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
+      ARG_TYPE_VALUES.forEach((inlineDynamic) => {
+        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
@@ -104,27 +85,24 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementProperty, 'value', SecurityContext.NONE]
                     ]),
               ],
-              (view) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, ['v1', 'v2']);
+              (check, view) => {
+                checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, ['v1', 'v2']);
               }));
 
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
           expect(getDOM().getProperty(el, 'title')).toBe('v1');
           expect(getDOM().getProperty(el, 'value')).toBe('v2');
 
-          if (!config.directDom) {
-            expect(getDOM().getAttribute(el, 'ng-reflect-title')).toBe('v1');
-          }
+          expect(getDOM().getAttribute(el, 'ng-reflect-title')).toBe('v1');
         });
       });
     });
 
     describe('change attributes', () => {
-      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
+      ARG_TYPE_VALUES.forEach((inlineDynamic) => {
+        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
@@ -134,12 +112,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementAttribute, 'a2', SecurityContext.NONE]
                     ]),
               ],
-              (view) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, ['v1', 'v2']);
+              (check, view) => {
+                checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, ['v1', 'v2']);
               }));
 
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
           expect(getDOM().getAttribute(el, 'a1')).toBe('v1');
@@ -149,20 +126,19 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     });
 
     describe('change classes', () => {
-      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
+      ARG_TYPE_VALUES.forEach((inlineDynamic) => {
+        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
                     NodeFlags.None, null, null, 0, 'div', null,
                     [[BindingType.ElementClass, 'c1'], [BindingType.ElementClass, 'c2']]),
               ],
-              (view) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, [true, true]);
+              (check, view) => {
+                checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, [true, true]);
               }));
 
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
           expect(getDOM().hasClass(el, 'c1')).toBeTruthy();
@@ -172,8 +148,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     });
 
     describe('change styles', () => {
-      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${InlineDynamic[inlineDynamic]}`, () => {
+      ARG_TYPE_VALUES.forEach((inlineDynamic) => {
+        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
@@ -183,12 +159,11 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementStyle, 'color', null]
                     ]),
               ],
-              (view) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, [10, 'red']);
+              (check, view) => {
+                checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, [10, 'red']);
               }));
 
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
           expect(getDOM().getStyle(el, 'width')).toBe('10px');
@@ -198,8 +173,8 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
     });
 
     describe('general binding behavior', () => {
-      INLINE_DYNAMIC_VALUES.forEach((inlineDynamic) => {
-        it(`should unwrap values with ${InlineDynamic[inlineDynamic]}`, () => {
+      ARG_TYPE_VALUES.forEach((inlineDynamic) => {
+        it(`should unwrap values with ${ArgumentType[inlineDynamic]}`, () => {
           let bindingValue: any;
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -210,25 +185,24 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
                       [BindingType.ElementProperty, 'someProp', SecurityContext.NONE],
                     ]),
               ],
-              (view) => {
-                setCurrentNode(view, 0);
-                checkNodeInlineOrDynamic(inlineDynamic, [bindingValue]);
+              (check, view) => {
+                checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, [bindingValue]);
               }));
 
           const setterSpy = jasmine.createSpy('set');
           Object.defineProperty(rootNodes[0], 'someProp', {set: setterSpy});
 
           bindingValue = 'v1';
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
           expect(setterSpy).toHaveBeenCalledWith('v1');
 
           setterSpy.calls.reset();
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
           expect(setterSpy).not.toHaveBeenCalled();
 
           setterSpy.calls.reset();
           bindingValue = WrappedValue.wrap('v1');
-          checkAndUpdateView(view);
+          Services.checkAndUpdateView(view);
           expect(setterSpy).toHaveBeenCalledWith('v1');
         });
       });
@@ -265,7 +239,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           expect(handleEventArgs[2]).toBe('click');
           expect(handleEventArgs[3]).toBeTruthy();
 
-          destroyView(view);
+          Services.destroyView(view);
 
           expect(removeListenerSpy).toHaveBeenCalled();
         });
@@ -291,7 +265,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           expect(handleEventArgs[2]).toBe('windowClick');
           expect(handleEventArgs[3]).toBeTruthy();
 
-          destroyView(view);
+          Services.destroyView(view);
 
           expect(removeListenerSpy).toHaveBeenCalled();
         });
@@ -317,7 +291,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           expect(handleEventArgs[2]).toBe('documentClick');
           expect(handleEventArgs[3]).toBeTruthy();
 
-          destroyView(view);
+          Services.destroyView(view);
 
           expect(removeListenerSpy).toHaveBeenCalled();
         });
