@@ -3,6 +3,7 @@ import {
     Directive,
     ElementRef,
     forwardRef,
+    Host,
     Input,
     NgZone,
     Optional,
@@ -26,6 +27,7 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
+import {MdInputContainer, FloatPlaceholderType} from '../input/input-container';
 
 /**
  * The following style constants are necessary to save here in order
@@ -92,7 +94,8 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
 
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
-              @Optional() private _dir: Dir, private _zone: NgZone) {}
+              @Optional() private _dir: Dir, private _zone: NgZone,
+              @Optional() @Host() private _inputContainer: MdInputContainer) {}
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options).withWrap();
@@ -123,6 +126,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     }
 
     this._panelOpen = true;
+    this._floatPlaceholder('always');
   }
 
   /** Closes the autocomplete suggestion panel. */
@@ -132,6 +136,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     }
 
     this._panelOpen = false;
+    this._floatPlaceholder('auto');
   }
 
   /**
@@ -211,6 +216,17 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     // Only emit blur event if the new focus is *not* on an option.
     if (newlyFocusedTag !== 'MD-OPTION') {
       this._blurStream.next(null);
+    }
+  }
+
+  /**
+   * In "auto" mode, the placeholder will animate down as soon as focus is lost.
+   * This causes the value to jump when selecting an option with the mouse.
+   * This method manually floats the placeholder until the panel can be closed.
+   */
+  private _floatPlaceholder(state: FloatPlaceholderType): void {
+    if (this._inputContainer) {
+      this._inputContainer.floatPlaceholder = state;
     }
   }
 

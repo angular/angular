@@ -12,7 +12,7 @@ import {MdOption} from '../core/option/option';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {MdAutocomplete} from './autocomplete';
-
+import {MdInputContainer} from '../input/input-container';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -181,16 +181,36 @@ describe('MdAutocomplete', () => {
             .toEqual('', `Expected panel to close when options list is empty.`);
       });
     }));
+
+    it('should keep the label floating until the panel closes', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      dispatchEvent('blur', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+          .toEqual('always', 'Expected placeholder to keep floating on blur.');
+
+      const backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+          .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
+    });
+
   });
 
   it('should have the correct text direction in RTL', () => {
     dir = 'rtl';
 
-    const fixture = TestBed.createComponent(SimpleAutocomplete);
-    fixture.detectChanges();
+    const rtlFixture = TestBed.createComponent(SimpleAutocomplete);
+    rtlFixture.detectChanges();
 
-    fixture.componentInstance.trigger.openPanel();
-    fixture.detectChanges();
+    rtlFixture.componentInstance.trigger.openPanel();
+    rtlFixture.detectChanges();
 
     const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
@@ -603,8 +623,8 @@ describe('MdAutocomplete', () => {
         // Expect option bottom minus the panel height (288 - 256 = 32)
         expect(scrollContainer.scrollTop).toEqual(32, `Expected panel to reveal the sixth option.`);
       });
-    }));
 
+    }));
   });
 
   describe('aria', () => {
@@ -793,6 +813,7 @@ class SimpleAutocomplete implements OnDestroy {
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
   @ViewChild(MdAutocomplete) panel: MdAutocomplete;
+  @ViewChild(MdInputContainer) inputContainer: MdInputContainer;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 
   states = [
