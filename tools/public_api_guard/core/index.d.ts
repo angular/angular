@@ -1007,6 +1007,9 @@ export declare const TRANSLATIONS: InjectionToken<string>;
 export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
+export declare const TRANSLATIONS_SERIALIZER: InjectionToken<string>;
+
+/** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
 
 /** @experimental */

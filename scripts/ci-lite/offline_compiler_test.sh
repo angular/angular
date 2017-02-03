@@ -47,9 +47,11 @@ cp -v package.json $TMP
   node ./node_modules/@angular/tsc-wrapped/src/main -p third_party_src/tsconfig-build.json
 
   ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
+  ./node_modules/.bin/ngc -p tsconfig-custom-serializer.json --i18nFile=src/messages.fr.json --locale=fr --i18nSerializer=./test/custom_serializer
 
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xmb
+  ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nSerializer=./test/custom_serializer
 
   node test/test_summaries.js
   node test/test_ngtools_api.js

@@ -15,6 +15,7 @@ import {createComponent} from './util';
 
 describe('template codegen output', () => {
   const outDir = 'src';
+  const genDir = 'gen_custom_serializer/src';
 
   it('should lower Decorators without reflect-metadata', () => {
     const jsOutput = path.join(outDir, 'basic.js');
@@ -87,6 +88,14 @@ describe('template codegen output', () => {
       const pElement = containerElement.children.find((c: any) => c.name == 'p');
       const pText = pElement.children.map((c: any) => c.data).join('').trim();
       expect(pText).toBe('tervetuloa');
+    });
+
+    describe('with custom serializer', () => {
+      it('should generate translated factories', () => {
+        const jsOutput = path.join(genDir, 'basic.ngfactory.ts');
+        expect(fs.existsSync(jsOutput)).toBeTruthy();
+        expect(fs.readFileSync(jsOutput, {encoding: 'utf-8'})).toContain('Bienvenue');
+      });
     });
   });
 });

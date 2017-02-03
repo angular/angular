@@ -20,6 +20,7 @@ import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {getI18nSerializer} from './utils';
 
 export class Extractor {
   constructor(
@@ -27,15 +28,16 @@ export class Extractor {
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(formatName: string): Promise<void> {
-    // Checks the format and returns the extension
-    const ext = this.getExtension(formatName);
+  extract(formatName: string, serializerPath: string): Promise<void> {
+    // Checks the arguments first
+    this.checkArguments(formatName, serializerPath);
 
     const promiseBundle = this.extractBundle();
 
     return promiseBundle.then(bundle => {
-      const content = this.serialize(bundle, ext);
-      const dstPath = path.join(this.options.genDir, `messages.${ext}`);
+      const serializer = this.getSerializer(formatName, serializerPath);
+      const content = this.serialize(bundle, serializer);
+      const dstPath = path.join(this.options.genDir, `messages.${serializer.getExtension()}`);
       this.host.writeFile(dstPath, content, false);
     });
   }
@@ -47,28 +49,35 @@ export class Extractor {
     return this.ngExtractor.extract(files);
   }
 
-  serialize(bundle: compiler.MessageBundle, ext: string): string {
+  getSerializer(ext: string, serializerPath: string): compiler.Serializer {
     let serializer: compiler.Serializer;
 
-    switch (ext) {
-      case 'xmb':
-        serializer = new compiler.Xmb();
-        break;
-      case 'xlf':
-      default:
-        serializer = new compiler.Xliff();
+    if (serializerPath) {
+      serializer = getI18nSerializer(serializerPath);
+    } else {
+      switch (ext) {
+        case 'xmb':
+          serializer = new compiler.Xmb();
+          break;
+        case 'xlf':
+        case 'xlif':
+        default:
+          serializer = new compiler.Xliff();
+      }
     }
+    return serializer;
+  }
 
+  serialize(bundle: compiler.MessageBundle, serializer: compiler.Serializer): string {
     return bundle.write(serializer);
   }
 
-  getExtension(formatName: string): string {
-    const format = (formatName || 'xlf').toLowerCase();
-
-    if (format === 'xmb') return 'xmb';
-    if (format === 'xlf' || format === 'xlif') return 'xlf';
-
-    throw new Error('Unsupported format "${formatName}"');
+  checkArguments(formatName: string, serializerPath: string) {
+    if (!serializerPath) {
+      if (formatName && ['xmb', 'xlf', 'xlif'].indexOf(formatName) == -1) {
+        throw new Error('Unsupported format "${formatName}"');
+      }
+    }
   }
 
   static create(

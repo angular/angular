@@ -92,6 +92,8 @@ export class Xliff extends Serializer {
   }
 
   digest(message: i18n.Message): string { return digest(message); }
+
+  getExtension(): string { return 'xlf'; }
 }
 
 class _WriteVisitor implements i18n.Visitor {

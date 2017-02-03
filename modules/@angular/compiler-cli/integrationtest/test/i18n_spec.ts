@@ -63,6 +63,9 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 </xliff>
 `;
 
+const EXPECTED_JSON =
+    `{"76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4":"translate me","65cc4ab3b4c438e07c89be2b677d08369fb62da2":"Welcome","63a85808f03b8181e36a952e0fa38202c2304862":"other-3rdP-component"}`;
+
 describe('template i18n extraction output', () => {
   const outDir = '';
   const genDir = 'out';
@@ -84,5 +87,12 @@ describe('template i18n extraction output', () => {
   it('should not emit js', () => {
     const genOutput = path.join(genDir, '');
     expect(fs.existsSync(genOutput)).toBeFalsy();
+  });
+
+  it('should extract i18n messages with custom serializer', () => {
+    const jsonOutput = path.join(outDir, 'messages.json');
+    expect(fs.existsSync(jsonOutput)).toBeTruthy();
+    const json = fs.readFileSync(jsonOutput, {encoding: 'utf-8'});
+    expect(json).toEqual(EXPECTED_JSON);
   });
 });

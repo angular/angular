@@ -57,6 +57,8 @@ export class Xtb extends Serializer {
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
+
+  getExtension(): string { return 'xtb'; }
 }
 
 function createLazyProperty(messages: any, id: string, valueFn: () => any) {

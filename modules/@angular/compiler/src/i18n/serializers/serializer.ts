@@ -22,6 +22,9 @@ export abstract class Serializer {
   // Creates a name mapper, see `PlaceholderMapper`
   // Returning `null` means that no name mapping is used.
   createNameMapper(message: i18n.Message): PlaceholderMapper { return null; }
+
+  // Returns the file extension to be used by the serializer
+  getExtension(): string { return ''; }
 }
 
 /**

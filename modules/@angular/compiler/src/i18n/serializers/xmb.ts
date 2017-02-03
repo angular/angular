@@ -81,6 +81,8 @@ export class Xmb extends Serializer {
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
   }
+
+  getExtension(): string { return 'xmb'; }
 }
 
 class _Visitor implements i18n.Visitor {
