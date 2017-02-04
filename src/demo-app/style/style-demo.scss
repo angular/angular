@@ -1,0 +1,15 @@
+.demo-button.cdk-focused {
+  border: 2px solid red;
+}
+
+.demo-button.cdk-mouse-focused {
+  background: green;
+}
+
+.demo-button.cdk-keyboard-focused {
+  background: yellow;
+}
+
+.demo-button.cdk-program-focused {
+  background: blue;
+}

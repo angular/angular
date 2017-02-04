@@ -50,7 +50,8 @@ export class DemoApp {
     {name: 'Tabs', route: 'tabs'},
     {name: 'Toolbar', route: 'toolbar'},
     {name: 'Tooltip', route: 'tooltip'},
-    {name: 'Platform', route: 'platform'}
+    {name: 'Platform', route: 'platform'},
+    {name: 'Style', route: 'style'}
   ];
 
   constructor(private _element: ElementRef) {
