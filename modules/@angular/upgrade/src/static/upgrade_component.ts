@@ -100,6 +100,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private controllerInstance: IControllerInstance = null;
   private bindingDestination: IBindingDestination = null;
 
+  private unregisterDoCheckWatcher: Function;
+
   /**
    * Create a new `UpgradeComponent` instance. You should not normally need to do this.
    * Instead you should derive a new class from this one and call the super constructor
@@ -173,7 +175,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
       const callDoCheck = () => this.controllerInstance.$doCheck();
 
-      this.$componentScope.$parent.$watch(callDoCheck);
+      this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
     }
 
@@ -236,6 +238,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (isFunction(this.unregisterDoCheckWatcher)) {
+      this.unregisterDoCheckWatcher();
+    }
     if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
       this.controllerInstance.$onDestroy();
     }

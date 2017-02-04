@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, EventEmitter, Injector, Input, NO_ERRORS_SCHEMA, NgModule, Output, SimpleChanges, destroyPlatform} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Inject, Injector, Input, NO_ERRORS_SCHEMA, NgModule, Output, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
+import {$SCOPE} from '@angular/upgrade/src/common/constants';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
 import {$digest, bootstrap, html, multiTrim} from '../test_helpers';
@@ -2735,64 +2736,130 @@ export function main() {
          }));
     });
 
-    it('should destroy `$componentScope` when destroying the upgraded component', async(() => {
-         const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
-         let ng2ComponentAInstance: Ng2ComponentA;
+    describe('destroying the upgraded component', () => {
+      it('should destroy `$componentScope`', async(() => {
+           const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
+           let ng2ComponentAInstance: Ng2ComponentA;
 
-         // Define `ng1Component`
-         const ng1Component: angular.IComponent = {
-           controller: class {
-             constructor($scope: angular.IScope) { $scope.$on('$destroy', scopeDestroyListener); }
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: class {
+               constructor($scope: angular.IScope) { $scope.$on('$destroy', scopeDestroyListener); }
+             }
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
            }
-         };
 
-         // Define `Ng1ComponentFacade`
-         @Directive({selector: 'ng1'})
-         class Ng1ComponentFacade extends UpgradeComponent {
-           constructor(elementRef: ElementRef, injector: Injector) {
-             super('ng1', elementRef, injector);
+           // Define `Ng2Component`
+           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           class Ng2ComponentA {
+             destroyIt = false;
+
+             constructor() { ng2ComponentAInstance = this; }
            }
-         }
 
-         // Define `Ng2Component`
-         @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
-         class Ng2ComponentA {
-           destroyIt = false;
+           @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+           class Ng2ComponentB {
+           }
 
-           constructor() { ng2ComponentAInstance = this; }
-         }
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
-         @Component({selector: 'ng2B', template: '<ng1></ng1>'})
-         class Ng2ComponentB {
-         }
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule, UpgradeModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-         // Define `ng1Module`
-         const ng1Module = angular.module('ng1Module', [])
-                               .component('ng1', ng1Component)
-                               .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+           // Bootstrap
+           const element = html(`<ng2-a></ng2-a>`);
 
-         // Define `Ng2Module`
-         @NgModule({
-           declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA],
-           imports: [BrowserModule, UpgradeModule]
-         })
-         class Ng2Module {
-           ngDoBootstrap() {}
-         }
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             expect(scopeDestroyListener).not.toHaveBeenCalled();
 
-         // Bootstrap
-         const element = html(`<ng2-a></ng2-a>`);
+             ng2ComponentAInstance.destroyIt = true;
+             $digest(adapter);
 
-         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-           expect(scopeDestroyListener).not.toHaveBeenCalled();
+             expect(scopeDestroyListener).toHaveBeenCalled();
+           });
+         }));
 
-           ng2ComponentAInstance.destroyIt = true;
-           $digest(adapter);
+      it('should clean up `$doCheck()` watchers from the parent scope', async(() => {
+           let ng2Component: Ng2Component;
 
-           expect(scopeDestroyListener).toHaveBeenCalled();
-         });
-       }));
+           // Define `ng1Component`
+           const ng1Component:
+               angular.IComponent = {template: 'ng1', controller: class {$doCheck() {}}};
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1 *ngIf="doShow"></ng1>'})
+           class Ng2Component {
+             doShow: boolean = false;
+             constructor(@Inject($SCOPE) public $scope: angular.IScope) { ng2Component = this; }
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentFacade, Ng2Component],
+             entryComponents: [Ng2Component]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             const getWatcherCount: () => number = () =>
+                 (ng2Component.$scope as any).$$watchers.length;
+             const baseWatcherCount = getWatcherCount();
+
+             expect(multiTrim(document.body.textContent)).toBe('');
+
+             ng2Component.doShow = true;
+             $digest(adapter);
+             expect(multiTrim(document.body.textContent)).toBe('ng1');
+             expect(getWatcherCount()).toBe(baseWatcherCount + 1);
+
+             ng2Component.doShow = false;
+             $digest(adapter);
+             expect(multiTrim(document.body.textContent)).toBe('');
+             expect(getWatcherCount()).toBe(baseWatcherCount);
+
+             ng2Component.doShow = true;
+             $digest(adapter);
+             expect(multiTrim(document.body.textContent)).toBe('ng1');
+             expect(getWatcherCount()).toBe(baseWatcherCount + 1);
+           });
+         }));
+    });
 
     it('should support ng2 > ng1 > ng2 (no inputs/outputs)', async(() => {
          // Define `ng1Component`
