@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
-import {bootstrap, digest, html, multiTrim} from '../test_helpers';
+import {$digest, bootstrap, html, multiTrim} from '../test_helpers';
 
 export function main() {
   describe('upgrade ng1 component', () => {
@@ -530,7 +530,7 @@ export function main() {
 
              ng2ComponentInstance.dataA = 'foo2';
              ng2ComponentInstance.dataB = 'bar2';
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(multiTrim(element.textContent))
@@ -605,7 +605,7 @@ export function main() {
 
              ng2ComponentInstance.dataA = {value: 'foo2'};
              ng2ComponentInstance.dataB = {value: 'bar2'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(multiTrim(element.textContent))
@@ -682,7 +682,7 @@ export function main() {
 
              ng2ComponentInstance.dataA = {value: 'foo2'};
              ng2ComponentInstance.dataB = {value: 'bar2'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(multiTrim(element.textContent))
@@ -929,7 +929,7 @@ export function main() {
 
              ng1Controller1.outputA({value: 'foo again'});
              ng1Controller2.outputB('bar again');
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(ng1Controller0.inputA).toEqual({value: 'foo again'});
@@ -1010,7 +1010,7 @@ export function main() {
                  .toBe('ng1 - Data: [4,5] - Length: 2 | ng2 - Data: 4,5 - Length: 2');
 
              ng1Controller.$scope.outputA(6);
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(ng1Controller.$scope.inputA).toEqual([4, 5, 6]);
@@ -1858,7 +1858,7 @@ export function main() {
 
              // Change: Re-assign `data`
              ng2ComponentInstance.data = {foo: 'baz'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChanges.calls.count()).toBe(2);
@@ -1879,7 +1879,7 @@ export function main() {
 
              // No change: Update internal property
              ng2ComponentInstance.data.foo = 'qux';
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChanges.calls.count()).toBe(2);
@@ -1888,7 +1888,7 @@ export function main() {
 
              // Change: Re-assign `data` (even if it looks the same)
              ng2ComponentInstance.data = {foo: 'qux'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChanges.calls.count()).toBe(3);
@@ -2008,7 +2008,7 @@ export function main() {
 
              // Change: Re-assign `data`
              ng2ComponentInstance.data = {foo: 'baz'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChangesA.calls.count()).toBe(2);
@@ -2029,7 +2029,7 @@ export function main() {
 
              // No change: Update internal property
              ng2ComponentInstance.data.foo = 'qux';
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChangesA.calls.count()).toBe(2);
@@ -2039,7 +2039,7 @@ export function main() {
 
              // Change: Re-assign `data` (even if it looks the same)
              ng2ComponentInstance.data = {foo: 'qux'};
-             digest(adapter);
+             $digest(adapter);
              tick();
 
              expect(scopeOnChangesA.calls.count()).toBe(3);
@@ -2399,12 +2399,12 @@ export function main() {
              // Run a `$digest`
              // (Since it's the first one since the `$doCheck` watcher was added,
              //  the `watchFn` will be run twice.)
-             digest(adapter);
+             $digest(adapter);
              expect(controllerDoCheckA.calls.count()).toBe(3);
              expect(controllerDoCheckB.calls.count()).toBe(3);
 
              // Run another `$digest`
-             digest(adapter);
+             $digest(adapter);
              expect(controllerDoCheckA.calls.count()).toBe(4);
              expect(controllerDoCheckB.calls.count()).toBe(4);
            });
@@ -2474,11 +2474,11 @@ export function main() {
              expect(scopeDoCheck).not.toHaveBeenCalled();
 
              // Run a `$digest`
-             digest(adapter);
+             $digest(adapter);
              expect(scopeDoCheck).not.toHaveBeenCalled();
 
              // Run another `$digest`
-             digest(adapter);
+             $digest(adapter);
              expect(scopeDoCheck).not.toHaveBeenCalled();
            });
          }));
@@ -2788,7 +2788,7 @@ export function main() {
            expect(scopeDestroyListener).not.toHaveBeenCalled();
 
            ng2ComponentAInstance.destroyIt = true;
-           digest(adapter);
+           $digest(adapter);
 
            expect(scopeDestroyListener).toHaveBeenCalled();
          });
@@ -2952,7 +2952,7 @@ export function main() {
            // (Should not propagate upwards.)
            ng2ComponentBInstance.ng2BInputA = 'foo2';
            ng2ComponentBInstance.ng2BInputC = 'baz2';
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -2962,7 +2962,7 @@ export function main() {
            // (Should propagate all the way up to `ng1ADataC` and back all the way down to
            // `ng2BInputC`.)
            ng2ComponentBInstance.ng2BOutputC.emit('baz3');
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -2972,7 +2972,7 @@ export function main() {
            // (Should not propagate upwards, only downwards.)
            ng1ControllerXInstance.ng1XInputA = 'foo4';
            ng1ControllerXInstance.ng1XInputB = {value: 'bar4'};
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -2981,7 +2981,7 @@ export function main() {
            // Update `ng1XInputC`.
            // (Should propagate upwards and downwards.)
            ng1ControllerXInstance.ng1XInputC = {value: 'baz5'};
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -2990,7 +2990,7 @@ export function main() {
            // Update a property on `ng1XInputC`.
            // (Should propagate upwards and downwards.)
            ng1ControllerXInstance.ng1XInputC.value = 'baz6';
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -2999,7 +2999,7 @@ export function main() {
            // Emit from `ng1XOutputA`.
            // (Should propagate upwards to `ng1ADataA` and back all the way down to `ng2BInputA`.)
            (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -3009,7 +3009,7 @@ export function main() {
            // (Should propagate upwards to `ng1ADataB`, but not downwards,
            //  since `ng1XInputB` has been re-assigned (i.e. `ng2ADataB !== ng1XInputB`).)
            (ng1ControllerXInstance as any).ng1XOutputB('bar8');
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
@@ -3020,7 +3020,7 @@ export function main() {
            ng2ComponentAInstance.ng2ADataA = {value: 'foo9'};
            ng2ComponentAInstance.ng2ADataB = {value: 'bar9'};
            ng2ComponentAInstance.ng2ADataC = {value: 'baz9'};
-           digest(adapter);
+           $digest(adapter);
            tick();
 
            expect(multiTrim(document.body.textContent))
