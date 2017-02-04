@@ -1,9 +1,9 @@
 Get started with Angular Material using the Angular CLI.
 
-## Install the CLI
+## Install Angular CLI
  
  ```bash
- npm install -g angular-cli
+ npm install -g @angular/cli
  ```
  
 ## Create a new project
