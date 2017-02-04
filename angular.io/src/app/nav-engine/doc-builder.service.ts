@@ -1,7 +1,7 @@
 import { Injectable, ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector } from '@angular/core';
 
 import { Doc, DocMetadata } from '../model';
-import { embeddedComponents } from '../embedded'; // CodeExampleComponent, LiveExampleComponent, CodeTabsComponent
+import { EmbeddedComponents } from '../embedded';
 
 interface EmbeddedComponentFactory {
   contentPropertyName: string;
@@ -13,9 +13,11 @@ export class DocBuilderService {
 
   private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
 
-  constructor(componentFactoryResolver: ComponentFactoryResolver) {
+  constructor(
+    componentFactoryResolver: ComponentFactoryResolver,
+    embeddedComponents: EmbeddedComponents) {
 
-    for (const component of embeddedComponents) {
+    for (const component of embeddedComponents.components) {
       const factory = componentFactoryResolver.resolveComponentFactory(component);
       const selector = factory.selector;
       const contentPropertyName = this.selectorToContentPropertyName(selector);
@@ -31,7 +33,9 @@ export class DocBuilderService {
 
     // security: the doc.content is always authored by the documentation team
     // and is considered to be safe
-    hostElement.innerHTML = doc.content;
+    hostElement.innerHTML = doc.content || '';
+
+    if (!doc.content) { return doc; }
 
     // TODO(i): why can't I use for-of? why doesn't typescript like Map#value() iterators?
     this.embeddedComponentFactories.forEach((ecf, selector) => {
