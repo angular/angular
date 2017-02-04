@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
-import {bootstrap, html, multiTrim} from '../test_helpers';
+import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
 
 export function main() {
   describe('downgrade ng2 component', () => {
@@ -22,15 +22,18 @@ export function main() {
     afterEach(() => destroyPlatform());
 
     it('should bind properties, events', async(() => {
-
-         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
-           $rootScope['dataA'] = 'A';
-           $rootScope['dataB'] = 'B';
-           $rootScope['modelA'] = 'initModelA';
-           $rootScope['modelB'] = 'initModelB';
-           $rootScope['eventA'] = '?';
-           $rootScope['eventB'] = '?';
-         });
+         const ng1Module =
+             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
+                                        throw err;
+                                      }).run(($rootScope: angular.IScope) => {
+               $rootScope['name'] = 'world';
+               $rootScope['dataA'] = 'A';
+               $rootScope['dataB'] = 'B';
+               $rootScope['modelA'] = 'initModelA';
+               $rootScope['modelB'] = 'initModelB';
+               $rootScope['eventA'] = '?';
+               $rootScope['eventB'] = '?';
+             });
 
          @Component({
            selector: 'ng2',
@@ -94,9 +97,10 @@ export function main() {
                  break;
                case 1:
                  assertChange('twoWayA', 'newA');
+                 assertChange('twoWayB', 'newB');
                  break;
                case 2:
-                 assertChange('twoWayB', 'newB');
+                 assertChange('interpolate', 'Hello everyone');
                  break;
                default:
                  throw new Error('Called too many times! ' + JSON.stringify(changes));
@@ -125,7 +129,7 @@ export function main() {
 
          const element = html(`
            <div>
-             <ng2 literal="Text" interpolate="Hello {{'world'}}"
+             <ng2 literal="Text" interpolate="Hello {{name}}"
                  bind-one-way-a="dataA" [one-way-b]="dataB"
                  bindon-two-way-a="modelA" [(two-way-b)]="modelB"
                  on-event-a='eventA=$event' (event-b)="eventB=$event"></ng2>
@@ -138,6 +142,14 @@ export function main() {
                    'ignore: -; ' +
                    'literal: Text; interpolate: Hello world; ' +
                    'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
+                   'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+
+           $apply(upgrade, 'name = "everyone"');
+           expect(multiTrim(document.body.textContent))
+               .toEqual(
+                   'ignore: -; ' +
+                   'literal: Text; interpolate: Hello everyone; ' +
+                   'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
                    'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
          });
        }));
