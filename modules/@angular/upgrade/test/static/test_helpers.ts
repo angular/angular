@@ -24,7 +24,12 @@ export function bootstrap(
   });
 }
 
-export function digest(adapter: UpgradeModule) {
+export function $apply(adapter: UpgradeModule, exp: angular.Ng1Expression) {
+  const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+  $rootScope.$apply(exp);
+}
+
+export function $digest(adapter: UpgradeModule) {
   const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
   $rootScope.$digest();
 }
