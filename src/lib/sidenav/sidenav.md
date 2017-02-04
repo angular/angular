@@ -27,6 +27,8 @@ The sidenav can render in one of three different ways based on the `mode` proper
 | push | Sidenav _pushes_ the primary content out of its way, also covering it with a backdrop     |
 | side | Sidenav appears _side-by-side_ with the primary content                                   |
 
+Using the `side` mode on mobile devices can affect the performance and is also not recommended by the
+[Material Design specification](https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-behavior).
 
 ### Positioning the sidenav
 The `align` property determines whether the sidenav appears at the `"start"` or `"end"` of the
