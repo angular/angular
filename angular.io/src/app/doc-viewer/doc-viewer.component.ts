@@ -1,8 +1,17 @@
-import { Component,  DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { DocBuilderService } from '../nav-engine';
-import { Doc } from '../model';
+import {
+  Component, ComponentFactory, ComponentFactoryResolver, ComponentRef,
+  DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation
+} from '@angular/core';
 
-// TODO: Ask Igor why we're doing this
+import { Doc, DocMetadata } from '../nav-engine';
+import { EmbeddedComponents } from '../embedded';
+
+interface EmbeddedComponentFactory {
+  contentPropertyName: string;
+  factory: ComponentFactory<any>;
+}
+
+// Initialization prevents flicker once pre-rendering is on
 const initialDocViewerElement = document.querySelector('aio-doc-viewer');
 const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElement.innerHTML : '';
 
@@ -14,26 +23,63 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
 
-  private currentDoc: Doc;
+  private currentDoc: LiveDoc;
+  private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
   private hostElement: HTMLElement;
 
   constructor(
+    componentFactoryResolver: ComponentFactoryResolver,
     elementRef: ElementRef,
+    embeddedComponents: EmbeddedComponents,
     private injector: Injector,
-    private builder: DocBuilderService) {
-      this.hostElement = elementRef.nativeElement;
-      // Security: the initialDocViewerContent comes from the prerendered DOM as is considered to be secure
-      this.hostElement.innerHTML = initialDocViewerContent;
+    ) {
+    this.hostElement = elementRef.nativeElement;
+    // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
+    this.hostElement.innerHTML = initialDocViewerContent;
+
+    for (const component of embeddedComponents.components) {
+      const factory = componentFactoryResolver.resolveComponentFactory(component);
+      const selector = factory.selector;
+      const contentPropertyName = this.selectorToContentPropertyName(selector);
+      this.embeddedComponentFactories.set(selector, { contentPropertyName, factory });
     }
+  }
 
   @Input()
   set doc(newDoc: Doc) {
-    // TODO: don't change anything if the doc metadata is actually the same as current?
     this.ngOnDestroy();
     if (newDoc) {
       window.scrollTo(0, 0);
-      this.currentDoc = this.builder.build(this.hostElement, this.injector, newDoc);
+      this.build(newDoc);
     }
+  }
+
+  /**
+   * Add doc content to host element and build it out with embedded components
+   */
+  private build(doc: Doc) {
+
+    const liveDoc = this.currentDoc = new LiveDoc(doc);
+
+    // security: the doc.content is always authored by the documentation team
+    // and is considered to be safe
+    this.hostElement.innerHTML = doc.content || '';
+
+    if (!doc.content) { return; }
+
+    // TODO(i): why can't I use for-of? why doesn't typescript like Map#value() iterators?
+    this.embeddedComponentFactories.forEach(({ contentPropertyName, factory }, selector) => {
+      const embeddedComponentElements = this.hostElement.querySelectorAll(selector);
+
+      // cast due to https://github.com/Microsoft/TypeScript/issues/4947
+      for (const element of embeddedComponentElements as any as HTMLElement[]){
+        // hack: preserve the current element content because the factory will empty it out
+        // security: the source of this innerHTML is always authored by the documentation team
+        // and is considered to be safe
+        element[contentPropertyName] = element.innerHTML;
+        liveDoc.addEmbeddedComponent(factory.create(this.injector, [], element));
+      }
+    });
   }
 
   ngDoCheck() {
@@ -46,5 +92,39 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
       this.currentDoc.destroy();
       this.currentDoc = undefined;
     }
+  }
+
+  /**
+   * Compute the component content property name by converting the selector to camelCase and appending
+   * 'Content', e.g. live-example => liveExampleContent
+   */
+  private selectorToContentPropertyName(selector: string) {
+    return selector.replace(/-(.)/g, (match, $1) => $1.toUpperCase()) + 'Content';
+  }
+}
+
+class LiveDoc {
+
+  metadata: DocMetadata;
+
+  private embeddedComponents: ComponentRef<any>[] = [];
+
+  constructor(doc: Doc) {
+    // ignore doc.content ... don't need to keep it around
+    this.metadata = doc.metadata;
+  }
+
+  addEmbeddedComponent(component: ComponentRef<any>) {
+    this.embeddedComponents.push(component);
+  }
+
+  detectChanges() {
+    this.embeddedComponents.forEach(comp => comp.changeDetectorRef.detectChanges());
+  }
+
+  destroy() {
+    // destroy components otherwise there will be memory leaks
+    this.embeddedComponents.forEach(comp => comp.destroy());
+    this.embeddedComponents.length = 0;
   }
 }

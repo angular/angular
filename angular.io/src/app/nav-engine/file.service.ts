@@ -8,9 +8,9 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 @Injectable()
 export class FileService {
 
-  getFile(url: string): Observable<any> {
+  getFile(url: string): Observable<string> {
 
-    let p: Promise<any>;
+    let p: Promise<string>;
 
     if (!url) {
       const emsg = 'No URL';

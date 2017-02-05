@@ -3,6 +3,12 @@ import { SitePage } from './app.po';
 describe('site App', function() {
   let page: SitePage;
 
+  beforeAll(done => {
+    // Hack:  CI has been failing on first test.
+    // Apparently needs to be primed with a browser wake up call
+    new SitePage().navigateTo().then(done);
+  });
+
   beforeEach(() => {
     page = new SitePage();
   });

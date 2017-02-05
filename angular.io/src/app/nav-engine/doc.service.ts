@@ -1,5 +1,3 @@
-declare var fetch;
-
 import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -7,7 +5,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 
-import { Doc, DocMetadata } from '../model';
+import { Doc, DocMetadata } from './doc.model';
 import { FileService } from './file.service';
 import { SiteMapService } from './sitemap.service';
 
@@ -21,13 +19,13 @@ export class DocService {
 
   constructor(
     private siteMapService: SiteMapService,
-    private fileService: FileService) {}
+    private fileService: FileService) { }
 
-  getDoc(documentId): Observable<Doc> {
+  getDoc(documentId: string): Observable<Doc> {
     let doc = this.cache[documentId];
     if (doc) {
       console.log('returned cached content for ', doc.metadata);
-      return of(doc.clone());
+      return of(cloneDoc(doc));
     }
 
     return this.siteMapService
@@ -37,10 +35,17 @@ export class DocService {
         return this.fileService.getFile(metadata.url)
           .map(content => {
             console.log('fetched content for', metadata);
-            doc = new Doc(metadata, content);
+            doc = { metadata, content };
             this.cache[metadata.id] = doc;
-            return doc.clone();
+            return cloneDoc(doc);
           });
       });
   }
+}
+
+function cloneDoc(doc: Doc) {
+  return {
+    metadata: Object.assign({}, doc.metadata),
+    content: doc.content
+  };
 }

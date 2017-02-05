@@ -1,7 +1,2 @@
 import { FileService } from './file.service';
-
-xdescribe('FileService', () => {
-  it('can create service', () => {
-    expect(true).toBe(true);
-  });
-});
+// Write tests when/if this service is retained.
