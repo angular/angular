@@ -294,14 +294,14 @@ export class CompileMetadataResolver {
 
   /**
    * Gets the metadata for the given directive.
-   * This assumes `loadNgModuleMetadata` has been called first.
+   * This assumes `loadNgModuleDirectiveAndPipeMetadata` has been called first.
    */
   getDirectiveMetadata(directiveType: any): cpl.CompileDirectiveMetadata {
     const dirMeta = this._directiveCache.get(directiveType);
     if (!dirMeta) {
       this._reportError(
           new SyntaxError(
-              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringifyType(directiveType)}.`),
+              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleDirectiveAndPipeMetadata for a module that declares it. Directive ${stringifyType(directiveType)}.`),
           directiveType);
     }
     return dirMeta;
@@ -648,14 +648,14 @@ export class CompileMetadataResolver {
 
   /**
    * Gets the metadata for the given pipe.
-   * This assumes `loadNgModuleMetadata` has been called first.
+   * This assumes `loadNgModuleDirectiveAndPipeMetadata` has been called first.
    */
   getPipeMetadata(pipeType: any): cpl.CompilePipeMetadata {
     const pipeMeta = this._pipeCache.get(pipeType);
     if (!pipeMeta) {
       this._reportError(
           new SyntaxError(
-              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringifyType(pipeType)}.`),
+              `Illegal state: getPipeMetadata can only be called after loadNgModuleDirectiveAndPipeMetadata for a module that declares it. Pipe ${stringifyType(pipeType)}.`),
           pipeType);
     }
     return pipeMeta;
