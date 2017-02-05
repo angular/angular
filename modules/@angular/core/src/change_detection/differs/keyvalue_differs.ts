@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '../change_detector_ref';
-
 import {Optional, Provider, SkipSelf} from '../../di';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 
