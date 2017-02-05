@@ -16,9 +16,7 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
   constructor() {}
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  create<K, V>(): KeyValueDiffer<K, V> {
-    return new DefaultKeyValueDiffer<K, V>();
-  }
+  create<K, V>(): KeyValueDiffer<K, V> { return new DefaultKeyValueDiffer<K, V>(); }
 }
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
