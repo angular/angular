@@ -8,6 +8,7 @@
 
 import {Optional, Provider, SkipSelf} from '../../di';
 import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
+import { ChangeDetectorRef } from '../change_detector_ref';
 
 /**
  * A type describing supported interable types.
@@ -137,6 +138,11 @@ export interface TrackByFunction<T> { (index: number, item: T): any; }
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
   create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
+
+  /**
+   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
+   */
+  create<V>(_cdr?: ChangeDetectorRef|TrackByFunction<V>, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
 }
 
 /**

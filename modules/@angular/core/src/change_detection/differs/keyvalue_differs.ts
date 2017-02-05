@@ -7,6 +7,7 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
+import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
 
 
 /**
@@ -108,6 +109,11 @@ export interface KeyValueDifferFactory {
    * Create a `KeyValueDiffer`.
    */
   create<K, V>(): KeyValueDiffer<K, V>;
+
+  /**
+   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
+   */
+  create<K, V>(_cdr?: ChangeDetectorRef): KeyValueDiffer<K, V>;
 }
 
 /**
