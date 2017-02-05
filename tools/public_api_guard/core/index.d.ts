@@ -620,6 +620,26 @@ export declare class KeyValueDiffers {
 export declare const LOCALE_ID: InjectionToken<string>;
 
 /** @experimental */
+export declare abstract class Logger {
+    abstract debug(...args: any[]): void;
+    abstract error(...args: any[]): void;
+    abstract group(groupTitle?: string): void;
+    abstract groupEnd(): void;
+    abstract info(...args: any[]): void;
+    abstract log(...args: any[]): void;
+    abstract warn(...args: any[]): void;
+}
+
+/** @experimental */
+export declare const LOGGER_OPTIONS: InjectionToken<LoggerOptions>;
+
+/** @experimental */
+export interface LoggerOptions {
+    debug?: boolean;
+    enabled?: boolean;
+}
+
+/** @experimental */
 export declare enum MissingTranslationStrategy {
     Error = 0,
     Warning = 1,

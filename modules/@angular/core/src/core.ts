@@ -39,4 +39,5 @@ export {AnimationStyles} from './animation/animation_styles';
 export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
 export {TransitionFactory, TransitionInstruction, Trigger} from './triggers';
+export {Logger, LOGGER_OPTIONS, LoggerOptions} from './logger';
 export * from './codegen_private_exports';
