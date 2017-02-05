@@ -8,9 +8,9 @@
 
 import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 import {isBlank, looseIdentical, stringify} from '../../facade/lang';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
@@ -22,8 +22,10 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
   /**
    * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
    */
-  create<V>(cdRefOrTrackBy?: ChangeDetectorRef|TrackByFunction<any>, trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
-    return new DefaultIterableDiffer<V>(trackByFn || <TrackByFunction<any>> cdRefOrTrackBy);
+  create<V>(
+      cdRefOrTrackBy?: ChangeDetectorRef|TrackByFunction<any>,
+      trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
+    return new DefaultIterableDiffer<V>(trackByFn || <TrackByFunction<any>>cdRefOrTrackBy);
   }
 }
 

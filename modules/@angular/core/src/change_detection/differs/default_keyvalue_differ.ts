@@ -8,9 +8,9 @@
 
 import {StringMapWrapper} from '../../facade/collection';
 import {isJsObject, looseIdentical, stringify} from '../../facade/lang';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {
@@ -22,7 +22,9 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
   /**
    * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
    */
-  create<K, V>(cd?: ChangeDetectorRef): KeyValueDiffer<K, V> { return new DefaultKeyValueDiffer<K, V>(); }
+  create<K, V>(cd?: ChangeDetectorRef): KeyValueDiffer<K, V> {
+    return new DefaultKeyValueDiffer<K, V>();
+  }
 }
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
