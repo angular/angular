@@ -137,7 +137,7 @@ export interface TrackByFunction<T> { (index: number, item: T): any; }
  */
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
-  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
+  create<V>(cdRef?: ChangeDetectorRef, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
 }
 
 /**

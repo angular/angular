@@ -16,7 +16,7 @@ import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFac
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
-  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
+  create<V>(cdRef?: ChangeDetectorRef, trackByFn?: TrackByFunction<any>): DefaultIterableDiffer<V> {
     return new DefaultIterableDiffer<V>(trackByFn);
   }
 }

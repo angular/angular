@@ -108,7 +108,7 @@ export interface KeyValueDifferFactory {
   /**
    * Create a `KeyValueDiffer`.
    */
-  create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V>;
+  create<K, V>(): KeyValueDiffer<K, V>;
 }
 
 /**

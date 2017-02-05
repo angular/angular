@@ -42,7 +42,7 @@ export class NgStyle implements DoCheck {
   set ngStyle(v: {[key: string]: string}) {
     this._ngStyle = v;
     if (!this._differ && v) {
-      this._differ = this._differs.find(v).create(null);
+      this._differ = this._differs.find(v).create();
     }
   }
 
