@@ -7,7 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 /**

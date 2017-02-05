@@ -8,7 +8,6 @@
 
 import {StringMapWrapper} from '../../facade/collection';
 import {isJsObject, looseIdentical, stringify} from '../../facade/lang';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 

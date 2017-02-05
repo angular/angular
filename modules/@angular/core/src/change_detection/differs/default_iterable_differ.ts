@@ -8,7 +8,6 @@
 
 import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 import {isBlank, looseIdentical, stringify} from '../../facade/lang';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 

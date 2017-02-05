@@ -8,7 +8,6 @@
 
 import {Optional, Provider, SkipSelf} from '../../di';
 import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * A type describing supported interable types.
