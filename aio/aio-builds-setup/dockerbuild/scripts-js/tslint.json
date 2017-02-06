@@ -1,0 +1,15 @@
+{
+  "extends": "tslint:recommended",
+  "rules": {
+    "array-type": [true, "array"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "interface-name": [true, "never-prefix"],
+    "max-classes-per-file": [true, 4],
+    "no-consecutive-blank-lines": [true, 2],
+    "no-console": false,
+    "no-namespace": [true, "allow-declarations"],
+    "no-string-literal": false,
+    "quotemark": [true, "single"],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+  }
+}
