@@ -17,8 +17,9 @@ modules/.vscode
 # Don't check in secret files
 *secret.js
 
-# Ignore npm debug log
+# Ignore npm/yarn debug log
 npm-debug.log
+yarn-error.log
 
 # build-analytics
 .build-analytics
@@ -27,6 +28,5 @@ npm-debug.log
 /modules/rollup-test/dist/
 
 # angular.io
-/aio/node_modules
 /aio/src/content/docs
 /aio/dist
