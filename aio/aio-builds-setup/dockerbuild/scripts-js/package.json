@@ -1,0 +1,38 @@
+{
+  "name": "aio-scripts-js",
+  "version": "1.0.0",
+  "description": "Performing various tasks on PR build artifacts for angular.io.",
+  "repository": "https://github.com/angular/angular.git",
+  "author": "Angular",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "yarn run clean",
+    "build": "tsc",
+    "build-watch": "yarn run tsc -- --watch",
+    "clean": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
+    "dev": "concurrently --kill-others --raw --success first \"yarn run build-watch\" \"yarn run test-watch\"",
+    "lint": "tslint --project tsconfig.json",
+    "pretest": "yarn run lint",
+    "test": "node dist/test",
+    "test-watch": "nodemon --exec \"yarn test\" --watch dist"
+  },
+  "dependencies": {
+    "express": "^4.14.1",
+    "jasmine": "^2.5.3",
+    "shelljs": "^0.7.6"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.35",
+    "@types/jasmine": "^2.5.43",
+    "@types/node": "^7.0.5",
+    "@types/shelljs": "^0.7.0",
+    "@types/supertest": "^2.0.0",
+    "concurrently": "^3.3.0",
+    "eslint": "^3.15.0",
+    "eslint-plugin-jasmine": "^2.2.0",
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  }
+}
