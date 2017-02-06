@@ -5,9 +5,13 @@ export function getSupportedInputTypes(): Set<string> {
   if (!supportedInputTypes) {
     let featureTestInput = document.createElement('input');
     supportedInputTypes = new Set([
+      // `color` must come first. Chrome 56 shows a warning if we change the type to `color` after
+      // first changing it to something else:
+      // The specified value "" does not conform to the required format.
+      // The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+      'color',
       'button',
       'checkbox',
-      'color',
       'date',
       'datetime-local',
       'email',
