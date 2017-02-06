@@ -59,6 +59,12 @@
     "platform": "OS X 10.11",
     "version": "9.0"
   },
+  "SL_SAFARI10": {
+    "base": "SauceLabs",
+    "browserName": "safari",
+    "platform": "OS X 10.12",
+    "version": "10.0"
+  },
   "SL_IOS7": {
     "base": "SauceLabs",
     "browserName": "iphone",
