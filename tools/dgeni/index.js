@@ -142,10 +142,3 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
 
 
 module.exports = apiDocsPackage;
-
-// Run the dgeni pipeline, generating documentation.
-// TODO(jelbourn): remove this once the process is more final in favor of gulp.
-let dgeni = new Dgeni([apiDocsPackage]);
-dgeni.generate().then(docs => {
-  console.log(docs);
-});
