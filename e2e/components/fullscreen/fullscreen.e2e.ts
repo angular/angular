@@ -1,38 +1,38 @@
-import {browser, by, element, Key, ProtractorBy} from 'protractor';
+import {browser, by, element} from 'protractor';
 
 describe('fullscreen', () => {
-  beforeEach(() => browser.get('/fullscreen'));
 
-  let overlayInBody = () =>
-    browser.isElementPresent(by.css('body > .cdk-overlay-container') as ProtractorBy);
-  let overlayInFullscreen = () =>
-    browser.isElementPresent(by.css('#fullscreenpane > .cdk-overlay-container') as ProtractorBy);
+  beforeEach(() => browser.get('/fullscreen'));
 
   it('should open a dialog inside a fullscreen element and move it to the document body', () => {
     element(by.id('fullscreen')).click();
     element(by.id('dialog')).click();
 
-    overlayInFullscreen().then((isPresent: boolean) => {
-        expect(isPresent).toBe(true);
-        element(by.id('exitfullscreenindialog')).click();
-        overlayInBody().then((isPresent: boolean) => {
-            expect(isPresent).toBe(true);
-        });
-    });
+    expectOverlayInFullscreen();
+
+    element(by.id('exitfullscreenindialog')).click();
+    expectOverlayInBody();
   });
 
   it('should open a dialog inside the document body and move it to a fullscreen element', () => {
     element(by.id('dialog')).click();
-    overlayInBody().then((isPresent: boolean) => {
-        expect(isPresent).toBe(true);
-        element(by.id('fullscreenindialog')).click();
-        overlayInFullscreen().then((isPresent: boolean) => {
-            expect(isPresent).toBe(true);
-            element(by.id('exitfullscreenindialog')).click();
-            overlayInBody().then((isPresent: boolean) => {
-                expect(isPresent).toBe(true);
-            });
-        });
-    });
+    expectOverlayInBody();
+
+    element(by.id('fullscreenindialog')).click();
+    expectOverlayInFullscreen();
+
+    element(by.id('exitfullscreenindialog')).click();
+    expectOverlayInBody();
   });
+
+  /** Expects the overlay container to be inside of the body element. */
+  function expectOverlayInBody() {
+    expect(browser.isElementPresent(by.css('body > .cdk-overlay-container'))).toBe(true);
+  }
+
+  /** Expects the overlay container to be in fullscreen mode. */
+  function expectOverlayInFullscreen() {
+    expect(browser.isElementPresent(by.css('#fullscreenpane > .cdk-overlay-container'))).toBe(true);
+  }
+
 });

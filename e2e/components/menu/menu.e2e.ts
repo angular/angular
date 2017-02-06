@@ -1,4 +1,4 @@
-import {browser, Key, protractor} from 'protractor';
+import {Key, protractor} from 'protractor';
 import {MenuPage} from './menu-page';
 import {expectToExist, expectAlignedWith, expectFocusOn, expectLocation} from '../../util/asserts';
 import {pressKeys} from '../../util/actions';

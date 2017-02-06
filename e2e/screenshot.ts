@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as gulp from 'gulp';
 import * as path from 'path';
 import {browser} from 'protractor';
 
