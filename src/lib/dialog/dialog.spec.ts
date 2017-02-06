@@ -7,13 +7,21 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import {NgModule,
+  Component,
+  Directive,
+  ViewChild,
+  ViewContainerRef,
+  Injector,
+  Inject,
+} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {NgModule, Component, Directive, ViewChild, ViewContainerRef, Injector} from '@angular/core';
 import {MdDialogModule} from './index';
 import {MdDialog} from './dialog';
 import {OverlayContainer} from '../core';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
+import {MD_DIALOG_DATA} from './dialog-injector';
 
 
 describe('MdDialog', () => {
@@ -271,6 +279,28 @@ describe('MdDialog', () => {
     expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(0);
   });
 
+  describe('passing in data', () => {
+    it('should be able to pass in data', () => {
+      let config = {
+        data: {
+          stringParam: 'hello',
+          dateParam: new Date()
+        }
+      };
+
+      let instance = dialog.open(DialogWithInjectedData, config).componentInstance;
+
+      expect(instance.data.stringParam).toBe(config.data.stringParam);
+      expect(instance.data.dateParam).toBe(config.data.dateParam);
+    });
+
+    it('should throw if injected data is expected but none is passed', () => {
+      expect(() => {
+        dialog.open(DialogWithInjectedData);
+      }).toThrow();
+    });
+  });
+
   describe('disableClose option', () => {
     it('should prevent closing via clicks on the backdrop', () => {
       dialog.open(PizzaMsg, {
@@ -505,19 +535,31 @@ class ComponentThatProvidesMdDialog {
   constructor(public dialog: MdDialog) {}
 }
 
+/** Simple component for testing ComponentPortal. */
+@Component({template: ''})
+class DialogWithInjectedData {
+  constructor(@Inject(MD_DIALOG_DATA) public data: any) { }
+}
+
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
 const TEST_DIRECTIVES = [
   ComponentWithChildViewContainer,
   PizzaMsg,
   DirectiveWithViewContainer,
-  ContentElementDialog
+  ContentElementDialog,
+  DialogWithInjectedData
 ];
 
 @NgModule({
   imports: [MdDialogModule],
   exports: TEST_DIRECTIVES,
   declarations: TEST_DIRECTIVES,
-  entryComponents: [ComponentWithChildViewContainer, PizzaMsg, ContentElementDialog],
+  entryComponents: [
+    ComponentWithChildViewContainer,
+    PizzaMsg,
+    ContentElementDialog,
+    DialogWithInjectedData
+  ],
 })
 class DialogTestModule { }

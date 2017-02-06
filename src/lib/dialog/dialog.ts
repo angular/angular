@@ -129,7 +129,7 @@ export class MdDialog {
     // to modify and close it.
     let dialogRef = <MdDialogRef<T>> new MdDialogRef(overlayRef);
 
-    if (!dialogContainer.dialogConfig.disableClose) {
+    if (!config.disableClose) {
       // When the dialog backdrop is clicked, we want to close it.
       overlayRef.backdropClick().first().subscribe(() => dialogRef.close());
     }
@@ -141,7 +141,7 @@ export class MdDialog {
     // inject the MdDialogRef. This allows a component loaded inside of a dialog to close itself
     // and, optionally, to return a value.
     let userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    let dialogInjector = new DialogInjector(dialogRef, userInjector || this._injector);
+    let dialogInjector = new DialogInjector(userInjector || this._injector, dialogRef, config.data);
 
     let contentPortal = new ComponentPortal(component, null, dialogInjector);
 
