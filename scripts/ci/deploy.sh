@@ -15,33 +15,53 @@ if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
 fi
 
 
-# Don't deploy if not running against angular/angular and not a PR
+# Don't deploy if not running against angular/angular
 # TODO(i): because we don't let deploy to run outside of angular/angular folks can't use their
 #   private travis build to deploy anywhere. This is likely ok, but this means that @alexeagle's
 #   fancy setup to publish ES2015 packages to github -build repos no longer works. This is ok
 #   since with flat modules we'll have this feature built-in. We should still go and remove
 #   stuff that Alex put in for this from publish-build-artifacts.sh
-if [[ ${TRAVIS_REPO_SLUG} != "angular/angular" || ${TRAVIS_PULL_REQUEST} != "false" ]]; then
-  echo "Skipping deploy to staging because this is a PR build."
+if [[ ${TRAVIS_REPO_SLUG} != "angular/angular" ]]; then
+  echo "Skipping deploy because this is not angular/angular."
   exit 0
 fi
 
 
 case ${CI_MODE} in
   e2e)
+    # Don't deploy if this is a PR build
+    if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
+      echo "Skipping deploy because this is a PR build."
+      exit 0
+    fi
+
     travisFoldStart "deploy.packages"
       ${thisDir}/publish-build-artifacts.sh
     travisFoldEnd "deploy.packages"
     ;;
   aio)
-    # aio deploy is setup only from master to aio-staging.firebaseapp.com for now
-    if [[ ${TRAVIS_BRANCH} == "master" ]]; then
-      travisFoldStart "deploy.aio"
-      (
-        cd ${TRAVIS_BUILD_DIR}/aio
-        yarn run deploy-staging
-      )
-      travisFoldEnd "deploy.aio"
+    # Don't deploy if this build is not for master
+    if [[ ${TRAVIS_BRANCH} != "master" ]]; then
+      echo "Skipping deploy because this build is not for master."
+      exit 0
     fi
+
+    travisFoldStart "deploy.aio"
+    (
+      cd ${TRAVIS_BUILD_DIR}/aio
+
+      if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
+        # This is a PR: deploy a snapshot for previewing
+        travisFoldStart "deploy.aio.pr-preview"
+          yarn run deploy-preview
+        travisFoldEnd "deploy.aio.pr-preview"
+      else
+        # This is upstream master: Deploy to staging
+        travisFoldStart "deploy.aio.staging"
+          yarn run deploy-staging
+        travisFoldEnd "deploy.aio.staging"
+      fi
+    )
+    travisFoldEnd "deploy.aio"
     ;;
 esac
