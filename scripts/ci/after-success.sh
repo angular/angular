@@ -10,4 +10,5 @@ cd $(dirname $0)/../..
 if [ "$TRAVIS_PULL_REQUEST" = "false" ] && $(npm bin)/travis-after-modes; then
   echo "All travis modes passed. Publishing the build artifacts..."
   ./scripts/release/publish-build-artifacts.sh
+  ./scripts/release/publish-docs-content.sh
 fi

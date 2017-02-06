@@ -16,7 +16,9 @@ const EXAMPLE_PATTERN = /<!--\W*example\(([^)]+)\)\W*-->/g;
 // documentation page. Using a RegExp to rewrite links in HTML files to work in the docs.
 const LINK_PATTERN = /(<a[^>]*) href="([^"]*)"/g;
 
-gulp.task('docs', () => {
+gulp.task('docs', ['markdown-docs', 'api-docs'])
+
+gulp.task('markdown-docs', () => {
   return gulp.src(['src/lib/**/*.md', 'guides/*.md'])
       .pipe(markdown({
         // Add syntax highlight using highlight.js
@@ -31,10 +33,10 @@ gulp.task('docs', () => {
         }
       }))
       .pipe(transform(transformMarkdownFiles))
-      .pipe(gulp.dest('dist/docs'));
+      .pipe(gulp.dest('dist/docs/markdown'));
 });
 
-task('api', () => {
+task('api-docs', () => {
   const Dgeni = require('dgeni');
   const docsPackage = require(path.resolve(__dirname, '../../dgeni'));
   const dgeni = new Dgeni([docsPackage]);

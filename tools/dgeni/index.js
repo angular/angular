@@ -12,7 +12,7 @@ const typescriptPackage = require('dgeni-packages/typescript');
 // Project configuration.
 const projectRootDir = path.resolve(__dirname, '../..');
 const sourceDir = path.resolve(projectRootDir, 'src/lib');
-const outputDir = path.resolve(projectRootDir, 'dist/docs');
+const outputDir = path.resolve(projectRootDir, 'dist/docs/api');
 const templateDir = path.resolve(__dirname, './templates');
 
 // Package definition for material2 api docs. This only *defines* the package- it does not yet
