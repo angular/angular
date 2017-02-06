@@ -516,7 +516,9 @@ class UrlParser {
     }
 
     const decodedKey = decode(key);
-    const decodedVal = decode(value);
+
+    const PERCENT_REG = /(?!%[0-9A-Fa-f]{2})%/g;
+    const decodedVal = decode(value.replace(PERCENT_REG, '%25'));
 
     if (params.hasOwnProperty(decodedKey)) {
       // Append to existing values
