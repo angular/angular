@@ -19,6 +19,7 @@ import * as o from '../output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
+import {syntaxError} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
@@ -290,8 +291,9 @@ export function analyzeAndValidateNgModules(
   const result = analyzeNgModules(programStaticSymbols, host, metadataResolver);
   if (result.symbolsMissingModule && result.symbolsMissingModule.length) {
     const messages = result.symbolsMissingModule.map(
-        s => `Cannot determine the module for class ${s.name} in ${s.filePath}!`);
-    throw new Error(messages.join('\n'));
+        s =>
+            `Cannot determine the module for class ${s.name} in ${s.filePath}! Add ${s.name} to the NgModule to fix it.`);
+    throw syntaxError(messages.join('\n'));
   }
   return result;
 }
