@@ -2247,7 +2247,8 @@ describe('Integration', () => {
          router.navigateByUrl('/team');
          tick(100);
          fixture.detectChanges();
-         // fixture.detectChanges();
+         fixture.detectChanges();
+         tick(100);
          const paragraph = fixture.nativeElement.querySelector('p');
          expect(paragraph.textContent).toEqual('true');
 
