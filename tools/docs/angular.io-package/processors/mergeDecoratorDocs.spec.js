@@ -2,7 +2,7 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('mergeDecoratorDocs processor', function() {
-  var dgeni, injector, processor, decoratorDoc, otherDoc;
+  var dgeni, injector, processor, decoratorDoc, decoratorDocWithTypeAssertion, otherDoc;
 
   beforeEach(function() {
     dgeni = new Dgeni([testPackage('angular.io-package')]);
@@ -13,9 +13,8 @@ describe('mergeDecoratorDocs processor', function() {
       name: 'X',
       docType: 'var',
       exportSymbol: {
-        valueDeclaration: {
-          initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'XMetadata'}]}
-        }
+        valueDeclaration:
+            {initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'X'}]}}
       }
     };
 
@@ -25,11 +24,8 @@ describe('mergeDecoratorDocs processor', function() {
       exportSymbol: {
         valueDeclaration: {
           initializer: {
-            expression: {
-              type: {},
-              expression: {text: 'makeDecorator'},
-              arguments: [{text: 'YMetadata'}]
-            }
+            expression:
+                {type: {}, expression: {text: 'makeDecorator'}, arguments: [{text: 'Y'}]}
           }
         }
       }
@@ -55,7 +51,7 @@ describe('mergeDecoratorDocs processor', function() {
 
   it('should extract the "type" of the decorator meta data', function() {
     processor.$process([decoratorDoc, decoratorDocWithTypeAssertion, otherDoc]);
-    expect(decoratorDoc.decoratorType).toEqual('XMetadata');
-    expect(decoratorDocWithTypeAssertion.decoratorType).toEqual('YMetadata');
+    expect(decoratorDoc.decoratorType).toEqual('X');
+    expect(decoratorDocWithTypeAssertion.decoratorType).toEqual('Y');
   });
 });

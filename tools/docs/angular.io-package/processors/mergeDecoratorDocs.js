@@ -1,61 +1,47 @@
 var _ = require('lodash');
 
-module.exports = function mergeDecoratorDocs() {
+module.exports = function mergeDecoratorDocs(log) {
   return {
     $runAfter: ['processing-docs'],
     $runBefore: ['docs-processed'],
-    docsToMergeInfo: [
-      {nameTemplate: _.template('${name}Decorator'), decoratorProperty: 'decoratorInterfaceDoc'}, {
-        nameTemplate: _.template('${name}Metadata'),
-        decoratorProperty: 'metadataDoc',
-        useFields: ['howToUse', 'whatItDoes']
-      },
-      {nameTemplate: _.template('${name}MetadataType'), decoratorProperty: 'metadataInterfaceDoc'},
-      {
-        nameTemplate: _.template('${name}MetadataFactory'),
-        decoratorProperty: 'metadataFactoryDoc'
-      }
+    makeDecoratorCalls: [
+      {type: '', description: 'toplevel'},
+      {type: 'Prop', description: 'property'},
+      {type: 'Param', description: 'parameter'},
     ],
     $process: function(docs) {
 
-      var docsToMergeInfo = this.docsToMergeInfo;
+      var makeDecoratorCalls = this.makeDecoratorCalls;
       var docsToMerge = Object.create(null);
 
       docs.forEach(function(doc) {
 
-        // find all the decorators, signified by a call to `makeDecorator(metadata)`
-        var makeDecorator = getMakeDecoratorCall(doc);
-        if (makeDecorator) {
-          doc.docType = 'decorator';
-          // get the type of the decorator metadata
-          doc.decoratorType = makeDecorator.arguments[0].text;
-          // clear the symbol type named (e.g. ComponentMetadataFactory) since it is not needed
-          doc.symbolTypeName = undefined;
+        makeDecoratorCalls.forEach(function(call) {
+          // find all the decorators, signified by a call to `makeDecorator(metadata)`
+          var makeDecorator = getMakeDecoratorCall(doc, call.type);
+          if (makeDecorator) {
+            log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name);
+            doc.docType = 'decorator';
+            doc.decoratorLocation = call.description;
+            // get the type of the decorator metadata
+            doc.decoratorType = makeDecorator.arguments[0].text;
+            // clear the symbol type named (e.g. ComponentMetadataFactory) since it is not needed
+            doc.symbolTypeName = undefined;
 
-          // keep track of the docs that need to be merged into this decorator doc
-          docsToMergeInfo.forEach(function(info) {
-            docsToMerge[info.nameTemplate({name: doc.name})] = {
-              decoratorDoc: doc,
-              property: info.decoratorProperty
-            };
-          });
-        }
+            // keep track of the names of the docs that need to be merged into this decorator doc
+            docsToMerge[doc.name + 'Decorator'] = doc;
+          }
+        });
       });
 
       // merge the metadata docs into the decorator docs
       docs = docs.filter(function(doc) {
         if (docsToMerge[doc.name]) {
-          var decoratorDoc = docsToMerge[doc.name].decoratorDoc;
-          var property = docsToMerge[doc.name].property;
-          var useFields = docsToMerge[doc.name].useFields;
-
-          // attach this document to its decorator
-          decoratorDoc[property] = doc;
-
-          // Copy over fields from the merged doc if specified
-          if (useFields) {
-            useFields.forEach(function(field) { decoratorDoc[field] = doc[field]; });
-          }
+          var decoratorDoc = docsToMerge[doc.name];
+          log.debug(
+              'mergeDecoratorDocs: merging', doc.name, 'into', decoratorDoc.name,
+              doc.callMember.description.substring(0, 50));
+          decoratorDoc.description = doc.callMember.description;
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =
