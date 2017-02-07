@@ -13,7 +13,7 @@ import {NavigationEnd, Router} from '../router';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
-
+const pr = Promise.resolve(null);
 
 /**
  * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.
@@ -126,10 +126,11 @@ export class RouterLinkActive implements OnChanges,
 
     // react only when status has changed to prevent unnecessary dom updates
     if (this.active !== hasActiveLinks) {
-      this.active = hasActiveLinks;
-      this.classes.forEach(
+      pr.then(() => {
+        this.active = hasActiveLinks;
+        this.classes.forEach(
           c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
-      this.cdr.markForCheck();
+      });
     }
   }
 
