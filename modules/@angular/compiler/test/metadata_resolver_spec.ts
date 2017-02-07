@@ -7,7 +7,7 @@
  */
 
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, async, inject} from '@angular/core/testing';
 
@@ -311,6 +311,61 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module5, true))
              .toThrowError(`['&lbrace;', '}}'] contains unusable interpolation symbol.`);
+       }));
+
+    it(`should throw an error when a Pipe is added to module's bootstrap list`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Pipe({name: 'pipe'})
+         class MyPipe {
+         }
+
+         @NgModule({declarations: [MyPipe], bootstrap: [MyPipe]})
+         class ModuleWithPipeInBootstrap {
+         }
+
+         expect(() => resolver.getNgModuleMetadata(ModuleWithPipeInBootstrap))
+             .toThrowError(`MyPipe cannot be used as an entry component.`);
+       }));
+
+    it(`should throw an error when a Service is added to module's bootstrap list`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @NgModule({declarations: [], bootstrap: [SimpleService]})
+         class ModuleWithServiceInBootstrap {
+         }
+
+         expect(() => resolver.getNgModuleMetadata(ModuleWithServiceInBootstrap))
+             .toThrowError(`SimpleService cannot be used as an entry component.`);
+       }));
+
+    it(`should throw an error when a Directive is added to module's bootstrap list`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Directive({selector: 'directive'})
+         class MyDirective {
+         }
+
+         @NgModule({declarations: [], bootstrap: [MyDirective]})
+         class ModuleWithDirectiveInBootstrap {
+         }
+
+         expect(() => resolver.getNgModuleMetadata(ModuleWithDirectiveInBootstrap))
+             .toThrowError(`MyDirective cannot be used as an entry component.`);
+       }));
+
+    it(`should not throw an error when a Component is added to module's bootstrap list`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Component({template: ''})
+         class MyComp {
+         }
+
+         @NgModule({declarations: [MyComp], bootstrap: [MyComp]})
+         class ModuleWithComponentInBootstrap {
+         }
+
+         expect(() => resolver.getNgModuleMetadata(ModuleWithComponentInBootstrap)).not.toThrow();
        }));
   });
 

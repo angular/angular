@@ -930,7 +930,7 @@ export class CompileMetadataResolver {
 
     extractIdentifiers(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
-      const entry = this._getEntryComponentMetadata(identifier.reference);
+      const entry = this._getEntryComponentMetadata(identifier.reference, false);
       if (entry) {
         components.push(entry);
       }
@@ -938,16 +938,21 @@ export class CompileMetadataResolver {
     return components;
   }
 
-  private _getEntryComponentMetadata(dirType: any): cpl.CompileEntryComponentMetadata {
+  private _getEntryComponentMetadata(dirType: any, throwIfNotFound = true):
+      cpl.CompileEntryComponentMetadata {
     const dirMeta = this.getNonNormalizedDirectiveMetadata(dirType);
-    if (dirMeta) {
+    if (dirMeta && dirMeta.metadata.isComponent) {
       return {componentType: dirType, componentFactory: dirMeta.metadata.componentFactory};
     } else {
       const dirSummary =
           <cpl.CompileDirectiveSummary>this._loadSummary(dirType, cpl.CompileSummaryKind.Directive);
-      if (dirSummary) {
+      if (dirSummary && dirSummary.isComponent) {
         return {componentType: dirType, componentFactory: dirSummary.componentFactory};
       }
+    }
+
+    if (throwIfNotFound) {
+      throw syntaxError(`${dirType.name} cannot be used as an entry component.`);
     }
   }
 
