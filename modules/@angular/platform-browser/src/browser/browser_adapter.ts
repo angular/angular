@@ -8,7 +8,6 @@
 
 import {setRootDomAdapter} from '../dom/dom_adapter';
 import {global, isBlank, isPresent, setValueOnPath} from '../facade/lang';
-
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
 const _attrToPropMap = {
@@ -18,47 +17,67 @@ const _attrToPropMap = {
   'tabindex': 'tabIndex',
 };
 
-const DOM_KEY_LOCATION_NUMPAD = 3;
-
-// Map to convert some key or keyIdentifier values to what will be returned by getEventKey
-const _keyMap: {[k: string]: string} = {
-  // The following values are here for cross-browser compatibility and to match the W3C standard
-  // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
-  '\b': 'Backspace',
-  '\t': 'Tab',
-  '\x7F': 'Delete',
-  '\x1B': 'Escape',
-  'Del': 'Delete',
+/**
+ * Normalization of deprecated HTML5 `key` values.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#Key_names
+ */
+const _normalizeKey: {[key: string]: string} = {
   'Esc': 'Escape',
+  'Spacebar': ' ',
   'Left': 'ArrowLeft',
-  'Right': 'ArrowRight',
   'Up': 'ArrowUp',
+  'Right': 'ArrowRight',
   'Down': 'ArrowDown',
+  'Del': 'Delete',
+  'Win': 'OS',
   'Menu': 'ContextMenu',
+  'Apps': 'ContextMenu',
   'Scroll': 'ScrollLock',
-  'Win': 'OS'
+  'MozPrintableKey': 'Unidentified',
 };
 
-// There is a bug in Chrome for numeric keypad keys:
-// https://code.google.com/p/chromium/issues/detail?id=155654
-// 1, 2, 3 ... are reported as A, B, C ...
-const _chromeNumKeyPadMap = {
-  'A': '1',
-  'B': '2',
-  'C': '3',
-  'D': '4',
-  'E': '5',
-  'F': '6',
-  'G': '7',
-  'H': '8',
-  'I': '9',
-  'J': '*',
-  'K': '+',
-  'M': '-',
-  'N': '.',
-  'O': '/',
-  '\x60': '0',
-  '\x90': 'NumLock'
+/**
+ * Translation from legacy `keyCode` to HTML5 `key`.
+ * Only special keys supported, all others depend on keyboard layout or browser
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#Key_names
+ */
+const _keyCodeDictionary: {[keyCode: number]: string} = {
+  8: 'Backspace',
+  9: 'Tab',
+  12: 'Clear',
+  13: 'Enter',
+  16: 'Shift',
+  17: 'Control',
+  18: 'Alt',
+  19: 'Pause',
+  20: 'CapsLock',
+  27: 'Escape',
+  32: ' ',
+  33: 'PageUp',
+  34: 'PageDown',
+  35: 'End',
+  36: 'Home',
+  37: 'ArrowLeft',
+  38: 'ArrowUp',
+  39: 'ArrowRight',
+  40: 'ArrowDown',
+  45: 'Insert',
+  46: 'Delete',
+  112: 'F1',
+  113: 'F2',
+  114: 'F3',
+  115: 'F4',
+  116: 'F5',
+  117: 'F6',
+  118: 'F7',
+  119: 'F8',
+  120: 'F9',
+  121: 'F10',
+  122: 'F11',
+  123: 'F12',
+  144: 'NumLock',
+  145: 'ScrollLock',
+  224: 'Meta',
 };
 
 /**
@@ -307,28 +326,37 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   adoptNode(node: Node): any { return document.adoptNode(node); }
   getHref(el: Element): string { return (<any>el).href; }
 
+  /**
+   * @param {any} event Native browser event.
+   * @return {string} Normalized `key` property.
+   */
   getEventKey(event: any): string {
-    let key = event.key;
-    if (isBlank(key)) {
-      key = event.keyIdentifier;
-      // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-      // Safari cf
-      // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-      if (isBlank(key)) {
-        return 'Unidentified';
-      }
-      if (key.startsWith('U+')) {
-        key = String.fromCharCode(parseInt(key.substring(2), 16));
-        if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
-          // There is a bug in Chrome for numeric keypad keys:
-          // https://code.google.com/p/chromium/issues/detail?id=155654
-          // 1, 2, 3 ... are reported as A, B, C ...
-          key = (_chromeNumKeyPadMap as any)[key];
-        }
+    if (event.key) {
+      // Normalize inconsistent values reported by browsers due to
+      // implementations of a working draft specification.
+
+      // FireFox implements `key` but returns `MozPrintableKey` for all
+      // printable characters (normalized to `Unidentified`), ignore it.
+      const key: string = _normalizeKey[event.key] || event.key;
+      if (key !== 'Unidentified') {
+        return key;
       }
     }
 
-    return _keyMap[key] || key;
+    // Browser does not implement `key`, polyfill as much of it as we can.
+    if (event.type === 'keypress') {
+      const charCode: number = getEventCharCode(event);
+
+      // The enter-key is technically both printable and non-printable and can
+      // thus be captured by `keypress`, no other non-printable key should.
+      return charCode === 13 ? 'Enter' : String.fromCharCode(charCode);
+    }
+    if (event.type === 'keydown' || event.type === 'keyup') {
+      // While user keyboard layout determines the actual meaning of each
+      // `keyCode` value, almost all function keys have a universal value.
+      return _keyCodeDictionary[event.keyCode] || 'Unidentified';
+    }
+    return '';
   }
   getGlobalEventTarget(target: string): EventTarget {
     if (target === 'window') {
@@ -412,4 +440,39 @@ export function parseCookieValue(cookieStr: string, name: string): string {
     }
   }
   return null;
+}
+
+/**
+ * `charCode` represents the actual "character code" and is safe to use with
+ * `String.fromCharCode`. As such, only keys that correspond to printable
+ * characters produce a valid `charCode`, the only exception to this is Enter.
+ * The Tab-key is considered non-printable and does not have a `charCode`,
+ * presumably because it does not produce a tab-character in browsers.
+ *
+ * @param {KeyboardEvent} event Native browser event.
+ * @return {number} Normalized `charCode` property.
+ */
+export function getEventCharCode(event: KeyboardEvent): number {
+  let charCode: number;
+  const keyCode: number = event.keyCode;
+
+  if ('charCode' in event) {
+    charCode = event.charCode;
+
+    // FF does not set `charCode` for the Enter-key, check against `keyCode`.
+    if (charCode === 0 && keyCode === 13) {
+      charCode = 13;
+    }
+  } else {
+    // IE8 does not implement `charCode`, but `keyCode` has the correct value.
+    charCode = keyCode;
+  }
+
+  // Some non-printable keys are reported in `charCode`/`keyCode`, discard them.
+  // Must not discard the (non-)printable Enter-key.
+  if (charCode >= 32 || charCode === 13) {
+    return charCode;
+  }
+
+  return 0;
 }
