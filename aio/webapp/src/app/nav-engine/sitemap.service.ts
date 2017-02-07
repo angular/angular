@@ -8,9 +8,9 @@ import 'rxjs/add/operator/map';
 import { DocMetadata } from './doc.model';
 
 const siteMap: DocMetadata[] = [
-  { 'title': 'Home', 'url': 'assets/documents/home.html', id: 'home'},
-  { 'title': 'Features', 'url': 'assets/documents/features.html', id: 'features'},
-  { 'title': 'News', 'url': 'assets/documents/news.html', id: 'news'}
+  { 'title': 'Home', 'url': 'content/documents/home.html', id: 'home'},
+  { 'title': 'Features', 'url': 'content/documents/features.html', id: 'features'},
+  { 'title': 'News', 'url': 'content/documents/news.html', id: 'news'}
 ];
 
 @Injectable()
@@ -32,7 +32,7 @@ export class SiteMapService {
     return {
       id,
       title: id,
-      url: `assets/documents/${filename}${filename.endsWith('/') ? 'index' : ''}.html`
+      url: `content/documents/${filename}${filename.endsWith('/') ? 'index' : ''}.html`
     } as DocMetadata;
   }
 }

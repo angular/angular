@@ -1,7 +1,7 @@
 export interface DocMetadata {
   id: string;    // 'home'
   title: string; // 'Home'
-  url: string;   // 'assets/documents/home.html'
+  url: string;   // 'content/documents/home.html'
 }
 
 export interface Doc {

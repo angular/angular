@@ -13,7 +13,7 @@ const fakeDoc: Doc = {
   metadata: {
     id: 'fake',
     title: 'All about the fake',
-    url: 'assets/documents/fake.html'
+    url: 'content/documents/fake.html'
   },
   content: 'fake content'
 };
@@ -27,7 +27,7 @@ describe('NavEngine', () => {
       metadata: {
         id: 'fake',
         title: 'All about the fake',
-        url: 'assets/documents/fake.html'
+        url: 'content/documents/fake.html'
       },
       content: 'fake content'
     };

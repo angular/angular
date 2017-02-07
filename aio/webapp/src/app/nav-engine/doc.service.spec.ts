@@ -23,7 +23,7 @@ describe('DocService', () => {
     this.metadata = {
       id: 'fake',
       title: 'All about the fake',
-      url: 'assets/documents/fake.html'
+      url: 'content/documents/fake.html'
     };
 
     loggerSpy = jasmine.createSpyObj('logger', ['log', 'warn', 'error']);
