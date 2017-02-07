@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SyntaxError} from '@angular/compiler';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
