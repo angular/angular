@@ -41,22 +41,9 @@ export function bindAction(selector: string, callback: () => void) {
 
 export function profile(create: () => void, destroy: () => void, name: string) {
   return function() {
-    window.console.profile(name + ' w GC');
+    window.console.profile(name);
     let duration = 0;
     let count = 0;
-    while (count++ < 150) {
-      (<any>window)['gc']();
-      const start = window.performance.now();
-      create();
-      duration += window.performance.now() - start;
-      destroy();
-    }
-    window.console.profileEnd();
-    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
-
-    window.console.profile(name + ' w/o GC');
-    duration = 0;
-    count = 0;
     while (count++ < 150) {
       const start = window.performance.now();
       create();
