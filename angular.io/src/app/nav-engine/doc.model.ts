@@ -6,5 +6,5 @@ export interface DocMetadata {
 
 export interface Doc {
   metadata: DocMetadata;
-  content?: string;
+  content: string;
 }

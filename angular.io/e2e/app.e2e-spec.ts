@@ -4,8 +4,9 @@ describe('site App', function() {
   let page: SitePage;
 
   beforeAll(done => {
-    // Hack:  CI has been failing on first test.
-    // Apparently needs to be primed with a browser wake up call
+    // Hack:  CI has been failing on first test so
+    // buying time by giving the browser a wake-up call.
+    // Todo:  Find and fix the root cause for flakes.
     new SitePage().navigateTo().then(done);
   });
 

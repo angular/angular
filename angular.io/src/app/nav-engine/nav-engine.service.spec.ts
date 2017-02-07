@@ -18,10 +18,8 @@ const fakeDoc: Doc = {
   content: 'fake content'
 };
 
-
 describe('NavEngine', () => {
 
-  let docService: DocService;
   let navEngine: NavEngine;
 
   beforeEach(() => {
@@ -34,10 +32,8 @@ describe('NavEngine', () => {
       content: 'fake content'
     };
 
-    docService = new DocService(null, null);
-
-    spyOn(docService, 'getDoc').and
-      .callFake((id: string) => of(this.fakeDoc).delay(0));
+    const docService: any = jasmine.createSpyObj('docService', ['getDoc']);
+    docService.getDoc.and.callFake((id: string) => of(this.fakeDoc).delay(0));
 
     navEngine = new NavEngine(docService);
   });

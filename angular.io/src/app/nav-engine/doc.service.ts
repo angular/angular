@@ -6,7 +6,9 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 
 import { Doc, DocMetadata } from './doc.model';
-import { FileService } from './file.service';
+import { DocFetchingService } from './doc-fetching.service';
+import { Logger } from '../logger.service';
+
 import { SiteMapService } from './sitemap.service';
 
 interface DocCache {
@@ -18,13 +20,20 @@ export class DocService {
   private cache: DocCache = {};
 
   constructor(
-    private siteMapService: SiteMapService,
-    private fileService: FileService) { }
+    private fileService: DocFetchingService,
+    private logger: Logger,
+    private siteMapService: SiteMapService
+    ) { }
 
+  /**
+   * Get document for documentId, from cache if found else server.
+   * Pass server errors along to caller
+   * Caller should interpret empty string content as "404 - file not found"
+   */
   getDoc(documentId: string): Observable<Doc> {
     let doc = this.cache[documentId];
     if (doc) {
-      console.log('returned cached content for ', doc.metadata);
+      this.logger.log('returned cached content for ', doc.metadata);
       return of(cloneDoc(doc));
     }
 
@@ -34,7 +43,7 @@ export class DocService {
 
         return this.fileService.getFile(metadata.url)
           .map(content => {
-            console.log('fetched content for', metadata);
+            this.logger.log('fetched content for', metadata);
             doc = { metadata, content };
             this.cache[metadata.id] = doc;
             return cloneDoc(doc);

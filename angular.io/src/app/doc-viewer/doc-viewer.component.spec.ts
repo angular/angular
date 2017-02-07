@@ -135,7 +135,7 @@ describe('DocViewerComponent', () => {
   });
 
   it(('should display nothing when set DocViewer.doc to doc w/o content'), () => {
-    component.docViewer.doc = { metadata: mockDocMetadata };
+    component.docViewer.doc = { metadata: mockDocMetadata, content: '' };
     expect(docViewerEl.innerHTML).toBe('');
   });
 
@@ -149,7 +149,7 @@ describe('DocViewerComponent', () => {
     const content = '<p>Howdy, doc viewer</p>';
     component.docViewer.doc = { metadata: mockDocMetadata, content };
     fixture.detectChanges();
-    component.docViewer.doc = { metadata: mockDocMetadata };
+    component.docViewer.doc = { metadata: mockDocMetadata, content: '' };
     expect(docViewerEl.innerHTML).toEqual('');
   });
 

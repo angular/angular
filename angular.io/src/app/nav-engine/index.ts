@@ -1,5 +1,5 @@
 import { DocService } from './doc.service';
-import { FileService } from './file.service';
+import { DocFetchingService } from './doc-fetching.service';
 import { NavEngine } from './nav-engine.service';
 import { NavLinkDirective } from './nav-link.directive';
 import { SiteMapService } from './sitemap.service';
@@ -12,7 +12,7 @@ export const navDirectives = [
 
 export const navProviders = [
   DocService,
-  FileService,
+  DocFetchingService,
   NavEngine,
   SiteMapService,
 ];

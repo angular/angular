@@ -23,7 +23,7 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
 
-  private currentDoc: LiveDoc;
+  private displayedDoc: DisplayedDoc;
   private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
   private hostElement: HTMLElement;
 
@@ -59,7 +59,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    */
   private build(doc: Doc) {
 
-    const liveDoc = this.currentDoc = new LiveDoc(doc);
+    const displayedDoc = this.displayedDoc = new DisplayedDoc(doc);
 
     // security: the doc.content is always authored by the documentation team
     // and is considered to be safe
@@ -77,20 +77,20 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
         // security: the source of this innerHTML is always authored by the documentation team
         // and is considered to be safe
         element[contentPropertyName] = element.innerHTML;
-        liveDoc.addEmbeddedComponent(factory.create(this.injector, [], element));
+        displayedDoc.addEmbeddedComponent(factory.create(this.injector, [], element));
       }
     });
   }
 
   ngDoCheck() {
-    if (this.currentDoc) { this.currentDoc.detectChanges(); }
+    if (this.displayedDoc) { this.displayedDoc.detectChanges(); }
   }
 
   ngOnDestroy() {
     // destroy components otherwise there will be memory leaks
-    if (this.currentDoc) {
-      this.currentDoc.destroy();
-      this.currentDoc = undefined;
+    if (this.displayedDoc) {
+      this.displayedDoc.destroy();
+      this.displayedDoc = undefined;
     }
   }
 
@@ -103,7 +103,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   }
 }
 
-class LiveDoc {
+class DisplayedDoc {
 
   metadata: DocMetadata;
 
