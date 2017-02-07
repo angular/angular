@@ -2246,14 +2246,14 @@ describe('Integration', () => {
          const fixture = TestBed.createComponent(ComponentWithRouterLink);
          router.navigateByUrl('/team');
          fixture.detectChanges();
-         tick(10);
+         fixture.detectChanges();
 
          const paragraph = fixture.nativeElement.querySelector('p');
          expect(paragraph.textContent).toEqual('true');
 
          router.navigateByUrl('/otherteam');
          fixture.detectChanges();
-         tick(10);
+         fixture.detectChanges();
 
          expect(paragraph.textContent).toEqual('false');
        }));
