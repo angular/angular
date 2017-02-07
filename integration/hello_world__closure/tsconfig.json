@@ -11,7 +11,7 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "experimentalDecorators": true,
-    "outDir": "built",
+    "outDir": "built/src",
     "declaration": true,
     "types": []
   },
@@ -21,6 +21,6 @@
     "node_modules",
     "built",
     "dist",
-    "src/main-jit.ts"
+    "e2e"
   ]
 }
