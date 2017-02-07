@@ -19,7 +19,7 @@ import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {SyncAsyncResult, SyntaxError} from './util';
+import {SyncAsyncResult, syntaxError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   componentType: any;
@@ -67,19 +67,19 @@ export class DirectiveNormalizer {
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
     if (prenormData.template != null) {
       if (typeof prenormData.template !== 'string') {
-        throw new SyntaxError(
+        throw syntaxError(
             `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
       }
       normalizedTemplateSync = this.normalizeTemplateSync(prenormData);
       normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
     } else if (prenormData.templateUrl) {
       if (typeof prenormData.templateUrl !== 'string') {
-        throw new SyntaxError(
+        throw syntaxError(
             `The templateUrl specified for component ${stringify(prenormData.componentType)} is not a string`);
       }
       normalizedTemplateAsync = this.normalizeTemplateAsync(prenormData);
     } else {
-      throw new SyntaxError(
+      throw syntaxError(
           `No template specified for component ${stringify(prenormData.componentType)}`);
     }
 
@@ -113,7 +113,7 @@ export class DirectiveNormalizer {
         template, stringify(prenomData.componentType), true, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
-      throw new SyntaxError(`Template parse errors:\n${errorString}`);
+      throw syntaxError(`Template parse errors:\n${errorString}`);
     }
 
     const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({

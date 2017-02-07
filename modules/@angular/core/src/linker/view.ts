@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
+import {getType} from '../errors';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {DirectRenderer, RenderComponentType, Renderer} from '../render/api';
@@ -17,7 +19,7 @@ import {AnimationViewContext} from './animation_view_context';
 import {ComponentRef} from './component_factory';
 import {DebugContext, StaticNodeDebugInfo} from './debug_context';
 import {ElementInjector} from './element_injector';
-import {ExpressionChangedAfterItHasBeenCheckedError, ViewDestroyedError, ViewWrappedError} from './errors';
+import {expressionChangedAfterItHasBeenCheckedError, viewDestroyedError, viewWrappedError} from './errors';
 import {ViewContainer} from './view_container';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
@@ -360,7 +362,7 @@ export abstract class AppView<T> {
     return cb;
   }
 
-  throwDestroyedError(details: string): void { throw new ViewDestroyedError(details); }
+  throwDestroyedError(details: string): void { throw viewDestroyedError(details); }
 }
 
 export class DebugAppView<T> extends AppView<T> {
@@ -445,12 +447,12 @@ export class DebugAppView<T> extends AppView<T> {
   }
 
   private _rethrowWithContext(e: any) {
-    if (!(e instanceof ViewWrappedError)) {
-      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedError)) {
+    if (!(getType(e) == viewWrappedError)) {
+      if (!(getType(e) == expressionChangedAfterItHasBeenCheckedError)) {
         this.cdMode = ChangeDetectorStatus.Errored;
       }
       if (isPresent(this._currentDebugContext)) {
-        throw new ViewWrappedError(e, this._currentDebugContext);
+        throw viewWrappedError(e, this._currentDebugContext);
       }
     }
   }

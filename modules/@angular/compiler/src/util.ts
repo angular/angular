@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseError} from './facade/errors';
 import {isPrimitive, isStrictStringMap} from './facade/lang';
 export const MODULE_SUFFIX = '';
 
@@ -79,4 +78,14 @@ export class SyncAsyncResult<T> {
   }
 }
 
-export class SyntaxError extends BaseError {}
+export function syntaxError(msg: string): Error {
+  const error = Error(msg);
+  (error as any)[ERROR_SYNTAX_ERROR] = true;
+  return error;
+}
+
+const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
+
+export function isSyntaxError(error: Error): boolean {
+  return (error as any)[ERROR_SYNTAX_ERROR];
+}

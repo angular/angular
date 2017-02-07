@@ -12,7 +12,7 @@ import {Type} from '../type';
 import {resolveForwardRef} from './forward_ref';
 import {Host, Inject, Optional, Self, SkipSelf} from './metadata';
 import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
-import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_errors';
+import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 
 
@@ -154,7 +154,7 @@ export function mergeResolvedReflectiveProviders(
     const existing = normalizedProvidersMap.get(provider.key.id);
     if (existing) {
       if (provider.multiProvider !== existing.multiProvider) {
-        throw new MixingMultiProvidersWithRegularProvidersError(existing, provider);
+        throw mixingMultiProvidersWithRegularProvidersError(existing, provider);
       }
       if (provider.multiProvider) {
         for (let j = 0; j < provider.resolvedFactories.length; j++) {
@@ -189,7 +189,7 @@ function _normalizeProviders(providers: Provider[], res: Provider[]): Provider[]
       _normalizeProviders(b, res);
 
     } else {
-      throw new InvalidProviderError(b);
+      throw invalidProviderError(b);
     }
   });
 
@@ -211,7 +211,7 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
 
   if (!params) return [];
   if (params.some(p => p == null)) {
-    throw new NoAnnotationError(typeOrFunc, params);
+    throw noAnnotationError(typeOrFunc, params);
   }
   return params.map(p => _extractToken(typeOrFunc, p, params));
 }
@@ -253,7 +253,7 @@ function _extractToken(
   if (token != null) {
     return _createDependency(token, optional, visibility);
   } else {
-    throw new NoAnnotationError(typeOrFunc, params);
+    throw noAnnotationError(typeOrFunc, params);
   }
 }
 

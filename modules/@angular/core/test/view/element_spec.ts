@@ -7,6 +7,7 @@
  */
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {getDebugContext} from '@angular/core/src/errors';
 import {BindingType, DebugContext, NodeDef, NodeFlags, RootData, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, checkAndUpdateView, checkNoChangesView, checkNodeDynamic, checkNodeInline, createRootView, destroyView, elementDef, rootRenderNodes, setCurrentNode, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -363,7 +364,7 @@ function defineTests(config: {directDom: boolean, viewFlags: number}) {
           }
           expect(err).toBeTruthy();
           expect(err.message).toBe('Test');
-          const debugCtx = <DebugContext>err.context;
+          const debugCtx = getDebugContext(err);
           expect(debugCtx.view).toBe(view);
           expect(debugCtx.nodeIndex).toBe(0);
         });

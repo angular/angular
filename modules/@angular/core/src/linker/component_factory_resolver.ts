@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
@@ -14,19 +13,23 @@ import {ComponentFactory} from './component_factory';
 
 
 
-/**
- * @stable
- */
-export class NoComponentFactoryError extends BaseError {
-  constructor(public component: Function) {
-    super(
-        `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
-  }
+export function noComponentFactoryError(component: Function) {
+  const error = Error(
+      `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
+  (error as any)[ERROR_COMPONENT] = component;
+  return error;
 }
+
+const ERROR_COMPONENT = 'ngComponent';
+
+export function getComponent(error: Error): Type<any> {
+  return (error as any)[ERROR_COMPONENT];
+}
+
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
-    throw new NoComponentFactoryError(component);
+    throw noComponentFactoryError(component);
   }
 }
 

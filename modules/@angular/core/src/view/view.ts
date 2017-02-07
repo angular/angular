@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {RenderComponentType, Renderer} from '../render/api';
-
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
