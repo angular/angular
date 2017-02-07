@@ -1,8 +1,8 @@
-{% if doc.metadataDoc and doc.metadataDoc.members.length %}
+{% if doc.members.length %}
 <section class="meta-data">
   <h2>Metadata Properties</h2>
   <div class="description">
-    {% for metadata in doc.metadataDoc.members %}{% if not metadata.internal %}
+    {% for metadata in doc.members %}{% if not metadata.internal %}
     <div class="metadata-member">
       <a name="{$ metadata.name $}-anchor" class="anchor-offset"></a>
       <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ metadata.name $}') }">
