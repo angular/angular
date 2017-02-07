@@ -245,6 +245,8 @@ export class DomRenderer implements Renderer {
   setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
     if (isPresent(styleValue)) {
       (renderElement.style as any)[styleName] = stringify(styleValue);
+    } else if (styleName.startsWith('--')) {
+      (renderElement.style as any).setProperty(styleName, styleValue);
     } else {
       // IE requires '' instead of null
       // see https://github.com/angular/angular/issues/7916
