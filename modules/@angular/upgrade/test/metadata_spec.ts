@@ -13,17 +13,12 @@ import {getComponentInfo, parseFields} from '@angular/upgrade/src/metadata';
 export function main() {
   describe('upgrade metadata', () => {
     it('should extract component selector', () => {
-      expect(getComponentInfo(ElementNameComponent).selector).toEqual('elementNameDashed');
+      expect(getComponentInfo(ElementNameComponent).selector).toBe('element-name-dashed');
     });
 
 
     describe('errors', () => {
       it('should throw on missing selector', () => {
-        expect(() => getComponentInfo(AttributeNameComponent))
-            .toThrowError('Only selectors matching element names are supported, got: [attr-name]');
-      });
-
-      it('should throw on non element names', () => {
         expect(() => getComponentInfo(NoAnnotationComponent))
             .toThrowError('No Directive annotation found on NoAnnotationComponent');
       });
