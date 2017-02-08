@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "mapRoot": "./modules/@angular/compiler/",
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
