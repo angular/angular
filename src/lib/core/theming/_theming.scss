@@ -4,7 +4,7 @@
 // For a given hue in a palette, return the contrast color from the map of contrast palettes.
 // @param $color-map
 // @param $hue
-@function md-contrast($palette, $hue) {
+@function mat-contrast($palette, $hue) {
   @return map-get(map-get($palette, contrast), $hue);
 }
 
@@ -14,21 +14,21 @@
 // @param $color-map
 // @param $primary
 // @param $lighter
-@function md-palette($base-palette, $default: 500, $lighter: 100, $darker: 700) {
+@function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700) {
   $result: map_merge($base-palette, (
     default: map-get($base-palette, $default),
     lighter: map-get($base-palette, $lighter),
     darker: map-get($base-palette, $darker),
 
-    default-contrast: md-contrast($base-palette, $default),
-    lighter-contrast: md-contrast($base-palette, $lighter),
-    darker-contrast: md-contrast($base-palette, $darker)
+    default-contrast: mat-contrast($base-palette, $default),
+    lighter-contrast: mat-contrast($base-palette, $lighter),
+    darker-contrast: mat-contrast($base-palette, $darker)
   ));
 
   // For each hue in the palette, add a "-contrast" color to the map.
   @each $hue, $color in $base-palette {
     $result: map_merge($result, (
-      '#{$hue}-contrast': md-contrast($base-palette, $hue)
+      '#{$hue}-contrast': mat-contrast($base-palette, $hue)
     ));
   }
 
@@ -36,19 +36,19 @@
 }
 
 
-// Gets a color from a theme palette (the output of md-palette).
+// Gets a color from a theme palette (the output of mat-palette).
 // The hue can be one of the standard values (500, A400, etc.), one of the three preconfigured
 // hues (default, lighter, darker), or any of the aforementioned prefixed with "-contrast".
 //
-// @param $color-map The theme palette (output of md-palette).
+// @param $color-map The theme palette (output of mat-palette).
 // @param $hue The hue from the palette to use. If this is a value between 0 and 1, it will
 //     be treated as opacity.
 // @param $opacity The alpha channel value for the color.
-@function md-color($palette, $hue: default, $opacity: 1) {
+@function mat-color($palette, $hue: default, $opacity: 1) {
   // If hueKey is a number between zero and one, then it actually contains an
   // opacity value, so recall this function with the default hue and that given opacity.
   @if type-of($hue) == number and $hue >= 0 and $hue <= 1 {
-    @return md-color($palette, default, $hue);
+    @return mat-color($palette, default, $hue);
   }
 
   $color: map-get($palette, $hue);
@@ -59,26 +59,26 @@
 
 
 // Creates a container object for a light theme to be given to individual component theme mixins.
-@function md-light-theme($primary, $accent, $warn: md-palette($md-red)) {
+@function mat-light-theme($primary, $accent, $warn: mat-palette($mat-red)) {
   @return (
     primary: $primary,
     accent: $accent,
     warn: $warn,
     is-dark: false,
-    foreground: $md-light-theme-foreground,
-    background: $md-light-theme-background,
+    foreground: $mat-light-theme-foreground,
+    background: $mat-light-theme-background,
   );
 }
 
 
 // Creates a container object for a dark theme to be given to individual component theme mixins.
-@function md-dark-theme($primary, $accent, $warn: md-palette($md-red)) {
+@function mat-dark-theme($primary, $accent, $warn: mat-palette($mat-red)) {
   @return (
     primary: $primary,
     accent: $accent,
     warn: $warn,
     is-dark: true,
-    foreground: $md-dark-theme-foreground,
-    background: $md-dark-theme-background,
+    foreground: $mat-dark-theme-foreground,
+    background: $mat-dark-theme-background,
   );
 }

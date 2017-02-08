@@ -24,7 +24,10 @@ export class MdDialogClose {
  * Title of a dialog element. Stays fixed to the top of the dialog when scrolling.
  */
 @Directive({
-  selector: '[md-dialog-title], [mat-dialog-title]'
+  selector: '[md-dialog-title], [mat-dialog-title]',
+  host: {
+    '[class.mat-dialog-title]': 'true'
+  }
 })
 export class MdDialogTitle { }
 
@@ -33,7 +36,10 @@ export class MdDialogTitle { }
  * Scrollable content container of a dialog.
  */
 @Directive({
-  selector: '[md-dialog-content], md-dialog-content, [mat-dialog-content], mat-dialog-content'
+  selector: '[md-dialog-content], md-dialog-content, [mat-dialog-content], mat-dialog-content',
+  host: {
+    '[class.mat-dialog-content]': 'true'
+  }
 })
 export class MdDialogContent { }
 
@@ -43,6 +49,9 @@ export class MdDialogContent { }
  * Stays fixed to the bottom when scrolling.
  */
 @Directive({
-  selector: '[md-dialog-actions], md-dialog-actions, [mat-dialog-actions], mat-dialog-actions'
+  selector: '[md-dialog-actions], md-dialog-actions, [mat-dialog-actions], mat-dialog-actions',
+  host: {
+    '[class.mat-dialog-actions]': 'true'
+  }
 })
 export class MdDialogActions { }

@@ -58,7 +58,7 @@ export class RippleRenderer {
   createBackgroundIfNeeded() {
     if (!this._backgroundDiv) {
       this._backgroundDiv = document.createElement('div');
-      this._backgroundDiv.classList.add('md-ripple-background');
+      this._backgroundDiv.classList.add('mat-ripple-background');
       this._rippleElement.appendChild(this._backgroundDiv);
     }
   }
@@ -129,7 +129,7 @@ export class RippleRenderer {
 
     const rippleDiv = document.createElement('div');
     this._rippleElement.appendChild(rippleDiv);
-    rippleDiv.classList.add('md-ripple-foreground');
+    rippleDiv.classList.add('mat-ripple-foreground');
     rippleDiv.style.left = `${offsetX - maxRadius}px`;
     rippleDiv.style.top = `${offsetY - maxRadius}px`;
     rippleDiv.style.width = `${2 * maxRadius}px`;
@@ -148,7 +148,7 @@ export class RippleRenderer {
     // Store the opacity to prevent this line as being seen as a no-op by optimizers.
     this._opacity = window.getComputedStyle(rippleDiv).opacity;
 
-    rippleDiv.classList.add('md-ripple-fade-in');
+    rippleDiv.classList.add('mat-ripple-fade-in');
     // Clearing the transform property causes the ripple to animate to its full size.
     rippleDiv.style.transform = '';
     const ripple = new ForegroundRipple(rippleDiv);
@@ -173,8 +173,8 @@ export class RippleRenderer {
    * @param ripple Ripple to be faded out.
    */
   fadeOutForegroundRipple(ripple: Element) {
-    ripple.classList.remove('md-ripple-fade-in');
-    ripple.classList.add('md-ripple-fade-out');
+    ripple.classList.remove('mat-ripple-fade-in');
+    ripple.classList.add('mat-ripple-fade-out');
   }
 
   /**
@@ -192,7 +192,7 @@ export class RippleRenderer {
    * @param color New background color for the ripple.
    */
   fadeInRippleBackground(color: string) {
-    this._backgroundDiv.classList.add('md-ripple-active');
+    this._backgroundDiv.classList.add('mat-ripple-active');
     // If color is not set, this will default to the background color defined in CSS.
     this._backgroundDiv.style.backgroundColor = color;
   }
@@ -200,7 +200,7 @@ export class RippleRenderer {
   /** Fades out the ripple background. */
   fadeOutRippleBackground() {
     if (this._backgroundDiv) {
-      this._backgroundDiv.classList.remove('md-ripple-active');
+      this._backgroundDiv.classList.remove('mat-ripple-active');
     }
   }
 }

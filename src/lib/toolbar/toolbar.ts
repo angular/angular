@@ -13,7 +13,10 @@ import {CompatibilityModule} from '../core';
 
 
 @Directive({
-  selector: 'md-toolbar-row, mat-toolbar-row'
+  selector: 'md-toolbar-row, mat-toolbar-row',
+  host: {
+    '[class.mat-toolbar-row]': 'true',
+  },
 })
 export class MdToolbarRow {}
 
@@ -23,7 +26,8 @@ export class MdToolbarRow {}
   templateUrl: 'toolbar.html',
   styleUrls: ['toolbar.css'],
   host: {
-    role: 'toolbar'
+    '[class.mat-toolbar]': 'true',
+    'role': 'toolbar'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
@@ -52,7 +56,7 @@ export class MdToolbar {
 
   private _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${color}`, isAdd);
+      this.renderer.setElementClass(this.elementRef.nativeElement, `mat-${color}`, isAdd);
     }
   }
 

@@ -43,8 +43,8 @@ if (!$attrs['tabindex']) {
 For example, rather than doing this:
 ```html
 <md-button>Basic button</md-button>
-<md-button class="md-fab">FAB</md-button>
-<md-button class="md-icon-button">pony</md-button>
+<md-button class="mat-fab">FAB</md-button>
+<md-button class="mat-icon-button">pony</md-button>
 ```
 
 do this:
@@ -192,13 +192,13 @@ code organization.** This will allow users to much more easily override styles.
 
 For example, rather than doing this:
 ```scss
-md-calendar {
+.mat-calendar {
   display: block;
 
-  .md-month {
+  .mat-month {
     display: inline-block;
 
-    .md-date.md-selected {
+    .mat-date.mat-selected {
       font-weight: bold;
     }
   }
@@ -207,15 +207,15 @@ md-calendar {
 
 do this:
 ```scss
-md-calendar {
+.mat-calendar {
   display: block;
 }
 
-.md-calendar-month {
+.mat-calendar-month {
   display: inline-block;
 }
 
-.md-calendar-date.md-selected {
+.mat-calendar-date.mat-selected {
   font-weight: bold;
 }
 ```
@@ -260,11 +260,11 @@ This is a low-effort task that makes a big difference for low-vision users. Exam
 When it is not super obvious, include a brief description of what a class represents. For example:
 ```scss
 // The calendar icon button used to open the calendar pane.
-.md-datepicker-button { ... }
+.mat-datepicker-button { ... }
 
 // Floating pane that contains the calendar at the bottom of the input.
-.md-datepicker-calendar-pane { ... }
+.mat-datepicker-calendar-pane { ... }
 
 // Portion of the floating panel that sits, invisibly, on top of the input.
-.md-datepicker-input-mask { }
+.mat-datepicker-input-mask { }
 ``` 

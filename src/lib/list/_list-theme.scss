@@ -2,27 +2,27 @@
 @import '../core/theming/theming';
 
 
-@mixin md-list-theme($theme) {
+@mixin mat-list-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  md-list, md-nav-list {
-    md-list-item, a[md-list-item] {
-      color: md-color($foreground, base);
+  .mat-list, .mat-nav-list {
+    .mat-list-item {
+      color: mat-color($foreground, base);
     }
 
-    [md-subheader] {
-      color: md-color($foreground, secondary-text);
+    .mat-subheader {
+      color: mat-color($foreground, secondary-text);
     }
   }
 
-  md-divider {
-    border-top-color: md-color($foreground, divider);
+  .mat-divider {
+    border-top-color: mat-color($foreground, divider);
   }
 
-  md-nav-list .md-list-item {
-    &:hover, &.md-list-item-focus {
-      background: md-color($background, 'hover');
+  .mat-nav-list .mat-list-item-content {
+    &:hover, &.mat-list-item-focus {
+      background: mat-color($background, 'hover');
     }
   }
 }

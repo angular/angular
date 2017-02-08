@@ -125,10 +125,10 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
    * folds out from the correct direction.
    */
   setPositionClasses(posX: MenuPositionX, posY: MenuPositionY): void {
-    this._classList['md-menu-before'] = posX == 'before';
-    this._classList['md-menu-after'] = posX == 'after';
-    this._classList['md-menu-above'] = posY == 'above';
-    this._classList['md-menu-below'] = posY == 'below';
+    this._classList['mat-menu-before'] = posX == 'before';
+    this._classList['mat-menu-after'] = posX == 'after';
+    this._classList['mat-menu-above'] = posY == 'above';
+    this._classList['mat-menu-below'] = posY == 'below';
   }
 
 }

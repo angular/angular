@@ -10,7 +10,7 @@ describe('tabs', () => {
     beforeEach(() => {
       browser.get('/tabs');
       tabGroup = element(by.css('md-tab-group'));
-      tabLabels = element.all(by.css('.md-tab-label'));
+      tabLabels = element.all(by.css('.mat-tab-label'));
       tabBodies = element.all(by.css('md-tab-body'));
     });
 
@@ -67,12 +67,12 @@ function getFocusStates(elements: ElementArrayFinder) {
 
 /** Returns an array of true/false that represents the active states for the provided elements. */
 function getLabelActiveStates(elements: ElementArrayFinder) {
-  return getClassStates(elements, 'md-tab-label-active');
+  return getClassStates(elements, 'mat-tab-label-active');
 }
 
 /** Returns an array of true/false that represents the active states for the provided elements */
 function getBodyActiveStates(elements: ElementArrayFinder) {
-  return getClassStates(elements, 'md-tab-body-active');
+  return getClassStates(elements, 'mat-tab-body-active');
 }
 
 /**

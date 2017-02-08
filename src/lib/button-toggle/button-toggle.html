@@ -1,5 +1,5 @@
-<label [attr.for]="inputId" class="md-button-toggle-label">
-  <input #input class="md-button-toggle-input cdk-visually-hidden"
+<label [attr.for]="inputId" class="mat-button-toggle-label">
+  <input #input class="mat-button-toggle-input cdk-visually-hidden"
          [type]="_type"
          [id]="inputId"
          [checked]="checked"
@@ -8,7 +8,7 @@
          (change)="_onInputChange($event)"
          (click)="_onInputClick($event)">
 
-  <div class="md-button-toggle-label-content">
+  <div class="mat-button-toggle-label-content">
     <ng-content></ng-content>
   </div>
 </label>

@@ -54,7 +54,7 @@
         <code>(focus)</code> event to run custom code.
       </p>
 
-      <md-chip-list class="md-chip-list-stacked">
+      <md-chip-list class="mat-chip-list-stacked">
         <md-chip *ngFor="let aColor of availableColors"
                  (focus)="color = aColor.color" color="{{aColor.color}}" selected="true">
           {{aColor.name}}

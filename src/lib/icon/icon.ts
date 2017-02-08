@@ -67,6 +67,7 @@ export class MdIconInvalidNameError extends MdError {
   styleUrls: ['icon.css'],
   host: {
     'role': 'img',
+    '[class.mat-icon]': 'true',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -111,7 +112,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
+      this._renderer.setElementClass(this._elementRef.nativeElement, `mat-${color}`, isAdd);
     }
   }
 

@@ -181,17 +181,17 @@ describe('MdRadio', () => {
     it('should focus individual radio buttons', () => {
       let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
 
-      expect(nativeRadioInput.classList).not.toContain('md-radio-focused');
+      expect(nativeRadioInput.classList).not.toContain('mat-radio-focused');
 
       dispatchEvent('focus', nativeRadioInput);
       fixture.detectChanges();
 
-      expect(radioNativeElements[0].classList).toContain('md-radio-focused');
+      expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
 
       dispatchEvent('blur', nativeRadioInput);
       fixture.detectChanges();
 
-      expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
+      expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
     });
 
     it('should focus individual radio buttons', () => {
@@ -200,12 +200,12 @@ describe('MdRadio', () => {
       radioInstances[0].focus();
       fixture.detectChanges();
 
-      expect(radioNativeElements[0].classList).toContain('md-radio-focused');
+      expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
 
       dispatchEvent('blur', nativeRadioInput);
       fixture.detectChanges();
 
-      expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
+      expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
     });
 
     it('should update the group and radios when updating the group value', () => {

@@ -29,19 +29,19 @@ describe('MdToolbar', () => {
     testComponent.toolbarColor = 'primary';
     fixture.detectChanges();
 
-    expect(toolbarElement.classList.contains('md-primary')).toBe(true);
+    expect(toolbarElement.classList.contains('mat-primary')).toBe(true);
 
     testComponent.toolbarColor = 'accent';
     fixture.detectChanges();
 
-    expect(toolbarElement.classList.contains('md-primary')).toBe(false);
-    expect(toolbarElement.classList.contains('md-accent')).toBe(true);
+    expect(toolbarElement.classList.contains('mat-primary')).toBe(false);
+    expect(toolbarElement.classList.contains('mat-accent')).toBe(true);
 
     testComponent.toolbarColor = 'warn';
     fixture.detectChanges();
 
-    expect(toolbarElement.classList.contains('md-accent')).toBe(false);
-    expect(toolbarElement.classList.contains('md-warn')).toBe(true);
+    expect(toolbarElement.classList.contains('mat-accent')).toBe(false);
+    expect(toolbarElement.classList.contains('mat-warn')).toBe(true);
   });
 
   it('should set the toolbar role on the host', () => {

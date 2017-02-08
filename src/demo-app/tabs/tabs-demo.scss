@@ -1,7 +1,7 @@
 .demo-nav-bar {
   border: 1px solid #e0e0e0;
   margin-bottom: 40px;
-  [md-tab-nav-bar] {
+  .mat-tab-nav-bar {
     background: #f9f9f9;
   }
   sunny-routed-content,
@@ -15,15 +15,15 @@
 .demo-tab-group {
   border: 1px solid #e0e0e0;
   margin-bottom: 40px;
-  .md-tab-header {
+  .mat-tab-header {
     background: #f9f9f9;
   }
-  .md-tab-body-content {
+  .mat-tab-body-content {
     padding: 12px;
   }
 }
 
-tabs-demo md-card {
+tabs-demo .mat-card {
   width: 160px;
 
 }
@@ -32,22 +32,22 @@ tabs-demo md-card {
   display: flex;
   width: 100%;
 
-  md-tab-group {
+  .mat-tab-group {
     min-width: 200px;
     margin-bottom: 0;
     flex-grow: 1;
   }
 
-  md-card {
+  .mat-card {
     min-width: 160px;
     margin-right: 16px;
 
-    md-checkbox {
+    .mat-checkbox {
       display: block;
       margin-top: 8px;
     }
 
-    md-input-container {
+    .mat-input-container {
       width: 100px;
     }
 

@@ -25,7 +25,7 @@ import 'rxjs/add/operator/first';
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],
   host: {
-    'class': 'md-dialog-container',
+    '[class.mat-dialog-container]': 'true',
     '[attr.role]': 'dialogConfig?.role',
     '(keydown.escape)': 'handleEscapeKey()',
   },

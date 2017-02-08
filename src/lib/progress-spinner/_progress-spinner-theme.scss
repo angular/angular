@@ -2,22 +2,22 @@
 @import '../core/theming/theming';
 
 
-@mixin md-progress-spinner-theme($theme) {
+@mixin mat-progress-spinner-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  md-progress-spinner, md-progress-circle, md-spinner {
+  .mat-progress-spinner, .mat-progress-circle, .mat-spinner {
     path {
-      stroke: md-color($primary, 600);
+      stroke: mat-color($primary, 600);
     }
 
-    &.md-accent path {
-      stroke: md-color($accent, 600);
+    &.mat-accent path {
+      stroke: mat-color($accent, 600);
     }
 
-    &.md-warn path {
-      stroke: md-color($warn, 600);
+    &.mat-warn path {
+      stroke: mat-color($warn, 600);
     }
   }
 }

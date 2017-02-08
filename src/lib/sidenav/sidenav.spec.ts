@@ -57,7 +57,7 @@ describe('MdSidenav', () => {
       expect(testComponent.closeCount).toBe(0);
 
       let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
-      let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
+      let sidenavBackdropElement = fixture.debugElement.query(By.css('.mat-sidenav-backdrop'));
       expect(getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('visible');
       expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility)
         .toEqual('visible');
@@ -208,7 +208,7 @@ describe('MdSidenav', () => {
 
       expect(testComponent.backdropClickedCount).toBe(0);
 
-      let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
+      let sidenavBackdropElement = fixture.debugElement.query(By.css('.mat-sidenav-backdrop'));
       sidenavBackdropElement.nativeElement.click();
       fixture.detectChanges();
       tick();
@@ -300,7 +300,7 @@ describe('MdSidenav', () => {
       endSidenavTransition(fixture);
       tick();
 
-      let backdropEl = fixture.debugElement.query(By.css('.md-sidenav-backdrop')).nativeElement;
+      let backdropEl = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
       backdropEl.click();
       fixture.detectChanges();
       tick();
@@ -346,8 +346,8 @@ describe('MdSidenav', () => {
 
       let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
 
-      expect(sidenavEl.classList).toContain('md-sidenav-closed');
-      expect(sidenavEl.classList).not.toContain('md-sidenav-opened');
+      expect(sidenavEl.classList).toContain('mat-sidenav-closed');
+      expect(sidenavEl.classList).not.toContain('mat-sidenav-opened');
     });
 
     it('should correctly parse opened="true"', () => {
@@ -358,8 +358,8 @@ describe('MdSidenav', () => {
       let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
       let testComponent = fixture.debugElement.query(By.css('md-sidenav')).componentInstance;
 
-      expect(sidenavEl.classList).not.toContain('md-sidenav-closed');
-      expect(sidenavEl.classList).toContain('md-sidenav-opened');
+      expect(sidenavEl.classList).not.toContain('mat-sidenav-closed');
+      expect(sidenavEl.classList).toContain('mat-sidenav-opened');
 
       expect((testComponent as any)._toggleAnimationPromise).toBeNull();
     });
@@ -379,17 +379,17 @@ describe('MdSidenav', () => {
 
       const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
       const sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      expect(sidenavEl.classList).not.toContain('md-sidenav-invalid');
+      expect(sidenavEl.classList).not.toContain('mat-sidenav-invalid');
 
       testComponent.sidenav1Align = 'end';
       fixture.detectChanges();
 
-      expect(sidenavEl.classList).toContain('md-sidenav-invalid');
+      expect(sidenavEl.classList).toContain('mat-sidenav-invalid');
 
       testComponent.sidenav2Align = 'start';
       fixture.detectChanges();
 
-      expect(sidenavEl.classList).not.toContain('md-sidenav-invalid');
+      expect(sidenavEl.classList).not.toContain('mat-sidenav-invalid');
     });
   });
 

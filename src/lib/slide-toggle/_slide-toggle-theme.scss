@@ -2,38 +2,38 @@
 @import '../core/theming/theming';
 
 
-@mixin _md-slide-toggle-checked($palette, $thumb-checked-hue) {
+@mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
   // Do not apply the checked colors if the toggle is disabled, because the specificity would be to high for
   // the disabled styles.
-  &.md-checked:not(.md-disabled) {
-    .md-slide-toggle-thumb {
-      background-color: md-color($palette, $thumb-checked-hue);
+  &.mat-checked:not(.mat-disabled) {
+    .mat-slide-toggle-thumb {
+      background-color: mat-color($palette, $thumb-checked-hue);
     }
 
-    .md-slide-toggle-bar {
-      background-color: md-color($palette, $thumb-checked-hue, 0.5);
+    .mat-slide-toggle-bar {
+      background-color: mat-color($palette, $thumb-checked-hue, 0.5);
     }
   }
 }
 
 // TODO(jelbourn): remove this when the real ripple has been applied to slide-toggle.
-@mixin _md-slide-toggle-ripple($palette, $foreground, $thumb-checked-hue) {
+@mixin _mat-slide-toggle-ripple($palette, $foreground, $thumb-checked-hue) {
 
-  &.md-slide-toggle-focused {
-    &:not(.md-checked) .md-ink-ripple {
+  &.mat-slide-toggle-focused {
+    &:not(.mat-checked) .mat-ink-ripple {
       // When the slide-toggle is not checked and it shows its focus indicator, it should use a 12% opacity
       // of black in light themes and 12% of white in dark themes.
-      background-color: md-color($foreground, divider);
+      background-color: mat-color($foreground, divider);
     }
 
-    .md-ink-ripple {
-      background-color: md-color($palette, $thumb-checked-hue, 0.26);
+    .mat-ink-ripple {
+      background-color: mat-color($palette, $thumb-checked-hue, 0.26);
     }
   }
 
 }
 
-@mixin md-slide-toggle-theme($theme) {
+@mixin mat-slide-toggle-theme($theme) {
   $is-dark: map_get($theme, is-dark);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -47,43 +47,43 @@
   $thumb-checked-hue: if($is-dark, 200, 500);
   $thumb-disabled-hue: if($is-dark, 800, 400);
 
-  $bar-normal-color: md-color($foreground, disabled);
+  $bar-normal-color: mat-color($foreground, disabled);
   $bar-disabled-color: if($is-dark, rgba(white, 0.12), rgba(black, 0.1));
 
-  md-slide-toggle {
-    @include _md-slide-toggle-checked($accent, $thumb-checked-hue);
-    @include _md-slide-toggle-ripple($accent, $foreground, $thumb-checked-hue);
+  .mat-slide-toggle {
+    @include _mat-slide-toggle-checked($accent, $thumb-checked-hue);
+    @include _mat-slide-toggle-ripple($accent, $foreground, $thumb-checked-hue);
     
 
-    &.md-primary {
-      @include _md-slide-toggle-checked($primary, $thumb-checked-hue);
-      @include _md-slide-toggle-ripple($primary, $foreground, $thumb-checked-hue);
+    &.mat-primary {
+      @include _mat-slide-toggle-checked($primary, $thumb-checked-hue);
+      @include _mat-slide-toggle-ripple($primary, $foreground, $thumb-checked-hue);
     }
   
-    &.md-warn {
-      @include _md-slide-toggle-checked($warn, $thumb-checked-hue);
-      @include _md-slide-toggle-ripple($warn, $foreground, $thumb-checked-hue);
+    &.mat-warn {
+      @include _mat-slide-toggle-checked($warn, $thumb-checked-hue);
+      @include _mat-slide-toggle-ripple($warn, $foreground, $thumb-checked-hue);
     }
 
   }
 
-  .md-disabled {
-    .md-slide-toggle-thumb {
+  .mat-disabled {
+    .mat-slide-toggle-thumb {
       // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark or light themes.
       // Since this is very specific to the slide-toggle component, we're not providing
       // it in the background palette.
-      background-color: md-color($md-grey, $thumb-disabled-hue);
+      background-color: mat-color($mat-grey, $thumb-disabled-hue);
     }
-    .md-slide-toggle-bar {
+    .mat-slide-toggle-bar {
       background-color: $bar-disabled-color;
     }
   }
 
-  .md-slide-toggle-thumb {
-    background-color: md-color($md-grey, $thumb-normal-hue);
+  .mat-slide-toggle-thumb {
+    background-color: mat-color($mat-grey, $thumb-normal-hue);
   }
 
-  .md-slide-toggle-bar {
+  .mat-slide-toggle-bar {
     background-color: $bar-normal-color;
   }
 }

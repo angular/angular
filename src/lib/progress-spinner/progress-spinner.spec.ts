@@ -114,13 +114,13 @@ describe('MdProgressSpinner', () => {
 
     let progressElement = fixture.debugElement.query(By.css('md-spinner'));
 
-    expect(progressElement.nativeElement.classList).toContain('md-primary');
+    expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
     fixture.debugElement.componentInstance.color = 'accent';
     fixture.detectChanges();
 
-    expect(progressElement.nativeElement.classList).toContain('md-accent');
-    expect(progressElement.nativeElement.classList).not.toContain('md-primary');
+    expect(progressElement.nativeElement.classList).toContain('mat-accent');
+    expect(progressElement.nativeElement.classList).not.toContain('mat-primary');
   });
 
   it('should set the color class on the md-progress-spinner', () => {
@@ -129,13 +129,13 @@ describe('MdProgressSpinner', () => {
 
     let progressElement = fixture.debugElement.query(By.css('md-progress-spinner'));
 
-    expect(progressElement.nativeElement.classList).toContain('md-primary');
+    expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
     fixture.debugElement.componentInstance.color = 'accent';
     fixture.detectChanges();
 
-    expect(progressElement.nativeElement.classList).toContain('md-accent');
-    expect(progressElement.nativeElement.classList).not.toContain('md-primary');
+    expect(progressElement.nativeElement.classList).toContain('mat-accent');
+    expect(progressElement.nativeElement.classList).not.toContain('mat-primary');
   });
 
 });

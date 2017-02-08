@@ -47,11 +47,12 @@ let nextId = 0;
   moduleId: module.id,
   selector: 'md-slide-toggle, mat-slide-toggle',
   host: {
-    '[class.md-checked]': 'checked',
-    '[class.md-disabled]': 'disabled',
-    // This md-slide-toggle prefix will change, once the temporary ripple is removed.
-    '[class.md-slide-toggle-focused]': '_hasFocus',
-    '[class.md-slide-toggle-label-before]': 'labelPosition == "before"',
+    '[class.mat-slide-toggle]': 'true',
+    '[class.mat-checked]': 'checked',
+    '[class.mat-disabled]': 'disabled',
+    // This mat-slide-toggle prefix will change, once the temporary ripple is removed.
+    '[class.mat-slide-toggle-focused]': '_hasFocus',
+    '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
     '(mousedown)': '_setMousedown()'
   },
   templateUrl: 'slide-toggle.html',
@@ -233,7 +234,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   private _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
+      this._renderer.setElementClass(this._elementRef.nativeElement, `mat-${color}`, isAdd);
     }
   }
 
@@ -285,8 +286,8 @@ class SlideToggleRenderer {
   private _percentage: number;
 
   constructor(private _elementRef: ElementRef) {
-    this._thumbEl = _elementRef.nativeElement.querySelector('.md-slide-toggle-thumb-container');
-    this._thumbBarEl = _elementRef.nativeElement.querySelector('.md-slide-toggle-bar');
+    this._thumbEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
+    this._thumbBarEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
   }
 
   /** Whether the slide-toggle is currently dragging. */
@@ -300,7 +301,7 @@ class SlideToggleRenderer {
     if (!this.isDragging()) {
       this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
       this._checked = checked;
-      this._thumbEl.classList.add('md-dragging');
+      this._thumbEl.classList.add('mat-dragging');
     }
   }
 
@@ -308,7 +309,7 @@ class SlideToggleRenderer {
   stopThumbDrag(): boolean {
     if (this.isDragging()) {
       this._thumbBarWidth = null;
-      this._thumbEl.classList.remove('md-dragging');
+      this._thumbEl.classList.remove('mat-dragging');
 
       applyCssTransform(this._thumbEl, '');
 

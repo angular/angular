@@ -1,7 +1,7 @@
 @import '../../theming/theming';
 
 
-@mixin md-pseudo-checkbox-theme($theme) {
+@mixin mat-pseudo-checkbox-theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -9,7 +9,7 @@
   $background: map-get($theme, background);
 
   // The color of the checkbox's checkmark / mixedmark.
-  $checkbox-mark-color: md-color($background, background);
+  $checkbox-mark-color: mat-color($background, background);
 
   // NOTE(traviskaufman): While the spec calls for translucent blacks/whites for disabled colors,
   // this does not work well with elements layered on top of one another. To get around this we
@@ -18,26 +18,26 @@
   $black-26pct-opacity-on-light: #b0b0b0;
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
 
-  md-pseudo-checkbox::after {
+  .mat-pseudo-checkbox::after {
     color: $checkbox-mark-color;
   }
 
-  .md-pseudo-checkbox-checked, .md-pseudo-checkbox-indeterminate {
+  .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate {
     border: none;
 
-    &.md-primary {
-      background: md-color($primary, 500);
+    &.mat-primary {
+      background: mat-color($primary, 500);
     }
 
-    &.md-accent {
-      background: md-color($accent, 500);
+    &.mat-accent {
+      background: mat-color($accent, 500);
     }
 
-    &.md-warn {
-      background: md-color($warn, 500);
+    &.mat-warn {
+      background: mat-color($warn, 500);
     }
 
-    &.md-pseudo-checkbox-disabled {
+    &.mat-pseudo-checkbox-disabled {
       background: $disabled-color;
     }
   }

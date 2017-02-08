@@ -126,16 +126,16 @@ describe('MdMenu', () => {
       fixture.detectChanges();
     });
 
-    it('should append md-menu-before if x position is changed', () => {
-      const panel = overlayContainerElement.querySelector('.md-menu-panel');
-      expect(panel.classList).toContain('md-menu-before');
-      expect(panel.classList).not.toContain('md-menu-after');
+    it('should append mat-menu-before if x position is changed', () => {
+      const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+      expect(panel.classList).toContain('mat-menu-before');
+      expect(panel.classList).not.toContain('mat-menu-after');
     });
 
-    it('should append md-menu-above if y position is changed', () => {
-      const panel = overlayContainerElement.querySelector('.md-menu-panel');
-      expect(panel.classList).toContain('md-menu-above');
-      expect(panel.classList).not.toContain('md-menu-below');
+    it('should append mat-menu-above if y position is changed', () => {
+      const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+      expect(panel.classList).toContain('mat-menu-above');
+      expect(panel.classList).not.toContain('mat-menu-below');
     });
 
   });
@@ -298,7 +298,7 @@ describe('MdMenu', () => {
       }
 
       get menuPanel() {
-        return overlayContainerElement.querySelector('.md-menu-panel');
+        return overlayContainerElement.querySelector('.mat-menu-panel');
       }
 
       private get overlayPane() {
@@ -351,8 +351,8 @@ describe('MdMenu', () => {
       it('repositions the origin to be below, so the menu opens from the trigger', () => {
         subject.openMenu();
 
-        expect(subject.menuPanel.classList).toContain('md-menu-below');
-        expect(subject.menuPanel.classList).not.toContain('md-menu-above');
+        expect(subject.menuPanel.classList).toContain('mat-menu-below');
+        expect(subject.menuPanel.classList).not.toContain('mat-menu-above');
       });
 
     });
@@ -364,8 +364,8 @@ describe('MdMenu', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
-      const item = fixture.debugElement.query(By.css('[md-menu-item]'));
-      const ripple = item.query(By.css('[md-ripple]'));
+      const item = fixture.debugElement.query(By.css('.mat-menu-item'));
+      const ripple = item.query(By.css('.mat-ripple'));
 
       expect(ripple).not.toBeNull();
     });
@@ -375,10 +375,10 @@ describe('MdMenu', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
-      const items = fixture.debugElement.queryAll(By.css('[md-menu-item]'));
+      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
 
       // items[1] is disabled, so the ripple should not be present
-      const ripple = items[1].query(By.css('[md-ripple]'));
+      const ripple = items[1].query(By.css('.mat-ripple'));
       expect(ripple).toBeNull();
     });
 

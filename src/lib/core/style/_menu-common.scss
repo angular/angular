@@ -5,33 +5,33 @@
 /** The mixins below are shared between md-menu and md-select */
 
 // menu width must be a multiple of 56px
-$md-menu-overlay-min-width: 112px !default;   // 56 * 2
-$md-menu-overlay-max-width: 280px !default;   // 56 * 5
+$mat-menu-overlay-min-width: 112px !default;   // 56 * 2
+$mat-menu-overlay-max-width: 280px !default;   // 56 * 5
 
-$md-menu-item-height: 48px !default;
-$md-menu-font-size: 16px !default;
-$md-menu-side-padding: 16px !default;
+$mat-menu-item-height: 48px !default;
+$mat-menu-font-size: 16px !default;
+$mat-menu-side-padding: 16px !default;
 
-@mixin md-menu-base() {
-  @include md-elevation(8);
-  min-width: $md-menu-overlay-min-width;
-  max-width: $md-menu-overlay-max-width;
+@mixin mat-menu-base() {
+  @include mat-elevation(8);
+  min-width: $mat-menu-overlay-min-width;
+  max-width: $mat-menu-overlay-max-width;
 
   overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
 }
 
-@mixin md-menu-item-base() {
-  @include md-truncate-line();
+@mixin mat-menu-item-base() {
+  @include mat-truncate-line();
 
   // Needs to be a block for the ellipsis to work.
   display: block;
-  line-height: $md-menu-item-height;
-  height: $md-menu-item-height;
-  padding: 0 $md-menu-side-padding;
+  line-height: $mat-menu-item-height;
+  height: $mat-menu-item-height;
+  padding: 0 $mat-menu-side-padding;
 
-  font-size: $md-menu-font-size;
-  font-family: $md-font-family;
+  font-size: $mat-menu-font-size;
+  font-family: $mat-font-family;
   text-align: start;
   text-decoration: none;   // necessary to reset anchor tags
 
@@ -39,7 +39,7 @@ $md-menu-side-padding: 16px !default;
     cursor: default;
   }
 
-  md-icon {
+  .mat-icon {
     margin-right: 16px;
 
     [dir='rtl'] & {
@@ -52,37 +52,37 @@ $md-menu-side-padding: 16px !default;
  * This mixin adds the correct panel transform styles based
  * on the direction that the menu panel opens.
  */
-@mixin md-menu-positions() {
-  &.md-menu-after.md-menu-below {
+@mixin mat-menu-positions() {
+  &.mat-menu-after.mat-menu-below {
     transform-origin: left top;
   }
 
-  &.md-menu-after.md-menu-above {
+  &.mat-menu-after.mat-menu-above {
     transform-origin: left bottom;
   }
 
-  &.md-menu-before.md-menu-below {
+  &.mat-menu-before.mat-menu-below {
     transform-origin: right top;
   }
 
-  &.md-menu-before.md-menu-above {
+  &.mat-menu-before.mat-menu-above {
     transform-origin: right bottom;
   }
 
   [dir='rtl'] & {
-    &.md-menu-after.md-menu-below {
+    &.mat-menu-after.mat-menu-below {
       transform-origin: right top;
     }
 
-    &.md-menu-after.md-menu-above {
+    &.mat-menu-after.mat-menu-above {
       transform-origin: right bottom;
     }
 
-    &.md-menu-before.md-menu-below {
+    &.mat-menu-before.mat-menu-below {
       transform-origin: left top;
     }
 
-    &.md-menu-before.md-menu-above {
+    &.mat-menu-before.mat-menu-above {
       transform-origin: left bottom;
     }
   }

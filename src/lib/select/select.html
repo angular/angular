@@ -1,17 +1,17 @@
-<div class="md-select-trigger" cdk-overlay-origin (click)="toggle()" #origin="cdkOverlayOrigin" #trigger>
-  <span class="md-select-placeholder" [class.md-floating-placeholder]="this.selected"
+<div class="mat-select-trigger" cdk-overlay-origin (click)="toggle()" #origin="cdkOverlayOrigin" #trigger>
+  <span class="mat-select-placeholder" [class.mat-floating-placeholder]="this.selected"
    [@transformPlaceholder]="_placeholderState" [style.width.px]="_selectedValueWidth"> {{ placeholder }} </span>
-  <span class="md-select-value" *ngIf="selected"> {{ selected?.viewValue }} </span>
-  <span class="md-select-arrow"></span>
+  <span class="mat-select-value" *ngIf="selected"> {{ selected?.viewValue }} </span>
+  <span class="mat-select-arrow"></span>
 </div>
 
 <template cdk-connected-overlay [origin]="origin" [open]="panelOpen" hasBackdrop (backdropClick)="close()"
   backdropClass="cdk-overlay-transparent-backdrop" [positions]="_positions" [minWidth]="_triggerWidth"
   [offsetY]="_offsetY" [offsetX]="_offsetX" (attach)="_setScrollTop()">
-  <div class="md-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
+  <div class="mat-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
     (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin"
-      [class.md-select-panel-done-animating]="_panelDoneAnimating">
-    <div class="md-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
+      [class.mat-select-panel-done-animating]="_panelDoneAnimating">
+    <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>
     </div>
   </div>

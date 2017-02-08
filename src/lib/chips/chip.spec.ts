@@ -38,9 +38,9 @@ describe('Chips', () => {
       document.body.removeChild(chipNativeElement);
     });
 
-    it('adds the `md-basic-chip` class', () => {
-      expect(chipNativeElement.classList).toContain('md-chip');
-      expect(chipNativeElement.classList).toContain('md-basic-chip');
+    it('adds the `mat-basic-chip` class', () => {
+      expect(chipNativeElement.classList).toContain('mat-chip');
+      expect(chipNativeElement.classList).toContain('mat-basic-chip');
     });
   });
 
@@ -67,11 +67,11 @@ describe('Chips', () => {
       });
 
       it('adds the `md-chip` class', () => {
-        expect(chipNativeElement.classList).toContain('md-chip');
+        expect(chipNativeElement.classList).toContain('mat-chip');
       });
 
-      it('does not add the `md-basic-chip` class', () => {
-        expect(chipNativeElement.classList).not.toContain('md-basic-chip');
+      it('does not add the `mat-basic-chip` class', () => {
+        expect(chipNativeElement.classList).not.toContain('mat-basic-chip');
       });
 
       it('emits focus on click', () => {
@@ -93,23 +93,23 @@ describe('Chips', () => {
       });
 
       it('allows color customization', () => {
-        expect(chipNativeElement.classList).toContain('md-primary');
+        expect(chipNativeElement.classList).toContain('mat-primary');
 
         testComponent.color = 'warn';
         fixture.detectChanges();
 
-        expect(chipNativeElement.classList).not.toContain('md-primary');
-        expect(chipNativeElement.classList).toContain('md-warn');
+        expect(chipNativeElement.classList).not.toContain('mat-primary');
+        expect(chipNativeElement.classList).toContain('mat-warn');
       });
 
       it('allows selection', () => {
         spyOn(testComponent, 'chipSelect');
-        expect(chipNativeElement.classList).not.toContain('md-chip-selected');
+        expect(chipNativeElement.classList).not.toContain('mat-chip-selected');
 
         testComponent.selected = true;
         fixture.detectChanges();
 
-        expect(chipNativeElement.classList).toContain('md-chip-selected');
+        expect(chipNativeElement.classList).toContain('mat-chip-selected');
         expect(testComponent.chipSelect).toHaveBeenCalledWith({ chip: chipInstance });
       });
 

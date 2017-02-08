@@ -2,85 +2,85 @@
 @import '../core/theming/theming';
 
 
-@mixin md-slider-theme($theme) {
+@mixin mat-slider-theme($theme) {
   $accent: map-get($theme, accent);
 
-  $md-slider-off-color: rgba(black, 0.26);
-  $md-slider-off-focused-color: rgba(black, 0.38);
-  $md-slider-disabled-color: rgba(black, 0.26);
-  $md-slider-labeled-min-value-thumb-color: black;
-  $md-slider-labeled-min-value-thumb-label-color: rgba(black, 0.26);
+  $mat-slider-off-color: rgba(black, 0.26);
+  $mat-slider-off-focused-color: rgba(black, 0.38);
+  $mat-slider-disabled-color: rgba(black, 0.26);
+  $mat-slider-labeled-min-value-thumb-color: black;
+  $mat-slider-labeled-min-value-thumb-label-color: rgba(black, 0.26);
 
-  .md-slider-track-background {
-    background-color: $md-slider-off-color;
+  .mat-slider-track-background {
+    background-color: $mat-slider-off-color;
   }
 
-  .md-slider-track-fill {
-    background-color: md-color($accent);
+  .mat-slider-track-fill {
+    background-color: mat-color($accent);
   }
 
-  .md-slider-thumb {
-    background-color: md-color($accent);
+  .mat-slider-thumb {
+    background-color: mat-color($accent);
   }
 
-  .md-slider-thumb-label {
-    background-color: md-color($accent);
+  .mat-slider-thumb-label {
+    background-color: mat-color($accent);
   }
 
-  .md-slider-thumb-label-text {
-    color: md-color($accent, default-contrast);
+  .mat-slider-thumb-label-text {
+    color: mat-color($accent, default-contrast);
   }
 
-  md-slider:hover,
-  .md-slider-active {
-    .md-slider-track-background {
-      background-color: $md-slider-off-focused-color;
+  .mat-slider:hover,
+  .mat-slider-active {
+    .mat-slider-track-background {
+      background-color: $mat-slider-off-focused-color;
     }
   }
 
-  .md-slider-disabled {
-    .md-slider-track-background,
-    .md-slider-track-fill,
-    .md-slider-thumb {
-      background-color: $md-slider-disabled-color;
+  .mat-slider-disabled {
+    .mat-slider-track-background,
+    .mat-slider-track-fill,
+    .mat-slider-thumb {
+      background-color: $mat-slider-disabled-color;
     }
 
     &:hover {
-      .md-slider-track-background {
-        background-color: $md-slider-disabled-color;
+      .mat-slider-track-background {
+        background-color: $mat-slider-disabled-color;
       }
     }
   }
 
-  .md-slider-min-value {
-    &.md-slider-thumb-label-showing {
-      .md-slider-thumb,
-      .md-slider-thumb-label {
-        background-color: $md-slider-labeled-min-value-thumb-color;
+  .mat-slider-min-value {
+    &.mat-slider-thumb-label-showing {
+      .mat-slider-thumb,
+      .mat-slider-thumb-label {
+        background-color: $mat-slider-labeled-min-value-thumb-color;
       }
 
-      &.md-slider-active {
-        .md-slider-thumb,
-        .md-slider-thumb-label {
-          background-color: $md-slider-labeled-min-value-thumb-label-color;
+      &.mat-slider-active {
+        .mat-slider-thumb,
+        .mat-slider-thumb-label {
+          background-color: $mat-slider-labeled-min-value-thumb-label-color;
         }
       }
     }
 
-    &:not(.md-slider-thumb-label-showing) {
-      .md-slider-thumb {
-        border-color: $md-slider-off-color;
+    &:not(.mat-slider-thumb-label-showing) {
+      .mat-slider-thumb {
+        border-color: $mat-slider-off-color;
         background-color: transparent;
       }
 
       &:hover,
-      &.md-slider-active {
-        .md-slider-thumb {
-          border-color: $md-slider-off-focused-color;
+      &.mat-slider-active {
+        .mat-slider-thumb {
+          border-color: $mat-slider-off-focused-color;
         }
 
-        &.md-slider-disabled .md-slider-thumb {
-          border-color: $md-slider-disabled-color;
+        &.mat-slider-disabled .mat-slider-thumb {
+          border-color: $mat-slider-disabled-color;
         }
       }
     }

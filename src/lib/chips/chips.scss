@@ -1,11 +1,11 @@
-$md-chip-vertical-padding: 8px;
-$md-chip-horizontal-padding: 12px;
-$md-chip-font-size: 13px;
-$md-chip-line-height: 16px;
+$mat-chip-vertical-padding: 8px;
+$mat-chip-horizontal-padding: 12px;
+$mat-chip-font-size: 13px;
+$mat-chip-line-height: 16px;
 
-$md-chips-chip-margin: $md-chip-horizontal-padding / 4;
+$mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 
-.md-chip-list-wrapper {
+.mat-chip-list-wrapper {
 
   display: flex;
   flex-direction: row;
@@ -15,19 +15,19 @@ $md-chips-chip-margin: $md-chip-horizontal-padding / 4;
   /*
    * Only apply the margins to chips
    */
-  .md-chip:not(.md-basic-chip) {
-    margin: 0 $md-chips-chip-margin 0 $md-chips-chip-margin;
+  .mat-chip:not(.mat-basic-chip) {
+    margin: 0 $mat-chips-chip-margin 0 $mat-chips-chip-margin;
 
     // Remove the margin from the first element (in both LTR and RTL)
     &:first-child {
       margin: {
         left: 0;
-        right: $md-chips-chip-margin;
+        right: $mat-chips-chip-margin;
       }
 
       [dir='rtl'] & {
         margin: {
-          left: $md-chips-chip-margin;
+          left: $mat-chips-chip-margin;
           right: 0;
         }
       }
@@ -36,41 +36,40 @@ $md-chips-chip-margin: $md-chip-horizontal-padding / 4;
     // Remove the margin from the last element (in both LTR and RTL)
     &:last-child {
       margin: {
-        left: $md-chips-chip-margin;
+        left: $mat-chips-chip-margin;
         right: 0;
       }
 
       [dir='rtl'] & {
         margin: {
           left: 0;
-          right: $md-chips-chip-margin;
+          right: $mat-chips-chip-margin;
         }
       }
     }
   }
 }
 
-.md-chip:not(.md-basic-chip) {
+.mat-chip:not(.mat-basic-chip) {
   display: inline-block;
-  padding: $md-chip-vertical-padding $md-chip-horizontal-padding
-    $md-chip-vertical-padding $md-chip-horizontal-padding;
-  border-radius: $md-chip-horizontal-padding * 2;
+  padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding $mat-chip-vertical-padding $mat-chip-horizontal-padding;
+  border-radius: $mat-chip-horizontal-padding * 2;
 
-  font-size: $md-chip-font-size;
-  line-height: $md-chip-line-height;
+  font-size: $mat-chip-font-size;
+  line-height: $mat-chip-line-height;
 }
 
-.md-chip-list-stacked .md-chip-list-wrapper {
+.mat-chip-list-stacked .mat-chip-list-wrapper {
   display: block;
 
-  .md-chip:not(.md-basic-chip) {
+  .mat-chip:not(.mat-basic-chip) {
     display: block;
     margin: 0;
-    margin-bottom: $md-chip-vertical-padding;
+    margin-bottom: $mat-chip-vertical-padding;
 
     [dir='rtl'] & {
       margin: 0;
-      margin-bottom: $md-chip-vertical-padding;
+      margin-bottom: $mat-chip-vertical-padding;
     }
 
     &:last-child, [dir='rtl'] &:last-child {

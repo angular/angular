@@ -393,19 +393,19 @@ describe('MdDialog', () => {
     });
 
     it('should close the dialog when clicking on the close button', () => {
-      expect(overlayContainerElement.querySelectorAll('.md-dialog-container').length).toBe(1);
+      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
 
       (overlayContainerElement.querySelector('button[md-dialog-close]') as HTMLElement).click();
 
-      expect(overlayContainerElement.querySelectorAll('.md-dialog-container').length).toBe(0);
+      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(0);
     });
 
     it('should not close the dialog if [md-dialog-close] is applied on a non-button node', () => {
-      expect(overlayContainerElement.querySelectorAll('.md-dialog-container').length).toBe(1);
+      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
 
       (overlayContainerElement.querySelector('div[md-dialog-close]') as HTMLElement).click();
 
-      expect(overlayContainerElement.querySelectorAll('.md-dialog-container').length).toBe(1);
+      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
     });
 
     it('should allow for a user-specified aria-label on the close button', () => {

@@ -1,26 +1,25 @@
 @import '../core/style/elevation';
 
+$mat-button-toggle-padding: 0 16px !default;
+$mat-button-toggle-line-height: 36px !default;
+$mat-button-toggle-border-radius: 2px !default;
 
-$md-button-toggle-padding: 0 16px !default;
-$md-button-toggle-line-height: 36px !default;
-$md-button-toggle-border-radius: 2px !default;
-
-md-button-toggle-group {
-  @include md-elevation(2);
+.mat-button-toggle-group {
+  @include mat-elevation(2);
   position: relative;
   display: inline-flex;
   flex-direction: row;
 
-  border-radius: $md-button-toggle-border-radius;
+  border-radius: $mat-button-toggle-border-radius;
 
   cursor: pointer;
   white-space: nowrap;
 }
 
-.md-button-toggle-vertical {
+.mat-button-toggle-vertical {
   flex-direction: column;
 
-  .md-button-toggle-label-content {
+  .mat-button-toggle-label-content {
     // Vertical button toggles shouldn't be an inline-block, because the toggles should
     // fill the available width in the group.
     display: block;
@@ -28,23 +27,23 @@ md-button-toggle-group {
 }
 
 
-.md-button-toggle-disabled .md-button-toggle-label-content {
+.mat-button-toggle-disabled .mat-button-toggle-label-content {
   cursor: default;
 }
 
-md-button-toggle {
+.mat-button-toggle {
   white-space: nowrap;
-  font-family: $md-font-family;
+  font-family: $mat-font-family;
 }
 
-.md-button-toggle-label-content {
+.mat-button-toggle-label-content {
   display: inline-block;
-  line-height: $md-button-toggle-line-height;
-  padding: $md-button-toggle-padding;
+  line-height: $mat-button-toggle-line-height;
+  padding: $mat-button-toggle-padding;
   cursor: pointer;
   user-select: none;
 }
 
-.md-button-toggle-label-content > * {
+.mat-button-toggle-label-content > * {
   vertical-align: middle;
 }

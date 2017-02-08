@@ -2,8 +2,8 @@
 @import '../core/theming/theming';
 
 
-@mixin md-tooltip-theme($theme) {
-  .md-tooltip {
-    background: md-color($md-grey, 700, 0.9);
+@mixin mat-tooltip-theme($theme) {
+  .mat-tooltip {
+    background: mat-color($mat-grey, 700, 0.9);
   }
 }

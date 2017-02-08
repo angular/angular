@@ -8,32 +8,32 @@
 @import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
-@mixin md-core() {
+@mixin mat-core() {
   // Provides external CSS classes for each elevation value. Each CSS class is formatted as
-  // `md-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
+  // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
   // elevated.
   @for $zValue from 0 through 24 {
-    .md-elevation-z#{$zValue} {
-      @include md-elevation($zValue);
+    .mat-elevation-z#{$zValue} {
+      @include mat-elevation($zValue);
     }
   }
 
-  @include md-ripple();
-  @include md-option();
+  @include mat-ripple();
+  @include mat-option();
   @include cdk-a11y();
   @include cdk-overlay();
 }
 
 // Mixin that renders all of the core styles that depend on the theme.
-@mixin md-core-theme($theme) {
-  @include md-ripple-theme($theme);
-  @include md-option-theme($theme);
-  @include md-pseudo-checkbox-theme($theme);
+@mixin mat-core-theme($theme) {
+  @include mat-ripple-theme($theme);
+  @include mat-option-theme($theme);
+  @include mat-pseudo-checkbox-theme($theme);
 
   // Wrapper element that provides the theme background when the
   // user's content isn't inside of a `md-sidenav-container`.
-  .md-app-background {
+  .mat-app-background {
     $background: map-get($theme, background);
-    background-color: md-color($background, background);
+    background-color: mat-color($background, background);
   }
 }

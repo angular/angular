@@ -2,7 +2,7 @@
 @import '../core/theming/theming';
 
 
-@mixin md-input-theme($theme) {
+@mixin mat-input-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
@@ -10,55 +10,55 @@
   $foreground: map-get($theme, foreground);
   
   // Placeholder colors. Required is used for the `*` star shown in the placeholder.
-  $input-placeholder-color: md-color($foreground, hint-text);
-  $input-floating-placeholder-color: md-color($primary);
-  $input-required-placeholder-color: md-color($accent);
+  $input-placeholder-color: mat-color($foreground, hint-text);
+  $input-floating-placeholder-color: mat-color($primary);
+  $input-required-placeholder-color: mat-color($accent);
   
   // Underline colors.
-  $input-underline-color: md-color($foreground, divider);
-  $input-underline-color-accent: md-color($accent);
-  $input-underline-color-warn: md-color($warn);
-  $input-underline-focused-color: md-color($primary);
+  $input-underline-color: mat-color($foreground, divider);
+  $input-underline-color-accent: mat-color($accent);
+  $input-underline-color-warn: mat-color($warn);
+  $input-underline-focused-color: mat-color($primary);
 
-  .md-input-placeholder {
+  .mat-input-placeholder {
     color: $input-placeholder-color;
 
-    // :focus is applied to the input, but we apply md-focused to the other elements
+    // :focus is applied to the input, but we apply mat-focused to the other elements
     // that need to listen to it.
-    &.md-focused {
+    &.mat-focused {
       color: $input-floating-placeholder-color;
 
-      &.md-accent {
+      &.mat-accent {
         color: $input-underline-color-accent;
       }
-      &.md-warn {
+      &.mat-warn {
         color: $input-underline-color-warn;
       }
     }
   }
 
-  .md-input-element:disabled {
-    color: md-color($foreground, disabled-text);
+  .mat-input-element:disabled {
+    color: mat-color($foreground, disabled-text);
   }
 
-  // See md-input-placeholder-floating mixin in input.scss
-  input.md-input-element:-webkit-autofill + .md-input-placeholder,
-  .md-input-placeholder.md-float.md-focused {
-    .md-placeholder-required {
+  // See mat-input-placeholder-floating mixin in input.scss
+  input.mat-input-element:-webkit-autofill + .mat-input-placeholder,
+  .mat-input-placeholder.mat-float.mat-focused {
+    .mat-placeholder-required {
       color: $input-required-placeholder-color;
     }
   }
 
-  .md-input-underline {
+  .mat-input-underline {
     border-color: $input-underline-color;
 
-    .md-input-ripple {
+    .mat-input-ripple {
       background-color: $input-underline-focused-color;
 
-      &.md-accent {
+      &.mat-accent {
         background-color: $input-underline-color-accent;
       }
-      &.md-warn {
+      &.mat-warn {
         background-color: $input-underline-color-warn;
       }
     }

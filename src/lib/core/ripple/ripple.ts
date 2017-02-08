@@ -23,6 +23,9 @@ import {SCROLL_DISPATCHER_PROVIDER} from '../overlay/scroll/scroll-dispatcher';
 
 @Directive({
   selector: '[md-ripple], [mat-ripple]',
+  host: {
+    '[class.mat-ripple]': 'true',
+  }
 })
 export class MdRipple implements OnInit, OnDestroy, OnChanges {
   /**
@@ -100,7 +103,7 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   set _backgroundColorDeprecated(value: string) { this.backgroundColor = value; };
 
   /** Whether the ripple background will be highlighted to indicated a focused state. */
-  @HostBinding('class.md-ripple-focused') @Input('mdRippleFocused') focused: boolean;
+  @HostBinding('class.mat-ripple-focused') @Input('mdRippleFocused') focused: boolean;
 
   /** @deprecated */
   @Input('md-ripple-focused')
@@ -108,7 +111,7 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   set _focusedDeprecated(value: boolean) { this.focused = value; };
 
   /** Whether foreground ripples should be visible outside the component's bounds. */
-  @HostBinding('class.md-ripple-unbounded') @Input('mdRippleUnbounded') unbounded: boolean;
+  @HostBinding('class.mat-ripple-unbounded') @Input('mdRippleUnbounded') unbounded: boolean;
 
   /** @deprecated */
   @Input('md-ripple-unbounded')

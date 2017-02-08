@@ -10,6 +10,7 @@ import {Focusable} from '../core/a11y/focus-key-manager';
   selector: '[md-menu-item], [mat-menu-item]',
   host: {
     'role': 'menuitem',
+    '[class.mat-menu-item]': 'true',
     '(click)': '_checkDisabled($event)',
     '[attr.tabindex]': '_tabindex'
   },

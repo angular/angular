@@ -145,11 +145,11 @@ outside of the scrollable region and absolutely position it.
   height: 300px;
 }
 
-.my-container md-sidenav {
+.my-container .mat-sidenav {
   max-width: 200px;
 }
 
-.my-container .md-sidenav-content,
+.my-container .mat-sidenav-content,
 .my-container md-sidenav {
   display: flex;
 }

@@ -11,6 +11,9 @@ import {MdSnackBarRef} from './snack-bar-ref';
   selector: 'simple-snack-bar',
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],
+  host: {
+    '[class.mat-simple-snackbar]': 'true',
+  }
 })
 export class SimpleSnackBar {
   /** The message to be shown in the snack bar. */

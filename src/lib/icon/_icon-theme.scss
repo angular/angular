@@ -2,24 +2,24 @@
 
 
 // Include this empty mixin for consistency with the other components.
-@mixin md-icon-theme($theme) {
+@mixin mat-icon-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  md-icon {
-    &.md-primary {
-      color: md-color($primary);
+  .mat-icon {
+    &.mat-primary {
+      color: mat-color($primary);
     }
 
-    &.md-accent {
-      color: md-color($accent);
+    &.mat-accent {
+      color: mat-color($accent);
     }
 
-    &.md-warn {
-      color: md-color($warn);
+    &.mat-warn {
+      color: mat-color($warn);
     }
   }
 }

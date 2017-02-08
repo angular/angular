@@ -30,13 +30,13 @@ describe('MdButton', () => {
 
     testComponent.buttonColor = 'primary';
     fixture.detectChanges();
-    expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
-    expect(aDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+    expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
+    expect(aDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
 
     testComponent.buttonColor = 'accent';
     fixture.detectChanges();
-    expect(buttonDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
-    expect(aDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+    expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
+    expect(aDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
   });
 
   it('should should not clear previous defined classes', () => {
@@ -49,14 +49,14 @@ describe('MdButton', () => {
     testComponent.buttonColor = 'primary';
     fixture.detectChanges();
 
-    expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+    expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
     expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
 
     testComponent.buttonColor = 'accent';
     fixture.detectChanges();
 
-    expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(false);
-    expect(buttonDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+    expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(false);
+    expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
     expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
 
   });

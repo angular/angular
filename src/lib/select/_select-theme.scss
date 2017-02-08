@@ -1,48 +1,48 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 
-@mixin md-select-theme($theme) {
+@mixin mat-select-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
   $warn: map-get($theme, warn);
 
-  .md-select-trigger {
-    color: md-color($foreground, hint-text);
-    border-bottom: 1px solid md-color($foreground, divider);
+  .mat-select-trigger {
+    color: mat-color($foreground, hint-text);
+    border-bottom: 1px solid mat-color($foreground, divider);
 
-    md-select:focus:not(.md-select-disabled) & {
-      color: md-color($primary);
-      border-bottom: 1px solid md-color($primary);
+    .mat-select:focus:not(.mat-select-disabled) & {
+      color: mat-color($primary);
+      border-bottom: 1px solid mat-color($primary);
     }
 
-    md-select.ng-invalid.ng-touched:not(.md-select-disabled) & {
-      color: md-color($warn);
-      border-bottom: 1px solid md-color($warn);
-    }
-  }
-
-  .md-select-arrow {
-    color: md-color($foreground, hint-text);
-
-    md-select:focus:not(.md-select-disabled) & {
-      color: md-color($primary);
-    }
-
-    md-select.ng-invalid.ng-touched:not(.md-select-disabled) & {
-      color: md-color($warn);
+    .mat-select.ng-invalid.ng-touched:not(.mat-select-disabled) & {
+      color: mat-color($warn);
+      border-bottom: 1px solid mat-color($warn);
     }
   }
 
-  .md-select-content, .md-select-panel-done-animating {
-    background: md-color($background, card);
+  .mat-select-arrow {
+    color: mat-color($foreground, hint-text);
+
+    .mat-select:focus:not(.mat-select-disabled) & {
+      color: mat-color($primary);
+    }
+
+    .mat-select.ng-invalid.ng-touched:not(.mat-select-disabled) & {
+      color: mat-color($warn);
+    }
   }
 
-  .md-select-value {
-    color: md-color($foreground, text);
+  .mat-select-content, .mat-select-panel-done-animating {
+    background: mat-color($background, card);
+  }
 
-    .md-select-disabled & {
-      color: md-color($foreground, hint-text);
+  .mat-select-value {
+    color: mat-color($foreground, text);
+
+    .mat-select-disabled & {
+      color: mat-color($foreground, hint-text);
     }
   }
 }

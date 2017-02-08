@@ -243,7 +243,7 @@ describe('MdGridList', () => {
     fixture.detectChanges();
 
     let footer = fixture.debugElement.query(By.directive(MdGridTileText));
-    expect(footer.nativeElement.classList.contains('md-2-line')).toBe(false);
+    expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(false);
   });
 
   it('should add class to footers with two lines', () => {
@@ -251,7 +251,7 @@ describe('MdGridList', () => {
     fixture.detectChanges();
 
     let footer = fixture.debugElement.query(By.directive(MdGridTileText));
-    expect(footer.nativeElement.classList.contains('md-2-line')).toBe(true);
+    expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(true);
   });
 });
 

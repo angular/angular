@@ -2,28 +2,28 @@
 @import '../core/style/layout-common';
 @import 'tabs-common';
 
-.md-tab-header {
+.mat-tab-header {
   @include tab-header;
 }
 
 // Wraps each tab label
-.md-tab-label {
+.mat-tab-label {
   @include tab-label;
   position: relative;
 }
 
-@media ($md-xsmall) {
-  .md-tab-label {
+@media ($mat-xsmall) {
+  .mat-tab-label {
     min-width: 72px;
   }
 }
 
 // The ink bar that displays under the active tab label
-md-ink-bar {
+.mat-ink-bar {
   @include ink-bar;
 }
 
-.md-tab-header-pagination {
+.mat-tab-header-pagination {
   position: relative;
   display: none;
   justify-content: center;
@@ -32,28 +32,28 @@ md-ink-bar {
   cursor: pointer;
   z-index: 2;
 
-  .md-tab-header-pagination-controls-enabled & {
+  .mat-tab-header-pagination-controls-enabled & {
     display: flex;
   }
 }
 
 // The pagination control that is displayed on the left side of the tab header.
-.md-tab-header-pagination-before, .md-tab-header-rtl .md-tab-header-pagination-after {
+.mat-tab-header-pagination-before, .mat-tab-header-rtl .mat-tab-header-pagination-after {
   padding-left: 4px;
-  .md-tab-header-pagination-chevron {
+  .mat-tab-header-pagination-chevron {
     transform: rotate(-135deg);
   }
 }
 
 // The pagination control that is displayed on the right side of the tab header.
-.md-tab-header-rtl .md-tab-header-pagination-before, .md-tab-header-pagination-after {
+.mat-tab-header-rtl .mat-tab-header-pagination-before, .mat-tab-header-pagination-after {
   padding-right: 4px;
-  .md-tab-header-pagination-chevron {
+  .mat-tab-header-pagination-chevron {
     transform: rotate(45deg);
   }
 }
 
-.md-tab-header-pagination-chevron {
+.mat-tab-header-pagination-chevron {
   border-style: solid;
   border-width: 2px 2px 0 0;
   content: '';
@@ -61,23 +61,23 @@ md-ink-bar {
   width: 8px;
 }
 
-.md-tab-header-pagination-disabled {
+.mat-tab-header-pagination-disabled {
   box-shadow: none;
   cursor: default;
 
-  .md-tab-header-pagination-chevron {
+  .mat-tab-header-pagination-chevron {
     border-color: #ccc;
   }
 }
 
-.md-tab-label-container {
+.mat-tab-label-container {
   display: flex;
   flex-grow: 1;
   overflow: hidden;
   z-index: 1;
 }
 
-.md-tab-list {
+.mat-tab-list {
   display: flex;
   flex-grow: 1;
   position: relative;

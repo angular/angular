@@ -2,25 +2,25 @@
 @import '../../core/style/variables';
 
 // Wraps the bar containing the anchors
-[md-tab-nav-bar] {
+.mat-tab-nav-bar {
   @include tab-header;
 }
 
 // Wraps each link in the header
-[md-tab-link] {
+.mat-tab-link {
   @include tab-label;
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
   overflow: hidden;  // Keeps the ripple from extending outside the element bounds
 }
 
-@media ($md-xsmall) {
-  [md-tab-link] {
+@media ($mat-xsmall) {
+  .mat-tab-link {
     min-width: 72px;
   }
 }
 
 // Styling for the ink bar that displays near the activated anchor
-md-ink-bar {
+.mat-ink-bar {
   @include ink-bar;
 }

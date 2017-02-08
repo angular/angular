@@ -3,53 +3,53 @@
 @import '../core/a11y/a11y';
 
 
-$md-card-default-padding: 24px !default;
-$md-card-mobile-padding: 24px 16px !default;
-$md-card-border-radius: 2px !default;
-$md-card-header-size: 40px !default;
+$mat-card-default-padding: 24px !default;
+$mat-card-mobile-padding: 24px 16px !default;
+$mat-card-border-radius: 2px !default;
+$mat-card-header-size: 40px !default;
 
-md-card {
-  @include md-elevation(2);
-  @include md-elevation-transition;
+.mat-card {
+  @include mat-elevation(2);
+  @include mat-elevation-transition;
   display: block;
   position: relative;
-  padding: $md-card-default-padding;
-  border-radius: $md-card-border-radius;
-  font-family: $md-font-family;
+  padding: $mat-card-default-padding;
+  border-radius: $mat-card-border-radius;
+  font-family: $mat-font-family;
 
   @include cdk-high-contrast {
     outline: solid 1px;
   }
 }
 
-.md-card-flat {
+.mat-card-flat {
   box-shadow: none;
 }
 
-// base styles for each card section preset (md-card-content, etc)
-%md-card-section-base {
+// base styles for each card section preset (mat-card-content, etc)
+%mat-card-section-base {
   display: block;
   margin-bottom: 16px;
 }
 
-md-card-title {
-  @extend %md-card-section-base;
+.mat-card-title {
+  @extend %mat-card-section-base;
   font-size: 24px;
   font-weight: 400;
 }
 
-md-card-subtitle {
-  @extend %md-card-section-base;
-  font-size: $md-body-font-size-base;
+.mat-card-subtitle {
+  @extend %mat-card-section-base;
+  font-size: $mat-body-font-size-base;
 }
 
-md-card-content {
-  @extend %md-card-section-base;
-  font-size: $md-body-font-size-base;
+.mat-card-content {
+  @extend %mat-card-section-base;
+  font-size: $mat-body-font-size-base;
 }
 
-md-card-actions {
-  @extend %md-card-section-base;
+.mat-card-actions {
+  @extend %mat-card-section-base;
   margin-left: -16px;
   margin-right: -16px;
   padding: 8px 0;
@@ -60,18 +60,18 @@ md-card-actions {
   }
 }
 
-[md-card-image] {
+.mat-card-image {
   width: calc(100% + 48px);
   margin: 0 -24px 16px -24px;
 }
 
-[md-card-xl-image] {
+.mat-card-xl-image {
   width: 240px;
   height: 240px;
   margin: -8px;
 }
 
-md-card-footer {
+.mat-card-footer {
   position: absolute;
   width: 100%;
   min-height: 5px;
@@ -79,94 +79,94 @@ md-card-footer {
   left: 0;
 }
 
-md-card-actions {
-  [md-button], [md-raised-button] {
+.mat-card-actions {
+  .mat-button, .mat-raised-button {
     margin: 0 4px;
   }
 }
 
 // HEADER STYLES
 
-md-card-header {
+.mat-card-header {
   display: flex;
   flex-direction: row;
-  height: $md-card-header-size;
+  height: $mat-card-header-size;
   margin: -8px 0 16px 0;
 }
 
-.md-card-header-text {
-  height: $md-card-header-size;
+.mat-card-header-text {
+  height: $mat-card-header-size;
   margin: 0 8px;
 }
 
-[md-card-avatar] {
-  height: $md-card-header-size;
-  width: $md-card-header-size;
+.mat-card-avatar {
+  height: $mat-card-header-size;
+  width: $mat-card-header-size;
   border-radius: 50%;
 }
 
-md-card-header md-card-title {
-  font-size: $md-body-font-size-base;
+.mat-card-header .mat-card-title {
+  font-size: $mat-body-font-size-base;
 }
 
 // TITLE-GROUP STYLES
 
 // images grouped with title in title-group layout
-%md-card-title-img {
+%mat-card-title-img {
   margin: -8px 0;
 }
 
-md-card-title-group {
+.mat-card-title-group {
   display: flex;
   justify-content: space-between;
   margin: 0 -8px;
 }
 
-[md-card-sm-image] {
-  @extend %md-card-title-img;
+.mat-card-sm-image {
+  @extend %mat-card-title-img;
   width: 80px;
   height: 80px;
 }
 
-[md-card-md-image] {
-  @extend %md-card-title-img;
+.mat-card-md-image {
+  @extend %mat-card-title-img;
   width: 112px;
   height: 112px;
 }
 
-[md-card-lg-image] {
-  @extend %md-card-title-img;
+.mat-card-lg-image {
+  @extend %mat-card-title-img;
   width: 152px;
   height: 152px;
 }
 
 // MEDIA QUERIES
 
-@media ($md-xsmall) {
-  md-card {
-    padding: $md-card-mobile-padding;
+@media ($mat-xsmall) {
+  .mat-card {
+    padding: $mat-card-mobile-padding;
   }
 
-  md-card-actions {
+  .mat-card-actions {
     margin-left: -8px;
     margin-right: -8px;
   }
-  
-  [md-card-image] {
+
+  .mat-card-image {
     width: calc(100% + 32px);
     margin: 16px -16px;
   }
 
-  md-card-title-group {
+  .mat-card-title-group {
     margin: 0;
   }
 
-  [md-card-xl-image] {
+  .mat-card-xl-image {
     margin-left: 0;
     margin-right: 0;
   }
 
-  md-card-header {
+  .mat-card-header {
     margin: -8px 0 0 0;
   }
 
@@ -174,59 +174,59 @@ md-card-title-group {
 
 // FIRST/LAST CHILD ADJUSTMENTS
 
-// top els in md-card-content and md-card can't have their default margin-tops (e.g. <p> tags)
+// top els in mat-card-content and mat-card can't have their default margin-tops (e.g. <p> tags)
 // or they'll incorrectly add to card's top padding
-md-card > :first-child, md-card-content > :first-child {
+.mat-card > :first-child, .mat-card-content > :first-child {
   margin-top: 0;
 }
 
-// last els in md-card-content and md-card can't have their default margin-bottoms (e.g. <p> tags)
+// last els in mat-card-content and mat-card can't have their default margin-bottoms (e.g. <p> tags)
 // or they'll incorrectly add to card's bottom padding
-md-card > :last-child, md-card-content > :last-child {
+.mat-card > :last-child, .mat-card-content > :last-child {
   margin-bottom: 0;
 }
 
 // if main image is on top, need to place it flush against top
 // (by stripping card's default 24px padding)
-[md-card-image]:first-child {
+.mat-card-image:first-child {
   margin-top: -24px;
 }
 
 // actions panel on bottom should be 8px from bottom of card
 // so must strip 16px from default card padding of 24px
-md-card > md-card-actions:last-child {
+.mat-card > .mat-card-actions:last-child {
   margin-bottom: -16px;
   padding-bottom: 0;
 }
 
 // actions panel should always be 8px from sides,
 // so the first button in the actions panel can't add its own margins
-md-card-actions [md-button]:first-child,
-md-card-actions [md-raised-button]:first-child {
+.mat-card-actions .mat-button:first-child,
+.mat-card-actions .mat-raised-button:first-child {
   margin-left: 0;
   margin-right: 0;
 }
 
 // should be 12px space between titles and subtitles generally
 // default margin-bottom is 16px, so need to move lower title up 4px
-md-card-title:not(:first-child), md-card-subtitle:not(:first-child) {
+.mat-card-title:not(:first-child), .mat-card-subtitle:not(:first-child) {
   margin-top: -4px;
 }
 
 // should be 8px space between titles and subtitles in header
 // default margin-bottom is 16px, so need to move subtitle in header up 4px
-md-card-header md-card-subtitle:not(:first-child) {
+.mat-card-header .mat-card-subtitle:not(:first-child) {
   margin-top: -8px;
 }
 
 // xl image should always have 16px on top.
 // when it's the first el, it'll need to remove 8px from default card padding of 24px
-md-card > [md-card-xl-image]:first-child {
+.mat-card > .mat-card-xl-image:first-child {
   margin-top: -8px;
 }
 
 // xl image should always have 16px on bottom
 // when it's the last el, it'll need to remove 8px from default card padding of 24px
-md-card > [md-card-xl-image]:last-child {
+.mat-card > .mat-card-xl-image:last-child {
   margin-bottom: -8px;
 }

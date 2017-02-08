@@ -16,7 +16,7 @@ _Note: chips are still early in their development and more features are being ac
 By default, `<md-chip>` has Material Design styles applied. For a chip with no styles applied,
 use `<md-basic-chip>`. You can then customize the chip appearance by adding your own CSS.
 
-_Hint: `<md-basic-chip>` receives the `md-basic-chip` CSS class in addition to the `md-chip` class._
+_Hint: `<md-basic-chip>` receives the `mat-basic-chip` CSS class in addition to the `mat-chip` class._
 
 ### Selection
 Chips can be selected via the `selected` property. Selection can be disabled by setting

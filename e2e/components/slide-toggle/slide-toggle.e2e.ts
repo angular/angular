@@ -43,7 +43,7 @@ describe('slide-toggle', () => {
 
   it('should move the thumb on state change', () => {
     let slideToggleEl = getNormalToggle();
-    let thumbEl = element(by.css('#normal-slide-toggle .md-slide-toggle-thumb-container'));
+    let thumbEl = element(by.css('#normal-slide-toggle .mat-slide-toggle-thumb-container'));
 
     let previousX = thumbEl.getLocation().then(pos => pos.x);
 

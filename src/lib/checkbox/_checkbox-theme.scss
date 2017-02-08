@@ -1,7 +1,7 @@
 @import '../core/theming/theming';
 
 
-@mixin md-checkbox-theme($theme) {
+@mixin mat-checkbox-theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -13,7 +13,7 @@
   $checkbox-border-color: if($is-dark-theme, rgba(white, 0.7), rgba(black, 0.54)) !default;
 
   // The color of the checkbox's checkmark / mixedmark.
-  $checkbox-mark-color: md-color($background, background);
+  $checkbox-mark-color: mat-color($background, background);
 
   // NOTE(traviskaufman): While the spec calls for translucent blacks/whites for disabled colors,
   // this does not work well with elements layered on top of one another. To get around this we
@@ -22,63 +22,63 @@
   $black-26pct-opacity-on-light: #b0b0b0;
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
 
-  .md-checkbox-frame {
+  .mat-checkbox-frame {
     border-color: $checkbox-border-color;
   }
 
-  .md-checkbox-checkmark {
+  .mat-checkbox-checkmark {
     fill: $checkbox-mark-color;
   }
 
-  .md-checkbox-checkmark-path {
+  .mat-checkbox-checkmark-path {
     // !important is needed here because a stroke must be set as an attribute on the SVG in order
     // for line animation to work properly.
     stroke: $checkbox-mark-color !important;
   }
 
-  .md-checkbox-mixedmark {
+  .mat-checkbox-mixedmark {
     background-color: $checkbox-mark-color;
   }
 
-  .md-checkbox-indeterminate, .md-checkbox-checked {
-    &.md-primary .md-checkbox-background {
-      background-color: md-color($primary, 500);
+  .mat-checkbox-indeterminate, .mat-checkbox-checked {
+    &.mat-primary .mat-checkbox-background {
+      background-color: mat-color($primary, 500);
     }
 
-    &.md-accent .md-checkbox-background {
-      background-color: md-color($accent, 500);
+    &.mat-accent .mat-checkbox-background {
+      background-color: mat-color($accent, 500);
     }
 
-    &.md-warn .md-checkbox-background {
-      background-color: md-color($warn, 500);
+    &.mat-warn .mat-checkbox-background {
+      background-color: mat-color($warn, 500);
     }
   }
 
-  .md-checkbox-disabled {
-    &.md-checkbox-checked, &.md-checkbox-indeterminate {
-      .md-checkbox-background {
+  .mat-checkbox-disabled {
+    &.mat-checkbox-checked, &.mat-checkbox-indeterminate {
+      .mat-checkbox-background {
         background-color: $disabled-color;
       }
     }
 
-    &:not(.md-checkbox-checked) {
-      .md-checkbox-frame {
+    &:not(.mat-checkbox-checked) {
+      .mat-checkbox-frame {
         border-color: $disabled-color;
       }
     }
   }
 
-  md-checkbox:not(.md-checkbox-disabled) {
-    &.md-primary .md-checkbox-ripple .md-ripple-foreground {
-      background-color: md-color($primary, 0.26);
+  .mat-checkbox:not(.mat-checkbox-disabled) {
+    &.mat-primary .mat-checkbox-ripple .mat-ripple-foreground {
+      background-color: mat-color($primary, 0.26);
     }
 
-    &.md-accent .md-checkbox-ripple .md-ripple-foreground {
-      background-color: md-color($accent, 0.26);
+    &.mat-accent .mat-checkbox-ripple .mat-ripple-foreground {
+      background-color: mat-color($accent, 0.26);
     }
 
-    &.md-warn .md-checkbox-ripple .md-ripple-foreground {
-      background-color: md-color($warn, 0.26);
+    &.mat-warn .mat-checkbox-ripple .mat-ripple-foreground {
+      background-color: mat-color($warn, 0.26);
     }
   }
 }

@@ -1,38 +1,38 @@
 @import '../core/style/variables';
 
-$md-toolbar-height-desktop: 64px !default;
-$md-toolbar-height-mobile-portrait: 56px !default;
-$md-toolbar-height-mobile-landscape: 48px !default;
+$mat-toolbar-height-desktop: 64px !default;
+$mat-toolbar-height-mobile-portrait: 56px !default;
+$mat-toolbar-height-mobile-landscape: 48px !default;
 
-$md-toolbar-font-size: 20px !default;
-$md-toolbar-padding: 16px !default;
+$mat-toolbar-font-size: 20px !default;
+$mat-toolbar-padding: 16px !default;
 
 
-@mixin md-toolbar-height($height) {
-  md-toolbar {
+@mixin mat-toolbar-height($height) {
+  .mat-toolbar {
     min-height: $height;
   }
-  md-toolbar-row {
+  .mat-toolbar-row {
     height: $height;
   }
 }
 
-md-toolbar {
+.mat-toolbar {
   display: flex;
   box-sizing: border-box;
 
   width: 100%;
 
   // Font Styling
-  font-size: $md-toolbar-font-size;
+  font-size: $mat-toolbar-font-size;
   font-weight: 500;
-  font-family: $md-font-family;
+  font-family: $mat-font-family;
 
-  padding: 0 $md-toolbar-padding;
+  padding: 0 $mat-toolbar-padding;
 
   flex-direction: column;
 
-  md-toolbar-row {
+  .mat-toolbar-row {
     display: flex;
     box-sizing: border-box;
 
@@ -45,14 +45,14 @@ md-toolbar {
 }
 
 // Set the default height for the toolbar.
-@include md-toolbar-height($md-toolbar-height-desktop);
+@include mat-toolbar-height($mat-toolbar-height-desktop);
 
 // Specific height for mobile devices in portrait mode.
-@media ($md-xsmall) and (orientation: portrait) {
-  @include md-toolbar-height($md-toolbar-height-mobile-portrait);
+@media ($mat-xsmall) and (orientation: portrait) {
+  @include mat-toolbar-height($mat-toolbar-height-mobile-portrait);
 }
 
 // Specific height for mobile devices in landscape mode.
-@media ($md-small) and (orientation: landscape) {
-  @include md-toolbar-height($md-toolbar-height-mobile-landscape);
+@media ($mat-small) and (orientation: landscape) {
+  @include mat-toolbar-height($mat-toolbar-height-mobile-landscape);
 }

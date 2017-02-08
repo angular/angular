@@ -1,16 +1,16 @@
 // This mixin will ensure that lines that overflow the container will hide the overflow and
 // truncate neatly with an ellipsis.
-@mixin md-truncate-line() {
+@mixin mat-truncate-line() {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
-// Mixin to provide all md-line styles, changing secondary font size based on whether the list
+// Mixin to provide all mat-line styles, changing secondary font size based on whether the list
 // is in dense mode.
-@mixin md-line-base($secondary-font-size) {
-  [md-line] {
-    @include md-truncate-line();
+@mixin mat-line-base($secondary-font-size) {
+  .mat-line {
+    @include mat-truncate-line();
     display: block;
     box-sizing: border-box;
 
@@ -22,7 +22,7 @@
 }
 
 // This mixin normalizes default element styles, e.g. font weight for heading text.
-@mixin md-normalize-text() {
+@mixin mat-normalize-text() {
   & > * {
     margin: 0;
     padding: 0;
@@ -31,9 +31,9 @@
   }
 }
 
-// This mixin provides base styles for the wrapper around md-line elements in a list.
-@mixin md-line-wrapper-base() {
-  @include md-normalize-text();
+// This mixin provides base styles for the wrapper around mat-line elements in a list.
+@mixin mat-line-wrapper-base() {
+  @include mat-normalize-text();
 
   display: flex;
   flex-direction: column;

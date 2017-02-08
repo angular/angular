@@ -48,6 +48,9 @@ export type MdTabBodyOriginState = 'left' | 'right';
   moduleId: module.id,
   selector: 'md-tab-body',
   templateUrl: 'tab-body.html',
+  host: {
+    '[class.mat-tab-body]': 'true',
+  },
   animations: [
     trigger('translateTab', [
       state('left', style({transform: 'translate3d(-100%, 0, 0)'})),

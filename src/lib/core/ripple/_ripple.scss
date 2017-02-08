@@ -1,28 +1,28 @@
 @import '../theming/theming';
 
 
-$md-ripple-focused-opacity: 0.1;
-$md-ripple-background-fade-duration: 300ms;
-$md-ripple-background-default-color: rgba(0, 0, 0, 0.0588);
-$md-ripple-foreground-initial-opacity: 0.25;
-$md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
+$mat-ripple-focused-opacity: 0.1;
+$mat-ripple-background-fade-duration: 300ms;
+$mat-ripple-background-default-color: rgba(0, 0, 0, 0.0588);
+$mat-ripple-foreground-initial-opacity: 0.25;
+$mat-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
 
 
-@mixin md-ripple() {
+@mixin mat-ripple() {
   // The host element of an md-ripple directive should always have a position of "absolute" or
   // "relative" so that the ripple divs it creates inside itself are correctly positioned.
-  [md-ripple] {
+  .mat-ripple {
     overflow: hidden;
   }
 
-  [md-ripple].md-ripple-unbounded {
+  .mat-ripple.mat-ripple-unbounded {
     overflow: visible;
   }
 
-  .md-ripple-background {
-    background-color: $md-ripple-background-default-color;
+  .mat-ripple-background {
+    background-color: $mat-ripple-background-default-color;
     opacity: 0;
-    transition: opacity $md-ripple-background-fade-duration linear;
+    transition: opacity $mat-ripple-background-fade-duration linear;
     position: absolute;
     left: 0;
     top: 0;
@@ -30,42 +30,42 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
     bottom: 0;
   }
 
-  .md-ripple-unbounded .md-ripple-background {
+  .mat-ripple-unbounded .mat-ripple-background {
     display: none;
   }
 
-  .md-ripple-background.md-ripple-active {
+  .mat-ripple-background.mat-ripple-active {
     opacity: 1;
   }
 
-  .md-ripple-focused .md-ripple-background {
+  .mat-ripple-focused .mat-ripple-background {
     opacity: 1;
   }
 
-  .md-ripple-foreground {
-    background-color: $md-ripple-foreground-default-color;
+  .mat-ripple-foreground {
+    background-color: $mat-ripple-foreground-default-color;
     border-radius: 50%;
     pointer-events: none;
-    opacity: $md-ripple-foreground-initial-opacity;
+    opacity: $mat-ripple-foreground-initial-opacity;
     position: absolute;
     // The transition duration is manually set based on the ripple size.
     transition: opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  .md-ripple-foreground.md-ripple-fade-in {
+  .mat-ripple-foreground.mat-ripple-fade-in {
     opacity: 1;
   }
 
-  .md-ripple-foreground.md-ripple-fade-out {
+  .mat-ripple-foreground.mat-ripple-fade-out {
     opacity: 0;
   }
 }
 
-@mixin md-ripple-theme($theme) {
+@mixin mat-ripple-theme($theme) {
   $accent: map-get($theme, accent);
 
-  .md-ripple-focused .md-ripple-background {
-    background-color: md-color($accent, $md-ripple-focused-opacity);
+  .mat-ripple-focused .mat-ripple-background {
+    background-color: mat-color($accent, $mat-ripple-focused-opacity);
   }
 }
 
@@ -76,10 +76,10 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
 // that mixin.
 // It is also possible to specify the color palette of the temporary ripple. By default it uses the
 // accent palette for its background.
-@mixin md-temporary-ink-ripple($component, $bindToParent: false) {
+@mixin mat-temporary-ink-ripple($component, $bindToParent: false) {
   // TODO(mtlin): Replace when ink ripple component is implemented.
   // A placeholder ink ripple, shown when keyboard focused.
-  .md-ink-ripple {
+  .mat-ink-ripple {
     border-radius: 50%;
     opacity: 0;
     height: 48px;
@@ -94,13 +94,13 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
   }
 
   // Fade in when radio focused.
-  #{if($bindToParent, '&', '')}.md-#{$component}-focused .md-ink-ripple {
+  #{if($bindToParent, '&', '')}.mat-#{$component}-focused .mat-ink-ripple {
     opacity: 1;
   }
 
   // TODO(mtlin): This corresponds to disabled focus state, but it's unclear how to enter into
   // this state.
-  #{if($bindToParent, '&', '')}.md-#{$component}-disabled .md-ink-ripple {
+  #{if($bindToParent, '&', '')}.mat-#{$component}-disabled .mat-ink-ripple {
     background-color: #000;
   }
 }

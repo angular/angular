@@ -3,115 +3,115 @@
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
 // vertical slider this is the width.
-$md-slider-thickness: 48px !default;
-$md-slider-min-size: 128px !default;
-$md-slider-padding: 8px !default;
+$mat-slider-thickness: 48px !default;
+$mat-slider-min-size: 128px !default;
+$mat-slider-padding: 8px !default;
 
-$md-slider-track-thickness: 2px !default;
-$md-slider-thumb-size: 20px !default;
-$md-slider-thumb-border-width: 3px !default;
-$md-slider-thumb-border-width-active: 2px !default;
-$md-slider-thumb-border-width-disabled: 4px !default;
+$mat-slider-track-thickness: 2px !default;
+$mat-slider-thumb-size: 20px !default;
+$mat-slider-thumb-border-width: 3px !default;
+$mat-slider-thumb-border-width-active: 2px !default;
+$mat-slider-thumb-border-width-disabled: 4px !default;
 
-$md-slider-thumb-default-scale: 0.7 !default;
-$md-slider-thumb-focus-scale: 1 !default;
-$md-slider-thumb-disabled-scale: 0.5 !default;
+$mat-slider-thumb-default-scale: 0.7 !default;
+$mat-slider-thumb-focus-scale: 1 !default;
+$mat-slider-thumb-disabled-scale: 0.5 !default;
 
-$md-slider-thumb-arrow-gap: 12px !default;
+$mat-slider-thumb-arrow-gap: 12px !default;
 
-$md-slider-thumb-label-size: 28px !default;
+$mat-slider-thumb-label-size: 28px !default;
 
-$md-slider-tick-color: rgba(0, 0, 0, 0.6) !default;
-$md-slider-tick-size: 2px !default;
+$mat-slider-tick-color: rgba(0, 0, 0, 0.6) !default;
+$mat-slider-tick-size: 2px !default;
 
 
-md-slider {
+.mat-slider {
   display: inline-block;
   position: relative;
   box-sizing: border-box;
-  padding: $md-slider-padding;
+  padding: $mat-slider-padding;
   outline: none;
   vertical-align: middle;
 }
 
-.md-slider-wrapper {
+.mat-slider-wrapper {
   position: absolute;
 }
 
-.md-slider-track-wrapper {
+.mat-slider-track-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   overflow: hidden;
 }
 
-.md-slider-track-fill {
+.mat-slider-track-fill {
   position: absolute;
   transform-origin: 0 0;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-track-background {
+.mat-slider-track-background {
   position: absolute;
   transform-origin: 100% 100%;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-ticks-container {
+.mat-slider-ticks-container {
   position: absolute;
   left: 0;
   top: 0;
   overflow: hidden;
 }
 
-.md-slider-ticks {
+.mat-slider-ticks {
   box-sizing: border-box;
   opacity: 0;
   transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 // TODO(mmalerba): Simplify css to avoid unnecessary selectors.
-.md-slider-disabled .md-slider-ticks {
+.mat-slider-disabled .mat-slider-ticks {
   opacity: 0;
 }
 
-.md-slider-thumb-container {
+.mat-slider-thumb-container {
   position: absolute;
   z-index: 1;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-thumb {
+.mat-slider-thumb {
   position: absolute;
-  right: -$md-slider-thumb-size / 2;
-  bottom: -$md-slider-thumb-size / 2;
+  right: -$mat-slider-thumb-size / 2;
+  bottom: -$mat-slider-thumb-size / 2;
   box-sizing: border-box;
-  width: $md-slider-thumb-size;
-  height: $md-slider-thumb-size;
-  border: $md-slider-thumb-border-width solid transparent;
+  width: $mat-slider-thumb-size;
+  height: $mat-slider-thumb-size;
+  border: $mat-slider-thumb-border-width solid transparent;
   border-radius: 50%;
-  transform: scale($md-slider-thumb-default-scale);
+  transform: scale($mat-slider-thumb-default-scale);
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color $swift-ease-out-duration $swift-ease-out-timing-function,
               border-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-thumb-label {
+.mat-slider-thumb-label {
   display: none;
   align-items: center;
   justify-content: center;
   position: absolute;
-  width: $md-slider-thumb-label-size;
-  height: $md-slider-thumb-label-size;
+  width: $mat-slider-thumb-label-size;
+  height: $mat-slider-thumb-label-size;
   border-radius: 50%;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               border-radius  $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color  $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-thumb-label-text {
+.mat-slider-thumb-label-text {
   z-index: 1;
   font-size: 12px;
   font-weight: bold;
@@ -121,10 +121,10 @@ md-slider {
 
 
 // Slider sliding state.
-.md-slider-sliding {
-  .md-slider-track-fill,
-  .md-slider-track-background,
-  .md-slider-thumb-container {
+.mat-slider-sliding {
+  .mat-slider-track-fill,
+  .mat-slider-track-background,
+  .mat-slider-thumb-container {
     // Must use `transition-duration: 0ms` to disable animation rather than `transition: none`.
     // On Mobile Safari `transition: none` causes the slider thumb to appear stuck.
     transition-duration: 0ms;
@@ -133,25 +133,25 @@ md-slider {
 
 
 // Slider with ticks when not disabled.
-.md-slider-has-ticks {
+.mat-slider-has-ticks {
 
-  .md-slider-wrapper::after {
+  .mat-slider-wrapper::after {
     content: '';
     position: absolute;
-    border: 0 solid $md-slider-tick-color;
+    border: 0 solid $mat-slider-tick-color;
     opacity: 0;
     transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
   }
 
-  &.md-slider-active,
+  &.mat-slider-active,
   &:hover {
-    &:not(.md-slider-hide-last-tick) {
-      .md-slider-wrapper::after {
+    &:not(.mat-slider-hide-last-tick) {
+      .mat-slider-wrapper::after {
         opacity: 1;
       }
     }
 
-    .md-slider-ticks {
+    .mat-slider-ticks {
       opacity: 1;
     }
   }
@@ -159,131 +159,131 @@ md-slider {
 
 
 // Slider with thumb label.
-.md-slider-thumb-label-showing {
-  .md-slider-thumb-label {
+.mat-slider-thumb-label-showing {
+  .mat-slider-thumb-label {
     display: flex;
   }
 }
 
 
 // Inverted slider.
-.md-slider-axis-inverted {
-  .md-slider-track-fill {
+.mat-slider-axis-inverted {
+  .mat-slider-track-fill {
     transform-origin: 100% 100%;
   }
 
-  .md-slider-track-background {
+  .mat-slider-track-background {
     transform-origin: 0 0;
   }
 }
 
 
 // Active slider.
-.md-slider-active {
-  .md-slider-thumb {
-    border-width: $md-slider-thumb-border-width-active;
-    transform: scale($md-slider-thumb-focus-scale);
+.mat-slider-active {
+  .mat-slider-thumb {
+    border-width: $mat-slider-thumb-border-width-active;
+    transform: scale($mat-slider-thumb-focus-scale);
   }
 
-  &.md-slider-thumb-label-showing .md-slider-thumb {
+  &.mat-slider-thumb-label-showing .mat-slider-thumb {
     transform: scale(0);
   }
 
-  .md-slider-thumb-label {
+  .mat-slider-thumb-label {
     border-radius: 50% 50% 0;
   }
 
-  .md-slider-thumb-label-text {
+  .mat-slider-thumb-label-text {
     opacity: 1;
   }
 }
 
 
 // Disabled slider.
-.md-slider-disabled {
-  .md-slider-thumb {
-    border-width: $md-slider-thumb-border-width-disabled;
-    transform: scale($md-slider-thumb-disabled-scale);
+.mat-slider-disabled {
+  .mat-slider-thumb {
+    border-width: $mat-slider-thumb-border-width-disabled;
+    transform: scale($mat-slider-thumb-disabled-scale);
   }
 
-  .md-slider-thumb-label {
+  .mat-slider-thumb-label {
     display: none;
   }
 }
 
 
 // Horizontal slider.
-.md-slider-horizontal {
-  height: $md-slider-thickness;
-  min-width: $md-slider-min-size;
+.mat-slider-horizontal {
+  height: $mat-slider-thickness;
+  min-width: $mat-slider-min-size;
 
-  .md-slider-wrapper {
-    height: $md-slider-track-thickness;
-    top: ($md-slider-thickness - $md-slider-track-thickness) / 2;
-    left: $md-slider-padding;
-    right: $md-slider-padding;
+  .mat-slider-wrapper {
+    height: $mat-slider-track-thickness;
+    top: ($mat-slider-thickness - $mat-slider-track-thickness) / 2;
+    left: $mat-slider-padding;
+    right: $mat-slider-padding;
   }
 
-  .md-slider-wrapper::after {
-    height: $md-slider-track-thickness;
-    border-left-width: $md-slider-tick-size;
+  .mat-slider-wrapper::after {
+    height: $mat-slider-track-thickness;
+    border-left-width: $mat-slider-tick-size;
     right: 0;
     top: 0;
   }
 
-  .md-slider-track-wrapper {
-    height: $md-slider-track-thickness;
+  .mat-slider-track-wrapper {
+    height: $mat-slider-track-thickness;
     width: 100%;
   }
 
-  .md-slider-track-fill {
-    height: $md-slider-track-thickness;
+  .mat-slider-track-fill {
+    height: $mat-slider-track-thickness;
     width: 100%;
     transform: scaleX(0);
   }
 
-  .md-slider-track-background {
-    height: $md-slider-track-thickness;
+  .mat-slider-track-background {
+    height: $mat-slider-track-thickness;
     width: 100%;
     transform: scaleX(1);
   }
 
-  .md-slider-ticks-container {
-    height: $md-slider-track-thickness;
+  .mat-slider-ticks-container {
+    height: $mat-slider-track-thickness;
     width: 100%;
   }
 
-  .md-slider-ticks {
-    background: repeating-linear-gradient(to right, $md-slider-tick-color,
-        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+  .mat-slider-ticks {
+    background: repeating-linear-gradient(to right, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
     // Firefox doesn't draw the gradient correctly with 'to right'
     // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
-    background: -moz-repeating-linear-gradient(0.0001deg, $md-slider-tick-color,
-        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    background: -moz-repeating-linear-gradient(0.0001deg, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
     background-clip: content-box;
-    height: $md-slider-track-thickness;
+    height: $mat-slider-track-thickness;
     width: 100%;
   }
 
-  .md-slider-thumb-container {
+  .mat-slider-thumb-container {
     width: 100%;
     height: 0;
     top: 50%;
   }
 
-  .md-slider-thumb-label {
-    right: -$md-slider-thumb-label-size / 2;
-    top: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
-    transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.01)
+  .mat-slider-thumb-label {
+    right: -$mat-slider-thumb-label-size / 2;
+    top: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
+    transform: translateY($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap) scale(0.01)
         rotate(45deg);
   }
 
-  .md-slider-thumb-label-text {
+  .mat-slider-thumb-label-text {
     transform: rotate(-45deg);
   }
 
-  &.md-slider-active {
-    .md-slider-thumb-label {
+  &.mat-slider-active {
+    .mat-slider-thumb-label {
       transform: rotate(45deg);
     }
   }
@@ -291,73 +291,73 @@ md-slider {
 
 
 // Vertical slider.
-.md-slider-vertical {
-  width: $md-slider-thickness;
-  min-height: $md-slider-min-size;
+.mat-slider-vertical {
+  width: $mat-slider-thickness;
+  min-height: $mat-slider-min-size;
 
-  .md-slider-wrapper {
-    width: $md-slider-track-thickness;
-    top: $md-slider-padding;
-    bottom: $md-slider-padding;
-    left: ($md-slider-thickness - $md-slider-track-thickness) / 2;
+  .mat-slider-wrapper {
+    width: $mat-slider-track-thickness;
+    top: $mat-slider-padding;
+    bottom: $mat-slider-padding;
+    left: ($mat-slider-thickness - $mat-slider-track-thickness) / 2;
   }
 
-  .md-slider-wrapper::after {
-    width: $md-slider-track-thickness;
-    border-top-width: $md-slider-tick-size;
+  .mat-slider-wrapper::after {
+    width: $mat-slider-track-thickness;
+    border-top-width: $mat-slider-tick-size;
     bottom: 0;
     left: 0;
   }
 
-  .md-slider-track-wrapper {
+  .mat-slider-track-wrapper {
     height: 100%;
-    width: $md-slider-track-thickness;
+    width: $mat-slider-track-thickness;
   }
 
-  .md-slider-track-fill {
+  .mat-slider-track-fill {
     height: 100%;
-    width: $md-slider-track-thickness;
+    width: $mat-slider-track-thickness;
     transform: scaleY(0);
   }
 
-  .md-slider-track-background {
+  .mat-slider-track-background {
     height: 100%;
-    width: $md-slider-track-thickness;
+    width: $mat-slider-track-thickness;
     transform: scaleY(1);
   }
 
-  .md-slider-ticks-container {
-    width: $md-slider-track-thickness;
+  .mat-slider-ticks-container {
+    width: $mat-slider-track-thickness;
     height: 100%;
   }
 
-  .md-slider-ticks {
-    background: repeating-linear-gradient(to bottom, $md-slider-tick-color,
-        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+  .mat-slider-ticks {
+    background: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
     background-clip: content-box;
-    width: $md-slider-track-thickness;
+    width: $mat-slider-track-thickness;
     height: 100%;
   }
 
-  .md-slider-thumb-container {
+  .mat-slider-thumb-container {
     height: 100%;
     width: 0;
     left: 50%;
   }
 
-  .md-slider-thumb-label {
-    bottom: -$md-slider-thumb-label-size / 2;
-    left: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
-    transform: translateX($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.01)
+  .mat-slider-thumb-label {
+    bottom: -$mat-slider-thumb-label-size / 2;
+    left: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
+    transform: translateX($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap) scale(0.01)
         rotate(-45deg);
   }
 
-  .md-slider-thumb-label-text {
+  .mat-slider-thumb-label-text {
     transform: rotate(45deg);
   }
 
-  &.md-slider-active {
-    .md-slider-thumb-label {
+  &.mat-slider-active {
+    .mat-slider-thumb-label {
       transform: rotate(-45deg);
     }
   }
@@ -366,26 +366,26 @@ md-slider {
 
 // Slider in RTL languages.
 [dir='rtl'] {
-  .md-slider-wrapper::after {
+  .mat-slider-wrapper::after {
     left: 0;
     right: auto;
   }
 
-  .md-slider-horizontal {
-    .md-slider-track-fill {
+  .mat-slider-horizontal {
+    .mat-slider-track-fill {
       transform-origin: 100% 100%;
     }
 
-    .md-slider-track-background {
+    .mat-slider-track-background {
       transform-origin: 0 0;
     }
 
-    &.md-slider-axis-inverted {
-      .md-slider-track-fill {
+    &.mat-slider-axis-inverted {
+      .mat-slider-track-fill {
         transform-origin: 0 0;
       }
 
-      .md-slider-track-background {
+      .mat-slider-track-background {
         transform-origin: 100% 100%;
       }
     }

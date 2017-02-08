@@ -69,7 +69,7 @@ describe('MdTooltip', () => {
       tick(500);
 
       // Make sure tooltip is shown to the user and animation has finished
-      const tooltipElement = overlayContainerElement.querySelector('.md-tooltip') as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement instanceof HTMLElement).toBe(true);
       expect(tooltipElement.style.transform).toBe('scale(1)');
 
@@ -339,7 +339,7 @@ describe('MdTooltip', () => {
       tick(500);
 
       // Make sure tooltip is shown to the user and animation has finished
-      const tooltipElement = overlayContainerElement.querySelector('.md-tooltip') as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement instanceof HTMLElement).toBe(true);
       expect(tooltipElement.style.transform).toBe('scale(1)');
 

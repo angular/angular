@@ -24,7 +24,10 @@ export type AutocompletePositionY = 'above' | 'below';
   templateUrl: 'autocomplete.html',
   styleUrls: ['autocomplete.css'],
   encapsulation: ViewEncapsulation.None,
-  exportAs: 'mdAutocomplete'
+  exportAs: 'mdAutocomplete',
+  host: {
+    '[class.mat-autocomplete]': 'true'
+  }
 })
 export class MdAutocomplete {
 
@@ -54,8 +57,8 @@ export class MdAutocomplete {
   /** Sets a class on the panel based on its position (used to set y-offset). */
   _getPositionClass() {
     return {
-      'md-autocomplete-panel-below': this.positionY === 'below',
-      'md-autocomplete-panel-above': this.positionY === 'above'
+      'mat-autocomplete-panel-below': this.positionY === 'below',
+      'mat-autocomplete-panel-above': this.positionY === 'above'
     };
   }
 

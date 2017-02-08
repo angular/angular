@@ -345,11 +345,11 @@ describe('MdAutocomplete', () => {
 
     it('should disable input in view when disabled programmatically', () => {
       const inputUnderline =
-          fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+          fixture.debugElement.query(By.css('.mat-input-underline')).nativeElement;
 
       expect(input.disabled)
           .toBe(false, `Expected input to start out enabled in view.`);
-      expect(inputUnderline.classList.contains('md-disabled'))
+      expect(inputUnderline.classList.contains('mat-disabled'))
           .toBe(false, `Expected input underline to start out with normal styles.`);
 
       fixture.componentInstance.stateCtrl.disable();
@@ -357,7 +357,7 @@ describe('MdAutocomplete', () => {
 
       expect(input.disabled)
           .toBe(true, `Expected input to be disabled in view when disabled programmatically.`);
-      expect(inputUnderline.classList.contains('md-disabled'))
+      expect(inputUnderline.classList.contains('mat-disabled'))
           .toBe(true, `Expected input underline to display disabled styles.`);
     });
 
@@ -469,8 +469,8 @@ describe('MdAutocomplete', () => {
           fixture.detectChanges();
           expect(fixture.componentInstance.trigger.activeOption)
               .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
-          expect(optionEls[0].classList).toContain('md-active');
-          expect(optionEls[1].classList).not.toContain('md-active');
+          expect(optionEls[0].classList).toContain('mat-active');
+          expect(optionEls[1].classList).not.toContain('mat-active');
 
           fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
@@ -479,8 +479,8 @@ describe('MdAutocomplete', () => {
             expect(fixture.componentInstance.trigger.activeOption)
                 .toBe(fixture.componentInstance.options.toArray()[1],
                     'Expected second option to be active.');
-            expect(optionEls[0].classList).not.toContain('md-active');
-            expect(optionEls[1].classList).toContain('md-active');
+            expect(optionEls[0].classList).not.toContain('mat-active');
+            expect(optionEls[1].classList).toContain('mat-active');
           });
         });
       });
@@ -498,8 +498,8 @@ describe('MdAutocomplete', () => {
           fixture.detectChanges();
           expect(fixture.componentInstance.trigger.activeOption)
               .toBe(fixture.componentInstance.options.last, 'Expected last option to be active.');
-          expect(optionEls[10].classList).toContain('md-active');
-          expect(optionEls[0].classList).not.toContain('md-active');
+          expect(optionEls[10].classList).toContain('mat-active');
+          expect(optionEls[0].classList).not.toContain('mat-active');
 
           fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
@@ -508,8 +508,8 @@ describe('MdAutocomplete', () => {
             expect(fixture.componentInstance.trigger.activeOption)
                 .toBe(fixture.componentInstance.options.first,
                     'Expected first option to be active.');
-            expect(optionEls[0].classList).toContain('md-active');
-            expect(optionEls[10].classList).not.toContain('md-active');
+            expect(optionEls[0].classList).toContain('mat-active');
+            expect(optionEls[10].classList).not.toContain('mat-active');
           });
         });
       });
@@ -535,8 +535,8 @@ describe('MdAutocomplete', () => {
             expect(fixture.componentInstance.trigger.activeOption)
                 .toBe(fixture.componentInstance.options.first,
                     'Expected first option to be active.');
-            expect(optionEls[0].classList).toContain('md-active');
-            expect(optionEls[1].classList).not.toContain('md-active');
+            expect(optionEls[0].classList).toContain('mat-active');
+            expect(optionEls[1].classList).not.toContain('mat-active');
           });
         });
       });
@@ -607,7 +607,7 @@ describe('MdAutocomplete', () => {
 
     it('should scroll to active options below the fold', async(() => {
       fixture.whenStable().then(() => {
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .md-autocomplete-panel');
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
 
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         fixture.detectChanges();
@@ -646,7 +646,7 @@ describe('MdAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      const panel = fixture.debugElement.query(By.css('.md-autocomplete-panel')).nativeElement;
+      const panel = fixture.debugElement.query(By.css('.mat-autocomplete-panel')).nativeElement;
 
       expect(panel.getAttribute('role'))
           .toEqual('listbox', 'Expected role of the panel to be listbox.');
@@ -709,7 +709,7 @@ describe('MdAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      const panel = fixture.debugElement.query(By.css('.md-autocomplete-panel')).nativeElement;
+      const panel = fixture.debugElement.query(By.css('.mat-autocomplete-panel')).nativeElement;
 
       expect(input.getAttribute('aria-owns'))
           .toEqual(panel.getAttribute('id'), 'Expected aria-owns to match attached autocomplete.');
@@ -734,7 +734,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       const inputBottom = input.getBoundingClientRect().bottom;
-      const panel = overlayContainerElement.querySelector('.md-autocomplete-panel');
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel');
       const panelTop = panel.getBoundingClientRect().top;
 
       // Panel is offset by 6px in styles so that the underline has room to display.
@@ -753,7 +753,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       const inputTop = input.getBoundingClientRect().top;
-      const panel = overlayContainerElement.querySelector('.md-autocomplete-panel');
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel');
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       // Panel is offset by 24px in styles so that the label has room to display.
@@ -777,7 +777,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const inputTop = input.getBoundingClientRect().top;
-        const panel = overlayContainerElement.querySelector('.md-autocomplete-panel');
+        const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel');
         const panelBottom = panel.getBoundingClientRect().bottom;
 
         // Panel is offset by 24px in styles so that the label has room to display.

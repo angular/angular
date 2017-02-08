@@ -56,8 +56,9 @@ export class MdButtonToggleChange {
   selector: 'md-button-toggle-group:not([multiple]), mat-button-toggle-group:not([multiple])',
   providers: [MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR],
   host: {
+    '[class.mat-button-toggle-group]': 'true',
     'role': 'radiogroup',
-    '[class.md-button-toggle-vertical]': 'vertical'
+    '[class.mat-button-toggle-vertical]': 'vertical'
   },
   exportAs: 'mdButtonToggleGroup',
 })
@@ -245,7 +246,8 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   selector: 'md-button-toggle-group[multiple], mat-button-toggle-group[multiple]',
   exportAs: 'mdButtonToggleGroup',
   host: {
-    '[class.md-button-toggle-vertical]': 'vertical'
+    '[class.mat-button-toggle-group]': 'true',
+    '[class.mat-button-toggle-vertical]': 'vertical'
   }
 })
 export class MdButtonToggleGroupMultiple {
@@ -284,6 +286,9 @@ export class MdButtonToggleGroupMultiple {
   templateUrl: 'button-toggle.html',
   styleUrls: ['button-toggle.css'],
   encapsulation: ViewEncapsulation.None,
+  host: {
+    '[class.mat-button-toggle]': 'true'
+  }
 })
 export class MdButtonToggle implements OnInit {
   /** Whether or not this button toggle is checked. */
@@ -366,7 +371,7 @@ export class MdButtonToggle implements OnInit {
   }
 
   /** Whether the button is checked. */
-  @HostBinding('class.md-button-toggle-checked')
+  @HostBinding('class.mat-button-toggle-checked')
   @Input()
   get checked(): boolean {
     return this._checked;
@@ -411,7 +416,7 @@ export class MdButtonToggle implements OnInit {
   }
 
   /** Whether the button is disabled. */
-  @HostBinding('class.md-button-toggle-disabled')
+  @HostBinding('class.mat-button-toggle-disabled')
   @Input()
   get disabled(): boolean {
     return this._disabled || (this.buttonToggleGroup != null && this.buttonToggleGroup.disabled) ||

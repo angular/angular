@@ -3,29 +3,29 @@
 @import '../core/style/form-common';
 @import '../core/a11y/a11y';
 
-$md-select-trigger-height: 30px !default;
-$md-select-trigger-min-width: 112px !default;
-$md-select-arrow-size: 5px !default;
-$md-select-arrow-margin: 4px !default;
-$md-select-panel-max-height: 256px !default;
+$mat-select-trigger-height: 30px !default;
+$mat-select-trigger-min-width: 112px !default;
+$mat-select-arrow-size: 5px !default;
+$mat-select-arrow-margin: 4px !default;
+$mat-select-panel-max-height: 256px !default;
 
-md-select {
+.mat-select {
   display: inline-block;
   outline: none;
 }
 
-.md-select-trigger {
+.mat-select-trigger {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: $md-select-trigger-height;
-  min-width: $md-select-trigger-min-width;
+  height: $mat-select-trigger-height;
+  min-width: $mat-select-trigger-min-width;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
 
   [aria-disabled='true'] & {
-    @include md-control-disabled-underline();
+    @include mat-control-disabled-underline();
     border-bottom: transparent;
     background-position: 0 bottom;
     cursor: default;
@@ -33,7 +33,7 @@ md-select {
   }
 }
 
-.md-select-placeholder {
+.mat-select-placeholder {
   position: relative;
   padding: 0 2px;
   transform-origin: left top;
@@ -42,7 +42,7 @@ md-select {
   // allow placeholders to sometimes float without animating,
   // for example when the value is set programmatically.
   // TODO(kara): Change when animations API supports skipping animation.
-  &.md-floating-placeholder {
+  &.mat-floating-placeholder {
     top: -22px;
     left: -2px;
     text-align: left;
@@ -52,7 +52,7 @@ md-select {
   [dir='rtl'] & {
     transform-origin: right top;
 
-    &.md-floating-placeholder {
+    &.mat-floating-placeholder {
       left: 2px;
       text-align: right;
     }
@@ -64,10 +64,10 @@ md-select {
   }
 }
 
-.md-select-value {
-  @include md-truncate-line();
+.mat-select-value {
+  @include mat-truncate-line();
   position: absolute;
-  max-width: calc(100% - #{$md-select-arrow-size * 2});
+  max-width: calc(100% - #{$mat-select-arrow-size * 2});
 
   // Firefox and some versions of IE incorrectly keep absolutely
   // positioned children of flex containers in the flex flow when calculating
@@ -88,20 +88,20 @@ md-select {
   }
 }
 
-.md-select-arrow {
+.mat-select-arrow {
   width: 0;
   height: 0;
-  border-left: $md-select-arrow-size solid transparent;
-  border-right: $md-select-arrow-size solid transparent;
-  border-top: $md-select-arrow-size solid;
-  margin: 0 $md-select-arrow-margin;
+  border-left: $mat-select-arrow-size solid transparent;
+  border-right: $mat-select-arrow-size solid transparent;
+  border-top: $mat-select-arrow-size solid;
+  margin: 0 $mat-select-arrow-margin;
 }
 
-.md-select-panel {
-  @include md-menu-base();
+.mat-select-panel {
+  @include mat-menu-base();
   padding-top: 0;
   padding-bottom: 0;
-  max-height: $md-select-panel-max-height;
+  max-height: $mat-select-panel-max-height;
 
   @include cdk-high-contrast {
     outline: solid 1px;

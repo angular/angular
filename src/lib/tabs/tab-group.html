@@ -1,13 +1,13 @@
 <md-tab-header [selectedIndex]="selectedIndex" #tabHeader
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
-  <div class="md-tab-label" role="tab" md-tab-label-wrapper md-ripple
+  <div class="mat-tab-label" role="tab" md-tab-label-wrapper md-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [tabIndex]="selectedIndex == i ? 0 : -1"
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
-       [class.md-tab-label-active]="selectedIndex == i"
+       [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
        (click)="tabHeader.focusIndex = selectedIndex = i">
 
@@ -21,12 +21,12 @@
   </div>
 </md-tab-header>
 
-<div class="md-tab-body-wrapper" #tabBodyWrapper>
+<div class="mat-tab-body-wrapper" #tabBodyWrapper>
   <md-tab-body role="tabpanel"
                *ngFor="let tab of _tabs; let i = index"
                [id]="_getTabContentId(i)"
                [attr.aria-labelledby]="_getTabLabelId(i)"
-               [class.md-tab-body-active]="selectedIndex == i"
+               [class.mat-tab-body-active]="selectedIndex == i"
                [content]="tab.content"
                [position]="tab.position"
                [origin]="tab.origin"

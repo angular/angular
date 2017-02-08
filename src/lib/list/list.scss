@@ -2,88 +2,89 @@
 @import '../core/style/list-common';
 
 
-$md-list-side-padding: 16px;
-$md-list-avatar-size: 40px;
-$md-list-icon-size: 24px;
+$mat-list-side-padding: 16px;
+$mat-list-avatar-size: 40px;
+$mat-list-icon-size: 24px;
 
 // Normal list variables
-$md-list-top-padding: 8px;
-$md-list-font-size: 16px;
-$md-list-secondary-font: 14px;
+$mat-list-top-padding: 8px;
+$mat-list-font-size: 16px;
+$mat-list-secondary-font: 14px;
 // height for single-line lists
-$md-list-base-height: 48px;
+$mat-list-base-height: 48px;
 // height for single-line lists with avatars
-$md-list-avatar-height: 56px;
+$mat-list-avatar-height: 56px;
 // spec requires two- and three-line lists be taller
-$md-list-two-line-height: 72px;
-$md-list-three-line-height: 88px;
+$mat-list-two-line-height: 72px;
+$mat-list-three-line-height: 88px;
 
 // Dense list variables
-$md-dense-top-padding: 4px;
-$md-dense-font-size: 13px;
-$md-dense-base-height: 40px;
-$md-dense-avatar-height: 48px;
-$md-dense-two-line-height: 60px;
-$md-dense-three-line-height: 76px;
+$mat-dense-top-padding: 4px;
+$mat-dense-font-size: 13px;
+$mat-dense-base-height: 40px;
+$mat-dense-avatar-height: 48px;
+$mat-dense-two-line-height: 60px;
+$mat-dense-three-line-height: 76px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
-@mixin md-list-item-base($font-size, $base-height, $avatar-height,
+@mixin mat-list-item-base($font-size, $base-height, $avatar-height,
   $two-line-height, $three-line-height) {
 
-  // Prevents the wrapper `md-list-item` from collapsing due to it being `inline` by default.
+  // Prevents the wrapper `mat-list-item-content` from collapsing due to it
+  // being `inline` by default.
   display: block;
 
-  .md-list-item {
+  .mat-list-item-content {
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-family: $md-font-family;
+    font-family: $mat-font-family;
     box-sizing: border-box;
     font-size: $font-size;
     height: $base-height;
-    padding: 0 $md-list-side-padding;
+    padding: 0 $mat-list-side-padding;
   }
 
-  &.md-list-avatar .md-list-item {
+  &.mat-list-item-avatar .mat-list-item-content {
     height: $avatar-height;
   }
 
-  &.md-2-line .md-list-item {
+  &.mat-2-line .mat-list-item-content {
     height: $two-line-height;
   }
 
 
-  &.md-3-line .md-list-item {
+  &.mat-3-line .mat-list-item-content {
     height: $three-line-height;
   }
 
   // list items with more than 3 lines should expand to match
   // the height of its contained text
-  &.md-multi-line .md-list-item {
+  &.mat-multi-line .mat-list-item-content {
     height: 100%;
-    padding: 8px $md-list-side-padding;
+    padding: 8px $mat-list-side-padding;
   }
 
-  .md-list-text {
-    @include md-line-wrapper-base();
-    padding: 0 $md-list-side-padding;
+  .mat-list-text {
+    @include mat-line-wrapper-base();
+    padding: 0 $mat-list-side-padding;
 
     &:first-child {
       padding: 0;
     }
   }
 
-  [md-list-avatar] {
+  .mat-list-avatar {
     flex-shrink: 0;
-    width: $md-list-avatar-size;
-    height: $md-list-avatar-size;
+    width: $mat-list-avatar-size;
+    height: $mat-list-avatar-size;
     border-radius: 50%;
   }
 
-  [md-list-icon] {
-    width: $md-list-icon-size;
-    height: $md-list-icon-size;
+  .mat-list-icon {
+    width: $mat-list-icon-size;
+    height: $mat-list-icon-size;
     border-radius: 50%;
     padding: 4px;
   }
@@ -91,11 +92,11 @@ $md-dense-three-line-height: 76px;
 
 // This mixin provides all subheader styles, adjusting heights and padding
 // based on whether the list is in dense mode.
-@mixin md-subheader-base($top-padding, $secondary-size, $base-height) {
+@mixin mat-subheader-base($top-padding, $secondary-size, $base-height) {
   display: block;
   box-sizing: border-box;
   height: $base-height;
-  padding: $md-list-side-padding;
+  padding: $mat-list-side-padding;
   margin: 0;
 
   font-size: $secondary-size;
@@ -106,75 +107,75 @@ $md-dense-three-line-height: 76px;
   }
 }
 
-md-list, md-nav-list {
-  padding-top: $md-list-top-padding;
+.mat-list, .mat-nav-list {
+  padding-top: $mat-list-top-padding;
   display: block;
 
-  [md-subheader] {
-    @include md-subheader-base(
-      $md-list-top-padding,
-      $md-list-secondary-font,
-      $md-list-base-height
+  .mat-subheader {
+    @include mat-subheader-base(
+      $mat-list-top-padding,
+      $mat-list-secondary-font,
+      $mat-list-base-height
     );
   }
 
 
-  md-list-item, a[md-list-item] {
-    @include md-list-item-base(
-      $md-list-font-size,
-      $md-list-base-height,
-      $md-list-avatar-height,
-      $md-list-two-line-height,
-      $md-list-three-line-height
+  .mat-list-item {
+    @include mat-list-item-base(
+      $mat-list-font-size,
+      $mat-list-base-height,
+      $mat-list-avatar-height,
+      $mat-list-two-line-height,
+      $mat-list-three-line-height
     );
 
-    @include md-line-base($md-list-secondary-font);
+    @include mat-line-base($mat-list-secondary-font);
   }
 }
 
 
-md-list[dense], md-nav-list[dense] {
-  padding-top: $md-dense-top-padding;
+.mat-list[dense], .mat-nav-list[dense] {
+  padding-top: $mat-dense-top-padding;
   display: block;
 
-  [md-subheader] {
-    @include md-subheader-base(
-      $md-dense-top-padding,
-      $md-dense-font-size,
-      $md-dense-base-height
+  .mat-subheader {
+    @include mat-subheader-base(
+      $mat-dense-top-padding,
+      $mat-dense-font-size,
+      $mat-dense-base-height
     );
   }
 
-  md-list-item, a[md-list-item] {
-    @include md-list-item-base(
-      $md-dense-font-size,
-      $md-dense-base-height,
-      $md-dense-avatar-height,
-      $md-dense-two-line-height,
-      $md-dense-three-line-height
+  .mat-list-item {
+    @include mat-list-item-base(
+      $mat-dense-font-size,
+      $mat-dense-base-height,
+      $mat-dense-avatar-height,
+      $mat-dense-two-line-height,
+      $mat-dense-three-line-height
     );
 
-    @include md-line-base($md-dense-font-size);
+    @include mat-line-base($mat-dense-font-size);
   }
 }
 
-md-divider {
+.mat-divider {
   display: block;
   border-top-style: solid;
   border-top-width: 1px;
   margin: 0;
 }
 
-md-nav-list {
+.mat-nav-list {
   a {
     text-decoration: none;
     color: inherit;
   }
 
-  .md-list-item {
+  .mat-list-item-content {
     cursor: pointer;
 
-    &:hover, &.md-list-item-focus {
+    &:hover, &.mat-list-item-focus {
       outline: none;
     }
   }

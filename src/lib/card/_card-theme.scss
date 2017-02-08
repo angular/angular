@@ -2,16 +2,16 @@
 @import '../core/theming/theming';
 
 
-@mixin md-card-theme($theme) {
+@mixin mat-card-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  md-card {
-    background: md-color($background, card);
-    color: md-color($foreground, base);
+  .mat-card {
+    background: mat-color($background, card);
+    color: mat-color($foreground, base);
   }
 
-  md-card-subtitle {
-    color: md-color($foreground, secondary-text);
+  .mat-card-subtitle {
+    color: mat-color($foreground, secondary-text);
   }
 }

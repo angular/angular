@@ -4,9 +4,8 @@
 @import 'button-base';
 @import '../core/a11y/a11y';
 
-// TODO(kara): Replace attribute selectors with class selectors when possible
-[md-button], [md-icon-button] {
-  @extend %md-button-base;
+.mat-button, .mat-icon-button {
+  @extend %mat-button-base;
 
   // Only flat button and icon buttons should inherit the color
   color: currentColor;
@@ -14,58 +13,58 @@
   // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
   &:hover {
     // Use the same visual treatment for hover as for focus.
-    .md-button-focus-overlay {
+    .mat-button-focus-overlay {
       opacity: 1;
     }
   }
 
   &[disabled]:hover {
-    &.md-primary, &.md-accent, &.md-warn, .md-button-focus-overlay {
+    &.mat-primary, &.mat-accent, &.mat-warn, .mat-button-focus-overlay {
       background-color: transparent;
     }
   }
 }
 
-[md-raised-button] {
-  @extend %md-raised-button;
+.mat-raised-button {
+  @extend %mat-raised-button;
 }
 
-[md-fab] {
-  @include md-fab($md-fab-size, $md-fab-padding);
+.mat-fab {
+  @include mat-fab($mat-fab-size, $mat-fab-padding);
 }
 
-[md-mini-fab] {
-  @include md-fab($md-mini-fab-size, $md-mini-fab-padding);
+.mat-mini-fab {
+  @include mat-fab($mat-mini-fab-size, $mat-mini-fab-padding);
 }
 
-[md-icon-button] {
+.mat-icon-button {
   padding: 0;
 
   // Reset the min-width from the button base.
   min-width: 0;
 
-  width: $md-icon-button-size;
-  height: $md-icon-button-size;
+  width: $mat-icon-button-size;
+  height: $mat-icon-button-size;
 
   flex-shrink: 0;
 
-  line-height: $md-icon-button-size;
-  border-radius: $md-icon-button-border-radius;
+  line-height: $mat-icon-button-size;
+  border-radius: $mat-icon-button-border-radius;
 
-  i, md-icon {
-    line-height: $md-icon-button-line-height;
+  i, .mat-icon {
+    line-height: $mat-icon-button-line-height;
   }
 }
 
 // The text and icon should be vertical aligned inside a button
-[md-button], [md-raised-button], [md-icon-button] {
-  .md-button-wrapper > * {
+.mat-button, .mat-raised-button, .mat-icon-button {
+  .mat-button-wrapper > * {
     vertical-align: middle;
   }
 }
 
 // The ripple container should match the bounds of the entire button.
-.md-button-ripple, .md-button-focus-overlay {
+.mat-button-ripple, .mat-button-focus-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -76,7 +75,7 @@
 // Overlay to be used as a tint. Note that the same effect can be achieved by using a pseudo
 // element, however we use a proper DOM element in order to be able to disable the default
 // touch action. This makes the buttons more responsive on touch devices.
-.md-button-focus-overlay {
+.mat-button-focus-overlay {
   // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
   // black, 12% opacity shade over the normal color (for both light and dark themes).
   background-color: rgba(black, 0.12);
@@ -93,7 +92,7 @@
 }
 
 // For round buttons, the ripple container should clip child ripples to a circle.
-.md-button-ripple-round {
+.mat-button-ripple-round {
   border-radius: 50%;
   // z-index needed to make clipping to border-radius work correctly.
   // http://stackoverflow.com/questions/20001515/chrome-bug-border-radius-not-clipping-contents-when-combined-with-css-transiti
@@ -102,7 +101,7 @@
 
 // Add an outline to make it more visible in high contrast mode.
 @include cdk-high-contrast {
-  [md-button], [md-raised-button], [md-icon-button], [md-fab], [md-mini-fab] {
+  .mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     outline: solid 1px;
   }
 }

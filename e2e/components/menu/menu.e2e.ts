@@ -4,7 +4,7 @@ import {expectToExist, expectAlignedWith, expectFocusOn, expectLocation} from '.
 import {pressKeys} from '../../util/actions';
 
 describe('menu', () => {
-  const menuSelector = '.md-menu-panel';
+  const menuSelector = '.mat-menu-panel';
   let page: MenuPage;
 
   beforeEach(() => page = new MenuPage());
@@ -60,7 +60,7 @@ describe('menu', () => {
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
     page.menu().getAttribute('class').then((classes: string) => {
-      expect(classes).toContain('md-menu-panel custom');
+      expect(classes).toContain('mat-menu-panel custom');
     });
   });
 

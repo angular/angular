@@ -12,7 +12,10 @@ import {
   ElementRef,
   Optional,
 } from '@angular/core';
-import {MdGridTile, MdGridTileText} from './grid-tile';
+import {
+  MdGridTile, MdGridTileText, MdGridTileFooterCssMatStyler,
+  MdGridTileHeaderCssMatStyler, MdGridAvatarCssMatStyler
+} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
@@ -35,7 +38,8 @@ const MD_FIT_MODE = 'fit';
   templateUrl: 'grid-list.html',
   styleUrls: ['grid-list.css'],
   host: {
-    'role': 'list'
+    'role': 'list',
+    '[class.mat-grid-list]': 'true',
   },
   encapsulation: ViewEncapsulation.None,
 })
@@ -151,8 +155,17 @@ export class MdGridList implements OnInit, AfterContentChecked {
     MdGridTileText,
     MdLineModule,
     CompatibilityModule,
+    MdGridTileHeaderCssMatStyler,
+    MdGridTileFooterCssMatStyler,
+    MdGridAvatarCssMatStyler
   ],
-  declarations: [MdGridList, MdGridTile, MdGridTileText],
+  declarations: [
+    MdGridList,
+    MdGridTile,
+    MdGridTileText,
+    MdGridTileHeaderCssMatStyler,
+    MdGridTileFooterCssMatStyler,
+    MdGridAvatarCssMatStyler],
 })
 export class MdGridListModule {
   /** @deprecated */

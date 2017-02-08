@@ -2,27 +2,27 @@
 
 
 // height of tile header or footer if it has one line
-$md-grid-list-one-line-height: 48px;
+$mat-grid-list-one-line-height: 48px;
 // height of tile header or footer if it has two lines
-$md-grid-list-two-line-height: 68px;
+$mat-grid-list-two-line-height: 68px;
 // side padding for text in tile headers and footers
-$md-grid-list-text-padding: 16px;
+$mat-grid-list-text-padding: 16px;
 
 // font styles for text in tile headers and footers
-$md-grid-list-font-size: 16px;
-$md-grid-list-secondary-font: 12px;
+$mat-grid-list-font-size: 16px;
+$mat-grid-list-secondary-font: 12px;
 
-md-grid-list {
+.mat-grid-list {
   display: block;
   position: relative;
 }
 
-md-grid-tile {
+.mat-grid-tile {
   display: block;
   position: absolute;
   overflow: hidden;
 
-  figure {
+  .mat-figure {
     display: flex;
     position: absolute;
 
@@ -40,48 +40,48 @@ md-grid-tile {
   }
 
   // Headers & footers
-  md-grid-tile-header,
-  md-grid-tile-footer {
-    @include md-line-base($md-grid-list-secondary-font);
-    @include md-normalize-text();
+  .mat-grid-tile-header,
+  .mat-grid-tile-footer {
+    @include mat-line-base($mat-grid-list-secondary-font);
+    @include mat-normalize-text();
 
     display: flex;
     align-items: center;
-    height: $md-grid-list-one-line-height;
+    height: $mat-grid-list-one-line-height;
     color: #fff;
     background: rgba(0, 0, 0, 0.38);
     overflow: hidden;
-    padding: 0 $md-grid-list-text-padding;
-    font-size: $md-grid-list-font-size;
+    padding: 0 $mat-grid-list-text-padding;
+    font-size: $mat-grid-list-font-size;
 
     // Positioning
     position: absolute;
     left: 0;
     right: 0;
 
-    &.md-2-line {
-      height: $md-grid-list-two-line-height;
+    &.mat-2-line {
+      height: $mat-grid-list-two-line-height;
     }
   }
 
-  .md-grid-list-text {
-    @include md-line-wrapper-base();
+  .mat-grid-list-text {
+    @include mat-line-wrapper-base();
   }
 
-  md-grid-tile-header {
+  .mat-grid-tile-header {
     top: 0;
   }
 
-  md-grid-tile-footer {
+  .mat-grid-tile-footer {
     bottom: 0;
   }
 
-  [md-grid-avatar] {
-    padding-right: $md-grid-list-text-padding;
+  .mat-grid-avatar {
+    padding-right: $mat-grid-list-text-padding;
 
     [dir='rtl'] & {
       padding-right: 0;
-      padding-left: $md-grid-list-text-padding;
+      padding-left: $mat-grid-list-text-padding;
     }
 
     &:empty {

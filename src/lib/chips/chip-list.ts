@@ -34,7 +34,7 @@ import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
     // Properties
     'tabindex': '0',
     'role': 'listbox',
-    'class': 'md-chip-list',
+    '[class.mat-chip-list]': 'true',
 
     // Events
     '(focus)': 'focus()',
@@ -101,7 +101,7 @@ export class MdChipList implements AfterContentInit {
     let target = event.target as HTMLElement;
 
     // If they are on a chip, check for space/left/right, otherwise pass to our key manager
-    if (target && target.classList.contains('md-chip')) {
+    if (target && target.classList.contains('mat-chip')) {
       switch (event.keyCode) {
         case SPACE:
           // If we are selectable, toggle the focused chip

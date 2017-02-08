@@ -2,10 +2,10 @@
 @import '../core/theming/theming';
 
 
-@mixin md-dialog-theme($theme) {
+@mixin mat-dialog-theme($theme) {
   $background: map-get($theme, background);
 
-  md-dialog-container {
-    background: md-color($background, dialog);
+  .mat-dialog-container {
+    background: mat-color($background, dialog);
   }
 }

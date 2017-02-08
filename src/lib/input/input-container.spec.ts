@@ -74,7 +74,7 @@ describe('MdInputContainer', function () {
 
           let el = fixture.debugElement.query(By.css('label')).nativeElement;
           expect(el).not.toBeNull();
-          expect(el.classList.contains('md-empty')).toBe(false);
+          expect(el.classList.contains('mat-empty')).toBe(false);
         }
       }));
 
@@ -87,7 +87,7 @@ describe('MdInputContainer', function () {
 
           let el = fixture.debugElement.query(By.css('label')).nativeElement;
           expect(el).not.toBeNull();
-          expect(el.classList.contains('md-empty')).toBe(true);
+          expect(el.classList.contains('mat-empty')).toBe(true);
         }
       }));
 
@@ -97,7 +97,7 @@ describe('MdInputContainer', function () {
 
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
-    expect(el.classList.contains('md-empty')).toBe(true);
+    expect(el.classList.contains('mat-empty')).toBe(true);
   });
 
   it('should treat password input type as empty at init', () => {
@@ -106,7 +106,7 @@ describe('MdInputContainer', function () {
 
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
-    expect(el.classList.contains('md-empty')).toBe(true);
+    expect(el.classList.contains('mat-empty')).toBe(true);
   });
 
   it('should treat number input type as empty at init', () => {
@@ -115,7 +115,7 @@ describe('MdInputContainer', function () {
 
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
-    expect(el.classList.contains('md-empty')).toBe(true);
+    expect(el.classList.contains('mat-empty')).toBe(true);
   });
 
   it('should not be empty after input entered', async(() => {
@@ -125,7 +125,7 @@ describe('MdInputContainer', function () {
     let inputEl = fixture.debugElement.query(By.css('input'));
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
-    expect(el.classList.contains('md-empty')).toBe(true, 'should be empty');
+    expect(el.classList.contains('mat-empty')).toBe(true, 'should be empty');
 
     inputEl.nativeElement.value = 'hello';
     // Simulate input event.
@@ -133,7 +133,7 @@ describe('MdInputContainer', function () {
     fixture.detectChanges();
 
     el = fixture.debugElement.query(By.css('label')).nativeElement;
-    expect(el.classList.contains('md-empty')).toBe(false, 'should not be empty');
+    expect(el.classList.contains('mat-empty')).toBe(false, 'should not be empty');
   }));
 
   it('should update the placeholder when input entered', async(() => {
@@ -143,8 +143,8 @@ describe('MdInputContainer', function () {
     let inputEl = fixture.debugElement.query(By.css('input'));
     let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
 
-    expect(labelEl.classList).toContain('md-empty');
-    expect(labelEl.classList).not.toContain('md-float');
+    expect(labelEl.classList).toContain('mat-empty');
+    expect(labelEl.classList).not.toContain('mat-float');
 
     // Update the value of the input.
     inputEl.nativeElement.value = 'Text';
@@ -152,22 +152,22 @@ describe('MdInputContainer', function () {
     // Fake behavior of the `(input)` event which should trigger a change detection.
     fixture.detectChanges();
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).not.toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).not.toContain('mat-float');
   }));
 
   it('should not be empty when the value set before view init', async(() => {
     let fixture = TestBed.createComponent(MdInputContainerWithValueBinding);
     fixture.detectChanges();
 
-    let placeholderEl = fixture.debugElement.query(By.css('.md-input-placeholder')).nativeElement;
+    let placeholderEl = fixture.debugElement.query(By.css('.mat-input-placeholder')).nativeElement;
 
-    expect(placeholderEl.classList).not.toContain('md-empty');
+    expect(placeholderEl.classList).not.toContain('mat-empty');
 
     fixture.componentInstance.value = '';
     fixture.detectChanges();
 
-    expect(placeholderEl.classList).toContain('md-empty');
+    expect(placeholderEl.classList).toContain('mat-empty');
   }));
 
   it('should not treat the number 0 as empty', async(() => {
@@ -179,7 +179,7 @@ describe('MdInputContainer', function () {
 
       let el = fixture.debugElement.query(By.css('label')).nativeElement;
       expect(el).not.toBeNull();
-      expect(el.classList.contains('md-empty')).toBe(false);
+      expect(el.classList.contains('mat-empty')).toBe(false);
     });
   }));
 
@@ -267,11 +267,11 @@ describe('MdInputContainer', function () {
     fixture.detectChanges();
 
     // If the hint label is empty, expect no label.
-    expect(fixture.debugElement.query(By.css('.md-hint'))).toBeNull();
+    expect(fixture.debugElement.query(By.css('.mat-hint'))).toBeNull();
 
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('.md-hint'))).not.toBeNull();
+    expect(fixture.debugElement.query(By.css('.mat-hint'))).not.toBeNull();
   });
 
   it('sets an id on hint labels', () => {
@@ -280,7 +280,7 @@ describe('MdInputContainer', function () {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.md-hint')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
 
     expect(hint.getAttribute('id')).toBeTruthy();
   });
@@ -360,17 +360,17 @@ describe('MdInputContainer', function () {
     const fixture = TestBed.createComponent(MdInputContainerWithDisabled);
     fixture.detectChanges();
 
-    const underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+    const underlineEl = fixture.debugElement.query(By.css('.mat-input-underline')).nativeElement;
     const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
-    expect(underlineEl.classList.contains('md-disabled'))
+    expect(underlineEl.classList.contains('mat-disabled'))
         .toBe(false, `Expected underline not to start out disabled.`);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
-    expect(underlineEl.classList.contains('md-disabled'))
+    expect(underlineEl.classList.contains('mat-disabled'))
         .toBe(true, `Expected underline to look disabled after property is set.`);
     expect(inputEl.disabled).toBe(true);
   }));
@@ -379,18 +379,18 @@ describe('MdInputContainer', function () {
     const fixture = TestBed.createComponent(MdInputContainerWithFormControl);
     fixture.detectChanges();
 
-    const underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+    const underlineEl = fixture.debugElement.query(By.css('.mat-input-underline')).nativeElement;
     const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
     expect(underlineEl.classList)
-        .not.toContain('md-disabled', `Expected underline not to start out disabled.`);
+        .not.toContain('mat-disabled', `Expected underline not to start out disabled.`);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.formControl.disable();
     fixture.detectChanges();
 
-    expect(underlineEl.classList)
-        .toContain('md-disabled', `Expected underline to look disabled after disable() is called.`);
+    expect(underlineEl.classList).toContain('mat-disabled',
+        `Expected underline to look disabled after disable() is called.`);
     expect(inputEl.disabled).toBe(true);
   });
 
@@ -436,7 +436,7 @@ describe('MdInputContainer', function () {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.md-hint')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
     let input = fixture.debugElement.query(By.css('input')).nativeElement;
 
     expect(input.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
@@ -448,7 +448,7 @@ describe('MdInputContainer', function () {
     fixture.componentInstance.label = 'label';
     fixture.detectChanges();
 
-    let hint = fixture.debugElement.query(By.css('.md-hint')).nativeElement;
+    let hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
     let input = fixture.debugElement.query(By.css('input')).nativeElement;
 
     expect(input.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
@@ -471,8 +471,8 @@ describe('MdInputContainer', function () {
 
     fixture.detectChanges();
 
-    let hintLabel = fixture.debugElement.query(By.css('.md-hint')).nativeElement;
-    let endLabel = fixture.debugElement.query(By.css('.md-hint[align="end"]')).nativeElement;
+    let hintLabel = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
+    let endLabel = fixture.debugElement.query(By.css('.mat-hint[align="end"]')).nativeElement;
     let input = fixture.debugElement.query(By.css('input')).nativeElement;
     let ariaValue = input.getAttribute('aria-describedby');
 
@@ -486,14 +486,14 @@ describe('MdInputContainer', function () {
     let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
     let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).toContain('mat-float');
 
     fixture.componentInstance.shouldFloat = 'auto';
     fixture.detectChanges();
 
-    expect(labelEl.classList).toContain('md-empty');
-    expect(labelEl.classList).toContain('md-float');
+    expect(labelEl.classList).toContain('mat-empty');
+    expect(labelEl.classList).toContain('mat-float');
 
     // Update the value of the input.
     inputEl.value = 'Text';
@@ -501,8 +501,8 @@ describe('MdInputContainer', function () {
     // Fake behavior of the `(input)` event which should trigger a change detection.
     fixture.detectChanges();
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).toContain('mat-float');
   });
 
   it('should always float the placeholder when floatPlaceholder is set to true', () => {
@@ -512,8 +512,8 @@ describe('MdInputContainer', function () {
     let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
     let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).toContain('mat-float');
 
     fixture.detectChanges();
 
@@ -523,8 +523,8 @@ describe('MdInputContainer', function () {
     // Fake behavior of the `(input)` event which should trigger a change detection.
     fixture.detectChanges();
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).toContain('mat-float');
   });
 
 
@@ -537,8 +537,8 @@ describe('MdInputContainer', function () {
     let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
     let labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
 
-    expect(labelEl.classList).toContain('md-empty');
-    expect(labelEl.classList).not.toContain('md-float');
+    expect(labelEl.classList).toContain('mat-empty');
+    expect(labelEl.classList).not.toContain('mat-float');
 
     // Update the value of the input.
     inputEl.value = 'Text';
@@ -546,8 +546,8 @@ describe('MdInputContainer', function () {
     // Fake behavior of the `(input)` event which should trigger a change detection.
     fixture.detectChanges();
 
-    expect(labelEl.classList).not.toContain('md-empty');
-    expect(labelEl.classList).not.toContain('md-float');
+    expect(labelEl.classList).not.toContain('mat-empty');
+    expect(labelEl.classList).not.toContain('mat-float');
   });
 
 });

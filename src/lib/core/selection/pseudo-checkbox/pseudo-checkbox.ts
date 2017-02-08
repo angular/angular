@@ -26,9 +26,10 @@ export type MdPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
   styleUrls: ['pseudo-checkbox.css'],
   template: '',
   host: {
-    '[class.md-pseudo-checkbox-indeterminate]': 'state === "indeterminate"',
-    '[class.md-pseudo-checkbox-checked]': 'state === "checked"',
-    '[class.md-pseudo-checkbox-disabled]': 'disabled',
+    '[class.mat-pseudo-checkbox]': 'true',
+    '[class.mat-pseudo-checkbox-indeterminate]': 'state === "indeterminate"',
+    '[class.mat-pseudo-checkbox-checked]': 'state === "checked"',
+    '[class.mat-pseudo-checkbox-disabled]': 'disabled',
   },
 })
 export class MdPseudoCheckbox {
@@ -45,8 +46,8 @@ export class MdPseudoCheckbox {
     if (value) {
       let nativeElement = this._elementRef.nativeElement;
 
-      this._renderer.setElementClass(nativeElement, `md-${this.color}`, false);
-      this._renderer.setElementClass(nativeElement, `md-${value}`, true);
+      this._renderer.setElementClass(nativeElement, `mat-${this.color}`, false);
+      this._renderer.setElementClass(nativeElement, `mat-${value}`, true);
       this._color = value;
     }
   }

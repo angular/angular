@@ -5,45 +5,46 @@
 :host {
   display: flex;
   flex-direction: column;
-  font-family: $md-font-family;
+  font-family: $mat-font-family;
 
-  &.md-tab-group-inverted-header {
+  &.mat-tab-group-inverted-header {
     flex-direction: column-reverse;
   }
 }
 
 // Wraps each tab label
-.md-tab-label {
+.mat-tab-label {
   @include tab-label;
   position: relative;
 }
 
-@media ($md-xsmall) {
-  .md-tab-label {
+@media ($mat-xsmall) {
+  .mat-tab-label {
     min-width: 72px;
   }
 }
 
-:host[md-stretch-tabs] .md-tab-label {
+:host[md-stretch-tabs] .mat-tab-label,
+:host[mat-stretch-tabs] .mat-tab-label {
   flex-basis: 0;
   flex-grow: 1;
 }
 
 // The bottom section of the view; contains the tab bodies
-.md-tab-body-wrapper {
+.mat-tab-body-wrapper {
   position: relative;
   overflow: hidden;
   display: flex;
-  transition: height $md-tab-animation-duration $ease-in-out-curve-function;
+  transition: height $mat-tab-animation-duration $ease-in-out-curve-function;
 }
 
 // Wraps each tab body
-md-tab-body {
-  @include md-fill;
+.mat-tab-body {
+  @include mat-fill;
   display: block;
   overflow: hidden;
 
-  &.md-tab-body-active {
+  &.mat-tab-body-active {
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
@@ -51,13 +52,13 @@ md-tab-body {
     flex-grow: 1;
   }
 
-  :host.md-tab-group-dynamic-height &.md-tab-body-active {
+  :host.mat-tab-group-dynamic-height &.mat-tab-body-active {
     overflow-y: hidden;
   }
 }
 
 // Styling for any tab that is marked disabled
-.md-tab-disabled {
+.mat-tab-disabled {
   cursor: default;
   pointer-events: none;
 }

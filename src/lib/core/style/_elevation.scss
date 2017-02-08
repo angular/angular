@@ -7,15 +7,15 @@
 // Examples:
 //
 //
-// .md-foo {
-//   @include $md-elevation(2);
+// .mat-foo {
+//   @include $mat-elevation(2);
 //
 //   &:active {
-//     @include $md-elevation(8);
+//     @include $mat-elevation(8);
 //   }
 // }
 //
-// <div id="external-card" class="md-elevation-z2"><p>Some content</p></div>
+// <div id="external-card" class="mat-elevation-z2"><p>Some content</p></div>
 //
 // For an explanation of the design behind how elevation is implemented, see the design doc at
 // https://goo.gl/Kq0k9Z.
@@ -123,17 +123,17 @@ $_ambient-elevation-map: (
 // The css property used for elevation. In most cases this should not be changed. It is exposed
 // as a variable for abstraction / easy use when needing to reference the property directly, for
 // example in a will-change rule.
-$md-elevation-property: box-shadow !default;
+$mat-elevation-property: box-shadow !default;
 
 // The default duration value for elevation transitions.
-$md-elevation-transition-duration: 280ms !default;
+$mat-elevation-transition-duration: 280ms !default;
 
 // The default easing value for elevation transitions.
-$md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
+$mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function;
 
 // Applies the correct css rules to an element to give it the elevation specified by $zValue.
 // The $zValue must be between 0 and 24.
-@mixin md-elevation($zValue) {
+@mixin mat-elevation($zValue) {
   @if type-of($zValue) != number or not unitless($zValue) {
     @error '$zValue must be a unitless number';
   }
@@ -141,7 +141,7 @@ $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
     @error '$zValue must be between 0 and 24';
   }
 
-  #{$md-elevation-property}: #{map-get($_umbra-elevation-map, $zValue)},
+  #{$mat-elevation-property}: #{map-get($_umbra-elevation-map, $zValue)},
                              #{map-get($_penumbra-elevation-map, $zValue)},
                              #{map-get($_ambient-elevation-map, $zValue)};
 }
@@ -151,13 +151,13 @@ $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
 // more than one property.
 //
 // .foo {
-//   transition: md-elevation-transition-property-value(), opacity 100ms ease;
-//   will-change: $md-elevation-property, opacity;
+//   transition: mat-elevation-transition-property-value(), opacity 100ms ease;
+//   will-change: $mat-elevation-property, opacity;
 // }
-@function md-elevation-transition-property-value(
-    $duration: $md-elevation-transition-duration,
-    $easing: $md-elevation-transition-timing-function) {
-  @return #{$md-elevation-property} #{$duration} #{$easing};
+@function mat-elevation-transition-property-value(
+    $duration: $mat-elevation-transition-duration,
+    $easing: $mat-elevation-transition-timing-function) {
+  @return #{$mat-elevation-property} #{$duration} #{$easing};
 }
 
 // Applies the correct css rules needed to have an element transition between elevations.
@@ -166,9 +166,9 @@ $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
 //
 // NOTE(traviskaufman): Both this mixin and the above function use default parameters so they can
 // be used in the same way by clients.
-@mixin md-elevation-transition(
-    $duration: $md-elevation-transition-duration,
-    $easing: $md-elevation-transition-timing-function) {
-  transition: md-elevation-transition-property-value($duration, $easing);
-  will-change: $md-elevation-property;
+@mixin mat-elevation-transition(
+    $duration: $mat-elevation-transition-duration,
+    $easing: $mat-elevation-transition-timing-function) {
+  transition: mat-elevation-transition-property-value($duration, $easing);
+  will-change: $mat-elevation-property;
 }

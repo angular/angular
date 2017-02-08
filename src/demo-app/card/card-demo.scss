@@ -2,7 +2,7 @@
   display: flex;
   flex-flow: column nowrap;
 
-  md-card {
+  .mat-card {
     margin: 0 16px 16px 0;
     width: 350px;
   }
@@ -15,7 +15,7 @@
 .demo-card-blue {
   background-color: #b0becc;
 
-  md-card-actions {
+  .mat-card-actions {
     display: flex;
     flex-direction: column;
   }

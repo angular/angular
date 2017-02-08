@@ -84,7 +84,8 @@ export class MdSelectChange {
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': '_control?.invalid || "false"',
     '[attr.aria-owns]': '_optionIds',
-    '[class.md-select-disabled]': 'disabled',
+    '[class.mat-select-disabled]': 'disabled',
+    '[class.mat-select]': 'true',
     '(keydown)': '_handleKeydown($event)',
     '(blur)': '_onBlur()'
   },
@@ -406,7 +407,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    */
   _setScrollTop(): void {
     const scrollContainer =
-        this.overlayDir.overlayRef.overlayElement.querySelector('.md-select-panel');
+        this.overlayDir.overlayRef.overlayElement.querySelector('.mat-select-panel');
     scrollContainer.scrollTop = this._scrollTop;
   }
 

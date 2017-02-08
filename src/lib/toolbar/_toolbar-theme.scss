@@ -2,32 +2,32 @@
 @import '../core/theming/theming';
 
 
-@mixin _md-toolbar-color($palette) {
-  background: md-color($palette);
-  color: md-color($palette, default-contrast);
+@mixin _mat-toolbar-color($palette) {
+  background: mat-color($palette);
+  color: mat-color($palette, default-contrast);
 }
 
-@mixin md-toolbar-theme($theme) {
+@mixin mat-toolbar-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  md-toolbar {
-    background: md-color($background, app-bar);
-    color: md-color($foreground, text);
+  .mat-toolbar {
+    background: mat-color($background, app-bar);
+    color: mat-color($foreground, text);
 
-    &.md-primary {
-      @include _md-toolbar-color($primary);
+    &.mat-primary {
+      @include _mat-toolbar-color($primary);
     }
 
-    &.md-accent {
-      @include _md-toolbar-color($accent);
+    &.mat-accent {
+      @include _mat-toolbar-color($accent);
     }
 
-    &.md-warn {
-      @include _md-toolbar-color($warn);
+    &.mat-warn {
+      @include _mat-toolbar-color($warn);
     }
   }
 }

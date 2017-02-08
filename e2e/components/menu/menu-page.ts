@@ -3,7 +3,7 @@ import {browser, by, element, ElementFinder} from 'protractor';
 export class MenuPage {
   constructor() { browser.get('/menu'); }
 
-  menu(): ElementFinder { return element(by.css('.md-menu-panel')); }
+  menu(): ElementFinder { return element(by.css('.mat-menu-panel')); }
 
   start(): ElementFinder { return element(by.id('start')); }
 
@@ -23,11 +23,11 @@ export class MenuPage {
 
   combinedTrigger(): ElementFinder { return element(by.id('combined-t')); }
 
-  beforeMenu(): ElementFinder { return element(by.css('.md-menu-panel.before')); }
+  beforeMenu(): ElementFinder { return element(by.css('.mat-menu-panel.before')); }
 
-  aboveMenu(): ElementFinder { return element(by.css('.md-menu-panel.above')); }
+  aboveMenu(): ElementFinder { return element(by.css('.mat-menu-panel.above')); }
 
-  combinedMenu(): ElementFinder { return element(by.css('.md-menu-panel.combined')); }
+  combinedMenu(): ElementFinder { return element(by.css('.mat-menu-panel.combined')); }
 
   getResultText() { return this.textArea().getText(); }
 }

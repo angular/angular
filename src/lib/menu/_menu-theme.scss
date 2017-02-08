@@ -2,29 +2,29 @@
 @import '../core/theming/theming';
 
 
-@mixin md-menu-theme($theme) {
+@mixin mat-menu-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  .md-menu-content {
-    background: md-color($background, 'card');
+  .mat-menu-content {
+    background: mat-color($background, 'card');
   }
 
-  [md-menu-item] {
+  .mat-menu-item {
     background: transparent;
-    color: md-color($foreground, 'text');
+    color: mat-color($foreground, 'text');
 
     &[disabled] {
-      color: md-color($foreground, 'disabled');
+      color: mat-color($foreground, 'disabled');
     }
 
-    md-icon {
-      color: md-color($foreground, 'icon');
+    .mat-icon {
+      color: mat-color($foreground, 'icon');
       vertical-align: middle;
     }
 
     &:hover:not([disabled]), &:focus:not([disabled]) {
-      background: md-color($background, 'hover');
+      background: mat-color($background, 'hover');
     }
   }
 }

@@ -47,7 +47,7 @@ describe('MdChipList', () => {
 
   describe('basic behaviors', () => {
     it('adds the `md-chip-list` class', () => {
-      expect(chipListNativeElement.classList).toContain('md-chip-list');
+      expect(chipListNativeElement.classList).toContain('mat-chip-list');
     });
   });
 

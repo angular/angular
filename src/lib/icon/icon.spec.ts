@@ -79,7 +79,7 @@ describe('MdIcon', () => {
     testComponent.iconName = 'home';
     testComponent.iconColor = 'primary';
     fixture.detectChanges();
-    expect(sortedClassNames(mdIconElement)).toEqual(['material-icons', 'md-primary']);
+    expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'mat-primary', 'material-icons']);
   });
 
   describe('Ligature icons', () => {
@@ -90,7 +90,7 @@ describe('MdIcon', () => {
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['material-icons']);
+      expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'material-icons']);
     });
 
     it('should use alternate icon font if set', () => {
@@ -102,7 +102,7 @@ describe('MdIcon', () => {
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['myfont']);
+      expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'myfont']);
     });
   });
 
@@ -300,19 +300,19 @@ describe('MdIcon', () => {
       testComponent.fontSet = 'f1';
       testComponent.fontIcon = 'house';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['font1', 'house']);
+      expect(sortedClassNames(mdIconElement)).toEqual(['font1', 'house', 'mat-icon']);
       expect(mdIconElement.getAttribute('aria-label')).toBe('house');
 
       testComponent.fontSet = 'f2';
       testComponent.fontIcon = 'igloo';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['f2', 'igloo']);
+      expect(sortedClassNames(mdIconElement)).toEqual(['f2', 'igloo', 'mat-icon']);
       expect(mdIconElement.getAttribute('aria-label')).toBe('igloo');
 
       testComponent.fontSet = 'f3';
       testComponent.fontIcon = 'tent';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['f3', 'tent']);
+      expect(sortedClassNames(mdIconElement)).toEqual(['f3', 'mat-icon', 'tent']);
       expect(mdIconElement.getAttribute('aria-label')).toBe('tent');
     });
   });

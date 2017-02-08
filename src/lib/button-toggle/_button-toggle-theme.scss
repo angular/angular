@@ -2,21 +2,21 @@
 @import '../core/theming/theming';
 
 
-@mixin md-button-toggle-theme($theme) {
+@mixin mat-button-toggle-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
 
-  md-button-toggle {
-    color: md-color($foreground, hint-text);
+  .mat-button-toggle {
+    color: mat-color($foreground, hint-text);
   }
 
-  .md-button-toggle-checked {
-    background-color: md-color($md-grey, 300);
-    color: md-color($foreground, base);
+  .mat-button-toggle-checked {
+    background-color: mat-color($mat-grey, 300);
+    color: mat-color($foreground, base);
   }
 
-  .md-button-toggle-disabled {
-    background-color: map_get($md-grey, 200);
-    color: md-color($foreground, disabled-button);
+  .mat-button-toggle-disabled {
+    background-color: map_get($mat-grey, 200);
+    color: mat-color($foreground, disabled-button);
   }
 }

@@ -2,25 +2,25 @@
 @import '../core/a11y/a11y';
 
 
-$md-tooltip-target-height: 22px;
-$md-tooltip-max-width: 250px;
-$md-tooltip-font-size: 10px;
-$md-tooltip-margin: 14px;
-$md-tooltip-horizontal-padding: 8px;
-$md-tooltip-vertical-padding: ($md-tooltip-target-height - $md-tooltip-font-size) / 2;
+$mat-tooltip-target-height: 22px;
+$mat-tooltip-max-width: 250px;
+$mat-tooltip-font-size: 10px;
+$mat-tooltip-margin: 14px;
+$mat-tooltip-horizontal-padding: 8px;
+$mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-size) / 2;
 
 :host {
   pointer-events: none;
 }
 
-.md-tooltip {
+.mat-tooltip {
   color: white;
-  padding: $md-tooltip-vertical-padding $md-tooltip-horizontal-padding;
+  padding: $mat-tooltip-vertical-padding $mat-tooltip-horizontal-padding;
   border-radius: 2px;
-  font-family: $md-font-family;
-  font-size: $md-tooltip-font-size;
-  margin: $md-tooltip-margin;
-  max-width: $md-tooltip-max-width;
+  font-family: $mat-font-family;
+  font-size: $mat-tooltip-font-size;
+  margin: $mat-tooltip-margin;
+  max-width: $mat-tooltip-max-width;
 
   @include cdk-high-contrast {
     outline: solid 1px;

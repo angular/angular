@@ -1,7 +1,7 @@
-<label class="md-checkbox-layout">
-  <div class="md-checkbox-inner-container">
+<label class="mat-checkbox-layout">
+  <div class="mat-checkbox-inner-container">
     <input #input
-           class="md-checkbox-input cdk-visually-hidden" type="checkbox"
+           class="mat-checkbox-input cdk-visually-hidden" type="checkbox"
            [id]="inputId"
            [required]="required"
            [checked]="checked"
@@ -15,28 +15,28 @@
            (blur)="_onInputBlur()"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
-    <div md-ripple *ngIf="!_isRippleDisabled()" class="md-checkbox-ripple"
+    <div md-ripple *ngIf="!_isRippleDisabled()" class="mat-checkbox-ripple"
          [mdRippleTrigger]="_getHostElement()"
          [mdRippleCentered]="true"
          [mdRippleSpeedFactor]="0.3"
          mdRippleBackgroundColor="rgba(0, 0, 0, 0)"></div>
-    <div class="md-checkbox-frame"></div>
-    <div class="md-checkbox-background">
+    <div class="mat-checkbox-frame"></div>
+    <div class="mat-checkbox-background">
       <svg version="1.1"
-           class="md-checkbox-checkmark"
+           class="mat-checkbox-checkmark"
            xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 24 24"
            xml:space="preserve">
-        <path class="md-checkbox-checkmark-path"
+        <path class="mat-checkbox-checkmark-path"
               fill="none"
               stroke="white"
               d="M4.1,12.7 9,17.6 20.3,6.3"/>
       </svg>
       <!-- Element for rendering the indeterminate state checkbox. -->
-      <div class="md-checkbox-mixedmark"></div>
+      <div class="mat-checkbox-mixedmark"></div>
     </div>
   </div>
-  <span class="md-checkbox-label">
+  <span class="mat-checkbox-label">
     <ng-content></ng-content>
   </span>
 </label>

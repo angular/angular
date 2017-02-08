@@ -1,35 +1,35 @@
-<div class="md-input-wrapper">
-  <div class="md-input-table">
-    <div class="md-input-prefix"><ng-content select="[mdPrefix], [md-prefix]"></ng-content></div>
+<div class="mat-input-wrapper">
+  <div class="mat-input-table">
+    <div class="mat-input-prefix"><ng-content select="[mdPrefix], [md-prefix]"></ng-content></div>
 
-    <div class="md-input-infix" [class.md-end]="align == 'end'">
+    <div class="mat-input-infix" [class.mat-end]="align == 'end'">
       <ng-content selector="input, textarea"></ng-content>
 
-      <label class="md-input-placeholder"
+      <label class="mat-input-placeholder"
              [attr.for]="_mdInputChild.id"
-             [class.md-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
-             [class.md-focused]="_mdInputChild.focused"
-             [class.md-float]="_canPlaceholderFloat"
-             [class.md-accent]="dividerColor == 'accent'"
-             [class.md-warn]="dividerColor == 'warn'"
+             [class.mat-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
+             [class.mat-focused]="_mdInputChild.focused"
+             [class.mat-float]="_canPlaceholderFloat"
+             [class.mat-accent]="dividerColor == 'accent'"
+             [class.mat-warn]="dividerColor == 'warn'"
              *ngIf="_hasPlaceholder()">
         <ng-content select="md-placeholder"></ng-content>
         {{_mdInputChild.placeholder}}
-        <span class="md-placeholder-required" *ngIf="_mdInputChild.required">*</span>
+        <span class="mat-placeholder-required" *ngIf="_mdInputChild.required">*</span>
       </label>
     </div>
 
-    <div class="md-input-suffix"><ng-content select="[mdSuffix], [md-suffix]"></ng-content></div>
+    <div class="mat-input-suffix"><ng-content select="[mdSuffix], [md-suffix]"></ng-content></div>
   </div>
 
-  <div class="md-input-underline"
-       [class.md-disabled]="_mdInputChild.disabled">
-    <span class="md-input-ripple"
-          [class.md-focused]="_mdInputChild.focused"
-          [class.md-accent]="dividerColor == 'accent'"
-          [class.md-warn]="dividerColor == 'warn'"></span>
+  <div class="mat-input-underline"
+       [class.mat-disabled]="_mdInputChild.disabled">
+    <span class="mat-input-ripple"
+          [class.mat-focused]="_mdInputChild.focused"
+          [class.mat-accent]="dividerColor == 'accent'"
+          [class.mat-warn]="dividerColor == 'warn'"></span>
   </div>
 
-  <div *ngIf="hintLabel != ''" [attr.id]="_hintLabelId" class="md-hint">{{hintLabel}}</div>
+  <div *ngIf="hintLabel != ''" [attr.id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
   <ng-content select="md-hint"></ng-content>
 </div>

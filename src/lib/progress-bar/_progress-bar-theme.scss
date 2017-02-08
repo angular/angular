@@ -2,46 +2,46 @@
 @import '../core/theming/theming';
 
 
-@mixin md-progress-bar-theme($theme) {
+@mixin mat-progress-bar-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  .md-progress-bar-background {
-    background: #{_md-progress-bar-buffer($primary, 100)};
+  .mat-progress-bar-background {
+    background: #{_mat-progress-bar-buffer($primary, 100)};
   }
 
-  .md-progress-bar-buffer {
-    background-color: md-color($primary, 100);
+  .mat-progress-bar-buffer {
+    background-color: mat-color($primary, 100);
   }
 
-  .md-progress-bar-fill::after {
-    background-color: md-color($primary, 600);
+  .mat-progress-bar-fill::after {
+    background-color: mat-color($primary, 600);
   }
 
-  md-progress-bar.md-accent {
-    .md-progress-bar-background {
-      background: #{_md-progress-bar-buffer($accent, 100)};
+  .mat-progress-bar.mat-accent {
+    .mat-progress-bar-background {
+      background: #{_mat-progress-bar-buffer($accent, 100)};
     }
 
-    .md-progress-bar-buffer {
-      background-color: md-color($accent, 100);
+    .mat-progress-bar-buffer {
+      background-color: mat-color($accent, 100);
     }
-    .md-progress-bar-fill::after {
-      background-color: md-color($accent, 600);
+    .mat-progress-bar-fill::after {
+      background-color: mat-color($accent, 600);
     }
   }
 
-  md-progress-bar.md-warn {
-    .md-progress-bar-background {
-      background: #{_md-progress-bar-buffer($warn, 100)};
+  .mat-progress-bar.mat-warn {
+    .mat-progress-bar-background {
+      background: #{_mat-progress-bar-buffer($warn, 100)};
     }
 
-    .md-progress-bar-buffer {
-      background-color: md-color($warn, 100);
+    .mat-progress-bar-buffer {
+      background-color: mat-color($warn, 100);
     }
-    .md-progress-bar-fill::after {
-      background-color: md-color($warn, 600);
+    .mat-progress-bar-fill::after {
+      background-color: mat-color($warn, 600);
     }
   }
 }
@@ -57,14 +57,14 @@
 //       xml:space="preserve" viewBox="0 0 5 2" preserveAspectRatio="none slice">
 //    <circle cx="1" cy="1" r="1" fill="{INJECTED_COLOR}"/>
 //  </svg>
-@function _md-progress-bar-buffer($palette, $hue) {
+@function _mat-progress-bar-buffer($palette, $hue) {
  $result: '' +
    'data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2F' +
    'www.w3.org%2F2000%2Fsvg%27%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%2' +
    '7%20x%3D%270px%27%20y%3D%270px%27%20enable-background%3D%27new%200%200%205%202%27%20xml%' +
    '3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio%3D%27none' +
    '%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27' +
-    md-color($palette, $hue) + '%27%2F%3E%3C%2Fsvg%3E';
+    mat-color($palette, $hue) + '%27%2F%3E%3C%2Fsvg%3E';
 
   @return url($result);
 }

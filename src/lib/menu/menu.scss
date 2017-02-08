@@ -6,11 +6,11 @@
 @import '../core/style/menu-common';
 @import '../core/a11y/a11y';
 
-$md-menu-vertical-padding: 8px !default;
+$mat-menu-vertical-padding: 8px !default;
 
-.md-menu-panel {
-  @include md-menu-base();
-  @include md-menu-positions();
+.mat-menu-panel {
+  @include mat-menu-base();
+  @include mat-menu-positions();
 
   // max height must be 100% of the viewport height + one row height
   max-height: calc(100vh + 48px);
@@ -20,22 +20,22 @@ $md-menu-vertical-padding: 8px !default;
   }
 }
 
-.md-menu-content {
-  padding-top: $md-menu-vertical-padding;
-  padding-bottom: $md-menu-vertical-padding;
+.mat-menu-content {
+  padding-top: $mat-menu-vertical-padding;
+  padding-bottom: $mat-menu-vertical-padding;
 }
 
-[md-menu-item] {
-  @include md-button-reset();
-  @include md-menu-item-base();
+.mat-menu-item {
+  @include mat-button-reset();
+  @include mat-menu-item-base();
   position: relative;
 }
 
-button[md-menu-item] {
+button.mat-menu-item {
   width: 100%;
 }
 
-.md-menu-ripple {
+.mat-menu-ripple {
   position: absolute;
   top: 0;
   left: 0;

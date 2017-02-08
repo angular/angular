@@ -2,12 +2,12 @@
   display: flex;
   flex-flow: row wrap;
 
-  md-card {
+  .mat-card {
     width: 400px;
     margin: 24px;
   }
 
-  md-input-container {
+  .mat-input-container {
     margin-top: 16px;
   }
 }

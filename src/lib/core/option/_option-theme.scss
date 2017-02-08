@@ -1,28 +1,28 @@
 @import '../theming/palette';
 @import '../theming/theming';
 
-@mixin md-option-theme($theme) {
+@mixin mat-option-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
 
-  md-option {
-    &:hover:not(.md-option-disabled), &:focus:not(.md-option-disabled) {
-      background: md-color($background, hover);
+  .mat-option {
+    &:hover:not(.mat-option-disabled), &:focus:not(.mat-option-disabled) {
+      background: mat-color($background, hover);
     }
 
-    &.md-selected {
-      background: md-color($background, hover);
-      color: md-color($primary);
+    &.mat-selected {
+      background: mat-color($background, hover);
+      color: mat-color($primary);
     }
 
-    &.md-active {
-      background: md-color($background, hover);
-      color: md-color($foreground, text);
+    &.mat-active {
+      background: mat-color($background, hover);
+      color: mat-color($foreground, text);
     }
 
-    &.md-option-disabled {
-      color: md-color($foreground, hint-text);
+    &.mat-option-disabled {
+      color: mat-color($foreground, hint-text);
     }
 
   }

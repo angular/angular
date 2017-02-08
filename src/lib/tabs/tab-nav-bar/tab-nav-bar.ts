@@ -21,6 +21,9 @@ import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
   selector: '[md-tab-nav-bar], [mat-tab-nav-bar]',
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
+  host: {
+    '[class.mat-tab-nav-bar]': 'true',
+  },
   encapsulation: ViewEncapsulation.None,
 })
 export class MdTabNavBar {
@@ -60,6 +63,9 @@ export class MdTabLink {
  */
 @Directive({
   selector: '[md-tab-link], [mat-tab-link]',
+  host: {
+    '[class.mat-tab-link]': 'true',
+  },
 })
 export class MdTabLinkRipple extends MdRipple implements OnDestroy {
   constructor(private _element: ElementRef, private _ngZone: NgZone, _ruler: ViewportRuler) {

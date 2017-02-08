@@ -2,14 +2,14 @@
 
 
 // Typography
-$md-body-font-size-base: rem(1.4) !default;
-$md-font-family: Roboto, 'Helvetica Neue', sans-serif !default;
+$mat-body-font-size-base: rem(1.4) !default;
+$mat-font-family: Roboto, 'Helvetica Neue', sans-serif !default;
 
 // Media queries
 // TODO: Find a way to respect media query ranges.
 // TODO: For example the xs-breakpoint should not interfere with the sm-breakpoint.
-$md-xsmall: 'max-width: 600px';
-$md-small: 'max-width: 960px';
+$mat-xsmall: 'max-width: 600px';
+$mat-small: 'max-width: 960px';
 
 // TODO: Revisit all z-indices before beta
 // z-index master list
@@ -33,17 +33,17 @@ $cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.6);
 $pi: 3.14159265;
 
 // Padding between input toggles and their labels
-$md-toggle-padding: 8px !default;
+$mat-toggle-padding: 8px !default;
 // Width and height of input toggles
-$md-toggle-size: 20px !default;
+$mat-toggle-size: 20px !default;
 
 // Easing Curves
 // TODO(jelbourn): all of these need to be revisited
 
 // The default animation curves used by material design.
-$md-linear-out-slow-in-timing-function: cubic-bezier(0, 0, 0.2, 0.1) !default;
-$md-fast-out-slow-in-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
-$md-fast-out-linear-in-timing-function: cubic-bezier(0.4, 0, 1, 1) !default;
+$mat-linear-out-slow-in-timing-function: cubic-bezier(0, 0, 0.2, 0.1) !default;
+$mat-fast-out-slow-in-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$mat-fast-out-linear-in-timing-function: cubic-bezier(0.4, 0, 1, 1) !default;
 
 $ease-in-out-curve-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 
