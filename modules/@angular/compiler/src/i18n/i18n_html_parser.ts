@@ -24,11 +24,18 @@ export class I18NHtmlParser implements HtmlParser {
   // @override
   getTagDefinition: any;
 
+  private _translationBundle: TranslationBundle;
+
   constructor(
-      private _htmlParser: HtmlParser, private _translations?: string,
-      private _translationsFormat?: string,
-      private _missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
-      private _console?: Console) {}
+      private _htmlParser: HtmlParser, translations?: string, translationsFormat?: string,
+      missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+      console?: Console) {
+    if (translations) {
+      const serializer = createSerializer(translationsFormat);
+      this._translationBundle =
+          TranslationBundle.load(translations, 'i18n', serializer, missingTranslation, console);
+    }
+  }
 
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,
@@ -36,36 +43,31 @@ export class I18NHtmlParser implements HtmlParser {
     const parseResult =
         this._htmlParser.parse(source, url, parseExpansionForms, interpolationConfig);
 
-    if (!this._translations || this._translations === '') {
+    if (!this._translationBundle) {
       // Do not enable i18n when no translation bundle is provided
       return parseResult;
     }
-
-    // TODO(vicb): add support for implicit tags / attributes
 
     if (parseResult.errors.length) {
       return new ParseTreeResult(parseResult.rootNodes, parseResult.errors);
     }
 
-    const serializer = this._createSerializer();
-    const translationBundle = TranslationBundle.load(
-        this._translations, url, serializer, this._missingTranslation, this._console);
-
-    return mergeTranslations(parseResult.rootNodes, translationBundle, interpolationConfig, [], {});
+    return mergeTranslations(
+        parseResult.rootNodes, this._translationBundle, interpolationConfig, [], {});
   }
+}
 
-  private _createSerializer(): Serializer {
-    const format = (this._translationsFormat || 'xlf').toLowerCase();
+function createSerializer(format?: string): Serializer {
+  format = (format || 'xlf').toLowerCase();
 
-    switch (format) {
-      case 'xmb':
-        return new Xmb();
-      case 'xtb':
-        return new Xtb();
-      case 'xliff':
-      case 'xlf':
-      default:
-        return new Xliff();
-    }
+  switch (format) {
+    case 'xmb':
+      return new Xmb();
+    case 'xtb':
+      return new Xtb();
+    case 'xliff':
+    case 'xlf':
+    default:
+      return new Xliff();
   }
 }
