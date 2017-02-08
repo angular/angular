@@ -91,7 +91,7 @@
     "run-sequence": "^1.2.2",
     "sass": "^0.5.0",
     "selenium-webdriver": "^3.0.1",
-    "stylelint": "^7.7.1",
+    "stylelint": "^7.8.0",
     "travis-after-modes": "0.0.7",
     "ts-node": "^2.0.0",
     "tslint": "^3.13.0",
