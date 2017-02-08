@@ -4,26 +4,16 @@ import {StyleModule} from './index';
 import {By} from '@angular/platform-browser';
 import {TAB} from '../keyboard/keycodes';
 import {FocusOriginMonitor} from './focus-classes';
-import {PlatformModule} from '../platform/index';
-import {Platform} from '../platform/platform';
-
-
-// NOTE: Firefox only fires focus & blur events when it is the currently active window.
-// This is not always the case on our CI setup, therefore we disable tests that depend on these
-// events firing for Firefox. We may be able to fix this by configuring our CI to start Firefox with
-// the following preference: focusmanager.testmode = true
-
 
 describe('FocusOriginMonitor', () => {
   let fixture: ComponentFixture<PlainButton>;
   let buttonElement: HTMLElement;
   let buttonRenderer: Renderer;
   let focusOriginMonitor: FocusOriginMonitor;
-  let platform: Platform;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [StyleModule, PlatformModule],
+      imports: [StyleModule],
       declarations: [
         PlainButton,
       ],
@@ -32,21 +22,21 @@ describe('FocusOriginMonitor', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([FocusOriginMonitor, Platform], (fom: FocusOriginMonitor, pfm: Platform) => {
+  beforeEach(inject([FocusOriginMonitor], (fom: FocusOriginMonitor) => {
     fixture = TestBed.createComponent(PlainButton);
     fixture.detectChanges();
 
     buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
     buttonRenderer = fixture.componentInstance.renderer;
     focusOriginMonitor = fom;
-    platform = pfm;
 
     focusOriginMonitor.registerElementForFocusClasses(buttonElement, buttonRenderer);
+
+    // Patch the element focus to properly emit focus events when the browser is blurred.
+    patchElementFocus(buttonElement);
   }));
 
   it('manually registered element should receive focus classes', async(() => {
-    if (platform.FIREFOX) { return; }
-
     buttonElement.focus();
     fixture.detectChanges();
 
@@ -59,8 +49,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('should detect focus via keyboard', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Simulate focus via keyboard.
     dispatchKeydownEvent(document, TAB);
     buttonElement.focus();
@@ -79,8 +67,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('should detect focus via mouse', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Simulate focus via mouse.
     dispatchMousedownEvent(document);
     buttonElement.focus();
@@ -99,8 +85,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('should detect programmatic focus', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Programmatically focus.
     buttonElement.focus();
     fixture.detectChanges();
@@ -118,8 +102,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia keyboard should simulate keyboard focus', async(() => {
-    if (platform.FIREFOX) { return; }
-
     focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'keyboard');
     fixture.detectChanges();
 
@@ -136,8 +118,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia mouse should simulate mouse focus', async(() => {
-    if (platform.FIREFOX) { return; }
-
     focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'mouse');
     fixture.detectChanges();
 
@@ -154,8 +134,6 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia program should simulate programmatic focus', async(() => {
-    if (platform.FIREFOX) { return; }
-
     focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'program');
     fixture.detectChanges();
 
@@ -176,11 +154,10 @@ describe('FocusOriginMonitor', () => {
 describe('cdkFocusClasses', () => {
   let fixture: ComponentFixture<ButtonWithFocusClasses>;
   let buttonElement: HTMLElement;
-  let platform: Platform;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [StyleModule, PlatformModule],
+      imports: [StyleModule],
       declarations: [
         ButtonWithFocusClasses,
       ],
@@ -189,21 +166,21 @@ describe('cdkFocusClasses', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([Platform], (pfm: Platform) => {
+  beforeEach(() => {
     fixture = TestBed.createComponent(ButtonWithFocusClasses);
     fixture.detectChanges();
 
     buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
-    platform = pfm;
-  }));
+
+    // Patch the element focus to properly emit focus events when the browser is blurred.
+    patchElementFocus(buttonElement);
+  });
 
   it('should initially not be focused', () => {
     expect(buttonElement.classList.length).toBe(0, 'button should not have focus classes');
   });
 
   it('should detect focus via keyboard', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Simulate focus via keyboard.
     dispatchKeydownEvent(document, TAB);
     buttonElement.focus();
@@ -222,8 +199,6 @@ describe('cdkFocusClasses', () => {
   }));
 
   it('should detect focus via mouse', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Simulate focus via mouse.
     dispatchMousedownEvent(document);
     buttonElement.focus();
@@ -242,8 +217,6 @@ describe('cdkFocusClasses', () => {
   }));
 
   it('should detect programmatic focus', async(() => {
-    if (platform.FIREFOX) { return; }
-
     // Programmatically focus.
     buttonElement.focus();
     fixture.detectChanges();
@@ -271,6 +244,7 @@ class PlainButton {
 @Component({template: `<button cdkFocusClasses>focus me!</button>`})
 class ButtonWithFocusClasses {}
 
+// TODO(devversion): move helper functions into a global utility file. See #2902
 
 /** Dispatches a mousedown event on the specified element. */
 function dispatchMousedownEvent(element: Node) {
@@ -290,4 +264,23 @@ function dispatchKeydownEvent(element: Node, keyCode: number) {
     get: function() { return keyCode; }
   });
   element.dispatchEvent(event);
+}
+
+/** Dispatches a focus event on the specified element. */
+function dispatchFocusEvent(element: Node, type = 'focus') {
+  let event = document.createEvent('Event');
+  event.initEvent(type, true, true);
+  element.dispatchEvent(event);
+}
+
+/** Patches an elements focus method to properly emit focus events when the browser is blurred. */
+function patchElementFocus(element: HTMLElement) {
+  // On Saucelabs, browsers will run simultaneously and therefore can't focus all browser windows
+  // at the same time. This is problematic when testing focus states. Chrome and Firefox
+  // only fire FocusEvents when the window is focused. This issue also appears locally.
+  let _nativeButtonFocus = element.focus.bind(element);
+
+  element.focus = () => {
+    document.hasFocus() ? _nativeButtonFocus() : dispatchFocusEvent(element);
+  };
 }
