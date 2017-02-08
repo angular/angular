@@ -230,7 +230,14 @@ export class DomRenderer implements Renderer {
       renderElement.nodeValue =
           TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(parsedBindings, null, 2));
     } else {
-      this.setElementAttribute(renderElement, propertyName, propertyValue);
+      // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
+      if (propertyName[propertyName.length - 1] === '$') {
+        const attrNode: Attr = createAttrNode(propertyName).cloneNode(true) as Attr;
+        attrNode.value = propertyValue;
+        renderElement.setAttributeNode(attrNode);
+      } else {
+        this.setElementAttribute(renderElement, propertyName, propertyValue);
+      }
     }
   }
 
@@ -340,4 +347,21 @@ export function isNamespaced(name: string) {
 export function splitNamespace(name: string): string[] {
   const match = name.match(NS_PREFIX_RE);
   return [match[1], match[2]];
+}
+
+let attrCache: Map<string, Attr>;
+
+function createAttrNode(name: string): Attr {
+  if (!attrCache) {
+    attrCache = new Map<string, Attr>();
+  }
+  if (attrCache.has(name)) {
+    return attrCache.get(name);
+  } else {
+    const div = document.createElement('div');
+    div.innerHTML = `<div ${name}>`;
+    const attr: Attr = div.firstChild.attributes[0];
+    attrCache.set(name, attr);
+    return attr;
+  }
 }
