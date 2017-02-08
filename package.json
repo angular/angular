@@ -61,7 +61,7 @@
     "hammerjs": "^2.0.8",
     "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
-    "jasmine-core": "^2.3.4",
+    "jasmine-core": "^2.4.1",
     "jpm": "1.0.0",
     "karma": "^0.13.20",
     "karma-browserstack-launcher": "^0.1.9",

@@ -6020,9 +6020,9 @@
       }
     },
     "jasmine-core": {
-      "version": "2.3.4",
-      "from": "jasmine-core@2.3.4",
-      "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.3.4.tgz",
+      "version": "2.4.1",
+      "from": "jasmine-core@2.4.1",
+      "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.4.1.tgz",
       "dev": true
     },
     "jasminewd2": {
