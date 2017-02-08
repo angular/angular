@@ -231,9 +231,9 @@ export declare class PercentPipe implements PipeTransform {
 
 /** @stable */
 export declare abstract class PlatformLocation {
-    hash: string;
-    pathname: string;
-    search: string;
+    readonly hash: string;
+    readonly pathname: string;
+    readonly search: string;
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
