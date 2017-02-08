@@ -334,7 +334,7 @@ describe('MdSnackBar', () => {
     });
 });
 
-describe('MdSbackBar with parent MdSnackBar', () => {
+describe('MdSnackBar with parent MdSnackBar', () => {
   let parentSnackBar: MdSnackBar;
   let childSnackBar: MdSnackBar;
   let overlayContainerElement: HTMLElement;
