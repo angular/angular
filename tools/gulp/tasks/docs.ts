@@ -1,6 +1,9 @@
 import gulp = require('gulp');
 const markdown = require('gulp-markdown');
 const transform = require('gulp-transform');
+const highlight = require('gulp-highlight-files');
+const rename = require('gulp-rename');
+const flatten = require('gulp-flatten');
 const hljs = require('highlight.js');
 import {task} from 'gulp';
 import * as path from 'path';
@@ -16,7 +19,7 @@ const EXAMPLE_PATTERN = /<!--\W*example\(([^)]+)\)\W*-->/g;
 // documentation page. Using a RegExp to rewrite links in HTML files to work in the docs.
 const LINK_PATTERN = /(<a[^>]*) href="([^"]*)"/g;
 
-gulp.task('docs', ['markdown-docs', 'api-docs'])
+gulp.task('docs', ['markdown-docs', 'highlight-docs', 'api-docs'])
 
 gulp.task('markdown-docs', () => {
   return gulp.src(['src/lib/**/*.md', 'guides/*.md'])
@@ -34,6 +37,20 @@ gulp.task('markdown-docs', () => {
       }))
       .pipe(transform(transformMarkdownFiles))
       .pipe(gulp.dest('dist/docs/markdown'));
+});
+
+gulp.task('highlight-docs', () => {
+  // rename files to fit format: [filename]-[filetype].html
+  const renameFile = (path: any) => {
+    const extension = path.extname.slice(1);
+    path.basename = `${path.basename}-${extension}`;
+  };
+
+  return gulp.src('src/examples/**/*.+(html|css|ts)')
+    .pipe(flatten())
+    .pipe(rename(renameFile))
+    .pipe(highlight())
+    .pipe(gulp.dest('dist/docs/examples'));
 });
 
 task('api-docs', () => {
