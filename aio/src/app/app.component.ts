@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
-import { NavEngine } from './nav-engine/nav-engine.service';
+import { SidenavComponent } from './sidenav/sidenav.component';
 
 @Component({
   selector: 'aio-shell',
@@ -8,5 +8,9 @@ import { NavEngine } from './nav-engine/nav-engine.service';
   styleUrls:  ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(public navEngine: NavEngine) {}
+  isHamburgerVisible = true; // always ... for now
+
+  @ViewChild(SidenavComponent) sidenav: SidenavComponent;
+
+  toggleSideNav() { this.sidenav.toggle(); }
 }

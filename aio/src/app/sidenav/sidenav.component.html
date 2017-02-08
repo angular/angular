@@ -1,0 +1,13 @@
+<md-sidenav-container class="sidenav-container" (window:resize)="onResize($event.target.innerWidth)">
+  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide">
+    <md-toolbar color="primary" class="app-toolbar" [class.active]="!isSideBySide">
+      <aio-menu class="small"></aio-menu>
+      <span class="fill-remaining-space"></span>
+    </md-toolbar>
+
+    <aio-navitem *ngFor="let node of nodes | async" [node]="node" [selectedNode]="selectedNode"></aio-navitem>
+  </md-sidenav>
+  <section class="sidenav-content">
+    <aio-doc-viewer [doc]="currentDoc | async"></aio-doc-viewer>
+  </section>
+</md-sidenav-container>

@@ -3,7 +3,7 @@ import {
   DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation
 } from '@angular/core';
 
-import { Doc, DocMetadata } from '../nav-engine';
+import { Doc, DocMetadata, DocMetadataService, NavNode } from '../nav-engine';
 import { EmbeddedComponents } from '../embedded';
 
 interface EmbeddedComponentFactory {
@@ -17,7 +17,14 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
 
 @Component({
   selector: 'aio-doc-viewer',
-  template: ''
+  template: '',
+  providers: [ DocMetadataService ],
+  styles: [ `
+    :host >>> doc-title.not-found h1 {
+      color: white;
+      background-color: red;
+    }
+  `]
   // TODO(robwormald): shadow DOM and emulated don't work here (?!)
   // encapsulation: ViewEncapsulation.Native
 })
@@ -31,7 +38,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     componentFactoryResolver: ComponentFactoryResolver,
     elementRef: ElementRef,
     embeddedComponents: EmbeddedComponents,
-    private injector: Injector,
+    private docMetadataService: DocMetadataService,
+    private injector: Injector
     ) {
     this.hostElement = elementRef.nativeElement;
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
@@ -49,6 +57,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   set doc(newDoc: Doc) {
     this.ngOnDestroy();
     if (newDoc) {
+      this.docMetadataService.metadata = newDoc.metadata;
       window.scrollTo(0, 0);
       this.build(newDoc);
     }
