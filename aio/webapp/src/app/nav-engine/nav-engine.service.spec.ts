@@ -5,7 +5,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/delay';
 
 import { DocService } from './doc.service';
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, NavigationMapEntry } from './doc.model';
 
 import { NavEngine } from './nav-engine.service';
 
@@ -13,8 +13,8 @@ const fakeDoc: Doc = {
   metadata: {
     id: 'fake',
     title: 'All about the fake',
-    url: 'content/documents/fake.html'
-  },
+    path: 'content/documents/fake.html'
+  } as NavigationMapEntry,
   content: 'fake content'
 };
 

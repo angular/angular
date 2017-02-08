@@ -5,7 +5,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, NavigationMapEntry } from './doc.model';
 import { DocFetchingService } from './doc-fetching.service';
 import { Logger } from '../logger.service';
 
@@ -41,7 +41,16 @@ export class DocService {
       .getDocMetadata(documentId)
       .switchMap(metadata => {
 
-        return this.fileService.getFile(metadata.url)
+        // document id not found
+        if (!metadata) {
+          this.logger.error('No metadata for id: ' + documentId);
+          return of({
+            metadata: {id: documentId, title: '', path: ''},
+            content: ''
+          } as Doc);
+        };
+
+        return this.fileService.getFile(metadata.path)
           .map(content => {
             this.logger.log('fetched content for', metadata);
             doc = { metadata, content };

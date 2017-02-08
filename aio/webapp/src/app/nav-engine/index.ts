@@ -4,7 +4,8 @@ import { NavEngine } from './nav-engine.service';
 import { NavLinkDirective } from './nav-link.directive';
 import { SiteMapService } from './sitemap.service';
 
-export { Doc, DocMetadata } from './doc.model';
+export { Doc, NavigationMap, NavigationMapEntry, SiteMap } from './doc.model';
+export { SiteMapService } from './sitemap.service';
 
 export const navDirectives = [
   NavLinkDirective

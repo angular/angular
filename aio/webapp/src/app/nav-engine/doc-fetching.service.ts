@@ -12,6 +12,8 @@ import { Logger } from '../logger.service';
 @Injectable()
 export class DocFetchingService {
 
+  private base = 'content/documents/';
+
   constructor(private http: Http, private logger: Logger) { }
 
   /**
@@ -28,6 +30,8 @@ export class DocFetchingService {
       throw new Error(emsg);
     }
 
+    url = this.base + url;
+
     this.logger.log('fetching document file at ', url);
 
     return this.http.get(url)
@@ -35,7 +39,7 @@ export class DocFetchingService {
       .do(content => this.logger.log('fetched document file at ', url) )
       .catch((error: Response) => {
         if (error.status === 404) {
-          this.logger.error(`Document file not found at '$(url)'`);
+          this.logger.error(`Document file not found at '${url}'`);
           return of('');
         } else {
           throw error;
