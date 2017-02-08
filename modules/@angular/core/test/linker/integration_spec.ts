@@ -1507,6 +1507,14 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
             .toContain('ng-reflect-dir-prop="hello"');
       });
 
+      it(`should work with prop names containing '$'`, () => {
+        TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
+        const fixture = TestBed.createComponent(ParentCmp);
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test$="hello"');
+      });
+
       it('should reflect property values on template comments', () => {
         TestBed.configureTestingModule({declarations: [MyComp]});
         const template = '<template [ngIf]="ctxBoolProp"></template>';
@@ -2299,4 +2307,17 @@ class DirectiveWithPropDecorators {
 @Component({selector: 'some-cmp'})
 class SomeCmp {
   value: any;
+}
+
+@Component({
+  selector: 'parent-cmp',
+  template: `<cmp [test$]="name"></cmp>`,
+})
+export class ParentCmp {
+  name: string = 'hello';
+}
+
+@Component({selector: 'cmp', template: ''})
+class SomeCmpWithInput {
+  @Input() test$: any;
 }
