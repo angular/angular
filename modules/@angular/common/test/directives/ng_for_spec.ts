@@ -47,6 +47,14 @@ export function main() {
          detectChangesAndExpectText('1;2;3;');
        }));
 
+    it('should work with iterators', async(() => {
+         fixture = createTestComponent();
+         fixture.detectChanges();
+         getComponent().items = [0, 1, 2].keys();
+         detectChangesAndExpectText('0;1;2;');
+         detectChangesAndExpectText('0;1;2;');
+       }));
+
     it('should reflect removed elements', async(() => {
          fixture = createTestComponent();
          fixture.detectChanges();
@@ -361,7 +369,7 @@ class Foo {
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   value: any;
-  items: any[] = [1, 2];
+  items: any = [1, 2];
   trackById(index: number, item: any): string { return item['id']; }
   trackByIndex(index: number, item: any): number { return index; }
   trackByContext(): void { thisArg = this; }
