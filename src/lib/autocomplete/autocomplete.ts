@@ -34,6 +34,9 @@ export class MdAutocomplete {
   /** Whether the autocomplete panel displays above or below its trigger. */
   positionY: AutocompletePositionY = 'below';
 
+  /** Whether the autocomplete panel should be visible, depending on option length. */
+  showPanel = false;
+
   @ViewChild(TemplateRef) template: TemplateRef<any>;
   @ViewChild('panel') panel: ElementRef;
   @ContentChildren(MdOption) options: QueryList<MdOption>;
@@ -54,11 +57,18 @@ export class MdAutocomplete {
     }
   }
 
+  /** Panel should hide itself when the option list is empty. */
+  _setVisibility() {
+    Promise.resolve().then(() => this.showPanel = !!this.options.length);
+  }
+
   /** Sets a class on the panel based on its position (used to set y-offset). */
-  _getPositionClass() {
+  _getClassList() {
     return {
       'mat-autocomplete-panel-below': this.positionY === 'below',
-      'mat-autocomplete-panel-above': this.positionY === 'above'
+      'mat-autocomplete-panel-above': this.positionY === 'above',
+      'mat-autocomplete-visible': this.showPanel,
+      'mat-autocomplete-hidden': !this.showPanel
     };
   }
 

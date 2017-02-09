@@ -165,20 +165,30 @@ describe('MdAutocomplete', () => {
           .toEqual('', `Expected closing programmatically to close the panel.`);
     });
 
-    it('should close the panel when the options list is empty', async(() => {
+    it('should hide the panel when the options list is empty', async(() => {
       dispatchEvent('focus', input);
-      fixture.detectChanges();
 
       fixture.whenStable().then(() => {
+        fixture.detectChanges();
+
+        const panel =
+            overlayContainerElement.querySelector('.mat-autocomplete-panel') as HTMLElement;
+        expect(panel.classList)
+            .toContain('mat-autocomplete-visible', `Expected panel to start out visible.`);
+
         // Filter down the option list such that no options match the value
         input.value = 'af';
         dispatchEvent('input', input);
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.trigger.panelOpen)
-            .toBe(false, `Expected panel to close when options list is empty.`);
-        expect(overlayContainerElement.textContent)
-            .toEqual('', `Expected panel to close when options list is empty.`);
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(true, `Expected panel to stay open when options list is empty.`);
+          expect(panel.classList)
+              .toContain('mat-autocomplete-hidden', `Expected panel to hide itself when empty.`);
+        });
       });
     }));
 
