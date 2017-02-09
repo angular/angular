@@ -12,12 +12,10 @@ let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
 let _jsonpConnections: {[key: string]: any} = null;
 
-function _getJsonpConnections(): {[key: string]: any} {
-  const w: {[key: string]: any} = typeof window == 'object' ? window : {};
-  if (_jsonpConnections === null) {
-    _jsonpConnections = w[JSONP_HOME] = {};
-  }
-  return _jsonpConnections;
+const _global: {[key: string]: any} = typeof window == 'object' ? window : {};
+
+function _getJsonpCallbackName(id: string): string {
+  return `${JSONP_HOME}${id}_finished`;
 }
 
 // Make sure not to evaluate this in a non-browser environment!
@@ -32,17 +30,13 @@ export class BrowserJsonp {
 
   nextRequestID(): string { return `__req${_nextRequestId++}`; }
 
-  requestCallback(id: string): string { return `${JSONP_HOME}${id}_finished`; }
+  requestCallback(id: string): string { return _getJsonpCallbackName(id); }
 
   exposeConnection(id: string, connection: any): void {
-    const connections = _getJsonpConnections();
-    connections[id] = connection;
+    _global[_getJsonpCallbackName(id)] = connection.finished.bind(connection);
   }
 
-  removeConnection(id: string): void {
-    const connections = _getJsonpConnections();
-    connections[id] = null;
-  }
+  removeConnection(id: string): void { _global[_getJsonpCallbackName(id)] = null; }
 
   // Attach the <script> element to the DOM
   send(node: any): void { document.body.appendChild(<Node>(node)); }
