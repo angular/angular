@@ -137,7 +137,7 @@ export declare class NgForOf<T> implements DoCheck, OnChanges {
     ngForOf: NgIterable<T>;
     ngForTemplate: TemplateRef<NgForOfRow<T>>;
     ngForTrackBy: TrackByFunction<T>;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfRow<T>>, _differs: IterableDiffers, _cdr: ChangeDetectorRef);
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfRow<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
 }

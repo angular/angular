@@ -112,7 +112,7 @@ export class NgForOf<T> implements DoCheck,
 
   constructor(
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfRow<T>>,
-      private _differs: IterableDiffers, private _cdr: ChangeDetectorRef) {}
+      private _differs: IterableDiffers) {}
 
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfRow<T>>) {
@@ -130,7 +130,7 @@ export class NgForOf<T> implements DoCheck,
       const value = changes['ngForOf'].currentValue;
       if (!this._differ && value) {
         try {
-          this._differ = this._differs.find(value).create(this._cdr, this.ngForTrackBy);
+          this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch (e) {
           throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
