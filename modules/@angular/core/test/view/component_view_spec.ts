@@ -16,9 +16,9 @@ import {createRootView, isBrowser, removeNodes} from './helper';
 export function main() {
   describe(`Component Views`, () => {
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
-        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, update, handleEvent);
+        nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
+        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
@@ -119,7 +119,7 @@ export function main() {
             directiveDef(NodeFlags.None, null, 0, AComp, [], null, null, () => compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
-              ], update
+              ], null, update
             )),
           ]));
         const compView = asProviderData(view, 1).componentView;
@@ -194,7 +194,7 @@ export function main() {
                                     [
                                       elementDef(NodeFlags.None, null, null, 0, 'span', null, null, ['click']),
                                     ],
-                                    update, null, ViewFlags.OnPush)),
+                                    update, null, null, ViewFlags.OnPush)),
                       ],
                       (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 
@@ -246,7 +246,7 @@ export function main() {
                   [
                     elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
                   ],
-                  update)),
+                  null, update)),
         ]));
 
         const compView = asProviderData(view, 1).componentView;

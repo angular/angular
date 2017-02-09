@@ -7,7 +7,7 @@
  */
 
 import {Injector, PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue} from '@angular/core';
-import {ArgumentType, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, directiveDef, elementDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, directiveDef, elementDef, nodeValue, pipeDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView} from './helper';
@@ -15,9 +15,9 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView} from './helpe
 export function main() {
   describe(`View Pure Expressions`, () => {
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
-        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, update, handleEvent);
+        nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
+        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
@@ -64,32 +64,6 @@ export function main() {
           expect(arr1).toEqual([3, 2]);
         });
 
-        it(`should unwrap values with ${ArgumentType[inlineDynamic]}`, () => {
-          let bindingValue: any;
-          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-              [
-                elementDef(NodeFlags.None, null, null, 1, 'span'),
-                pureArrayDef(1),
-              ],
-              (check, view) => {
-                checkNodeInlineOrDynamic(check, view, 1, inlineDynamic, [bindingValue]);
-              }));
-
-          const exprData = asPureExpressionData(view, 1);
-
-          bindingValue = 'v1';
-          Services.checkAndUpdateView(view);
-          const v1Arr = exprData.value;
-          expect(v1Arr).toEqual(['v1']);
-
-          Services.checkAndUpdateView(view);
-          expect(exprData.value).toBe(v1Arr);
-
-          bindingValue = WrappedValue.wrap('v1');
-          Services.checkAndUpdateView(view);
-          expect(exprData.value).not.toBe(v1Arr);
-          expect(exprData.value).toEqual(['v1']);
-        });
       });
 
     });
@@ -127,32 +101,6 @@ export function main() {
           expect(obj1).toEqual({a: 3, b: 2});
         });
 
-        it(`should unwrap values with ${ArgumentType[inlineDynamic]}`, () => {
-          let bindingValue: any;
-          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-              [
-                elementDef(NodeFlags.None, null, null, 1, 'span'),
-                pureObjectDef(['a']),
-              ],
-              (check, view) => {
-                checkNodeInlineOrDynamic(check, view, 1, inlineDynamic, [bindingValue]);
-              }));
-
-          const exprData = asPureExpressionData(view, 1);
-
-          bindingValue = 'v1';
-          Services.checkAndUpdateView(view);
-          const v1Obj = exprData.value;
-          expect(v1Obj).toEqual({'a': 'v1'});
-
-          Services.checkAndUpdateView(view);
-          expect(exprData.value).toBe(v1Obj);
-
-          bindingValue = WrappedValue.wrap('v1');
-          Services.checkAndUpdateView(view);
-          expect(exprData.value).not.toBe(v1Obj);
-          expect(exprData.value).toEqual({'a': 'v1'});
-        });
       });
     });
 
@@ -168,11 +116,12 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null, null, 3, 'span'),
-                directiveDef(NodeFlags.None, null, 0, SomePipe, []), purePipeDef(SomePipe, 2),
+                pipeDef(NodeFlags.None, SomePipe, []), purePipeDef(2),
                 directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
-                const pureValue = checkNodeInlineOrDynamic(check, view, 2, inlineDynamic, values);
+                const pureValue = checkNodeInlineOrDynamic(
+                    check, view, 2, inlineDynamic, [nodeValue(view, 1)].concat(values));
                 checkNodeInlineOrDynamic(check, view, 3, inlineDynamic, [pureValue]);
               }));
           const service = asProviderData(view, 3).instance;
@@ -194,36 +143,6 @@ export function main() {
           expect(obj1).toEqual([13, 22]);
         });
 
-        it(`should unwrap values with ${ArgumentType[inlineDynamic]}`, () => {
-          let bindingValue: any;
-          let transformSpy = jasmine.createSpy('transform');
-
-          class SomePipe implements PipeTransform {
-            transform = transformSpy;
-          }
-
-          const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-              [
-                elementDef(NodeFlags.None, null, null, 2, 'span'),
-                directiveDef(NodeFlags.None, null, 0, SomePipe, []),
-                purePipeDef(SomePipe, 1),
-              ],
-              (check, view) => {
-                checkNodeInlineOrDynamic(check, view, 2, inlineDynamic, [bindingValue]);
-              }));
-
-          bindingValue = 'v1';
-          Services.checkAndUpdateView(view);
-          expect(transformSpy).toHaveBeenCalledWith('v1');
-
-          transformSpy.calls.reset();
-          Services.checkAndUpdateView(view);
-          expect(transformSpy).not.toHaveBeenCalled();
-
-          bindingValue = WrappedValue.wrap('v1');
-          Services.checkAndUpdateView(view);
-          expect(transformSpy).toHaveBeenCalledWith('v1');
-        });
       });
     });
   });

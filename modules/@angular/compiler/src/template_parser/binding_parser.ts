@@ -51,6 +51,7 @@ export class BoundProperty {
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeSummary> = new Map();
+  private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
@@ -58,6 +59,8 @@ export class BindingParser {
       private _targetErrors: ParseError[]) {
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
+
+  getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
   createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
       BoundElementPropertyAst[] {
@@ -377,11 +380,14 @@ export class BindingParser {
       const collector = new PipeCollector();
       ast.visit(collector);
       collector.pipes.forEach((ast, pipeName) => {
-        if (!this.pipesByName.has(pipeName)) {
+        const pipeMeta = this.pipesByName.get(pipeName);
+        if (!pipeMeta) {
           this._reportError(
               `The pipe '${pipeName}' could not be found`,
               new ParseSourceSpan(
                   sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
+        } else {
+          this._usedPipes.set(pipeName, pipeMeta);
         }
       });
     }

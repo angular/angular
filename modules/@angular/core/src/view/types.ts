@@ -23,7 +23,8 @@ import {Sanitizer, SecurityContext} from '../security';
 export interface ViewDefinition {
   flags: ViewFlags;
   component: ComponentDefinition;
-  update: ViewUpdateFn;
+  updateDirectives: ViewUpdateFn;
+  updateRenderer: ViewUpdateFn;
   handleEvent: ViewHandleEventFn;
   /**
    * Order: Depth first.
@@ -124,7 +125,9 @@ export interface NodeDef {
 export enum NodeType {
   Element,
   Text,
+  Directive,
   Provider,
+  Pipe,
   PureExpression,
   Query,
   NgContent
@@ -163,8 +166,8 @@ export enum BindingType {
   ElementClass,
   ElementStyle,
   ElementProperty,
-  ProviderProperty,
-  Interpolation,
+  DirectiveProperty,
+  TextInterpolation,
   PureExpressionProperty
 }
 
@@ -200,7 +203,7 @@ export interface ProviderDef {
   tokenKey: string;
   value: any;
   deps: DepDef[];
-  outputs: ProviderOutputDef[];
+  outputs: DirectiveOutputDef[];
   // closure to allow recursive components
   component: ViewDefinitionFactory;
 }
@@ -228,7 +231,7 @@ export enum DepFlags {
   Value = 2 << 2
 }
 
-export interface ProviderOutputDef {
+export interface DirectiveOutputDef {
   propName: string;
   eventName: string;
 }
@@ -238,10 +241,7 @@ export interface TextDef {
   source: string;
 }
 
-export interface PureExpressionDef {
-  type: PureExpressionType;
-  pipeDep: DepDef;
-}
+export interface PureExpressionDef { type: PureExpressionType; }
 
 export enum PureExpressionType {
   Array,
@@ -285,8 +285,7 @@ export interface NgContentDef {
 export interface ViewData {
   def: ViewDefinition;
   root: RootData;
-  // index of parent element / anchor. Not the index
-  // of the provider with the component view.
+  // index of component provider / anchor.
   parentIndex: number;
   parent: ViewData;
   component: any;
@@ -385,10 +384,7 @@ export function asProviderData(view: ViewData, index: number): ProviderData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface PureExpressionData {
-  value: any;
-  pipe: PipeTransform;
-}
+export interface PureExpressionData { value: any; }
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -493,7 +489,8 @@ export interface Services {
       notFoundValue?: any): any;
   createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
   handleEvent: ViewHandleEventFn;
-  updateView: ViewUpdateFn;
+  updateDirectives: ViewUpdateFn;
+  updateRenderer: ViewUpdateFn;
 }
 
 /**
@@ -513,5 +510,6 @@ export const Services: Services = {
   resolveDep: undefined,
   createDebugContext: undefined,
   handleEvent: undefined,
-  updateView: undefined,
+  updateDirectives: undefined,
+  updateRenderer: undefined,
 };

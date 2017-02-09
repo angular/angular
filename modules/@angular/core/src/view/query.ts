@@ -13,7 +13,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 
 import {createTemplateRef, createViewContainerRef} from './refs';
 import {NodeDef, NodeFlags, NodeType, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
-import {declaredViewContainer} from './util';
+import {declaredViewContainer, viewParentElIndex} from './util';
 
 export function queryDef(
     flags: NodeFlags, id: string, bindings: {[propName: string]: QueryBindingType}): NodeDef {
@@ -54,16 +54,18 @@ export function createQuery(): QueryList<any> {
 }
 
 export function dirtyParentQuery(queryId: string, view: ViewData) {
-  let nodeIndex = view.parentIndex;
+  let elIndex = viewParentElIndex(view);
   view = view.parent;
   let queryIdx: number;
   while (view) {
-    const elementDef = view.def.nodes[nodeIndex];
-    queryIdx = elementDef.element.providerIndices[queryId];
-    if (queryIdx != null) {
-      break;
+    if (elIndex != null) {
+      const elementDef = view.def.nodes[elIndex];
+      queryIdx = elementDef.element.providerIndices[queryId];
+      if (queryIdx != null) {
+        break;
+      }
     }
-    nodeIndex = view.parentIndex;
+    elIndex = viewParentElIndex(view);
     view = view.parent;
   }
   if (!view) {

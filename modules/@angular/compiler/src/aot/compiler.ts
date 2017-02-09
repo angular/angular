@@ -205,14 +205,14 @@ export class AotCompiler {
     const pipes = ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
 
-    const parsedTemplate = this._templateParser.parse(
+    const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, ngModule.schemas,
         identifierName(compMeta.type));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const compiledAnimations =
         this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
     const viewResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, stylesExpr, pipes, compiledAnimations);
+        compMeta, parsedTemplate, stylesExpr, usedPipes, compiledAnimations);
     if (componentStyles) {
       targetStatements.push(
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));

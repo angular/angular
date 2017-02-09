@@ -102,8 +102,8 @@ function generateHandleEventMethod(
   });
   boundEvents.forEach((renderEvent, renderEventIdx) => {
     const evalResult = convertActionBinding(
-        compileElement.view, compileElement.view, compileElement.view.componentContext,
-        renderEvent.handler, `sub_${renderEventIdx}`);
+        compileElement.view, compileElement.view.componentContext, renderEvent.handler,
+        `sub_${renderEventIdx}`);
     const trueStmts = evalResult.stmts;
     if (evalResult.allowDefault) {
       trueStmts.push(resultVar.set(evalResult.allowDefault.and(resultVar)).toStmt());

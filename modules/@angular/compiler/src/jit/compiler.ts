@@ -278,14 +278,14 @@ export class JitCompiler implements Compiler {
         template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
-    const parsedTemplate = this._templateParser.parse(
+    const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
         identifierName(compMeta.type));
     const compiledAnimations =
         this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
-        pipes, compiledAnimations);
+        usedPipes, compiledAnimations);
     const statements = stylesCompileResult.componentStylesheet.statements
                            .concat(...compiledAnimations.map(ca => ca.statements))
                            .concat(compileResult.statements);

@@ -19,8 +19,8 @@ import {resolveDep} from './provider';
 import {getQueryValue} from './query';
 import {createInjector} from './refs';
 import {DirectDomRenderer, LegacyRendererAdapter} from './renderer';
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {checkBinding, isComponentView, queryIdIsReference, renderNode, resolveViewDefinition, rootRenderNodes, viewParentDiIndex} from './util';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, ViewUpdateFn, asElementData, asProviderData} from './types';
+import {checkBinding, isComponentView, queryIdIsReference, renderNode, resolveViewDefinition, rootRenderNodes, viewParentElIndex} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 
@@ -44,7 +44,8 @@ export function initServicesIfNeeded() {
   Services.resolveDep = services.resolveDep;
   Services.createDebugContext = services.createDebugContext;
   Services.handleEvent = services.handleEvent;
-  Services.updateView = services.updateView;
+  Services.updateDirectives = services.updateDirectives;
+  Services.updateRenderer = services.updateRenderer;
 }
 
 function createProdServices() {
@@ -62,7 +63,9 @@ function createProdServices() {
     createDebugContext: (view: ViewData, nodeIndex: number) => new DebugContext_(view, nodeIndex),
     handleEvent: (view: ViewData, nodeIndex: number, eventName: string, event: any) =>
                      view.def.handleEvent(view, nodeIndex, eventName, event),
-    updateView: (check: NodeCheckFn, view: ViewData) => view.def.update(check, view)
+    updateDirectives: (check: NodeCheckFn, view: ViewData) =>
+                          view.def.updateDirectives(check, view),
+    updateRenderer: (check: NodeCheckFn, view: ViewData) => view.def.updateRenderer(check, view),
   };
 }
 
@@ -80,7 +83,8 @@ function createDebugServices() {
     resolveDep: resolveDep,
     createDebugContext: (view: ViewData, nodeIndex: number) => new DebugContext_(view, nodeIndex),
     handleEvent: debugHandleEvent,
-    updateView: debugUpdateView
+    updateDirectives: debugUpdateDirectives,
+    updateRenderer: debugUpdateRenderer
   };
 }
 
@@ -152,36 +156,55 @@ function debugHandleEvent(view: ViewData, nodeIndex: number, eventName: string, 
       'handleEvent', view.def.handleEvent, null, [view, nodeIndex, eventName, event]);
 }
 
-function debugUpdateView(check: NodeCheckFn, view: ViewData) {
+function debugUpdateDirectives(check: NodeCheckFn, view: ViewData) {
   if (view.state & ViewState.Destroyed) {
     throw viewDestroyedError(_currentAction);
   }
-  debugSetCurrentNode(view, nextNodeIndexWithBinding(view, 0));
-  return view.def.update(debugCheckFn, view);
+  debugSetCurrentNode(view, nextDirectiveWithBinding(view, 0));
+  return view.def.updateDirectives(debugCheckDirectivesFn, view);
 
-  function debugCheckFn(
-      view: ViewData, nodeIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
-      v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any) {
-    const values = argStyle === ArgumentType.Dynamic ? v0 : [].slice.call(arguments, 3);
-    const nodeDef = view.def.nodes[nodeIndex];
-    for (let i = 0; i < nodeDef.bindings.length; i++) {
-      const binding = nodeDef.bindings[i];
-      const value = values[i];
-      if ((binding.type === BindingType.ElementProperty ||
-           binding.type === BindingType.ProviderProperty) &&
-          checkBinding(view, nodeDef, i, value)) {
-        const elIndex = nodeDef.type === NodeType.Provider ? nodeDef.parent : nodeDef.index;
-        setBindingDebugInfo(
-            view.root.renderer, asElementData(view, elIndex).renderElement, binding.nonMinifiedName,
-            value);
-      }
-    }
-    const result = check(view, nodeIndex, <any>argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-
-    debugSetCurrentNode(view, nextNodeIndexWithBinding(view, nodeIndex));
+  function debugCheckDirectivesFn(
+      view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
+    const result = debugCheckFn(check, view, nodeIndex, argStyle, values);
+    debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
     return result;
   };
 }
+
+function debugUpdateRenderer(check: NodeCheckFn, view: ViewData) {
+  if (view.state & ViewState.Destroyed) {
+    throw viewDestroyedError(_currentAction);
+  }
+  debugSetCurrentNode(view, nextRenderNodeWithBinding(view, 0));
+  return view.def.updateRenderer(debugCheckRenderNodeFn, view);
+
+  function debugCheckRenderNodeFn(
+      view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
+    const result = debugCheckFn(check, view, nodeIndex, argStyle, values);
+    debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
+    return result;
+  };
+}
+
+function debugCheckFn(
+    delegate: NodeCheckFn, view: ViewData, nodeIndex: number, argStyle: ArgumentType,
+    givenValues: any[]) {
+  const values = argStyle === ArgumentType.Dynamic ? givenValues[0] : givenValues;
+  const nodeDef = view.def.nodes[nodeIndex];
+  for (let i = 0; i < nodeDef.bindings.length; i++) {
+    const binding = nodeDef.bindings[i];
+    const value = values[i];
+    if ((binding.type === BindingType.ElementProperty ||
+         binding.type === BindingType.DirectiveProperty) &&
+        checkBinding(view, nodeDef, i, value)) {
+      const elIndex = nodeDef.type === NodeType.Directive ? nodeDef.parent : nodeDef.index;
+      setBindingDebugInfo(
+          view.root.renderer, asElementData(view, elIndex).renderElement, binding.nonMinifiedName,
+          value);
+    }
+  }
+  return (<any>delegate)(view, nodeIndex, argStyle, ...givenValues);
+};
 
 function setBindingDebugInfo(renderer: RendererV2, renderNode: any, propName: string, value: any) {
   const renderName = `ng-reflect-${camelCaseToDashCase(propName)}`;
@@ -203,16 +226,26 @@ function camelCaseToDashCase(input: string): string {
   return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
 }
 
-function nextNodeIndexWithBinding(view: ViewData, nodeIndex: number): number {
+function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
-    if (nodeDef.bindings && nodeDef.bindings.length) {
+    if (nodeDef.type === NodeType.Directive && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
   return undefined;
 }
 
+function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number {
+  for (let i = nodeIndex; i < view.def.nodes.length; i++) {
+    const nodeDef = view.def.nodes[i];
+    if ((nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text) && nodeDef.bindings &&
+        nodeDef.bindings.length) {
+      return i;
+    }
+  }
+  return undefined;
+}
 
 class DebugRenderer implements RendererV2 {
   constructor(private _delegate: RendererV2) {}
@@ -282,7 +315,7 @@ class DebugContext_ implements DebugContext {
     }
     if (elIndex == null) {
       while (elIndex == null && elView) {
-        elIndex = viewParentDiIndex(elView);
+        elIndex = viewParentElIndex(elView);
         elView = elView.parent;
       }
     }
@@ -320,7 +353,7 @@ class DebugContext_ implements DebugContext {
     if (this.elDef) {
       for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
         const childDef = this.elView.def.nodes[i];
-        if (childDef.type === NodeType.Provider) {
+        if (childDef.type === NodeType.Provider || childDef.type === NodeType.Directive) {
           tokens.push(childDef.provider.token);
         }
         i += childDef.childCount;
@@ -335,7 +368,7 @@ class DebugContext_ implements DebugContext {
 
       for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
         const childDef = this.elView.def.nodes[i];
-        if (childDef.type === NodeType.Provider) {
+        if (childDef.type === NodeType.Provider || childDef.type === NodeType.Directive) {
           collectReferences(this.elView, childDef, references);
         }
         i += childDef.childCount;
@@ -368,7 +401,7 @@ function findHostElement(view: ViewData): ElementData {
     view = view.parent;
   }
   if (view.parent) {
-    const hostData = asElementData(view.parent, view.parentIndex);
+    const hostData = asElementData(view.parent, viewParentElIndex(view));
     return hostData;
   }
   return undefined;
@@ -397,6 +430,7 @@ function callWithDebugContext(action: string, fn: any, self: any, args: any[]) {
     if (isViewDebugError(e) || !_currentView) {
       throw e;
     }
+    _currentView.state |= ViewState.Errored;
     throw viewWrappedDebugError(e, getCurrentDebugContext());
   }
 }

@@ -16,9 +16,9 @@ import {createRootView, isBrowser} from './helper';
 export function main() {
   describe('View Services', () => {
     function compViewDef(
-        nodes: NodeDef[], update?: ViewUpdateFn, handleEvent?: ViewHandleEventFn,
-        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, update, handleEvent);
+        nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
+        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
     }
 
     function createAndGetRootNodes(

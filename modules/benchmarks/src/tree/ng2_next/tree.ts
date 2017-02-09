@@ -75,10 +75,13 @@ function TreeComponent_0(): ViewDefinition {
       ],
       (check, view) => {
         const cmp = view.component;
-        check(view, 0, ArgumentType.Inline, cmp.bgColor);
-        check(view, 1, ArgumentType.Inline, cmp.data.value);
         check(view, 3, ArgumentType.Inline, cmp.data.left != null);
         check(view, 5, ArgumentType.Inline, cmp.data.right != null);
+      },
+      (check, view) => {
+        const cmp = view.component;
+        check(view, 0, ArgumentType.Inline, cmp.bgColor);
+        check(view, 1, ArgumentType.Inline, cmp.data.value);
       });
 }
 
