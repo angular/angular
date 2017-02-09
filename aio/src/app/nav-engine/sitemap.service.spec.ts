@@ -11,21 +11,21 @@ describe('SiteMapService', () => {
 
   it('should get News metadata', fakeAsync(() => {
     siteMapService.getDocMetadata('news').subscribe(
-      metadata => expect(metadata.url).toBe('assets/documents/news.html')
+      metadata => expect(metadata.url).toBe('content/news.html')
     );
     tick();
   }));
 
   it('should calculate expected doc url for unknown id', fakeAsync(() => {
     siteMapService.getDocMetadata('fizbuz').subscribe(
-      metadata => expect(metadata.url).toBe('assets/documents/fizbuz.html')
+      metadata => expect(metadata.url).toBe('content/fizbuz.html')
     );
     tick();
   }));
 
   it('should calculate expected index doc url for unknown id ending in /', fakeAsync(() => {
     siteMapService.getDocMetadata('fizbuz/').subscribe(
-      metadata => expect(metadata.url).toBe('assets/documents/fizbuz/index.html')
+      metadata => expect(metadata.url).toBe('content/fizbuz/index.html')
     );
     tick();
   }));

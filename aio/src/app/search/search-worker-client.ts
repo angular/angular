@@ -12,7 +12,21 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/switchMap';
 
 
-export interface QueryResults {}
+/**
+ * We will use this client from a component with something like...
+ *
+ *  ngOnInit() {
+ *    const searchWorker = new SearchWorkerClient('app/search-worker.js', this.zone);
+ *    this.indexReady = searchWorker.ready;
+ *    this.searchInput = new FormControl();
+ *    this.searchResult$ = this.searchInput.valueChanges
+ *      .switchMap((searchText: string) => searchWorker.search(searchText));
+ *  }
+ *
+ * TODO(petebd): do we need a fallback for browsers that do not support service workers?
+ */
+
+type QueryResults = Object[];
 
 export interface ResultsReadyMessage {
   type: 'query-results';
@@ -40,7 +54,7 @@ export class SearchWorkerClient {
     return new Promise((resolve, reject) => {
 
       worker.onmessage = (e) => {
-        if(e.data.type === 'index-ready') {
+        if (e.data.type === 'index-ready') {
           resolve(true);
           cleanup();
         }
