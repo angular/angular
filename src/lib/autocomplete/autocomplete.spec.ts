@@ -24,7 +24,7 @@ describe('MdAutocomplete', () => {
       imports: [
           MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), ReactiveFormsModule
       ],
-      declarations: [SimpleAutocomplete],
+      declarations: [SimpleAutocomplete, AutocompleteWithoutForms],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -790,6 +790,25 @@ describe('MdAutocomplete', () => {
 
   });
 
+  describe('misc', () => {
+
+    it('should allow basic use without any forms directives', () => {
+      expect(() => {
+        const fixture = TestBed.createComponent(AutocompleteWithoutForms);
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        input.value = 'd';
+        dispatchEvent('input', input);
+        fixture.detectChanges();
+
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        expect(options.length).toBe(1);
+      }).not.toThrowError();
+    });
+
+  });
 });
 
 @Component({
@@ -849,6 +868,33 @@ class SimpleAutocomplete implements OnDestroy {
 }
 
 
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput placeholder="State" [mdAutocomplete]="auto" 
+      (input)="onInput($event.target?.value)">
+    </md-input-container>
+  
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let state of filteredStates" [value]="state">
+        <span> {{ state }}  </span>
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithoutForms {
+  filteredStates: any[];
+  states = ['Alabama', 'California', 'Florida'];
+
+  constructor() {
+    this.filteredStates = this.states.slice();
+  }
+
+  onInput(value: any) {
+    this.filteredStates = this.states.filter(s => new RegExp(value, 'gi').test(s));
+  }
+
+}
 
 /**
  * TODO: Move this to core testing utility until Angular has event faking

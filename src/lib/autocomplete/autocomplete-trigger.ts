@@ -84,7 +84,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   private _blurStream = new Subject<any>();
 
   /** View -> model callback called when value changes */
-  _onChange: (value: any) => {};
+  _onChange = (value: any) => {};
 
   /** View -> model callback called when autocomplete has been touched */
   _onTouched = () => {};
