@@ -7,6 +7,7 @@
   "compilerOptions": {
     "module": "es2015",
     "moduleResolution": "node",
+    "strictNullChecks": true,
     "target": "es6",
     "noImplicitAny": false,
     "sourceMap": false,

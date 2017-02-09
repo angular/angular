@@ -17,7 +17,7 @@ const Reflect = global.Reflect;
  *
  * @stable
  */
-export interface ClassDefinition {
+export type ClassDefinition = {
   /**
    * Optional argument for specifying the superclass.
    */
@@ -32,14 +32,15 @@ export interface ClassDefinition {
    *
    * See {@link Class} for example of usage.
    */
-  constructor: Function|any[];
-
+  constructor: Function | any[];
+} &
+{
   /**
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
   [x: string]: Type<any>|Function|any[];
-}
+};
 
 /**
  * An interface implemented by all Angular type decorators, which allows them to be used as ES7

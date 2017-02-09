@@ -71,7 +71,7 @@ export declare class Meta {
 }
 
 /** @experimental */
-export interface MetaDefinition {
+export declare type MetaDefinition = {
     charset?: string;
     content?: string;
     httpEquiv?: string;
@@ -81,8 +81,9 @@ export interface MetaDefinition {
     property?: string;
     scheme?: string;
     url?: string;
+} & {
     [prop: string]: string;
-}
+};
 
 /** @deprecated */
 export declare class NgProbeToken {

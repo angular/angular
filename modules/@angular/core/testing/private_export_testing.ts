@@ -11,13 +11,13 @@ import * as test_compiler from './test_compiler';
 
 export const __core_private_testing__: {
   TestingCompiler: typeof test_compiler.TestingCompiler,
-  _TestingCompiler?: test_compiler.TestingCompiler,
+  _TestingCompiler: test_compiler.TestingCompiler,
   TestingCompilerFactory: typeof test_compiler.TestingCompilerFactory,
-  _TestingCompilerFactory?: test_compiler.TestingCompilerFactory,
+  _TestingCompilerFactory: test_compiler.TestingCompilerFactory,
   MockAnimationPlayer: typeof mock_animation_player.MockAnimationPlayer
-  _MockAnimationPlayer?: mock_animation_player.MockAnimationPlayer
+  _MockAnimationPlayer: mock_animation_player.MockAnimationPlayer
 } = {
   TestingCompiler: test_compiler.TestingCompiler,
   TestingCompilerFactory: test_compiler.TestingCompilerFactory,
   MockAnimationPlayer: mock_animation_player.MockAnimationPlayer
-};
+} as any /* TODO(misko): export these using omega names instead */;
