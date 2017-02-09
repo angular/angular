@@ -547,7 +547,15 @@ export class Parse5DomAdapter extends DomAdapter {
       return this.defaultDoc().body;
     }
   }
-  getBaseHref(): string { throw 'not implemented'; }
+  getBaseHref(): string {
+    const base = this.querySelector(this.defaultDoc(), 'base');
+    let href = '';
+    if (base) {
+      href = this.getHref(base);
+    }
+    // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
+    return isBlank(href) ? null : href;
+  }
   resetBaseElement(): void { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }
