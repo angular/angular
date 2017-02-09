@@ -729,7 +729,11 @@ class TemplateParseVisitor implements html.Visitor {
           !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
         let errorMsg =
             `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
-        if (elementName.indexOf('-') > -1) {
+        if (elementName.startsWith('ng-')) {
+          errorMsg +=
+              `\n1. If '${boundProp.name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+              `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+        } else if (elementName.indexOf('-') > -1) {
           errorMsg +=
               `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
               `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
