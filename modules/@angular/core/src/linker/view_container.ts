@@ -80,8 +80,8 @@ export class ViewContainer {
     return result;
   }
 
-  moveView(view: AppView<any>, currentIndex: number) {
-    const previousIndex = this.nestedViews.indexOf(view);
+  moveView(view: AppView<any>, toIndex: number) {
+    const fromIndex = this.nestedViews.indexOf(view);
     if (view.type === ViewType.COMPONENT) {
       throw new Error(`Component views can't be moved!`);
     }
@@ -90,9 +90,9 @@ export class ViewContainer {
       nestedViews = [];
       this.nestedViews = nestedViews;
     }
-    nestedViews.splice(previousIndex, 1);
-    nestedViews.splice(currentIndex, 0, view);
-    const prevView = currentIndex > 0 ? nestedViews[currentIndex - 1] : null;
+    nestedViews.splice(fromIndex, 1);
+    nestedViews.splice(toIndex, 0, view);
+    const prevView = toIndex > 0 ? nestedViews[toIndex - 1] : null;
     view.moveAfter(this, prevView);
   }
 

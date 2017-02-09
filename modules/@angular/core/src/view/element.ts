@@ -137,7 +137,13 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   if (view.parent || !rootSelectorOrNode) {
     const parentNode =
         def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
-    el = elDef.name ? renderer.createElement(elDef.name) : renderer.createComment('');
+    if (elDef.name) {
+      // TODO(vicb): move the namespace to the node definition
+      const nsAndName = splitNamespace(elDef.name);
+      el = renderer.createElement(nsAndName[1], nsAndName[0]);
+    } else {
+      el = renderer.createComment('');
+    }
     if (parentNode) {
       renderer.appendChild(parentNode, el);
     }
@@ -146,7 +152,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   }
   if (elDef.attrs) {
     for (let attrName in elDef.attrs) {
-      renderer.setAttribute(el, attrName, elDef.attrs[attrName]);
+      // TODO(vicb): move the namespace to the node definition
+      const nsAndName = splitNamespace(attrName);
+      renderer.setAttribute(el, nsAndName[1], elDef.attrs[attrName], nsAndName[0]);
     }
   }
   if (elDef.outputs.length) {
@@ -234,10 +242,12 @@ function setElementAttribute(
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
   const renderer = view.root.renderer;
+  // TODO(vicb): move the namespace to the node definition
+  const nsAndName = splitNamespace(name);
   if (value != null) {
-    renderer.setAttribute(renderNode, name, renderValue);
+    renderer.setAttribute(renderNode, nsAndName[1], renderValue, nsAndName[0]);
   } else {
-    renderer.removeAttribute(renderNode, name);
+    renderer.removeAttribute(renderNode, nsAndName[1], nsAndName[0]);
   }
 }
 
@@ -264,9 +274,9 @@ function setElementStyle(
   }
   const renderer = view.root.renderer;
   if (renderValue != null) {
-    renderer.setStyle(renderNode, name, renderValue);
+    renderer.setStyle(renderNode, name, renderValue, false, false);
   } else {
-    renderer.removeStyle(renderNode, name);
+    renderer.removeStyle(renderNode, name, false);
   }
 }
 
@@ -275,4 +285,14 @@ function setElementProperty(
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   view.root.renderer.setProperty(renderNode, name, renderValue);
+}
+
+const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
+
+function splitNamespace(name: string): string[] {
+  if (name[0] === ':') {
+    const match = name.match(NS_PREFIX_RE);
+    return [match[1], match[2]];
+  }
+  return ['', name];
 }

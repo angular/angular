@@ -183,6 +183,11 @@ export enum RenderNodeAction {
 
 export function visitRootRenderNodes(
     view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
+  // We need to re-compute the parent node in case the nodes have been moved around manually
+  if (action === RenderNodeAction.RemoveChild) {
+    parentNode = view.root.renderer.parentNode(renderNode(view, view.def.lastRootNode));
+  }
+
   const len = view.def.nodes.length;
   for (let i = 0; i < len; i++) {
     const nodeDef = view.def.nodes[i];

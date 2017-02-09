@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from './type';
 import {DebugContext} from './view';
 
 export const ERROR_TYPE = 'ngType';

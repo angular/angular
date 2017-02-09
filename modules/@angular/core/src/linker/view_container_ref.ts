@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di/injector';
-import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
@@ -133,7 +132,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
   get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {
     const views = this._element.nestedViews;
-    return isPresent(views) ? views.length : 0;
+    return views ? views.length : 0;
   }
 
   get element(): ElementRef { return this._element.elementRef; }

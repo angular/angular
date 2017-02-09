@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
 import {isBlank, isPresent, stringify} from './facade/lang';
@@ -17,7 +17,7 @@ const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
 
 @Injectable()
-export class ServerRootRenderer {
+export class ServerRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, ServerRenderer> = new Map<string, ServerRenderer>();
   constructor(
       @Inject(DOCUMENT) public document: any, public sharedStylesHost: SharedStylesHost,
@@ -213,13 +213,13 @@ export class ServerRenderer implements Renderer {
   }
 }
 
-function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  const parent = getDOM().parentElement(sibling);
-  if (nodes.length > 0 && isPresent(parent)) {
-    const nextSibling = getDOM().nextSibling(sibling);
-    if (isPresent(nextSibling)) {
+function moveNodesAfterSibling(ref: any, nodes: any) {
+  const parent = getDOM().parentElement(ref);
+  if (nodes.length > 0 && parent) {
+    const nextSibling = getDOM().nextSibling(ref);
+    if (nextSibling) {
       for (let i = 0; i < nodes.length; i++) {
-        getDOM().insertBefore(nextSibling, nodes[i]);
+        getDOM().insertBefore(parent, nextSibling, nodes[i]);
       }
     } else {
       for (let i = 0; i < nodes.length; i++) {
@@ -229,18 +229,119 @@ function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TO
   }
 }
 
-function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
+function appendNodes(parent: any, nodes: any) {
   for (let i = 0; i < nodes.length; i++) {
     getDOM().appendChild(parent, nodes[i]);
   }
 }
 
-function decoratePreventDefault(eventHandler: Function): Function {
-  return (event: any /** TODO #9100 */) => {
-    const allowDefaultBehavior = eventHandler(event);
-    if (allowDefaultBehavior === false) {
-      // TODO(tbosch): move preventDefault into event plugins...
-      getDOM().preventDefault(event);
+@Injectable()
+export class ServerRendererV2 implements RendererV2 {
+  constructor(private ngZone: NgZone, @Inject(DOCUMENT) private document: any) {}
+
+  createElement(name: string, namespace?: string, debugInfo?: any): any {
+    if (namespace) {
+      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name);
     }
-  };
+
+    return getDOM().createElement(name);
+  }
+
+  createComment(value: string, debugInfo?: any): any { return getDOM().createComment(value); }
+
+  createText(value: string, debugInfo?: any): any { return getDOM().createTextNode(value); }
+
+  appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
+
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    if (parent) {
+      getDOM().insertBefore(parent, refChild, newChild);
+    }
+  }
+
+  removeChild(parent: any, oldChild: any): void { getDOM().removeChild(parent, oldChild); }
+
+  selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
+    let el: any;
+    if (typeof selectorOrNode === 'string') {
+      el = getDOM().querySelector(this.document, selectorOrNode);
+      if (!el) {
+        throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
+      }
+    } else {
+      el = selectorOrNode;
+    }
+    getDOM().clearNodes(el);
+    return el;
+  }
+
+  parentNode(node: any): any { return getDOM().parentElement(node); }
+
+  nextSibling(node: any): any { return getDOM().nextSibling(node); }
+
+  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    if (namespace) {
+      getDOM().setAttributeNS(el, NAMESPACE_URIS[namespace], namespace + ':' + name, value);
+    } else {
+      getDOM().setAttribute(el, name, value);
+    }
+  }
+
+  removeAttribute(el: any, name: string, namespace?: string): void {
+    if (namespace) {
+      getDOM().removeAttributeNS(el, NAMESPACE_URIS[namespace], name);
+    } else {
+      getDOM().removeAttribute(el, name);
+    }
+  }
+
+  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
+    if (getDOM().isCommentNode(el)) {
+      const m = getDOM().getText(el).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
+      const obj = m === null ? {} : JSON.parse(m[1]);
+      obj[propertyName] = propertyValue;
+      getDOM().setText(el, TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2)));
+    } else {
+      this.setAttribute(el, propertyName, propertyValue);
+    }
+  }
+
+  removeBindingDebugInfo(el: any, propertyName: string): void {
+    if (getDOM().isCommentNode(el)) {
+      const m = getDOM().getText(el).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
+      const obj = m === null ? {} : JSON.parse(m[1]);
+      delete obj[propertyName];
+      getDOM().setText(el, TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2)));
+    } else {
+      this.removeAttribute(el, propertyName);
+    }
+  }
+
+  addClass(el: any, name: string): void { getDOM().addClass(el, name); }
+
+  removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
+
+  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
+      void {
+    getDOM().setStyle(el, style, value);
+  }
+
+  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+    getDOM().removeStyle(el, style);
+  }
+
+  setProperty(el: any, name: string, value: any): void { getDOM().setProperty(el, name, value); }
+
+  setText(node: any, value: string): void { getDOM().setText(node, value); }
+
+  listen(
+      target: 'document'|'window'|'body'|any, eventName: string,
+      callback: (event: any) => boolean): () => void {
+    // Note: We are not using the EventsPlugin here as this is not needed
+    // to run our tests.
+    const el =
+        typeof target === 'string' ? getDOM().getGlobalEventTarget(this.document, target) : target;
+    const outsideHandler = (event: any) => this.ngZone.runGuarded(() => callback(event));
+    return this.ngZone.runOutsideAngular(() => getDOM().onAndCancel(el, eventName, outsideHandler));
+  }
 }
