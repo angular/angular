@@ -1,6 +1,7 @@
 @import '../core/style/menu-common';
 @import '../core/style/list-common';
 @import '../core/style/form-common';
+@import '../core/style/variables';
 @import '../core/a11y/a11y';
 
 $mat-select-trigger-height: 30px !default;
@@ -12,6 +13,7 @@ $mat-select-panel-max-height: 256px !default;
 .mat-select {
   display: inline-block;
   outline: none;
+  font-family: $mat-font-family;
 }
 
 .mat-select-trigger {
