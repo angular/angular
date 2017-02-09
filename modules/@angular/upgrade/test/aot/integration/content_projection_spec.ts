@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injector, NgModule, destroyPlatform} from '@angular/core';
+import {Component, Directive, ElementRef, Injector, Input, NgModule, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/angular_js';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
-import {bootstrap, html} from '../test_helpers';
+import {bootstrap, html, multiTrim} from '../test_helpers';
 
 export function main() {
   describe('content projection', () => {
@@ -49,6 +49,44 @@ export function main() {
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
            expect(document.body.textContent).toEqual('ng1[NG2(~ng-content~)]');
+         });
+       }));
+
+    it('should correctly project structural directives', async(() => {
+         @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
+         class Ng2Component {
+           @Input() itemId: string;
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive(
+                     'ng2', downgradeComponent({component: Ng2Component, inputs: ['itemId']}))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   $rootScope['items'] = [
+                     {id: 'a', subitems: [1, 2, 3]}, {id: 'b', subitems: [4, 5, 6]},
+                     {id: 'c', subitems: [7, 8, 9]}
+                   ];
+                 });
+
+         const element = html(`
+           <ng2 ng-repeat="item in items" [item-id]="item.id">
+             <div ng-repeat="subitem in item.subitems">{{ subitem }}</div>
+           </ng2>
+         `);
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(multiTrim(document.body.textContent))
+               .toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
          });
        }));
 

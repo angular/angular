@@ -656,67 +656,59 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
       restrict: 'E',
       terminal: true,
       require: REQUIRE_INJECTOR,
-      compile: (templateElement: angular.IAugmentedJQuery, templateAttributes: angular.IAttributes,
-                transclude: angular.ITranscludeFunction) => {
+      link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
+             parentInjector: Injector | ParentInjectorPromise): void => {
         // We might have compile the contents lazily, because this might have been triggered by the
         // UpgradeNg1ComponentAdapterBuilder, when the ng2 templates have not been compiled yet
-        return {
-          post: (scope: angular.IScope, element: angular.IAugmentedJQuery,
-                 attrs: angular.IAttributes, parentInjector: Injector | ParentInjectorPromise,
-                 transclude: angular.ITranscludeFunction): void => {
-            let id = idPrefix + (idCount++);
-            (<any>element[0]).id = id;
 
-            let injectorPromise = new ParentInjectorPromise(element);
+        let id = idPrefix + (idCount++);
+        (<any>element[0]).id = id;
 
-            const ng2Compiler = ng1Injector.get(NG2_COMPILER) as Compiler;
-            const ngContentSelectors = ng2Compiler.getNgContentSelectors(info.type);
-            const linkFns = compileProjectedNodes(templateElement, ngContentSelectors);
+        let injectorPromise = new ParentInjectorPromise(element);
 
-            const componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
-            if (!componentFactory)
-              throw new Error('Expecting ComponentFactory for: ' + info.selector);
+        const ng2Compiler = ng1Injector.get(NG2_COMPILER) as Compiler;
+        const ngContentSelectors = ng2Compiler.getNgContentSelectors(info.type);
+        const linkFns = compileProjectedNodes(element, ngContentSelectors);
 
-            element.empty();
-            let projectableNodes = linkFns.map(link => {
-              let projectedClone: Node[];
-              link(scope, (clone: Node[]) => {
-                projectedClone = clone;
-                element.append(clone);
-              });
-              return projectedClone;
-            });
+        const componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
+        if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
 
-            parentInjector = parentInjector || ng1Injector.get(NG2_INJECTOR);
+        element.empty();
+        let projectableNodes = linkFns.map(link => {
+          let projectedClone: Node[];
+          link(scope, (clone: Node[]) => {
+            projectedClone = clone;
+            element.append(clone);
+          });
+          return projectedClone;
+        });
 
-            if (parentInjector instanceof ParentInjectorPromise) {
-              parentInjector.then((resolvedInjector: Injector) => downgrade(resolvedInjector));
-            } else {
-              downgrade(parentInjector);
-            }
+        parentInjector = parentInjector || ng1Injector.get(NG2_INJECTOR);
 
-            function downgrade(injector: Injector) {
-              const facade = new DowngradeNg2ComponentAdapter(
-                  info, element, attrs, scope, injector, parse, componentFactory);
-              facade.setupInputs();
-              facade.bootstrapNg2(projectableNodes);
-              facade.setupOutputs();
-              facade.registerCleanup();
-              injectorPromise.resolve(facade.componentRef.injector);
-            }
-          }
-        };
+        if (parentInjector instanceof ParentInjectorPromise) {
+          parentInjector.then((resolvedInjector: Injector) => downgrade(resolvedInjector));
+        } else {
+          downgrade(parentInjector);
+        }
+
+        function downgrade(injector: Injector) {
+          const facade = new DowngradeNg2ComponentAdapter(
+              info, element, attrs, scope, injector, parse, componentFactory);
+          facade.setupInputs();
+          facade.bootstrapNg2(projectableNodes);
+          facade.setupOutputs();
+          facade.registerCleanup();
+          injectorPromise.resolve(facade.componentRef.injector);
+        }
       }
     };
 
     function compileProjectedNodes(
-        templateElement: angular.IAugmentedJQuery,
-        ngContentSelectors: string[]): angular.ILinkFn[] {
+        element: angular.IAugmentedJQuery, ngContentSelectors: string[]): angular.ILinkFn[] {
       if (!ngContentSelectors)
         throw new Error('Expecting ngContentSelectors for: ' + info.selector);
       // We have to sort the projected content before we compile it, hence the terminal: true
-      let projectableTemplateNodes =
-          sortProjectableNodes(ngContentSelectors, templateElement.contents());
+      let projectableTemplateNodes = sortProjectableNodes(ngContentSelectors, element.contents());
       return projectableTemplateNodes.map(nodes => ng1Compile(nodes));
     }
   }

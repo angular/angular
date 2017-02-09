@@ -491,6 +491,39 @@ export function main() {
            });
          }));
 
+      it('should correctly project structural directives', async(() => {
+           @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
+           class Ng2Component {
+             @Input() itemId: string;
+           }
+
+           @NgModule({imports: [BrowserModule], declarations: [Ng2Component]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component))
+                                 .run(($rootScope: angular.IRootScopeService) => {
+                                   $rootScope['items'] = [
+                                     {id: 'a', subitems: [1, 2, 3]}, {id: 'b', subitems: [4, 5, 6]},
+                                     {id: 'c', subitems: [7, 8, 9]}
+                                   ];
+                                 });
+
+           const element = html(`
+             <ng2 ng-repeat="item in items" [item-id]="item.id">
+               <div ng-repeat="subitem in item.subitems">{{ subitem }}</div>
+             </ng2>
+           `);
+
+           adapter.bootstrap(element, [ng1Module.name]).ready(ref => {
+             expect(multiTrim(document.body.textContent))
+                 .toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
+             ref.dispose();
+           });
+         }));
+
       it('should allow attribute selectors for components in ng2', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
            const ng1Module = angular.module('myExample', []);
@@ -1901,14 +1934,17 @@ function multiTrim(text: string): string {
 }
 
 function html(html: string): Element {
+  // Don't return `body` itself, because using it as a `$rootElement` for ng1
+  // will attach `$injector` to it and that will affect subsequent tests.
   const body = document.body;
-  body.innerHTML = html;
+  body.innerHTML = `<div>${html.trim()}</div>`;
+  const div = document.body.firstChild as Element;
 
-  if (body.childNodes.length == 1 && body.firstChild instanceof HTMLElement) {
-    return <Element>body.firstChild;
+  if (div.childNodes.length === 1 && div.firstChild instanceof HTMLElement) {
+    return div.firstChild;
   }
 
-  return body;
+  return div;
 }
 
 function nodes(html: string) {
