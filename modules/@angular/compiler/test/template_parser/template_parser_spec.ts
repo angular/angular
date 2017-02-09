@@ -380,6 +380,16 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. ("<my-component [ERROR ->][invalidProp]="bar"></my-component>"): TestComp@0:14`);
           });
 
+          it('should throw error when binding to an unknown property of ng-container', () => {
+            expect(() => parse('<ng-container [invalidProp]="bar"></ng-container>', []))
+                .toThrowError(
+                    `Template parse errors:
+Can't bind to 'invalidProp' since it isn't a known property of 'ng-container'.
+1. If 'invalidProp' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.
+2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.` +
+                    ` ("<ng-container [ERROR ->][invalidProp]="bar"></ng-container>"): TestComp@0:14`);
+          });
+
           it('should throw error when binding to an unknown element w/o bindings', () => {
             expect(() => parse('<unknown></unknown>', [])).toThrowError(`Template parse errors:
 'unknown' is not a known element:
