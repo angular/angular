@@ -52,21 +52,20 @@ export type ViewDefinitionFactory = () => ViewDefinition;
 export type ViewUpdateFn = (check: NodeCheckFn, view: ViewData) => void;
 
 // helper functions to create an overloaded function type.
-export declare function _nodeCheckFn(
-    view: ViewData, nodeIndex: number, argStyle: ArgumentType.Dynamic, values: any[]): any;
-    export declare function _nodeCheckFn(
-        view: ViewData, nodeIndex: number, argStyle: ArgumentType.Inline, v0?: any, v1?: any,
-        v2?: any, v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any):
-        any;
+export interface NodeCheckFn {
+  (view: ViewData, nodeIndex: number, argStyle: ArgumentType.Dynamic, values: any[]): any;
 
-    export type NodeCheckFn = typeof _nodeCheckFn;
+  (view: ViewData, nodeIndex: number, argStyle: ArgumentType.Inline, v0?: any, v1?: any, v2?: any,
+   v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
+}
 
-    export type ViewHandleEventFn =
-        (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
+export type ViewHandleEventFn =
+    (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
 
-    export enum ArgumentType {
-      Inline, Dynamic
-    }
+export enum ArgumentType {
+  Inline,
+  Dynamic
+}
 
 /**
  * Bitmask for ViewDefintion.flags.
