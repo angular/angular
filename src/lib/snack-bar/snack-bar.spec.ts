@@ -9,10 +9,8 @@ import {
 } from '@angular/core/testing';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdSnackBar, MdSnackBarModule} from './snack-bar';
-import {MdSnackBarConfig} from './snack-bar-config';
+import {MdSnackBarModule, MdSnackBar, MdSnackBarConfig, SimpleSnackBar} from './index';
 import {OverlayContainer, LiveAnnouncer} from '../core';
-import {SimpleSnackBar} from './simple-snack-bar';
 
 
 // TODO(josephperrott): Update tests to mock waiting for time to complete for animations.
