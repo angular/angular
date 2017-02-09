@@ -211,11 +211,12 @@ export declare abstract class ChangeDetectorRef {
 export declare function Class(clsDef: ClassDefinition): Type<any>;
 
 /** @stable */
-export interface ClassDefinition {
-    constructor: Function | any[];
+export declare type ClassDefinition = {
     extends?: Type<any>;
+    constructor: Function | any[];
+} & {
     [x: string]: Type<any> | Function | any[];
-}
+};
 
 /** @stable */
 export interface ClassProvider {
