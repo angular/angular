@@ -12,8 +12,9 @@ echo 'travis_fold:start:test_docs'
 # Setup environment
 cd `dirname $0`
 source ./env.sh
-cd ../..
 
+cd ../../aio
 $(npm bin)/gulp docs-test
+cd -
 
 echo 'travis_fold:end:test_docs'

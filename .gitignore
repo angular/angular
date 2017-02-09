@@ -3,7 +3,6 @@
 /dist/
 node_modules
 bower_components
-angular.io/dist
 
 # Include when developing application packages.
 pubspec.lock
@@ -28,5 +27,6 @@ npm-debug.log
 /modules/rollup-test/dist/
 
 # angular.io
-/angular.io/node_modules/
-/angular.io/dist/
+/aio/node_modules
+/aio/src/content/docs
+/aio/dist

@@ -36,7 +36,7 @@ groups:
         include:
           - "*"
         exclude:
-          - "angular.io/*"
+          - "aio/*"
           - "integration/*"
           - "modules/*"
           - "tools/*"
@@ -236,7 +236,7 @@ groups:
   angular.io:
     conditions:
       files:
-        - "angular.io/*"
+        - "aio/*"
     users:
       - IgorMinar
       - robwormald
