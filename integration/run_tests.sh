@@ -5,7 +5,14 @@ set -e -o pipefail
 cd `dirname $0`
 
 if [ ! -d "rxjs/dist/es6" ]; then
-  echo "You must run build_rxjs_es6.sh before running tests"
+  echo "You must run build the ES2015 version of RxJS for some tests:"
+  echo "./integration/build_rxjs_es6.sh"
+  exit 1
+fi
+
+if [ ! -d "../dist/packages-dist-es2015" ]; then
+  echo "You must build the ES2015 distro for some tests:"
+  echo "EXPERIMENTAL_ES2015_DISTRO=1 ./build.sh"
   exit 1
 fi
 
