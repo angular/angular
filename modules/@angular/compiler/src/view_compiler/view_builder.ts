@@ -9,7 +9,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
-import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
+import {legacyCreateSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
 import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier, identifierToken} from '../identifiers';
@@ -586,7 +586,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
     stmts.push(new o.IfStmt(o.not(ViewProperties.throwOnChange), afterViewStmts));
   }
 
-  const varStmts = createSharedBindingVariablesIfNeeded(stmts);
+  const varStmts = legacyCreateSharedBindingVariablesIfNeeded(stmts);
   return varStmts.concat(stmts);
 }
 

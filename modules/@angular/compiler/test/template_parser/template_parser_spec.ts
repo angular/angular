@@ -70,7 +70,8 @@ export function main() {
             if (pipes === null) {
               pipes = [];
             }
-            return parser.parse(component, template, directives, pipes, schemas, 'TestComp');
+            return parser.parse(component, template, directives, pipes, schemas, 'TestComp')
+                .template;
           };
     }));
   }
@@ -306,10 +307,10 @@ export function main() {
              isComponent: true,
              template: new CompileTemplateMetadata({interpolation: ['{%', '%}']})
            });
-           expect(humanizeTplAst(parser.parse(component, '{%a%}', [], [], [], 'TestComp'), {
-             start: '{%',
-             end: '%}'
-           })).toEqual([[BoundTextAst, '{% a %}']]);
+           expect(humanizeTplAst(
+                      parser.parse(component, '{%a%}', [], [], [], 'TestComp').template,
+                      {start: '{%', end: '%}'}))
+               .toEqual([[BoundTextAst, '{% a %}']]);
          }));
 
       describe('bound properties', () => {
