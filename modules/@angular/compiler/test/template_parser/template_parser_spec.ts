@@ -376,22 +376,22 @@ export function main() {
                 .toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 1. If 'my-component' is an Angular component and it has 'invalidProp' input, then verify that it is part of this module.
-2. If 'my-component' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.
- ("<my-component [ERROR ->][invalidProp]="bar"></my-component>"): TestComp@0:14`);
+2. If 'my-component' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. ("<my-component [ERROR ->][invalidProp]="bar"></my-component>"): TestComp@0:14`);
           });
 
           it('should throw error when binding to an unknown element w/o bindings', () => {
             expect(() => parse('<unknown></unknown>', [])).toThrowError(`Template parse errors:
 'unknown' is not a known element:
 1. If 'unknown' is an Angular component, then verify that it is part of this module.
-2. If 'unknown' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<unknown></unknown>"): TestComp@0:0`);
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. ("[ERROR ->]<unknown></unknown>"): TestComp@0:0`);
           });
 
           it('should throw error when binding to an unknown custom element w/o bindings', () => {
             expect(() => parse('<un-known></un-known>', [])).toThrowError(`Template parse errors:
 'un-known' is not a known element:
 1. If 'un-known' is an Angular component, then verify that it is part of this module.
-2. If 'un-known' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<un-known></un-known>"): TestComp@0:0`);
+2. If 'un-known' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<un-known></un-known>"): TestComp@0:0`);
           });
 
           it('should throw error when binding to an invalid property', () => {

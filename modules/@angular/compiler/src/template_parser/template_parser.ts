@@ -674,9 +674,16 @@ class TemplateParseVisitor implements html.Visitor {
     const elName = element.name.replace(/^:xhtml:/, '');
 
     if (!matchElement && !this._schemaRegistry.hasElement(elName, this._schemas)) {
-      const errorMsg = `'${elName}' is not a known element:\n` +
-          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n` +
-          `2. If '${elName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.`;
+      let errorMsg = `'${elName}' is not a known element:\n`;
+      errorMsg +=
+          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n`;
+      if (elName.indexOf('-') > -1) {
+        errorMsg +=
+            `2. If '${elName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+      } else {
+        errorMsg +=
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+      }
       this._reportError(errorMsg, element.sourceSpan);
     }
   }
@@ -725,7 +732,8 @@ class TemplateParseVisitor implements html.Visitor {
         if (elementName.indexOf('-') > -1) {
           errorMsg +=
               `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
-              `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
+              `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+              `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
         }
         this._reportError(errorMsg, boundProp.sourceSpan);
       }
