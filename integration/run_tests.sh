@@ -25,7 +25,7 @@ for testDir in $(ls | grep -v rxjs | grep -v node_modules) ; do
     cd $testDir
     # Workaround for https://github.com/yarnpkg/yarn/issues/2256
     rm -f yarn.lock
-    ../../node_modules/.bin/yarn
-    ../../node_modules/.bin/yarn test || exit 1
+    yarn
+    yarn test || exit 1
   )
 done
