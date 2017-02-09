@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SyntaxError} from '@angular/compiler';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
@@ -155,13 +156,12 @@ export function main() {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler(false);
          errorHandler._console = logger as any;
-         bootstrap(HelloRootDirectiveIsNotCmp, [
-           {provide: ErrorHandler, useValue: errorHandler}
-         ]).catch((e) => {
-           expect(e.message).toBe(
-               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-           done.done();
-         });
+         expect(
+             () => bootstrap(
+                 HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
+             .toThrowError(
+                 SyntaxError, `HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
+         done.done();
        }));
 
     it('should throw if no element is found',
