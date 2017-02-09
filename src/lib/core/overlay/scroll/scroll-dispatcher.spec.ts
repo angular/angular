@@ -1,5 +1,5 @@
-import {inject, TestBed, async, ComponentFixture} from '@angular/core/testing';
-import {NgModule, Component, ViewChild, ElementRef, QueryList, ViewChildren} from '@angular/core';
+import {inject, TestBed, async, fakeAsync, ComponentFixture, tick} from '@angular/core/testing';
+import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {OverlayModule} from '../overlay-directives';
 import {Scrollable} from './scrollable';
@@ -38,15 +38,17 @@ describe('Scroll Dispatcher', () => {
       expect(scroll.scrollableReferences.has(componentScrollable)).toBe(false);
     });
 
-    it('should notify through the directive and service that a scroll event occurred', () => {
+    it('should notify through the directive and service that a scroll event occurred',
+        fakeAsync(() => {
       let hasDirectiveScrollNotified = false;
       // Listen for notifications from scroll directive
       let scrollable = fixture.componentInstance.scrollable;
       scrollable.elementScrolled().subscribe(() => { hasDirectiveScrollNotified = true; });
 
-      // Listen for notifications from scroll service
+      // Listen for notifications from scroll service with a throttle of 100ms
+      const throttleTime = 100;
       let hasServiceScrollNotified = false;
-      scroll.scrolled().subscribe(() => { hasServiceScrollNotified = true; });
+      scroll.scrolled(throttleTime).subscribe(() => { hasServiceScrollNotified = true; });
 
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
@@ -55,9 +57,17 @@ describe('Scroll Dispatcher', () => {
       scrollEvent.initUIEvent('scroll', true, true, window, 0);
       fixture.componentInstance.scrollingElement.nativeElement.dispatchEvent(scrollEvent);
 
+      // The scrollable directive should have notified the service immediately.
       expect(hasDirectiveScrollNotified).toBe(true);
+
+      // Verify that the throttle is used, the service should wait for the throttle time until
+      // sending the notification.
+      expect(hasServiceScrollNotified).toBe(false);
+
+      // After the throttle time, the notification should be sent.
+      tick(throttleTime);
       expect(hasServiceScrollNotified).toBe(true);
-    });
+    }));
   });
 
   describe('Nested scrollables', () => {
@@ -107,7 +117,6 @@ class ScrollingComponent {
 })
 class NestedScrollingComponent {
   @ViewChild('interestingElement') interestingElement: ElementRef;
-  @ViewChildren(Scrollable) scrollables: QueryList<Scrollable>;
 }
 
 const TEST_COMPONENTS = [ScrollingComponent, NestedScrollingComponent];

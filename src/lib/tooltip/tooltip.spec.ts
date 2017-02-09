@@ -10,13 +10,15 @@ import {
   Component,
   DebugElement,
   AnimationTransitionEvent,
+  ViewChild,
   ChangeDetectionStrategy
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {TooltipPosition, MdTooltip, MdTooltipModule} from './tooltip';
+import {TooltipPosition, MdTooltip, MdTooltipModule, SCROLL_THROTTLE_MS} from './tooltip';
 import {OverlayContainer} from '../core';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {OverlayModule} from '../core/overlay/overlay-directives';
+import {Scrollable} from '../core/overlay/scroll/scrollable';
 
 const initialTooltipMessage = 'initial tooltip message';
 
@@ -27,10 +29,11 @@ describe('MdTooltip', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdTooltipModule.forRoot(), OverlayModule],
-      declarations: [BasicTooltipDemo, OnPushTooltipDemo],
+      declarations: [BasicTooltipDemo, ScrollableTooltipDemo, OnPushTooltipDemo],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
+          document.body.appendChild(overlayContainerElement);
           return {getContainerElement: () => overlayContainerElement};
         }},
         {provide: Dir, useFactory: () => {
@@ -312,6 +315,43 @@ describe('MdTooltip', () => {
     });
   });
 
+  describe('scrollable usage', () => {
+    let fixture: ComponentFixture<ScrollableTooltipDemo>;
+    let buttonDebugElement: DebugElement;
+    let buttonElement: HTMLButtonElement;
+    let tooltipDirective: MdTooltip;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ScrollableTooltipDemo);
+      fixture.detectChanges();
+      buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
+      tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
+    });
+
+    it('should hide tooltip if clipped after changing positions', fakeAsync(() => {
+      expect(tooltipDirective._tooltipInstance).toBeUndefined();
+
+      // Show the tooltip and tick for the show delay (default is 0)
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+
+      // Expect that the tooltip is displayed
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      // Scroll the page but tick just before the default throttle should update.
+      fixture.componentInstance.scrollDown();
+      tick(SCROLL_THROTTLE_MS - 1);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      // Finish ticking to the throttle's limit and check that the scroll event notified the
+      // tooltip and it was hidden.
+      tick(1);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+    }));
+  });
+
   describe('with OnPush', () => {
     let fixture: ComponentFixture<OnPushTooltipDemo>;
     let buttonDebugElement: DebugElement;
@@ -374,6 +414,39 @@ class BasicTooltipDemo {
   message: string = initialTooltipMessage;
   showButton: boolean = true;
 }
+
+@Component({
+     selector: 'app',
+     template: `
+    <div cdk-scrollable style="padding: 100px; margin: 300px;
+                               height: 200px; width: 200px; overflow: auto;">
+      <button *ngIf="showButton" style="margin-bottom: 600px"
+              [md-tooltip]="message"		
+              [tooltip-position]="position">		
+        Button		
+      </button>		
+    </div>`
+})
+class ScrollableTooltipDemo {
+ position: string = 'below';
+ message: string = initialTooltipMessage;
+ showButton: boolean = true;
+
+ @ViewChild(Scrollable) scrollingContainer: Scrollable;
+
+ scrollDown() {
+     const scrollingContainerEl = this.scrollingContainer.getElementRef().nativeElement;
+     scrollingContainerEl.scrollTop = 250;
+
+     // Emit a scroll event from the scrolling element in our component.
+     // This event should be picked up by the scrollable directive and notify.
+     // The notification should be picked up by the service.
+     const scrollEvent = document.createEvent('UIEvents');
+     scrollEvent.initUIEvent('scroll', true, true, window, 0);
+     scrollingContainerEl.dispatchEvent(scrollEvent);
+   }
+}
+
 @Component({
   selector: 'app',
   template: `
@@ -387,4 +460,3 @@ class OnPushTooltipDemo {
   position: string = 'below';
   message: string = initialTooltipMessage;
 }
-

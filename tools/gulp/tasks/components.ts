@@ -77,6 +77,7 @@ task(':build:components:rollup', () => {
     'rxjs/add/observable/of': 'Rx.Observable',
     'rxjs/add/observable/merge': 'Rx.Observable',
     'rxjs/add/observable/throw': 'Rx.Observable',
+    'rxjs/add/operator/auditTime': 'Rx.Observable.prototype',
     'rxjs/add/operator/toPromise': 'Rx.Observable.prototype',
     'rxjs/add/operator/map': 'Rx.Observable.prototype',
     'rxjs/add/operator/filter': 'Rx.Observable.prototype',
