@@ -25,7 +25,9 @@ export const ROUTES = [
 
 @NgModule({
   imports: [WorkerAppModule, RouterModule.forRoot(ROUTES, {useHash: true})],
-  providers: [WORKER_APP_LOCATION_PROVIDERS],
+  providers: [
+    WORKER_APP_LOCATION_PROVIDERS,
+  ],
   bootstrap: [App],
   declarations: [App, Start, Contact, About]
 })
