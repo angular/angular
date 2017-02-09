@@ -128,6 +128,7 @@ $mat-input-underline-disabled-background-image:
   font-size: 100%;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
   z-index: 1;
+  padding-top: 1em;
 
   // Put ellipsis text overflow.
   width: 100%;
@@ -158,6 +159,24 @@ $mat-input-underline-disabled-background-image:
     right: 0;
   }
 }
+
+// Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
+// determining overflow.
+.mat-input-placeholder-wrapper {
+  position: absolute;
+  left: 0;
+  top: -1em;
+  width: 100%;
+  padding-top: 1em;
+  overflow: hidden;
+  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+
+  // Keeps the element height since the placeholder text is `position: absolute`.
+  &::after {
+    content: '\\00a0';
+  }
+}
+
 
 // The underline is what's shown under the input, its prefix and its suffix.
 // The ripple is the blue animation coming on top of it.

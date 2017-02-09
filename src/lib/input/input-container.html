@@ -8,18 +8,20 @@
     <div class="mat-input-infix" [class.mat-end]="align == 'end'">
       <ng-content selector="input, textarea"></ng-content>
 
-      <label class="mat-input-placeholder"
-             [attr.for]="_mdInputChild.id"
-             [class.mat-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
-             [class.mat-focused]="_mdInputChild.focused"
-             [class.mat-float]="_canPlaceholderFloat"
-             [class.mat-accent]="dividerColor == 'accent'"
-             [class.mat-warn]="dividerColor == 'warn'"
-             *ngIf="_hasPlaceholder()">
-        <ng-content select="md-placeholder, mat-placeholder"></ng-content>
-        {{_mdInputChild.placeholder}}
-        <span class="mat-placeholder-required" *ngIf="_mdInputChild.required">*</span>
-      </label>
+      <span class="mat-input-placeholder-wrapper">
+        <label class="mat-input-placeholder"
+               [attr.for]="_mdInputChild.id"
+               [class.mat-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
+               [class.mat-focused]="_mdInputChild.focused"
+               [class.mat-float]="_canPlaceholderFloat"
+               [class.mat-accent]="dividerColor == 'accent'"
+               [class.mat-warn]="dividerColor == 'warn'"
+               *ngIf="_hasPlaceholder()">
+          <ng-content select="md-placeholder, mat-placeholder"></ng-content>
+          {{_mdInputChild.placeholder}}
+          <span class="mat-placeholder-required" *ngIf="_mdInputChild.required">*</span>
+        </label>
+      </span>
     </div>
 
     <div class="mat-input-suffix">
