@@ -19,8 +19,8 @@ import {Sanitizer, SecurityContext} from '../security';
 import {Type} from '../type';
 
 import {DirectDomRenderer, LegacyRendererAdapter} from './renderer';
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentDiIndex} from './util';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
+import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentElIndex} from './util';
 
 const EMPTY_CONTEXT = new Object();
 
@@ -53,7 +53,7 @@ class ComponentFactory_ implements ComponentFactory<any> {
     const len = viewDef.nodes.length;
     for (let i = 0; i < len; i++) {
       const nodeDef = viewDef.nodes[i];
-      if (nodeDef.provider && nodeDef.provider.component) {
+      if (nodeDef.flags & NodeFlags.HasComponent) {
         componentNodeIndex = i;
         break;
       }
@@ -99,7 +99,7 @@ class ViewContainerRef_ implements ViewContainerRef {
     let view = this._view;
     let elIndex = view.def.nodes[this._elIndex].parent;
     while (elIndex == null && view) {
-      elIndex = viewParentDiIndex(view);
+      elIndex = viewParentElIndex(view);
       view = view.parent;
     }
     return view ? new Injector_(view, elIndex) : this._view.root.injector;

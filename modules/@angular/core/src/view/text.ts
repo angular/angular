@@ -10,7 +10,7 @@ import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
 import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
-import {checkAndUpdateBinding, sliceErrorStack, unwrapValue} from './util';
+import {checkAndUpdateBinding, sliceErrorStack} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   // skip the call to sliceErrorStack itself + the call to this function.
@@ -18,7 +18,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   const bindings: BindingDef[] = new Array(constants.length - 1);
   for (let i = 1; i < constants.length; i++) {
     bindings[i - 1] = {
-      type: BindingType.Interpolation,
+      type: BindingType.TextInterpolation,
       name: undefined,
       nonMinifiedName: undefined,
       securityContext: undefined,
@@ -143,7 +143,6 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
 }
 
 function _addInterpolationPart(value: any, binding: BindingDef): string {
-  value = unwrapValue(value);
   const valueStr = value != null ? value.toString() : '';
   return valueStr + binding.suffix;
 }

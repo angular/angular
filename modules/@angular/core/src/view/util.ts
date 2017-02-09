@@ -30,16 +30,28 @@ export function tokenKey(token: any): string {
   return key;
 }
 
+let unwrapCounter = 0;
+
+export function unwrapValue(value: any): any {
+  if (value instanceof WrappedValue) {
+    value = value.wrapped;
+    unwrapCounter++;
+  }
+  return value;
+}
+
 export function checkBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  return !!(view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value);
+  return unwrapCounter > 0 || !!(view.state & ViewState.FirstCheck) ||
+      !devModeEqual(oldValue, value);
 }
 
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
+  if (unwrapCounter || (view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
+    unwrapCounter = 0;
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.index), oldValue, value,
         (view.state & ViewState.FirstCheck) !== 0);
@@ -49,15 +61,10 @@ export function checkBindingNoChanges(
 export function checkAndUpdateBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
-  if ((view.state & ViewState.FirstCheck) ||
+  if (unwrapCounter || (view.state & ViewState.FirstCheck) ||
       !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
+    unwrapCounter = 0;
     oldValues[def.bindingIndex + bindingIdx] = value;
-    if (def.flags & NodeFlags.HasComponent) {
-      const compView = asProviderData(view, def.index).componentView;
-      if (compView.def.flags & ViewFlags.OnPush) {
-        compView.state |= ViewState.ChecksEnabled;
-      }
-    }
     return true;
   }
   return false;
@@ -75,13 +82,6 @@ export function dispatchEvent(
   return Services.handleEvent(view, nodeIndex, eventName, event);
 }
 
-export function unwrapValue(value: any): any {
-  if (value instanceof WrappedValue) {
-    value = value.wrapped;
-  }
-  return value;
-}
-
 export function declaredViewContainer(view: ViewData): ElementData {
   if (view.parent) {
     const parentView = view.parent;
@@ -91,16 +91,17 @@ export function declaredViewContainer(view: ViewData): ElementData {
 }
 
 /**
- * for component views, this is the same as parentIndex.
+ * for component views, this is the host element.
  * for embedded views, this is the index of the parent node
  * that contains the view container.
  */
-export function viewParentDiIndex(view: ViewData): number {
-  if (view.parent && view.context !== view.component) {
-    const parentNodeDef = view.parent.def.nodes[view.parentIndex];
-    return parentNodeDef.parent;
+export function viewParentElIndex(view: ViewData): number {
+  const parentView = view.parent;
+  if (parentView) {
+    return parentView.def.nodes[view.parentIndex].parent;
+  } else {
+    return null;
   }
-  return view.parentIndex;
 }
 
 export function renderNode(view: ViewData, def: NodeDef): any {
@@ -119,6 +120,8 @@ export function nodeValue(view: ViewData, index: number): any {
       return asElementData(view, def.index).renderElement;
     case NodeType.Text:
       return asTextData(view, def.index).renderText;
+    case NodeType.Directive:
+    case NodeType.Pipe:
     case NodeType.Provider:
       return asProviderData(view, def.index).instance;
   }
@@ -183,7 +186,10 @@ export function visitRootRenderNodes(
   const len = view.def.nodes.length;
   for (let i = 0; i < len; i++) {
     const nodeDef = view.def.nodes[i];
-    visitRenderNode(view, nodeDef, action, parentNode, nextSibling, target);
+    if (nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text ||
+        nodeDef.type === NodeType.NgContent) {
+      visitRenderNode(view, nodeDef, action, parentNode, nextSibling, target);
+    }
     // jump to next sibling
     i += nodeDef.childCount;
   }
@@ -197,7 +203,7 @@ export function visitProjectedRenderNodes(
     compView = compView.parent;
   }
   const hostView = compView.parent;
-  const hostElDef = hostView.def.nodes[compView.parentIndex];
+  const hostElDef = hostView.def.nodes[viewParentElIndex(compView)];
   const startIndex = hostElDef.index + 1;
   const endIndex = hostElDef.index + hostElDef.childCount;
   for (let i = startIndex; i <= endIndex; i++) {

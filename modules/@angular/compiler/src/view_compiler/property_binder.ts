@@ -9,7 +9,7 @@
 import {SecurityContext} from '@angular/core';
 
 import {createCheckBindingField} from '../compiler_util/binding_util';
-import {convertPropertyBinding} from '../compiler_util/expression_converter';
+import {legacyConvertPropertyBinding} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {createCheckAnimationBindingStmts, createCheckRenderBindingStmt} from '../compiler_util/render_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
@@ -26,7 +26,7 @@ import {getHandleEventMethodName} from './util';
 export function bindRenderText(
     boundText: BoundTextAst, compileNode: CompileNode, view: CompileView): void {
   const valueField = createCheckBindingField(view);
-  const evalResult = convertPropertyBinding(
+  const evalResult = legacyConvertPropertyBinding(
       view, view, view.componentContext, boundText.value, valueField.bindingId);
   if (!evalResult) {
     return null;
@@ -53,7 +53,7 @@ export function bindRenderInputs(
   boundProps.forEach((boundProp) => {
     const bindingField = createCheckBindingField(view);
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
-    const evalResult = convertPropertyBinding(
+    const evalResult = legacyConvertPropertyBinding(
         view, view, compileElement.view.componentContext, boundProp.value, bindingField.bindingId);
     if (!evalResult) {
       return;
@@ -123,7 +123,7 @@ export function bindDirectiveInputs(
     const bindingId = `${compileElement.nodeIndex}_${dirIndex}_${inputIdx}`;
     detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, input);
     const evalResult =
-        convertPropertyBinding(view, view, view.componentContext, input.value, bindingId);
+        legacyConvertPropertyBinding(view, view, view.componentContext, input.value, bindingId);
     if (!evalResult) {
       return;
     }
