@@ -1,7 +1,11 @@
 {
+  "rulesDirectory": ["node_modules/tslint-no-unused-var"],
   "rules": {
     "max-line-length": [true, 100],
-    "no-inferrable-types": true,
+    // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a
+    // TSLint now shows warnings if types for properties are inferred. This rule needs to be
+    // disabled because all properties need to have explicit types set to work for Dgeni.
+    "no-inferrable-types": false,
     "class-name": true,
     "comment-format": [
       true,
@@ -20,7 +24,7 @@
     "no-bitwise": true,
     "no-shadowed-variable": true,
     "no-unused-expression": true,
-    "no-unused-variable": [true, {"ignore-pattern": "^(_.*)$"}],
+    "no-unused-var": [true, {"ignore-pattern": "^(_.*)$"}],
     "one-line": [
       true,
       "check-catch",

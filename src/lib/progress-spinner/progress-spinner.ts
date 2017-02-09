@@ -31,7 +31,7 @@ const MAX_ANGLE = 359.99 / 100;
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
 
 type EasingFn = (currentTime: number, startValue: number,
-                 changeInValue: number, duration: number) => number
+                 changeInValue: number, duration: number) => number;
 
 
 /**

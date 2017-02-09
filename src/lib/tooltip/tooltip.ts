@@ -331,7 +331,7 @@ export class TooltipComponent {
       // trigger interaction and close the tooltip right after it was displayed.
       this._closeOnInteraction = false;
 
-      // Mark for check so if any parent component has set the 
+      // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
       this._changeDetectorRef.markForCheck();
       setTimeout(() => { this._closeOnInteraction = true; }, 0);
@@ -352,7 +352,7 @@ export class TooltipComponent {
       this._visibility = 'hidden';
       this._closeOnInteraction = false;
 
-      // Mark for check so if any parent component has set the 
+      // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
       this._changeDetectorRef.markForCheck();
     }, delay);

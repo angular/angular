@@ -21,7 +21,7 @@ export type ElementBoundingPositions = {
   right: number;
   bottom: number;
   left: number;
-}
+};
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an

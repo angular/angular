@@ -97,7 +97,8 @@
     "stylelint": "^7.8.0",
     "travis-after-modes": "0.0.7",
     "ts-node": "^2.0.0",
-    "tslint": "^3.13.0",
+    "tslint": "^4.4.2",
+    "tslint-no-unused-var": "0.0.6",
     "typescript": "~2.0.10",
     "uglify-js": "^2.7.5",
     "web-animations-js": "^2.2.2"
