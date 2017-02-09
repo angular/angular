@@ -8,7 +8,7 @@
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompilePipeSummary, tokenName, viewClassName} from '../compile_metadata';
-import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
+import {EventHandlerVars, LegacyNameResolver} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
@@ -33,7 +33,7 @@ export class CompileViewRootNode {
       public ngContentIndex?: number) {}
 }
 
-export class CompileView implements NameResolver {
+export class CompileView implements LegacyNameResolver {
   public viewType: ViewType;
   public viewQueries: Map<any, CompileQuery[]>;
 

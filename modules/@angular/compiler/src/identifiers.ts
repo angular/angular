@@ -400,10 +400,35 @@ export class Identifiers {
     moduleUrl: VIEW_ENGINE_MODULE_URL,
     runtime: viewEngine.queryDef
   };
+  static pureArrayDef: IdentifierSpec = {
+    name: 'pureArrayDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pureArrayDef
+  };
+  static pureObjectDef: IdentifierSpec = {
+    name: 'pureObjectDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pureObjectDef
+  };
+  static purePipeDef: IdentifierSpec = {
+    name: 'purePipeDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.purePipeDef
+  };
+  static pipeDef: IdentifierSpec = {
+    name: 'pipeDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pipeDef
+  };
   static nodeValue: IdentifierSpec = {
     name: 'nodeValue',
     moduleUrl: VIEW_ENGINE_MODULE_URL,
     runtime: viewEngine.nodeValue
+  };
+  static unwrapValue: IdentifierSpec = {
+    name: 'unwrapValue',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.unwrapValue
   };
 }
 

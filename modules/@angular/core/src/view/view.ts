@@ -11,19 +11,19 @@ import {ViewEncapsulation} from '../metadata/view';
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
-import {callLifecycleHooksChildrenFirst, checkAndUpdateProviderDynamic, checkAndUpdateProviderInline, createProviderInstance} from './provider';
+import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAndUpdateDirectiveInline, createDirectiveInstance, createPipeInstance, createProviderInstance} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, ComponentDefinition, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
-import {checkBindingNoChanges, isComponentView, queryIdIsReference, resolveViewDefinition} from './util';
+import {checkBindingNoChanges, isComponentView, queryIdIsReference, resolveViewDefinition, viewParentElIndex} from './util';
 
 const NOOP = (): any => undefined;
 
 export function viewDef(
-    flags: ViewFlags, nodesWithoutIndices: NodeDef[], update?: ViewUpdateFn,
-    handleEvent?: ViewHandleEventFn, compId?: string, encapsulation?: ViewEncapsulation,
-    styles?: string[]): ViewDefinition {
+    flags: ViewFlags, nodesWithoutIndices: NodeDef[], updateDirectives?: ViewUpdateFn,
+    updateRenderer?: ViewUpdateFn, handleEvent?: ViewHandleEventFn, compId?: string,
+    encapsulation?: ViewEncapsulation, styles?: string[]): ViewDefinition {
   // clone nodes and set auto calculated values
   if (nodesWithoutIndices.length === 0) {
     throw new Error(`Illegal State: Views without nodes are not allowed!`);
@@ -83,7 +83,7 @@ export function viewDef(
     if (!currentParent) {
       lastRootNode = node;
     }
-    if (node.provider) {
+    if (node.type === NodeType.Provider || node.type === NodeType.Directive) {
       currentParent.element.providerIndices[node.provider.tokenKey] = i;
     }
     if (node.query) {
@@ -108,7 +108,8 @@ export function viewDef(
     nodeFlags: viewNodeFlags,
     nodeMatchedQueries: viewMatchedQueries, flags,
     nodes: nodes, reverseChildNodes,
-    update: update || NOOP,
+    updateDirectives: updateDirectives || NOOP,
+    updateRenderer: updateRenderer || NOOP,
     handleEvent: handleEvent || NOOP,
     component: componentDef,
     bindingCount: viewBindingCount,
@@ -172,18 +173,18 @@ function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
           `Illegal State: Last root node of a template can't have embedded views, at index ${node.index}!`);
     }
   }
-  if (node.provider) {
+  if (node.type === NodeType.Provider || node.type === NodeType.Directive) {
     const parentType = parent ? parent.type : null;
     if (parentType !== NodeType.Element) {
       throw new Error(
-          `Illegal State: Provider nodes need to be children of elements or anchors, at index ${node.index}!`);
+          `Illegal State: Provider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
     }
   }
   if (node.query) {
     const parentType = parent ? parent.type : null;
-    if (parentType !== NodeType.Provider) {
+    if (parentType !== NodeType.Directive) {
       throw new Error(
-          `Illegal State: Query nodes need to be children of providers, at index ${node.index}!`);
+          `Illegal State: Query nodes need to be children of directives, at index ${node.index}!`);
     }
   }
   if (node.childCount) {
@@ -282,7 +283,7 @@ function initView(view: ViewData, component: any, context: any) {
 function createViewNodes(view: ViewData) {
   let renderHost: any;
   if (isComponentView(view)) {
-    renderHost = asElementData(view.parent, view.parentIndex).renderElement;
+    renderHost = asElementData(view.parent, viewParentElIndex(view)).renderElement;
   }
 
   const def = view.def;
@@ -297,23 +298,36 @@ function createViewNodes(view: ViewData) {
       case NodeType.Text:
         nodes[i] = createText(view, renderHost, nodeDef) as any;
         break;
-      case NodeType.Provider:
-        if (nodeDef.provider.component) {
+      case NodeType.Provider: {
+        const instance = createProviderInstance(view, nodeDef);
+        const providerData = <ProviderData>{componentView: undefined, instance};
+        nodes[i] = providerData as any;
+        break;
+      }
+      case NodeType.Pipe: {
+        const instance = createPipeInstance(view, nodeDef);
+        const providerData = <ProviderData>{componentView: undefined, instance};
+        nodes[i] = providerData as any;
+        break;
+      }
+      case NodeType.Directive: {
+        if (nodeDef.flags & NodeFlags.HasComponent) {
           // Components can inject a ChangeDetectorRef that needs a references to
           // the component view. Therefore, we create the component view first
           // and set the ProviderData in ViewData, and then instantiate the provider.
           const componentView = createView(
-              view.root, view, nodeDef.parent, resolveViewDefinition(nodeDef.provider.component));
+              view.root, view, nodeDef.index, resolveViewDefinition(nodeDef.provider.component));
           const providerData = <ProviderData>{componentView, instance: undefined};
           nodes[i] = providerData as any;
-          const instance = providerData.instance = createProviderInstance(view, nodeDef);
+          const instance = providerData.instance = createDirectiveInstance(view, nodeDef);
           initView(componentView, instance, instance);
         } else {
-          const instance = createProviderInstance(view, nodeDef);
+          const instance = createDirectiveInstance(view, nodeDef);
           const providerData = <ProviderData>{componentView: undefined, instance};
           nodes[i] = providerData as any;
         }
         break;
+      }
       case NodeType.PureExpression:
         nodes[i] = createPureExpression(view, nodeDef) as any;
         break;
@@ -333,21 +347,25 @@ function createViewNodes(view: ViewData) {
 }
 
 export function checkNoChangesView(view: ViewData) {
-  Services.updateView(checkNoChangesNode, view);
+  Services.updateDirectives(checkNoChangesNode, view);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
   execQueriesAction(view, NodeFlags.HasContentQuery, QueryAction.CheckNoChanges);
+  Services.updateRenderer(checkNoChangesNode, view);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
   execQueriesAction(view, NodeFlags.HasViewQuery, QueryAction.CheckNoChanges);
 }
 
 export function checkAndUpdateView(view: ViewData) {
-  Services.updateView(checkAndUpdateNode, view);
+  Services.updateDirectives(checkAndUpdateNode, view);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(view, NodeFlags.HasContentQuery, QueryAction.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterContentChecked |
           (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
+
+  Services.updateRenderer(checkAndUpdateNode, view);
+
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(view, NodeFlags.HasViewQuery, QueryAction.CheckAndUpdate);
 
@@ -380,8 +398,8 @@ function checkAndUpdateNodeInline(
       return checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
     case NodeType.Text:
       return checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-    case NodeType.Provider:
-      return checkAndUpdateProviderInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    case NodeType.Directive:
+      return checkAndUpdateDirectiveInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
     case NodeType.PureExpression:
       return checkAndUpdatePureExpressionInline(
           view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
@@ -395,8 +413,8 @@ function checkAndUpdateNodeDynamic(view: ViewData, nodeIndex: number, values: an
       return checkAndUpdateElementDynamic(view, nodeDef, values);
     case NodeType.Text:
       return checkAndUpdateTextDynamic(view, nodeDef, values);
-    case NodeType.Provider:
-      return checkAndUpdateProviderDynamic(view, nodeDef, values);
+    case NodeType.Directive:
+      return checkAndUpdateDirectiveDynamic(view, nodeDef, values);
     case NodeType.PureExpression:
       return checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
   }
@@ -462,14 +480,14 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
 }
 
 export function destroyView(view: ViewData) {
+  execEmbeddedViewsAction(view, ViewAction.Destroy);
+  execComponentViewsAction(view, ViewAction.Destroy);
   callLifecycleHooksChildrenFirst(view, NodeFlags.OnDestroy);
   if (view.disposables) {
     for (let i = 0; i < view.disposables.length; i++) {
       view.disposables[i]();
     }
   }
-  execComponentViewsAction(view, ViewAction.Destroy);
-  execEmbeddedViewsAction(view, ViewAction.Destroy);
   view.state |= ViewState.Destroyed;
 }
 
