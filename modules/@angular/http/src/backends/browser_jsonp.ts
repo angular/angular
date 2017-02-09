@@ -32,23 +32,23 @@ export class BrowserJsonp {
 
   nextRequestID(): string { return `__req${_nextRequestId++}`; }
 
-  requestCallback(id: string): string { return `${JSONP_HOME}${id}_finished`; }
+  requestCallback(id: string): string { return `${JSONP_HOME}.${id}.finished`; }
 
-  exposeConnection(id: string, connection: any): void {
+  exposeConnection(id: string, connection: any) {
     const connections = _getJsonpConnections();
     connections[id] = connection;
   }
 
-  removeConnection(id: string): void {
+  removeConnection(id: string) {
     const connections = _getJsonpConnections();
     connections[id] = null;
   }
 
   // Attach the <script> element to the DOM
-  send(node: any): void { document.body.appendChild(<Node>(node)); }
+  send(node: any) { document.body.appendChild(<Node>(node)); }
 
   // Remove <script> element from the DOM
-  cleanup(node: any): void {
+  cleanup(node: any) {
     if (node.parentNode) {
       node.parentNode.removeChild(<Node>(node));
     }
