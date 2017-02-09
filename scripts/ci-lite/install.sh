@@ -40,7 +40,7 @@ if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "aio" || ${CI_MODE} == 
 fi
 
 
-if [[ ${TRAVIS} && ${CI_MODE} == "aio" ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   echo 'travis_fold:start:install.aio.node_modules'
   cd "`dirname $0`/../../aio"
