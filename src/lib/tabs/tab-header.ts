@@ -40,7 +40,7 @@ const EXAGGERATED_OVERSCROLL = 60;
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-tab-header',
+  selector: 'md-tab-header, mat-tab-header',
   templateUrl: 'tab-header.html',
   styleUrls: ['tab-header.css'],
   encapsulation: ViewEncapsulation.None,

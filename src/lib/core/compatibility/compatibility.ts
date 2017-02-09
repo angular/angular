@@ -19,12 +19,15 @@ export const MAT_ELEMENTS_SELECTOR = `
   [mat-dialog-title],
   [mat-fab],
   [mat-icon-button],
+  [mat-menu-trigger-for],
   [mat-mini-fab],
   [mat-raised-button],
   [mat-tab-label],
   [mat-tab-link],
   [mat-tab-nav-bar],
+  [matTooltip],
   mat-autocomplete,
+  mat-button-toggle,
   mat-button-toggle-group,
   mat-button-toggle,
   mat-card,
@@ -56,6 +59,7 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-placeholder,
   mat-progress-bar,
   mat-progress-circle,
+  mat-pseudo-checkbox,
   mat-radio-button,
   mat-radio-group,
   mat-select,
@@ -64,9 +68,10 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-slider,
   mat-spinner,
   mat-tab,
+  mat-tab-body,
+  mat-tab-header,
   mat-tab-group,
-  mat-toolbar,
-  matTooltip`;
+  mat-toolbar`;
 
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MD_ELEMENTS_SELECTOR = `  
@@ -77,12 +82,15 @@ export const MD_ELEMENTS_SELECTOR = `
   [md-dialog-title],
   [md-fab],
   [md-icon-button],
+  [md-menu-trigger-for],
   [md-mini-fab],
   [md-raised-button],
   [md-tab-label],
   [md-tab-link],
   [md-tab-nav-bar],
+  [mdTooltip],
   md-autocomplete,
+  md-button-toggle,
   md-button-toggle-group,
   md-button-toggle,
   md-card,
@@ -114,6 +122,7 @@ export const MD_ELEMENTS_SELECTOR = `
   md-placeholder,
   md-progress-bar,
   md-progress-circle,
+  md-pseudo-checkbox,
   md-radio-button,
   md-radio-group,
   md-select,
@@ -122,9 +131,10 @@ export const MD_ELEMENTS_SELECTOR = `
   md-slider,
   md-spinner,
   md-tab,
+  md-tab-body,
+  md-tab-header,
   md-tab-group,
-  md-toolbar,
-  mdTooltip`;
+  md-toolbar`;
 
 /** Directive that enforces that the `mat-` prefix cannot be used. */
 @Directive({selector: MAT_ELEMENTS_SELECTOR})

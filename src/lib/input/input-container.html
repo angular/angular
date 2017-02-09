@@ -1,6 +1,9 @@
 <div class="mat-input-wrapper">
   <div class="mat-input-table">
-    <div class="mat-input-prefix"><ng-content select="[mdPrefix], [md-prefix]"></ng-content></div>
+    <div class="mat-input-prefix">
+      <!-- TODO(andrewseguin): remove [md-prefix] -->
+      <ng-content select="[mdPrefix], [matPrefix], [md-prefix]"></ng-content>
+    </div>
 
     <div class="mat-input-infix" [class.mat-end]="align == 'end'">
       <ng-content selector="input, textarea"></ng-content>
@@ -13,13 +16,16 @@
              [class.mat-accent]="dividerColor == 'accent'"
              [class.mat-warn]="dividerColor == 'warn'"
              *ngIf="_hasPlaceholder()">
-        <ng-content select="md-placeholder"></ng-content>
+        <ng-content select="md-placeholder, mat-placeholder"></ng-content>
         {{_mdInputChild.placeholder}}
         <span class="mat-placeholder-required" *ngIf="_mdInputChild.required">*</span>
       </label>
     </div>
 
-    <div class="mat-input-suffix"><ng-content select="[mdSuffix], [md-suffix]"></ng-content></div>
+    <div class="mat-input-suffix">
+      <!-- TODO(andrewseguin): remove [md-suffix] -->
+      <ng-content select="[mdSuffix], [matSuffix], [md-suffix]"></ng-content>
+    </div>
   </div>
 
   <div class="mat-input-underline"
@@ -31,5 +37,5 @@
   </div>
 
   <div *ngIf="hintLabel != ''" [attr.id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
-  <ng-content select="md-hint"></ng-content>
+  <ng-content select="md-hint, mat-hint"></ng-content>
 </div>

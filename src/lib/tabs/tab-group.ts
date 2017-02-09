@@ -50,7 +50,7 @@ export type MdTabHeaderPosition = 'above' | 'below';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-tab-group',
+  selector: 'md-tab-group, mat-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   host: {

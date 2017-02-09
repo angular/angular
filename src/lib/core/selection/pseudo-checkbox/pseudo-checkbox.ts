@@ -22,7 +22,7 @@ export type MdPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 @Component({
   moduleId: module.id,
   encapsulation: ViewEncapsulation.None,
-  selector: 'md-pseudo-checkbox',
+  selector: 'md-pseudo-checkbox, mat-pseudo-checkbox',
   styleUrls: ['pseudo-checkbox.css'],
   template: '',
   host: {
