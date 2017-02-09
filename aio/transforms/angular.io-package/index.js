@@ -21,8 +21,10 @@ const rhoPackage = require('../rho-package');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'modules');
-const CONTENTS_PATH = path.resolve(PROJECT_ROOT, 'docs/content');
-const TEMPLATES_PATH = path.resolve(PROJECT_ROOT, 'docs/templates');
+const AIO_PATH = path.resolve(PROJECT_ROOT, 'aio');
+const CONTENTS_PATH = path.resolve(AIO_PATH, 'content');
+const TEMPLATES_PATH = path.resolve(AIO_PATH, 'transforms/templates');
+const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content/docs');
 
 module.exports =
     new Package(
@@ -44,6 +46,9 @@ module.exports =
         .processor(require('./processors/extractDecoratedClasses'))
         .processor(require('./processors/matchUpDirectiveDecorators'))
         .processor(require('./processors/filterMemberDocs'))
+
+        // overrides base packageInfo and returns the one for the 'angular/angular' repo.
+        .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
 
         .config(function(checkAnchorLinksProcessor, log) {
           // TODO: re-enable
@@ -102,14 +107,14 @@ module.exports =
 
           collectExamples.exampleFolders = ['@angular/examples', 'examples'];
 
-          generateKeywordsProcessor.ignoreWordsFile = 'tools/docs/angular.io-package/ignore.words';
+          generateKeywordsProcessor.ignoreWordsFile = 'aio/transforms/angular.io-package/ignore.words';
           generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
         })
 
 
 
         // Where do we write the output files?
-        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = 'dist/docs'; })
+        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = OUTPUT_PATH; })
 
 
         // Target environments
@@ -151,7 +156,6 @@ module.exports =
 
           // Where to find the templates for the doc rendering
           templateFinder.templateFolders = [TEMPLATES_PATH];
-          // templateFinder.templateFolders.unshift(TEMPLATES_PATH);
 
           // Standard patterns for matching docs to templates
           templateFinder.templatePatterns = [
@@ -182,8 +186,6 @@ module.exports =
         // We are going to be relaxed about ambigous links
         .config(function(getLinkInfo) {
           getLinkInfo.useFirstAmbiguousLink = false;
-          // TODO: I think we don't need this for Igor's shell app
-          //   getLinkInfo.relativeLinks = true;
         })
 
 

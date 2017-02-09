@@ -34,7 +34,7 @@ if [[ ${CI_MODE} == "aio" ]]; then
   echo 'travis_fold:start:BUILD.aio'
 
   # Build angular.io
-  cd "`dirname $0`/../../angular.io"
+  cd "`dirname $0`/../../aio"
   yarn run build
   cd -
 

@@ -32,7 +32,7 @@ node tools/npm/check-node-modules --purge || npm install
 echo 'travis_fold:end:install.node_modules'
 
 
-if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "aio") ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # Install version of yarn that we are locked against
   echo 'travis_fold:start:install.yarn'
   curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
@@ -43,7 +43,7 @@ fi
 if [[ ${TRAVIS} && ${CI_MODE} == "aio" ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   echo 'travis_fold:start:install.aio.node_modules'
-  cd "`dirname $0`/../../angular.io"
+  cd "`dirname $0`/../../aio"
   yarn install
   cd -
   echo 'travis_fold:end:install.aio.node_modules'
