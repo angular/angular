@@ -11,26 +11,15 @@ import {platformCoreDynamic} from '@angular/compiler';
 import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
+import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter} from './parse5_adapter';
 import {DebugDomRootRenderer} from './private_import_core';
-import {SharedStylesHost} from './private_import_platform-browser';
+import {DomAdapter, SharedStylesHost} from './private_import_platform-browser';
 import {ServerRootRenderer} from './server_renderer';
+
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
-}
-
-class ServerPlatformLocation extends PlatformLocation {
-  getBaseHrefFromDOM(): string { throw notSupported('getBaseHrefFromDOM'); };
-  onPopState(fn: any): void { notSupported('onPopState'); };
-  onHashChange(fn: any): void { notSupported('onHashChange'); };
-  get pathname(): string { throw notSupported('pathname'); }
-  get search(): string { throw notSupported('search'); }
-  get hash(): string { throw notSupported('hash'); }
-  replaceState(state: any, title: string, url: string): void { notSupported('replaceState'); };
-  pushState(state: any, title: string, url: string): void { notSupported('pushState'); };
-  forward(): void { notSupported('forward'); };
-  back(): void { notSupported('back'); };
 }
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
