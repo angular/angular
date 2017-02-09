@@ -23,7 +23,8 @@
     "protractor": "file:../../node_modules/protractor"
   },
   "scripts": {
-    "test": "ngc && ./bundle.sh && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
+    "pretest": "node -v",
+    "test": "ngc && ./bundle.sh && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
