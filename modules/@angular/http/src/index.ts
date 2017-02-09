@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {BrowserJsonp} from './backends/browser_jsonp';
 export {BrowserXhr} from './backends/browser_xhr';
 export {JSONPBackend, JSONPConnection} from './backends/jsonp_backend';
 export {CookieXSRFStrategy, XHRBackend, XHRConnection} from './backends/xhr_backend';

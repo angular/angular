@@ -9,6 +9,17 @@ export declare class BaseResponseOptions extends ResponseOptions {
 }
 
 /** @experimental */
+export declare class BrowserJsonp {
+    build(url: string): any;
+    cleanup(node: any): void;
+    exposeConnection(id: string, connection: any): void;
+    nextRequestID(): string;
+    removeConnection(id: string): void;
+    requestCallback(id: string): string;
+    send(node: any): void;
+}
+
+/** @experimental */
 export declare class BrowserXhr {
     constructor();
     build(): any;
