@@ -75,7 +75,7 @@ High level items planned for January 2017:
 | dialog           |                           Available | [README][22] |   [#114][0114] |
 | snackbar / toast |                           Available | [README][21] |   [#115][0115] |
 | select           |                           Available | [README][23] |   [#118][0118] |
-| textarea         |                           Available |           -  |              - |
+| textarea         |                           Available | [README][5]  |              - |
 | autocomplete     |                         In-progress |           -  |   [#117][0117] |
 | chips            |  Initial version, features evolving |           -  |   [#120][0120] |
 | theming          |   Available, need guidance overlays | [Guide][20]  |              - |
