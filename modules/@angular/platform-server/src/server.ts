@@ -8,13 +8,14 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 
 import {ServerPlatformLocation} from './location';
-import {Parse5DomAdapter} from './parse5_adapter';
+import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
+import {PlatformState} from './platform_state';
 import {DebugDomRootRenderer} from './private_import_core';
-import {DomAdapter, SharedStylesHost} from './private_import_platform-browser';
+import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRootRenderer} from './server_renderer';
 
 
@@ -23,14 +24,15 @@ function notSupported(feature: string): Error {
 }
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  {provide: PLATFORM_INITIALIZER, useValue: initParse5Adapter, multi: true},
+  {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
+  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]},
   {provide: PlatformLocation, useClass: ServerPlatformLocation},
+  PlatformState,
 ];
 
-function initParse5Adapter() {
-  Parse5DomAdapter.makeCurrent();
+function initParse5Adapter(injector: Injector) {
+  return () => { Parse5DomAdapter.makeCurrent(); };
 }
-
 
 export function _createConditionalRootRenderer(rootRenderer: any) {
   if (isDevMode()) {
@@ -47,12 +49,43 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 ];
 
 /**
+ * Config object passed to initialize the platform.
+ *
+ * @experimental
+ */
+export interface PlatformConfig {
+  document?: string;
+  url?: string;
+}
+
+/**
+ * The DI token for setting the initial config for the platform.
+ *
+ * @experimental
+ */
+export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
+
+/**
  * The ng module for the server.
  *
  * @experimental
  */
-@NgModule({exports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
+@NgModule({
+  exports: [BrowserModule],
+  providers: [
+    SERVER_RENDER_PROVIDERS,
+  ]
+})
 export class ServerModule {
+}
+
+function _document(injector: Injector) {
+  let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+  if (config && config.document) {
+    return parseDocument(config.document);
+  } else {
+    return getDOM().createHtmlDocument();
+  }
 }
 
 /**

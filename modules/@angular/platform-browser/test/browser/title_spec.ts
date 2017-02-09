@@ -14,23 +14,24 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('title service', () => {
-    const initialTitle = getDOM().getTitle();
-    const titleService = new Title();
+    const doc = getDOM().createHtmlDocument();
+    const initialTitle = getDOM().getTitle(doc);
+    const titleService = new Title(doc);
 
-    afterEach(() => { getDOM().setTitle(initialTitle); });
+    afterEach(() => { getDOM().setTitle(doc, initialTitle); });
 
     it('should allow reading initial title',
        () => { expect(titleService.getTitle()).toEqual(initialTitle); });
 
     it('should set a title on the injected document', () => {
       titleService.setTitle('test title');
-      expect(getDOM().getTitle()).toEqual('test title');
+      expect(getDOM().getTitle(doc)).toEqual('test title');
       expect(titleService.getTitle()).toEqual('test title');
     });
 
     it('should reset title to empty string if title not provided', () => {
       titleService.setTitle(null);
-      expect(getDOM().getTitle()).toEqual('');
+      expect(getDOM().getTitle(doc)).toEqual('');
     });
   });
 

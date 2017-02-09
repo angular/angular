@@ -12,7 +12,7 @@ export function main() {
   describe('HammerGesturesPlugin', () => {
 
     it('should implement addGlobalEventListener', () => {
-      const plugin = new HammerGesturesPlugin(new HammerGestureConfig());
+      const plugin = new HammerGesturesPlugin(document, new HammerGestureConfig());
 
       spyOn(plugin, 'addEventListener').and.callFake(() => {});
 
