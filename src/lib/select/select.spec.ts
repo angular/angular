@@ -1,6 +1,13 @@
 import {TestBed, async, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+  Component,
+  DebugElement,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
@@ -26,7 +33,8 @@ describe('MdSelect', () => {
         SelectInitWithoutOptions,
         SelectWithChangeEvent,
         CustomSelectAccessor,
-        CompWithCustomSelect
+        CompWithCustomSelect,
+        BasicSelectOnPush
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1255,6 +1263,29 @@ describe('MdSelect', () => {
       expect(fixture.componentInstance.changeListener).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('with OnPush change detection', () => {
+    let fixture: ComponentFixture<BasicSelectOnPush>;
+    let trigger: HTMLElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicSelectOnPush);
+      fixture.detectChanges();
+      trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+    });
+
+    it('should update the trigger based on the value', () => {
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      expect(trigger.textContent).toContain('Pizza');
+
+      fixture.componentInstance.control.reset();
+      fixture.detectChanges();
+
+      expect(trigger.textContent).not.toContain('Pizza');
+    });
+  });
 });
 
 @Component({
@@ -1431,6 +1462,29 @@ class CustomSelectAccessor implements ControlValueAccessor {
 class CompWithCustomSelect {
   ctrl = new FormControl('initial value');
   @ViewChild(CustomSelectAccessor) customAccessor: CustomSelectAccessor;
+}
+
+@Component({
+  selector: 'basic-select-on-push',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <md-select placeholder="Food" [formControl]="control">
+      <md-option *ngFor="let food of foods" [value]="food.value">
+        {{ food.viewValue }}
+      </md-option>
+    </md-select>
+  `
+})
+class BasicSelectOnPush {
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+  ];
+  control = new FormControl();
+
+  @ViewChild(MdSelect) select: MdSelect;
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
 }
 
 
