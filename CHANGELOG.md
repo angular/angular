@@ -1,3 +1,13 @@
+<a name="2.4.7"></a>
+## [2.4.7](https://github.com/angular/angular/compare/2.4.6...2.4.7) (2017-02-09)
+
+
+### Bug Fixes
+
+* **upgrade:** allow non-element selectors for downgraded components ([#14291](https://github.com/angular/angular/issues/14291)) ([5bb47db](https://github.com/angular/angular/commit/5bb47db))
+
+
+
 <a name="2.4.6"></a>
 ## [2.4.6](https://github.com/angular/angular/compare/2.4.5...2.4.6) (2017-02-03)
 
