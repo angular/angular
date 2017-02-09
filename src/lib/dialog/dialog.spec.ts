@@ -381,6 +381,8 @@ describe('MdDialog', () => {
 
       expect(document.activeElement.id)
           .toBe('dialog-trigger', 'Expected that the trigger was refocused after dialog close');
+
+      document.body.removeChild(button);
     }));
   });
 

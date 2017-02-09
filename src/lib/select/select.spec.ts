@@ -7,6 +7,7 @@ import {
   ViewChild,
   ViewChildren,
   ChangeDetectionStrategy,
+  OnInit,
 } from '@angular/core';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
@@ -34,6 +35,8 @@ describe('MdSelect', () => {
         SelectWithChangeEvent,
         CustomSelectAccessor,
         CompWithCustomSelect,
+        SelectWithErrorSibling,
+        ThrowsErrorOnInit,
         BasicSelectOnPush
       ],
       providers: [
@@ -1239,6 +1242,14 @@ describe('MdSelect', () => {
       });
     }));
 
+    it('should not crash the browser when a sibling throws an error on init', async(() => {
+      // Note that this test can be considered successful if the error being thrown didn't
+      // end up crashing the testing setup altogether.
+      expect(() => {
+        TestBed.createComponent(SelectWithErrorSibling).detectChanges();
+      }).toThrowError(new RegExp('Oh no!', 'g'));
+    }));
+
   });
 
   describe('change event', () => {
@@ -1281,7 +1292,7 @@ describe('MdSelect', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelectOnPush);
       fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
     });
 
     it('should update the trigger based on the value', () => {
@@ -1472,6 +1483,27 @@ class CustomSelectAccessor implements ControlValueAccessor {
 class CompWithCustomSelect {
   ctrl = new FormControl('initial value');
   @ViewChild(CustomSelectAccessor) customAccessor: CustomSelectAccessor;
+}
+
+@Component({
+  selector: 'select-infinite-loop',
+  template: `
+    <md-select [(ngModel)]="value"></md-select>
+    <throws-error-on-init></throws-error-on-init>
+  `
+})
+class SelectWithErrorSibling {
+  value: string;
+}
+
+@Component({
+  selector: 'throws-error-on-init',
+  template: ''
+})
+export class ThrowsErrorOnInit implements OnInit {
+  ngOnInit() {
+    throw new Error('Oh no!');
+  }
 }
 
 @Component({
