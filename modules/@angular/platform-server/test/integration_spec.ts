@@ -176,4 +176,73 @@ export function main() {
          })));
     });
   });
+
+  describe('Platform Server', () => {
+    @Component({selector: 'app', template: '{{text}}'})
+    class MyAsyncServerApp {
+      text = '';
+
+      ngOnInit() {
+        Promise.resolve(null).then(() => setTimeout(() => { this.text = 'Works!'; }, 10));
+      }
+    }
+
+    @NgModule(
+        {declarations: [MyAsyncServerApp], imports: [ServerModule], bootstrap: [MyAsyncServerApp]})
+    class AsyncServerModule {
+    }
+
+    let doc: string;
+    let called: boolean;
+    let expectedOutput =
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>';
+
+    beforeEach(() => {
+      destroyPlatform();
+      // PlatformConfig takes in a parsed document so that it can be cached across requests.
+      doc = '<html><head></head><body><app></app></body></html>';
+      called = false;
+    });
+    afterEach(() => {
+      expect(called).toBe(true);
+      // Platform should have been destroyed at the end of rendering.
+      expect(getPlatform()).toBeNull();
+    });
+
+    it('PlatformState should render to string (Long form rendering)', async(() => {
+         const platform =
+             platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+
+         platform.bootstrapModule(AsyncServerModule)
+             .then((moduleRef) => {
+               const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+               return toPromise.call(first.call(
+                   filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
+             })
+             .then((b) => {
+               expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
+               destroyPlatform();
+               called = true;
+             });
+       }));
+
+    it('renderModule should render to string (short form rendering)', async(() => {
+         renderModule(AsyncServerModule, {document: doc}).then(output => {
+           expect(output).toBe(expectedOutput);
+           called = true;
+         });
+       }));
+
+    it('renderModuleFactory should render to string (short form rendering)',
+       async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+         const compilerFactory: CompilerFactory =
+             defaultPlatform.injector.get(CompilerFactory, null);
+         const moduleFactory =
+             compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
+         renderModuleFactory(moduleFactory, {document: doc}).then(output => {
+           expect(output).toBe(expectedOutput);
+           called = true;
+         });
+       })));
+  });
 }
