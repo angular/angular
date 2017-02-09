@@ -1,30 +1,35 @@
 @import '../core/style/variables';
+@import '../core/style/button-common';
+@import '../core/style/list-common';
 
-.mat-simple-snackbar {
+:host {
   display: flex;
   justify-content: space-between;
+  color: white;
+  line-height: 20px;
+  font: {
+    size: $mat-body-font-size-base;
+    family: $mat-font-family;
+  }
 }
 
 .mat-simple-snackbar-message {
-  box-sizing: border-box;
-  border: none;
-  color: white;
-  font-family: $mat-font-family;
-  font-size: 14px;
-  line-height: 20px;
-  outline: none;
-  text-decoration: none;
-  word-break: break-all;
+  @include mat-truncate-line;
 }
 
 .mat-simple-snackbar-action {
-  box-sizing: border-box;
-  color: white;
-  float: right;
-  font-weight: 600;
-  line-height: 20px;
-  margin: -5px 0 0 48px;
-  min-width: initial;
+  @include mat-button-reset;
+
+  background: none;
+  margin: -5px 0 0;
   padding: 5px;
   text-transform: uppercase;
+  color: inherit;
+  line-height: inherit;
+  flex-shrink: 0;
+  font: {
+    family: inherit;
+    size: inherit;
+    weight: 600;
+  }
 }
