@@ -125,6 +125,16 @@ describe('MdSelect', () => {
       });
     }));
 
+    it('should not attempt to open a select that does not have any options', () => {
+      fixture.componentInstance.foods = [];
+      fixture.detectChanges();
+
+      trigger.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select.panelOpen).toBe(false);
+    });
+
   });
 
   describe('selection logic', () => {
