@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, ViewChild, TemplateRef} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {MdDialog, MdDialogRef, MdDialogConfig, MD_DIALOG_DATA} from '@angular/material';
 
@@ -27,6 +27,9 @@ export class DialogDemo {
       message: 'Jazzy jazz jazz'
     }
   };
+  numTemplateOpens = 0;
+
+  @ViewChild(TemplateRef) template: TemplateRef<any>;
 
   constructor(public dialog: MdDialog, @Inject(DOCUMENT) doc: any) {
     // Possible useful example for the open and closeAll events.
@@ -54,6 +57,11 @@ export class DialogDemo {
   openContentElement() {
     let dialogRef = this.dialog.open(ContentElementDialog, this.config);
     dialogRef.componentInstance.actionsAlignment = this.actionsAlignment;
+  }
+
+  openTemplate() {
+    this.numTemplateOpens++;
+    this.dialog.open(this.template, this.config);
   }
 }
 

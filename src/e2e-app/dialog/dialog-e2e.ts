@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild, TemplateRef} from '@angular/core';
 import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
 
 @Component({
@@ -8,6 +8,8 @@ import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
 })
 export class DialogE2E {
   dialogRef: MdDialogRef<TestDialog>;
+
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
   constructor (private _dialog: MdDialog) { }
 
@@ -27,6 +29,10 @@ export class DialogE2E {
     this._openDialog({
       disableClose: true
     });
+  }
+
+  openTemplate() {
+    this.dialogRef = this._dialog.open(this.templateRef);
   }
 }
 

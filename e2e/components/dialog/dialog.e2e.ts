@@ -11,6 +11,12 @@ describe('dialog', () => {
     expectToExist('md-dialog-container');
   });
 
+  it('should open a template dialog', () => {
+    expectToExist('.my-template-dialog', false);
+    element(by.id('template')).click();
+    expectToExist('.my-template-dialog');
+  });
+
   it('should close by clicking on the backdrop', () => {
     element(by.id('default')).click();
 
