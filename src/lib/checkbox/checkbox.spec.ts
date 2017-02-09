@@ -727,7 +727,7 @@ class MultipleCheckboxes { }
 @Component({
   template: `
     <md-checkbox
-        [tabindex]="customTabIndex"
+        [tabIndex]="customTabIndex"
         [disabled]="isDisabled"
         [disableRipple]="disableRipple">
     </md-checkbox>`,

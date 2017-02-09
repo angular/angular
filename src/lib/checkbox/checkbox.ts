@@ -139,8 +139,8 @@ export class MdCheckbox implements ControlValueAccessor {
   get disabled(): boolean { return this._disabled; }
   set disabled(value) { this._disabled = coerceBooleanProperty(value); }
 
-  /** @docs-private */
-  @Input() tabindex: number = 0;
+  /** Tabindex value that is passed to the underlying input element. */
+  @Input() tabIndex: number = 0;
 
   /** Name value will be applied to the input element if present */
   @Input() name: string = null;
