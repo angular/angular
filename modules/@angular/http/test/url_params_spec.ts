@@ -7,17 +7,19 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-import {URLSearchParams} from '../src/url_search_params';
+
+import {HttpUrlParams} from '../src/url_params';
+
 
 export function main() {
-  describe('URLSearchParams', () => {
+  describe('HttpUrlParams', () => {
     it('should conform to spec', () => {
       const paramsString = 'q=URLUtils.searchParams&topic=api';
-      const searchParams = new URLSearchParams(paramsString);
+      const searchParams = new HttpUrlParams(paramsString);
 
       // Tests borrowed from example at
       // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-      // Compliant with spec described at https://url.spec.whatwg.org/#urlsearchparams
+      // Compliant with spec described at https://url.spec.whatwg.org/#URLSearchParams
       expect(searchParams.has('topic')).toBe(true);
       expect(searchParams.has('foo')).toBe(false);
       expect(searchParams.get('topic')).toEqual('api');
@@ -30,7 +32,7 @@ export function main() {
       expect(searchParams.toString()).toEqual('q=URLUtils.searchParams');
 
       // Test default constructor
-      expect(new URLSearchParams().toString()).toBe('');
+      expect(new HttpUrlParams().toString()).toBe('');
     });
 
 
@@ -39,14 +41,14 @@ export function main() {
         encodeKey() { return 'I AM KEY'; },
         encodeValue() { return 'I AM VALUE'; }
       };
-      const params = new URLSearchParams('', fooEveryThingParser);
+      const params = new HttpUrlParams('', fooEveryThingParser);
       params.set('myKey', 'myValue');
       expect(params.toString()).toBe('I AM KEY=I AM VALUE');
     });
 
 
     it('should encode special characters in params', () => {
-      const searchParams = new URLSearchParams();
+      const searchParams = new HttpUrlParams();
       searchParams.append('a', '1+1');
       searchParams.append('b c', '2');
       searchParams.append('d%', '3$');
@@ -64,10 +66,10 @@ export function main() {
        * sub-delims: "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
        *
        * & and = are excluded and should be encoded inside keys and values
-       * because URLSearchParams is responsible for inserting this.
+       * because HttpUrlParams is responsible for inserting this.
        **/
 
-      let params = new URLSearchParams();
+      let params = new HttpUrlParams();
       '! $ \' ( ) * + , ; A 9 - . _ ~ ? / ='.split(' ').forEach(
           (char, idx) => { params.set(`a${idx}`, char); });
       expect(params.toString())
@@ -77,7 +79,7 @@ export function main() {
 
 
       // Original example from https://github.com/angular/angular/issues/9348 for posterity
-      params = new URLSearchParams();
+      params = new HttpUrlParams();
       params.set('q', 'repo:janbaer/howcani+type:issue');
       params.set('sort', 'created');
       params.set('order', 'desc');
@@ -88,8 +90,8 @@ export function main() {
 
 
     it('should support map-like merging operation via setAll()', () => {
-      const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
-      const mapB = new URLSearchParams('a=4&a=5&a=6&b=7');
+      const mapA = new HttpUrlParams('a=1&a=2&a=3&c=8');
+      const mapB = new HttpUrlParams('a=4&a=5&a=6&b=7');
       mapA.setAll(mapB);
       expect(mapA.has('a')).toBe(true);
       expect(mapA.has('b')).toBe(true);
@@ -102,8 +104,8 @@ export function main() {
 
 
     it('should support multimap-like merging operation via appendAll()', () => {
-      const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
-      const mapB = new URLSearchParams('a=4&a=5&a=6&b=7');
+      const mapA = new HttpUrlParams('a=1&a=2&a=3&c=8');
+      const mapB = new HttpUrlParams('a=4&a=5&a=6&b=7');
       mapA.appendAll(mapB);
       expect(mapA.has('a')).toBe(true);
       expect(mapA.has('b')).toBe(true);
@@ -116,8 +118,8 @@ export function main() {
 
 
     it('should support multimap-like merging operation via replaceAll()', () => {
-      const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
-      const mapB = new URLSearchParams('a=4&a=5&a=6&b=7');
+      const mapA = new HttpUrlParams('a=1&a=2&a=3&c=8');
+      const mapB = new HttpUrlParams('a=4&a=5&a=6&b=7');
       mapA.replaceAll(mapB);
       expect(mapA.has('a')).toBe(true);
       expect(mapA.has('b')).toBe(true);
@@ -133,11 +135,11 @@ export function main() {
         encodeKey(k: string) { return encodeURIComponent(k); },
         encodeValue(v: string) { return encodeURIComponent(v); }
       };
-      const paramsA = new URLSearchParams('', fooQueryEncoder);
+      const paramsA = new HttpUrlParams('', fooQueryEncoder);
       paramsA.set('a', '2');
       paramsA.set('q', '4+');
       paramsA.set('c', '8');
-      const paramsB = new URLSearchParams();
+      const paramsB = new HttpUrlParams();
       paramsB.set('a', '2');
       paramsB.set('q', '4+');
       paramsB.set('c', '8');
@@ -150,7 +152,7 @@ export function main() {
     });
 
     it('should remove the parameter when set to undefined or null', () => {
-      const params = new URLSearchParams('q=Q');
+      const params = new HttpUrlParams('q=Q');
       params.set('q', undefined);
       expect(params.has('q')).toBe(false);
       expect(params.toString()).toEqual('');
@@ -160,7 +162,7 @@ export function main() {
     });
 
     it('should ignore the value when append undefined or null', () => {
-      const params = new URLSearchParams('q=Q');
+      const params = new HttpUrlParams('q=Q');
       params.append('q', undefined);
       expect(params.toString()).toEqual('q=Q');
       params.append('q', null);

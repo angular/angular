@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
+
 import {Injector, ReflectiveInjector} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
-import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
-import {stringToArrayBuffer} from '../src/http_utils';
-import {MockBackend, MockConnection} from '../testing/mock_backend';
+import {Http, HttpBackend, HttpHeaders, HttpModule, HttpRequest, HttpResponse, HttpUrlParams, Jsonp, JsonpBackend, JsonpModule, XhrBackend} from '../index';
+import {MockBackend, MockRequest} from '../testing/mock_backend';
+
 
 export function main() {
   describe('injectables', () => {
@@ -30,8 +33,8 @@ export function main() {
       TestBed.configureTestingModule({
         imports: [HttpModule, JsonpModule],
         providers: [
-          {provide: XHRBackend, useClass: MockBackend},
-          {provide: JSONPBackend, useClass: MockBackend}
+          {provide: HttpBackend, useClass: MockBackend},
+          {provide: JsonpBackend, useClass: MockBackend}
         ]
       });
       injector = getTestBed();
@@ -42,63 +45,44 @@ export function main() {
 
          http = injector.get(Http);
          jsonp = injector.get(Jsonp);
-         jsonpBackend = injector.get(JSONPBackend) as MockBackend;
-         xhrBackend = injector.get(XHRBackend) as any as MockBackend;
+         jsonpBackend = injector.get(JsonpBackend) as any as MockBackend;
+         xhrBackend = injector.get(HttpBackend) as any as MockBackend;
 
-         let xhrCreatedConnections = 0;
-         let jsonpCreatedConnections = 0;
+         let xhrCreatedRequests = 0;
+         let jsonpCreatedRequests = 0;
 
-         xhrBackend.connections.subscribe(() => {
-           xhrCreatedConnections++;
-           expect(xhrCreatedConnections).toEqual(1);
-           if (jsonpCreatedConnections) {
+         xhrBackend.mockRequests.subscribe(() => {
+           xhrCreatedRequests++;
+           expect(xhrCreatedRequests).toEqual(1);
+           if (jsonpCreatedRequests) {
              async.done();
            }
          });
 
          http.get(url).subscribe(() => {});
 
-         jsonpBackend.connections.subscribe(() => {
-           jsonpCreatedConnections++;
-           expect(jsonpCreatedConnections).toEqual(1);
-           if (xhrCreatedConnections) {
+         jsonpBackend.mockRequests.subscribe(() => {
+           jsonpCreatedRequests++;
+           expect(jsonpCreatedRequests).toEqual(1);
+           if (xhrCreatedRequests) {
              async.done();
            }
          });
 
-         jsonp.request(url).subscribe(() => {});
+         jsonp.get(url).subscribe(() => {});
        }));
   });
 
   describe('http', () => {
     const url = 'http://foo.bar';
     let http: Http;
-    let injector: Injector;
     let backend: MockBackend;
-    let baseResponse: Response;
-    let jsonp: Jsonp;
+    let sampleResponse: HttpResponse;
 
     beforeEach(() => {
-      injector = ReflectiveInjector.resolveAndCreate([
-        BaseRequestOptions, MockBackend, {
-          provide: Http,
-          useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-            return new Http(backend, defaultOptions);
-          },
-          deps: [MockBackend, BaseRequestOptions]
-        },
-        {
-          provide: Jsonp,
-          useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-            return new Jsonp(backend, defaultOptions);
-          },
-          deps: [MockBackend, BaseRequestOptions]
-        }
-      ]);
-      http = injector.get(Http);
-      jsonp = injector.get(Jsonp);
-      backend = injector.get(MockBackend);
-      baseResponse = new Response(new ResponseOptions({body: 'base response'}));
+      backend = new MockBackend();
+      http = new Http(backend, []);
+      sampleResponse = new HttpResponse({body: 'base response'});
       spyOn(Http.prototype, 'request').and.callThrough();
     });
 
@@ -109,202 +93,191 @@ export function main() {
         it('should return an Observable',
            () => { expect(http.request(url)).toBeAnInstanceOf(Observable); });
 
-
         it('should accept a fully-qualified request as its only parameter',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toBe('https://google.com');
-               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.url).toBe('https://google.com');
+               req.respond(new HttpResponse({body: 'Thank you'}));
                async.done();
              });
-             http.request(new Request(new RequestOptions({url: 'https://google.com'})))
-                 .subscribe((res: Response) => {});
+             http.request(new HttpRequest('https://google.com')).subscribe();
            }));
 
-        it('should accept a fully-qualified request as its only parameter',
+        it('should accept a fully-qualified POST request as its only parameter',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toBe('https://google.com');
-               expect(c.request.method).toBe(RequestMethod.Post);
-               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.url).toBe('https://google.com');
+               expect(req.request.method).toBe('POST');
+               req.respond(new HttpResponse({body: 'Thank you'}));
                async.done();
              });
-             http.request(new Request(new RequestOptions(
-                              {url: 'https://google.com', method: RequestMethod.Post})))
-                 .subscribe((res: Response) => {});
+             http.request(new HttpRequest('https://google.com', {method: 'POST'})).subscribe();
            }));
-
 
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
-             http.request('http://basic.connection').subscribe((res: Response) => {
-               expect(res.text()).toBe('base response');
-               async.done();
-             });
+             backend.mockRequests.subscribe(req => req.respond(sampleResponse));
+             http.request(url)
+                 .mergeMap(res => res.text())
+                 .subscribe(text => expect(text).toBe('base response'), null, () => async.done());
            }));
 
         it('should perform a post request for given url if options include a method',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toEqual(RequestMethod.Post);
-               c.mockRespond(baseResponse);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toEqual('POST');
+               req.respond(sampleResponse);
              });
-             const requestOptions = new RequestOptions({method: RequestMethod.Post});
-             http.request('http://basic.connection', requestOptions).subscribe((res: Response) => {
-               expect(res.text()).toBe('base response');
-               async.done();
-             });
+             http.request(url, {method: 'POST'})
+                 .mergeMap(res => res.text())
+                 .subscribe(text => expect(text).toBe('base response'), null, () => async.done());
            }));
 
         it('should perform a post request for given url if options include a method',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toEqual(RequestMethod.Post);
-               c.mockRespond(baseResponse);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toEqual('POST');
+               req.respond(sampleResponse);
              });
-             const requestOptions = {method: RequestMethod.Post};
-             http.request('http://basic.connection', requestOptions).subscribe((res: Response) => {
-               expect(res.text()).toBe('base response');
-               async.done();
-             });
+             http.request(url, {method: 'POST'})
+                 .mergeMap(res => res.text())
+                 .subscribe(text => expect(text).toBe('base response'), null, () => async.done());
            }));
 
         it('should perform a get request and complete the response',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
-             http.request('http://basic.connection')
-                 .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                     () => { async.done(); });
+             backend.mockRequests.subscribe(req => req.respond(sampleResponse));
+             http.request(url)
+                 .mergeMap(res => res.text())
+                 .subscribe(text => expect(text).toBe('base response'), null, () => async.done());
            }));
 
         it('should perform multiple get requests and complete the responses',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
-
-             http.request('http://basic.connection').subscribe((res: Response) => {
-               expect(res.text()).toBe('base response');
-             });
-             http.request('http://basic.connection')
-                 .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                     () => { async.done(); });
+             backend.mockRequests.subscribe(req => req.respond(sampleResponse));
+             const obs = http.request(url).mergeMap(res => res.text());
+             Observable.combineLatest(obs, obs).subscribe(texts => {
+               texts.forEach(text => expect(text).toBe('base response'));
+             }, null, () => async.done());
            }));
 
         it('should throw if url is not a string or Request', () => {
-          const req = <Request>{};
+          const req = <HttpRequest>{};
           expect(() => http.request(req))
-              .toThrowError('First argument must be a url string or Request instance.');
+              .toThrowError('First argument must be a url string or HttpRequest instance.');
         });
-      });
 
+        it('should attach default Accept header',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('Accept')).toBe('application/json, text/plain, */*');
+               req.respond(new HttpResponse({body: 'Thank you'}));
+               async.done();
+             });
+             http.request(new HttpRequest('http://google.com')).subscribe();
+           }));
+      });
 
       describe('.get()', () => {
         it('should perform a get request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Get);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('GET');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.get(url).subscribe((res: Response) => {});
+             http.get(url).subscribe();
            }));
       });
-
 
       describe('.post()', () => {
         it('should perform a post request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Post);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('POST');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.post(url, 'post me').subscribe((res: Response) => {});
+             http.post(url, 'post me').subscribe();
            }));
-
 
         it('should attach the provided body to the request',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              const body = 'this is my post body';
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.text()).toBe(body);
-               backend.resolveAllConnections();
+             backend.mockRequests.map(req => req.request.text()).subscribe(text => {
+               expect(text).toBe(body);
                async.done();
+               backend.resolveAllConnections();
              });
-             http.post(url, body).subscribe((res: Response) => {});
+             http.post(url, body).subscribe();
            }));
       });
-
 
       describe('.put()', () => {
         it('should perform a put request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Put);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('PUT');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.put(url, 'put me').subscribe((res: Response) => {});
+             http.put(url, 'put me').subscribe();
            }));
 
         it('should attach the provided body to the request',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              const body = 'this is my put body';
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.text()).toBe(body);
-               backend.resolveAllConnections();
+             backend.mockRequests.map(req => req.request.text()).subscribe(text => {
+               expect(text).toBe(body);
                async.done();
+               backend.resolveAllConnections();
              });
-             http.put(url, body).subscribe((res: Response) => {});
+             http.put(url, body).subscribe();
            }));
       });
-
 
       describe('.delete()', () => {
         it('should perform a delete request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Delete);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('DELETE');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.delete(url).subscribe((res: Response) => {});
+             http.delete(url).subscribe();
            }));
       });
-
 
       describe('.patch()', () => {
         it('should perform a patch request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Patch);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('PATCH');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.patch(url, 'this is my patch body').subscribe((res: Response) => {});
+             http.patch(url, 'patch me').subscribe();
            }));
 
         it('should attach the provided body to the request',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              const body = 'this is my patch body';
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.text()).toBe(body);
-               backend.resolveAllConnections();
+             backend.mockRequests.map(req => req.request.text()).subscribe(text => {
+               expect(text).toBe(body);
                async.done();
+               backend.resolveAllConnections();
              });
-             http.patch(url, body).subscribe((res: Response) => {});
+             http.patch(url, body).subscribe();
            }));
       });
 
@@ -312,14 +285,14 @@ export function main() {
       describe('.head()', () => {
         it('should perform a head request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Head);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('HEAD');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.head(url).subscribe((res: Response) => {});
+             http.head(url).subscribe();
            }));
       });
 
@@ -327,214 +300,237 @@ export function main() {
       describe('.options()', () => {
         it('should perform an options request for given url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.method).toBe(RequestMethod.Options);
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('OPTIONS');
                expect(http.request).toHaveBeenCalled();
                backend.resolveAllConnections();
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.options(url).subscribe((res: Response) => {});
-           }));
-      });
-
-
-      describe('searchParams', () => {
-        it('should append search params to url',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             const params = new URLSearchParams();
-             params.append('q', 'puppies');
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toEqual('https://www.google.com?q=puppies');
-               backend.resolveAllConnections();
-               async.done();
-             });
-             http.get('https://www.google.com', new RequestOptions({search: params}))
-                 .subscribe((res: Response) => {});
-           }));
-
-        it('should append string search params to url',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toEqual('https://www.google.com?q=piggies');
-               backend.resolveAllConnections();
-               async.done();
-             });
-             http.get('https://www.google.com', new RequestOptions({search: 'q=piggies'}))
-                 .subscribe((res: Response) => {});
-           }));
-
-        it('should produce valid url when url already contains a query',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toEqual('https://www.google.com?q=angular&as_eq=1.x');
-               backend.resolveAllConnections();
-               async.done();
-             });
-             http.get('https://www.google.com?q=angular', new RequestOptions({search: 'as_eq=1.x'}))
-                 .subscribe((res: Response) => {});
+             http.options(url).subscribe();
            }));
       });
 
       describe('params', () => {
-        it('should append params to url',
+        it('should append search params to url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             backend.connections.subscribe((c: MockConnection) => {
-               expect(c.request.url).toEqual('https://www.google.com?q=puppies');
+             const params = new HttpUrlParams();
+             params.append('q', 'puppies');
+             backend.mockRequests.subscribe(mock => {
+               expect(mock.request.url).toEqual('https://www.google.com?q=puppies');
                backend.resolveAllConnections();
                async.done();
              });
-             http.get('https://www.google.com', {params: {q: 'puppies'}})
-                 .subscribe((res: Response) => {});
+             http.get('https://www.google.com', {params}).subscribe();
+           }));
+
+        it('should append string search params to url',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.mockRequests.subscribe(mock => {
+               expect(mock.request.url).toEqual('https://www.google.com?q=piggies');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.get('https://www.google.com', {params: 'q=piggies'}).subscribe();
+           }));
+
+        it('should produce valid url when url already contains a query',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.mockRequests.subscribe(mock => {
+               expect(mock.request.url).toEqual('https://www.google.com?q=angular&as_eq=1.x');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.get('https://www.google.com?q=angular', {params: 'as_eq=1.x'}).subscribe();
+           }));
+
+        it('should append map params to url',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.mockRequests.subscribe(mock => {
+               expect(mock.request.url).toEqual('https://www.google.com?q=puppies');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.get('https://www.google.com', {params: {q: 'puppies'}}).subscribe();
            }));
       });
 
       describe('string method names', () => {
-        it('should allow case insensitive strings for method names', () => {
-          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-            backend.connections.subscribe((c: MockConnection) => {
-              expect(c.request.method).toBe(RequestMethod.Post);
-              c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
-              async.done();
-            });
-            http.request(
-                    new Request(new RequestOptions({url: 'https://google.com', method: 'PosT'})))
-                .subscribe((res: Response) => {});
-          });
-        });
-
-        it('should throw when invalid string parameter is passed for method name', () => {
-          expect(() => {
-            http.request(
-                new Request(new RequestOptions({url: 'https://google.com', method: 'Invalid'})));
-          }).toThrowError('Invalid request method. The method "Invalid" is not supported.');
-        });
+        it('should allow case insensitive strings for method names',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.method).toBe('POST');
+               req.respond(new HttpResponse({body: 'Thank you'}));
+               async.done();
+             });
+             http.request(new HttpRequest('https://google.com', {method: 'PosT'})).subscribe();
+           }));
       });
-    });
 
-    describe('Jsonp', () => {
-      describe('.request()', () => {
-        it('should throw if url is not a string or Request', () => {
-          const req = <Request>{};
-          expect(() => jsonp.request(req))
-              .toThrowError('First argument must be a url string or Request instance.');
-        });
-      });
-    });
+      describe('content type detection', () => {
+        it('should skip content type detection if custom content type header is set',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const headers = new HttpHeaders({'Content-Type': 'text/plain'});
+             const body = {test: 'val'};
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type')).toBe('text/plain');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body, {headers}).subscribe();
+           }));
 
-    describe('response buffer', () => {
+        it('should use object body and detect content type header to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const body = {test: 'val'};
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type')).toBe('application/json');
+               expect(req.request.text()).toBe('{"test":"val"}');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body).subscribe();
+           }));
 
-      it('should attach the provided buffer to the response',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           backend.connections.subscribe((c: MockConnection) => {
-             expect(c.request.responseType).toBe(ResponseContentType.ArrayBuffer);
-             c.mockRespond(new Response(new ResponseOptions({body: new ArrayBuffer(32)})));
-             async.done();
-           });
-           http.get(
-                   'https://www.google.com',
-                   new RequestOptions({responseType: ResponseContentType.ArrayBuffer}))
-               .subscribe((res: Response) => {});
-         }));
+        it('should use number body and detect content type header to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const body = 42;
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type')).toBe('text/plain');
+               expect(req.request.text()).toBe('42');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body).subscribe();
+           }));
 
-      it('should be able to consume a buffer containing a String as any response type',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
-           http.get('https://www.google.com').subscribe((res: Response) => {
-             expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
-             expect(res.text()).toBe('base response');
-             async.done();
-           });
-         }));
+        it('should use string body and detect content type header to the request',
+           () => inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const body = 'some string';
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type')).toBe('text/plain');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body).subscribe();
+           }));
 
+        it('should use URLSearchParams body and detect content type header to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const body = new HttpUrlParams();
+             body.set('test1', 'val1');
+             body.set('test2', 'val2');
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type'))
+                   .toBe('application/x-www-form-urlencoded;charset=UTF-8');
+               expect(req.request.text()).toBe('test1=val1&test2=val2');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body).subscribe();
+           }));
 
-      it('should be able to consume a buffer containing an ArrayBuffer as any response type',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const arrayBuffer = stringToArrayBuffer('{"response": "ok"}');
-           backend.connections.subscribe(
-               (c: MockConnection) =>
-                   c.mockRespond(new Response(new ResponseOptions({body: arrayBuffer}))));
-           http.get('https://www.google.com').subscribe((res: Response) => {
-             expect(res.arrayBuffer()).toBe(arrayBuffer);
-             expect(res.text()).toEqual('{"response": "ok"}');
-             expect(res.json()).toEqual({response: 'ok'});
-             async.done();
-           });
-         }));
+        if ((global as any)['Blob']) {
+          // `new Blob(...)` throws an 'Illegal constructor' exception in Android browser <= 4.3,
+          // but a BlobBuilder can be used instead
+          const createBlob = (data: Array<string>, datatype: string) => {
+            let newBlob: Blob;
+            try {
+              newBlob = new Blob(data || [], datatype ? {type: datatype} : {});
+            } catch (e) {
+              const BlobBuilder = (<any>global).BlobBuilder || (<any>global).WebKitBlobBuilder ||
+                  (<any>global).MozBlobBuilder || (<any>global).MSBlobBuilder;
+              const builder = new BlobBuilder();
+              builder.append(data);
+              newBlob = builder.getBlob(datatype);
+            }
+            return newBlob;
+          };
 
-      it('should be able to consume a buffer containing an Object as any response type',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const simpleObject = {'content': 'ok'};
-           backend.connections.subscribe(
-               (c: MockConnection) =>
-                   c.mockRespond(new Response(new ResponseOptions({body: simpleObject}))));
-           http.get('https://www.google.com').subscribe((res: Response) => {
-             expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
-             expect(res.text()).toEqual(JSON.stringify(simpleObject, null, 2));
-             expect(res.json()).toBe(simpleObject);
-             async.done();
-           });
-         }));
-
-      it('should preserve encoding of ArrayBuffer response',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const message = 'é@θЂ';
-           const arrayBuffer = stringToArrayBuffer(message);
-           backend.connections.subscribe(
-               (c: MockConnection) =>
-                   c.mockRespond(new Response(new ResponseOptions({body: arrayBuffer}))));
-           http.get('https://www.google.com').subscribe((res: Response) => {
-             expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
-             expect(res.text()).toEqual(message);
-             async.done();
-           });
-         }));
-
-      it('should preserve encoding of String response',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const message = 'é@θЂ';
-           backend.connections.subscribe(
-               (c: MockConnection) =>
-                   c.mockRespond(new Response(new ResponseOptions({body: message}))));
-           http.get('https://www.google.com').subscribe((res: Response) => {
-             expect(res.arrayBuffer()).toEqual(stringToArrayBuffer(message));
-             async.done();
-           });
-         }));
-
-      it('should have an equivalent response independently of the buffer used',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const message = {'param': 'content'};
-
-           backend.connections.subscribe((c: MockConnection) => {
-             const body = (): any => {
-               switch (c.request.responseType) {
-                 case ResponseContentType.Text:
-                   return JSON.stringify(message, null, 2);
-                 case ResponseContentType.Json:
-                   return message;
-                 case ResponseContentType.ArrayBuffer:
-                   return stringToArrayBuffer(JSON.stringify(message, null, 2));
-               }
-             };
-             c.mockRespond(new Response(new ResponseOptions({body: body()})));
-           });
-
-           zip(http.get(
-                   'https://www.google.com',
-                   new RequestOptions({responseType: ResponseContentType.Text})),
-               http.get(
-                   'https://www.google.com',
-                   new RequestOptions({responseType: ResponseContentType.Json})),
-               http.get(
-                   'https://www.google.com',
-                   new RequestOptions({responseType: ResponseContentType.ArrayBuffer})))
-               .subscribe((res: Array<any>) => {
-                 expect(res[0].text()).toEqual(res[1].text());
-                 expect(res[1].text()).toEqual(res[2].text());
+          it('should use FormData body and detect content type header to the request',
+             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+               const body = new FormData();
+               body.append('test1', 'val1');
+               body.append('test2', 123456);
+               const blob = createBlob(['body { color: red; }'], 'text/css');
+               body.append('userfile', blob);
+               backend.mockRequests.subscribe(req => {
+                 // TODO(alxhub): test content type.
+                 backend.resolveAllConnections();
                  async.done();
                });
-         }));
+               http.post('http://google.com', body).subscribe();
+             }));
+
+          it('should use blob body and detect content type header to the request',
+             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+               const body = createBlob(['body { color: red; }'], 'text/css');
+               backend.mockRequests.subscribe(req => {
+                 expect(req.request.headers.get('content-type')).toEqual('text/css');
+                 expect(req.request.blob()).toBe(body);
+                 backend.resolveAllConnections();
+                 async.done();
+               });
+               http.post('http://google.com', body).subscribe();
+             }));
+
+          it('should use blob body without type to the request',
+             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+               const body = createBlob(['body { color: red; }'], null);
+               backend.mockRequests.subscribe(req => {
+                 expect(req.request.headers.has('content-type')).toBeFalsy();
+                 expect(req.request.blob()).toBe(body);
+                 backend.resolveAllConnections();
+                 async.done();
+               });
+               http.post('http://google.com', body).subscribe();
+             }));
+
+          it('should use blob body without type with custom content type header to the request',
+             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+               const headers = new HttpHeaders({'Content-Type': 'text/css'});
+               const body = createBlob(['body { color: red; }'], null);
+               backend.mockRequests.subscribe(req => {
+                 expect(req.request.headers.get('content-type')).toBe('text/css');
+                 expect(req.request.blob()).toBe(body);
+                 backend.resolveAllConnections();
+                 async.done();
+               });
+               http.post('http://google.com', body, {headers}).subscribe();
+             }));
+        }
+
+        it('should use array buffer body to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const body = new ArrayBuffer(512);
+             const longInt8View = new Uint8Array(body);
+             for (let i = 0; i < longInt8View.length; i++) {
+               longInt8View[i] = i % 255;
+             }
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.has('content-type')).toBeFalsy();
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body).subscribe();
+           }));
+
+        it('should use array buffer body without type with custom content type header to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const headers = new HttpHeaders({'Content-Type': 'text/css'});
+             const body = new ArrayBuffer(512);
+             const longInt8View = new Uint8Array(body);
+             for (let i = 0; i < longInt8View.length; i++) {
+               longInt8View[i] = i % 255;
+             }
+             backend.mockRequests.subscribe(req => {
+               expect(req.request.headers.get('content-type')).toBe('text/css');
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.post('http://google.com', body, {headers}).subscribe();
+           }));
+      });
     });
   });
 }

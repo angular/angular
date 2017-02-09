@@ -6,17 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {BrowserXhr} from './backends/browser_xhr';
-export {JSONPBackend, JSONPConnection} from './backends/jsonp_backend';
-export {CookieXSRFStrategy, XHRBackend, XHRConnection} from './backends/xhr_backend';
-export {BaseRequestOptions, RequestOptions} from './base_request_options';
-export {BaseResponseOptions, ResponseOptions} from './base_response_options';
-export {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
-export {Headers} from './headers';
-export {Http, Jsonp} from './http';
-export {HttpModule, JsonpModule} from './http_module';
-export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, XSRFStrategy} from './interfaces';
-export {Request} from './static_request';
-export {Response} from './static_response';
-export {QueryEncoder, URLSearchParams} from './url_search_params';
+export {HttpBackend, XhrBackend} from './backend';
+export {Headers, HttpHeaders, HttpHeadersMap} from './headers';
+export {Http, HttpModule, HttpParamsMap, HttpRequestMethodOpts, HttpRequestOpts} from './http';
+export {HTTP_INTERCEPTORS, HttpInterceptor} from './interceptor';
+export {Jsonp, JsonpBackend, JsonpInterceptor, JsonpModule} from './jsonp';
+export {HttpAsyncBody, HttpBody, HttpMethod, HttpRequest, HttpRequestInit, HttpResponse, HttpResponseInit, HttpResponseTypeHint, HttpSyncBody, Request, Response} from './request_response';
+export {HttpUrlParams, QueryEncoder, URLSearchParams} from './url_params';
 export {VERSION} from './version';
+export {COOKIE_XSRF_HEADER, COOKIE_XSRF_NAME, CookieXsrfInterceptor} from './xsrf';
