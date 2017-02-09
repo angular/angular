@@ -3,9 +3,9 @@ import { browser, element, by } from 'protractor';
 export class SitePage {
 
   links = element.all(by.css('md-toolbar a'));
-  datePipeLink = element(by.css('md-toolbar a[aioNavLink="docs/api/common/date-pipe"]'));
+  datePipeLink = element(by.css('md-toolbar a[aioNavLink="docs/api/common/DatePipe"]'));
   docViewer = element(by.css('aio-doc-viewer'));
-  codeExample = element.all(by.css('aio-doc-viewer code-example > pre > code'));
+  codeExample = element.all(by.css('aio-doc-viewer pre > code'));
   featureLink = element(by.css('md-toolbar a[aioNavLink="features"]'));
 
   navigateTo() {
