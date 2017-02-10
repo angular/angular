@@ -64,6 +64,7 @@ groups:
         exclude:
           - "tools/@angular/tsc-wrapped/*"
           - "tools/public_api_guard/*"
+          - "aio/*"
     users:
       - IgorMinar #primary
       - mhevery
