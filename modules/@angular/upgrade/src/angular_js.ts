@@ -8,6 +8,8 @@
 
 export type Ng1Token = string;
 
+export type Ng1Expression = string | Function;
+
 export interface IAnnotatedFunction extends Function { $inject?: Ng1Token[]; }
 
 export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
@@ -45,9 +47,7 @@ export interface IRootScopeService {
   $watch(expr: any, fn?: (a1?: any, a2?: any) => void): Function;
   $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
   $destroy(): any;
-  $apply(): any;
-  $apply(exp: string): any;
-  $apply(exp: Function): any;
+  $apply(exp?: Ng1Expression): any;
   $digest(): any;
   $evalAsync(): any;
   $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
