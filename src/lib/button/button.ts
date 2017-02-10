@@ -184,7 +184,6 @@ export class MdButton {
   moduleId: module.id,
   selector: `a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab],
              a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
-  inputs: ['color', 'disabled', 'disableRipple'],
   host: {
     '[attr.disabled]': 'disabled',
     '[attr.aria-disabled]': '_isAriaDisabled',

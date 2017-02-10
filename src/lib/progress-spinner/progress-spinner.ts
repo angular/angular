@@ -291,8 +291,6 @@ export class MdProgressSpinner implements OnDestroy {
     'mode': 'indeterminate',
     '[class.mat-spinner]': 'true',
   },
-  // Due to the class extending we need to explicitly say that the input exists.
-  inputs: ['color'],
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
 })
