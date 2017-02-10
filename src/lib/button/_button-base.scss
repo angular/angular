@@ -74,7 +74,7 @@ $mat-mini-fab-padding: 8px !default;
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
               mat-elevation-transition-property-value();
 
-  &:active {
+  &:not([disabled]):active {
     @include mat-elevation(8);
   }
 
@@ -99,7 +99,7 @@ $mat-mini-fab-padding: 8px !default;
 
   flex-shrink: 0;
 
-  &:active {
+  &:not([disabled]):active {
     @include mat-elevation(12);
   }
 
