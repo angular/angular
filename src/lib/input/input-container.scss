@@ -173,7 +173,8 @@ $mat-input-underline-disabled-background-image:
 
   // Keeps the element height since the placeholder text is `position: absolute`.
   &::after {
-    content: '\\00a0';
+    content: '';
+    display: inline-table;
   }
 }
 
