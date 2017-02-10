@@ -128,14 +128,14 @@ To add a divider, use `<md-divider>`.
 <md-list>
    <h3 md-subheader>Folders</h3>
    <md-list-item *ngFor="let folder of folders">
-      <md-icon md-list-avatar>folder</md-icon>
+      <md-icon md-list-icon>folder</md-icon>
       <h4 md-line>{{folder.name}}</h4>
       <p md-line class="demo-2"> {{folder.updated}} </p>
    </md-list-item>
    <md-divider></md-divider>
    <h3 md-subheader>Notes</h3>
    <md-list-item *ngFor="let note of notes">
-      <md-icon md-list-avatar>note</md-icon>
+      <md-icon md-list-icon>note</md-icon>
       <h4 md-line>{{note.name}}</h4>
       <p md-line class="demo-2"> {{note.updated}} </p>
    </md-list-item>
