@@ -67,10 +67,11 @@ describe('Overlay', () => {
     let paneElement = overlayRef.overlayElement;
 
     overlayRef.attach(componentPortal);
+    viewContainerFixture.detectChanges();
 
     expect(paneElement.childNodes.length).not.toBe(0);
     expect(paneElement.style.pointerEvents)
-      .toBeFalsy('Expected the overlay pane to enable pointerEvents when attached.');
+      .toBe('auto', 'Expected the overlay pane to enable pointerEvents when attached.');
 
     overlayRef.detach();
 

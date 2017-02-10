@@ -40,7 +40,7 @@ describe('Overlay directives', () => {
 
     expect(overlayContainerElement.textContent).toContain('Menu content');
     expect(getPaneElement().style.pointerEvents)
-      .toBeFalsy('Expected the overlay pane to enable pointerEvents when attached.');
+      .toBe('auto', 'Expected the overlay pane to enable pointerEvents when attached.');
 
     fixture.componentInstance.isOpen = false;
     fixture.detectChanges();

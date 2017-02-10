@@ -128,7 +128,7 @@ export class OverlayRef implements PortalHost {
 
   /** Toggles the pointer events for the overlay pane element. */
   private _togglePointerEvents(enablePointer: boolean) {
-    this._pane.style.pointerEvents = enablePointer ? null : 'none';
+    this._pane.style.pointerEvents = enablePointer ? 'auto' : 'none';
   }
 
   /** Attaches a backdrop for this overlay. */
