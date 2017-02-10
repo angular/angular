@@ -21,11 +21,6 @@ export function bootstrap(
   });
 }
 
-export function digest(adapter: UpgradeModule) {
-  const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
-  $rootScope.$digest();
-}
-
 export function html(html: string): Element {
   // Don't return `body` itself, because using it as a `$rootElement` for ng1
   // will attach `$injector` to it and that will affect subsequent tests.
@@ -42,4 +37,14 @@ export function html(html: string): Element {
 
 export function multiTrim(text: string): string {
   return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+}
+
+export function $apply(adapter: UpgradeModule, exp: angular.Ng1Expression) {
+  const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+  $rootScope.$apply(exp);
+}
+
+export function $digest(adapter: UpgradeModule) {
+  const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+  $rootScope.$digest();
 }

@@ -57,16 +57,15 @@ export class DowngradeComponentAdapter {
       let expr: any /** TODO #9100 */ = null;
 
       if (attrs.hasOwnProperty(input.attr)) {
-        const observeFn = ((prop: any /** TODO #9100 */) => {
+        const observeFn = (prop => {
           let prevValue = INITIAL_VALUE;
-          return (value: any /** TODO #9100 */) => {
-            if (this.inputChanges !== null) {
-              this.inputChangeCount++;
-              this.inputChanges[prop] =
-                  new Ng1Change(value, prevValue === INITIAL_VALUE ? value : prevValue);
-              prevValue = value;
+          return (currValue: any) => {
+            if (prevValue === INITIAL_VALUE) {
+              prevValue = currValue;
             }
-            this.component[prop] = value;
+
+            this.updateInput(prop, prevValue, currValue);
+            prevValue = currValue;
           };
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
@@ -82,14 +81,8 @@ export class DowngradeComponentAdapter {
       }
       if (expr != null) {
         const watchFn =
-            ((prop: any /** TODO #9100 */) =>
-                 (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
-                   if (this.inputChanges != null) {
-                     this.inputChangeCount++;
-                     this.inputChanges[prop] = new Ng1Change(prevValue, value);
-                   }
-                   this.component[prop] = value;
-                 })(input.prop);
+            (prop => (currValue: any, prevValue: any) =>
+                 this.updateInput(prop, prevValue, currValue))(input.prop);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -170,6 +163,15 @@ export class DowngradeComponentAdapter {
       this.componentScope.$destroy();
       this.componentRef.destroy();
     });
+  }
+
+  private updateInput(prop: string, prevValue: any, currValue: any) {
+    if (this.inputChanges) {
+      this.inputChangeCount++;
+      this.inputChanges[prop] = new Ng1Change(prevValue, currValue);
+    }
+
+    this.component[prop] = currValue;
   }
 }
 
