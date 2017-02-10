@@ -8,6 +8,7 @@ cd "$(dirname $0)/../../"
 docsPath="/dist/docs"
 repoPath="/tmp/material2-docs-content"
 repoUrl="https://github.com/DevVersion/material2-docs-content"
+examplesSource="/dist/docs/examples"
 
 # If the docs directory is not present, generate docs
 if [ ! -d $docsPath ]; then
@@ -21,8 +22,8 @@ commitAuthorEmail="$(git --no-pager show -s --format='%ae' HEAD)"
 commitMessage="$(git log --oneline -n 1)"
 
 # create directory and clone test repo
-rm -rf "/tmp/"
-mkdir "/tmp/" $repoPath
+rm -rf /tmp/
+mkdir -p $repoPath
 git clone $repoUrl $repoPath
 
 # Clean out repo directory and copy contents of dist/docs into it
@@ -30,10 +31,26 @@ rm -rf $repoPath/*
 mkdir $repoPath/overview
 mkdir $repoPath/guides
 mkdir $repoPath/api
-# mkdir $repoPath/examples
+mkdir $repoPath/examples
 
 # Move api files over to $repoPath/api
 cp -r $docsPath/api/* $repoPath/api
+
+# Flatten the markdown docs structure and move it into $repoPath/overview
+overviewFiles=$docsPath/markdown/
+for filename in $overviewFiles*
+do
+  if [ -d $filename ]; then
+    for _ in $filename/*
+    do
+      markdownFile=${filename#$overviewFiles}.html
+      # Filename should be same as folder name with .html extension
+      if [ -e $filename/$markdownFile ]; then
+        cp -r $filename/$markdownFile $repoPath/overview/
+      fi
+    done
+  fi
+done
 
 # Move guide files over to $repoPath/guides
 for filename in $overviewFiles*
@@ -43,25 +60,8 @@ do
   fi
 done
 
-# Flatten the markdown docs structure and move it into $repoPath/overview
-overviewFiles=$docsPath/markdown/
-targetFile="OVERVIEW.html"
-for filename in $overviewFiles*
-do
-  if [ -d $filename ]; then
-    for _ in $filename/*
-    do
-      if [ -f $filename/$targetFile ]; then
-        name=${filename#$overviewFiles}
-        cp -r $filename/$targetFile $repoPath/overview/
-        mv $repoPath/overview/$targetFile $repoPath/overview/$name.html
-      fi
-    done
-  fi
-done
-
-# src/examples should be added to the $repoPath after they have been moved into
-# the material2 repo from material.angular.io
+# Move highlighted examples into $repoPath
+cp -r $examplesSource/* $repoPath/examples
 
 # Push content to repo
 cd $repoPath
