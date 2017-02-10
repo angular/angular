@@ -138,7 +138,7 @@ export class LiteralArray extends AST {
 }
 
 export class LiteralMap extends AST {
-  constructor(span: ParseSpan, public keys: any[], public values: any[]) { super(span); }
+  constructor(span: ParseSpan, public keys: (string|AST)[], public values: any[]) { super(span); }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitLiteralMap(this, context);
   }
@@ -271,7 +271,15 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitLiteralArray(ast: LiteralArray, context: any): any {
     return this.visitAll(ast.expressions, context);
   }
-  visitLiteralMap(ast: LiteralMap, context: any): any { return this.visitAll(ast.values, context); }
+  visitLiteralMap(ast: LiteralMap, context: any): any {
+    for (let i = 0; i < ast.keys.length; i++) {
+      let key = ast.keys[i];
+      if (key instanceof AST) {
+        key.visit(this);
+      }
+    }
+    return this.visitAll(ast.values, context);
+  }
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any { return null; }
   visitMethodCall(ast: MethodCall, context: any): any {
     ast.receiver.visit(this);

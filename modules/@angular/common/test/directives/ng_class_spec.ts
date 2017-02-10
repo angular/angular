@@ -54,8 +54,8 @@ export function main() {
          }));
 
       it('should add and remove classes based on changes in object literal values', async(() => {
-           fixture =
-               createTestComponent('<div [ngClass]="{foo: condition, bar: !condition}"></div>');
+           fixture = createTestComponent(
+               '<div [ngClass]="{[strExpr]: condition, bar: !condition}"></div>');
 
            detectChangesAndExpectClassName('foo');
 

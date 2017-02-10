@@ -310,7 +310,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
     const parts: any[] = [];
     for (let i = 0; i < ast.keys.length; i++) {
-      parts.push([ast.keys[i], this.visit(ast.values[i], _Mode.Expression)]);
+      let key = ast.keys[i];
+      if (key instanceof cdAst.AST) {
+        parts.push(
+            [this.visit(key, _Mode.Expression), this.visit(ast.values[i], _Mode.Expression)]);
+      } else if (typeof key === 'string') {
+        parts.push([key, this.visit(ast.values[i], _Mode.Expression)]);
+      }
     }
     const literalMap =
         this.isAction ? o.literalMap(parts) : createCachedLiteralMap(this._builder, parts);
@@ -602,13 +608,13 @@ function createCachedLiteralArray(builder: ClassBuilder, values: o.Expression[])
 }
 
 function createCachedLiteralMap(
-    builder: ClassBuilder, entries: [string, o.Expression][]): o.Expression {
+    builder: ClassBuilder, entries: [string | o.Expression, o.Expression][]): o.Expression {
   if (entries.length === 0) {
     return o.importExpr(createIdentifier(Identifiers.EMPTY_MAP));
   }
   const proxyExpr = o.THIS_EXPR.prop(`_map_${builder.fields.length}`);
   const proxyParams: o.FnParam[] = [];
-  const proxyReturnEntries: [string, o.Expression][] = [];
+  const proxyReturnEntries: [string | o.Expression, o.Expression][] = [];
   const values: o.Expression[] = [];
   for (let i = 0; i < entries.length; i++) {
     const paramName = `p${i}`;
