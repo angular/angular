@@ -19,7 +19,6 @@ $mat-select-trigger-font-size: 16px !default;
 
 .mat-select-trigger {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: $mat-select-trigger-height;
   min-width: $mat-select-trigger-min-width;
@@ -29,11 +28,22 @@ $mat-select-trigger-font-size: 16px !default;
   font-size: $mat-select-trigger-font-size;
 
   [aria-disabled='true'] & {
-    @include mat-control-disabled-underline();
-    border-bottom: transparent;
-    background-position: 0 bottom;
     cursor: default;
     user-select: none;
+  }
+}
+
+.mat-select-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+
+  [aria-disabled='true'] & {
+    @include mat-control-disabled-underline();
+    background-color: transparent;
+    background-position: 0 bottom;
   }
 }
 
@@ -41,6 +51,7 @@ $mat-select-trigger-font-size: 16px !default;
   position: relative;
   padding: 0 2px;
   transform-origin: left top;
+  flex-grow: 1;
 
   // These values are duplicated from animation code in order to
   // allow placeholders to sometimes float without animating,
@@ -69,27 +80,34 @@ $mat-select-trigger-font-size: 16px !default;
 }
 
 .mat-select-value {
-  @include mat-truncate-line();
   position: absolute;
-  max-width: calc(100% - #{$mat-select-arrow-size * 2});
+  max-width: calc(100% - #{($mat-select-arrow-size + $mat-select-arrow-margin) * 2});
+  flex-grow: 1;
 
   // Firefox and some versions of IE incorrectly keep absolutely
   // positioned children of flex containers in the flex flow when calculating
   // position. This has been fixed for Firefox 52, slated for early 2017.
   // Bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=874718
   //
-  // In the meantime, we must adjust the left position to 0 to mimic where it
-  // would be if it were correctly taken out of the flex flow. It's also necessary
-  // to adjust the top value because absolutely positioned elements should not be
-  // affected by the flex container's "align-items" property either. To center the text,
-  // we must offset by 6px (6px top + 6px bottom + 18px text height = 30px total height).
+  // In the meantime, we must adjust the position to fit the top, left, and bottom edge of the
+  // containing trigger element. In doing so, we can use align-items: center to allow the text to
+  // correctly position itself in the middle of the container.
+  top: 0;
   left: 0;
-  top: 6px;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
 
   [dir='rtl'] & {
     left: auto;
     right: 0;
   }
+}
+
+.mat-select-value-text {
+  @include mat-truncate-line();
+  line-height: $mat-select-trigger-height;
 }
 
 .mat-select-arrow {

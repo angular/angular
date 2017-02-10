@@ -9,16 +9,25 @@
 
   .mat-select-trigger {
     color: mat-color($foreground, hint-text);
-    border-bottom: 1px solid mat-color($foreground, divider);
 
     .mat-select:focus:not(.mat-select-disabled) & {
       color: mat-color($primary);
-      border-bottom: 1px solid mat-color($primary);
     }
 
     .mat-select.ng-invalid.ng-touched:not(.mat-select-disabled) & {
       color: mat-color($warn);
-      border-bottom: 1px solid mat-color($warn);
+    }
+  }
+
+  .mat-select-underline {
+    background-color: mat-color($foreground, divider);
+
+    .mat-select:focus:not(.mat-select-disabled) & {
+      background-color: mat-color($primary);
+    }
+
+    .mat-select.ng-invalid.ng-touched:not(.mat-select-disabled) & {
+      background-color: mat-color($warn);
     }
   }
 
