@@ -21,7 +21,7 @@ export type RippleConfig = {
   centered?: boolean;
   radius?: number;
   speedFactor?: number;
-}
+};
 
 /**
  * Helper service that performs DOM manipulations. Not intended to be used outside this module.
