@@ -40,6 +40,7 @@ import * as reflection_capabilities from './reflection/reflection_capabilities';
 import * as reflector_reader from './reflection/reflector_reader';
 import * as reflection_types from './reflection/types';
 import * as api from './render/api';
+import {TransitionEngine} from './transition/transition_engine';
 import * as decorators from './util/decorators';
 import {isObservable, isPromise} from './util/lang';
 
@@ -109,6 +110,7 @@ export const __core_private__: {
   AnimationTransition: typeof AnimationTransition
   view_utils: typeof view_utils,
   ERROR_COMPONENT_TYPE: typeof ERROR_COMPONENT_TYPE,
+  TransitionEngine: typeof TransitionEngine
 } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
@@ -158,5 +160,6 @@ export const __core_private__: {
   isPromise: isPromise,
   isObservable: isObservable,
   AnimationTransition: AnimationTransition,
-  ERROR_COMPONENT_TYPE: ERROR_COMPONENT_TYPE
+  ERROR_COMPONENT_TYPE: ERROR_COMPONENT_TYPE,
+  TransitionEngine: TransitionEngine
 };

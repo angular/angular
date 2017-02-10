@@ -25,6 +25,7 @@
         map: {
           'index': 'index.js',
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
+          '@angular/animation': '/packages-dist/common/bundles/animation.umd.js',
           '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
           '@angular/core': '/packages-dist/core/bundles/core.umd.js',
           '@angular/forms': '/packages-dist/forms/bundles/forms.umd.js',
@@ -60,6 +61,7 @@
         packages: {
           'app': {defaultExtension: 'js'},
           '@angular/common': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/animation': {main: 'index.js', defaultExtension: 'js'},
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/core': {main: 'index.js', defaultExtension: 'js'},
           '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
