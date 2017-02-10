@@ -1,6 +1,9 @@
 @import '../style/menu-common';
 @import '../a11y/a11y';
 
+/** Default size of option text. */
+$mat-option-font-size: 16px !default;
+
 /**
  * This mixin contains shared option styles between the select and
  * autocomplete components.
@@ -11,6 +14,7 @@
     position: relative;
     cursor: pointer;
     outline: none;
+    font-size: $mat-option-font-size;
 
     &[aria-disabled='true'] {
       cursor: default;

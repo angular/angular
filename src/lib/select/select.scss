@@ -9,6 +9,7 @@ $mat-select-trigger-min-width: 112px !default;
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
 $mat-select-panel-max-height: 256px !default;
+$mat-select-trigger-font-size: 16px !default;
 
 .mat-select {
   display: inline-block;
@@ -25,6 +26,7 @@ $mat-select-panel-max-height: 256px !default;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
+  font-size: $mat-select-trigger-font-size;
 
   [aria-disabled='true'] & {
     @include mat-control-disabled-underline();
