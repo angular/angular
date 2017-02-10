@@ -105,8 +105,8 @@ function generateHandleEventMethod(
         compileElement.view, compileElement.view, compileElement.view.componentContext,
         renderEvent.handler, `sub_${renderEventIdx}`);
     const trueStmts = evalResult.stmts;
-    if (evalResult.preventDefault) {
-      trueStmts.push(resultVar.set(evalResult.preventDefault.and(resultVar)).toStmt());
+    if (evalResult.allowDefault) {
+      trueStmts.push(resultVar.set(evalResult.allowDefault.and(resultVar)).toStmt());
     }
     // TODO(tbosch): convert this into a `switch` once our OutputAst supports it.
     handleEventStmts.push(

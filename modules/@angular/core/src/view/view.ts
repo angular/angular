@@ -7,6 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
+
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
@@ -15,7 +16,7 @@ import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline,
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, ComponentDefinition, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
-import {checkBindingNoChanges, isComponentView, resolveViewDefinition} from './util';
+import {checkBindingNoChanges, isComponentView, queryIdIsReference, resolveViewDefinition} from './util';
 
 const NOOP = (): any => undefined;
 
@@ -41,7 +42,7 @@ export function viewDef(
       const newParent = nodes[currentParent.parent];
       if (newParent) {
         newParent.childFlags |= currentParent.childFlags;
-        copyInto(currentParent.childMatchedQueries, newParent.childMatchedQueries);
+        copyQueryMatchesInto(currentParent.childMatchedQueries, newParent.childMatchedQueries);
       }
       currentParent = newParent;
     }
@@ -64,17 +65,18 @@ export function viewDef(
     }
     nodes[i] = node;
     reverseChildNodes[reverseChildIndex] = node;
-    validateNode(currentParent, node);
+    validateNode(currentParent, node, nodesWithoutIndices.length);
 
     viewNodeFlags |= node.flags;
-    copyInto(node.matchedQueries, viewMatchedQueries);
+    copyQueryMatchesInto(node.matchedQueries, viewMatchedQueries);
     viewBindingCount += node.bindings.length;
     viewDisposableCount += node.disposableCount;
     if (currentParent) {
       currentParent.childFlags |= node.flags;
-      copyInto(node.matchedQueries, currentParent.childMatchedQueries);
+      copyQueryMatchesInto(node.matchedQueries, currentParent.childMatchedQueries);
       if (node.element && node.element.template) {
-        copyInto(node.element.template.nodeMatchedQueries, currentParent.childMatchedQueries);
+        copyQueryMatchesInto(
+            node.element.template.nodeMatchedQueries, currentParent.childMatchedQueries);
       }
     }
 
@@ -96,7 +98,7 @@ export function viewDef(
     const newParent = nodes[currentParent.parent];
     if (newParent) {
       newParent.childFlags |= currentParent.childFlags;
-      copyInto(currentParent.childMatchedQueries, newParent.childMatchedQueries);
+      copyQueryMatchesInto(currentParent.childMatchedQueries, newParent.childMatchedQueries);
     }
     currentParent = newParent;
   }
@@ -114,9 +116,12 @@ export function viewDef(
   };
 }
 
-function copyInto(source: any, target: any) {
+function copyQueryMatchesInto(
+    source: {[queryId: string]: any}, target: {[queryId: string]: boolean}) {
   for (let prop in source) {
-    target[prop] = source[prop];
+    if (!queryIdIsReference(prop)) {
+      target[prop] = true;
+    }
   }
 }
 
@@ -159,7 +164,7 @@ function calculateReverseChildIndex(
   return parentEndIndexInReverseChildOrder - lastChildOffsetRelativeToParentInDfsOrder;
 }
 
-function validateNode(parent: NodeDef, node: NodeDef) {
+function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
   const template = node.element && node.element.template;
   if (template) {
     if (template.lastRootNode && template.lastRootNode.flags & NodeFlags.HasEmbeddedViews) {
@@ -182,12 +187,10 @@ function validateNode(parent: NodeDef, node: NodeDef) {
     }
   }
   if (node.childCount) {
-    if (parent) {
-      const parentEnd = parent.index + parent.childCount;
-      if (node.index <= parentEnd && node.index + node.childCount > parentEnd) {
-        throw new Error(
-            `Illegal State: childCount of node leads outside of parent, at index ${node.index}!`);
-      }
+    const parentEnd = parent ? parent.index + parent.childCount : nodeCount - 1;
+    if (node.index <= parentEnd && node.index + node.childCount > parentEnd) {
+      throw new Error(
+          `Illegal State: childCount of node leads outside of parent, at index ${node.index}!`);
     }
   }
 }

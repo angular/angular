@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Injector, ModuleWithComponentFactories, NgModuleFactory, Type} from '@angular/core';
+import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName} from '../compile_metadata';
-import {CompilerConfig} from '../config';
+import {CompilerConfig, USE_VIEW_ENGINE} from '../config';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {stringify} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
@@ -50,7 +50,8 @@ export class JitCompiler implements Compiler {
       private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
       private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _directiveWrapperCompiler: DirectiveWrapperCompiler,
-      private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser) {}
+      private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser,
+      @Inject(USE_VIEW_ENGINE) private _useViewEngine: boolean) {}
 
   get injector(): Injector { return this._injector; }
 
@@ -244,6 +245,9 @@ export class JitCompiler implements Compiler {
 
   private _compileDirectiveWrapper(
       dirMeta: CompileDirectiveMetadata, moduleMeta: CompileNgModuleMetadata): void {
+    if (this._useViewEngine) {
+      return;
+    }
     const compileResult = this._directiveWrapperCompiler.compile(dirMeta);
     const statements = compileResult.statements;
     let directiveWrapperClass: any;

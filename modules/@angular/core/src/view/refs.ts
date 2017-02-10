@@ -20,7 +20,7 @@ import {Type} from '../type';
 
 import {DirectDomRenderer, LegacyRendererAdapter} from './renderer';
 import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {findElementDef, isComponentView, parentDiIndex, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey} from './util';
+import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentDiIndex} from './util';
 
 const EMPTY_CONTEXT = new Object();
 
@@ -99,7 +99,7 @@ class ViewContainerRef_ implements ViewContainerRef {
     let view = this._view;
     let elIndex = view.def.nodes[this._elIndex].parent;
     while (elIndex == null && view) {
-      elIndex = parentDiIndex(view);
+      elIndex = viewParentDiIndex(view);
       view = view.parent;
     }
     return view ? new Injector_(view, elIndex) : this._view.root.injector;
@@ -119,7 +119,7 @@ class ViewContainerRef_ implements ViewContainerRef {
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
-    const viewRef = templateRef.createEmbeddedView(context);
+    const viewRef = templateRef.createEmbeddedView(context || <any>{});
     this.insert(viewRef, index);
     return viewRef;
   }
