@@ -16,11 +16,13 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDestroyFns: Function[] = [];
   private _player: DOMAnimation;
   private _duration: number;
+  private _delay: number;
   private _initialized = false;
   private _finished = false;
   private _started = false;
   private _destroyed = false;
   private _finalKeyframe: {[key: string]: string | number};
+  public time = 0;
 
   public parentPlayer: AnimationPlayer = null;
   public previousStyles: {[styleName: string]: string | number};
@@ -30,6 +32,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       public options: {[key: string]: string | number},
       previousPlayers: WebAnimationsPlayer[] = []) {
     this._duration = <number>options['duration'];
+    this._delay = <number>options['delay'] || 0;
+    this.time = this._duration + this._delay;
 
     this.previousStyles = {};
     previousPlayers.forEach(player => {
@@ -157,11 +161,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
   }
 
-  get totalTime(): number { return this._duration; }
+  setPosition(p: number): void { this._player.currentTime = p * this.time; }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.totalTime; }
-
-  getPosition(): number { return this._player.currentTime / this.totalTime; }
+  getPosition(): number { return this._player.currentTime / this.time; }
 
   private _captureStyles(): {[prop: string]: string | number} {
     const styles: {[key: string]: string | number} = {};

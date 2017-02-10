@@ -227,8 +227,8 @@ export function main() {
           const steps = [
             animate(1000, style({opacity: .5})), animate(1000, style({opacity: 1})),
             animate(
-                1000, keyframes([style({height: 0}), style({height: 100}), style({height: 0})])),
-            animate(1000, style({opacity: 0}))
+                1000, keyframes([style({height: 0}), style({height: 100}), style({height: 50})])),
+            animate(1000, style({height: 0, opacity: 0}))
           ];
 
           const players = invokeAnimationSequence(steps);
@@ -237,23 +237,23 @@ export function main() {
           const player0 = players[0];
           expect(player0.delay).toEqual(0);
           expect(player0.keyframes).toEqual([
-            {opacity: AUTO_STYLE, height: AUTO_STYLE, offset: 0},
-            {opacity: .5, height: AUTO_STYLE, offset: .5},
-            {opacity: 1, height: AUTO_STYLE, offset: 1},
+            {opacity: AUTO_STYLE, offset: 0},
+            {opacity: .5, offset: .5},
+            {opacity: 1, offset: 1},
           ]);
 
           const subPlayer = players[1];
           expect(subPlayer.delay).toEqual(2000);
           expect(subPlayer.keyframes).toEqual([
-            {opacity: 1, height: 0, offset: 0},
-            {opacity: 1, height: 100, offset: .5},
-            {opacity: 1, height: 0, offset: 1},
+            {height: 0, offset: 0},
+            {height: 100, offset: .5},
+            {height: 50, offset: 1},
           ]);
 
           const player1 = players[2];
           expect(player1.delay).toEqual(3000);
           expect(player1.keyframes).toEqual([
-            {opacity: 1, height: 0, offset: 0}, {opacity: 0, height: 0, offset: 1}
+            {opacity: 1, height: 50, offset: 0}, {opacity: 0, height: 0, offset: 1}
           ]);
         });
 
@@ -321,6 +321,59 @@ export function main() {
 
              const player = invokeAnimationSequence(steps)[1];
              expect(player.delay).toEqual(2500);
+           });
+
+        it('should not leak in additional styles used later on after keyframe styles have already been declared',
+           () => {
+             const steps = [
+               animate(1000, style({height: '50px'})),
+               animate(
+                   2000, keyframes([
+                     style({left: '0', transform: 'rotate(0deg)', offset: 0}),
+                     style({
+                       left: '40%',
+                       transform: 'rotate(250deg) translateY(-200px)',
+                       offset: .33
+                     }),
+                     style(
+                         {left: '60%', transform: 'rotate(180deg) translateY(200px)', offset: .66}),
+                     style({left: 'calc(100% - 100px)', transform: 'rotate(0deg)', offset: 1}),
+                   ])),
+               group([animate('2s', style({width: '200px'}))]),
+               animate('2s', style({height: '300px'})),
+               group([animate('2s', style({height: '500px', width: '500px'}))])
+             ];
+
+             const players = invokeAnimationSequence(steps);
+             expect(players.length).toEqual(5);
+
+             const firstPlayerKeyframes = players[0].keyframes;
+             expect(firstPlayerKeyframes[0]['width']).toBeFalsy();
+             expect(firstPlayerKeyframes[1]['width']).toBeFalsy();
+             expect(firstPlayerKeyframes[0]['height']).toEqual(AUTO_STYLE);
+             expect(firstPlayerKeyframes[1]['height']).toEqual('50px');
+
+             const keyframePlayerKeyframes = players[1].keyframes;
+             expect(keyframePlayerKeyframes[0]['width']).toBeFalsy();
+             expect(keyframePlayerKeyframes[0]['height']).toBeFalsy();
+
+             const groupPlayerKeyframes = players[2].keyframes;
+             expect(groupPlayerKeyframes[0]['width']).toEqual(AUTO_STYLE);
+             expect(groupPlayerKeyframes[1]['width']).toEqual('200px');
+             expect(groupPlayerKeyframes[0]['height']).toBeFalsy();
+             expect(groupPlayerKeyframes[1]['height']).toBeFalsy();
+
+             const secondToFinalAnimatePlayerKeyframes = players[3].keyframes;
+             expect(secondToFinalAnimatePlayerKeyframes[0]['width']).toBeFalsy();
+             expect(secondToFinalAnimatePlayerKeyframes[1]['width']).toBeFalsy();
+             expect(secondToFinalAnimatePlayerKeyframes[0]['height']).toEqual('50px');
+             expect(secondToFinalAnimatePlayerKeyframes[1]['height']).toEqual('300px');
+
+             const finalAnimatePlayerKeyframes = players[4].keyframes;
+             expect(finalAnimatePlayerKeyframes[0]['width']).toEqual('200px');
+             expect(finalAnimatePlayerKeyframes[1]['width']).toEqual('500px');
+             expect(finalAnimatePlayerKeyframes[0]['height']).toEqual('300px');
+             expect(finalAnimatePlayerKeyframes[1]['height']).toEqual('500px');
            });
       });
 
