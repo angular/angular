@@ -7,15 +7,11 @@
  */
 
 import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
-
-import {isBlank, isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
-
 import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
-import {camelCaseToDashCase} from './util';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'xlink': 'http://www.w3.org/1999/xlink',
@@ -206,14 +202,14 @@ export class DomRenderer implements Renderer {
       attributeName = nsAndName[0] + ':' + nsAndName[1];
       attrNs = NAMESPACE_URIS[nsAndName[0]];
     }
-    if (isPresent(attributeValue)) {
+    if (attributeValue != null) {
       if (attrNs) {
         renderElement.setAttributeNS(attrNs, attributeName, attributeValue);
       } else {
         renderElement.setAttribute(attributeName, attributeValue);
       }
     } else {
-      if (isPresent(attrNs)) {
+      if (attrNs != null) {
         renderElement.removeAttributeNS(attrNs, attrNameWithoutNs);
       } else {
         renderElement.removeAttribute(attributeName);
@@ -243,8 +239,14 @@ export class DomRenderer implements Renderer {
   }
 
   setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
-    if (isPresent(styleValue)) {
-      (renderElement.style as any)[styleName] = stringify(styleValue);
+    if (styleName != null) {
+      // TODO: precompute this at compile time
+      // is css variable or vendor prefix
+      if (styleName[0] === '-') {
+        renderElement.style.setProperty(styleName, styleValue);
+      } else {
+        (renderElement.style as any)[styleName] = styleValue;
+      }
     } else {
       // IE requires '' instead of null
       // see https://github.com/angular/angular/issues/7916
@@ -270,7 +272,7 @@ export class DomRenderer implements Renderer {
   }
 }
 
-function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {
+function moveNodesAfterSibling(sibling: Node, nodes: Node[]): void {
   const parent = sibling.parentNode;
   if (nodes.length > 0 && parent) {
     const nextSibling = sibling.nextSibling;
@@ -286,7 +288,7 @@ function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {
   }
 }
 
-function appendNodes(parent: Element | DocumentFragment, nodes: Node[]) {
+function appendNodes(parent: Element | DocumentFragment, nodes: Node[]): void {
   for (let i = 0; i < nodes.length; i++) {
     parent.appendChild(nodes[i]);
   }
