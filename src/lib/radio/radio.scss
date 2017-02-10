@@ -32,8 +32,6 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
 
 // The outer circle for the radio, always present.
 .mat-radio-outer-circle {
-  border: solid 2px;
-  border-radius: 50%;
   box-sizing: border-box;
   height: $mat-radio-size;
   left: 0;
@@ -41,6 +39,11 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
   top: 0;
   transition: border-color ease 280ms;
   width: $mat-radio-size;
+  border: {
+    width: 2px;
+    style: solid;
+    radius: 50%;
+  }
 }
 
 // The inner circle for the radio, shown when checked.

@@ -196,7 +196,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox-layout {
-  // `cursor: inherit` ensures that the wrapper element gets the same cursor as the md-checkbox
+  // `cursor: inherit` ensures that the wrapper element gets the same cursor as the mat-checkbox
   // (e.g. pointer by default, regular when disabled), instead of the browser default.
   cursor: inherit;
   align-items: baseline;
@@ -234,8 +234,12 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   @extend %mat-checkbox-outer-box;
 
   background-color: transparent;
-  border: $mat-checkbox-border-width solid;
-  transition: border-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
+  transition:
+      border-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
+  border: {
+    width: $mat-checkbox-border-width;
+    style: solid;
+  }
 }
 
 .mat-checkbox-background {
