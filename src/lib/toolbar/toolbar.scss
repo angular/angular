@@ -41,6 +41,10 @@ $mat-toolbar-padding: 16px !default;
     // Flexbox Vertical Alignment
     flex-direction: row;
     align-items: center;
+
+    // Per Material specs a toolbar cannot have multiple lines inside of a single row. 
+    // Disable text wrapping inside of the toolbar. Developers are still able to overwrite it.
+    white-space: nowrap;
   }
 }
 
