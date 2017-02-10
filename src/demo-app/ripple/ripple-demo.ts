@@ -9,23 +9,22 @@ import {MdRipple} from '@angular/material';
   styleUrls: ['ripple-demo.css'],
 })
 export class RippleDemo {
-  @ViewChild(MdRipple) manualRipple: MdRipple;
+  @ViewChild(MdRipple) ripple: MdRipple;
 
   centered = false;
   disabled = false;
   unbounded = false;
   rounded = false;
-  maxRadius: number = null;
+  radius: number = null;
   rippleSpeed = 1;
   rippleColor = '';
-  rippleBackgroundColor = '';
 
   disableButtonRipples = false;
 
   doManualRipple() {
-    if (this.manualRipple) {
-      window.setTimeout(() => this.manualRipple.start(), 10);
-      window.setTimeout(() => this.manualRipple.end(0, 0), 500);
+    if (this.ripple) {
+      this.ripple.launch(0, 0, { centered: true });
     }
   }
+
 }

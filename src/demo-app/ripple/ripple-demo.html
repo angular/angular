@@ -21,23 +21,17 @@
   <section>
     Speed
     <md-radio-group [(ngModel)]="rippleSpeed">
-      <md-radio-button name="demo-ripple-options" value="0.1">Slow</md-radio-button>
+      <md-radio-button name="demo-ripple-options" value="0.4">Slow</md-radio-button>
       <md-radio-button name="demo-ripple-options" value="1">Normal</md-radio-button>
-      <md-radio-button name="demo-ripple-options" value="4">Fast</md-radio-button>
+      <md-radio-button name="demo-ripple-options" value="2.5">Fast</md-radio-button>
     </md-radio-group>
   </section>
   <section>
     <md-input-container>
-      <input mdInput placeholder="Max radius" aria-label="radius" [(ngModel)]="maxRadius">
+      <input mdInput placeholder="Ripple radius" aria-label="radius" [(ngModel)]="radius">
     </md-input-container>
     <md-input-container>
       <input mdInput placeholder="Ripple color" aria-label="color" [(ngModel)]="rippleColor">
-    </md-input-container>
-    <md-input-container>
-      <input mdInput
-             placeholder="Ripple background"
-             aria-label="background"
-             [(ngModel)]="rippleBackgroundColor">
     </md-input-container>
   </section>
   <section>
@@ -51,9 +45,8 @@
         [mdRippleCentered]="centered"
         [mdRippleDisabled]="disabled"
         [mdRippleUnbounded]="unbounded"
-        [mdRippleMaxRadius]="maxRadius"
+        [mdRippleRadius]="radius"
         [mdRippleColor]="rippleColor"
-        [mdRippleBackgroundColor]="rippleBackgroundColor"
         [mdRippleSpeedFactor]="rippleSpeed">
       Click me
     </div>

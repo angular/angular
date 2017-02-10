@@ -1,15 +1,14 @@
 <!-- TODO(jelbourn): render the radio on either side of the content -->
 <!-- TODO(mtlin): Evaluate trade-offs of using native radio vs. cost of additional bindings. -->
-<label [attr.for]="inputId" class="mat-radio-label">
+<label [attr.for]="inputId" class="mat-radio-label" #label>
   <!-- The actual 'radio' part of the control. -->
   <div class="mat-radio-container">
     <div class="mat-radio-outer-circle"></div>
     <div class="mat-radio-inner-circle"></div>
     <div md-ripple *ngIf="!_isRippleDisabled()" class="mat-radio-ripple"
-         [mdRippleTrigger]="_getInputElement()"
+         [mdRippleTrigger]="label"
          [mdRippleCentered]="true"
-         [mdRippleSpeedFactor]="0.3"
-         mdRippleBackgroundColor="rgba(0, 0, 0, 0)"></div>
+         [mdRippleSpeedFactor]="0.3"></div>
   </div>
 
   <input #input class="mat-radio-input cdk-visually-hidden" type="radio"

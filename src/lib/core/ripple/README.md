@@ -19,9 +19,7 @@ Properties:
 | --- | --- | --- |
 | `mdRippleTrigger` | Element | The DOM element that triggers the ripple when clicked. Defaults to the parent of the `md-ripple`.
 | `mdRippleColor` | string | Custom color for foreground ripples
-| `mdRippleBackgroundColor` | string | Custom color for the ripple background
 | `mdRippleCentered` | boolean | If true, the ripple animation originates from the center of the `md-ripple` bounds rather than from the location of the click event.
-| `mdRippleMaxRadius` | number | Optional fixed radius of foreground ripples when fully expanded. Mainly used in conjunction with `unbounded` attribute. If not set, ripples will expand from their origin to the most distant corner of the component's bounding rectangle.
+| `mdRippleRadius` | number | Optional fixed radius of foreground ripples when fully expanded. Mainly used in conjunction with `unbounded` attribute. If not set, ripples will expand from their origin to the most distant corner of the component's bounding rectangle.
 | `mdRippleUnbounded` | boolean | If true, foreground ripples will be visible outside the component's bounds.
-| `mdRippleFocused` | boolean | If true, the background ripple is shown using the current theme's accent color to indicate focus.
 | `mdRippleDisabled` | boolean | If true, click events on the trigger element will not activate ripples. The `start` and `end` methods can still be called to programmatically create ripples.

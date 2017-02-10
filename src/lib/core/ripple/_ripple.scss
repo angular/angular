@@ -1,12 +1,6 @@
 @import '../theming/theming';
 
-
-$mat-ripple-focused-opacity: 0.1;
-$mat-ripple-background-fade-duration: 300ms;
-$mat-ripple-background-default-color: rgba(0, 0, 0, 0.0588);
-$mat-ripple-foreground-initial-opacity: 0.25;
-$mat-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
-
+$mat-ripple-element-color: rgba(0, 0, 0, 0.1);
 
 @mixin mat-ripple() {
   // The host element of an md-ripple directive should always have a position of "absolute" or
@@ -19,55 +13,19 @@ $mat-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
     overflow: visible;
   }
 
-  .mat-ripple-background {
-    background-color: $mat-ripple-background-default-color;
-    opacity: 0;
-    transition: opacity $mat-ripple-background-fade-duration linear;
+  .mat-ripple-element {
     position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-  }
-
-  .mat-ripple-unbounded .mat-ripple-background {
-    display: none;
-  }
-
-  .mat-ripple-background.mat-ripple-active {
-    opacity: 1;
-  }
-
-  .mat-ripple-focused .mat-ripple-background {
-    opacity: 1;
-  }
-
-  .mat-ripple-foreground {
-    background-color: $mat-ripple-foreground-default-color;
     border-radius: 50%;
     pointer-events: none;
-    opacity: $mat-ripple-foreground-initial-opacity;
-    position: absolute;
-    // The transition duration is manually set based on the ripple size.
+
+    background-color: $mat-ripple-element-color;
+
     transition: opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1);
-  }
-
-  .mat-ripple-foreground.mat-ripple-fade-in {
-    opacity: 1;
-  }
-
-  .mat-ripple-foreground.mat-ripple-fade-out {
-    opacity: 0;
+    transform: scale(0);
   }
 }
 
-@mixin mat-ripple-theme($theme) {
-  $accent: map-get($theme, accent);
-
-  .mat-ripple-focused .mat-ripple-background {
-    background-color: mat-color($accent, $mat-ripple-focused-opacity);
-  }
-}
+@mixin mat-ripple-theme($theme) {}
 
 
 // A mixin, which generates temporary ink ripple on a given component.

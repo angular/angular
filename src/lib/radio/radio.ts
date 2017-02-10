@@ -503,10 +503,6 @@ export class MdRadioButton implements OnInit {
       }
     }
   }
-
-  _getInputElement() {
-    return this._inputElement.nativeElement;
-  }
 }
 
 

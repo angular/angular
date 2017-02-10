@@ -6,7 +6,6 @@ import {
   ViewEncapsulation,
   Directive,
   NgZone,
-  OnDestroy,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/ripple';
@@ -67,15 +66,9 @@ export class MdTabLink {
     '[class.mat-tab-link]': 'true',
   },
 })
-export class MdTabLinkRipple extends MdRipple implements OnDestroy {
-  constructor(private _element: ElementRef, private _ngZone: NgZone, _ruler: ViewportRuler) {
-    super(_element, _ngZone, _ruler);
+export class MdTabLinkRipple extends MdRipple {
+  constructor(elementRef: ElementRef, ngZone: NgZone, ruler: ViewportRuler) {
+    super(elementRef, ngZone, ruler);
   }
 
-  /**
-   * In certain cases the parent destroy handler may not get called. See Angular issue #11606.
-   */
-  ngOnDestroy() {
-    super.ngOnDestroy();
-  }
 }

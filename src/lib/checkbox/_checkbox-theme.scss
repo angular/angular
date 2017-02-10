@@ -69,15 +69,15 @@
   }
 
   .mat-checkbox:not(.mat-checkbox-disabled) {
-    &.mat-primary .mat-checkbox-ripple .mat-ripple-foreground {
+    &.mat-primary .mat-checkbox-ripple .mat-ripple-element {
       background-color: mat-color($primary, 0.26);
     }
 
-    &.mat-accent .mat-checkbox-ripple .mat-ripple-foreground {
+    &.mat-accent .mat-checkbox-ripple .mat-ripple-element {
       background-color: mat-color($accent, 0.26);
     }
 
-    &.mat-warn .mat-checkbox-ripple .mat-ripple-foreground {
+    &.mat-warn .mat-checkbox-ripple .mat-ripple-element {
       background-color: mat-color($warn, 0.26);
     }
   }
