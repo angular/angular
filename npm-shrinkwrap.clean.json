@@ -6713,6 +6713,10 @@
       "version": "2.0.0",
       "dev": true
     },
+    "xhr2": {
+      "version": "0.1.4",
+      "dev": true
+    },
     "xml2js": {
       "version": "0.4.15",
       "dev": true

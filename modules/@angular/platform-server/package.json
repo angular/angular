@@ -14,7 +14,8 @@
     "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
-    "parse5": "^2.2.1"
+    "parse5": "^2.2.1",
+    "xhr2": "^0.1.4"
   },
   "repository": {
     "type": "git",
