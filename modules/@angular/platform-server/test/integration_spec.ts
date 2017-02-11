@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, destroyPlatform} from '@angular/core';
 import {PlatformLocation} from '@angular/common';
+import {Component, NgModule, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {ServerModule, platformDynamicServer} from '@angular/platform-server';
@@ -43,7 +43,7 @@ export function main() {
            expect(getDOM().getText(body)).toEqual('Works!');
          });
        }));
-    
+
     describe('PlatformLocation', () => {
       it('is injectable', () => {
         const body = writeBody('<app></app>');
