@@ -14,7 +14,7 @@ import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} fr
 import {NAMESPACE_URIS, SharedStylesHost, flattenStyles, getDOM, isNamespaced, shimContentAttribute, shimHostAttribute, splitNamespace} from './private_import_platform-browser';
 
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
+export const TEMPLATE_BINDINGS_EXP = /^template bindings=([\s\S]*)$/;
 
 @Injectable()
 export class ServerRootRenderer {

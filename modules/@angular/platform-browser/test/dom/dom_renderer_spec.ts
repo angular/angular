@@ -13,24 +13,41 @@ import {BrowserModule} from '@angular/platform-browser';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
+import {TEMPLATE_BINDINGS_EXP} from '../../src/dom/dom_renderer';
 
 export function main() {
   describe('DomRenderer', () => {
 
-    beforeEach(() => TestBed.configureTestingModule({imports: [BrowserModule, TestModule]}));
-
-    // other browsers don't support shadow dom
-    if (browserDetection.isChromeDesktop) {
-      it('should add only styles with native encapsulation to the shadow DOM', () => {
-        const fixture = TestBed.createComponent(SomeApp);
-        fixture.detectChanges();
-
-        const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
-        const styles = cmp.shadowRoot.querySelectorAll('style');
-        expect(styles.length).toBe(1);
-        expect(styles[0]).toHaveText('.cmp-native { color: red; }');
+    describe('setBindingDebugInfo', () => {
+      describe('template binding regex', () => {
+        it('should match the string containing Unicode char with code 8233', () => {
+          // https://github.com/angular/angular/issues/14423
+          const expression = `{"ng-reflect-ng-if": "${String.fromCharCode(8233)}"}`;
+          const binding = `template bindings=${expression}`;
+          const match = binding.match(TEMPLATE_BINDINGS_EXP);
+          expect(match).not.toBeNull();
+          expect(match.length).toBe(2);
+          expect(match[1]).toEqual(expression);
+        });
       });
-    }
+    });
+
+    describe('integration test', () => {
+      beforeEach(() => TestBed.configureTestingModule({imports: [BrowserModule, TestModule]}));
+
+      // other browsers don't support shadow dom
+      if (browserDetection.isChromeDesktop) {
+        it('should add only styles with native encapsulation to the shadow DOM', () => {
+          const fixture = TestBed.createComponent(SomeApp);
+          fixture.detectChanges();
+
+          const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
+          const styles = cmp.shadowRoot.querySelectorAll('style');
+          expect(styles.length).toBe(1);
+          expect(styles[0]).toHaveText('.cmp-native { color: red; }');
+        });
+      }
+    });
   });
 }
 
@@ -69,7 +86,7 @@ class CmpEncapsulationNone {
 	  <cmp-none></cmp-none>
   `,
 })
-export class SomeApp {
+class SomeApp {
 }
 
 @NgModule({
