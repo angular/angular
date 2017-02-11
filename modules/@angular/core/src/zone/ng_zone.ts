@@ -139,13 +139,17 @@ export class NgZone {
    *
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
-  run(fn: () => any): any { return this.inner.run(fn); }
+  run(fn: () => any, applyThis?: any, applyArgs?: any[], source?: string): any {
+    return this.inner.run(fn, applyThis, applyArgs, source);
+  }
 
   /**
    * Same as `run`, except that synchronous errors are caught and forwarded via `onError` and not
    * rethrown.
    */
-  runGuarded(fn: () => any): any { return this.inner.runGuarded(fn); }
+  runGuarded(fn: () => any, applyThis?: any, applyArgs?: any[], source?: string): any {
+    return this.inner.runGuarded(fn, applyThis, applyArgs, source);
+  }
 
   /**
    * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
@@ -159,7 +163,9 @@ export class NgZone {
    *
    * Use {@link run} to reenter the Angular zone and do work that updates the application model.
    */
-  runOutsideAngular(fn: () => any): any { return this.outer.run(fn); }
+  runOutsideAngular(fn: () => any, applyThis?: any, applyArgs?: any[], source?: string): any {
+    return this.outer.run(fn, applyThis, applyArgs, source);
+  }
 
   /**
    * Notifies when code enters Angular Zone. This gets fired first on VM Turn.
