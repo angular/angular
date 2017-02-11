@@ -9,8 +9,10 @@
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
 import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {HttpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 
+import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter} from './parse5_adapter';
 import {DebugDomRootRenderer} from './private_import_core';
@@ -51,7 +53,11 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
  *
  * @experimental
  */
-@NgModule({exports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
+@NgModule({
+  exports: [BrowserModule],
+  imports: [HttpModule],
+  providers: [SERVER_RENDER_PROVIDERS, SERVER_HTTP_PROVIDERS],
+})
 export class ServerModule {
 }
 

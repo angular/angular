@@ -9817,6 +9817,12 @@
       "resolved": "https://registry.npmjs.org/xdg-basedir/-/xdg-basedir-2.0.0.tgz",
       "dev": true
     },
+    "xhr2": {
+      "version": "0.1.4",
+      "from": "xhr2@>=0.1.4 <0.2.0",
+      "resolved": "https://registry.npmjs.org/xhr2/-/xhr2-0.1.4.tgz",
+      "dev": true
+    },
     "xml2js": {
       "version": "0.4.15",
       "from": "xml2js@>=0.4.4 <0.5.0",
