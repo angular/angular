@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
+import {Injectable} from '@angular/core';
+import {Subject} from 'rxjs/Subject';
 import * as url from 'url';
 
-import {Injectable} from '@angular/core';
-import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
-import {getDOM} from './private_import_platform-browser';
 import {scheduleMicroTask} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
 
-import {Subject} from 'rxjs/Subject';
 
 
 /**
@@ -27,26 +27,20 @@ export class ServerPlatformLocation implements PlatformLocation {
   private _hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
-  getBaseHrefFromDOM(): string {
-    return getDOM().getBaseHref();
-  }
-  
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
+
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
   }
-  
-  onHashChange(fn: LocationChangeListener): void {
-    this._hashUpdate.subscribe(fn);
-  }
+
+  onHashChange(fn: LocationChangeListener): void { this._hashUpdate.subscribe(fn); }
 
   get pathname(): string { return this._path; }
   get search(): string { return this._search; }
   get hash(): string { return this._hash; }
 
-  get url(): string {
-    return `${this.pathname}${this.search}${this.hash}`;
-  }
+  get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
 
   private setHash(value: string, oldUrl: string) {
     if (this._hash === value) {
@@ -55,8 +49,8 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
     this._hash = value;
     const newUrl = this.url;
-    scheduleMicroTask(() => this._hashUpdate.next(
-        {type: 'hashchange', oldUrl, newUrl} as LocationChangeEvent));
+    scheduleMicroTask(
+        () => this._hashUpdate.next({ type: 'hashchange', oldUrl, newUrl } as LocationChangeEvent));
   }
 
   replaceState(state: any, title: string, newUrl: string): void {
@@ -71,11 +65,7 @@ export class ServerPlatformLocation implements PlatformLocation {
     this.replaceState(state, title, newUrl);
   }
 
-  forward(): void {
-    throw new Error('Not implemented');
-  }
+  forward(): void { throw new Error('Not implemented'); }
 
-  back(): void {
-    throw new Error('Not implemented');
-  }
+  back(): void { throw new Error('Not implemented'); }
 }
