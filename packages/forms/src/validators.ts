@@ -26,7 +26,18 @@ function isEmptyInputValue(value: any): boolean {
  *
  * ### Example
  *
- * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
+ * ```typescript
+ * @Directive({
+ *   selector: '[custom-validator]',
+ *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
+ * })
+ * class CustomValidatorDirective implements Validator {
+ *   validate(c: FormControl): {[key: string]: any} {
+ *     return {"custom": true};
+ *   }
+ * }
+ * ```
+ *
  * @stable
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
