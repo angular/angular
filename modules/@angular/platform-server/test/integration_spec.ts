@@ -32,7 +32,7 @@ class ExampleModule {
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
-  fdescribe('platform-server integration', () => {
+  describe('platform-server integration', () => {
 
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
