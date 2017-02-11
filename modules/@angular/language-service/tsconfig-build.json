@@ -17,6 +17,7 @@
       "@angular/compiler": ["../../../dist/packages-dist/compiler"],
       "@angular/compiler/*": ["../../../dist/packages-dist/compiler/*"],
       "@angular/compiler-cli": ["../../../dist/packages-dist/compiler-cli"],
+      "@angular/http": ["../../../dist/packages-dist/http"],
       "@angular/platform-server": ["../../../dist/packages-dist/platform-server"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
       "@angular/tsc-wrapped": ["../../../dist/tools/@angular/tsc-wrapped"],
