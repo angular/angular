@@ -16,7 +16,7 @@ export class StyleWithImports {
 }
 
 export function isStyleUrlResolvable(url: string): boolean {
-  if (!url) return false;
+  if (url == null || url.length === 0 || url[0] == '/') return false;
   const schemeMatch = url.match(URL_WITH_SCHEMA_REGEXP);
   return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }
