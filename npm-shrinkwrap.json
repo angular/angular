@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.7",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -9008,18 +9008,10 @@
       }
     },
     "tsickle": {
-      "version": "0.21.1",
-      "from": "tsickle@0.21.1",
-      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.21.1.tgz",
-      "dev": true,
-      "dependencies": {
-        "source-map": {
-          "version": "0.5.6",
-          "from": "source-map@>=0.5.6 <0.6.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz",
-          "dev": true
-        }
-      }
+      "version": "0.21.2",
+      "from": "tsickle@0.21.2",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.21.2.tgz",
+      "dev": true
     },
     "tslint": {
       "version": "4.1.1",
