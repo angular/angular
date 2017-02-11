@@ -23,6 +23,7 @@ System.config({
     '@angular': 'dist/all/@angular',
     'rxjs': 'node_modules/rxjs',
     'parse5': 'dist/all/empty.js',
+    'url': 'dist/all/empty.js',
     '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
     'angular2/*': 'dist/all/angular2/*.js',
     'angular2/src/alt_router/router_testing_providers':
