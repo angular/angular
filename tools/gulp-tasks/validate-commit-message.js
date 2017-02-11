@@ -14,7 +14,11 @@ module.exports = (gulp) => () => {
 
         let someCommitsInvalid = false;
         let commitsByLine = stdout.trim().split(/\n/);
-
+        for (var i = 0; i < commitsByLine.length; i++) {
+          if (!commitsByLine[i]) {
+            commitsByLine.splice(i, 1);
+          }
+        }
         console.log(`Examining ${commitsByLine.length} commits between HEAD and master`);
 
         if (commitsByLine.length == 0) {
