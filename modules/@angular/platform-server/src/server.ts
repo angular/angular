@@ -14,7 +14,7 @@ import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
-import {DebugDomRendererV2, DebugDomRootRenderer} from './private_import_core';
+import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRendererV2, DebugDomRootRenderer} from './private_import_core';
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRendererV2, ServerRootRenderer} from './server_renderer';
 
@@ -25,8 +25,9 @@ function notSupported(feature: string): Error {
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]},
-  {provide: PlatformLocation, useClass: ServerPlatformLocation},
-  PlatformState,
+  {provide: PlatformLocation, useClass: ServerPlatformLocation}, PlatformState,
+  // Add special provider that allows multiple instances of platformServer* to be created.
+  {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
 function initParse5Adapter(injector: Injector) {
