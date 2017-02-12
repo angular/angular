@@ -200,6 +200,17 @@ export function main() {
            });
          }));
 
+      it(`should have pristine initial state`, fakeAsync(() => {
+           const fixture = initTest(InputInitState, TestInput);
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             expect(sortedClassList(input)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+           });
+         }));
+
       it('should set status classes with ngModel and async validators', fakeAsync(() => {
 
            const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
@@ -1516,6 +1527,20 @@ class NgAsyncValidator implements AsyncValidator {
   template: `<input name="async" ngModel ng-async-validator>`
 })
 class NgModelAsyncValidation {
+}
+
+@Component({selector: 'input-state', template: `<input ngModel testInput placeholder="test">`})
+class InputInitState {
+}
+
+@Directive({
+  selector: 'input[testInput]',
+  host: {
+    '[placeholder]': 'placeholder',
+  }
+})
+export class TestInput {
+  @Input() placeholder: string;
 }
 
 function sortedClassList(el: HTMLElement) {
