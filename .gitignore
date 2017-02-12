@@ -25,3 +25,8 @@ npm-debug.log
 
 # rollup-test output
 /modules/rollup-test/dist/
+
+# angular.io
+/aio/node_modules
+/aio/src/content/docs
+/aio/dist

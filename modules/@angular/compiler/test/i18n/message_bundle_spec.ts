@@ -28,13 +28,12 @@ export function main(): void {
         ]);
       });
 
-      it('should extract the all messages and duplicates', () => {
+      it('should extract and dedup messages', () => {
         messages.updateFromTemplate(
-            '<p i18n="m|d">Translate Me</p><p i18n>Translate Me</p><p i18n>Translate Me</p>', 'url',
-            DEFAULT_INTERPOLATION_CONFIG);
+            '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
+            'url', DEFAULT_INTERPOLATION_CONFIG);
         expect(humanizeMessages(messages)).toEqual([
           'Translate Me (m|d)',
-          'Translate Me (|)',
           'Translate Me (|)',
         ]);
       });
@@ -42,15 +41,18 @@ export function main(): void {
   });
 }
 
-class _TestSerializer implements Serializer {
+class _TestSerializer extends Serializer {
   write(messages: i18n.Message[]): string {
     return messages.map(msg => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
         .join('//');
   }
 
-  load(content: string, url: string): {} { return null; }
+  load(content: string, url: string):
+      {locale: string | null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
+    return {locale: null, i18nNodesByMsgId: {}};
+  }
 
-  digest(msg: i18n.Message): string { return 'unused'; }
+  digest(msg: i18n.Message): string { return msg.id || `default`; }
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {

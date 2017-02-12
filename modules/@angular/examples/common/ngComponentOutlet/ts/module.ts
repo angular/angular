@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Injector, NgModule, ReflectiveInjector} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Compiler, Component, Injectable, Injector, NgModule, NgModuleFactory, ReflectiveInjector} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 
@@ -60,12 +61,34 @@ class NgTemplateOutletCompleteExample {
 }
 // #enddocregion
 
+// #docregion NgModuleFactoryExample
+@Component({selector: 'other-module-component', template: `Other Module Component!`})
+class OtherModuleComponent {
+}
+
+@Component({
+  selector: 'ng-component-outlet-other-module-example',
+  template: `
+    <ng-container *ngComponentOutlet="OtherModuleComponent;
+                                      ngModuleFactory: myModule;"></ng-container>`
+})
+class NgTemplateOutletOtherModuleExample {
+  // This field is necessary to expose OtherModuleComponent to the template.
+  OtherModuleComponent = OtherModuleComponent;
+  myModule: NgModuleFactory<any>;
+
+  constructor(compiler: Compiler) { this.myModule = compiler.compileModuleSync(OtherModule); }
+}
+// #enddocregion
+
 
 @Component({
   selector: 'example-app',
   template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
              <hr/>
-             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`
+             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>
+             <hr/>
+             <ng-component-outlet-other-module-example></ng-component-outlet-other-module-example>`
 })
 class ExampleApp {
 }
@@ -73,11 +96,19 @@ class ExampleApp {
 @NgModule({
   imports: [BrowserModule],
   declarations: [
-    ExampleApp, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample, HelloWorld,
-    CompleteComponent
+    ExampleApp, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
+    NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
   ],
   entryComponents: [HelloWorld, CompleteComponent],
   bootstrap: [ExampleApp]
 })
 export class AppModule {
+}
+
+@NgModule({
+  imports: [CommonModule],
+  declarations: [OtherModuleComponent],
+  entryComponents: [OtherModuleComponent]
+})
+export class OtherModule {
 }

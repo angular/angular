@@ -1,6 +1,6 @@
 # Ng2 Next Benchmark
 
-This benchmark uses the upcoming view engine for Angular 2, which moves
+This benchmark uses the upcoming view engine for Angular, which moves
 more functionality from codegen into runtime to reduce generated code size.
 
 As we introduce more runtime code, we need to be very careful to not

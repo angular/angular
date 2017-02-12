@@ -7,26 +7,13 @@
  */
 
 import {Injectable, InjectionToken} from '../di';
-import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
+import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
-
-
-
-/**
- * Indicates that a component is still being loaded in a synchronous compile.
- *
- * @stable
- */
-export class ComponentStillLoadingError extends BaseError {
-  constructor(public compType: Type<any>) {
-    super(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
-  }
-}
 
 /**
  * Combination of NgModuleFactory and ComponentFactorys.
@@ -58,8 +45,7 @@ function _throwError() {
 export class Compiler {
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed
-   * in `entryComponents`
-   * have to be inlined. Otherwise throws a {@link ComponentStillLoadingError}.
+   * in `entryComponents` have to be inlined.
    */
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
 
@@ -87,7 +73,7 @@ export class Compiler {
    * Exposes the CSS-style selectors that have been used in `ngContent` directives within
    * the template of the given component.
    * This is used by the `upgrade` library to compile the appropriate transclude content
-   * in the Angular 1 wrapper component.
+   * in the AngularJS wrapper component.
    */
   getNgContentSelectors(component: Type<any>): string[] { throw _throwError(); }
 
@@ -112,6 +98,7 @@ export type CompilerOptions = {
   useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
   providers?: any[],
+  missingTranslation?: MissingTranslationStrategy,
 };
 
 /**

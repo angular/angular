@@ -12,6 +12,8 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
+import {stripSourceMap} from './abstract_emitter_spec';
+
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
@@ -28,6 +30,7 @@ class SimpleJsImportGenerator implements ImportResolver {
     return importedUrlStr;
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
+  getTypeArity(symbol: StaticSymbol): number /*|null*/ { return null; }
 }
 
 export function main() {
@@ -47,11 +50,9 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement | o.Statement[], exportedVars: string[] = null): string {
-      if (!exportedVars) {
-        exportedVars = [];
-      }
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      return emitter.emitStatements(someModuleUrl, stmts, exportedVars);
+      const source = emitter.emitStatements(someModuleUrl, stmts, exportedVars || []);
+      return stripSourceMap(source);
     }
 
     it('should declare variables', () => {
@@ -429,11 +430,19 @@ export function main() {
     });
 
     it('should support expression types', () => {
+      expect(
+          emitStmt(o.variable('a').set(o.NULL_EXPR).toDeclStmt(o.expressionType(o.variable('b')))))
+          .toEqual('var a:b = (null as any);');
+    });
+
+    it('should support expressions with type parameters', () => {
       expect(emitStmt(o.variable('a')
                           .set(o.NULL_EXPR)
-                          .toDeclStmt(o.expressionType(
-                              o.variable('b'), [o.expressionType(o.variable('c'))]))))
-          .toEqual('var a:b<c> = (null as any);');
+                          .toDeclStmt(o.importType(externalModuleIdentifier, [o.STRING_TYPE]))))
+          .toEqual([
+            `import * as import0 from 'somePackage/someOtherPath';`,
+            `var a:import0.someExternalId<string> = (null as any);`
+          ].join('\n'));
     });
 
     it('should support combined types', () => {

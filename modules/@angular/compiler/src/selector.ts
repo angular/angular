@@ -9,10 +9,11 @@
 import {getHtmlTagDefinition} from './ml_parser/html_tags';
 
 const _SELECTOR_REGEXP = new RegExp(
-    '(\\:not\\()|' +                               //":not("
-        '([-\\w]+)|' +                             // "tag"
-        '(?:\\.([-\\w]+))|' +                      // ".class"
-        '(?:\\[([.-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]"
+    '(\\:not\\()|' +           //":not("
+        '([-\\w]+)|' +         // "tag"
+        '(?:\\.([-\\w]+))|' +  // ".class"
+        // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
+        '(?:\\[([-.\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]"
         '(\\))|' +                                 // ")"
         '(\\s*,\\s*)',                             // ","
     'g');

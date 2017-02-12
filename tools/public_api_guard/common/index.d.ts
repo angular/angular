@@ -2,10 +2,12 @@
 export declare const APP_BASE_HREF: InjectionToken<string>;
 
 /** @stable */
-export declare class AsyncPipe implements OnDestroy {
+export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
-    transform(obj: Observable<any> | Promise<any> | EventEmitter<any>): any;
+    transform<T>(obj: EventEmitter<T>): T | null;
+    transform<T>(obj: Promise<T>): T | null;
+    transform<T>(obj: Observable<T>): T | null;
 }
 
 /** @stable */
@@ -74,7 +76,7 @@ export declare class Location {
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string): void;
-    subscribe(onNext: (value: any) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
+    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
     static joinWithSlash(start: string, end: string): string;
     static normalizeQueryParams(params: string): string;
     static stripTrailingSlash(url: string): string;
@@ -118,21 +120,26 @@ export declare class NgClass implements DoCheck {
 }
 
 /** @experimental */
-export declare class NgComponentOutlet implements OnChanges {
-    componentRef: ComponentRef<any>;
+export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngComponentOutlet: Type<any>;
     ngComponentOutletContent: any[][];
     ngComponentOutletInjector: Injector;
-    constructor(_cmpFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef);
+    ngComponentOutletNgModuleFactory: NgModuleFactory<any>;
+    constructor(_viewContainerRef: ViewContainerRef);
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
+}
+
+/** @deprecated */
+export declare class NgFor extends NgForOf<any> {
 }
 
 /** @stable */
-export declare class NgFor implements DoCheck, OnChanges {
-    ngForOf: any;
-    ngForTemplate: TemplateRef<NgForRow>;
-    ngForTrackBy: TrackByFn;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForRow>, _differs: IterableDiffers, _cdr: ChangeDetectorRef);
+export declare class NgForOf<T> implements DoCheck, OnChanges {
+    ngForOf: NgIterable<T>;
+    ngForTemplate: TemplateRef<NgForOfRow<T>>;
+    ngForTrackBy: TrackByFunction<T>;
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfRow<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
 }
@@ -226,9 +233,9 @@ export declare class PercentPipe implements PipeTransform {
 
 /** @stable */
 export declare abstract class PlatformLocation {
-    hash: string;
-    pathname: string;
-    search: string;
+    readonly hash: string;
+    readonly pathname: string;
+    readonly search: string;
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
@@ -236,6 +243,13 @@ export declare abstract class PlatformLocation {
     abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
     abstract replaceState(state: any, title: string, url: string): void;
+}
+
+/** @experimental */
+export interface PopStateEvent {
+    pop?: boolean;
+    type?: string;
+    url?: string;
 }
 
 /** @stable */

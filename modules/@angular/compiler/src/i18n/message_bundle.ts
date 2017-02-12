@@ -11,14 +11,15 @@ import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
 import {extractMessages} from './extractor_merger';
-import {Message} from './i18n_ast';
-import {Serializer} from './serializers/serializer';
+import * as i18n from './i18n_ast';
+import {PlaceholderMapper, Serializer} from './serializers/serializer';
+
 
 /**
  * A container for message extracted from the templates.
  */
 export class MessageBundle {
-  private _messages: Message[] = [];
+  private _messages: i18n.Message[] = [];
 
   constructor(
       private _htmlParser: HtmlParser, private _implicitTags: string[],
@@ -42,7 +43,53 @@ export class MessageBundle {
     this._messages.push(...i18nParserResult.messages);
   }
 
-  getMessages(): Message[] { return this._messages; }
+  // Return the message in the internal format
+  // The public (serialized) format might be different, see the `write` method.
+  getMessages(): i18n.Message[] { return this._messages; }
 
-  write(serializer: Serializer): string { return serializer.write(this._messages); }
+  write(serializer: Serializer): string {
+    const messages: {[id: string]: i18n.Message} = {};
+    const mapperVisitor = new MapPlaceholderNames();
+
+    // Deduplicate messages based on their ID
+    this._messages.forEach(message => {
+      const id = serializer.digest(message);
+      if (!messages.hasOwnProperty(id)) {
+        messages[id] = message;
+      }
+    });
+
+    // Transform placeholder names using the serializer mapping
+    const msgList = Object.keys(messages).map(id => {
+      const mapper = serializer.createNameMapper(messages[id]);
+      const src = messages[id];
+      const nodes = mapper ? mapperVisitor.convert(src.nodes, mapper) : src.nodes;
+      return new i18n.Message(nodes, {}, {}, src.meaning, src.description, id);
+    });
+
+    return serializer.write(msgList);
+  }
+}
+
+// Transform an i18n AST by renaming the placeholder nodes with the given mapper
+class MapPlaceholderNames extends i18n.CloneVisitor {
+  convert(nodes: i18n.Node[], mapper: PlaceholderMapper): i18n.Node[] {
+    return mapper ? nodes.map(n => n.visit(this, mapper)) : nodes;
+  }
+
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper): i18n.TagPlaceholder {
+    const startName = mapper.toPublicName(ph.startName);
+    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName) : ph.closeName;
+    const children = ph.children.map(n => n.visit(this, mapper));
+    return new i18n.TagPlaceholder(
+        ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan);
+  }
+
+  visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
+    return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name), ph.sourceSpan);
+  }
+
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, mapper: PlaceholderMapper): i18n.IcuPlaceholder {
+    return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name), ph.sourceSpan);
+  }
 }

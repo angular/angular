@@ -10,6 +10,7 @@
     "outDir": "../../../dist/packages-dist/language-service",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/animation": ["../../../dist/packages-dist/animation"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
       "@angular/core/testing/*": ["../../../dist/packages-dist/core/testing/*"],
       "@angular/common": ["../../../dist/packages-dist/common"],

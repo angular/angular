@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {anchorDef} from './anchor';
-export {elementDef} from './element';
-export {providerDef} from './provider';
+export {anchorDef, elementDef} from './element';
+export {ngContentDef} from './ng_content';
+export {directiveDef, providerDef} from './provider';
+export {pureArrayDef, pureObjectDef, purePipeDef} from './pure_expression';
+export {queryDef} from './query';
+export {createComponentFactory} from './refs';
+export {initServicesIfNeeded} from './services';
 export {textDef} from './text';
-export {checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView, viewDef} from './view';
-export {attachEmbeddedView, detachEmbeddedView, rootRenderNodes} from './view_attach';
+export {elementEventFullName, nodeValue, rootRenderNodes} from './util';
+export {viewDef} from './view';
+export {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 
 export * from './types';
-export {DefaultServices} from './services';

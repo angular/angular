@@ -1,0 +1,14 @@
+{
+{%- for module, items in doc.data %}
+  "{$ module | replace("/index", "") $}" : [{% for item in items %}
+    {
+      "title": "{$ item.title $}",
+      "path": "{$ item.exportDoc.path $}",
+      "docType": "{$ item.docType $}",
+      "stability": "{$ item.stability $}",
+      "secure": "{$ item.security $}",
+      "barrel" : "{$ module | replace("/index", "") $}"
+    }{% if not loop.last %},{% endif %}
+  {% endfor %}]{% if not loop.last %},{% endif %}
+{% endfor -%}
+}

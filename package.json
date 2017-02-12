@@ -1,14 +1,15 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-beta.4",
+  "version": "4.0.0-beta.7",
   "private": true,
   "branchPattern": "2.0.*",
-  "description": "Angular 2 - a web framework for modern web apps",
+  "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">= 5.4.1 < 7"
+    "node": ">= 6.9.5 < 7.0.0",
+    "npm": ">=3.10.7 <4.0.0"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,9 @@
     "reflect-metadata": "^0.1.3",
     "rxjs": "^5.0.1",
     "zone.js": "^0.7.2"
+  },
+  "optionalDependencies": {
+    "fsevents": "^1.0.14"
   },
   "devDependencies": {
     "@types/angularjs": "^1.5.13-alpha",
@@ -38,14 +42,17 @@
     "base64-js": "^1.2.0",
     "bower": "^1.3.12",
     "browserstacktunnel-wrapper": "^1.4.2",
+    "canonical-path": "0.0.2",
     "chokidar": "^1.1.0",
     "clang-format": "^1.0.32",
     "cldr": "^3.5.2",
     "conventional-changelog": "^1.1.0",
     "cors": "^2.7.1",
+    "dgeni": "^0.4.2",
+    "dgeni-packages": "^0.16.5",
+    "entities": "^1.1.1",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.26.3",
-    "fsevents": "^1.0.14",
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-clang-format": "^1.0.23",
@@ -55,7 +62,7 @@
     "hammerjs": "^2.0.8",
     "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
-    "jasmine-core": "^2.3.4",
+    "jasmine-core": "^2.4.1",
     "jpm": "1.0.0",
     "karma": "^0.13.20",
     "karma-browserstack-launcher": "^0.1.9",
@@ -71,21 +78,24 @@
     "protractor": "^4.0.11",
     "react": "^0.14.0",
     "rewire": "^2.3.3",
+    "rho": "^0.3.0",
     "rollup": "^0.26.3",
     "rollup-plugin-commonjs": "^5.0.5",
     "selenium-webdriver": "^2.53.3",
     "semver": "^5.1.0",
-    "source-map": "^0.3.0",
+    "source-map": "^0.5.6",
     "source-map-support": "^0.4.2",
     "systemjs": "0.18.10",
-    "ts-api-guardian": "0.1.4",
-    "tsickle": "^0.2.4",
+    "ts-api-guardian": "^0.2.0",
+    "tsickle": "^0.21.1",
     "tslint": "^4.1.1",
     "tslint-eslint-rules": "^3.1.0",
-    "typescript": "^2.0.2",
+    "typescript": "^2.1.5",
     "universal-analytics": "^0.3.9",
     "vrsource-tslint-rules": "^4.0.0",
     "webpack": "^1.12.6",
-    "yargs": "^3.31.0"
+    "yargs": "^3.31.0",
+    "yarn": "^0.19.1"
   }
+
 }

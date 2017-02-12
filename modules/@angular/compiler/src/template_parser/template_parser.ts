@@ -24,7 +24,7 @@ import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer'
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {SyntaxError} from '../util';
+import {syntaxError} from '../util';
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
@@ -99,7 +99,7 @@ export class TemplateParser {
 
     if (errors.length > 0) {
       const errorString = errors.join('\n');
-      throw new SyntaxError(`Template parse errors:\n${errorString}`);
+      throw syntaxError(`Template parse errors:\n${errorString}`);
     }
 
     return result.templateAst;
@@ -341,8 +341,9 @@ class TemplateParseVisitor implements html.Visitor {
 
       parsedElement = new EmbeddedTemplateAst(
           attrs, events, references, elementVars, providerContext.transformedDirectiveAsts,
-          providerContext.transformProviders, providerContext.transformedHasViewContainer, children,
-          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
+          providerContext.transformProviders, providerContext.transformedHasViewContainer,
+          providerContext.queryMatches, children, hasInlineTemplates ? null : ngContentIndex,
+          element.sourceSpan);
     } else {
       this._assertElementExists(matchElement, element);
       this._assertOnlyOneComponent(directiveAsts, element.sourceSpan);
@@ -352,7 +353,7 @@ class TemplateParseVisitor implements html.Visitor {
       parsedElement = new ElementAst(
           nodeName, attrs, elementProps, events, references,
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
-          providerContext.transformedHasViewContainer, children,
+          providerContext.transformedHasViewContainer, providerContext.queryMatches, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan, element.endSourceSpan);
 
       this._findComponentDirectives(directiveAsts)
@@ -386,8 +387,8 @@ class TemplateParseVisitor implements html.Visitor {
       parsedElement = new EmbeddedTemplateAst(
           [], [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
           templateProviderContext.transformProviders,
-          templateProviderContext.transformedHasViewContainer, [parsedElement], ngContentIndex,
-          element.sourceSpan);
+          templateProviderContext.transformedHasViewContainer, templateProviderContext.queryMatches,
+          [parsedElement], ngContentIndex, element.sourceSpan);
     }
 
     return parsedElement;
@@ -673,9 +674,16 @@ class TemplateParseVisitor implements html.Visitor {
     const elName = element.name.replace(/^:xhtml:/, '');
 
     if (!matchElement && !this._schemaRegistry.hasElement(elName, this._schemas)) {
-      const errorMsg = `'${elName}' is not a known element:\n` +
-          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n` +
-          `2. If '${elName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.`;
+      let errorMsg = `'${elName}' is not a known element:\n`;
+      errorMsg +=
+          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n`;
+      if (elName.indexOf('-') > -1) {
+        errorMsg +=
+            `2. If '${elName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+      } else {
+        errorMsg +=
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+      }
       this._reportError(errorMsg, element.sourceSpan);
     }
   }
@@ -721,10 +729,15 @@ class TemplateParseVisitor implements html.Visitor {
           !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
         let errorMsg =
             `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
-        if (elementName.indexOf('-') > -1) {
+        if (elementName.startsWith('ng-')) {
+          errorMsg +=
+              `\n1. If '${boundProp.name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+              `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+        } else if (elementName.indexOf('-') > -1) {
           errorMsg +=
               `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
-              `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
+              `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+              `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
         }
         this._reportError(errorMsg, boundProp.sourceSpan);
       }
@@ -755,7 +768,7 @@ class NonBindableVisitor implements html.Visitor {
     const ngContentIndex = parent.findNgContentIndex(selector);
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
     return new ElementAst(
-        ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, children,
+        ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, [], children,
         ngContentIndex, ast.sourceSpan, ast.endSourceSpan);
   }
   visitComment(comment: html.Comment, context: any): any { return null; }

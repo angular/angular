@@ -6,20 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedError} from '@angular/core/src/facade/errors';
+import {ERROR_DEBUG_CONTEXT} from '@angular/core/src/errors';
 import {DebugContext} from '@angular/core/src/linker/debug_context';
-import {ViewWrappedError} from '@angular/core/src/linker/errors';
+import {viewWrappedError} from '@angular/core/src/linker/errors';
 
-import {ErrorHandler} from '../src/error_handler';
+import {ErrorHandler, wrappedError} from '../src/error_handler';
 
 class MockConsole {
   res: any[] = [];
   error(s: any): void { this.res.push(s); }
-}
-
-class _CustomException {
-  context = 'some context';
-  toString(): string { return 'custom'; }
 }
 
 export function main() {
@@ -58,12 +53,9 @@ export function main() {
       it('should print nested context', () => {
         const cause = new Error('message!');
         const stack = getStack(cause);
-        const context = {
-          source: 'context!',
-          toString() { return 'Context'; }
-        } as any as DebugContext;
-        const original = new ViewWrappedError(cause, context);
-        const e = errorToString(new WrappedError('message', original));
+        const context = { source: 'context!', toString() { return 'Context'; } } as any;
+        const original = viewWrappedError(cause, context);
+        const e = errorToString(wrappedError('message', original));
         expect(e).toEqual(
             stack ? `EXCEPTION: message caused by: Error in context! caused by: message!
 ORIGINAL EXCEPTION: message!
@@ -81,15 +73,15 @@ Context`);
     describe('original exception', () => {
       it('should print original exception message if available (original is Error)', () => {
         const realOriginal = new Error('inner');
-        const original = new WrappedError('wrapped', realOriginal);
-        const e = errorToString(new WrappedError('wrappedwrapped', original));
+        const original = wrappedError('wrapped', realOriginal);
+        const e = errorToString(wrappedError('wrappedwrapped', original));
         expect(e).toContain('inner');
       });
 
       it('should print original exception message if available (original is not Error)', () => {
-        const realOriginal = new _CustomException();
-        const original = new WrappedError('wrapped', realOriginal);
-        const e = errorToString(new WrappedError('wrappedwrapped', original));
+        const realOriginal = new Error('custom');
+        const original = wrappedError('wrapped', realOriginal);
+        const e = errorToString(wrappedError('wrappedwrapped', original));
         expect(e).toContain('custom');
       });
     });
@@ -99,8 +91,8 @@ Context`);
         const realOriginal = new Error('inner');
         const stack = getStack(realOriginal);
         if (stack) {
-          const original = new WrappedError('wrapped', realOriginal);
-          const e = errorToString(new WrappedError('wrappedwrapped', original));
+          const original = wrappedError('wrapped', realOriginal);
+          const e = errorToString(wrappedError('wrappedwrapped', original));
           expect(e).toContain(stack);
         }
       });

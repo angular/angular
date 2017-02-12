@@ -12,7 +12,7 @@ import {toPromise} from 'rxjs/operator/toPromise';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
 import {isPresent} from './facade/lang';
-import {AbstractControl} from './model';
+import {AbstractControl, FormControl, FormGroup} from './model';
 import {isPromise} from './private_import_core';
 
 function isEmptyInputValue(value: any): boolean {
@@ -45,6 +45,9 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
 
+const EMAIL_REGEXP =
+    /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
+
 /**
  * Provides a set of validators used by form controls.
  *
@@ -61,6 +64,30 @@ export const NG_ASYNC_VALIDATORS =
  */
 export class Validators {
   /**
+   * Validator that compares the value of the given FormControls
+   */
+  static equalsTo(...fieldPaths: string[]): ValidatorFn {
+    return function(control: FormControl): {[key: string]: any} {
+      if (fieldPaths.length < 1) {
+        throw new Error('You must compare to at least 1 other field');
+      }
+
+      for (let fieldName of fieldPaths) {
+        let field = (<FormGroup>control.parent).get(fieldName);
+        if (!field) {
+          throw new Error(
+              `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in the group`);
+        }
+
+        if (field.value !== control.value) {
+          return {'equalsTo': {'unequalField': fieldName}};
+        }
+      }
+      return null;
+    };
+  }
+
+  /**
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: AbstractControl): {[key: string]: boolean} {
@@ -72,6 +99,13 @@ export class Validators {
    */
   static requiredTrue(control: AbstractControl): {[key: string]: boolean} {
     return control.value === true ? null : {'required': true};
+  }
+
+  /**
+   * Validator that performs email validation.
+   */
+  static email(control: AbstractControl): {[key: string]: boolean} {
+    return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
   /**

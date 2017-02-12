@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type, isDevMode} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {QueryParamsHandling, ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -31,7 +31,7 @@ import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} fr
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
-import {NavigationCancelingError, PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
@@ -102,12 +102,26 @@ export interface NavigationExtras {
   /**
   * Preserves the query parameters for the next navigation.
   *
+  * deprecated, use `queryParamsHandling` instead
+  *
   * ```
   * // Preserve query params from /results?page=1 to /view?page=1
   * this.router.navigate(['/view'], { preserveQueryParams: true });
   * ```
+  *
+  * @deprecated
   */
   preserveQueryParams?: boolean;
+
+  /**
+  *  config strategy to handle the query parameters for the next navigation.
+  *
+  * ```
+  * // from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
+  * ```
+  */
+  queryParamsHandling?: QueryParamsHandling;
   /**
   * Preserves the fragment for the next navigation
   *
@@ -326,7 +340,7 @@ export class Router {
   navigated: boolean = false;
 
   /**
-   * Extracts and merges URLs. Used for Angular 1 to Angular 2 migrations.
+   * Extracts and merges URLs. Used for AngularJS to Angular migrations.
    */
   urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
 
@@ -364,7 +378,9 @@ export class Router {
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
-    this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+    if (this.navigationId === 0) {
+      this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+    }
   }
 
   /**
@@ -463,11 +479,28 @@ export class Router {
    * ```
    */
   createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
+      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
+    if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
+      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
+    }
     const a = relativeTo || this.routerState.root;
-    const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
+    let q: Params = null;
+    if (queryParamsHandling) {
+      switch (queryParamsHandling) {
+        case 'merge':
+          q = merge(this.currentUrlTree.queryParams, queryParams);
+          break;
+        case 'preserve':
+          q = this.currentUrlTree.queryParams;
+          break;
+        default:
+          q = queryParams;
+      }
+    } else {
+      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
+    }
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
 
@@ -757,8 +790,8 @@ export class Router {
           })
           .then(
               () => {
-                this.navigated = true;
                 if (navigationIsSuccessful) {
+                  this.navigated = true;
                   this.routerEvents.next(new NavigationEnd(
                       id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
@@ -769,7 +802,7 @@ export class Router {
                 }
               },
               (e: any) => {
-                if (e instanceof NavigationCancelingError) {
+                if (isNavigationCancelingError(e)) {
                   this.resetUrlToCurrentUrlTree();
                   this.navigated = true;
                   this.routerEvents.next(
@@ -959,7 +992,7 @@ export class PreActivation {
 
     return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
       const obs = map.call(from(d.guards), (c: any) => {
-        const guard = this.getToken(c, c.node);
+        const guard = this.getToken(c, d.node);
         let observable: Observable<boolean>;
         if (guard.canActivateChild) {
           observable = wrapIntoObservable(guard.canActivateChild(future, this.future));

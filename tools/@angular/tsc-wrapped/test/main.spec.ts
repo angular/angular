@@ -91,6 +91,35 @@ describe('tsc-wrapped', () => {
         .catch(e => done.fail(e));
   });
 
+  it('should pre-process sources using config from vinyl like object', (done) => {
+    const config = {
+      path: basePath + '/tsconfig.json',
+      contents: new Buffer(JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          types: [],
+          outDir: 'built',
+          declaration: true,
+          moduleResolution: 'node',
+          target: 'es2015'
+        },
+        angularCompilerOptions: {annotateForClosureCompiler: true},
+        files: ['test.ts']
+      }))
+    };
+
+    main(config, {basePath})
+        .then(() => {
+          const out = readOut('js');
+          // Expand `export *` and fix index import
+          expect(out).toContain(`export { A, B } from './dep/index'`);
+          // Annotated for Closure compiler
+          expect(out).toContain('* @param {?} x');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
   it('should allow all options disabled', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {
@@ -205,6 +234,32 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           console.timeEnd('TSICKLE');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
+  it('should produce valid source maps', (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": true,
+        "moduleResolution": "node",
+        "target": "es2015",
+        "sourceMap": true
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": true
+      },
+      "files": ["test.ts"]
+    }`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const out = readOut('js.map');
+          expect(out).toContain('"sources":["../test.ts"]');
           done();
         })
         .catch(e => done.fail(e));

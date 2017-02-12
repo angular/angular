@@ -6,10 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
+import {merge} from 'rxjs/observable/merge';
+import {share} from 'rxjs/operator/share';
+
 import {ErrorHandler} from '../src/error_handler';
 import {ListWrapper} from '../src/facade/collection';
-import {unimplemented} from '../src/facade/errors';
-import {stringify} from '../src/facade/lang';
+import {scheduleMicroTask, stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
@@ -185,9 +191,7 @@ export abstract class PlatformRef {
    *
    * @experimental APIs related to application bootstrap are currently under review.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
-    throw unimplemented();
-  }
+  abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
 
   /**
    * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
@@ -204,10 +208,9 @@ export abstract class PlatformRef {
    * ```
    * @stable
    */
-  bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
-      Promise<NgModuleRef<M>> {
-    throw unimplemented();
-  }
+  abstract bootstrapModule<M>(
+      moduleType: Type<M>,
+      compilerOptions?: CompilerOptions|CompilerOptions[]): Promise<NgModuleRef<M>>;
 
   /**
    * Register a listener to be called when the platform is disposed.
@@ -218,14 +221,14 @@ export abstract class PlatformRef {
    * Retrieve the platform {@link Injector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
-  get injector(): Injector { throw unimplemented(); };
+  abstract get injector(): Injector;
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
    */
   abstract destroy(): void;
 
-  get destroyed(): boolean { throw unimplemented(); }
+  abstract get destroyed(): boolean;
 }
 
 function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () => any): any {
@@ -247,6 +250,10 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
   }
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 @Injectable()
 export class PlatformRef_ extends PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
@@ -309,28 +316,17 @@ export class PlatformRef_ extends PlatformRef {
   }
 
   private _bootstrapModuleWithZone<M>(
-      moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [], ngZone: NgZone,
-      componentFactoryCallback?: any): Promise<NgModuleRef<M>> {
+      moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
+      ngZone: NgZone = null): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const compiler = compilerFactory.createCompiler(
         Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
-
-    // ugly internal api hack: generate host component factories for all declared components and
-    // pass the factories into the callback - this is used by UpdateAdapter to get hold of all
-    // factories.
-    if (componentFactoryCallback) {
-      return compiler.compileModuleAndAllComponentsAsync(moduleType)
-          .then(({ngModuleFactory, componentFactories}) => {
-            componentFactoryCallback(componentFactories);
-            return this._bootstrapModuleFactoryWithZone(ngModuleFactory, ngZone);
-          });
-    }
 
     return compiler.compileModuleAsync(moduleType)
         .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
   }
 
-  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>) {
+  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef.bootstrapFactories.length > 0) {
       moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
@@ -341,6 +337,7 @@ export class PlatformRef_ extends PlatformRef {
           `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
           `Please define one of these.`);
     }
+    this._modules.push(moduleRef);
   }
 }
 
@@ -382,31 +379,40 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    * This list is populated even before the component is created.
    */
-  get componentTypes(): Type<any>[] { return <Type<any>[]>unimplemented(); };
+  abstract get componentTypes(): Type<any>[];
 
   /**
    * Get a list of components registered to this application.
    */
-  get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
+  abstract get components(): ComponentRef<any>[];
 
   /**
    * Attaches a view so that it will be dirty checked.
    * The view will be automatically detached when it is destroyed.
    * This will throw if the view is already attached to a ViewContainer.
    */
-  attachView(view: ViewRef): void { unimplemented(); }
+  abstract attachView(view: ViewRef): void;
 
   /**
    * Detaches a view from dirty checking again.
    */
-  detachView(view: ViewRef): void { unimplemented(); }
+  abstract detachView(view: ViewRef): void;
 
   /**
    * Returns the number of attached views.
    */
-  get viewCount() { return unimplemented(); }
+  abstract get viewCount(): number;
+
+  /**
+   * Returns an Observable that indicates when the application is stable or unstable.
+   */
+  abstract get isStable(): Observable<boolean>;
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 @Injectable()
 export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
@@ -418,6 +424,8 @@ export class ApplicationRef_ extends ApplicationRef {
   private _views: AppView<any>[] = [];
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
+  private _isStable: Observable<boolean>;
+  private _stable = true;
 
   constructor(
       private _zone: NgZone, private _console: Console, private _injector: Injector,
@@ -431,6 +439,46 @@ export class ApplicationRef_ extends ApplicationRef {
 
     this._zone.onMicrotaskEmpty.subscribe(
         {next: () => { this._zone.run(() => { this.tick(); }); }});
+
+    const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
+      this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
+          !this._zone.hasPendingMicrotasks;
+      this._zone.runOutsideAngular(() => {
+        observer.next(this._stable);
+        observer.complete();
+      });
+    });
+
+    const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
+      const stableSub: Subscription = this._zone.onStable.subscribe(() => {
+        NgZone.assertNotInAngularZone();
+
+        // Check whether there are no pending macro/micro tasks in the next tick
+        // to allow for NgZone to update the state.
+        scheduleMicroTask(() => {
+          if (!this._stable && !this._zone.hasPendingMacrotasks &&
+              !this._zone.hasPendingMicrotasks) {
+            this._stable = true;
+            observer.next(true);
+          }
+        });
+      });
+
+      const unstableSub: Subscription = this._zone.onUnstable.subscribe(() => {
+        NgZone.assertInAngularZone();
+        if (this._stable) {
+          this._stable = false;
+          this._zone.runOutsideAngular(() => { observer.next(false); });
+        }
+      });
+
+      return () => {
+        stableSub.unsubscribe();
+        unstableSub.unsubscribe();
+      };
+    });
+
+    this._isStable = merge(isCurrentlyStable, share.call(isStable));
   }
 
   attachView(viewRef: ViewRef): void {
@@ -516,4 +564,6 @@ export class ApplicationRef_ extends ApplicationRef {
   get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
 
   get components(): ComponentRef<any>[] { return this._rootComponents; }
+
+  get isStable(): Observable<boolean> { return this._isStable; }
 }

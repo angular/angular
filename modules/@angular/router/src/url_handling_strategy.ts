@@ -9,7 +9,7 @@
 import {UrlTree} from './url_tree';
 
 /**
- * @whatItDoes Provides a way to migrate Angular 1 applications to Angular 2.
+ * @whatItDoes Provides a way to migrate AngularJS applications to Angular.
  *
  * @experimental
  */

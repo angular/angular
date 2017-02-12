@@ -5,16 +5,13 @@
 [![Issue Stats](http://issuestats.com/github/angular/angular/badge/issue?style=flat)](http://issuestats.com/github/angular/angular)
 [![npm version](https://badge.fury.io/js/%40angular%2Fcore.svg)](https://badge.fury.io/js/%40angular%2Fcore)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)  
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)
 *Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][browserstack].*
 
 Angular
 =========
 
-Angular is a development platform for building mobile and desktop web applications. This is the
-repository for [Angular 2][ng2] Typescript/JavaScript (JS).
- 
-Angular2 for [Dart][dart] can be found at [dart-lang/angular2][ng2dart].
+Angular is a development platform for building mobile and desktop web applications using Typescript/JavaScript (JS) and other languages.
 
 
 ## Quickstart
@@ -29,9 +26,5 @@ guidelines for [contributing][contributing] and then check out one of our issues
 
 [browserstack]: https://www.browserstack.com/
 [contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
-[dart]: http://www.dartlang.org
 [quickstart]: https://angular.io/docs/ts/latest/quickstart.html
-[ng2]: http://angular.io
-[ngDart]: http://angulardart.org
-[ngJS]: http://angularjs.org
-[ng2dart]: https://github.com/dart-lang/angular2
+[ng]: http://angular.io

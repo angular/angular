@@ -12,6 +12,8 @@ import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 
+import {stripSourceMap} from './abstract_emitter_spec';
+
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
@@ -27,6 +29,7 @@ class SimpleJsImportGenerator implements ImportResolver {
     return importedUrlStr;
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
+  getTypeArity(symbol: StaticSymbol): number /*|null*/ { return null; }
 }
 
 export function main() {
@@ -46,10 +49,8 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement, exportedVars: string[] = null): string {
-      if (!exportedVars) {
-        exportedVars = [];
-      }
-      return emitter.emitStatements(someModuleUrl, [stmt], exportedVars);
+      const source = emitter.emitStatements(someModuleUrl, [stmt], exportedVars || []);
+      return stripSourceMap(source);
     }
 
     it('should declare variables', () => {

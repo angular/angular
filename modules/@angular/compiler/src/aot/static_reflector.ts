@@ -9,6 +9,7 @@
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {ReflectorReader} from '../private_import_core';
+import {syntaxError} from '../util';
 
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
@@ -85,7 +86,7 @@ export class StaticReflector implements ReflectorReader {
       annotations = [];
       const classMetadata = this.getTypeMetadata(type);
       if (classMetadata['extends']) {
-        const parentType = this.simplify(type, classMetadata['extends']);
+        const parentType = this.trySimplify(type, classMetadata['extends']);
         if (parentType && (parentType instanceof StaticSymbol)) {
           const parentAnnotations = this.annotations(parentType);
           annotations.push(...parentAnnotations);
@@ -300,6 +301,17 @@ export class StaticReflector implements ReflectorReader {
     } else {
       throw error;
     }
+  }
+
+  /**
+   * Simplify but discard any errors
+   */
+  private trySimplify(context: StaticSymbol, value: any): any {
+    const originalRecorder = this.errorRecorder;
+    this.errorRecorder = (error: any, fileName: string) => {};
+    const result = this.simplify(context, value);
+    this.errorRecorder = originalRecorder;
+    return result;
   }
 
   /** @internal */
@@ -554,7 +566,7 @@ export class StaticReflector implements ReflectorReader {
         if (e.fileName) {
           throw positionalError(message, e.fileName, e.line, e.column);
         }
-        throw new Error(message);
+        throw syntaxError(message);
       }
     }
 

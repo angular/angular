@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di/injector';
-import {unimplemented} from '../facade/errors';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 
@@ -42,11 +41,11 @@ export abstract class ViewContainerRef {
    * Anchor element that specifies the location of this container in the containing View.
    * <!-- TODO: rename to anchorElement -->
    */
-  get element(): ElementRef { return <ElementRef>unimplemented(); }
+  abstract get element(): ElementRef;
 
-  get injector(): Injector { return <Injector>unimplemented(); }
+  abstract get injector(): Injector;
 
-  get parentInjector(): Injector { return <Injector>unimplemented(); }
+  abstract get parentInjector(): Injector;
 
   /**
    * Destroys all Views in this container.
@@ -61,7 +60,7 @@ export abstract class ViewContainerRef {
   /**
    * Returns the number of Views currently attached to this container.
    */
-  get length(): number { return <number>unimplemented(); };
+  abstract get length(): number;
 
   /**
    * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
@@ -187,7 +186,8 @@ export class ViewContainerRef_ implements ViewContainerRef {
   }
 
   indexOf(viewRef: ViewRef): number {
-    return this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView);
+    return this.length ? this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView) :
+                         -1;
   }
 
   /** @internal */
@@ -214,7 +214,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
     return wtfLeave(s, view.ref);
   }
 
-  clear() {
+  clear(): void {
     for (let i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }

@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, isDevMode} from '@angular/core';
+import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers, createIdentifier} from './identifiers';
 
-function unimplemented(): any {
-  throw new Error('unimplemented');
-}
+
+/**
+ * Temporal switch for the compiler to use the new view engine,
+ * until it is fully integrated.
+ *
+ * Only works in Jit for now.
+ */
+export const USE_VIEW_ENGINE = new InjectionToken<boolean>('UseViewEngine');
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
@@ -21,21 +26,24 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
+  public missingTranslation: MissingTranslationStrategy;
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true}: {
+       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
-        useJit?: boolean
+        useJit?: boolean,
+        missingTranslation?: MissingTranslationStrategy,
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
+    this.missingTranslation = missingTranslation;
   }
 
   get genDebugInfo(): boolean {
@@ -52,12 +60,12 @@ export class CompilerConfig {
  * to help tree shaking.
  */
 export abstract class RenderTypes {
-  get renderer(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderText(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderElement(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderComment(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderNode(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderEvent(): CompileIdentifierMetadata { return unimplemented(); }
+  abstract get renderer(): CompileIdentifierMetadata;
+  abstract get renderText(): CompileIdentifierMetadata;
+  abstract get renderElement(): CompileIdentifierMetadata;
+  abstract get renderComment(): CompileIdentifierMetadata;
+  abstract get renderNode(): CompileIdentifierMetadata;
+  abstract get renderEvent(): CompileIdentifierMetadata;
 }
 
 export class DefaultRenderTypes implements RenderTypes {

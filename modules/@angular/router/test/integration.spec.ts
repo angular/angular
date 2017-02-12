@@ -37,6 +37,18 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/simple');
      })));
 
+  it('should navigate from ngOnInit hook',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       router.resetConfig([
+         {path: '', component: SimpleCmp},
+         {path: 'one', component: RouteCmp},
+       ]);
+
+       const fixture = createRoot(router, RootCmpWithOnInit);
+       expect(location.path()).toEqual('/one');
+       expect(fixture.nativeElement).toHaveText('route');
+     })));
+
   describe('should execute navigations serially', () => {
     let log: any[] = [];
 
@@ -1088,6 +1100,50 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home?q=456#1');
        }));
 
+    it('should correctly use the preserve strategy', fakeAsync(() => {
+
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`
+         })
+         class RootCmpWithLink {
+         }
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/home?a=123');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?a=123');
+       }));
+
+    it('should correctly use the merge strategy', fakeAsync(() => {
+
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="merge">Link</a>`
+         })
+         class RootCmpWithLink {
+         }
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/home?a=123');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?a=123&q=456');
+       }));
+
     it('should support using links on non-a tags', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -1440,6 +1496,35 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/one');
 
+           })));
+      });
+
+      describe('should redirect to / when guard returns false', () => {
+        beforeEach(() => TestBed.configureTestingModule({
+          providers: [{
+            provide: 'returnFalseAndNavigate',
+            useFactory: (router: Router) => () => {
+              router.navigate(['/']);
+              return false;
+            },
+            deps: [Router]
+          }]
+        }));
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             router.resetConfig([
+               {
+                 path: '',
+                 component: SimpleCmp,
+               },
+               {path: 'one', component: RouteCmp, canActivate: ['returnFalseAndNavigate']}
+             ]);
+
+             const fixture = TestBed.createComponent(RootCmp);
+             router.navigateByUrl('/one');
+             advance(fixture);
+             expect(location.path()).toEqual('/');
+             expect(fixture.nativeElement).toHaveText('simple');
            })));
       });
     });
@@ -1816,6 +1901,47 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/team/22');
            })));
       });
+
+      it('should find the guard provided in lazy loaded module',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
+               class AdminComponent {
+               }
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [AdminComponent, LazyLoadedComponent],
+                 imports: [RouterModule.forChild([{
+                   path: '',
+                   component: AdminComponent,
+                   children: [{
+                     path: '',
+                     canActivateChild: ['alwaysTrue'],
+                     children: [{path: '', component: LazyLoadedComponent}]
+                   }]
+                 }])],
+                 providers: [{provide: 'alwaysTrue', useValue: () => true}],
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{path: 'admin', loadChildren: 'lazy'}]);
+
+               router.navigateByUrl('/admin');
+               advance(fixture);
+
+               expect(location.path()).toEqual('/admin');
+               expect(fixture.nativeElement).toHaveText('lazy-loaded');
+             })));
     });
 
     describe('CanLoad', () => {
@@ -2903,6 +3029,13 @@ class ComponentRecordingRoutePathAndUrl {
 class RootCmp {
 }
 
+@Component({selector: 'root-cmp-on-init', template: `<router-outlet></router-outlet>`})
+class RootCmpWithOnInit {
+  constructor(private router: Router) {}
+
+  ngOnInit(): void { this.router.navigate(['one']); }
+}
+
 @Component({
   selector: 'root-cmp',
   template:
@@ -2974,6 +3107,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
+    RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
@@ -3001,6 +3135,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
+    RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,

@@ -8,8 +8,8 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TestBed, async, fakeAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -143,6 +143,69 @@ export function main() {
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('projected foo');
        }));
+
+    it('should resolve components from other modules, if supplied', async(() => {
+         const compiler = TestBed.get(Compiler) as Compiler;
+         let fixture = TestBed.createComponent(TestComponent);
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('');
+
+         fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+         fixture.componentInstance.currentComponent = Module2InjectedComponent;
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('baz');
+       }));
+
+    it('should clean up moduleRef, if supplied', async(() => {
+         let destroyed = false;
+         const compiler = TestBed.get(Compiler) as Compiler;
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+         fixture.componentInstance.currentComponent = Module2InjectedComponent;
+         fixture.detectChanges();
+
+         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+         spyOn(moduleRef, 'destroy').and.callThrough();
+
+         expect(moduleRef.destroy).not.toHaveBeenCalled();
+         fixture.destroy();
+         expect(moduleRef.destroy).toHaveBeenCalled();
+       }));
+
+    it('should not re-create moduleRef when it didn\'t actually change', async(() => {
+         const compiler = TestBed.get(Compiler) as Compiler;
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+         fixture.componentInstance.currentComponent = Module2InjectedComponent;
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement).toHaveText('baz');
+
+         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+         fixture.componentInstance.currentComponent = Module2InjectedComponent2;
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement).toHaveText('baz2');
+         expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
+       }));
+
+    it('should re-create moduleRef when changed', async(() => {
+         const compiler = TestBed.get(Compiler) as Compiler;
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+         fixture.componentInstance.currentComponent = Module2InjectedComponent;
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement).toHaveText('baz');
+
+         fixture.componentInstance.module = compiler.compileModuleSync(TestModule3);
+         fixture.componentInstance.currentComponent = Module3InjectedComponent;
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement).toHaveText('bat');
+       }));
   });
 }
 
@@ -158,15 +221,16 @@ class InjectedComponentAgain {
 }
 
 const TEST_CMP_TEMPLATE =
-    `<template *ngComponentOutlet="currentComponent; injector: injector; content: projectables"></template>`;
+    `<template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
   currentComponent: Type<any>;
   injector: Injector;
   projectables: any[][];
+  module: NgModuleFactory<any>;
 
-  get cmpRef(): ComponentRef<any> { return this.ngComponentOutlet.componentRef; }
-  set cmpRef(value: ComponentRef<any>) { this.ngComponentOutlet.componentRef = value; }
+  get cmpRef(): ComponentRef<any> { return this.ngComponentOutlet['_componentRef']; }
+  set cmpRef(value: ComponentRef<any>) { this.ngComponentOutlet['_componentRef'] = value; }
 
   @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
   @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;
@@ -181,4 +245,34 @@ class TestComponent {
   entryComponents: [InjectedComponent, InjectedComponentAgain]
 })
 export class TestModule {
+}
+
+@Component({selector: 'mdoule-2-injected-component', template: 'baz'})
+class Module2InjectedComponent {
+}
+
+@Component({selector: 'mdoule-2-injected-component-2', template: 'baz2'})
+class Module2InjectedComponent2 {
+}
+
+@NgModule({
+  imports: [CommonModule],
+  declarations: [Module2InjectedComponent, Module2InjectedComponent2],
+  exports: [Module2InjectedComponent, Module2InjectedComponent2],
+  entryComponents: [Module2InjectedComponent, Module2InjectedComponent2]
+})
+export class TestModule2 {
+}
+
+@Component({selector: 'mdoule-3-injected-component', template: 'bat'})
+class Module3InjectedComponent {
+}
+
+@NgModule({
+  imports: [CommonModule],
+  declarations: [Module3InjectedComponent],
+  exports: [Module3InjectedComponent],
+  entryComponents: [Module3InjectedComponent]
+})
+export class TestModule3 {
 }

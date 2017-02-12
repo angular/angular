@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
-import {BindingDef, BindingType, NodeData, NodeDef, NodeFlags, NodeType, Services, ViewData} from './types';
-import {checkAndUpdateBinding} from './util';
+import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {checkAndUpdateBinding, sliceErrorStack, unwrapValue} from './util';
 
-export function textDef(constants: string[]): NodeDef {
+export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
+  // skip the call to sliceErrorStack itself + the call to this function.
+  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const bindings: BindingDef[] = new Array(constants.length - 1);
   for (let i = 1; i < constants.length; i++) {
     bindings[i - 1] = {
@@ -29,31 +32,33 @@ export function textDef(constants: string[]): NodeDef {
     reverseChildIndex: undefined,
     parent: undefined,
     childFlags: undefined,
+    childMatchedQueries: undefined,
     bindingIndex: undefined,
-    providerIndices: undefined,
+    disposableIndex: undefined,
     // regular values
     flags: 0,
+    matchedQueries: {}, ngContentIndex,
     childCount: 0, bindings,
+    disposableCount: 0,
     element: undefined,
     provider: undefined,
-    text: {prefix: constants[0]},
-    component: undefined,
-    template: undefined
+    text: {prefix: constants[0], source},
+    pureExpression: undefined,
+    query: undefined,
+    ngContent: undefined
   };
 }
 
-export function createText(view: ViewData, renderHost: any, def: NodeDef): NodeData {
-  const parentNode = def.parent != null ? view.nodes[def.parent].renderNode : renderHost;
+export function createText(view: ViewData, renderHost: any, def: NodeDef): TextData {
+  const parentNode =
+      def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
-  if (view.renderer) {
-    renderNode = view.renderer.createText(parentNode, def.text.prefix);
-  } else {
-    renderNode = document.createTextNode(def.text.prefix);
-    if (parentNode) {
-      parentNode.appendChild(renderNode);
-    }
+  const renderer = view.root.renderer;
+  renderNode = renderer.createText(def.text.prefix);
+  if (parentNode) {
+    renderer.appendChild(parentNode, renderNode);
   }
-  return {renderNode, provider: undefined, embeddedViews: undefined, componentView: undefined};
+  return {renderText: renderNode};
 }
 
 export function checkAndUpdateTextInline(
@@ -111,20 +116,20 @@ export function checkAndUpdateTextInline(
         value = _addInterpolationPart(v0, bindings[0]) + value;
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].renderNode;
-    if (view.renderer) {
-      view.renderer.setText(renderNode, value);
-    } else {
-      renderNode.nodeValue = value;
-    }
+    const renderNode = asTextData(view, def.index).renderText;
+    view.root.renderer.setText(renderNode, value);
   }
 }
 
 export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: any[]) {
   const bindings = def.bindings;
-  let changed = view.firstChange;
-  for (let i = 0; i < values.length && !changed; i++) {
-    changed = changed || checkAndUpdateBinding(view, def, i, values[i]);
+  let changed = false;
+  for (let i = 0; i < values.length; i++) {
+    // Note: We need to loop over all values, so that
+    // the old values are updates as well!
+    if (checkAndUpdateBinding(view, def, i, values[i])) {
+      changed = true;
+    }
   }
   if (changed) {
     let value = '';
@@ -132,16 +137,13 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
       value = value + _addInterpolationPart(values[i], bindings[i]);
     }
     value = def.text.prefix + value;
-    const renderNode = view.nodes[def.index].renderNode;
-    if (view.renderer) {
-      view.renderer.setText(renderNode, value);
-    } else {
-      renderNode.nodeValue = value;
-    }
+    const renderNode = asTextData(view, def.index).renderText;
+    view.root.renderer.setText(renderNode, value);
   }
 }
 
 function _addInterpolationPart(value: any, binding: BindingDef): string {
+  value = unwrapValue(value);
   const valueStr = value != null ? value.toString() : '';
   return valueStr + binding.suffix;
 }

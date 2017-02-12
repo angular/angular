@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModuleRef} from '@angular/core';
+import {ApplicationRef, NgModuleRef, enableProdMode} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
@@ -40,12 +40,10 @@ export function main() {
 
   const numberOfChecksEl = document.getElementById('numberOfChecks');
 
+  enableProdMode();
   appMod = new AppModule();
   appMod.bootstrap();
-  tree = appMod.rootComp;
-  const rootEl = document.querySelector('#root');
-  rootEl.textContent = '';
-  rootEl.appendChild(appMod.rootEl);
+  tree = appMod.componentRef.instance;
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);

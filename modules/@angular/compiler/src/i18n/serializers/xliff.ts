@@ -21,26 +21,20 @@ const _XMLNS = 'urn:oasis:names:tc:xliff:document:1.2';
 const _SOURCE_LANG = 'en';
 const _PLACEHOLDER_TAG = 'x';
 
+const _FILE_TAG = 'file';
 const _SOURCE_TAG = 'source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
 
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
-export class Xliff implements Serializer {
+export class Xliff extends Serializer {
   write(messages: i18n.Message[]): string {
     const visitor = new _WriteVisitor();
-    const visited: {[id: string]: boolean} = {};
     const transUnits: xml.Node[] = [];
 
     messages.forEach(message => {
-      const id = this.digest(message);
-
-      // deduplicate messages
-      if (visited[id]) return;
-      visited[id] = true;
-
-      const transUnit = new xml.Tag(_UNIT_TAG, {id, datatype: 'html'});
+      const transUnit = new xml.Tag(_UNIT_TAG, {id: message.id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
           new xml.CR(8), new xml.Tag(_TARGET_TAG));
@@ -75,10 +69,11 @@ export class Xliff implements Serializer {
     ]);
   }
 
-  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
+  load(content: string, url: string):
+      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliffParser = new XliffParser();
-    const {mlNodesByMsgId, errors} = xliffParser.parse(content, url);
+    const {locale, mlNodesByMsgId, errors} = xliffParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
@@ -93,7 +88,7 @@ export class Xliff implements Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return i18nNodesByMsgId;
+    return {locale, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return digest(message); }
@@ -161,6 +156,7 @@ class XliffParser implements ml.Visitor {
   private _unitMlNodes: ml.Node[];
   private _errors: I18nError[];
   private _mlNodesByMsgId: {[msgId: string]: ml.Node[]};
+  private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
     this._unitMlNodes = [];
@@ -174,6 +170,7 @@ class XliffParser implements ml.Visitor {
     return {
       mlNodesByMsgId: this._mlNodesByMsgId,
       errors: this._errors,
+      locale: this._locale,
     };
   }
 
@@ -205,6 +202,14 @@ class XliffParser implements ml.Visitor {
 
       case _TARGET_TAG:
         this._unitMlNodes = element.children;
+        break;
+
+      case _FILE_TAG:
+        const localeAttr = element.attrs.find((attr) => attr.name === 'target-language');
+        if (localeAttr) {
+          this._locale = localeAttr.value;
+        }
+        ml.visitAll(this, element.children, null);
         break;
 
       default:

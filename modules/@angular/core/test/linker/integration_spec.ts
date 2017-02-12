@@ -7,8 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ComponentFactory, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
+import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {QueryList} from '@angular/core/src/linker/query_list';
@@ -28,12 +30,21 @@ import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => { declareTests({useJit: true, viewEngine: false}); });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => { declareTests({useJit: false, viewEngine: false}); });
+
+  describe('view engine', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+    });
+
+    declareTests({useJit: true, viewEngine: true});
+  });
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolean}) {
   describe('integration tests', function() {
 
     beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
@@ -254,7 +265,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       describe('pipes', () => {
-        it('should support pipes in bindings', () => {
+        viewEngine || it('should support pipes in bindings', () => {
           TestBed.configureTestingModule({declarations: [MyComp, MyDir, DoublePipe]});
           const template = '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>';
           TestBed.overrideComponent(MyComp, {set: {template}});
@@ -519,7 +530,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           const value = fixture.debugElement.childNodes[0].references['alice'];
-          expect(value).toBeAnInstanceOf(TemplateRef_);
+          expect(value.createEmbeddedView).toBeTruthy();
         });
 
         it('should preserve case', () => {
@@ -534,7 +545,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       describe('variables', () => {
-        it('should allow to use variables in a for loop', () => {
+        viewEngine || it('should allow to use variables in a for loop', () => {
           TestBed.configureTestingModule({declarations: [MyComp, ChildCompNoTemplate]});
           const template =
               '<template ngFor [ngForOf]="[1]" let-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>';
@@ -659,29 +670,31 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
         if (getDOM().supportsDOMEvents()) {
-          it('should be checked when an async pipe requests a check', fakeAsync(() => {
-               TestBed.configureTestingModule(
-                   {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
-               const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-               TestBed.overrideComponent(MyComp, {set: {template}});
-               const fixture = TestBed.createComponent(MyComp);
+          viewEngine ||
+              it('should be checked when an async pipe requests a check', fakeAsync(() => {
+                   TestBed.configureTestingModule(
+                       {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
+                   const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
+                   TestBed.overrideComponent(MyComp, {set: {template}});
+                   const fixture = TestBed.createComponent(MyComp);
 
-               tick();
+                   tick();
 
-               const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references['cmp'];
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(1);
+                   const cmp: PushCmpWithAsyncPipe =
+                       fixture.debugElement.children[0].references['cmp'];
+                   fixture.detectChanges();
+                   expect(cmp.numberOfChecks).toEqual(1);
 
-               fixture.detectChanges();
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(1);
+                   fixture.detectChanges();
+                   fixture.detectChanges();
+                   expect(cmp.numberOfChecks).toEqual(1);
 
-               cmp.resolve(2);
-               tick();
+                   cmp.resolve(2);
+                   tick();
 
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(2);
-             }));
+                   fixture.detectChanges();
+                   expect(cmp.numberOfChecks).toEqual(2);
+                 }));
         }
       });
 
@@ -884,24 +897,26 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(tc.nativeElement.id).toEqual('newId');
       });
 
-      it('should not use template variables for expressions in hostProperties', () => {
-        @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
-        class DirectiveWithHostProps {
-          id = 'one';
-        }
+      viewEngine ||
+          it('should not use template variables for expressions in hostProperties', () => {
+            @Directive(
+                {selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+            class DirectiveWithHostProps {
+              id = 'one';
+            }
 
-        const fixture =
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
-                .overrideComponent(
-                    MyComp,
-                    {set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}})
-                .createComponent(MyComp);
-        fixture.detectChanges();
+            const fixture =
+                TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
+                    .overrideComponent(MyComp, {
+                      set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}
+                    })
+                    .createComponent(MyComp);
+            fixture.detectChanges();
 
-        const tc = fixture.debugElement.children[0];
-        expect(tc.properties['id']).toBe('one');
-        expect(tc.properties['title']).toBe(undefined);
-      });
+            const tc = fixture.debugElement.children[0];
+            expect(tc.properties['id']).toBe('one');
+            expect(tc.properties['title']).toBe(undefined);
+          });
 
       it('should not allow pipes in hostProperties', () => {
         @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
@@ -915,7 +930,8 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toThrowError(/Host binding expression cannot contain pipes/);
       });
 
-      it('should not use template variables for expressions in hostListeners', () => {
+      // TODO: literal array
+      viewEngine || it('should not use template variables for expressions in hostListeners', () => {
         @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
         class DirectiveWithHostListener {
           id = 'one';
@@ -1231,7 +1247,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
       });
 
-      it('should use a default element name for components without selectors', () => {
+      viewEngine || it('should use a default element name for components without selectors', () => {
         let noSelectorComponentFactory: ComponentFactory<SomeComponent>;
 
         @Component({template: '----'})
@@ -1263,7 +1279,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
     });
 
-    describe('error handling', () => {
+    viewEngine || describe('error handling', () => {
       it('should report a meaningful error when a directive is missing annotation', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
 
@@ -1295,7 +1311,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.createComponent(MyComp);
           throw 'Should throw';
         } catch (e) {
-          const c = e.context;
+          const c = getDebugContext(e);
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
         }
@@ -1310,7 +1326,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           fixture.detectChanges();
           throw 'Should throw';
         } catch (e) {
-          const c = e.context;
+          const c = getDebugContext(e);
           expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
@@ -1330,7 +1346,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              fixture.detectChanges();
              throw 'Should throw';
            } catch (e) {
-             const c = e.context;
+             const c = getDebugContext(e);
              expect(c.renderNode).toBeTruthy();
              expect(c.source).toContain(':0:5');
            }
@@ -1353,7 +1369,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              try {
                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
              } catch (e) {
-               const c = e.context;
+               const c = getDebugContext(e);
                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
                expect((<Injector>c.injector).get).toBeTruthy();
@@ -1489,6 +1505,14 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(getDOM().getInnerHTML(fixture.nativeElement))
             .toContain('ng-reflect-dir-prop="hello"');
+      });
+
+      it(`should work with prop names containing '$'`, () => {
+        TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
+        const fixture = TestBed.createComponent(ParentCmp);
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test$="hello"');
       });
 
       it('should reflect property values on template comments', () => {
@@ -1720,7 +1744,7 @@ class MyService {
 class SimpleImperativeViewComponent {
   done: any;
 
-  constructor(self: ElementRef, renderer: Renderer) {
+  constructor(self: ElementRef) {
     const hostElement = self.nativeElement;
     getDOM().appendChild(hostElement, el('hello imp view'));
   }
@@ -2283,4 +2307,17 @@ class DirectiveWithPropDecorators {
 @Component({selector: 'some-cmp'})
 class SomeCmp {
   value: any;
+}
+
+@Component({
+  selector: 'parent-cmp',
+  template: `<cmp [test$]="name"></cmp>`,
+})
+export class ParentCmp {
+  name: string = 'hello';
+}
+
+@Component({selector: 'cmp', template: ''})
+class SomeCmpWithInput {
+  @Input() test$: any;
 }

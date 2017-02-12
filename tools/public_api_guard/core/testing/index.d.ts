@@ -67,7 +67,7 @@ export declare class TestBed implements Injector {
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    execute(tokens: any[], fn: Function): any;
+    execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
     /** @experimental */ initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): void;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;

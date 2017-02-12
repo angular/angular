@@ -1,0 +1,40 @@
+@import '~@angular/material/core/theming/all-theme';
+@import './ng-io-theme';
+@import './typography';
+
+
+// Include material core styles.
+@include md-core();
+@include docs-site-typography();
+
+
+// Define the light theme.
+$primary: md-palette($md-cyan);
+$accent:  md-palette($md-amber, A200, A100, A400);
+
+$theme: md-light-theme($primary, $accent);
+@include angular-material-theme($theme);
+
+body {
+  font-family: "Roboto","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+  margin: 0;
+}
+
+[md-button], [md-raised-button] {
+  text-transform: uppercase;
+}
+
+h1, h2 {
+  weight: 400;
+}
+
+.docs-primary-header {
+  padding-left: 20px;
+
+  h1 {
+    font-size: 30px;
+    font-weight: 300;
+    margin: 0;
+    padding: 50px;
+  }
+}

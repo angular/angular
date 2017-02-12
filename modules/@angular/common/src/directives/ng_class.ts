@@ -69,9 +69,9 @@ export class NgClass implements DoCheck {
 
     if (this._rawClass) {
       if (isListLikeIterable(this._rawClass)) {
-        this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create(null);
+        this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create();
       } else {
-        this._keyValueDiffer = this._keyValueDiffers.find(this._rawClass).create(null);
+        this._keyValueDiffer = this._keyValueDiffers.find(this._rawClass).create();
       }
     }
   }

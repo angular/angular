@@ -6,7 +6,7 @@ export declare function downgradeComponent(info: {
 }): any;
 
 /** @experimental */
-export declare function downgradeInjectable(token: any): (string | ((i: Injector) => any))[];
+export declare function downgradeInjectable(token: any): Function;
 
 /** @experimental */
 export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
@@ -27,3 +27,6 @@ export declare class UpgradeModule {
         ngZone: NgZone);
     bootstrap(element: Element, modules?: string[], config?: any): void;
 }
+
+/** @stable */
+export declare const VERSION: Version;

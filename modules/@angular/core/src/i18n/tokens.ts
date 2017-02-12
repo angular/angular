@@ -22,3 +22,12 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  * @experimental i18n support is experimental.
  */
 export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
+
+/**
+ * @experimental i18n support is experimental.
+ */
+export enum MissingTranslationStrategy {
+  Error,
+  Warning,
+  Ignore,
+}

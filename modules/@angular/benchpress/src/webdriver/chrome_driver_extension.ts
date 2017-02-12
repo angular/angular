@@ -68,7 +68,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
           const events: PerfLogEvent[] = [];
-          entries.forEach(entry => {
+          entries.forEach((entry: any) => {
             const message = JSON.parse(entry['message'])['message'];
             if (message['method'] === 'Tracing.dataCollected') {
               events.push(message['params']);

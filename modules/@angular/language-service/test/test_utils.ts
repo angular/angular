@@ -52,6 +52,7 @@ export function validateCache(): {exists: string[], unused: string[], reported: 
 }
 
 missingCache.set('/node_modules/@angular/core.d.ts', true);
+missingCache.set('/node_modules/@angular/animation.d.ts', true);
 missingCache.set('/node_modules/@angular/common.d.ts', true);
 missingCache.set('/node_modules/@angular/forms.d.ts', true);
 missingCache.set('/node_modules/@angular/core/src/di/provider.metadata.json', true);
@@ -97,6 +98,8 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.overrides.set(fileName, content);
     this.scriptNames.push(fileName);
   }
+
+  forgetAngular() { this.angularPath = undefined; }
 
   getCompilationSettings(): ts.CompilerOptions {
     return {

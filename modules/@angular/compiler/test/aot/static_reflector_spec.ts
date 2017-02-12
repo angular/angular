@@ -344,6 +344,19 @@ describe('StaticReflector', () => {
             'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
+  it('should throw a SyntaxError without stack trace when the required resource cannot be resolved',
+     () => {
+       expect(
+           () => simplify(
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'AppModule'), ({
+                 __symbolic: 'error',
+                 message:
+                     'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts'
+               })))
+           .toThrowError(
+               'Error encountered resolving symbol values statically. Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts, resolving symbol AppModule in /tmp/src/function-reference.ts');
+     });
+
   it('should record data about the error in the exception', () => {
     let threw = false;
     try {
@@ -664,6 +677,30 @@ describe('StaticReflector', () => {
       expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
         'hook1', 'hook2', 'hook3'
       ])).toEqual([false, false, false]);
+    });
+
+    it('should allow inheritance from expressions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export function metaClass() { return null; };
+            export class Child extends metaClass() {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
+    });
+
+    it('should allow inheritance from functions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export let ctor: {new(): T} = function() { return null; }
+            export class Child extends ctor {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
     });
   });
 

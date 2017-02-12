@@ -17,7 +17,12 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
   constructor() {}
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V> {
+  create<K, V>(): DefaultKeyValueDiffer<K, V>;
+
+  /**
+   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
+   */
+  create<K, V>(cd?: ChangeDetectorRef): KeyValueDiffer<K, V> {
     return new DefaultKeyValueDiffer<K, V>();
   }
 }
