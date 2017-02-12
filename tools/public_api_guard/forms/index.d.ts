@@ -103,7 +103,11 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
 
 /** @stable */
 export interface AsyncValidatorFn {
-    (c: AbstractControl): any;
+    (c: AbstractControl): Promise<{
+        [key: string]: any;
+    }> | Observable<{
+        [key: string]: any;
+    }>;
 }
 
 /** @stable */
