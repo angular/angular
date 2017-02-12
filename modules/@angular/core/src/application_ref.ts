@@ -37,6 +37,8 @@ let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
 let _platform: PlatformRef;
 
+export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
+
 /**
  * Disable Angular's development mode, which turns off assertions and other
  * checks within the framework.
@@ -83,7 +85,8 @@ export class NgProbeToken {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (_platform && !_platform.destroyed) {
+  if (_platform && !_platform.destroyed &&
+      !_platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
     throw new Error(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
@@ -103,7 +106,8 @@ export function createPlatformFactory(
     providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
   const marker = new InjectionToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
-    if (!getPlatform()) {
+    let platform = getPlatform();
+    if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
       if (parentPlatformFactory) {
         parentPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
@@ -117,8 +121,7 @@ export function createPlatformFactory(
 }
 
 /**
- * Checks that there currently is a platform
- * which contains the given token as a provider.
+ * Checks that there currently is a platform which contains the given token as a provider.
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
