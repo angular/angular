@@ -31,7 +31,7 @@
     "@angular/platform-browser-dynamic": "^2.4.7",
     "@angular/router": "^3.4.7",
     "core-js": "^2.4.1",
-    "rxjs": "^5.0.1",
+    "rxjs": "^5.1.1",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.7.2"
   },
