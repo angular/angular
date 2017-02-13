@@ -207,14 +207,18 @@ export function sliceErrorStack(start: number, end: number): string {
   } catch (e) {
     err = e;
   }
-  const stack = err.stack || '';
-  const lines = stack.split('\n');
-  if (lines[0].startsWith('Error')) {
-    // Chrome always adds the message to the stack as well...
-    start++;
-    end++;
+  const stack = err.stack;
+  if (stack) {
+    const lines = stack.split('\n');
+    if (lines[0].startsWith('Error')) {
+      // Chrome always adds the message to the stack as well...
+      start++;
+      end++;
+    }
+    return lines.slice(start, end).join('\n');
+  } else {
+    return 'No source information available in this browser';
   }
-  return lines.slice(start, end).join('\n');
 }
 
 export function rootRenderNodes(view: ViewData): any[] {
