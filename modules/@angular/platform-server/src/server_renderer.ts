@@ -259,7 +259,11 @@ export class ServerRendererV2 implements RendererV2 {
     }
   }
 
-  removeChild(parent: any, oldChild: any): void { getDOM().removeChild(parent, oldChild); }
+  removeChild(parent: any, oldChild: any): void {
+    if (parent) {
+      getDOM().removeChild(parent, oldChild);
+    }
+  }
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
     let el: any;

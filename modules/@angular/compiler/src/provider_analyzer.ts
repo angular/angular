@@ -11,7 +11,7 @@ import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveS
 import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
-import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, QueryId, QueryMatch, ReferenceAst} from './template_parser/template_ast';
+import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst} from './template_parser/template_ast';
 
 export class ProviderError extends ParseError {
   constructor(message: string, span: ParseSourceSpan) { super(span, message); }
@@ -19,7 +19,7 @@ export class ProviderError extends ParseError {
 
 export interface QueryWithId {
   meta: CompileQueryMetadata;
-  id: QueryId;
+  queryId: number;
 }
 
 export class ProviderViewContext {
@@ -57,16 +57,21 @@ export class ProviderElementContext {
   constructor(
       public viewContext: ProviderViewContext, private _parent: ProviderElementContext,
       private _isViewRoot: boolean, private _directiveAsts: DirectiveAst[], attrs: AttrAst[],
-      refs: ReferenceAst[], private _sourceSpan: ParseSourceSpan) {
+      refs: ReferenceAst[], isTemplate: boolean, contentQueryStartId: number,
+      private _sourceSpan: ParseSourceSpan) {
     this._attrs = {};
     attrs.forEach((attrAst) => this._attrs[attrAst.name] = attrAst.value);
     const directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
     this._allProviders =
         _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, viewContext.errors);
-    this._contentQueries = _getContentQueries(this.depth, directivesMeta);
+    this._contentQueries = _getContentQueries(contentQueryStartId, directivesMeta);
     Array.from(this._allProviders.values()).forEach((provider) => {
       this._addQueryReadsTo(provider.token, provider.token, this._queriedTokens);
     });
+    if (isTemplate) {
+      const templateRefId = createIdentifierToken(Identifiers.TemplateRef);
+      this._addQueryReadsTo(templateRefId, templateRefId, this._queriedTokens);
+    }
     refs.forEach((refAst) => {
       let defaultQueryValue = refAst.value || createIdentifierToken(Identifiers.ElementRef);
       this._addQueryReadsTo({value: refAst.name}, defaultQueryValue, this._queriedTokens);
@@ -89,16 +94,6 @@ export class ProviderElementContext {
     Array.from(this._allProviders.values()).forEach((provider) => {
       this._getOrCreateLocalProvider(provider.providerType, provider.token, false);
     });
-  }
-
-  get depth(): number {
-    let d = 0;
-    let current: ProviderElementContext = this;
-    while (current._parent) {
-      d++;
-      current = current._parent;
-    }
-    return d;
   }
 
   get transformProviders(): ProviderAst[] {
@@ -133,7 +128,7 @@ export class ProviderElementContext {
         queryMatches = [];
         queryReadTokens.set(tokenRef, queryMatches);
       }
-      queryMatches.push({query: query.id, value: queryValue});
+      queryMatches.push({queryId: query.queryId, value: queryValue});
     });
   }
 
@@ -483,24 +478,24 @@ function _resolveProviders(
 
 
 function _getViewQueries(component: CompileDirectiveMetadata): Map<any, QueryWithId[]> {
+  // Note: queries start with id 1 so we can use the number in a Bloom filter!
+  let viewQueryId = 1;
   const viewQueries = new Map<any, QueryWithId[]>();
   if (component.viewQueries) {
     component.viewQueries.forEach(
-        (query, queryIndex) => _addQueryToTokenMap(
-            viewQueries,
-            {meta: query, id: {elementDepth: null, directiveIndex: null, queryIndex: queryIndex}}));
+        (query) => _addQueryToTokenMap(viewQueries, {meta: query, queryId: viewQueryId++}));
   }
   return viewQueries;
 }
 
 function _getContentQueries(
-    elementDepth: number, directives: CompileDirectiveSummary[]): Map<any, QueryWithId[]> {
+    contentQueryStartId: number, directives: CompileDirectiveSummary[]): Map<any, QueryWithId[]> {
+  let contentQueryId = contentQueryStartId;
   const contentQueries = new Map<any, QueryWithId[]>();
   directives.forEach((directive, directiveIndex) => {
     if (directive.queries) {
       directive.queries.forEach(
-          (query, queryIndex) => _addQueryToTokenMap(
-              contentQueries, {meta: query, id: {elementDepth, directiveIndex, queryIndex}}));
+          (query) => _addQueryToTokenMap(contentQueries, {meta: query, queryId: contentQueryId++}));
     }
   });
   return contentQueries;
