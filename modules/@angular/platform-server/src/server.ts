@@ -15,7 +15,7 @@ import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
 import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRootRenderer} from './private_import_core';
-import {SharedStylesHost, getDOM} from './private_import_platform-browser';
+import {getDOM} from './private_import_platform-browser';
 import {ServerRootRenderer} from './server_renderer';
 
 
@@ -45,8 +45,6 @@ export function _createConditionalRootRenderer(rootRenderer: any) {
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
-  // use plain SharedStylesHost, not the DomSharedStylesHost
-  SharedStylesHost
 ];
 
 /**
@@ -83,7 +81,11 @@ export class ServerModule {
 function _document(injector: Injector) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
   if (config && config.document) {
-    return parseDocument(config.document);
+    let doc = parseDocument(config.document);
+    doc['head'] = getDOM().querySelector(doc, 'head');
+    doc['body'] = getDOM().querySelector(doc, 'body');
+    doc['_window'] = {};
+    return doc;
   } else {
     return getDOM().createHtmlDocument();
   }

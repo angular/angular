@@ -203,6 +203,7 @@ export class Parse5DomAdapter extends DomAdapter {
   appendChild(el: any, node: any) {
     this.remove(node);
     treeAdapter.appendChild(this.templateAwareRoot(el), node);
+    return node;
   }
   removeChild(el: any, node: any) {
     if (el.childNodes.indexOf(node) > -1) {

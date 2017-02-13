@@ -7,7 +7,7 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, PlatformRef} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {async, inject} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -33,7 +33,7 @@ class MyServerApp2 {
 class ExampleModule2 {
 }
 
-@Component({selector: 'app', template: '{{text}}'})
+@Component({selector: 'app', template: '<p>{{text}}</p>', styles: ['p { margin: 2px; }']})
 class MyAsyncServerApp {
   text = '';
 
@@ -129,8 +129,8 @@ export function main() {
     describe('render', () => {
       let doc: string;
       let called: boolean;
-      let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>';
+      let expectedPattern =
+          /<html><head><style>p\[_ngcontent-.*\] { margin: 2px; }<\/style><\/head><body><app ng-version="0.0.0-PLACEHOLDER" _nghost-.*><p _ngcontent-.*>Works!<\/p><\/app><\/body><\/html>/;
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -150,7 +150,8 @@ export function main() {
                      filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
                })
                .then((b) => {
-                 expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
+                 expect(platform.injector.get(PlatformState).renderToString())
+                     .toMatch(expectedPattern);
                  platform.destroy();
                  called = true;
                });
@@ -158,7 +159,7 @@ export function main() {
 
       it('using renderModule should work', async(() => {
            renderModule(AsyncServerModule, {document: doc}).then(output => {
-             expect(output).toBe(expectedOutput);
+             expect(output).toMatch(expectedPattern);
              called = true;
            });
          }));
@@ -170,7 +171,7 @@ export function main() {
            const moduleFactory =
                compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
            renderModuleFactory(moduleFactory, {document: doc}).then(output => {
-             expect(output).toBe(expectedOutput);
+             expect(output).toMatch(expectedPattern);
              called = true;
            });
          })));
@@ -179,8 +180,8 @@ export function main() {
     describe('render', () => {
       let doc: string;
       let called: boolean;
-      let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>';
+      let expectedPattern =
+          /<html><head><style>p\[_ngcontent-.*\] { margin: 2px; }<\/style><\/head><body><app ng-version="0.0.0-PLACEHOLDER" _nghost-.*><p _ngcontent-.*>Works!<\/p><\/app><\/body><\/html>/;
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -200,7 +201,8 @@ export function main() {
                      filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
                })
                .then((b) => {
-                 expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
+                 expect(platform.injector.get(PlatformState).renderToString())
+                     .toMatch(expectedPattern);
                  platform.destroy();
                  called = true;
                });
@@ -208,7 +210,7 @@ export function main() {
 
       it('using renderModule should work', async(() => {
            renderModule(AsyncServerModule, {document: doc}).then(output => {
-             expect(output).toBe(expectedOutput);
+             expect(output).toMatch(expectedPattern);
              called = true;
            });
          }));
@@ -220,7 +222,7 @@ export function main() {
            const moduleFactory =
                compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
            renderModuleFactory(moduleFactory, {document: doc}).then(output => {
-             expect(output).toBe(expectedOutput);
+             expect(output).toMatch(expectedPattern);
              called = true;
            });
          })));
