@@ -1,3 +1,9 @@
+# Note about future changes
+
+* From version 3.0.0 onwards, router releases are released in-step with regular angular releases.
+* For any subsequent release of angular there will be a corresponding router release with a version number 1 higher
+* For example, if you're using @angular/core 2.2.0-rc.0, then use @angular/router 3.2.0-rc.0 and look at the changelog for 2.2.0-rc.0 - available here : https://github.com/angular/angular/blob/master/CHANGELOG.md
+
 # 3.0.0-rc.2 (2016-08-31)
 
 ## Features
