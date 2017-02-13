@@ -367,7 +367,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return this.querySelectorAll(element, '.' + name);
   }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
-    throw _notImplemented('getElementsByTagName');
+    return this.querySelectorAll(element, name);
   }
   classList(element: any): string[] {
     let classAttrValue: any = null;
