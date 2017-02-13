@@ -6,7 +6,8 @@
 [![npm version](https://badge.fury.io/js/%40angular%2Fcore.svg)](https://badge.fury.io/js/%40angular%2Fcore)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)
-*Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][browserstack].*
+
+*Safari (7,8), iOS (7,8), Android (4.1 to 4.4) and IE mobile (11) are tested on [BrowserStack][browserstack].*
 
 Angular
 =========
