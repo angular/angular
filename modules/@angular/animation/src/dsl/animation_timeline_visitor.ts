@@ -5,15 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, AnimationStyles} from '@angular/core';
-
+import {AnimationStyles} from '@angular/core';
 import {StyleData} from '../common/style_data';
 import {copyStyles, normalizeStyles, parseTimeExpression} from '../common/util';
-
 import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
 import * as meta from './animation_metadata';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
-
 
 /*
  * The code within this file aims to generate web-animations-compatible keyframes from Angular's
@@ -134,19 +131,13 @@ export class AnimationTimelineContext {
   }
 
   transformIntoNewTimeline(newTime = 0) {
-    const oldTimeline = this.currentTimeline;
-    const oldTime = oldTimeline.time;
-    if (newTime > 0) {
-      oldTimeline.time = newTime;
-    }
-    this.currentTimeline = oldTimeline.fork();
-    oldTimeline.time = oldTime;
+    this.currentTimeline = this.currentTimeline.fork(newTime);
     this.timelines.push(this.currentTimeline);
     return this.currentTimeline;
   }
 
   incrementTime(time: number) {
-    this.currentTimeline.forwardTime(this.currentTimeline.time + time);
+    this.currentTimeline.forwardTime(this.currentTimeline.duration + time);
   }
 }
 
@@ -201,7 +192,8 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       context.currentTimeline.forwardFrame();
       context.currentTimeline.snapshotCurrentStyles();
     }
-    ast.steps.map(s => visitAnimationNode(this, s, context));
+
+    ast.steps.forEach(s => visitAnimationNode(this, s, context));
 
     // this means that some animation function within the sequence
     // ended up creating a sub timeline (which means the current
@@ -216,7 +208,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
   visitGroup(ast: meta.AnimationGroupMetadata, context: AnimationTimelineContext) {
     const innerTimelines: TimelineBuilder[] = [];
     let furthestTime = context.currentTimeline.currentTime;
-    ast.steps.map(s => {
+    ast.steps.forEach(s => {
       const innerContext = context.createSubContext();
       visitAnimationNode(this, s, innerContext);
       furthestTime = Math.max(furthestTime, innerContext.currentTimeline.currentTime);
@@ -289,16 +281,17 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       offsetGap = MAX_KEYFRAME_OFFSET / limit;
     }
 
-    const keyframeDuration = context.currentAnimateTimings.duration;
+    const startTime = context.currentTimeline.duration;
+    const duration = context.currentAnimateTimings.duration;
     const innerContext = context.createSubContext();
     const innerTimeline = innerContext.currentTimeline;
     innerTimeline.easing = context.currentAnimateTimings.easing;
 
-    ast.steps.map((step: meta.AnimationStyleMetadata, i: number) => {
+    ast.steps.forEach((step: meta.AnimationStyleMetadata, i: number) => {
       const normalizedStyles = normalizeStyles(new AnimationStyles(step.styles));
       const offset = containsOffsets ? <number>normalizedStyles['offset'] :
                                        (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
-      innerTimeline.forwardTime(offset * keyframeDuration);
+      innerTimeline.forwardTime(offset * duration);
       innerTimeline.setStyles(normalizedStyles);
     });
 
@@ -308,13 +301,13 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
     // we do this because the window between this timeline and the sub timeline
     // should ensure that the styles within are exactly the same as they were before
-    context.transformIntoNewTimeline(context.currentTimeline.time + keyframeDuration);
+    context.transformIntoNewTimeline(startTime + duration);
     context.previousNode = ast;
   }
 }
 
 export class TimelineBuilder {
-  public time: number = 0;
+  public duration: number = 0;
   public easing: string = '';
   private _currentKeyframe: StyleData;
   private _keyframes = new Map<number, StyleData>();
@@ -332,27 +325,27 @@ export class TimelineBuilder {
 
   hasStyling(): boolean { return this._keyframes.size > 1; }
 
-  get currentTime() { return this.startTime + this.time; }
+  get currentTime() { return this.startTime + this.duration; }
 
-  fork(): TimelineBuilder {
-    return new TimelineBuilder(this.currentTime, this._globalTimelineStyles);
+  fork(currentTime = 0): TimelineBuilder {
+    return new TimelineBuilder(currentTime || this.currentTime, this._globalTimelineStyles);
   }
 
   private _loadKeyframe() {
-    this._currentKeyframe = this._keyframes.get(this.time);
+    this._currentKeyframe = this._keyframes.get(this.duration);
     if (!this._currentKeyframe) {
       this._currentKeyframe = Object.create(this._backFill, {});
-      this._keyframes.set(this.time, this._currentKeyframe);
+      this._keyframes.set(this.duration, this._currentKeyframe);
     }
   }
 
   forwardFrame() {
-    this.time++;
+    this.duration++;
     this._loadKeyframe();
   }
 
   forwardTime(time: number) {
-    this.time = time;
+    this.duration = time;
     this._loadKeyframe();
   }
 
@@ -384,7 +377,7 @@ export class TimelineBuilder {
 
   snapshotCurrentStyles() { copyStyles(this._localTimelineStyles, false, this._currentKeyframe); }
 
-  getFinalKeyframe() { return this._keyframes.get(this.time); }
+  getFinalKeyframe() { return this._keyframes.get(this.duration); }
 
   get properties() {
     const properties: string[] = [];
@@ -408,7 +401,7 @@ export class TimelineBuilder {
     const finalKeyframes: StyleData[] = [];
     // special case for when there are only start/destination
     // styles but no actual animation animate steps...
-    if (this.time == 0) {
+    if (this.duration == 0) {
       const targetKeyframe = this.getFinalKeyframe();
 
       const firstKeyframe = copyStyles(targetKeyframe, true);
@@ -421,11 +414,11 @@ export class TimelineBuilder {
     } else {
       this._keyframes.forEach((keyframe, time) => {
         const finalKeyframe = copyStyles(keyframe, true);
-        finalKeyframe['offset'] = time / this.time;
+        finalKeyframe['offset'] = time / this.duration;
         finalKeyframes.push(finalKeyframe);
       });
     }
 
-    return createTimelineInstruction(finalKeyframes, this.time, this.startTime, this.easing);
+    return createTimelineInstruction(finalKeyframes, this.duration, this.startTime, this.easing);
   }
 }
