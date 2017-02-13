@@ -28,8 +28,6 @@ $mat-tab-animation-duration: 500ms !default;
 @mixin tab-header {
   overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: row;
   flex-shrink: 0;
 }
 

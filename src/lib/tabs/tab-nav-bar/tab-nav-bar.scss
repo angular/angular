@@ -6,6 +6,11 @@
   @include tab-header;
 }
 
+.mat-tab-links {
+  display: flex;
+  position: relative;
+}
+
 // Wraps each link in the header
 .mat-tab-link {
   @include tab-label;

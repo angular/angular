@@ -216,7 +216,7 @@ interface Tab {
     <md-tab-header [selectedIndex]="selectedIndex"
                (indexFocused)="focusedIndex = $event"
                (selectFocusedIndex)="selectedIndex = $event">
-      <div md-tab-label-wrapper style="min-width: 30px"
+      <div md-tab-label-wrapper style="min-width: 30px; width: 30px"
            *ngFor="let tab of tabs; let i = index"
            [disabled]="!!tab.disabled"
            (click)="selectedIndex = i">

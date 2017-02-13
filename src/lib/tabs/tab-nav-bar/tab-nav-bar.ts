@@ -26,11 +26,23 @@ import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
   encapsulation: ViewEncapsulation.None,
 })
 export class MdTabNavBar {
+  _activeLinkChanged: boolean;
+  _activeLinkElement: ElementRef;
+
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
 
-  /** Animates the ink bar to the position of the active link element. */
-  updateActiveLink(element: HTMLElement) {
-    this._inkBar.alignToElement(element);
+  /** Notifies the component that the active link has been changed. */
+  updateActiveLink(element: ElementRef) {
+    this._activeLinkChanged = this._activeLinkElement != element;
+    this._activeLinkElement = element;
+  }
+
+  /** Checks if the active link has been changed and, if so, will update the ink bar. */
+  ngAfterContentChecked(): void {
+    if (this._activeLinkChanged) {
+      this._inkBar.alignToElement(this._activeLinkElement.nativeElement);
+      this._activeLinkChanged = false;
+    }
   }
 }
 
@@ -39,6 +51,9 @@ export class MdTabNavBar {
  */
 @Directive({
   selector: '[md-tab-link], [mat-tab-link]',
+  host: {
+    '[class.mat-tab-link]': 'true',
+  }
 })
 export class MdTabLink {
   private _isActive: boolean = false;
@@ -49,11 +64,11 @@ export class MdTabLink {
   set active(value: boolean) {
     this._isActive = value;
     if (value) {
-      this._mdTabNavBar.updateActiveLink(this._element.nativeElement);
+      this._mdTabNavBar.updateActiveLink(this._elementRef);
     }
   }
 
-  constructor(private _mdTabNavBar: MdTabNavBar, private _element: ElementRef) {}
+  constructor(private _mdTabNavBar: MdTabNavBar, private _elementRef: ElementRef) {}
 }
 
 /**

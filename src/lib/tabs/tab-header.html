@@ -9,7 +9,9 @@
 <div class="mat-tab-label-container" #tabListContainer
      (keydown)="_handleKeydown($event)">
   <div class="mat-tab-list" #tabList role="tablist" (cdkObserveContent)="_onContentChanges()">
-    <ng-content></ng-content>
+    <div class="mat-tab-labels">
+      <ng-content></ng-content>
+    </div>
     <md-ink-bar></md-ink-bar>
   </div>
 </div>
