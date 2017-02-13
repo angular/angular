@@ -465,6 +465,24 @@ export function main() {
             {width: 200, height: 200, offset: 1},
           ]);
         });
+
+        it('should respect delays after multiple calls to group()', () => {
+          const steps = [
+            group([animate('2s', style({opacity: 1})), animate('2s', style({width: '100px'}))]),
+            animate(2000, style({width: 0, opacity: 0})),
+            group([animate('2s', style({opacity: 1})), animate('2s', style({width: '200px'}))]),
+            animate(2000, style({width: 0, opacity: 0}))
+          ];
+
+          const players = invokeAnimationSequence(steps);
+          const middlePlayer = players[2];
+          expect(middlePlayer.delay).toEqual(2000);
+          expect(middlePlayer.duration).toEqual(2000);
+
+          const finalPlayer = players[players.length - 1];
+          expect(finalPlayer.delay).toEqual(6000);
+          expect(finalPlayer.duration).toEqual(2000);
+        });
       });
 
       describe('timing values', () => {
