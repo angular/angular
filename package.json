@@ -44,7 +44,7 @@
     "@types/glob": "^5.0.30",
     "@types/gulp": "^3.8.32",
     "@types/hammerjs": "^2.0.34",
-    "@types/jasmine": "^2.5.41",
+    "@types/jasmine": "2.5.41",
     "@types/merge2": "^0.3.29",
     "@types/minimist": "^1.2.0",
     "@types/node": "^7.0.4",
