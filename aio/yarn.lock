@@ -1538,9 +1538,9 @@ detect-indent@^4.0.0:
   dependencies:
     repeating "^2.0.0"
 
-dgeni-packages@^0.16.5:
-  version "0.16.5"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.16.5.tgz#3f4d59b312dc11cf216933d0fc368a954ac7c268"
+dgeni-packages@^0.16.6:
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.16.6.tgz#db7b0079e7e24ddd3527bc1ac79b59514b86767d"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -1563,7 +1563,7 @@ dgeni-packages@^0.16.5:
     stringmap "^0.2.2"
     typescript "^1.7.5"
 
-dgeni@^0.4.0, dgeni@^0.4.2:
+dgeni@^0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.2.tgz#c5f7297922444e9e149368f7d3c3fdb17cc96d28"
   dependencies:
@@ -1571,6 +1571,20 @@ dgeni@^0.4.0, dgeni@^0.4.2:
     dependency-graph "~0.4.1"
     di "0.0.1"
     lodash "^3.10.1"
+    optimist "~0.6.1"
+    q "~1.4.1"
+    validate.js "^0.9.0"
+    winston "^2.1.1"
+
+dgeni@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.4.tgz#4179b9c31dc351d439f40acf0b4c2267f066163a"
+  dependencies:
+    canonical-path "~0.0.2"
+    dependency-graph "~0.4.1"
+    di "0.0.1"
+    lodash "^3.10.1"
+    objectdiff "^1.1.0"
     optimist "~0.6.1"
     q "~1.4.1"
     validate.js "^0.9.0"
@@ -4298,6 +4312,10 @@ object.omit@^2.0.0:
   dependencies:
     for-own "^0.1.4"
     is-extendable "^0.1.1"
+
+objectdiff@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/objectdiff/-/objectdiff-1.1.0.tgz#8d7a15be6cb8670df8a490cc6be12a4f05ea82f4"
 
 obuf@^1.0.0, obuf@^1.1.0:
   version "1.1.1"
