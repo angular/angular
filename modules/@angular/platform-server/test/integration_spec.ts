@@ -29,6 +29,14 @@ class MyServerApp {
 class ExampleModule {
 }
 
+@Component({selector: 'app', template: `<img [src]="'link'">`})
+class ImageApp {
+}
+
+@NgModule({declarations: [ImageApp], imports: [ServerModule], bootstrap: [ImageApp]})
+class ImageExampleModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
@@ -43,6 +51,15 @@ export function main() {
            expect(getDOM().getText(body)).toEqual('Works!');
          });
        }));
+
+    it('copies known properties to attributes', async(() => {
+         const body = writeBody('<app></app>');
+         platformDynamicServer().bootstrapModule(ImageExampleModule).then(() => {
+           const img = getDOM().getElementsByTagName(body, 'img')[0] as any;
+           expect(img.attribs['src']).toEqual('link');
+         });
+       }));
+
 
     describe('PlatformLocation', () => {
       it('is injectable', () => {
