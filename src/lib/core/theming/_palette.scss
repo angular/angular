@@ -649,7 +649,8 @@ $mat-light-theme-background: (
   hover:      rgba(black, 0.04), // TODO(kara): check style with Material Design UX
   card:       white,
   dialog:     white,
-  disabled-button:   rgba(black, 0.12)
+  disabled-button: rgba(black, 0.12),
+  raised-button: white,
 );
 
 // Background palette for dark themes.
@@ -660,7 +661,8 @@ $mat-dark-theme-background: (
   hover:      rgba(white, 0.04), // TODO(kara): check style with Material Design UX
   card:       map_get($mat-grey, 800),
   dialog:     map_get($mat-grey, 800),
-  disabled-button: rgba(white, 0.12)
+  disabled-button: rgba(white, 0.12),
+  raised-button: map-get($mat-grey, 800),
 );
 
 // Foreground palette for light themes.

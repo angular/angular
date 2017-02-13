@@ -71,9 +71,12 @@
   }
 
   .mat-raised-button, .mat-fab, .mat-mini-fab {
+    // Default properties when not using any [color] value.
+    color: mat-color($foreground, text);
+    background-color: mat-color($background, raised-button);
+
     @include _mat-button-theme-color($theme, 'color', default-contrast);
     @include _mat-button-theme-color($theme, 'background-color');
-    background-color: mat-color($background, background);
   }
 
   .mat-fab, .mat-mini-fab {
