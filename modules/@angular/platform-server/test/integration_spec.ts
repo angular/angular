@@ -90,6 +90,14 @@ export class HttpBeforeExampleModule {
 export class HttpAfterExampleModule {
 }
 
+@Component({selector: 'app', template: `<img [src]="'link'">`})
+class ImageApp {
+}
+
+@NgModule({declarations: [ImageApp], imports: [ServerModule], bootstrap: [ImageApp]})
+class ImageExampleModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
@@ -142,6 +150,18 @@ export function main() {
            expect(style.children[0].data).toContain('color: red');
          });
        }));
+
+    it('copies known properties to attributes', async(() => {
+         const platform = platformDynamicServer(
+             [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+         platform.bootstrapModule(ImageExampleModule).then(ref => {
+           const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
+           const app = appRef.components[0].location.nativeElement;
+           const img = getDOM().getElementsByTagName(app, 'img')[0] as any;
+           expect(img.attribs['src']).toEqual('link');
+         });
+       }));
+
 
     describe('PlatformLocation', () => {
       it('is injectable', async(() => {
