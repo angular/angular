@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DomElementSchemaRegistry} from '@angular/compiler';
 import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
@@ -16,9 +17,13 @@ import {NAMESPACE_URIS, SharedStylesHost, flattenStyles, getDOM, isNamespaced, s
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
 
+const EMPTY_ARRAY: any[] = [];
+
 @Injectable()
 export class ServerRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, ServerRenderer> = new Map<string, ServerRenderer>();
+  private _schema = new DomElementSchemaRegistry();
+
   constructor(
       @Inject(DOCUMENT) public document: any, public sharedStylesHost: SharedStylesHost,
       public animationDriver: AnimationDriver, @Inject(APP_ID) public appId: string,
@@ -28,7 +33,7 @@ export class ServerRootRenderer implements RootRenderer {
     if (!renderer) {
       renderer = new ServerRenderer(
           this, componentProto, this.animationDriver, `${this.appId}-${componentProto.id}`,
-          this._zone);
+          this._zone, this._schema);
       this.registeredComponents.set(componentProto.id, renderer);
     }
     return renderer;
@@ -42,7 +47,8 @@ export class ServerRenderer implements Renderer {
 
   constructor(
       private _rootRenderer: ServerRootRenderer, private componentProto: RenderComponentType,
-      private _animationDriver: AnimationDriver, styleShimId: string, private _zone: NgZone) {
+      private _animationDriver: AnimationDriver, styleShimId: string, private _zone: NgZone,
+      private _schema: DomElementSchemaRegistry) {
     this._styles = flattenStyles(styleShimId, componentProto.styles, []);
     if (componentProto.encapsulation === ViewEncapsulation.Native) {
       throw new Error('Native encapsulation is not supported on the server!');
@@ -141,8 +147,27 @@ export class ServerRenderer implements Renderer {
     return this.listen(renderElement, name, callback);
   }
 
+  // The value was validated already as a property binding, against the property name.
+  // To know this value is safe to use as an attribute, the security context of the
+  // attribute with the given name is checked against that security context of the
+  // property.
+  private _isSafeToReflectProperty(tagName: string, propertyName: string): boolean {
+    return this._schema.securityContext(tagName, propertyName, true) ===
+        this._schema.securityContext(tagName, propertyName, false);
+  }
+
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void {
     getDOM().setProperty(renderElement, propertyName, propertyValue);
+
+    // Mirror property values for known HTML element properties in the attributes.
+    const tagName = (renderElement.tagName as string).toLowerCase();
+    if (isPresent(propertyValue) &&
+        (typeof propertyValue === 'number' || typeof propertyValue == 'string') &&
+        this._schema.hasElement(tagName, EMPTY_ARRAY) &&
+        this._schema.hasProperty(tagName, propertyName, EMPTY_ARRAY) &&
+        this._isSafeToReflectProperty(tagName, propertyName)) {
+      this.setElementAttribute(renderElement, propertyName, propertyValue.toString());
+    }
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void {
