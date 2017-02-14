@@ -47,6 +47,7 @@ export class ServerRenderer implements Renderer {
     if (componentProto.encapsulation === ViewEncapsulation.Native) {
       throw new Error('Native encapsulation is not supported on the server!');
     }
+    this._rootRenderer.sharedStylesHost.addStyles(this._styles);
     if (this.componentProto.encapsulation === ViewEncapsulation.Emulated) {
       this._contentAttr = shimContentAttribute(styleShimId);
       this._hostAttr = shimHostAttribute(styleShimId);

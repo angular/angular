@@ -8,15 +8,15 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RENDERER_V2_DIRECT, RendererV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RENDERER_V2_DIRECT, RendererV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
-
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
 import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRendererV2, DebugDomRootRenderer} from './private_import_core';
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRendererV2, ServerRootRenderer} from './server_renderer';
+import {ServerStylesHost} from './styles_host';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -42,12 +42,24 @@ export function _createDebugRendererV2(renderer: RendererV2): RendererV2 {
   return isDevMode() ? new DebugDomRendererV2(renderer) : renderer;
 }
 
+export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
+  const initializer = () => stylesHost.rootComponentIsReady();
+  return initializer;
+}
+
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
-  ServerRootRenderer, {provide: RENDERER_V2_DIRECT, useClass: ServerRendererV2},
+  ServerRootRenderer,
+  {provide: RENDERER_V2_DIRECT, useClass: ServerRendererV2},
   {provide: RendererV2, useFactory: _createDebugRendererV2, deps: [RENDERER_V2_DIRECT]},
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
-  // use plain SharedStylesHost, not the DomSharedStylesHost
-  SharedStylesHost
+  ServerStylesHost,
+  {provide: SharedStylesHost, useExisting: ServerStylesHost},
+  {
+    provide: APP_BOOTSTRAP_LISTENER,
+    useFactory: _addStylesToRootComponentFactory,
+    deps: [ServerStylesHost],
+    multi: true
+  },
 ];
 
 /**
