@@ -23,7 +23,7 @@ const publicApiArgs = [
   '--rootDir',
   'dist/packages-dist',
   '--stripExportPattern',
-  '^__',
+  '^(__|ɵ)',
   '--allowModuleIdentifiers',
   'jasmine',
   '--allowModuleIdentifiers',

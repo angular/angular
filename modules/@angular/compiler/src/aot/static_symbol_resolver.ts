@@ -127,6 +127,12 @@ export class StaticSymbolResolver {
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
   }
 
+  recordImportAs(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol) {
+    sourceSymbol.assertNoMembers();
+    targetSymbol.assertNoMembers();
+    this.importAs.set(sourceSymbol, targetSymbol);
+  }
+
   private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol {
     const members = staticSymbol.members;
     const baseResolvedSymbol =

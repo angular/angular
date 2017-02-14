@@ -7,6 +7,7 @@
  */
 
 import {AotCompiler, AotCompilerHost, createAotCompiler} from '@angular/compiler';
+import {RenderComponentType} from '@angular/core';
 import {async} from '@angular/core/testing';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -16,20 +17,26 @@ import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, s
 
 const DTS = /\.d\.ts$/;
 
-// These are the files that contain the well known annotations.
-const CORE_FILES = [
-  '@angular/core/src/metadata.ts', '@angular/core/src/di/metadata.ts',
-  '@angular/core/src/di/injection_token.ts', '@angular/core/src/animation/metadata.ts',
-  '@angular/core/src/di/provider.ts', '@angular/core/src/linker/view.ts'
-];
+const minCoreIndex = `
+  export * from './src/metadata';
+  export * from './src/di/metadata';
+  export * from './src/di/injector';
+  export * from './src/di/injection_token';
+  export * from './src/animation/metadata';
+  export * from './src/linker';
+  export * from './src/render';
+  export * from './src/codegen_private_exports';
+`;
 
 describe('compiler', () => {
   let angularFiles: Map<string, string>;
 
   beforeAll(() => {
-    const emittingHost = new EmittingCompilerHost(CORE_FILES);
+    const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
+    emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
     const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
     emittingProgram.emit();
+
     angularFiles = emittingHost.written;
   });
 
@@ -147,7 +154,8 @@ function summaryCompile(
 function compile(
     host: MockCompilerHost, aotHost: AotCompilerHost, preCompile?: (program: ts.Program) => void,
     postCompile: (program: ts.Program) => void = expectNoDiagnostics) {
-  const program = ts.createProgram(host.scriptNames, settings, host);
+  const scripts = host.scriptNames.slice(0);
+  const program = ts.createProgram(scripts, settings, host);
   if (preCompile) preCompile(program);
   const {compiler, reflector} = createAotCompiler(aotHost, {});
   return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName))
@@ -155,7 +163,8 @@ function compile(
         generatedFiles.forEach(
             file => isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, file.source) :
                                                 host.override(file.genFileUrl, file.source));
-        const newProgram = ts.createProgram(host.scriptNames, settings, host, program);
+        const scripts = host.scriptNames.slice(0);
+        const newProgram = ts.createProgram(scripts, settings, host);
         if (postCompile) postCompile(newProgram);
         return generatedFiles;
       });
@@ -166,7 +175,7 @@ const FILES: MockData = {
   quickstart: {
     app: {
       'app.component.ts': `
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
 
         @Component({
           template: '<h1>Hello {{name}}</h1>'
@@ -176,7 +185,7 @@ const FILES: MockData = {
         }
       `,
       'app.module.ts': `
-        import { NgModule }      from '@angular/core/src/metadata';
+        import { NgModule }      from '@angular/core';
 
         import { AppComponent }  from './app.component';
 

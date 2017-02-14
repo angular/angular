@@ -57,8 +57,16 @@ export class StaticReflector implements ReflectorReader {
     return staticSymbol ? staticSymbol.filePath : null;
   }
 
-  resolveIdentifier(name: string, moduleUrl: string): StaticSymbol {
-    return this.findDeclaration(moduleUrl, name);
+  resolveIdentifier(name: string, moduleUrl: string, members: string[]): StaticSymbol {
+    const importSymbol = this.getStaticSymbol(moduleUrl, name);
+    const rootSymbol = this.findDeclaration(moduleUrl, name);
+    if (importSymbol != rootSymbol) {
+      this.symbolResolver.recordImportAs(rootSymbol, importSymbol);
+    }
+    if (members && members.length) {
+      return this.getStaticSymbol(rootSymbol.filePath, rootSymbol.name, members);
+    }
+    return rootSymbol;
   }
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
@@ -77,7 +85,8 @@ export class StaticReflector implements ReflectorReader {
 
   resolveEnum(enumIdentifier: any, name: string): any {
     const staticSymbol: StaticSymbol = enumIdentifier;
-    return this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
+    const members = (staticSymbol.members || []).concat(name);
+    return this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, members);
   }
 
   public annotations(type: StaticSymbol): any[] {
