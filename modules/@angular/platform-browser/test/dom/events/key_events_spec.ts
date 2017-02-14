@@ -22,34 +22,45 @@ export function main() {
     });
 
     it('should correctly parse event names', () => {
+
       // key with no modifier
       expect(KeyEventsPlugin.parseEventName('keydown.enter'))
-          .toEqual({'domEventName': 'keydown', 'fullKey': 'enter'});
+          .toEqual({'domEventName': 'keydown', 'fullKey': 'enter', useCapture: false});
       expect(KeyEventsPlugin.parseEventName('keyup.enter'))
-          .toEqual({'domEventName': 'keyup', 'fullKey': 'enter'});
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'enter', useCapture: false});
+      expect(KeyEventsPlugin.parseEventName('~keyup.enter'))
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'enter', useCapture: true});
 
       // key with modifiers:
-      expect(KeyEventsPlugin.parseEventName('keydown.control.shift.enter'))
-          .toEqual({'domEventName': 'keydown', 'fullKey': 'control.shift.enter'});
+      expect(KeyEventsPlugin.parseEventName('keydown.control.shift.enter')).toEqual({
+        'domEventName': 'keydown',
+        'fullKey': 'control.shift.enter',
+        useCapture: false
+      });
       expect(KeyEventsPlugin.parseEventName('keyup.control.shift.enter'))
-          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift.enter'});
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift.enter', useCapture: false});
+      expect(KeyEventsPlugin.parseEventName('~keyup.control.shift.enter'))
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift.enter', useCapture: true});
 
       // key with modifiers in a different order:
-      expect(KeyEventsPlugin.parseEventName('keydown.shift.control.enter'))
-          .toEqual({'domEventName': 'keydown', 'fullKey': 'control.shift.enter'});
+      expect(KeyEventsPlugin.parseEventName('keydown.shift.control.enter')).toEqual({
+        'domEventName': 'keydown',
+        'fullKey': 'control.shift.enter',
+        useCapture: false
+      });
       expect(KeyEventsPlugin.parseEventName('keyup.shift.control.enter'))
-          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift.enter'});
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift.enter', useCapture: false});
 
       // key that is also a modifier:
       expect(KeyEventsPlugin.parseEventName('keydown.shift.control'))
-          .toEqual({'domEventName': 'keydown', 'fullKey': 'shift.control'});
+          .toEqual({'domEventName': 'keydown', 'fullKey': 'shift.control', useCapture: false});
       expect(KeyEventsPlugin.parseEventName('keyup.shift.control'))
-          .toEqual({'domEventName': 'keyup', 'fullKey': 'shift.control'});
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'shift.control', useCapture: false});
 
       expect(KeyEventsPlugin.parseEventName('keydown.control.shift'))
-          .toEqual({'domEventName': 'keydown', 'fullKey': 'control.shift'});
+          .toEqual({'domEventName': 'keydown', 'fullKey': 'control.shift', useCapture: false});
       expect(KeyEventsPlugin.parseEventName('keyup.control.shift'))
-          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift'});
+          .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift', useCapture: false});
 
     });
 

@@ -23,8 +23,6 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  constructor() { super(); }
-
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
@@ -34,11 +32,17 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
+      return getDOM().onAndCancel(
+          element, parsedEvent['domEventName'], outsideHandler, parsedEvent['useCapture']);
     });
   }
 
-  static parseEventName(eventName: string): {[key: string]: string} {
+  static parseEventName(eventName: string): {[key: string]: any} {
+    const useCapture: boolean = eventName[0] === '~';
+    if (useCapture) {
+      eventName = eventName.substring(1);
+    }
+
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -63,9 +67,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const result: {[k: string]: string} = {};
+    const result: {[key: string]: any} = {};
+    // Required to tell closure to prevent minification
     result['domEventName'] = domEventName;
     result['fullKey'] = fullKey;
+    result['useCapture'] = useCapture;
     return result;
   }
 
