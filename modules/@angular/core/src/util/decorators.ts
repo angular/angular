@@ -221,6 +221,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  *   }
  * });
  * ```
+ * @suppress {globalThis}
  * @stable
  */
 export function Class(clsDef: ClassDefinition): Type<any> {
@@ -257,6 +258,9 @@ export function Class(clsDef: ClassDefinition): Type<any> {
   return <Type<any>>constructor;
 }
 
+/**
+ * @suppress {globalThis}
+ */
 export function makeDecorator(
     name: string, props: {[name: string]: any}, parentClass?: any,
     chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
