@@ -7,6 +7,9 @@
  */
 
 import {Injectable} from '@angular/core';
+
+import {getDOM} from '../dom_adapter';
+
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
@@ -16,7 +19,9 @@ export class DomEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return true; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    element.addEventListener(eventName, handler as any, false);
-    return () => element.removeEventListener(eventName, handler as any, false);
+    // https://github.com/angular/angular/issues/13548
+    const zone = this.manager.getZone();
+    const outsideHandler = (event: Event) => zone.runGuarded(() => handler(event));
+    return zone.runOutsideAngular(() => getDOM().onAndCancel(element, eventName, outsideHandler));
   }
 }
