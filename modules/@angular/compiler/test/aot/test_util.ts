@@ -41,15 +41,18 @@ export const settings: ts.CompilerOptions = {
   types: []
 };
 
+export interface EmitterOptions { emitMetadata: boolean; }
+
 export class EmittingCompilerHost implements ts.CompilerHost {
   private angularSourcePath: string|undefined;
   private nodeModulesPath: string|undefined;
+  private addedFiles = new Map<string, string>();
   private writtenFiles = new Map<string, string>();
   private scriptNames: string[];
   private root = '/';
   private collector = new MetadataCollector();
 
-  constructor(scriptNames: string[]) {
+  constructor(scriptNames: string[], private options: EmitterOptions) {
     const moduleFilename = module.filename.replace(/\\/g, '/');
     const distIndex = moduleFilename.indexOf('/dist/all');
     if (distIndex >= 0) {
@@ -59,11 +62,25 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
       // Rewrite references to scripts with '@angular' to its corresponding location in
       // the source tree.
-      this.scriptNames = scriptNames.map(
-          f => f.startsWith('@angular/') ? path.join(this.angularSourcePath, f) : f);
+      this.scriptNames = scriptNames.map(f => this.effectiveName(f));
 
       this.root = root;
     }
+  }
+
+  public addScript(fileName: string, content: string) {
+    const scriptName = this.effectiveName(fileName);
+    this.addedFiles.set(scriptName, content);
+    this.scriptNames.push(scriptName);
+  }
+
+  public override(fileName: string, content: string) {
+    const scriptName = this.effectiveName(fileName);
+    this.addedFiles.set(scriptName, content);
+  }
+
+  public addWrittenFile(fileName: string, content: string) {
+    this.writtenFiles.set(this.effectiveName(fileName), content);
   }
 
   public getWrittenFiles(): {name: string, content: string}[] {
@@ -74,10 +91,19 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   public get written(): Map<string, string> { return this.writtenFiles; }
 
+  public effectiveName(fileName: string): string {
+    return fileName.startsWith('@angular/') ? path.join(this.angularSourcePath, fileName) :
+                                              fileName;
+  }
+
   // ts.ModuleResolutionHost
-  fileExists(fileName: string): boolean { return fs.existsSync(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.addedFiles.has(fileName) || fs.existsSync(fileName);
+  }
 
   readFile(fileName: string): string {
+    const result = this.addedFiles.get(fileName);
+    if (result) return result;
     let basename = path.basename(fileName);
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(settings);
@@ -106,7 +132,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
       onError?: (message: string) => void): ts.SourceFile {
     const content = this.readFile(fileName);
     if (content) {
-      return ts.createSourceFile(fileName, content, languageVersion);
+      return ts.createSourceFile(fileName, content, languageVersion, /* setParentNodes */ true);
     }
   }
 
@@ -115,11 +141,13 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   writeFile: ts.WriteFileCallback =
       (fileName: string, data: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        this.writtenFiles.set(fileName, data);
-        if (sourceFiles && sourceFiles.length && DTS.test(fileName)) {
+        this.addWrittenFile(fileName, data);
+        if (this.options.emitMetadata && sourceFiles && sourceFiles.length && DTS.test(fileName)) {
           const metadataFilePath = fileName.replace(DTS, '.metadata.json');
           const metadata = this.collector.getMetadata(sourceFiles[0]);
-          if (metadata) this.writtenFiles.set(metadataFilePath, JSON.stringify(metadata));
+          if (metadata) {
+            this.addWrittenFile(metadataFilePath, JSON.stringify(metadata));
+          }
         }
       }
 
