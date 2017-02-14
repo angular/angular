@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {ServerPlatformLocation} from './location';
@@ -16,6 +16,7 @@ import {Parse5DomAdapter} from './parse5_adapter';
 import {DebugDomRootRenderer} from './private_import_core';
 import {DomAdapter, SharedStylesHost} from './private_import_platform-browser';
 import {ServerRootRenderer} from './server_renderer';
+import {ServerStylesHost} from './styles_host';
 
 
 function notSupported(feature: string): Error {
@@ -39,11 +40,22 @@ export function _createConditionalRootRenderer(rootRenderer: any) {
   return rootRenderer;
 }
 
+export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
+  const initializer = () => stylesHost.rootComponentIsReady();
+  return initializer;
+}
+
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
-  // use plain SharedStylesHost, not the DomSharedStylesHost
-  SharedStylesHost
+  ServerStylesHost,
+  {provide: SharedStylesHost, useExisting: ServerStylesHost},
+  {
+    provide: APP_BOOTSTRAP_LISTENER,
+    useFactory: _addStylesToRootComponentFactory,
+    deps: [ServerStylesHost],
+    multi: true
+  },
 ];
 
 /**

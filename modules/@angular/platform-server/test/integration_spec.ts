@@ -29,6 +29,14 @@ class MyServerApp {
 class ExampleModule {
 }
 
+@Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
+class MyStylesApp {
+}
+
+@NgModule({declarations: [MyStylesApp], imports: [ServerModule], bootstrap: [MyStylesApp]})
+class ExampleStylesModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
@@ -41,6 +49,17 @@ export function main() {
          const body = writeBody('<app></app>');
          platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
            expect(getDOM().getText(body)).toEqual('Works!');
+         });
+       }));
+
+    it('adds styles to the root component', async(() => {
+         const body = writeBody('<app></app>');
+         platformDynamicServer().bootstrapModule(ExampleStylesModule).then(() => {
+           const app = body.children[0];
+           expect(app.children.length).toBe(2);
+           const style = app.children[1];
+           expect(style.type).toBe('style');
+           expect(style.children[0].data).toContain('color: red');
          });
        }));
 
