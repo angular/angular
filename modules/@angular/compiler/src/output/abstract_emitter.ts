@@ -7,11 +7,14 @@
  */
 
 import {isBlank, isPresent} from '../facade/lang';
+import {ParseSourceSpan} from '../parse_util';
 
 import * as o from './output_ast';
+import {SourceMapGenerator} from './source_map';
 
 const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
 const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
+const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error');
 export const CATCH_STACK_VAR = o.variable('stack');
 
@@ -21,6 +24,7 @@ export abstract class OutputEmitter {
 
 class _EmittedLine {
   parts: string[] = [];
+  srcSpans: ParseSourceSpan[] = [];
   constructor(public indent: number) {}
 }
 
@@ -40,13 +44,16 @@ export class EmitterVisitorContext {
 
   isExportedVar(varName: string): boolean { return this._exportedVars.indexOf(varName) !== -1; }
 
-  println(lastPart: string = ''): void { this.print(lastPart, true); }
+  println(from?: {sourceSpan?: ParseSourceSpan}|null, lastPart: string = ''): void {
+    this.print(from, lastPart, true);
+  }
 
   lineIsEmpty(): boolean { return this._currentLine.parts.length === 0; }
 
-  print(part: string, newLine: boolean = false) {
+  print(from: {sourceSpan?: ParseSourceSpan}|null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
+      this._currentLine.srcSpans.push(from && from.sourceSpan || null);
     }
     if (newLine) {
       this._lines.push(new _EmittedLine(this._indent));
@@ -77,20 +84,59 @@ export class EmitterVisitorContext {
     return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
   }
 
-  toSource(): any {
-    let lines = this._lines;
-    if (lines[lines.length - 1].parts.length === 0) {
-      lines = lines.slice(0, lines.length - 1);
-    }
-    return lines
-        .map((line) => {
-          if (line.parts.length > 0) {
-            return _createIndent(line.indent) + line.parts.join('');
-          } else {
-            return '';
-          }
-        })
+  toSource(): string {
+    return this.sourceLines
+        .map(l => l.parts.length > 0 ? _createIndent(l.indent) + l.parts.join('') : '')
         .join('\n');
+  }
+
+  toSourceMapGenerator(file: string|null = null, startsAtLine: number = 0): SourceMapGenerator {
+    const map = new SourceMapGenerator(file);
+    for (let i = 0; i < startsAtLine; i++) {
+      map.addLine();
+    }
+
+    this.sourceLines.forEach(line => {
+      map.addLine();
+
+      const spans = line.srcSpans;
+      const parts = line.parts;
+      let col0 = line.indent * _INDENT_WITH.length;
+      let spanIdx = 0;
+      // skip leading parts without source spans
+      while (spanIdx < spans.length && !spans[spanIdx]) {
+        col0 += parts[spanIdx].length;
+        spanIdx++;
+      }
+
+      while (spanIdx < spans.length) {
+        const span = spans[spanIdx];
+        const source = span.start.file;
+        const sourceLine = span.start.line;
+        const sourceCol = span.start.col;
+
+        map.addSource(source.url, source.content)
+            .addMapping(col0, source.url, sourceLine, sourceCol);
+
+        col0 += parts[spanIdx].length;
+        spanIdx++;
+
+        // assign parts without span or the same span to the previous segment
+        while (spanIdx < spans.length && (span === spans[spanIdx] || !spans[spanIdx])) {
+          col0 += parts[spanIdx].length;
+          spanIdx++;
+        }
+      }
+    });
+
+    return map;
+  }
+
+  private get sourceLines(): _EmittedLine[] {
+    if (this._lines.length && this._lines[this._lines.length - 1].parts.length === 0) {
+      return this._lines.slice(0, -1);
+    }
+    return this._lines;
   }
 }
 
@@ -99,14 +145,14 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
   visitExpressionStmt(stmt: o.ExpressionStatement, ctx: EmitterVisitorContext): any {
     stmt.expr.visitExpression(this, ctx);
-    ctx.println(';');
+    ctx.println(stmt, ';');
     return null;
   }
 
   visitReturnStmt(stmt: o.ReturnStatement, ctx: EmitterVisitorContext): any {
-    ctx.print(`return `);
+    ctx.print(stmt, `return `);
     stmt.value.visitExpression(this, ctx);
-    ctx.println(';');
+    ctx.println(stmt, ';');
     return null;
   }
 
@@ -115,82 +161,83 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any;
 
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(`if (`);
+    ctx.print(stmt, `if (`);
     stmt.condition.visitExpression(this, ctx);
-    ctx.print(`) {`);
+    ctx.print(stmt, `) {`);
     const hasElseCase = isPresent(stmt.falseCase) && stmt.falseCase.length > 0;
     if (stmt.trueCase.length <= 1 && !hasElseCase) {
-      ctx.print(` `);
+      ctx.print(stmt, ` `);
       this.visitAllStatements(stmt.trueCase, ctx);
       ctx.removeEmptyLastLine();
-      ctx.print(` `);
+      ctx.print(stmt, ` `);
     } else {
       ctx.println();
       ctx.incIndent();
       this.visitAllStatements(stmt.trueCase, ctx);
       ctx.decIndent();
       if (hasElseCase) {
-        ctx.println(`} else {`);
+        ctx.println(stmt, `} else {`);
         ctx.incIndent();
         this.visitAllStatements(stmt.falseCase, ctx);
         ctx.decIndent();
       }
     }
-    ctx.println(`}`);
+    ctx.println(stmt, `}`);
     return null;
   }
 
   abstract visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any;
 
   visitThrowStmt(stmt: o.ThrowStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(`throw `);
+    ctx.print(stmt, `throw `);
     stmt.error.visitExpression(this, ctx);
-    ctx.println(`;`);
+    ctx.println(stmt, `;`);
     return null;
   }
   visitCommentStmt(stmt: o.CommentStmt, ctx: EmitterVisitorContext): any {
     const lines = stmt.comment.split('\n');
-    lines.forEach((line) => { ctx.println(`// ${line}`); });
+    lines.forEach((line) => { ctx.println(stmt, `// ${line}`); });
     return null;
   }
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
+
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
     const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
-      ctx.print('(');
+      ctx.print(expr, '(');
     }
-    ctx.print(`${expr.name} = `);
+    ctx.print(expr, `${expr.name} = `);
     expr.value.visitExpression(this, ctx);
     if (!lineWasEmpty) {
-      ctx.print(')');
+      ctx.print(expr, ')');
     }
     return null;
   }
   visitWriteKeyExpr(expr: o.WriteKeyExpr, ctx: EmitterVisitorContext): any {
     const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
-      ctx.print('(');
+      ctx.print(expr, '(');
     }
     expr.receiver.visitExpression(this, ctx);
-    ctx.print(`[`);
+    ctx.print(expr, `[`);
     expr.index.visitExpression(this, ctx);
-    ctx.print(`] = `);
+    ctx.print(expr, `] = `);
     expr.value.visitExpression(this, ctx);
     if (!lineWasEmpty) {
-      ctx.print(')');
+      ctx.print(expr, ')');
     }
     return null;
   }
   visitWritePropExpr(expr: o.WritePropExpr, ctx: EmitterVisitorContext): any {
     const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
-      ctx.print('(');
+      ctx.print(expr, '(');
     }
     expr.receiver.visitExpression(this, ctx);
-    ctx.print(`.${expr.name} = `);
+    ctx.print(expr, `.${expr.name} = `);
     expr.value.visitExpression(this, ctx);
     if (!lineWasEmpty) {
-      ctx.print(')');
+      ctx.print(expr, ')');
     }
     return null;
   }
@@ -204,9 +251,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
         return null;
       }
     }
-    ctx.print(`.${name}(`);
+    ctx.print(expr, `.${name}(`);
     this.visitAllExpressions(expr.args, ctx, `,`);
-    ctx.print(`)`);
+    ctx.print(expr, `)`);
     return null;
   }
 
@@ -214,9 +261,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
     expr.fn.visitExpression(this, ctx);
-    ctx.print(`(`);
+    ctx.print(expr, `(`);
     this.visitAllExpressions(expr.args, ctx, ',');
-    ctx.print(`)`);
+    ctx.print(expr, `)`);
     return null;
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
@@ -239,24 +286,24 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           throw new Error(`Unknown builtin variable ${ast.builtin}`);
       }
     }
-    ctx.print(varName);
+    ctx.print(ast, varName);
     return null;
   }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(`new `);
+    ctx.print(ast, `new `);
     ast.classExpr.visitExpression(this, ctx);
-    ctx.print(`(`);
+    ctx.print(ast, `(`);
     this.visitAllExpressions(ast.args, ctx, ',');
-    ctx.print(`)`);
+    ctx.print(ast, `)`);
     return null;
   }
 
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
     if (typeof value === 'string') {
-      ctx.print(escapeIdentifier(value, this._escapeDollarInStrings));
+      ctx.print(ast, escapeIdentifier(value, this._escapeDollarInStrings));
     } else {
-      ctx.print(`${value}`);
+      ctx.print(ast, `${value}`);
     }
     return null;
   }
@@ -264,17 +311,17 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any;
 
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(`(`);
+    ctx.print(ast, `(`);
     ast.condition.visitExpression(this, ctx);
-    ctx.print('? ');
+    ctx.print(ast, '? ');
     ast.trueCase.visitExpression(this, ctx);
-    ctx.print(': ');
+    ctx.print(ast, ': ');
     ast.falseCase.visitExpression(this, ctx);
-    ctx.print(`)`);
+    ctx.print(ast, `)`);
     return null;
   }
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {
-    ctx.print('!');
+    ctx.print(ast, '!');
     ast.condition.visitExpression(this, ctx);
     return null;
   }
@@ -332,46 +379,46 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
-    ctx.print(`(`);
+    ctx.print(ast, `(`);
     ast.lhs.visitExpression(this, ctx);
-    ctx.print(` ${opStr} `);
+    ctx.print(ast, ` ${opStr} `);
     ast.rhs.visitExpression(this, ctx);
-    ctx.print(`)`);
+    ctx.print(ast, `)`);
     return null;
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: EmitterVisitorContext): any {
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(`.`);
-    ctx.print(ast.name);
+    ctx.print(ast, `.`);
+    ctx.print(ast, ast.name);
     return null;
   }
   visitReadKeyExpr(ast: o.ReadKeyExpr, ctx: EmitterVisitorContext): any {
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(`[`);
+    ctx.print(ast, `[`);
     ast.index.visitExpression(this, ctx);
-    ctx.print(`]`);
+    ctx.print(ast, `]`);
     return null;
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
     const useNewLine = ast.entries.length > 1;
-    ctx.print(`[`, useNewLine);
+    ctx.print(ast, `[`, useNewLine);
     ctx.incIndent();
     this.visitAllExpressions(ast.entries, ctx, ',', useNewLine);
     ctx.decIndent();
-    ctx.print(`]`, useNewLine);
+    ctx.print(ast, `]`, useNewLine);
     return null;
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
     const useNewLine = ast.entries.length > 1;
-    ctx.print(`{`, useNewLine);
+    ctx.print(ast, `{`, useNewLine);
     ctx.incIndent();
     this.visitAllObjects(entry => {
-      ctx.print(`${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}: `);
+      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}: `);
       entry.value.visitExpression(this, ctx);
     }, ast.entries, ctx, ',', useNewLine);
     ctx.decIndent();
-    ctx.print(`}`, useNewLine);
+    ctx.print(ast, `}`, useNewLine);
     return null;
   }
 
@@ -387,7 +434,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       newLine: boolean = false): void {
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
-        ctx.print(separator, newLine);
+        ctx.print(null, separator, newLine);
       }
       handler(expressions[i]);
     }
@@ -424,7 +471,7 @@ export function escapeIdentifier(
 function _createIndent(count: number): string {
   let res = '';
   for (let i = 0; i < count; i++) {
-    res += '  ';
+    res += _INDENT_WITH;
   }
   return res;
 }

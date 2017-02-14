@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -104,8 +104,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         return TestBed.createComponent(MyComp1).componentInstance.injector;
       }
 
-      it('should support providers with an OpaqueToken that contains a `.` in the name', () => {
-        const token = new OpaqueToken('a.b');
+      it('should support providers with an InjectionToken that contains a `.` in the name', () => {
+        const token = new InjectionToken('a.b');
         const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
         expect(injector.get(token)).toEqual(tokenValue);
@@ -127,9 +127,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      it('should support providers with an OpaqueToken that has a StringMap as value', () => {
-        const token1 = new OpaqueToken('someToken');
-        const token2 = new OpaqueToken('someToken');
+      it('should support providers with an InjectionToken that has a StringMap as value', () => {
+        const token1 = new InjectionToken('someToken');
+        const token2 = new InjectionToken('someToken');
         const tokenValue1 = {'a': 1};
         const tokenValue2 = {'a': 1};
         const injector = createInjector(

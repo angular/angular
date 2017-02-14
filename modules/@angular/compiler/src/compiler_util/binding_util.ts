@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Identifiers, createIdentifier} from '../identifiers';
 import {ClassBuilder} from '../output/class_builder';
 import * as o from '../output/output_ast';
-
-import {ConvertPropertyBindingResult} from './expression_converter';
 
 export class CheckBindingField {
   constructor(public expression: o.ReadPropExpr, public bindingId: string) {}

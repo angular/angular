@@ -14,8 +14,6 @@ import {CompilerInjectable} from './injectable';
 import {ReflectorReader, reflector} from './private_import_core';
 import {splitAtColon} from './util';
 
-
-
 /*
  * Resolve a `Type` for {@link Directive}.
  *

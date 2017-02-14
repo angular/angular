@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, OpaqueToken, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
-import {CompilerConfig} from '../config';
+import {CompilerConfig, USE_VIEW_ENGINE} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
@@ -31,6 +31,7 @@ import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
 import {DEFAULT_PACKAGE_URL_PROVIDER, UrlResolver} from '../url_resolver';
 import {ViewCompiler} from '../view_compiler/view_compiler';
+import {ViewCompilerNext} from '../view_compiler_next/view_compiler';
 
 import {JitCompiler} from './compiler';
 
@@ -40,7 +41,12 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
           `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
 };
 
-const baseHtmlParser = new OpaqueToken('HtmlParser');
+const baseHtmlParser = new InjectionToken('HtmlParser');
+
+function viewCompilerFactory(
+    useViewEngine: boolean, cc: CompilerConfig, sr: ElementSchemaRegistry) {
+  return useViewEngine ? new ViewCompilerNext(cc, sr) : new ViewCompiler(cc, sr);
+}
 
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
@@ -60,12 +66,16 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   },
   {
     provide: i18n.I18NHtmlParser,
-    useFactory: (parser: HtmlParser, translations: string, format: string) =>
-                    new i18n.I18NHtmlParser(parser, translations, format),
+    useFactory: (parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
+                 console: Console) =>
+                    new i18n.I18NHtmlParser(
+                        parser, translations, format, config.missingTranslation, console),
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
       [new Optional(), new Inject(TRANSLATIONS_FORMAT)],
+      [CompilerConfig],
+      [Console],
     ]
   },
   {
@@ -77,7 +87,12 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   CompileMetadataResolver,
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
-  ViewCompiler,
+  {provide: USE_VIEW_ENGINE, useValue: false},
+  {
+    provide: ViewCompiler,
+    useFactory: viewCompilerFactory,
+    deps: [USE_VIEW_ENGINE, CompilerConfig, ElementSchemaRegistry]
+  },
   NgModuleCompiler,
   DirectiveWrapperCompiler,
   {provide: CompilerConfig, useValue: new CompilerConfig()},
@@ -89,7 +104,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   DirectiveResolver,
   PipeResolver,
   NgModuleResolver,
-  AnimationParser
+  AnimationParser,
 ];
 
 
@@ -100,11 +115,12 @@ export class JitCompilerFactory implements CompilerFactory {
     this._defaultOptions = [<CompilerOptions>{
                              useDebug: isDevMode(),
                              useJit: true,
-                             defaultEncapsulation: ViewEncapsulation.Emulated
+                             defaultEncapsulation: ViewEncapsulation.Emulated,
+                             missingTranslation: MissingTranslationStrategy.Warning,
                            }].concat(defaultOptions);
   }
   createCompiler(options: CompilerOptions[] = []): Compiler {
-    const mergedOptions = _mergeOptions(this._defaultOptions.concat(options));
+    const opts = _mergeOptions(this._defaultOptions.concat(options));
     const injector = ReflectiveInjector.resolveAndCreate([
       COMPILER_PROVIDERS, {
         provide: CompilerConfig,
@@ -112,19 +128,20 @@ export class JitCompilerFactory implements CompilerFactory {
           return new CompilerConfig({
             // let explicit values from the compiler options overwrite options
             // from the app providers. E.g. important for the testing platform.
-            genDebugInfo: mergedOptions.useDebug,
+            genDebugInfo: opts.useDebug,
             // let explicit values from the compiler options overwrite options
             // from the app providers
-            useJit: mergedOptions.useJit,
+            useJit: opts.useJit,
             // let explicit values from the compiler options overwrite options
             // from the app providers
-            defaultEncapsulation: mergedOptions.defaultEncapsulation,
-            logBindingUpdate: mergedOptions.useDebug
+            defaultEncapsulation: opts.defaultEncapsulation,
+            logBindingUpdate: opts.useDebug,
+            missingTranslation: opts.missingTranslation,
           });
         },
         deps: []
       },
-      mergedOptions.providers
+      opts.providers
     ]);
     return injector.get(Compiler);
   }
@@ -150,7 +167,8 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
     useDebug: _lastDefined(optionsArr.map(options => options.useDebug)),
     useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
-    providers: _mergeArrays(optionsArr.map(options => options.providers))
+    providers: _mergeArrays(optionsArr.map(options => options.providers)),
+    missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
   };
 }
 

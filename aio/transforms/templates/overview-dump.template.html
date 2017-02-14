@@ -1,0 +1,74 @@
+{% import "lib/githubLinks.html" as github -%}
+{% import "lib/paramList.html" as params -%}
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style>
+    body {
+      max-width: 1000px;
+    }
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 0;
+      border-bottom: solid 1px black;
+    }
+    h3 {
+      margin-top: 10px;
+      margin-bottom: 0;
+      padding-left: 20px;
+    }
+    h4 {
+      padding-left: 30px;
+      margin: 0;
+    }
+    .not-documented::after {
+      content: "(not documented)";
+      font-size: small;
+      font-style: italic;
+      color: red;
+    }
+    a {
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+
+<h1>Module Overview</h1>
+
+{% for module in doc.modules %}
+
+<h2>
+  <code>{$ module.id $}{%- if module.public %} (public){% endif %}</code>
+</h2>
+
+  {% for export in module.exports %}
+  <h3 {% if export.notYetDocumented %}class="not-documented"{% endif %}>
+    <a href="{$ github.githubHref(export, versionInfo) $}">
+    <code>{$ export.docType $} {$ export.name $}</code>
+    </a>
+  </h3>
+      {%- if export.constructorDoc %}
+      <h4  {% if export.constructorDoc.notYetDocumented %}class="not-documented"{% endif %}>
+        <a href="{$ github.githubHref(export.constructorDoc, versionInfo) $}">
+        <code>{$ export.constructorDoc.name $}{$ params.paramList(export.constructorDoc.params) $}</code>
+        </a>
+      </h4>
+    {% endif -%}
+    {%- for member in export.members %}
+      <h4 {% if member.notYetDocumented %}class="not-documented"{% endif %}>
+        <a href="{$ github.githubHref(member, versionInfo) $}">
+        <code>{$ member.name $}{$ params.paramList(member.params) $}</code>
+        </a>
+      </h4>
+    {% endfor %}
+
+  {% endfor %}
+
+{% endfor %}
+
+</body>
+</html>

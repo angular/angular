@@ -25,7 +25,7 @@ export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './debug/d
 export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
 export * from './platform_core_providers';
-export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID} from './i18n/tokens';
+export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy} from './i18n/tokens';
 export {ApplicationModule} from './application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './profile/profile';
 export {Type} from './type';
@@ -35,4 +35,7 @@ export * from './core_private_export';
 export * from './animation/metadata';
 export {AnimationTransitionEvent} from './animation/animation_transition_event';
 export {AnimationPlayer} from './animation/animation_player';
+export {AnimationStyles} from './animation/animation_styles';
+export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
+export {TransitionFactory, TransitionInstruction, Trigger} from './triggers';

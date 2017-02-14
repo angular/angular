@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, OpaqueToken} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, ComponentRef, InjectionToken} from '@angular/core';
 import {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, Router, RouterPreloader} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 
+
 /**
- * @whatItDoes Creates an initializer that in addition to setting up the Angular 2
+ * @whatItDoes Creates an initializer that in addition to setting up the Angular
  * router sets up the ngRoute integration.
  *
  * @howToUse
@@ -57,7 +58,7 @@ export function initialRouterNavigation(
     const router = ngUpgrade.injector.get(Router);
     const ref = ngUpgrade.injector.get(ApplicationRef);
 
-    router.resetRootComponentType(ref.componentTypes[0]);
+    (router as any).resetRootComponentType(ref.componentTypes[0]);
     preloader.setUpPreloading();
     if (opts.initialNavigation === false) {
       router.setUpLocationChangeListener();

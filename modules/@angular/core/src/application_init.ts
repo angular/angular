@@ -8,14 +8,14 @@
 
 import {isPromise} from '../src/util/lang';
 
-import {Inject, Injectable, OpaqueToken, Optional} from './di';
+import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 
 /**
  * A function that will be executed when an application is initialized.
  * @experimental
  */
-export const APP_INITIALIZER: any = new OpaqueToken('Application Initializer');
+export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Application Initializer');
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER}s.

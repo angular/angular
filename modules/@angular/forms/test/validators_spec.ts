@@ -8,7 +8,7 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-import {AbstractControl, FormArray, FormControl, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
@@ -36,12 +36,54 @@ export function main() {
   }
 
   describe('Validators', () => {
+    describe('equalsTo', () => {
+      it('should not error when equal', () => {
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')});
+        let validator = Validators.equalsTo('f2');
+        expect(validator(group.controls['f1'])).toBeNull();
+      });
+
+      it('should error when not equal', () => {
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
+        let validator = Validators.equalsTo('f2');
+        expect(validator(group.controls['f1'])).toEqual({equalsTo: {unequalField: 'f2'}});
+      });
+
+      it('should throw if passed a form control', () => {
+        let validator = Validators.equalsTo('f1', 'f2');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(<any>new FormGroup({f1: new FormControl('')}))).toThrow();
+      });
+
+      it('should throw if passed a form array', () => {
+        let validator = Validators.equalsTo('f1', 'f2');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(<any>new FormArray([]))).toThrow();
+      });
+
+      it('should throw if not passed any field to compare', () => {
+        let validator = Validators.equalsTo();
+        expect(() => validator(new FormControl('a'))).toThrow();
+      });
+
+      it('should throw if field passed does not exist in the group', () => {
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
+        let validator = Validators.equalsTo('f3', 'f4');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(new FormControl('a'))).toThrow();
+      });
+    });
+
     describe('required', () => {
       it('should error on an empty string',
          () => { expect(Validators.required(new FormControl(''))).toEqual({'required': true}); });
 
       it('should error on null',
          () => { expect(Validators.required(new FormControl(null))).toEqual({'required': true}); });
+
+      it('should not error on undefined', () => {
+        expect(Validators.required(new FormControl(undefined))).toEqual({'required': true});
+      });
 
       it('should not error on a non-empty string',
          () => { expect(Validators.required(new FormControl('not empty'))).toBeNull(); });
@@ -64,6 +106,14 @@ export function main() {
          () => expect(Validators.requiredTrue(new FormControl(true))).toBeNull());
     });
 
+    describe('email', () => {
+      it('should error on invalid email',
+         () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
+
+      it('should not error on valid email',
+         () => expect(Validators.email(new FormControl('test@gmail.com'))).toBeNull());
+    });
+
     describe('minLength', () => {
       it('should not error on an empty string',
          () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });
@@ -72,7 +122,7 @@ export function main() {
          () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
 
       it('should not error on undefined',
-         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
+         () => { expect(Validators.minLength(2)(new FormControl(undefined))).toBeNull(); });
 
       it('should not error on valid strings',
          () => { expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull(); });
@@ -103,6 +153,9 @@ export function main() {
       it('should not error on null',
          () => { expect(Validators.maxLength(2)(new FormControl(null))).toBeNull(); });
 
+      it('should not error on undefined',
+         () => { expect(Validators.maxLength(2)(new FormControl(undefined))).toBeNull(); });
+
       it('should not error on valid strings',
          () => { expect(Validators.maxLength(2)(new FormControl('aa'))).toBeNull(); });
 
@@ -132,8 +185,9 @@ export function main() {
       it('should not error on null',
          () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
 
-      it('should not error on undefined',
-         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
+      it('should not error on undefined', () => {
+        expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(undefined))).toBeNull();
+      });
 
       it('should not error on null value and "null" pattern',
          () => { expect(Validators.pattern('null')(new FormControl(null))).toBeNull(); });

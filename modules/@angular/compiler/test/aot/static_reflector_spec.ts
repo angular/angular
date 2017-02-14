@@ -344,6 +344,19 @@ describe('StaticReflector', () => {
             'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
+  it('should throw a SyntaxError without stack trace when the required resource cannot be resolved',
+     () => {
+       expect(
+           () => simplify(
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'AppModule'), ({
+                 __symbolic: 'error',
+                 message:
+                     'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts'
+               })))
+           .toThrowError(
+               'Error encountered resolving symbol values statically. Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts, resolving symbol AppModule in /tmp/src/function-reference.ts');
+     });
+
   it('should record data about the error in the exception', () => {
     let threw = false;
     try {
@@ -447,6 +460,40 @@ describe('StaticReflector', () => {
         reflector.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
+  });
+
+  // #13605
+  it('should not throw on unknown decorators', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/app.component.ts';
+    data[file] = `
+      import { Component } from '@angular/core';
+
+      export const enum TypeEnum {
+        type
+      }
+
+      export function MyValidationDecorator(p1: any, p2: any): any {
+        return null;
+      }
+
+      export function ValidationFunction(a1: any): any {
+        return null;
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: "<h1>Hello {{name}}</h1>",
+      })
+      export class AppComponent  {
+        name = 'Angular';
+
+        @MyValidationDecorator( TypeEnum.type, ValidationFunction({option: 'value'}))
+        myClassProp: number;
+    }`;
+    init(data);
+    const appComponent = reflector.getStaticSymbol(file, 'AppComponent');
+    expect(() => reflector.propMetadata(appComponent)).not.toThrow();
   });
 
   describe('inheritance', () => {
@@ -630,6 +677,30 @@ describe('StaticReflector', () => {
       expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
         'hook1', 'hook2', 'hook3'
       ])).toEqual([false, false, false]);
+    });
+
+    it('should allow inheritance from expressions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export function metaClass() { return null; };
+            export class Child extends metaClass() {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
+    });
+
+    it('should allow inheritance from functions', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export let ctor: {new(): T} = function() { return null; }
+            export class Child extends ctor {}
+          `
+      });
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([]);
     });
   });
 

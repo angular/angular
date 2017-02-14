@@ -10,6 +10,7 @@ import {AUTO_STYLE, AnimationPlayer} from '@angular/core';
 export class MockAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _finished = false;
   private _destroyed = false;
   private _started = false;
@@ -47,6 +48,8 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+
   hasStarted() { return this._started; }
 
   play(): void {
@@ -76,6 +79,8 @@ export class MockAnimationPlayer implements AnimationPlayer {
       this._destroyed = true;
       this.finish();
       this.log.push('destroy');
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
     }
   }
 

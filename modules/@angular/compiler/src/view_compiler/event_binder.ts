@@ -15,7 +15,6 @@ import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
-import {ViewProperties} from './constants';
 import {getHandleEventMethodName} from './util';
 
 export function bindOutputs(
@@ -103,11 +102,11 @@ function generateHandleEventMethod(
   });
   boundEvents.forEach((renderEvent, renderEventIdx) => {
     const evalResult = convertActionBinding(
-        compileElement.view, compileElement.view, compileElement.view.componentContext,
-        renderEvent.handler, `sub_${renderEventIdx}`);
+        compileElement.view, compileElement.view.componentContext, renderEvent.handler,
+        `sub_${renderEventIdx}`);
     const trueStmts = evalResult.stmts;
-    if (evalResult.preventDefault) {
-      trueStmts.push(resultVar.set(evalResult.preventDefault.and(resultVar)).toStmt());
+    if (evalResult.allowDefault) {
+      trueStmts.push(resultVar.set(evalResult.allowDefault.and(resultVar)).toStmt());
     }
     // TODO(tbosch): convert this into a `switch` once our OutputAst supports it.
     handleEventStmts.push(

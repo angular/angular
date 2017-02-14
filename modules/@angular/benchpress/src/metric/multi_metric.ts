@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core';
+import {InjectionToken, Injector} from '@angular/core';
 
 import {Metric} from '../metric';
 
@@ -60,4 +60,4 @@ function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: strin
   return result;
 }
 
-const _CHILDREN = new OpaqueToken('MultiMetric.children');
+const _CHILDREN = new InjectionToken('MultiMetric.children');

@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('DomSharedStylesHost', () => {
-    let doc: any /** TODO #9100 */;
+    let doc: Document;
     let ssh: DomSharedStylesHost;
     let someHost: Element;
     beforeEach(() => {
@@ -45,6 +45,15 @@ export function main() {
     it('should use the document head as default host', () => {
       ssh.addStyles(['a {};', 'b {};']);
       expect(doc.head).toHaveText('a {};b {};');
+    });
+
+    it('should remove style nodes on destroy', () => {
+      ssh.addStyles(['a {};']);
+      ssh.addHost(someHost);
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+
+      ssh.ngOnDestroy();
+      expect(getDOM().getInnerHTML(someHost)).toEqual('');
     });
   });
 }

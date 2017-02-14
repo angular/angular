@@ -8,13 +8,15 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
 import {check, tsc} from './tsc';
 
 import NgOptions from './options';
-import {MetadataWriterHost, DecoratorDownlevelCompilerHost, TsickleCompilerHost} from './compiler_host';
+import {MetadataWriterHost} from './compiler_host';
 import {CliOptions} from './cli_options';
+import {VinylFile, isVinylFile} from './vinyl_file';
 
 export {UserError} from './tsc';
 
@@ -23,10 +25,16 @@ export type CodegenExtension =
         Promise<void>;
 
 export function main(
-    project: string, cliOptions: CliOptions, codegen?: CodegenExtension): Promise<any> {
+    project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
+    options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
-    if (fs.lstatSync(project).isFile()) {
+    // project is vinyl like file object
+    if (isVinylFile(project)) {
+      projectDir = path.dirname(project.path);
+    }
+    // project is path to project file
+    else if (fs.lstatSync(project).isFile()) {
       projectDir = path.dirname(project);
     }
 
@@ -34,7 +42,7 @@ export function main(
     const basePath = path.resolve(process.cwd(), cliOptions.basePath || projectDir);
 
     // read the configuration options from wherever you store them
-    const {parsed, ngOptions} = tsc.readConfiguration(project, basePath);
+    const {parsed, ngOptions} = tsc.readConfiguration(project, basePath, options);
     ngOptions.basePath = basePath;
     const createProgram = (host: ts.CompilerHost, oldProgram?: ts.Program) =>
         ts.createProgram(parsed.fileNames, parsed.options, host, oldProgram);
@@ -70,22 +78,40 @@ export function main(
       let preprocessHost = host;
       let programForJsEmit = programWithCodegen;
 
+
+      const tsickleCompilerHostOptions: tsickle.Options = {
+        googmodule: false,
+        untyped: true,
+        convertIndexImportShorthand:
+            ngOptions.target === ts.ScriptTarget.ES2015,  // This covers ES6 too
+      };
+
+      const tsickleHost: tsickle.TsickleHost = {
+        shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+        pathToModuleName: (context, importPath) => '',
+        shouldIgnoreWarningsForPath: (filePath) => false,
+        fileNameToModuleId: (fileName) => fileName,
+      };
+
+      const tsickleCompilerHost = new tsickle.TsickleCompilerHost(
+          preprocessHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
+
       if (ngOptions.annotationsAs !== 'decorators') {
         if (diagnostics) console.time('NG downlevel');
-        const downlevelHost = new DecoratorDownlevelCompilerHost(preprocessHost, programForJsEmit);
+        tsickleCompilerHost.reconfigureForRun(programForJsEmit, tsickle.Pass.DECORATOR_DOWNLEVEL);
         // A program can be re-used only once; save the programWithCodegen to be reused by
         // metadataWriter
-        programForJsEmit = createProgram(downlevelHost);
-        check(downlevelHost.diagnostics);
-        preprocessHost = downlevelHost;
+        programForJsEmit = createProgram(tsickleCompilerHost);
+        check(tsickleCompilerHost.diagnostics);
+        preprocessHost = tsickleCompilerHost;
         if (diagnostics) console.timeEnd('NG downlevel');
       }
 
       if (ngOptions.annotateForClosureCompiler) {
         if (diagnostics) console.time('NG JSDoc');
-        const tsickleHost = new TsickleCompilerHost(preprocessHost, programForJsEmit, ngOptions);
-        programForJsEmit = createProgram(tsickleHost);
-        check(tsickleHost.diagnostics);
+        tsickleCompilerHost.reconfigureForRun(programForJsEmit, tsickle.Pass.CLOSURIZE);
+        programForJsEmit = createProgram(tsickleCompilerHost);
+        check(tsickleCompilerHost.diagnostics);
         if (diagnostics) console.timeEnd('NG JSDoc');
       }
 
@@ -111,12 +137,17 @@ export function main(
 
 // CLI entry point
 if (require.main === module) {
-  const args = require('minimist')(process.argv.slice(2));
-  const project = args.p || args.project || '.';
-  const cliOptions = new CliOptions(args);
-  main(project, cliOptions).then((exitCode: any) => process.exit(exitCode)).catch((e: any) => {
-    console.error(e.stack);
-    console.error('Compilation failed');
-    process.exit(1);
-  });
+  const args = process.argv.slice(2);
+  let {options, fileNames, errors} = (ts as any).parseCommandLine(args);
+  check(errors);
+  const project = options.project || '.';
+  // TODO(alexeagle): command line should be TSC-compatible, remove "CliOptions" here
+  const cliOptions = new CliOptions(require('minimist')(args));
+  main(project, cliOptions, null, options)
+      .then((exitCode: any) => process.exit(exitCode))
+      .catch((e: any) => {
+        console.error(e.stack);
+        console.error('Compilation failed');
+        process.exit(1);
+      });
 }

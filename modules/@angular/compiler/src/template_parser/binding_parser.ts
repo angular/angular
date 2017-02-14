@@ -11,7 +11,6 @@ import {SecurityContext} from '@angular/core';
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {ASTWithSource, BindingPipe, EmptyExpr, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {isPresent} from '../facade/lang';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
@@ -52,6 +51,7 @@ export class BoundProperty {
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeSummary> = new Map();
+  private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
@@ -59,6 +59,8 @@ export class BindingParser {
       private _targetErrors: ParseError[]) {
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
+
+  getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
   createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
       BoundElementPropertyAst[] {
@@ -111,14 +113,14 @@ export class BindingParser {
   }
 
   parseInlineTemplateBinding(
-      name: string, prefixToken: string, value: string, sourceSpan: ParseSourceSpan,
+      prefixToken: string, value: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[], targetVars: VariableAst[]) {
     const bindings = this._parseTemplateBindings(prefixToken, value, sourceSpan);
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
       if (binding.keyIsVar) {
         targetVars.push(new VariableAst(binding.key, binding.name, sourceSpan));
-      } else if (isPresent(binding.expression)) {
+      } else if (binding.expression) {
         this._parsePropertyAst(
             binding.key, binding.expression, sourceSpan, targetMatchableAttrs, targetProps);
       } else {
@@ -136,7 +138,7 @@ export class BindingParser {
       const bindingsResult = this._exprParser.parseTemplateBindings(prefixToken, value, sourceInfo);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
-        if (isPresent(binding.expression)) {
+        if (binding.expression) {
           this._checkPipes(binding.expression, sourceSpan);
         }
       });
@@ -193,7 +195,7 @@ export class BindingParser {
       name: string, value: string, sourceSpan: ParseSourceSpan, targetMatchableAttrs: string[][],
       targetProps: BoundProperty[]): boolean {
     const expr = this.parseInterpolation(value, sourceSpan);
-    if (isPresent(expr)) {
+    if (expr) {
       this._parsePropertyAst(name, expr, sourceSpan, targetMatchableAttrs, targetProps);
       return true;
     }
@@ -374,15 +376,18 @@ export class BindingParser {
   }
 
   private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan) {
-    if (isPresent(ast)) {
+    if (ast) {
       const collector = new PipeCollector();
       ast.visit(collector);
       collector.pipes.forEach((ast, pipeName) => {
-        if (!this.pipesByName.has(pipeName)) {
+        const pipeMeta = this.pipesByName.get(pipeName);
+        if (!pipeMeta) {
           this._reportError(
               `The pipe '${pipeName}' could not be found`,
               new ParseSourceSpan(
                   sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
+        } else {
+          this._usedPipes.set(pipeName, pipeMeta);
         }
       });
     }

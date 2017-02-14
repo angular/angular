@@ -20,10 +20,10 @@ export declare class ComponentFixture<T> {
 }
 
 /** @experimental */
-export declare const ComponentFixtureAutoDetect: OpaqueToken;
+export declare const ComponentFixtureAutoDetect: InjectionToken<boolean[]>;
 
 /** @experimental */
-export declare const ComponentFixtureNoNgZone: OpaqueToken;
+export declare const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
 
 /** @experimental */
 export declare function discardPeriodicTasks(): void;
@@ -67,7 +67,7 @@ export declare class TestBed implements Injector {
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    execute(tokens: any[], fn: Function): any;
+    execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
     /** @experimental */ initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): void;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;

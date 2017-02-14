@@ -7,19 +7,18 @@
  */
 import {SecurityContext} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE} from '../private_import_core';
 import {BoundElementPropertyAst, BoundEventAst, PropertyBindingType} from '../template_parser/template_ast';
 
 import {isFirstViewCheck} from './binding_util';
-import {ConvertPropertyBindingResult} from './expression_converter';
+import {LegacyConvertPropertyBindingResult} from './expression_converter';
 import {createEnumExpression} from './identifier_util';
 
 export function createCheckRenderBindingStmt(
     view: o.Expression, renderElement: o.Expression, boundProp: BoundElementPropertyAst,
-    oldValue: o.ReadPropExpr, evalResult: ConvertPropertyBindingResult,
+    oldValue: o.ReadPropExpr, evalResult: LegacyConvertPropertyBindingResult,
     securityContextExpression?: o.Expression): o.Statement[] {
   const checkStmts: o.Statement[] = [...evalResult.stmts];
   const securityContext = calcSecurityContext(boundProp, securityContextExpression);
@@ -85,7 +84,7 @@ function calcSecurityContext(
 export function createCheckAnimationBindingStmts(
     view: o.Expression, componentView: o.Expression, boundProp: BoundElementPropertyAst,
     boundOutputs: BoundEventAst[], eventListener: o.Expression, renderElement: o.Expression,
-    oldValue: o.ReadPropExpr, evalResult: ConvertPropertyBindingResult) {
+    oldValue: o.ReadPropExpr, evalResult: LegacyConvertPropertyBindingResult) {
   const detachStmts: o.Statement[] = [];
   const updateStmts: o.Statement[] = [];
 

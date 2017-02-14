@@ -1,16 +1,16 @@
-# WebWorkers in Angular 2: Documentation
+# WebWorkers in Angular: Documentation
 
-Angular 2 includes native support for writing applications which live in a
+Angular includes native support for writing applications which live in a
 WebWorker. This document describes how to write applications that take advantage
 of this feature.
 It also provides a detailed description of the underlying messaging
 infrastructure that angular uses to communicate between the main process and the
 worker. This infrastructure can be modified by an application developer to
-enable driving an angular 2 application from an iFrame, different window / tab,
+enable driving an Angular application from an iFrame, different window / tab,
 server, etc..
 
 ## Introduction
-WebWorker support in Angular2 is designed to make it easy to leverage parallelization in your web application.
+WebWorker support in Angular is designed to make it easy to leverage parallelization in your web application.
 When you choose to run your application in a WebWorker angular runs both your application's logic and the
 majority of the core angular framework in a WebWorker.
 By offloading as much code as possible to the WebWorker we keep the UI thread
@@ -20,7 +20,7 @@ better framerate and UX for applications.
 ## Bootstrapping a WebWorker Application
 Bootstrapping a WebWorker application is not much different than bootstrapping a normal application.
 The main difference is that you need to do the bootstrap process on both the worker and render thread.
-Unlike in a standard Angular2 application you don't bootstrap your main component on the render thread.
+Unlike in a standard Angular application you don't bootstrap your main component on the render thread.
 Instead you initialize a new application injector with the WORKER_APP_PLATFORM providers and provide the name
 of your WebWorker script. See the example below for details:
 
@@ -79,13 +79,13 @@ run specifically on the UI or Worker. Additionally, they contain the core messag
 communicate between the Worker and the UI. This messaging code is not in the standard angular2.js file.
 * We pass `loader.js` to our application injector using the WORKER_SCRIPT symbol. This tells angular that our WebWorkers's init script is located at `loader.js`.
 You can think of `loader.js` as the index.html file for the WebWorker.
-Since WebWorkers share no memory with the UI we need to reload the angular2 dependencies before
+Since WebWorkers share no memory with the UI we need to reload the Angular dependencies before
 bootstrapping our application. We do this with `importScripts`. Additionally, we need to do this in a different
 file than `app.ts` because our module loader (System.js in this example) has not been loaded yet, and `app.ts`
 will be compiled with a `System.define` call at the top.
-* The HelloWorld Component looks exactly like a normal Angular2 HelloWorld Component! The goal of WebWorker
+* The HelloWorld Component looks exactly like a normal Angular HelloWorld Component! The goal of WebWorker
 support was to allow as much of Angular to live in the worker as possible.
-As such, *most* angular2 components can be bootstrapped in a WebWorker with minimal to no changes required.
+As such, *most* Angular components can be bootstrapped in a WebWorker with minimal to no changes required.
 
 For reference, here's the same HelloWorld example in Dart.
 ```HTML
@@ -140,13 +140,13 @@ can communicate with the Isolate that spawned it. You need to provide this `Send
 so that Angular can communicate with the UI.
 * You need to set up `ReflectionCapabilities` on both the UI and Worker. Just like writing non-concurrent
 Angular2 Dart applications you need to set up the reflector. You should not use Reflection in production,
-but should use the angular 2 transformer to remove it in your final JS code. Note there's currently a bug
+but should use the Angular transformer to remove it in your final JS code. Note there's currently a bug
 with running the transformer on your UI code (#3971). You can (and should) pass the file where you call
 `bootstrap` as an entry point to the transformer, but you should not pass your UI index file
 to the transformer until that bug is fixed.
 
 ## Writing WebWorker Compatible Components
-You can do almost everything in a WebWorker component that you can do in a typical Angular 2 Component.
+You can do almost everything in a WebWorker component that you can do in a typical Angular Component.
 The main exception is that there is **no** DOM access from a WebWorker component. In Dart this means you can't
 import anything from `dart:html` and in JavaScript it means you can't use `document` or `window`. Instead you
 should use data bindings and if needed you can inject the `Renderer` along with your component's `ElementRef`

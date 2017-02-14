@@ -356,5 +356,9 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
 
 export function equalParamsAndUrlSegments(
     a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
-  return shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
+  const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
+  const parentsMismatch = !a.parent !== !b.parent;
+
+  return equalUrlParams && !parentsMismatch &&
+      (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent));
 }

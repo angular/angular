@@ -29,6 +29,7 @@ export const registerModuleFactory: typeof r.registerModuleFactory = r.registerM
 export type ViewType = typeof r._ViewType;
 export const ViewType: typeof r.ViewType = r.ViewType;
 export const view_utils: typeof r.view_utils = r.view_utils;
+export const viewEngine: typeof r.viewEngine = r.viewEngine;
 export const DebugContext: typeof r.DebugContext = r.DebugContext;
 export const StaticNodeDebugInfo: typeof r.StaticNodeDebugInfo = r.StaticNodeDebugInfo;
 export const devModeEqual: typeof r.devModeEqual = r.devModeEqual;
@@ -58,6 +59,7 @@ export const AnimationStyles: typeof r.AnimationStyles = r.AnimationStyles;
 export const ANY_STATE = r.ANY_STATE;
 export const DEFAULT_STATE = r.DEFAULT_STATE;
 export const EMPTY_STATE = r.EMPTY_STATE;
+export const ERROR_COMPONENT_TYPE = r.ERROR_COMPONENT_TYPE;
 export const FILL_STYLE_FLAG = r.FILL_STYLE_FLAG;
 export const prepareFinalAnimationStyles: typeof r.prepareFinalAnimationStyles =
     r.prepareFinalAnimationStyles;
@@ -68,9 +70,6 @@ export const collectAndResolveStyles: typeof r.collectAndResolveStyles = r.colle
 export const renderStyles: typeof r.renderStyles = r.renderStyles;
 export type ViewMetadata = typeof r._ViewMetadata;
 export const ViewMetadata: typeof r.ViewMetadata = r.ViewMetadata;
-export type ComponentStillLoadingError = typeof r._ComponentStillLoadingError;
-export const ComponentStillLoadingError: typeof r.ComponentStillLoadingError =
-    r.ComponentStillLoadingError;
 export const AnimationTransition: typeof r.AnimationTransition = r.AnimationTransition;
 export type SetterFn = typeof r._SetterFn;
 export type GetterFn = typeof r._GetterFn;

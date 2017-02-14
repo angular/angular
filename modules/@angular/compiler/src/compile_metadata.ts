@@ -15,10 +15,6 @@ import {LifecycleHooks, reflector} from './private_import_core';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
 
-function unimplemented(): any {
-  throw new Error('unimplemented');
-}
-
 // group 0: "[prop] or (event) or @trigger"
 // group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
@@ -39,7 +35,11 @@ export class CompileAnimationStateDeclarationMetadata extends CompileAnimationSt
 }
 
 export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
-  constructor(public stateChangeExpr: string, public steps: CompileAnimationMetadata) { super(); }
+  constructor(
+      public stateChangeExpr: string|StaticSymbol|((stateA: string, stateB: string) => boolean),
+      public steps: CompileAnimationMetadata) {
+    super();
+  }
 }
 
 export abstract class CompileAnimationMetadata {}

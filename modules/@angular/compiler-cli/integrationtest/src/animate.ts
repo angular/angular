@@ -8,6 +8,10 @@
 
 import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from '@angular/core';
 
+export function anyToAny(stateA: string, stateB: string): boolean {
+  return Math.random() != Math.random();
+}
+
 @Component({
   selector: 'animate-cmp',
   animations: [trigger(
@@ -16,7 +20,7 @@ import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from 
         state('*', style({height: AUTO_STYLE, color: 'black', borderColor: 'black'})),
         state('closed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
         state('open', style({height: AUTO_STYLE, borderColor: 'green', color: 'green'})),
-        transition('* => *', animate(500))
+        transition(anyToAny, animate('1s')), transition('* => *', animate(500))
       ])],
   template: `
     <button (click)="setAsOpen()">Open</button>

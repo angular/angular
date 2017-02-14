@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {StaticSymbol} from './aot/static_symbol';
-import {CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
+import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, viewEngine, view_utils} from './private_import_core';
 
 const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
+const VIEW_ENGINE_MODULE_URL = assetUrl('core', 'view/index');
 const CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
 
 const ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core', 'animation/animation_style_util');
@@ -364,6 +364,72 @@ export class Identifiers {
   };
   static noop:
       IdentifierSpec = {name: 'noop', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.noop};
+
+  static viewDef: IdentifierSpec = {
+    name: 'viewDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.viewDef
+  };
+  static elementDef: IdentifierSpec = {
+    name: 'elementDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.elementDef
+  };
+  static anchorDef: IdentifierSpec = {
+    name: 'anchorDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.anchorDef
+  };
+  static textDef: IdentifierSpec = {
+    name: 'textDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.textDef
+  };
+  static directiveDef: IdentifierSpec = {
+    name: 'directiveDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.directiveDef
+  };
+  static providerDef: IdentifierSpec = {
+    name: 'providerDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.providerDef
+  };
+  static queryDef: IdentifierSpec = {
+    name: 'queryDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.queryDef
+  };
+  static pureArrayDef: IdentifierSpec = {
+    name: 'pureArrayDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pureArrayDef
+  };
+  static pureObjectDef: IdentifierSpec = {
+    name: 'pureObjectDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pureObjectDef
+  };
+  static purePipeDef: IdentifierSpec = {
+    name: 'purePipeDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.purePipeDef
+  };
+  static pipeDef: IdentifierSpec = {
+    name: 'pipeDef',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.pipeDef
+  };
+  static nodeValue: IdentifierSpec = {
+    name: 'nodeValue',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.nodeValue
+  };
+  static unwrapValue: IdentifierSpec = {
+    name: 'unwrapValue',
+    moduleUrl: VIEW_ENGINE_MODULE_URL,
+    runtime: viewEngine.unwrapValue
+  };
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {

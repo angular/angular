@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {EventManagerPlugin} from './event_manager';
 
 const EVENT_NAMES = {
@@ -53,7 +53,7 @@ const EVENT_NAMES = {
  *
  * @experimental
  */
-export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken('HammerGestureConfig');
+export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;

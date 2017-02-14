@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {NgModuleFactory, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
@@ -310,7 +310,8 @@ export type ResolveData = {
  * See {@link Routes} for more details.
  * @stable
  */
-export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observable<Type<any>>;
+export type LoadChildrenCallback = () =>
+    Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
 
 /**
  * @whatItDoes The type of `loadChildren`.
@@ -318,6 +319,13 @@ export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observab
  * @stable
  */
 export type LoadChildren = string | LoadChildrenCallback;
+
+/**
+ * @whatItDoes The type of `queryParamsHandling`.
+ * See {@link RouterLink} for more details.
+ * @stable
+ */
+export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
  * See {@link Routes} for more details.

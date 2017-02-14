@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * @ngModule CommonModule
@@ -32,7 +32,7 @@ export class I18nSelectPipe implements PipeTransform {
     if (value == null) return '';
 
     if (typeof mapping !== 'object' || typeof value !== 'string') {
-      throw new InvalidPipeArgumentError(I18nSelectPipe, mapping);
+      throw invalidPipeArgumentError(I18nSelectPipe, mapping);
     }
 
     if (mapping.hasOwnProperty(value)) {

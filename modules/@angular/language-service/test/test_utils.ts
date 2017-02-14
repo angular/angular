@@ -52,6 +52,7 @@ export function validateCache(): {exists: string[], unused: string[], reported: 
 }
 
 missingCache.set('/node_modules/@angular/core.d.ts', true);
+missingCache.set('/node_modules/@angular/animation.d.ts', true);
 missingCache.set('/node_modules/@angular/common.d.ts', true);
 missingCache.set('/node_modules/@angular/forms.d.ts', true);
 missingCache.set('/node_modules/@angular/core/src/di/provider.metadata.json', true);
@@ -71,12 +72,13 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private projectVersion = 0;
 
   constructor(private scriptNames: string[], private data: MockData) {
-    let angularIndex = module.filename.indexOf('@angular');
+    const moduleFilename = module.filename.replace(/\\/g, '/');
+    let angularIndex = moduleFilename.indexOf('@angular');
     if (angularIndex >= 0)
-      this.angularPath = module.filename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
-    let distIndex = module.filename.indexOf('/dist/all');
+      this.angularPath = moduleFilename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
+    let distIndex = moduleFilename.indexOf('/dist/all');
     if (distIndex >= 0)
-      this.nodeModulesPath = path.join(module.filename.substr(0, distIndex), 'node_modules');
+      this.nodeModulesPath = path.join(moduleFilename.substr(0, distIndex), 'node_modules');
   }
 
   override(fileName: string, content: string) {
@@ -96,6 +98,8 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.overrides.set(fileName, content);
     this.scriptNames.push(fileName);
   }
+
+  forgetAngular() { this.angularPath = undefined; }
 
   getCompilationSettings(): ts.CompilerOptions {
     return {

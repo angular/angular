@@ -111,8 +111,14 @@ export class PlaceholderRegistry {
   private _hashClosingTag(tag: string): string { return this._hashTag(`/${tag}`, {}, false); }
 
   private _generateUniqueName(base: string): string {
-    const next = this._placeHolderNameCounts[base];
-    this._placeHolderNameCounts[base] = next ? next + 1 : 1;
-    return next ? `${base}_${next}` : base;
+    const seen = this._placeHolderNameCounts.hasOwnProperty(base);
+    if (!seen) {
+      this._placeHolderNameCounts[base] = 1;
+      return base;
+    }
+
+    const id = this._placeHolderNameCounts[base];
+    this._placeHolderNameCounts[base] = id + 1;
+    return `${base}_${id}`;
   }
 }

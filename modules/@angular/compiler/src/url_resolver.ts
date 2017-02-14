@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, PACKAGE_ROOT_URL} from '@angular/core';
+import {Inject, InjectionToken, PACKAGE_ROOT_URL} from '@angular/core';
 
 import {isBlank, isPresent} from './facade/lang';
 import {CompilerInjectable} from './injectable';
+
 
 
 /**

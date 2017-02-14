@@ -7,7 +7,7 @@
  */
 
 import * as chars from '../chars';
-import {NumberWrapper, isPresent} from '../facade/lang';
+import {NumberWrapper} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
@@ -241,7 +241,7 @@ class _Scanner {
       this.advance();
       str += two;
     }
-    if (isPresent(threeCode) && this.peek == threeCode) {
+    if (threeCode != null && this.peek == threeCode) {
       this.advance();
       str += three;
     }
@@ -294,6 +294,8 @@ class _Scanner {
         buffer += input.substring(marker, this.index);
         this.advance();
         let unescapedCode: number;
+        // Workaround for TS2.1-introduced type strictness
+        this.peek = this.peek;
         if (this.peek == chars.$u) {
           // 4 character hex code for unicode character.
           const hex: string = input.substring(this.index + 1, this.index + 5);

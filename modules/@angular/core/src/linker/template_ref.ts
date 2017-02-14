@@ -8,7 +8,6 @@
 
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
-import {ViewContainer} from './view_container';
 import {EmbeddedViewRef} from './view_ref';
 
 
@@ -38,11 +37,15 @@ export abstract class TemplateRef<C> {
    *
    */
   // TODO(i): rename to anchor or location
-  get elementRef(): ElementRef { return null; }
+  abstract get elementRef(): ElementRef;
 
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 export class TemplateRef_<C> extends TemplateRef<C> {
   constructor(
       private _parentView: AppView<any>, private _nodeIndex: number, private _nativeElement: any) {

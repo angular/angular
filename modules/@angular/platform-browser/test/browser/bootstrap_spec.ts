@@ -155,13 +155,11 @@ export function main() {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler(false);
          errorHandler._console = logger as any;
-         bootstrap(HelloRootDirectiveIsNotCmp, [
-           {provide: ErrorHandler, useValue: errorHandler}
-         ]).catch((e) => {
-           expect(e.message).toBe(
-               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-           done.done();
-         });
+         expect(
+             () => bootstrap(
+                 HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
+             .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
+         done.done();
        }));
 
     it('should throw if no element is found',

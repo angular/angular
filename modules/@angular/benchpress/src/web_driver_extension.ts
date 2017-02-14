@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core';
+import {InjectionToken, Injector} from '@angular/core';
 
 import {Options} from './common_options';
 
@@ -101,4 +101,4 @@ export class PerfLogFeatures {
   }
 }
 
-const _CHILDREN = new OpaqueToken('WebDriverExtension.children');
+const _CHILDREN = new InjectionToken('WebDriverExtension.children');

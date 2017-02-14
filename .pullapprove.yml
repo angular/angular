@@ -1,0 +1,245 @@
+# Configuration for pullapprove.com
+#
+# Approval access and primary role is determined by info in the project ownership spreadsheet:
+# https://docs.google.com/spreadsheets/d/1-HIlzfbPYGsPr9KuYMe6bLfc4LXzPjpoALqtYRYTZB0/edit?pli=1#gid=0&vpid=A5
+#
+# === GitHub username to Full name map ===
+#
+# alexeagle - Alex Eagle
+# alxhub - Alex Rickabaugh
+# chuckjaz - Chuck Jazdzewski
+# gkalpak - George Kalpakas
+# IgorMinar - Igor Minar
+# kara - Kara Erickson
+# matsko - Matias Niemelä
+# mhevery - Misko Hevery
+# petebacondarwin - Pete Bacon Darwin
+# pkozlowski-opensource - Pawel Kozlowski
+# robwormald - Rob Wormald
+# tbosch - Tobias Bosch
+# vicb - Victor Berchet
+# vikerman - Vikram Subramanian
+
+version: 2
+
+group_defaults:
+  required: 1
+  reset_on_reopened:
+    enabled: true
+  approve_by_comment:
+    enabled: false
+
+groups:
+  root:
+    conditions:
+      files:
+        include:
+          - "*"
+        exclude:
+          - "aio/*"
+          - "integration/*"
+          - "modules/*"
+          - "tools/*"
+    users:
+      - IgorMinar
+      - mhevery
+
+  public-api:
+    conditions:
+      files:
+        include:
+          - "tools/public_api_guard/*"
+    users:
+      - IgorMinar
+      - mhevery
+
+  build-and-ci:
+    conditions:
+      files:
+        include:
+          - "*.yml"
+          - "*.json"
+          - "*.lock"
+          - "tools/*"
+        exclude:
+          - "tools/@angular/tsc-wrapped/*"
+          - "tools/public_api_guard/*"
+          - "aio/*"
+    users:
+      - IgorMinar #primary
+      - mhevery
+
+  integration:
+    conditions:
+      files:
+        - "integration/*"
+    users:
+      - alexeagle
+      - mhevery
+      - tbosch
+      - vicb
+      - IgorMinar #fallback
+
+
+  core:
+    conditions:
+      files:
+        - "modules/@angular/core/*"
+    users:
+      - tbosch #primary
+      - mhevery
+      - vicb
+      - IgorMinar #fallback
+
+  compiler/animations:
+    conditions:
+      files:
+        - "modules/@angular/compiler/src/animation/*"
+    users:
+      - matsko #primary
+      - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  compiler/i18n:
+    conditions:
+      files:
+        - "modules/@angular/compiler/src/i18n/*"
+    users:
+      - vicb #primary
+      - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  compiler:
+    conditions:
+      files:
+        - "modules/@angular/compiler/*"
+    users:
+      - tbosch #primary
+      - mhevery
+      - IgorMinar #fallback
+
+  compiler-cli:
+    conditions:
+      files:
+        - "tools/@angular/tsc-wrapped/*"
+        - "modules/@angular/compiler-cli/*"
+    users:
+      - alexeagle
+      - chuckjaz
+      - tbosch
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  common:
+    conditions:
+      files:
+        - "modules/@angular/common/*"
+    users:
+      - pkozlowski-opensource #primary
+      - vicb
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  forms:
+    conditions:
+      files:
+        - "modules/@angular/forms/*"
+    users:
+      - kara #primary
+      # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  http:
+    conditions:
+      files:
+        - "modules/@angular/http/*"
+    users:
+      - vikerman #primary
+      - alxhub
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  language-service:
+    conditions:
+      files:
+        - "modules/@angular/language-service/*"
+    users:
+      - chuckjaz #primary
+      # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  router:
+    conditions:
+      files:
+        - "modules/@angular/router/*"
+    users:
+      - vicb #primary
+      # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  upgrade:
+    conditions:
+      files:
+        - "modules/@angular/upgrade/*"
+    users:
+      - petebacondarwin #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  platform-browser:
+    conditions:
+      files:
+        - "modules/@angular/platform-browser/*"
+    users:
+      - tbosch #primary
+      - vicb
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  platform-server:
+    conditions:
+      files:
+        - "modules/@angular/platform-server/*"
+    users:
+      - vikerman #primary
+      - alxhub
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  platform-webworker:
+    conditions:
+      files:
+        - "modules/@angular/platform-webworker/*"
+    users:
+      - vicb #primary
+      # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+
+
+  benchpress:
+    conditions:
+      files:
+        - "modules/@angular/benchpress/*"
+    users:
+      - tbosch #primary
+      # needs secondary
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  angular.io:
+    conditions:
+      files:
+        - "aio/*"
+    users:
+      - IgorMinar
+      - robwormald
+      - petebacondarwin
+      - mhevery #fallback

@@ -8,12 +8,10 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
-import {ViewContainer} from './view_container';
 import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
 
@@ -31,32 +29,32 @@ export abstract class ComponentRef<C> {
   /**
    * Location of the Host Element of this Component Instance.
    */
-  get location(): ElementRef { return unimplemented(); }
+  abstract get location(): ElementRef;
 
   /**
    * The injector on which the component instance exists.
    */
-  get injector(): Injector { return unimplemented(); }
+  abstract get injector(): Injector;
 
   /**
    * The instance of the Component.
    */
-  get instance(): C { return unimplemented(); };
+  abstract get instance(): C;
 
   /**
    * The {@link ViewRef} of the Host View of this Component instance.
    */
-  get hostView(): ViewRef { return unimplemented(); };
+  abstract get hostView(): ViewRef;
 
   /**
    * The {@link ChangeDetectorRef} of the Component instance.
    */
-  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); }
+  abstract get changeDetectorRef(): ChangeDetectorRef;
 
   /**
    * The component type.
    */
-  get componentType(): Type<any> { return unimplemented(); }
+  abstract get componentType(): Type<any>;
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -69,6 +67,10 @@ export abstract class ComponentRef<C> {
   abstract onDestroy(callback: Function): void;
 }
 
+/**
+ * workaround https://github.com/angular/tsickle/issues/350
+ * @suppress {checkTypes}
+ */
 export class ComponentRef_<C> extends ComponentRef<C> {
   constructor(
       private _index: number, private _parentView: AppView<any>, private _nativeElement: any,
@@ -87,22 +89,15 @@ export class ComponentRef_<C> extends ComponentRef<C> {
 }
 
 /**
- * @experimental
- */
-const EMPTY_CONTEXT = new Object();
-
-/**
  * @stable
  */
 export class ComponentFactory<C> {
   /** @internal */
   _viewClass: Type<AppView<any>>;
   constructor(
-      public selector: string, _viewClass: Type<AppView<any>>, private _componentType: Type<any>) {
+      public selector: string, _viewClass: Type<AppView<any>>, public componentType: Type<any>) {
     this._viewClass = _viewClass;
   }
-
-  get componentType(): Type<any> { return this._componentType; }
 
   /**
    * Creates a new component.

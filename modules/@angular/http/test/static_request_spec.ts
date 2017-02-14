@@ -11,7 +11,7 @@ import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {RequestOptions} from '../src/base_request_options';
 import {ContentType} from '../src/enums';
 import {Headers} from '../src/headers';
-import {Request} from '../src/static_request';
+import {ArrayBuffer, Request} from '../src/static_request';
 
 export function main() {
   describe('Request', () => {
@@ -75,6 +75,17 @@ export function main() {
         }));
 
         expect(req.detectContentType()).toEqual(ContentType.BLOB);
+      });
+
+      it('should not create a blob out of ArrayBuffer', () => {
+        const req = new Request(new RequestOptions({
+          url: 'test',
+          method: 'GET',
+          body: new ArrayBuffer(1),
+          headers: new Headers({'content-type': 'application/octet-stream'})
+        }));
+
+        expect(req.detectContentType()).toEqual(ContentType.ARRAY_BUFFER);
       });
     });
 

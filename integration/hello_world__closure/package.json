@@ -1,0 +1,30 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist-es2015/common",
+    "@angular/compiler": "file:../../dist/packages-dist-es2015/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist-es2015/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist-es2015/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist-es2015/platform-browser",
+    "@angular/platform-server": "file:../../dist/packages-dist-es2015/platform-server",
+    "@angular/tsc-wrapped": "file:../../dist/tools/@angular/tsc-wrapped",
+    "google-closure-compiler": "20161201.0.0",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "2.1.6",
+    "zone.js": "0.7.6"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.41",
+    "concurrently": "3.1.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor"
+  },
+  "scripts": {
+    "test": "ngc && ./bundle.sh && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js"
+  }
+}

@@ -421,7 +421,7 @@ export function main() {
         TestBed.overrideDirective(
             SimpleDirective, {set: {providers: [{provide: 'service', useValue: 'parentService'}]}});
         const el = createComponent(
-            '<div simpleDirective><template [ngIf]="true"><div *ngIf="true" needsService></div></template></div>');
+            '<div simpleDirective><ng-container *ngIf="true"><div *ngIf="true" needsService></div></ng-container></div>');
         expect(el.children[0].children[0].injector.get(NeedsService).service)
             .toEqual('parentService');
       });

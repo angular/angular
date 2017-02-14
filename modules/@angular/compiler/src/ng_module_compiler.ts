@@ -9,7 +9,7 @@
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, tokenName, tokenReference} from './compile_metadata';
 import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
-import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {Identifiers, createIdentifier, resolveIdentifier} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';

@@ -17,6 +17,7 @@ import {DomAnimatePlayer} from './dom_animate_player';
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _player: DomAnimatePlayer;
   private _duration: number;
   private _initialized = false;
@@ -96,7 +97,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   /** @internal */
   _triggerWebAnimation(element: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return <DomAnimatePlayer>element.animate(keyframes, options);
+    // jscompiler doesn't seem to know animate is a native property because it's not fully
+    // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
+    return <DomAnimatePlayer>element['animate'](keyframes, options);
   }
 
   get domPlayer() { return this._player; }
@@ -104,6 +107,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
 
   play(): void {
     this.init();
@@ -151,6 +156,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._resetDomPlayerState();
       this._onFinish();
       this._destroyed = true;
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
     }
   }
 

@@ -39,6 +39,16 @@ export function main() {
       expectSanitize('translateX(12px, -5px)').toEqual('translateX(12px, -5px)');
       expectSanitize('scale3d(1, 1, 2)').toEqual('scale3d(1, 1, 2)');
     });
+    t.it('accepts gradients', () => {
+      expectSanitize('linear-gradient(to bottom, #fg34a1, #bada55)')
+          .toEqual('linear-gradient(to bottom, #fg34a1, #bada55)');
+      expectSanitize('repeating-radial-gradient(ellipse cover, black, red, black, red)')
+          .toEqual('repeating-radial-gradient(ellipse cover, black, red, black, red)');
+    });
+    t.it('accepts calc', () => { expectSanitize('calc(90%-123px)').toEqual('calc(90%-123px)'); });
+    t.it('accepts attr', () => {
+      expectSanitize('attr(value string)').toEqual('attr(value string)');
+    });
     t.it('sanitizes URLs', () => {
       expectSanitize('url(foo/bar.png)').toEqual('url(foo/bar.png)');
       expectSanitize('url( foo/bar.png\n )').toEqual('url( foo/bar.png\n )');

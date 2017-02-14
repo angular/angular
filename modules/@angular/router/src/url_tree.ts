@@ -40,7 +40,7 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 
 function containsQueryParams(
     container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
-  return Object.keys(containee) <= Object.keys(container) &&
+  return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => containee[key] === container[key]);
 }
 

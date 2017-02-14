@@ -8,7 +8,7 @@
 
 angular.module('ngComponentRouter').
     value('$route', null). // can be overloaded with ngRouteShim
-    // Because Angular 1 has no notion of a root component, we use an object with unique identity
+    // Because AngularJS has no notion of a root component, we use an object with unique identity
     // to represent this. Can be overloaded with a component name
     value('$routerRootComponent', new Object()).
 
@@ -45,7 +45,7 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
 
   var exports = {
     Injectable: function () {},
-    OpaqueToken: function () {},
+    InjectionToken: function () {},
     Inject: function () {}
   };
   var routerRequire = function () {return exports;};

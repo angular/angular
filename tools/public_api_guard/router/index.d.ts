@@ -1,17 +1,17 @@
 /** @stable */
 export declare class ActivatedRoute {
-    children: ActivatedRoute[];
+    readonly children: ActivatedRoute[];
     component: Type<any> | string;
     data: Observable<Data>;
-    firstChild: ActivatedRoute;
+    readonly firstChild: ActivatedRoute;
     fragment: Observable<string>;
     outlet: string;
     params: Observable<Params>;
-    parent: ActivatedRoute;
-    pathFromRoot: ActivatedRoute[];
+    readonly parent: ActivatedRoute;
+    readonly pathFromRoot: ActivatedRoute[];
     queryParams: Observable<Params>;
-    root: ActivatedRoute;
-    routeConfig: Route;
+    readonly root: ActivatedRoute;
+    readonly routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
     toString(): string;
@@ -19,18 +19,18 @@ export declare class ActivatedRoute {
 
 /** @stable */
 export declare class ActivatedRouteSnapshot {
-    children: ActivatedRouteSnapshot[];
+    readonly children: ActivatedRouteSnapshot[];
     component: Type<any> | string;
     data: Data;
-    firstChild: ActivatedRouteSnapshot;
+    readonly firstChild: ActivatedRouteSnapshot;
     fragment: string;
     outlet: string;
     params: Params;
-    parent: ActivatedRouteSnapshot;
-    pathFromRoot: ActivatedRouteSnapshot[];
+    readonly parent: ActivatedRouteSnapshot;
+    readonly pathFromRoot: ActivatedRouteSnapshot[];
     queryParams: Params;
-    root: ActivatedRouteSnapshot;
-    routeConfig: Route;
+    readonly root: ActivatedRouteSnapshot;
+    readonly routeConfig: Route;
     url: UrlSegment[];
     toString(): string;
 }
@@ -85,7 +85,7 @@ export interface ExtraOptions {
 export declare type LoadChildren = string | LoadChildrenCallback;
 
 /** @stable */
-export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
+export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>>;
 
 /** @stable */
 export declare class NavigationCancel {
@@ -127,8 +127,9 @@ export declare class NavigationError {
 export interface NavigationExtras {
     fragment?: string;
     preserveFragment?: boolean;
-    preserveQueryParams?: boolean;
+    /** @deprecated */ preserveQueryParams?: boolean;
     queryParams?: Params;
+    queryParamsHandling?: QueryParamsHandling;
     relativeTo?: ActivatedRoute;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
@@ -165,7 +166,7 @@ export declare abstract class PreloadingStrategy {
 }
 
 /** @stable */
-export declare const PRIMARY_OUTLET: string;
+export declare const PRIMARY_OUTLET = "primary";
 
 /** @stable */
 export declare function provideRoutes(routes: Routes): any;
@@ -202,14 +203,14 @@ export interface Route {
 export declare class Router {
     config: Routes;
     errorHandler: ErrorHandler;
-    events: Observable<Event>;
+    readonly events: Observable<Event>;
     navigated: boolean;
     routeReuseStrategy: RouteReuseStrategy;
-    routerState: RouterState;
-    url: string;
+    readonly routerState: RouterState;
+    readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
@@ -223,10 +224,10 @@ export declare class Router {
 }
 
 /** @stable */
-export declare const ROUTER_CONFIGURATION: OpaqueToken;
+export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 
 /** @experimental */
-export declare const ROUTER_INITIALIZER: OpaqueToken;
+export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 /** @experimental */
 export declare abstract class RouteReuseStrategy {
@@ -241,31 +242,32 @@ export declare abstract class RouteReuseStrategy {
 export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
-    preserveQueryParams: boolean;
+    /** @deprecated */ preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
+    queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
-    urlTree: UrlTree;
+    readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer, el: ElementRef);
     onClick(): boolean;
 }
 
 /** @stable */
 export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
-    isActive: boolean;
+    readonly isActive: boolean;
     links: QueryList<RouterLink>;
     linksWithHrefs: QueryList<RouterLinkWithHref>;
     routerLinkActive: string[] | string;
     routerLinkActiveOptions: {
         exact: boolean;
     };
-    constructor(router: Router, element: ElementRef, renderer: Renderer);
+    constructor(router: Router, element: ElementRef, renderer: Renderer, cdr: ChangeDetectorRef);
     ngAfterContentInit(): void;
-    ngOnChanges(changes: {}): any;
-    ngOnDestroy(): any;
+    ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
 }
 
 /** @stable */
@@ -277,11 +279,12 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     queryParams: {
         [k: string]: any;
     };
+    queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
     target: string;
-    urlTree: UrlTree;
+    readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
@@ -298,12 +301,12 @@ export declare class RouterModule {
 /** @stable */
 export declare class RouterOutlet implements OnDestroy {
     activateEvents: EventEmitter<any>;
-    activatedRoute: ActivatedRoute;
-    component: Object;
+    readonly activatedRoute: ActivatedRoute;
+    readonly component: Object;
     deactivateEvents: EventEmitter<any>;
-    isActivated: boolean;
-    locationFactoryResolver: ComponentFactoryResolver;
-    locationInjector: Injector;
+    readonly isActivated: boolean;
+    readonly locationFactoryResolver: ComponentFactoryResolver;
+    readonly locationInjector: Injector;
     outletMap: RouterOutletMap;
     constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
     activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
@@ -382,7 +385,7 @@ export declare class UrlSegmentGroup {
     children: {
         [key: string]: UrlSegmentGroup;
     };
-    numberOfChildren: number;
+    readonly numberOfChildren: number;
     parent: UrlSegmentGroup;
     segments: UrlSegment[];
     constructor(

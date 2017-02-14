@@ -19,7 +19,7 @@ export declare abstract class AfterViewInit {
 }
 
 /** @experimental */
-export declare const ANALYZE_FOR_ENTRY_COMPONENTS: OpaqueToken;
+export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 /** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
@@ -40,8 +40,15 @@ export declare class AnimationEntryMetadata {
 
 /** @experimental */
 export declare class AnimationGroupMetadata extends AnimationWithStepsMetadata {
-    steps: AnimationMetadata[];
+    readonly steps: AnimationMetadata[];
     constructor(_steps: AnimationMetadata[]);
+}
+
+/** @experimental */
+export declare class AnimationKeyframe {
+    offset: number;
+    styles: AnimationStyles;
+    constructor(offset: number, styles: AnimationStyles);
 }
 
 /** @experimental */
@@ -62,6 +69,7 @@ export declare abstract class AnimationPlayer {
     abstract getPosition(): number;
     abstract hasStarted(): boolean;
     abstract init(): void;
+    abstract onDestroy(fn: () => void): void;
     abstract onDone(fn: () => void): void;
     abstract onStart(fn: () => void): void;
     abstract pause(): void;
@@ -73,7 +81,7 @@ export declare abstract class AnimationPlayer {
 
 /** @experimental */
 export declare class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
-    steps: AnimationMetadata[];
+    readonly steps: AnimationMetadata[];
     constructor(_steps: AnimationMetadata[]);
 }
 
@@ -90,9 +98,9 @@ export declare abstract class AnimationStateMetadata {
 
 /** @experimental */
 export declare class AnimationStateTransitionMetadata extends AnimationStateMetadata {
-    stateChangeExpr: string;
+    stateChangeExpr: string | ((fromState: string, toState: string) => boolean);
     steps: AnimationMetadata;
-    constructor(stateChangeExpr: string, steps: AnimationMetadata);
+    constructor(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata);
 }
 
 /** @experimental */
@@ -107,38 +115,52 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 }
 
 /** @experimental */
+export declare class AnimationStyles {
+    styles: {
+        [key: string]: string | number;
+    }[];
+    constructor(styles: {
+        [key: string]: string | number;
+    }[]);
+}
+
+/** @experimental */
 export declare class AnimationTransitionEvent {
+    element: ElementRef;
     fromState: string;
     phaseName: string;
     toState: string;
     totalTime: number;
-    constructor({fromState, toState, totalTime, phaseName}: {
+    triggerName: string;
+    constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
         fromState: string;
         toState: string;
         totalTime: number;
         phaseName: string;
+        element: any;
+        triggerName: string;
     });
 }
 
 /** @experimental */
 export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
-    steps: AnimationMetadata[];
+    readonly steps: AnimationMetadata[];
     constructor();
 }
 
 /** @experimental */
-export declare const APP_BOOTSTRAP_LISTENER: OpaqueToken;
+export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
 
 /** @experimental */
-export declare const APP_ID: any;
+export declare const APP_ID: InjectionToken<string>;
 
 /** @experimental */
-export declare const APP_INITIALIZER: any;
+export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare class ApplicationInitStatus {
-    done: boolean;
-    donePromise: Promise<any>;
+    readonly done: boolean;
+    readonly donePromise: Promise<any>;
     constructor(appInits: (() => any)[]);
 }
 
@@ -148,12 +170,13 @@ export declare class ApplicationModule {
 
 /** @stable */
 export declare abstract class ApplicationRef {
-    componentTypes: Type<any>[];
-    components: ComponentRef<any>[];
-    viewCount: any;
-    attachView(view: ViewRef): void;
+    readonly abstract componentTypes: Type<any>[];
+    readonly abstract components: ComponentRef<any>[];
+    readonly abstract isStable: Observable<boolean>;
+    readonly abstract viewCount: number;
+    abstract attachView(view: ViewRef): void;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
-    detachView(view: ViewRef): void;
+    abstract detachView(view: ViewRef): void;
     abstract tick(): void;
 }
 
@@ -167,7 +190,7 @@ export declare function assertPlatform(requiredToken: any): PlatformRef;
 export declare const Attribute: AttributeDecorator;
 
 /** @experimental */
-export declare const AUTO_STYLE: string;
+export declare const AUTO_STYLE = "*";
 
 /** @stable */
 export declare enum ChangeDetectionStrategy {
@@ -188,11 +211,12 @@ export declare abstract class ChangeDetectorRef {
 export declare function Class(clsDef: ClassDefinition): Type<any>;
 
 /** @stable */
-export interface ClassDefinition {
-    constructor: Function | any[];
+export declare type ClassDefinition = {
     extends?: Type<any>;
+    constructor: Function | any[];
+} & {
     [x: string]: Type<any> | Function | any[];
-}
+};
 
 /** @stable */
 export interface ClassProvider {
@@ -201,14 +225,8 @@ export interface ClassProvider {
     useClass: Type<any>;
 }
 
-/** @stable */
-export declare class CollectionChangeRecord {
-    currentIndex: number;
-    item: any;
-    previousIndex: number;
-    trackById: any;
-    constructor(item: any, trackById: any);
-    toString(): string;
+/** @deprecated */
+export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 /** @stable */
@@ -223,7 +241,7 @@ export declare class Compiler {
 }
 
 /** @experimental */
-export declare const COMPILER_OPTIONS: OpaqueToken;
+export declare const COMPILER_OPTIONS: InjectionToken<CompilerOptions[]>;
 
 /** @experimental */
 export declare abstract class CompilerFactory {
@@ -236,6 +254,7 @@ export declare type CompilerOptions = {
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: any[];
+    missingTranslation?: MissingTranslationStrategy;
 };
 
 /** @stable */
@@ -251,7 +270,7 @@ export interface ComponentDecorator {
 export declare class ComponentFactory<C> {
     componentType: Type<any>;
     selector: string;
-    constructor(selector: string, _viewClass: Type<AppView<any>>, _componentType: Type<any>);
+    constructor(selector: string, _viewClass: Type<AppView<any>>, componentType: Type<any>);
     create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 
@@ -263,12 +282,12 @@ export declare abstract class ComponentFactoryResolver {
 
 /** @stable */
 export declare abstract class ComponentRef<C> {
-    changeDetectorRef: ChangeDetectorRef;
-    componentType: Type<any>;
-    hostView: ViewRef;
-    injector: Injector;
-    instance: C;
-    location: ElementRef;
+    readonly abstract changeDetectorRef: ChangeDetectorRef;
+    readonly abstract componentType: Type<any>;
+    readonly abstract hostView: ViewRef;
+    readonly abstract injector: Injector;
+    readonly abstract instance: C;
+    readonly abstract location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
 }
@@ -316,7 +335,7 @@ export declare class DebugElement extends DebugNode {
         [key: string]: string;
     };
     childNodes: DebugNode[];
-    children: DebugElement[];
+    readonly children: DebugElement[];
     classes: {
         [key: string]: boolean;
     };
@@ -340,35 +359,35 @@ export declare class DebugElement extends DebugNode {
 
 /** @experimental */
 export declare class DebugNode {
-    componentInstance: any;
-    context: any;
-    injector: Injector;
+    readonly componentInstance: any;
+    readonly context: any;
+    readonly injector: Injector;
     listeners: EventListener[];
     nativeNode: any;
     parent: DebugElement;
-    providerTokens: any[];
-    references: {
+    readonly providerTokens: any[];
+    readonly references: {
         [key: string]: any;
     };
-    source: string;
+    readonly source: string;
     constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
 }
 
-/** @stable */
-export declare class DefaultIterableDiffer implements IterableDiffer {
-    collection: any;
-    isDirty: boolean;
-    length: number;
-    constructor(_trackByFn?: TrackByFn);
-    check(collection: any): boolean;
-    diff(collection: any): DefaultIterableDiffer;
-    forEachAddedItem(fn: Function): void;
-    forEachIdentityChange(fn: Function): void;
-    forEachItem(fn: Function): void;
-    forEachMovedItem(fn: Function): void;
-    forEachOperation(fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void): void;
-    forEachPreviousItem(fn: Function): void;
-    forEachRemovedItem(fn: Function): void;
+/** @deprecated */
+export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
+    readonly collection: NgIterable<V>;
+    readonly isDirty: boolean;
+    readonly length: number;
+    constructor(_trackByFn?: TrackByFunction<V>);
+    check(collection: NgIterable<V>): boolean;
+    diff(collection: NgIterable<V>): DefaultIterableDiffer<V>;
+    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachOperation(fn: (item: IterableChangeRecord_<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
     toString(): string;
 }
@@ -398,8 +417,8 @@ export declare class ElementRef {
 
 /** @experimental */
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
-    context: C;
-    rootNodes: any[];
+    readonly abstract context: C;
+    readonly abstract rootNodes: any[];
 }
 
 /** @stable */
@@ -494,8 +513,15 @@ export interface InjectDecorator {
 }
 
 /** @stable */
+export declare class InjectionToken<T> extends OpaqueToken {
+    constructor(desc: string);
+    toString(): string;
+}
+
+/** @stable */
 export declare abstract class Injector {
-    get(token: any, notFoundValue?: any): any;
+    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T;
+    /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
 }
@@ -507,20 +533,39 @@ export declare const Input: InputDecorator;
 export declare function isDevMode(): boolean;
 
 /** @stable */
-export interface IterableDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface IterableChangeRecord<V> {
+    currentIndex: number;
+    item: V;
+    previousIndex: number;
+    trackById: any;
+}
+
+/** @stable */
+export interface IterableChanges<V> {
+    forEachAddedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+}
+
+/** @stable */
+export interface IterableDiffer<V> {
+    diff(object: NgIterable<V>): IterableChanges<V>;
 }
 
 /** @stable */
 export interface IterableDifferFactory {
-    create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+    create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
+    /** @deprecated */ create<V>(_cdr?: ChangeDetectorRef | TrackByFunction<V>, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class IterableDiffers {
-    factories: IterableDifferFactory[];
+    /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
@@ -531,37 +576,54 @@ export declare class IterableDiffers {
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
-export declare class KeyValueChangeRecord {
-    currentValue: any;
-    key: any;
-    previousValue: any;
-    constructor(key: any);
-    toString(): string;
+export interface KeyValueChangeRecord<K, V> {
+    currentValue: V;
+    key: K;
+    previousValue: V;
 }
 
 /** @stable */
-export interface KeyValueDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface KeyValueChanges<K, V> {
+    forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+}
+
+/** @stable */
+export interface KeyValueDiffer<K, V> {
+    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: {
+        [key: string]: V;
+    }): KeyValueChanges<string, V>;
 }
 
 /** @stable */
 export interface KeyValueDifferFactory {
-    create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+    create<K, V>(): KeyValueDiffer<K, V>;
+    /** @deprecated */ create<K, V>(_cdr?: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class KeyValueDiffers {
-    factories: KeyValueDifferFactory[];
+    /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
-    find(kv: Object): KeyValueDifferFactory;
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): Provider;
+    find(kv: any): KeyValueDifferFactory;
+    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
 }
 
 /** @experimental */
-export declare const LOCALE_ID: OpaqueToken;
+export declare const LOCALE_ID: InjectionToken<string>;
+
+/** @experimental */
+export declare enum MissingTranslationStrategy {
+    Error = 0,
+    Warning = 1,
+    Ignore = 2,
+}
 
 /** @experimental */
 export declare class ModuleWithComponentFactories<T> {
@@ -577,11 +639,14 @@ export interface ModuleWithProviders {
 }
 
 /** @stable */
+export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+/** @stable */
 export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
 export declare class NgModuleFactory<T> {
-    moduleType: Type<T>;
+    readonly moduleType: Type<T>;
     constructor(_injectorClass: {
         new (parentInjector: Injector): NgModuleInjector<T>;
     }, _moduleType: Type<T>);
@@ -595,9 +660,9 @@ export declare abstract class NgModuleFactoryLoader {
 
 /** @stable */
 export declare abstract class NgModuleRef<T> {
-    componentFactoryResolver: ComponentFactoryResolver;
-    injector: Injector;
-    instance: T;
+    readonly abstract componentFactoryResolver: ComponentFactoryResolver;
+    readonly abstract injector: Injector;
+    readonly abstract instance: T;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }
@@ -611,13 +676,13 @@ export declare class NgProbeToken {
 
 /** @experimental */
 export declare class NgZone {
-    hasPendingMacrotasks: boolean;
-    hasPendingMicrotasks: boolean;
-    isStable: boolean;
-    onError: EventEmitter<any>;
-    onMicrotaskEmpty: EventEmitter<any>;
-    onStable: EventEmitter<any>;
-    onUnstable: EventEmitter<any>;
+    readonly hasPendingMacrotasks: boolean;
+    readonly hasPendingMicrotasks: boolean;
+    readonly isStable: boolean;
+    readonly onError: EventEmitter<any>;
+    readonly onMicrotaskEmpty: EventEmitter<any>;
+    readonly onStable: EventEmitter<any>;
+    readonly onUnstable: EventEmitter<any>;
     constructor({enableLongStackTrace}: {
         enableLongStackTrace?: boolean;
     });
@@ -647,8 +712,9 @@ export declare abstract class OnInit {
     abstract ngOnInit(): void;
 }
 
-/** @stable */
+/** @deprecated */
 export declare class OpaqueToken {
+    protected _desc: string;
     constructor(_desc: string);
     toString(): string;
 }
@@ -666,7 +732,7 @@ export interface OptionalDecorator {
 export declare const Output: OutputDecorator;
 
 /** @experimental */
-export declare const PACKAGE_ROOT_URL: any;
+export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 /** @stable */
 export declare const Pipe: PipeDecorator;
@@ -677,17 +743,17 @@ export interface PipeTransform {
 }
 
 /** @experimental */
-export declare const PLATFORM_INITIALIZER: any;
+export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
-    destroyed: boolean;
-    injector: Injector;
-    /** @stable */ bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
+    readonly abstract destroyed: boolean;
+    readonly abstract injector: Injector;
+    /** @stable */ abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
+    /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }
@@ -701,11 +767,11 @@ export declare abstract class Query {
 
 /** @stable */
 export declare class QueryList<T> {
-    changes: Observable<any>;
-    dirty: boolean;
-    first: T;
-    last: T;
-    length: number;
+    readonly changes: Observable<any>;
+    readonly dirty: boolean;
+    readonly first: T;
+    readonly last: T;
+    readonly length: number;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
@@ -721,12 +787,12 @@ export declare class QueryList<T> {
 
 /** @stable */
 export declare abstract class ReflectiveInjector implements Injector {
-    parent: Injector;
-    createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
+    readonly abstract parent: Injector;
+    abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     abstract get(token: any, notFoundValue?: any): any;
-    instantiateResolved(provider: ResolvedReflectiveProvider): any;
-    resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
-    resolveAndInstantiate(provider: Provider): any;
+    abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
+    abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
+    abstract resolveAndInstantiate(provider: Provider): any;
     /** @experimental */ static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
     static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
@@ -734,11 +800,11 @@ export declare abstract class ReflectiveInjector implements Injector {
 
 /** @experimental */
 export declare class ReflectiveKey {
-    displayName: string;
+    readonly displayName: string;
     id: number;
     token: Object;
     constructor(token: Object, id: number);
-    static numberOfKeys: number;
+    static readonly numberOfKeys: number;
     static get(token: Object): ReflectiveKey;
 }
 
@@ -886,7 +952,7 @@ export declare abstract class SystemJsNgModuleLoaderConfig {
 
 /** @stable */
 export declare abstract class TemplateRef<C> {
-    elementRef: ElementRef;
+    readonly abstract elementRef: ElementRef;
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
@@ -912,22 +978,42 @@ export declare class TestabilityRegistry {
     registerApplication(token: any, testability: Testability): void;
 }
 
-/** @stable */
+/** @deprecated */
 export interface TrackByFn {
     (index: number, item: any): any;
 }
 
-/** @experimental */
-export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
+/** @stable */
+export interface TrackByFunction<T> {
+    (index: number, item: T): any;
+}
 
 /** @experimental */
-export declare const TRANSLATIONS: OpaqueToken;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
-export declare const TRANSLATIONS_FORMAT: OpaqueToken;
+export interface TransitionFactory {
+    match(currentState: any, nextState: any): TransitionInstruction;
+}
+
+/** @experimental */
+export interface TransitionInstruction {
+}
+
+/** @experimental */
+export declare const TRANSLATIONS: InjectionToken<string>;
+
+/** @experimental */
+export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
+
+/** @experimental */
+export interface Trigger {
+    name: string;
+    transitionFactories: TransitionFactory[];
+}
 
 /** @stable */
 export declare const Type: FunctionConstructor;
@@ -954,9 +1040,9 @@ export interface ValueProvider {
 /** @stable */
 export declare class Version {
     full: string;
-    major: string;
-    minor: string;
-    patch: string;
+    readonly major: string;
+    readonly minor: string;
+    readonly patch: string;
     constructor(full: string);
 }
 
@@ -991,10 +1077,10 @@ export interface ViewChildrenDecorator {
 
 /** @stable */
 export declare abstract class ViewContainerRef {
-    element: ElementRef;
-    injector: Injector;
-    length: number;
-    parentInjector: Injector;
+    readonly abstract element: ElementRef;
+    readonly abstract injector: Injector;
+    readonly abstract length: number;
+    readonly abstract parentInjector: Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][]): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
@@ -1015,7 +1101,7 @@ export declare enum ViewEncapsulation {
 
 /** @stable */
 export declare abstract class ViewRef extends ChangeDetectorRef {
-    destroyed: boolean;
+    readonly abstract destroyed: boolean;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): any;
 }

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
+import {ChangeDetectorRef, OnDestroy, Pipe, PipeTransform, WrappedValue} from '@angular/core';
 import {EventEmitter, Observable} from '../facade/async';
-import {isPromise} from '../private_import_core';
-import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {isObservable, isPromise} from '../private_import_core';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any): any;
@@ -66,7 +66,7 @@ const _observableStrategy = new ObservableStrategy();
  * @stable
  */
 @Pipe({name: 'async', pure: false})
-export class AsyncPipe implements OnDestroy {
+export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: Object = null;
   private _latestReturnedValue: Object = null;
 
@@ -82,6 +82,9 @@ export class AsyncPipe implements OnDestroy {
     }
   }
 
+  transform<T>(obj: Observable<T>): T|null;
+  transform<T>(obj: Promise<T>): T|null;
+  transform<T>(obj: EventEmitter<T>): T|null;
   transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (!this._obj) {
       if (obj) {
@@ -93,7 +96,7 @@ export class AsyncPipe implements OnDestroy {
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj);
+      return this.transform(obj as any);
     }
 
     if (this._latestValue === this._latestReturnedValue) {
@@ -116,11 +119,11 @@ export class AsyncPipe implements OnDestroy {
       return _promiseStrategy;
     }
 
-    if ((<any>obj).subscribe) {
+    if (isObservable(obj)) {
       return _observableStrategy;
     }
 
-    throw new InvalidPipeArgumentError(AsyncPipe, obj);
+    throw invalidPipeArgumentError(AsyncPipe, obj);
   }
 
   private _dispose(): void {
@@ -131,7 +134,7 @@ export class AsyncPipe implements OnDestroy {
     this._obj = null;
   }
 
-  private _updateLatestValue(async: any, value: Object) {
+  private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();

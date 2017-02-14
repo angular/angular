@@ -8,7 +8,8 @@
     "moduleResolution": "node",
     "outDir": "../dist/all/",
     "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true,
+    // Attention: This is only set to false for @angular/core.
+    "noFallthroughCasesInSwitch": false,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
@@ -26,7 +27,6 @@
   },
   "exclude": [
     "angular1_router",
-    "angular2",
     "benchmarks/e2e_test/old",
     "benchmarks/src/old",
     "benchmarks/src/**/index_aot.ts",

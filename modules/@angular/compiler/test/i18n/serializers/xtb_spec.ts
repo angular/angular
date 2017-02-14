@@ -9,14 +9,16 @@
 import {escapeRegExp} from '@angular/core/src/facade/lang';
 
 import {serializeNodes} from '../../../src/i18n/digest';
+import * as i18n from '../../../src/i18n/i18n_ast';
 import {Xtb} from '../../../src/i18n/serializers/xtb';
+
 
 export function main(): void {
   describe('XTB serializer', () => {
     const serializer = new Xtb();
 
     function loadAsMap(xtb: string): {[id: string]: string} {
-      const i18nNodesByMsgId = serializer.load(xtb, 'url');
+      const {i18nNodesByMsgId} = serializer.load(xtb, 'url');
       const msgMap: {[id: string]: string} = {};
       Object.keys(i18nNodesByMsgId).forEach(id => {
         msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join('');
@@ -52,6 +54,14 @@ export function main(): void {
         expect(loadAsMap(XTB)).toEqual({'8841459487341224498': 'rab'});
       });
 
+      it('should return the target locale', () => {
+        const XTB = `<?xml version="1.0" encoding="UTF-8"?>
+<translationbundle lang='fr'>
+  <translation id="8841459487341224498">rab</translation>
+</translationbundle>`;
+
+        expect(serializer.load(XTB, 'url').locale).toEqual('fr');
+      });
 
       it('should load XTB files with placeholders', () => {
         const XTB = `<?xml version="1.0" encoding="UTF-8"?>
@@ -100,6 +110,27 @@ export function main(): void {
     });
 
     describe('errors', () => {
+      it('should be able to parse non-angular xtb files without error', () => {
+        const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
+<translationbundle>
+  <translation id="angular">is great</translation>
+  <translation id="non angular">is <invalid>less</invalid> {count, plural, =0 {{GREAT}}}</translation>
+</translationbundle>`;
+
+        // Invalid messages should not cause the parser to throw
+        let i18nNodesByMsgId: {[id: string]: i18n.Node[]};
+        expect(() => {
+          i18nNodesByMsgId = serializer.load(XTB, 'url').i18nNodesByMsgId;
+        }).not.toThrow();
+
+        expect(Object.keys(i18nNodesByMsgId).length).toEqual(2);
+        expect(serializeNodes(i18nNodesByMsgId['angular']).join('')).toEqual('is great');
+        // Messages that contain unsupported feature should throw on access
+        expect(() => {
+          const read = i18nNodesByMsgId['non angular'];
+        }).toThrowError(/xtb parse errors/);
+      });
+
       it('should throw on nested <translationbundle>', () => {
         const XTB =
             '<translationbundle><translationbundle></translationbundle></translationbundle>';

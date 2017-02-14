@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/animation",
+    "paths": {
+      "@angular/core": ["../../../dist/packages-dist/core"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": []
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true
+  }
+}

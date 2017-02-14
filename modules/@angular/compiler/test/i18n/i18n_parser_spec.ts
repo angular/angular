@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {digest} from '@angular/compiler/src/i18n/digest';
+import {digest, serializeNodes} from '@angular/compiler/src/i18n/digest';
 import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-
-import {serializeNodes} from '../../src/i18n/digest';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
 export function main() {
   describe('I18nParser', () => {
@@ -291,7 +289,7 @@ export function main() {
   });
 }
 
-function _humanizeMessages(
+export function _humanizeMessages(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
   // clang-format off
@@ -322,7 +320,7 @@ function _humanizePlaceholdersToMessage(
 }
 
 
-function _extractMessages(
+export function _extractMessages(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): Message[] {
   const htmlParser = new HtmlParser();

@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import AngularCompilerOptions from './options';
+import {VinylFile, isVinylFile} from './vinyl_file';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -18,7 +19,8 @@ import AngularCompilerOptions from './options';
  * you should implement a similar interface.
  */
 export interface CompilerInterface {
-  readConfiguration(project: string, basePath: string):
+  readConfiguration(
+      project: string|VinylFile, basePath: string, existingOptions?: ts.CompilerOptions):
       {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
   emit(program: ts.Program): number;
@@ -28,17 +30,27 @@ export class UserError extends Error {
   private _nativeError: Error;
 
   constructor(message: string) {
-    // Errors don't use current this, instead they create a new instance.
-    // We have to do forward all of our api to the nativeInstance.
-    const nativeError = super(message) as any as Error;
+    super(message);
+    // Required for TS 2.1, see
+    // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    Object.setPrototypeOf(this, UserError.prototype);
+
+    const nativeError = new Error(message) as any as Error;
     this._nativeError = nativeError;
   }
 
   get message() { return this._nativeError.message; }
-  set message(message) { this._nativeError.message = message; }
-  get name() { return 'UserError'; }
+  set message(message) {
+    if (this._nativeError) this._nativeError.message = message;
+  }
+  get name() { return this._nativeError.name; }
+  set name(name) {
+    if (this._nativeError) this._nativeError.name = name;
+  }
   get stack() { return (this._nativeError as any).stack; }
-  set stack(value) { (this._nativeError as any).stack = value; }
+  set stack(value) {
+    if (this._nativeError) (this._nativeError as any).stack = value;
+  }
   toString() { return this._nativeError.toString(); }
 }
 
@@ -97,20 +109,30 @@ export class Tsc implements CompilerInterface {
 
   constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
 
-  readConfiguration(project: string, basePath: string) {
+  readConfiguration(
+      project: string|VinylFile, basePath: string, existingOptions?: ts.CompilerOptions) {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
     // Note, TS@next returns an empty array, while earlier versions throw
     try {
-      if (this.readDirectory(project).length > 0) {
+      if (!isVinylFile(project) && this.readDirectory(project).length > 0) {
         project = path.join(project, 'tsconfig.json');
       }
     } catch (e) {
       // Was not a directory, continue on assuming it's a file
     }
 
-    const {config, error} = ts.readConfigFile(project, this.readFile);
+    let {config, error} = (() => {
+      // project is vinyl like file object
+      if (isVinylFile(project)) {
+        return {config: JSON.parse(project.contents.toString()), error: null};
+      }
+      // project is path to project file
+      else {
+        return ts.readConfigFile(project, this.readFile);
+      }
+    })();
     check([error]);
 
     // Do not inline `host` into `parseJsonConfigFileContent` until after
@@ -121,9 +143,10 @@ export class Tsc implements CompilerInterface {
     const host = {
       useCaseSensitiveFileNames: true,
       fileExists: existsSync,
-      readDirectory: this.readDirectory
+      readDirectory: this.readDirectory,
+      readFile: ts.sys.readFile
     };
-    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath);
+    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath, existingOptions);
 
     check(this.parsed.errors);
 

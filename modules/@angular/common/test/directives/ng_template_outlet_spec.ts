@@ -34,29 +34,22 @@ export function main() {
       });
     });
 
-    it('should do nothing if templateRef is null', async(() => {
-         const template = `<template [ngTemplateOutlet]="null"></template>`;
+    it('should do nothing if templateRef is `null`', async(() => {
+         const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
          fixture = createTestComponent(template);
-
          detectChangesAndExpectText('');
        }));
 
     it('should insert content specified by TemplateRef', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
+         const template = `<template #tpl>foo</template>` +
+             `<ng-container [ngTemplateOutlet]="tpl"></ng-container>`;
          fixture = createTestComponent(template);
-
-         detectChangesAndExpectText('');
-
-         const refs = fixture.debugElement.children[0].references['refs'];
-
-         setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');
        }));
 
-    it('should clear content if TemplateRef becomes null', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
+    it('should clear content if TemplateRef becomes `null`', async(() => {
+         const template = `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs>` +
+             `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
          const refs = fixture.debugElement.children[0].references['refs'];
@@ -70,7 +63,8 @@ export function main() {
 
     it('should swap content if TemplateRef changes', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template><template>bar</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
+             `<tpl-refs #refs="tplRefs"><template>foo</template><template>bar</template></tpl-refs>` +
+             `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
@@ -83,69 +77,46 @@ export function main() {
          detectChangesAndExpectText('bar');
        }));
 
-    it('should display template if context is null', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="null"></template>`;
+    it('should display template if context is `null`', async(() => {
+         const template = `<template #tpl>foo</template>` +
+             `<ng-container *ngTemplateOutlet="tpl; context: null"></ng-container>`;
          fixture = createTestComponent(template);
-         detectChangesAndExpectText('');
-
-         const refs = fixture.debugElement.children[0].references['refs'];
-
-         setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');
        }));
 
     it('should reflect initial context and changes', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template let-foo="foo"><span>{{foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+         const template = `<template let-foo="foo" #tpl>{{foo}}</template>` +
+             `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
-
-         const refs = fixture.debugElement.children[0].references['refs'];
-         setTplRef(refs.tplRefs.first);
-
          detectChangesAndExpectText('bar');
 
          fixture.componentInstance.context.foo = 'alter-bar';
-
          detectChangesAndExpectText('alter-bar');
        }));
 
-    it('should reflect user defined $implicit property in the context', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template let-ctx><span>{{ctx.foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+    it('should reflect user defined `$implicit` property in the context', async(() => {
+         const template = `<template let-ctx #tpl>{{ctx.foo}}</template>` +
+             `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
-
-         fixture.detectChanges();
-
-         const refs = fixture.debugElement.children[0].references['refs'];
-         setTplRef(refs.tplRefs.first);
-
-         fixture.componentInstance.context = {$implicit: fixture.componentInstance.context};
-         detectChangesAndExpectText('bar');
+         fixture.componentInstance.context = {$implicit: {foo: 'bra'}};
+         detectChangesAndExpectText('bra');
        }));
 
     it('should reflect context re-binding', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+         const template = `<template let-shawshank="shawshank" #tpl>{{shawshank}}</template>` +
+             `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
 
-         fixture.detectChanges();
-
-         const refs = fixture.debugElement.children[0].references['refs'];
-         setTplRef(refs.tplRefs.first);
          fixture.componentInstance.context = {shawshank: 'brooks'};
-
          detectChangesAndExpectText('brooks');
 
          fixture.componentInstance.context = {shawshank: 'was here'};
-
          detectChangesAndExpectText('was here');
        }));
   });
 }
-
 
 @Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})
 class CaptureTplRefs {

@@ -8,7 +8,7 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, dirWrapperClassName, identifierModuleUrl, identifierName} from './compile_metadata';
 import {createCheckBindingField, isFirstViewCheck} from './compiler_util/binding_util';
-import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
+import {EventHandlerVars, convertActionBinding, legacyConvertPropertyBinding} from './compiler_util/expression_converter';
 import {createCheckAnimationBindingStmts, createCheckRenderBindingStmt} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
 import {Parser} from './expression_parser/parser';
@@ -123,7 +123,6 @@ class DirectiveWrapperBuilder implements ClassBuilder {
           this.detachStmts),
       new o.ClassMethod('ngOnDestroy', [], this.destroyStmts),
     ];
-
 
     const fields: o.ClassField[] = [
       new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE, [o.StmtModifier.Private]),
@@ -254,7 +253,7 @@ function addCheckHostMethod(
   ];
   hostProps.forEach((hostProp, hostPropIdx) => {
     const field = createCheckBindingField(builder);
-    const evalResult = convertPropertyBinding(
+    const evalResult = legacyConvertPropertyBinding(
         builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostProp.value, field.bindingId);
     if (!evalResult) {
       return;
@@ -286,11 +285,10 @@ function addHandleEventMethod(hostListeners: BoundEventAst[], builder: Directive
   const actionStmts: o.Statement[] = [resultVar.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
   hostListeners.forEach((hostListener, eventIdx) => {
     const evalResult = convertActionBinding(
-        builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostListener.handler,
-        `sub_${eventIdx}`);
+        null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostListener.handler, `sub_${eventIdx}`);
     const trueStmts = evalResult.stmts;
-    if (evalResult.preventDefault) {
-      trueStmts.push(resultVar.set(evalResult.preventDefault.and(resultVar)).toStmt());
+    if (evalResult.allowDefault) {
+      trueStmts.push(resultVar.set(evalResult.allowDefault.and(resultVar)).toStmt());
     }
     // TODO(tbosch): convert this into a `switch` once our OutputAst supports it.
     actionStmts.push(

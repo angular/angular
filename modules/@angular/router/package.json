@@ -6,7 +6,6 @@
   "module": "index.js",
   "typings": "index.d.ts",
   "keywords": [
-    "angular2",
     "angular",
     "router"
   ],

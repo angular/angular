@@ -8,7 +8,6 @@
 
 import {CompileQueryMetadata, tokenReference} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
@@ -33,7 +32,7 @@ export class CompileQuery {
   addValue(value: o.Expression, view: CompileView) {
     let currentView = view;
     const elPath: CompileElement[] = [];
-    while (isPresent(currentView) && currentView !== this.view) {
+    while (currentView && currentView !== this.view) {
       const parentEl = currentView.declarationElement;
       elPath.unshift(parentEl);
       currentView = parentEl.view;
@@ -67,7 +66,7 @@ export class CompileQuery {
   generateStatements(targetStaticMethod: CompileMethod, targetDynamicMethod: CompileMethod) {
     const values = createQueryValues(this._values);
     const updateStmts = [this.queryList.callMethod('reset', [o.literalArr(values)]).toStmt()];
-    if (isPresent(this.ownerDirectiveExpression)) {
+    if (this.ownerDirectiveExpression) {
       const valueExpr = this.meta.first ? this.queryList.prop('first') : this.queryList;
       updateStmts.push(
           this.ownerDirectiveExpression.prop(this.meta.propertyName).set(valueExpr).toStmt());
@@ -110,9 +109,7 @@ function mapNestedViews(
   ]);
 }
 
-export function createQueryList(
-    query: CompileQueryMetadata, directiveInstance: o.Expression, propertyName: string,
-    compileView: CompileView): o.Expression {
+export function createQueryList(propertyName: string, compileView: CompileView): o.Expression {
   compileView.fields.push(new o.ClassField(
       propertyName, o.importType(createIdentifier(Identifiers.QueryList), [o.DYNAMIC_TYPE])));
   const expr = o.THIS_EXPR.prop(propertyName);

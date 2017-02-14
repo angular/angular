@@ -107,8 +107,9 @@ class LanguageServiceImpl implements LanguageService {
   getTemplateAst(template: TemplateSource, contextFile: string): AstResult {
     let result: AstResult;
     try {
-      const {metadata} =
+      const resolvedMetadata =
           this.metadataResolver.getNonNormalizedDirectiveMetadata(template.type as any);
+      const metadata = resolvedMetadata && resolvedMetadata.metadata;
       if (metadata) {
         const rawHtmlParser = new HtmlParser();
         const htmlParser = new I18NHtmlParser(rawHtmlParser);
@@ -124,9 +125,10 @@ class LanguageServiceImpl implements LanguageService {
           ngModule = findSuitableDefaultModule(analyzedModules);
         }
         if (ngModule) {
-          const directives = ngModule.transitiveModule.directives.map(
-              d => this.host.resolver.getNonNormalizedDirectiveMetadata(d.reference)
-                       .metadata.toSummary());
+          const resolvedDirectives = ngModule.transitiveModule.directives.map(
+              d => this.host.resolver.getNonNormalizedDirectiveMetadata(d.reference));
+          const directives =
+              resolvedDirectives.filter(d => d !== null).map(d => d.metadata.toSummary());
           const pipes = ngModule.transitiveModule.pipes.map(
               p => this.host.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
           const schemas = ngModule.schemas;

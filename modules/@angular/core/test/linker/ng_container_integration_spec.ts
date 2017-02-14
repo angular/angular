@@ -23,8 +23,15 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     beforeEach(() => {
       TestBed.configureCompiler({useJit: useJit});
-      TestBed.configureTestingModule(
-          {declarations: [MyComp, NeedsContentChildren, NeedsViewChildren, TextDirective, Simple]});
+      TestBed.configureTestingModule({
+        declarations: [
+          MyComp,
+          NeedsContentChildren,
+          NeedsViewChildren,
+          TextDirective,
+          Simple,
+        ],
+      });
     });
 
     it('should support the "i18n" attribute', () => {

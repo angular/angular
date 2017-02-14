@@ -48,6 +48,51 @@ export class ParseLocation {
     }
     return new ParseLocation(this.file, offset, line, col);
   }
+
+  // Return the source around the location
+  // Up to `maxChars` or `maxLines` on each side of the location
+  getContext(maxChars: number, maxLines: number): {before: string, after: string} {
+    const content = this.file.content;
+    let startOffset = this.offset;
+
+    if (isPresent(startOffset)) {
+      if (startOffset > content.length - 1) {
+        startOffset = content.length - 1;
+      }
+      let endOffset = startOffset;
+      let ctxChars = 0;
+      let ctxLines = 0;
+
+      while (ctxChars < maxChars && startOffset > 0) {
+        startOffset--;
+        ctxChars++;
+        if (content[startOffset] == '\n') {
+          if (++ctxLines == maxLines) {
+            break;
+          }
+        }
+      }
+
+      ctxChars = 0;
+      ctxLines = 0;
+      while (ctxChars < maxChars && endOffset < content.length - 1) {
+        endOffset++;
+        ctxChars++;
+        if (content[endOffset] == '\n') {
+          if (++ctxLines == maxLines) {
+            break;
+          }
+        }
+      }
+
+      return {
+        before: content.substring(startOffset, this.offset),
+        after: content.substring(this.offset, endOffset + 1),
+      };
+    }
+
+    return null;
+  }
 }
 
 export class ParseSourceFile {
@@ -74,47 +119,9 @@ export class ParseError {
       public level: ParseErrorLevel = ParseErrorLevel.FATAL) {}
 
   toString(): string {
-    const source = this.span.start.file.content;
-    let ctxStart = this.span.start.offset;
-    let contextStr = '';
-    let details = '';
-    if (isPresent(ctxStart)) {
-      if (ctxStart > source.length - 1) {
-        ctxStart = source.length - 1;
-      }
-      let ctxEnd = ctxStart;
-      let ctxLen = 0;
-      let ctxLines = 0;
-
-      while (ctxLen < 100 && ctxStart > 0) {
-        ctxStart--;
-        ctxLen++;
-        if (source[ctxStart] == '\n') {
-          if (++ctxLines == 3) {
-            break;
-          }
-        }
-      }
-
-      ctxLen = 0;
-      ctxLines = 0;
-      while (ctxLen < 100 && ctxEnd < source.length - 1) {
-        ctxEnd++;
-        ctxLen++;
-        if (source[ctxEnd] == '\n') {
-          if (++ctxLines == 3) {
-            break;
-          }
-        }
-      }
-
-      const context = source.substring(ctxStart, this.span.start.offset) + '[ERROR ->]' +
-          source.substring(this.span.start.offset, ctxEnd + 1);
-      contextStr = ` ("${context}")`;
-    }
-    if (this.span.details) {
-      details = `, ${this.span.details}`;
-    }
+    const ctx = this.span.start.getContext(100, 3);
+    const contextStr = ctx ? ` ("${ctx.before}[ERROR ->]${ctx.after}")` : '';
+    const details = this.span.details ? `, ${this.span.details}` : '';
     return `${this.msg}${contextStr}: ${this.span.start}${details}`;
   }
 }

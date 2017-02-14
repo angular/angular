@@ -71,7 +71,13 @@ particular `gulp` and `protractor` commands. If you prefer, you can drop this pa
 Since global installs can become stale, and required versions can vary by project, we avoid their
 use in these instructions.
 
-*Option 2*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
+*Option 2*: globally installing the package `npm-run` by running `npm install -g npm-run`
+(you might need to prefix this command with `sudo`). You will then be able to run locally installed
+package scripts by invoking: e.g., `npm-run gulp build`
+(see [npm-run project page](https://github.com/timoxley/npm-run) for more details).
+
+
+*Option 3*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
 [Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
 ## Installing Bower Modules
@@ -155,7 +161,13 @@ You can check that your code is properly formatted and adheres to coding style b
 $ gulp lint
 ```
 
-## Publishing your own personal snapshot build
+## Publishing snapshot builds
+
+When the `master` branch successfully builds on Travis, it automatically publishes build artifacts
+to repositories in the Angular org, eg. the `@angular/core` package is published to
+http://github.com/angular/core-builds.
+The ES2015 version of Angular is published to a different branch in these repos, for example
+http://github.com/angular/core-builds#master-es2015
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can

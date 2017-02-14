@@ -1,6 +1,6 @@
 # Dependency Injection (DI): Documentation
 
-This document describes in detail how the DI module works in Angular 2.
+This document describes in detail how the DI module works in Angular.
 
 ## Core Abstractions
 

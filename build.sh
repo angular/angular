@@ -13,6 +13,7 @@ PACKAGES=(core
   platform-server
   platform-webworker
   platform-webworker-dynamic
+  animation
   http
   upgrade
   router
@@ -112,6 +113,7 @@ do
   PWD=`pwd`
   SRCDIR=${PWD}/modules/@angular/${PACKAGE}
   DESTDIR=${PWD}/dist/packages-dist/${PACKAGE}
+  ES2015_DESTDIR=${PWD}/dist/packages-dist-es2015/${PACKAGE}
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_TESTING_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-testing.umd.js
   UMD_STATIC_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.js
@@ -131,6 +133,13 @@ do
 
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-build.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-build.json
+  # ES2015 distro is not ready yet; don't slow down all builds for it
+  # TODO(alexeagle,igorminar): figure out ES2015 story and enable
+  if [[ -n "${EXPERIMENTAL_ES2015_DISTRO}" ]]; then
+    $TSC -p ${SRCDIR}/tsconfig-build.json --target es2015 --outDir ${ES2015_DESTDIR}
+    cp ${SRCDIR}/package.json ${ES2015_DESTDIR}/
+    cp ${PWD}/modules/@angular/README.md ${ES2015_DESTDIR}/
+  fi
 
   if [[ -e ${SRCDIR}/tsconfig-upgrade.json ]]; then
     echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-upgrade.json        ====="
@@ -143,23 +152,14 @@ do
   if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
     echo "======      COMPILING TESTING: ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
     $TSC -p ${SRCDIR}/tsconfig-testing.json
+    if [[ -n "${EXPERIMENTAL_ES2015_DISTRO}" ]]; then
+      $TSC -p ${SRCDIR}/tsconfig-testing.json --target es2015 --outDir ${ES2015_DESTDIR}
+    fi
   fi
 
   if [[ -e ${SRCDIR}/tsconfig-2015.json ]]; then
     echo "======      COMPILING ESM: ${TSC} -p ${SRCDIR}/tsconfig-2015.json"
     ${TSC} -p ${SRCDIR}/tsconfig-2015.json
-  fi
-
-  echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
-  # safely strips 'readonly' specifier from d.ts files to make them compatible with tsc 1.8
-  if [ "$(uname)" == "Darwin" ]; then
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -e 's/\/\/\/ <reference types="node" \/>//g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
-  else
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -e 's/\/\/\/ <reference types="node" \/>//g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   fi
 
   if [[ ${PACKAGE} == benchpress ]]; then
@@ -214,8 +214,12 @@ do
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_UPGRADE_ES5_MIN_PATH} ${UMD_UPGRADE_ES5_PATH}
       fi
     ) 2>&1 | grep -v "as external dependency"
+
+    if [[ -n "${EXPERIMENTAL_ES2015_DISTRO}" ]]; then
+      cp -prv ${DESTDIR}/bundles ${ES2015_DESTDIR}
+    fi
   fi
-  
+
   (
     echo "======      VERSION: Updating version references"
     cd ${DESTDIR}

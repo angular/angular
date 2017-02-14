@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * Transforms text to lowercase.
@@ -21,7 +21,7 @@ export class LowerCasePipe implements PipeTransform {
   transform(value: string): string {
     if (!value) return value;
     if (typeof value !== 'string') {
-      throw new InvalidPipeArgumentError(LowerCasePipe, value);
+      throw invalidPipeArgumentError(LowerCasePipe, value);
     }
     return value.toLowerCase();
   }
@@ -48,7 +48,7 @@ export class TitleCasePipe implements PipeTransform {
   transform(value: string): string {
     if (!value) return value;
     if (typeof value !== 'string') {
-      throw new InvalidPipeArgumentError(TitleCasePipe, value);
+      throw invalidPipeArgumentError(TitleCasePipe, value);
     }
 
     return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
@@ -65,7 +65,7 @@ export class UpperCasePipe implements PipeTransform {
   transform(value: string): string {
     if (!value) return value;
     if (typeof value !== 'string') {
-      throw new InvalidPipeArgumentError(UpperCasePipe, value);
+      throw invalidPipeArgumentError(UpperCasePipe, value);
     }
     return value.toUpperCase();
   }

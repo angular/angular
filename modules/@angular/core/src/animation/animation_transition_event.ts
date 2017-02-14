@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ElementRef} from '../linker/element_ref';
 
 /**
  * An instance of this class is returned as an event parameter when an animation
@@ -42,12 +43,22 @@ export class AnimationTransitionEvent {
   public toState: string;
   public totalTime: number;
   public phaseName: string;
+  public element: ElementRef;
+  public triggerName: string;
 
-  constructor({fromState, toState, totalTime, phaseName}:
-                  {fromState: string, toState: string, totalTime: number, phaseName: string}) {
+  constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
+    fromState: string,
+    toState: string,
+    totalTime: number,
+    phaseName: string,
+    element: any,
+    triggerName: string
+  }) {
     this.fromState = fromState;
     this.toState = toState;
     this.totalTime = totalTime;
     this.phaseName = phaseName;
+    this.element = new ElementRef(element);
+    this.triggerName = triggerName;
   }
 }

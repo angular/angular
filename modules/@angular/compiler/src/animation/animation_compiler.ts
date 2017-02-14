@@ -12,7 +12,7 @@ import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 
-import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
+import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionFnExpression, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 
 export class AnimationEntryCompileResult {
   constructor(public name: string, public statements: o.Statement[], public fnExp: o.Expression) {}
@@ -162,16 +162,22 @@ class _AnimationBuilder implements AnimationAstVisitor {
     const stateChangePreconditions: o.Expression[] = [];
 
     ast.stateChanges.forEach(stateChange => {
-      stateChangePreconditions.push(
-          _compareToAnimationStateExpr(_ANIMATION_CURRENT_STATE_VAR, stateChange.fromState)
-              .and(_compareToAnimationStateExpr(_ANIMATION_NEXT_STATE_VAR, stateChange.toState)));
+      if (stateChange instanceof AnimationStateTransitionFnExpression) {
+        stateChangePreconditions.push(o.importExpr({reference: stateChange.fn}).callFn([
+          _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
+        ]));
+      } else {
+        stateChangePreconditions.push(
+            _compareToAnimationStateExpr(_ANIMATION_CURRENT_STATE_VAR, stateChange.fromState)
+                .and(_compareToAnimationStateExpr(_ANIMATION_NEXT_STATE_VAR, stateChange.toState)));
 
-      if (stateChange.fromState != ANY_STATE) {
-        context.stateMap.registerState(stateChange.fromState);
-      }
+        if (stateChange.fromState != ANY_STATE) {
+          context.stateMap.registerState(stateChange.fromState);
+        }
 
-      if (stateChange.toState != ANY_STATE) {
-        context.stateMap.registerState(stateChange.toState);
+        if (stateChange.toState != ANY_STATE) {
+          context.stateMap.registerState(stateChange.toState);
+        }
       }
     });
 
@@ -294,8 +300,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(new o.ReturnStatement(
         o.importExpr(createIdentifier(Identifiers.AnimationTransition)).instantiate([
-          _ANIMATION_PLAYER_VAR, _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR,
-          _ANIMATION_TIME_VAR
+          _ANIMATION_PLAYER_VAR, _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+          _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR, _ANIMATION_TIME_VAR
         ])));
 
     return o.fn(

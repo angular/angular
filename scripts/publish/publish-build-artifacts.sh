@@ -2,6 +2,30 @@
 set -e -x
 
 
+# Find the most recent tag that is reachable from the current commit.
+# This is shallow clone of the repo, so we might need to fetch more commits to
+# find the tag.
+function getLatestTag {
+  local depth=`git log --oneline | wc -l`
+  local latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
+
+  while [ "$latestTag" == "NOT_FOUND" ]; do
+    # Avoid infinite loop.
+    if [ "$depth" -gt "1000" ]; then
+      echo "Error: Unable to find the latest tag." 1>&2
+      exit 1;
+    fi
+
+    # Increase the clone depth and look for a tag.
+    depth=$((depth + 50))
+    echo "Looking for latest tag at depth $depth..."
+    git fetch --depth=$depth
+    latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
+  done
+
+  echo $latestTag;
+}
+
 function publishRepo {
   COMPONENT=$1
   ARTIFACTS_DIR=$2
@@ -68,7 +92,11 @@ function publishRepo {
 
 # Publish all individual packages from packages-dist.
 function publishPackages {
-  for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
+  GIT_SCHEME=$1
+  PKGS_DIST=$2
+  BRANCH=$3
+
+  for dir in $PKGS_DIST/*/ dist/tools/@angular/tsc-wrapped
   do
     COMPONENT="$(basename ${dir})"
 
@@ -76,19 +104,19 @@ function publishPackages {
     COMPONENT="${COMPONENT//_/-}"
     JS_BUILD_ARTIFACTS_DIR="${dir}"
 
-    if [[ "$1" == "ssh" ]]; then
+    if [[ "$GIT_SCHEME" == "ssh" ]]; then
       REPO_URL="git@github.com:${ORG}/${COMPONENT}-builds.git"
-    elif [[ "$1" == "http" ]]; then
+    elif [[ "$GIT_SCHEME" == "http" ]]; then
       REPO_URL="https://github.com/${ORG}/${COMPONENT}-builds.git"
     else
-      die "Don't have a way to publish to scheme $1"
+      die "Don't have a way to publish to scheme $GIT_SCHEME"
     fi
     SHA=`git rev-parse HEAD`
     SHORT_SHA=`git rev-parse --short HEAD`
     COMMIT_MSG=`git log --oneline | head -n1`
     COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
     COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
-    LATEST_TAG=`git describe --tags --abbrev=0`
+    LATEST_TAG=`getLatestTag`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
@@ -97,16 +125,24 @@ function publishPackages {
 }
 
 # See DEVELOPER.md for help
-BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
-  publishPackages "ssh"
+  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
+  if [[ -e dist/packages-dist-es2015 ]]; then
+    publishPackages "ssh" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
+  fi
+
 elif [[ \
     "$TRAVIS_REPO_SLUG" == "angular/angular" && \
     "$TRAVIS_PULL_REQUEST" == "false" && \
     "$CI_MODE" == "e2e" ]]; then
   ORG="angular"
-  publishPackages "http"
+  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  if [[ -e dist/packages-dist-es2015 ]]; then
+    publishPackages "http" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
+  fi
+
 else
-  echo "Not building the upstream/${BRANCH} branch, build artifacts won't be published."
+  echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
 fi
