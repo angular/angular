@@ -7,7 +7,7 @@
  */
 
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {getDOM} from './dom_adapter';
+import {DomAdapter, getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
@@ -33,18 +33,21 @@ export class SharedStylesHost {
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
+  private _dom: DomAdapter;
   private _hostNodes = new Set<Node>();
   private _styleNodes = new Set<Node>();
+
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
+    this._dom = getDOM();
     this._hostNodes.add(_doc.head);
   }
 
   private _addStylesToHost(styles: Set<string>, host: Node): void {
     styles.forEach((style: string) => {
-      const styleEl = this._doc.createElement('style');
-      styleEl.textContent = style;
-      this._styleNodes.add(host.appendChild(styleEl));
+      const styleEl = this._dom.createElement('style');
+      this._dom.setText(styleEl, style);
+      this._styleNodes.add(this._dom.appendChild(host, styleEl));
     });
   }
 
@@ -59,5 +62,5 @@ export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
     this._hostNodes.forEach(hostNode => this._addStylesToHost(additions, hostNode));
   }
 
-  ngOnDestroy(): void { this._styleNodes.forEach(styleNode => getDOM().remove(styleNode)); }
+  ngOnDestroy(): void { this._styleNodes.forEach(styleNode => this._dom.remove(styleNode)); }
 }

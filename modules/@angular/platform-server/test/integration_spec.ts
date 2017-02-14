@@ -7,19 +7,15 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {Component, NgModule, destroyPlatform} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
+import {async, inject} from '@angular/core/testing';
+import {DOCUMENT} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {ServerModule, platformDynamicServer} from '@angular/platform-server';
-
-function writeBody(html: string): any {
-  const dom = getDOM();
-  const doc = dom.defaultDoc();
-  const body = dom.querySelector(doc, 'body');
-  dom.setInnerHTML(body, html);
-  return body;
-}
-
+import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {Subscription} from 'rxjs/Subscription';
+import {filter} from 'rxjs/operator/filter';
+import {first} from 'rxjs/operator/first';
+import {toPromise} from 'rxjs/operator/toPromise';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -29,52 +25,207 @@ class MyServerApp {
 class ExampleModule {
 }
 
+@Component({selector: 'app', template: `Works too!`})
+class MyServerApp2 {
+}
+
+@NgModule({declarations: [MyServerApp2], imports: [ServerModule], bootstrap: [MyServerApp2]})
+class ExampleModule2 {
+}
+
+@Component({selector: 'app', template: '<p>{{text}}</p>', styles: ['p { margin: 2px; }']})
+class MyAsyncServerApp {
+  text = '';
+
+  ngOnInit() {
+    Promise.resolve(null).then(() => setTimeout(() => { this.text = 'Works!'; }, 10));
+  }
+}
+
+@NgModule(
+    {declarations: [MyAsyncServerApp], imports: [ServerModule], bootstrap: [MyAsyncServerApp]})
+class AsyncServerModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {
-
-    beforeEach(() => destroyPlatform());
-    afterEach(() => destroyPlatform());
+    beforeEach(() => {
+      if (getPlatform()) destroyPlatform();
+    });
 
     it('should bootstrap', async(() => {
-         const body = writeBody('<app></app>');
-         platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
-           expect(getDOM().getText(body)).toEqual('Works!');
+         const platform = platformDynamicServer(
+             [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+
+         platform.bootstrapModule(ExampleModule).then((moduleRef) => {
+           const doc = moduleRef.injector.get(DOCUMENT);
+           expect(getDOM().getText(doc)).toEqual('Works!');
+           platform.destroy();
+         });
+       }));
+
+    it('should allow multiple platform instances', async(() => {
+         const platform = platformDynamicServer(
+             [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+
+         const platform2 = platformDynamicServer(
+             [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+
+
+         platform.bootstrapModule(ExampleModule).then((moduleRef) => {
+           const doc = moduleRef.injector.get(DOCUMENT);
+           expect(getDOM().getText(doc)).toEqual('Works!');
+           platform.destroy();
+         });
+
+         platform2.bootstrapModule(ExampleModule2).then((moduleRef) => {
+           const doc = moduleRef.injector.get(DOCUMENT);
+           expect(getDOM().getText(doc)).toEqual('Works too!');
+           platform2.destroy();
          });
        }));
 
     describe('PlatformLocation', () => {
-      it('is injectable', () => {
-        const body = writeBody('<app></app>');
-        platformDynamicServer().bootstrapModule(ExampleModule).then(appRef => {
-          const location: PlatformLocation = appRef.injector.get(PlatformLocation);
-          expect(location.pathname).toBe('/');
-        });
-      });
-      it('pushState causes the URL to update', () => {
-        const body = writeBody('<app></app>');
-        platformDynamicServer().bootstrapModule(ExampleModule).then(appRef => {
-          const location: PlatformLocation = appRef.injector.get(PlatformLocation);
-          location.pushState(null, 'Test', '/foo#bar');
-          expect(location.pathname).toBe('/foo');
-          expect(location.hash).toBe('#bar');
-        });
-      });
+      it('is injectable', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(ExampleModule).then(appRef => {
+             const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+             expect(location.pathname).toBe('/');
+             platform.destroy();
+           });
+         }));
+      it('pushState causes the URL to update', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(ExampleModule).then(appRef => {
+             const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+             location.pushState(null, 'Test', '/foo#bar');
+             expect(location.pathname).toBe('/foo');
+             expect(location.hash).toBe('#bar');
+             platform.destroy();
+           });
+         }));
       it('allows subscription to the hash state', done => {
-        const body = writeBody('<app></app>');
-        platformDynamicServer().bootstrapModule(ExampleModule).then(appRef => {
+        const platform =
+            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platform.bootstrapModule(ExampleModule).then(appRef => {
           const location: PlatformLocation = appRef.injector.get(PlatformLocation);
           expect(location.pathname).toBe('/');
           location.onHashChange((e: any) => {
             expect(e.type).toBe('hashchange');
             expect(e.oldUrl).toBe('/');
             expect(e.newUrl).toBe('/foo#bar');
+            platform.destroy();
             done();
           });
           location.pushState(null, 'Test', '/foo#bar');
         });
       });
+    });
+
+    describe('render', () => {
+      let doc: string;
+      let called: boolean;
+      let expectedPattern =
+          /<html><head><style>p\[_ngcontent-.*\] { margin: 2px; }<\/style><\/head><body><app ng-version="0.0.0-PLACEHOLDER" _nghost-.*><p _ngcontent-.*>Works!<\/p><\/app><\/body><\/html>/;
+
+      beforeEach(() => {
+        // PlatformConfig takes in a parsed document so that it can be cached across requests.
+        doc = '<html><head></head><body><app></app></body></html>';
+        called = false;
+      });
+      afterEach(() => { expect(called).toBe(true); });
+
+      it('using long from should work', async(() => {
+           const platform =
+               platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+
+           platform.bootstrapModule(AsyncServerModule)
+               .then((moduleRef) => {
+                 const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                 return toPromise.call(first.call(
+                     filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
+               })
+               .then((b) => {
+                 expect(platform.injector.get(PlatformState).renderToString())
+                     .toMatch(expectedPattern);
+                 platform.destroy();
+                 called = true;
+               });
+         }));
+
+      it('using renderModule should work', async(() => {
+           renderModule(AsyncServerModule, {document: doc}).then(output => {
+             expect(output).toMatch(expectedPattern);
+             called = true;
+           });
+         }));
+
+      it('using renderModuleFactory should work',
+         async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
+           renderModuleFactory(moduleFactory, {document: doc}).then(output => {
+             expect(output).toMatch(expectedPattern);
+             called = true;
+           });
+         })));
+    });
+
+    describe('render', () => {
+      let doc: string;
+      let called: boolean;
+      let expectedPattern =
+          /<html><head><style>p\[_ngcontent-.*\] { margin: 2px; }<\/style><\/head><body><app ng-version="0.0.0-PLACEHOLDER" _nghost-.*><p _ngcontent-.*>Works!<\/p><\/app><\/body><\/html>/;
+
+      beforeEach(() => {
+        // PlatformConfig takes in a parsed document so that it can be cached across requests.
+        doc = '<html><head></head><body><app></app></body></html>';
+        called = false;
+      });
+      afterEach(() => { expect(called).toBe(true); });
+
+      it('using long from should work', async(() => {
+           const platform =
+               platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+
+           platform.bootstrapModule(AsyncServerModule)
+               .then((moduleRef) => {
+                 const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                 return toPromise.call(first.call(
+                     filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
+               })
+               .then((b) => {
+                 expect(platform.injector.get(PlatformState).renderToString())
+                     .toMatch(expectedPattern);
+                 platform.destroy();
+                 called = true;
+               });
+         }));
+
+      it('using renderModule should work', async(() => {
+           renderModule(AsyncServerModule, {document: doc}).then(output => {
+             expect(output).toMatch(expectedPattern);
+             called = true;
+           });
+         }));
+
+      it('using renderModuleFactory should work',
+         async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
+           renderModuleFactory(moduleFactory, {document: doc}).then(output => {
+             expect(output).toMatch(expectedPattern);
+             called = true;
+           });
+         })));
     });
   });
 }

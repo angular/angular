@@ -92,7 +92,7 @@ export class AppModule implements Injector {
 
   constructor() {
     initServicesIfNeeded();
-    this.sanitizer = new DomSanitizerImpl();
+    this.sanitizer = new DomSanitizerImpl(document);
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
     this.componentFactory = createComponentFactory('#root', TreeComponent, TreeComponent_Host);

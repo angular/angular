@@ -7,7 +7,8 @@
  */
 
 import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
 import * as url from 'url';
 
@@ -27,7 +28,9 @@ export class ServerPlatformLocation implements PlatformLocation {
   private _hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {}
+
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc); }
 
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
