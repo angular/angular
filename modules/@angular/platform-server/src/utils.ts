@@ -12,7 +12,8 @@ import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
 
 import {PlatformState} from './platform_state';
-import {INITIAL_CONFIG, platformDynamicServer, platformServer} from './server';
+import {platformDynamicServer, platformServer} from './server';
+import {INITIAL_CONFIG} from './tokens';
 
 const parse5 = require('parse5');
 

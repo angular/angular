@@ -162,7 +162,6 @@ export function main() {
          });
        }));
 
-
     describe('PlatformLocation', () => {
       it('is injectable', async(() => {
            const platform = platformDynamicServer(
@@ -173,6 +172,19 @@ export function main() {
              platform.destroy();
            });
          }));
+      it('is configurable via INITIAL_CONFIG', () => {
+        platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com/deep/path?query#hash'}
+        }])
+            .bootstrapModule(ExampleModule)
+            .then(appRef => {
+              const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+              expect(location.pathname).toBe('/deep/path');
+              expect(location.search).toBe('?query');
+              expect(location.hash).toBe('#hash');
+            });
+      });
       it('pushState causes the URL to update', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
