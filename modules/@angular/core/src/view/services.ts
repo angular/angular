@@ -16,7 +16,7 @@ import {resolveDep} from './provider';
 import {getQueryValue} from './query';
 import {createInjector} from './refs';
 import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {checkBinding, isComponentView, queryIdIsReference, renderNode, viewParentElIndex} from './util';
+import {checkBinding, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 
@@ -191,10 +191,10 @@ function debugCheckFn(
     if ((binding.type === BindingType.ElementProperty ||
          binding.type === BindingType.DirectiveProperty) &&
         checkBinding(view, nodeDef, i, value)) {
-      const elIndex = nodeDef.type === NodeType.Directive ? nodeDef.parent : nodeDef.index;
+      const elDef = nodeDef.type === NodeType.Directive ? nodeDef.parent : nodeDef;
       setBindingDebugInfo(
-          view.root.renderer, asElementData(view, elIndex).renderElement, binding.nonMinifiedName,
-          value);
+          view.root.renderer, asElementData(view, elDef.index).renderElement,
+          binding.nonMinifiedName, value);
     }
   }
   return (<any>delegate)(view, nodeIndex, argStyle, ...givenValues);
@@ -303,49 +303,37 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
-  private compProviderIndex: number;
+  private compProviderDef: NodeDef;
   constructor(public view: ViewData, public nodeIndex: number) {
     if (nodeIndex == null) {
       this.nodeIndex = 0;
     }
     this.nodeDef = view.def.nodes[nodeIndex];
-    let elIndex = nodeIndex;
+    let elDef = this.nodeDef;
     let elView = view;
-    while (elIndex != null && view.def.nodes[elIndex].type !== NodeType.Element) {
-      elIndex = view.def.nodes[elIndex].parent;
+    while (elDef && elDef.type !== NodeType.Element) {
+      elDef = elDef.parent;
     }
-    if (elIndex == null) {
-      while (elIndex == null && elView) {
-        elIndex = viewParentElIndex(elView);
+    if (!elDef) {
+      while (!elDef && elView) {
+        elDef = viewParentEl(elView);
         elView = elView.parent;
       }
     }
+    this.elDef = elDef;
     this.elView = elView;
-    if (elView) {
-      this.elDef = elView.def.nodes[elIndex];
-
-      for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
-        const childDef = this.elView.def.nodes[i];
-        if (childDef.flags & NodeFlags.HasComponent) {
-          this.compProviderIndex = i;
-          break;
-        }
-        i += childDef.childCount;
-      }
-    } else {
-      this.elDef = null;
-    }
+    this.compProviderDef = elView ? this.elDef.element.component : null;
   }
-  get injector(): Injector { return createInjector(this.elView, this.elDef.index); }
+  get injector(): Injector { return createInjector(this.elView, this.elDef); }
   get component(): any {
-    if (this.compProviderIndex != null) {
-      return asProviderData(this.elView, this.compProviderIndex).instance;
+    if (this.compProviderDef) {
+      return asProviderData(this.elView, this.compProviderDef.index).instance;
     }
     return this.view.component;
   }
   get context(): any {
-    if (this.compProviderIndex != null) {
-      return asProviderData(this.elView, this.compProviderIndex).instance;
+    if (this.compProviderDef) {
+      return asProviderData(this.elView, this.compProviderDef.index).instance;
     }
     return this.view.context;
   }
@@ -385,8 +373,8 @@ class DebugContext_ implements DebugContext {
     }
   }
   get componentRenderElement() {
-    const view = this.compProviderIndex != null ?
-        asProviderData(this.elView, this.compProviderIndex).componentView :
+    const view = this.compProviderDef ?
+        asProviderData(this.elView, this.compProviderDef.index).componentView :
         this.view;
     const elData = findHostElement(view);
     return elData ? elData.renderElement : undefined;
@@ -402,17 +390,14 @@ function findHostElement(view: ViewData): ElementData {
     view = view.parent;
   }
   if (view.parent) {
-    const hostData = asElementData(view.parent, viewParentElIndex(view));
-    return hostData;
+    return asElementData(view.parent, viewParentEl(view).index);
   }
   return undefined;
 }
 
 function collectReferences(view: ViewData, nodeDef: NodeDef, references: {[key: string]: any}) {
-  for (let queryId in nodeDef.matchedQueries) {
-    if (queryIdIsReference(queryId)) {
-      references[queryId.slice(1)] = getQueryValue(view, nodeDef, queryId);
-    }
+  for (let refName in nodeDef.references) {
+    references[refName] = getQueryValue(view, nodeDef, nodeDef.references[refName]);
   }
 }
 

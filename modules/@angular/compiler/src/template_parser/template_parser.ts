@@ -207,12 +207,15 @@ export class TemplateParser {
 class TemplateParseVisitor implements html.Visitor {
   selectorMatcher = new SelectorMatcher();
   directivesIndex = new Map<CompileDirectiveSummary, number>();
-  ngContentCount: number = 0;
+  ngContentCount = 0;
+  contentQueryStartId: number;
 
   constructor(
       public providerViewContext: ProviderViewContext, directives: CompileDirectiveSummary[],
       private _bindingParser: BindingParser, private _schemaRegistry: ElementSchemaRegistry,
       private _schemas: SchemaMetadata[], private _targetErrors: TemplateParseError[]) {
+    // Note: queries start with id 1 so we can use the number in a Bloom filter!
+    this.contentQueryStartId = providerViewContext.component.viewQueries.length + 1;
     directives.forEach((directive, index) => {
       const selector = CssSelector.parse(directive.selector);
       this.selectorMatcher.addSelectables(selector, directive);
@@ -241,6 +244,7 @@ class TemplateParseVisitor implements html.Visitor {
   visitComment(comment: html.Comment, context: any): any { return null; }
 
   visitElement(element: html.Element, parent: ElementContext): any {
+    const queryStartIndex = this.contentQueryStartId;
     const nodeName = element.name;
     const preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
@@ -322,9 +326,9 @@ class TemplateParseVisitor implements html.Visitor {
 
     const providerContext = new ProviderElementContext(
         this.providerViewContext, parent.providerContext, isViewRoot, directiveAsts, attrs,
-        references, element.sourceSpan);
+        references, isTemplateElement, queryStartIndex, element.sourceSpan);
 
-    const children = html.visitAll(
+    const children: TemplateAst[] = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(
             isTemplateElement, directiveAsts,
@@ -378,6 +382,7 @@ class TemplateParseVisitor implements html.Visitor {
     }
 
     if (hasInlineTemplates) {
+      const templateQueryStartIndex = this.contentQueryStartId;
       const templateCssSelector =
           createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
       const {directives: templateDirectiveMetas} =
@@ -392,7 +397,7 @@ class TemplateParseVisitor implements html.Visitor {
           templateDirectiveAsts, templateElementProps, element.sourceSpan);
       const templateProviderContext = new ProviderElementContext(
           this.providerViewContext, parent.providerContext, parent.isTemplateElement,
-          templateDirectiveAsts, [], [], element.sourceSpan);
+          templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan);
       templateProviderContext.afterElement();
 
       parsedElement = new EmbeddedTemplateAst(
@@ -585,8 +590,11 @@ class TemplateParseVisitor implements html.Visitor {
           matchedReferences.add(elOrDirRef.name);
         }
       });
+      const contentQueryStartId = this.contentQueryStartId;
+      this.contentQueryStartId += directive.queries.length;
       return new DirectiveAst(
-          directive, directiveProperties, hostProperties, hostEvents, sourceSpan);
+          directive, directiveProperties, hostProperties, hostEvents, contentQueryStartId,
+          sourceSpan);
     });
 
     elementOrDirectiveRefs.forEach((elOrDirRef) => {
@@ -779,7 +787,7 @@ class NonBindableVisitor implements html.Visitor {
     const attrNameAndValues = ast.attrs.map((attr): [string, string] => [attr.name, attr.value]);
     const selector = createElementCssSelector(ast.name, attrNameAndValues);
     const ngContentIndex = parent.findNgContentIndex(selector);
-    const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
+    const children: TemplateAst[] = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
     return new ElementAst(
         ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, [], children,
         ngContentIndex, ast.sourceSpan, ast.endSourceSpan);

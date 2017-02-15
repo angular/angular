@@ -10,39 +10,39 @@ import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, resolveViewDefinition, sliceErrorStack} from './util';
+import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
-    childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef {
-  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
-  if (matchedQueries) {
-    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
-  }
+    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
+    ngContentIndex: number, childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef {
+  const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
+
   return {
     type: NodeType.Element,
     // will bet set by the view definition
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
+    childFlags: 0,
+    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: [],
     disposableCount: 0,
     element: {
       name: undefined,
       attrs: undefined,
-      outputs: [], template,
+      outputs: [], template, source,
       // will bet set by the view definition
-      providerIndices: undefined, source,
+      component: undefined,
+      publicProviders: undefined,
+      allProviders: undefined,
     },
     provider: undefined,
     text: undefined,
@@ -53,18 +53,16 @@ export function anchorDef(
 }
 
 export function elementDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
-    childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
+    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
+    ngContentIndex: number, childCount: number, name: string,
+    fixedAttrs: {[name: string]: string} = {},
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
     outputs?: (string | [string, string])[]): NodeDef {
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
-  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
-  if (matchedQueries) {
-    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
-  }
+  const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   bindings = bindings || [];
   const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
@@ -104,22 +102,24 @@ export function elementDef(
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
+    childFlags: 0,
+    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
     element: {
       name,
       attrs: fixedAttrs,
-      outputs: outputDefs,
+      outputs: outputDefs, source,
       template: undefined,
       // will bet set by the view definition
-      providerIndices: undefined, source,
+      component: undefined,
+      publicProviders: undefined,
+      allProviders: undefined,
     },
     provider: undefined,
     text: undefined,
@@ -135,8 +135,6 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   const renderer = view.root.renderer;
   let el: any;
   if (view.parent || !rootSelectorOrNode) {
-    const parentNode =
-        def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
     if (elDef.name) {
       // TODO(vicb): move the namespace to the node definition
       const nsAndName = splitNamespace(elDef.name);
@@ -144,8 +142,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
     } else {
       el = renderer.createComment('');
     }
-    if (parentNode) {
-      renderer.appendChild(parentNode, el);
+    const parentEl = getParentRenderElement(view, renderHost, def);
+    if (parentEl) {
+      renderer.appendChild(parentEl, el);
     }
   } else {
     el = renderer.selectRootElement(rootSelectorOrNode);

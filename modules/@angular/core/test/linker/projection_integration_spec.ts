@@ -6,14 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, iit, it} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
+  describe('Current compiler', () => { createTests({viewEngine: false}); });
+
+  describe('View Engine compiler', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+    });
+
+    createTests({viewEngine: true});
+  });
+}
+
+function createTests({viewEngine}: {viewEngine: boolean}) {
   describe('projection', () => {
     beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
 
@@ -365,7 +378,7 @@ export function main() {
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
     });
 
-    if (getDOM().supportsNativeShadowDOM()) {
+    if (!viewEngine && getDOM().supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component', () => {
         TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
         TestBed.overrideComponent(MainComp, {
@@ -383,7 +396,7 @@ export function main() {
       });
     }
 
-    if (getDOM().supportsDOMEvents()) {
+    if (!viewEngine && getDOM().supportsDOMEvents()) {
       it('should support non emulated styles', () => {
         TestBed.configureTestingModule({declarations: [OtherComp]});
         TestBed.overrideComponent(MainComp, {

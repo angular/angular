@@ -155,7 +155,7 @@ export function main() {
       expectVisitedNode(
           new class extends
           NullVisitor{visitDirective(ast: DirectiveAst, context: any): any{return ast;}},
-          new DirectiveAst(null, [], [], [], null));
+          new DirectiveAst(null, [], [], [], 0, null));
     });
 
     it('should visit DirectiveAst', () => {
@@ -178,7 +178,7 @@ export function main() {
         new BoundEventAst('foo', 'bar', 'goo', null, null),
         new BoundElementPropertyAst('foo', null, null, false, null, 'bar', null),
         new AttrAst('foo', 'bar', null), new BoundTextAst(null, 0, null),
-        new TextAst('foo', 0, null), new DirectiveAst(null, [], [], [], null),
+        new TextAst('foo', 0, null), new DirectiveAst(null, [], [], [], 0, null),
         new BoundDirectivePropertyAst('foo', 'bar', null, null)
       ];
       const result = templateVisitAll(visitor, nodes, null);

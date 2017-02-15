@@ -16,7 +16,7 @@ import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
 import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentElIndex} from './util';
+import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentEl} from './util';
 
 const EMPTY_CONTEXT = new Object();
 
@@ -45,18 +45,7 @@ class ComponentFactory_ implements ComponentFactory<any> {
       injector: Injector, projectableNodes: any[][] = null,
       rootSelectorOrNode: string|any = null): ComponentRef<any> {
     const viewDef = resolveViewDefinition(this._viewClass);
-    let componentNodeIndex: number;
-    const len = viewDef.nodes.length;
-    for (let i = 0; i < len; i++) {
-      const nodeDef = viewDef.nodes[i];
-      if (nodeDef.flags & NodeFlags.HasComponent) {
-        componentNodeIndex = i;
-        break;
-      }
-    }
-    if (componentNodeIndex == null) {
-      throw new Error(`Illegal State: Could not find a component in the view definition!`);
-    }
+    const componentNodeIndex = viewDef.nodes[0].element.component.index;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -65,9 +54,14 @@ class ComponentFactory_ implements ComponentFactory<any> {
 }
 
 class ComponentRef_ implements ComponentRef<any> {
-  constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {}
-  get location(): ElementRef { return new ElementRef(asElementData(this._view, 0).renderElement); }
-  get injector(): Injector { return new Injector_(this._view, 0); }
+  private _elDef: NodeDef;
+  constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {
+    this._elDef = this._view.def.nodes[0];
+  }
+  get location(): ElementRef {
+    return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
+  }
+  get injector(): Injector { return new Injector_(this._view, this._elDef); }
   get instance(): any { return this._component; };
   get hostView(): ViewRef { return this._viewRef; };
   get changeDetectorRef(): ChangeDetectorRef { return this._viewRef; };
@@ -77,28 +71,28 @@ class ComponentRef_ implements ComponentRef<any> {
   onDestroy(callback: Function): void { this._viewRef.onDestroy(callback); }
 }
 
-export function createViewContainerRef(view: ViewData, elIndex: number): ViewContainerRef {
-  return new ViewContainerRef_(view, elIndex);
+export function createViewContainerRef(view: ViewData, elDef: NodeDef): ViewContainerRef {
+  return new ViewContainerRef_(view, elDef);
 }
 
 class ViewContainerRef_ implements ViewContainerRef {
   private _data: ElementData;
-  constructor(private _view: ViewData, private _elIndex: number) {
-    this._data = asElementData(_view, _elIndex);
+  constructor(private _view: ViewData, private _elDef: NodeDef) {
+    this._data = asElementData(_view, _elDef.index);
   }
 
   get element(): ElementRef { return new ElementRef(this._data.renderElement); }
 
-  get injector(): Injector { return new Injector_(this._view, this._elIndex); }
+  get injector(): Injector { return new Injector_(this._view, this._elDef); }
 
   get parentInjector(): Injector {
     let view = this._view;
-    let elIndex = view.def.nodes[this._elIndex].parent;
-    while (elIndex == null && view) {
-      elIndex = viewParentElIndex(view);
+    let elDef = this._elDef.parent;
+    while (!elDef && view) {
+      elDef = viewParentEl(view);
       view = view.parent;
     }
-    return view ? new Injector_(view, elIndex) : this._view.root.injector;
+    return view ? new Injector_(view, elDef) : this._view.root.injector;
   }
 
   clear(): void {
@@ -200,15 +194,15 @@ class TemplateRef_ implements TemplateRef<any> {
   }
 }
 
-export function createInjector(view: ViewData, elIndex: number): Injector {
-  return new Injector_(view, elIndex);
+export function createInjector(view: ViewData, elDef: NodeDef): Injector {
+  return new Injector_(view, elDef);
 }
 
 class Injector_ implements Injector {
-  constructor(private view: ViewData, private elIndex: number) {}
+  constructor(private view: ViewData, private elDef: NodeDef) {}
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
     return Services.resolveDep(
-        this.view, undefined, this.elIndex,
-        {flags: DepFlags.None, token, tokenKey: tokenKey(token)}, notFoundValue);
+        this.view, this.elDef, true, {flags: DepFlags.None, token, tokenKey: tokenKey(token)},
+        notFoundValue);
   }
 }

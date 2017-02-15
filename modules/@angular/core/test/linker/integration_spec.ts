@@ -1250,7 +1250,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
             .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
       });
 
-      viewEngine || it('should use a default element name for components without selectors', () => {
+      it('should use a default element name for components without selectors', () => {
         let noSelectorComponentFactory: ComponentFactory<SomeComponent>;
 
         @Component({template: '----'})

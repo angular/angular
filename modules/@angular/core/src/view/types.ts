@@ -43,10 +43,11 @@ export interface ViewDefinition {
   bindingCount: number;
   disposableCount: number;
   /**
-   * ids of all queries that are matched by one of the nodes.
+   * Binary or of all query ids that are matched by one of the nodes.
    * This includes query ids from templates as well.
+   * Used as a bloom filter.
    */
-  nodeMatchedQueries: {[queryId: string]: boolean};
+  nodeMatchedQueries: number;
 }
 
 export type ViewDefinitionFactory = () => ViewDefinition;
@@ -94,12 +95,13 @@ export interface NodeDef {
   index: number;
   reverseChildIndex: number;
   flags: NodeFlags;
-  parent: number;
+  parent: NodeDef;
+  renderParent: NodeDef;
   /** this is checked against NgContentDef.index to find matched nodes */
   ngContentIndex: number;
   /** number of transitive children */
   childCount: number;
-  /** aggregated NodeFlags for all children **/
+  /** aggregated NodeFlags for all children (does not include self) **/
   childFlags: NodeFlags;
 
   bindingIndex: number;
@@ -107,14 +109,21 @@ export interface NodeDef {
   disposableIndex: number;
   disposableCount: number;
   /**
+   * references that the user placed on the element
+   */
+  references: {[refId: string]: QueryValueType};
+  /**
    * ids and value types of all queries that are matched by this node.
    */
-  matchedQueries: {[queryId: string]: QueryValueType};
+  matchedQueries: {[queryId: number]: QueryValueType};
+  /** Binary or of all matched query ids of this node. */
+  matchedQueryIds: number;
   /**
-   * ids of all queries that are matched by one of the child nodes.
+   * Binary or of all query ids that are matched by one of the children.
    * This includes query ids from templates as well.
+   * Used as a bloom filter.
    */
-  childMatchedQueries: {[queryId: string]: boolean};
+  childMatchedQueries: number;
   element: ElementDef;
   provider: ProviderDef;
   text: TextDef;
@@ -150,8 +159,11 @@ export enum NodeFlags {
   HasEmbeddedViews = 1 << 8,
   HasComponent = 1 << 9,
   HasContentQuery = 1 << 10,
-  HasViewQuery = 1 << 11,
-  LazyProvider = 1 << 12
+  HasStaticQuery = 1 << 11,
+  HasDynamicQuery = 1 << 12,
+  HasViewQuery = 1 << 13,
+  LazyProvider = 1 << 14,
+  PrivateProvider = 1 << 15,
 }
 
 export interface BindingDef {
@@ -185,11 +197,17 @@ export interface ElementDef {
   attrs: {[name: string]: string};
   outputs: ElementOutputDef[];
   template: ViewDefinition;
+  component: NodeDef;
   /**
-   * visible providers for DI in the view,
-   * as see from this element.
+   * visible public providers for DI in the view,
+   * as see from this element. This does not include private providers.
    */
-  providerIndices: {[tokenKey: string]: number};
+  publicProviders: {[tokenKey: string]: NodeDef};
+  /**
+   * same as visiblePublicProviders, but also includes private providers
+   * that are located on this element.
+   */
+  allProviders: {[tokenKey: string]: NodeDef};
   source: string;
 }
 
@@ -229,7 +247,7 @@ export enum DepFlags {
   None = 0,
   SkipSelf = 1 << 0,
   Optional = 1 << 1,
-  Value = 2 << 2
+  Value = 2 << 2,
 }
 
 export interface DirectiveOutputDef {
@@ -251,7 +269,9 @@ export enum PureExpressionType {
 }
 
 export interface QueryDef {
-  id: string;
+  id: number;
+  // variant of the id that can be used to check against NodeDef.matchedQueryIds, ...
+  filterId: number;
   bindings: QueryBindingDef[];
 }
 
@@ -287,7 +307,7 @@ export interface ViewData {
   def: ViewDefinition;
   root: RootData;
   // index of component provider / anchor.
-  parentIndex: number;
+  parentNodeDef: NodeDef;
   parent: ViewData;
   component: any;
   context: any;
@@ -431,7 +451,7 @@ export interface Services {
   moveEmbeddedView(elementData: ElementData, oldViewIndex: number, newViewIndex: number): ViewData;
   destroyView(view: ViewData): void;
   resolveDep(
-      view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef,
+      view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
       notFoundValue?: any): any;
   createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
   handleEvent: ViewHandleEventFn;

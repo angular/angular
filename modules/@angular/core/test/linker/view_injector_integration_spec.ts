@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, describe, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -190,6 +190,19 @@ class TestComp {
 }
 
 export function main() {
+  describe('Current compiler', () => { createTests({viewEngine: false}); });
+
+  describe('View Engine compiler', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+    });
+
+    createTests({viewEngine: true});
+  });
+}
+
+function createTests({viewEngine}: {viewEngine: boolean}) {
   function createComponentFixture<T>(
       template: string, providers: Provider[] = null, comp: Type<T> = null): ComponentFixture<T> {
     if (!comp) {
@@ -213,9 +226,10 @@ export function main() {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEach(() => TestBed.configureTestingModule({declarations: [TestComp]}));
-
-    beforeEachProviders(() => [{provide: 'appService', useValue: 'appService'}]);
+    beforeEach(() => TestBed.configureTestingModule({
+      declarations: [TestComp],
+      providers: [{provide: 'appService', useValue: 'appService'}]
+    }));
 
     describe('injection', () => {
       it('should instantiate directives that have no dependencies', () => {
@@ -591,20 +605,19 @@ export function main() {
             .toBe(el.children[0].nativeElement);
       });
 
-      it('should inject ChangeDetectorRef of the component\'s view into the component via a proxy',
-         () => {
-           TestBed.configureTestingModule({declarations: [PushComponentNeedsChangeDetectorRef]});
-           const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
-           cf.detectChanges();
-           const compEl = cf.debugElement.children[0];
-           const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
-           comp.counter = 1;
-           cf.detectChanges();
-           expect(compEl.nativeElement).toHaveText('0');
-           comp.changeDetectorRef.markForCheck();
-           cf.detectChanges();
-           expect(compEl.nativeElement).toHaveText('1');
-         });
+      it('should inject ChangeDetectorRef of the component\'s view into the component', () => {
+        TestBed.configureTestingModule({declarations: [PushComponentNeedsChangeDetectorRef]});
+        const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        comp.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
 
       it('should inject ChangeDetectorRef of the containing component into directives', () => {
         TestBed.configureTestingModule(
@@ -624,9 +637,9 @@ export function main() {
         cf.detectChanges();
         expect(compEl.nativeElement).toHaveText('0');
         expect(compEl.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
-            .toBe(comp.changeDetectorRef);
+            .toEqual(comp.changeDetectorRef);
         expect(compEl.children[1].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
-            .toBe(comp.changeDetectorRef);
+            .toEqual(comp.changeDetectorRef);
         comp.changeDetectorRef.markForCheck();
         cf.detectChanges();
         expect(compEl.nativeElement).toHaveText('1');
@@ -687,7 +700,7 @@ export function main() {
             '<div [simpleDirective]="true | pipeNeedsChangeDetectorRef" directiveNeedsChangeDetectorRef></div>');
         const cdRef =
             el.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef;
-        expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toBe(cdRef);
+        expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toEqual(cdRef);
       });
 
       it('should cache pure pipes', () => {

@@ -389,7 +389,11 @@ export class DomRendererV2 implements RendererV2 {
     }
   }
 
-  removeChild(parent: any, oldChild: any): void { parent.removeChild(oldChild); }
+  removeChild(parent: any, oldChild: any): void {
+    if (parent) {
+      parent.removeChild(oldChild);
+    }
+  }
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :

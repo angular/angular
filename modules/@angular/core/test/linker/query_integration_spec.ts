@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -13,6 +14,19 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {stringify} from '../../src/facade/lang';
 
 export function main() {
+  describe('Current compiler', () => { createTests({viewEngine: false}); });
+
+  describe('View Engine compiler', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+    });
+
+    createTests({viewEngine: true});
+  });
+}
+
+function createTests({viewEngine}: {viewEngine: boolean}) {
   describe('Query API', () => {
 
     beforeEach(() => TestBed.configureTestingModule({
@@ -267,9 +281,10 @@ export function main() {
       it('should contain the first descendant content child templateRef', () => {
         const template = '<needs-content-child-template-ref-app>' +
             '</needs-content-child-template-ref-app>';
-        const view = createTestCmpAndDetectChanges(MyComp0, template);
+        const view = createTestCmp(MyComp0, template);
 
-        view.detectChanges();
+        // can't execute checkNoChanges as our view modifies our content children (via a query).
+        view.detectChanges(false);
         expect(view.nativeElement).toHaveText('OUTER');
       });
 
