@@ -25,16 +25,16 @@ body {
 }
 
 h1, h2 {
-  weight: 400;
+  font-weight: 400;
 }
 
 .docs-primary-header {
   padding-left: 20px;
+}
 
-  h1 {
+h1.docs-primary-header, h1 .docs-primary-header{
     font-size: 30px;
     font-weight: 300;
     margin: 0;
-    padding: 50px;
-  }
+    padding: 30px;
 }

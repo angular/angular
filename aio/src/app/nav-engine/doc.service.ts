@@ -2,59 +2,56 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, NavNode } from './doc.model';
 import { DocFetchingService } from './doc-fetching.service';
 import { Logger } from '../logger.service';
 
-import { SiteMapService } from './sitemap.service';
-
-interface DocCache {
-  [index: string]: Doc;
-}
+import { NavMapService } from './nav-map.service';
 
 @Injectable()
 export class DocService {
-  private cache: DocCache = {};
+  private cache = new Map<string, Doc>();
+  private notFoundContent: string;
 
   constructor(
     private fileService: DocFetchingService,
-    private logger: Logger,
-    private siteMapService: SiteMapService
+    private logger: Logger
     ) { }
 
   /**
-   * Get document for documentId, from cache if found else server.
+   * Get document for id, from cache if found else server.
    * Pass server errors along to caller
-   * Caller should interpret empty string content as "404 - file not found"
+   * Constructs and caches a "Not Found" doc when fileservice returns a doc with no content.
    */
-  getDoc(documentId: string): Observable<Doc> {
-    let doc = this.cache[documentId];
-    if (doc) {
-      this.logger.log('returned cached content for ', doc.metadata);
-      return of(cloneDoc(doc));
+  getDoc(docId: string): Observable<Doc> {
+    const cached = this.cache.get(docId);
+    if (cached) {
+      this.logger.log(`Returned cached document for '${docId}'`);
+      return of(cached);
     }
 
-    return this.siteMapService
-      .getDocMetadata(documentId)
-      .switchMap(metadata => {
+    return this.fileService.getDocFile(docId)
+      .switchMap(doc => {
+        this.logger.log(`Fetched document for '${docId}'`);
+        return doc.content ? of(doc) :
+          this.getNotFound()
+              .map(nfContent => <Doc> {metadata: {docId, title: docId}, content: nfContent});
+      })
+      .do(doc => this.cache.set(docId, doc));
+  }
 
-        return this.fileService.getFile(metadata.url)
-          .map(content => {
-            this.logger.log('fetched content for', metadata);
-            doc = { metadata, content };
-            this.cache[metadata.id] = doc;
-            return cloneDoc(doc);
-          });
+  getNotFound(): Observable<string> {
+    if (this.notFoundContent) { return of(this.notFoundContent); }
+    const nfDocId = 'not-found';
+    return this.fileService.getDocFile(nfDocId)
+      .map(doc => {
+        this.logger.log(`Fetched "not found" document for '${nfDocId}'`);
+        this.notFoundContent = doc.content;
+        return doc.content;
       });
   }
-}
-
-function cloneDoc(doc: Doc) {
-  return {
-    metadata: Object.assign({}, doc.metadata),
-    content: doc.content
-  };
 }

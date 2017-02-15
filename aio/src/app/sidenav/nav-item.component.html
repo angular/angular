@@ -1,0 +1,19 @@
+<div *ngIf="isItem">
+  <a href={{href}} [ngClass]="classes" target={{target}} title={{tooltip}}
+    (click)="itemClicked()" class="vertical-menu">
+    {{label}}
+  </a>
+</div>
+
+<div *ngIf="!isItem">
+  <a href={{href}} [ngClass]="classes" target={{target}} title={{tooltip}}
+    (click)="headerClicked()" class="vertical-menu heading">
+    {{label}}
+    <md-icon [class.active]="!isActive">keyboard_arrow_right</md-icon>
+    <md-icon [class.active]="isActive">keyboard_arrow_down</md-icon>
+  </a>
+  <div class="heading-children" [ngClass]="classes">
+    <aio-navitem *ngFor="let node of node.children" [level]="level + 1"
+    [node]="node" [selectedNode]="selectedNode"></aio-navitem>
+  </div>
+</div>

@@ -1,8 +1,22 @@
 .fill-remaining-space {
   flex: 1 1 auto;
 }
-.nav-link {
-  margin-right: 10px;
-  margin-left: 20px;
-  cursor: pointer;
+
+md-input-container {
+  margin-left: 10px;
+  input {
+    min-width:200px;
+  }
+}
+
+
+.md-input-element {
+  font-size: 70%;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  aio-menu {
+    display: none;
+  }
 }
