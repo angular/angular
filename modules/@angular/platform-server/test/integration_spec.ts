@@ -51,6 +51,19 @@ export function main() {
               expect(location.pathname).toBe('/');
             });
       });
+      it('is configurable via INITIAL_CONFIG', () => {
+        platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com/deep/path?query#hash'}
+        }])
+            .bootstrapModule(ExampleModule)
+            .then(appRef => {
+              const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+              expect(location.pathname).toBe('/deep/path');
+              expect(location.search).toBe('?query');
+              expect(location.hash).toBe('#hash');
+            });
+      });
       it('pushState causes the URL to update', () => {
         platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}])
             .bootstrapModule(ExampleModule)
