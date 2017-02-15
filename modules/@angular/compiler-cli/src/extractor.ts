@@ -27,7 +27,7 @@ export class Extractor {
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(formatName: string): Promise<void> {
+  extract(formatName: string, outFile?: string): Promise<void> {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
@@ -35,7 +35,7 @@ export class Extractor {
 
     return promiseBundle.then(bundle => {
       const content = this.serialize(bundle, ext);
-      const dstPath = path.join(this.options.genDir, `messages.${ext}`);
+      const dstPath = path.join(this.options.genDir, `${outFile || ('messages.' + ext)}`);
       this.host.writeFile(dstPath, content, false);
     });
   }

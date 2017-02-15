@@ -12,10 +12,13 @@ export class CliOptions {
 
 export class I18nExtractionCliOptions extends CliOptions {
   public i18nFormat: string;
+  public outFile: string;
 
-  constructor({i18nFormat = null}: {i18nFormat?: string}) {
+  constructor({i18nFormat = null,
+               outFile = null}: {i18nFormat?: string, outFile?: string}) {
     super({});
     this.i18nFormat = i18nFormat;
+    this.outFile = outFile;
   }
 }
 

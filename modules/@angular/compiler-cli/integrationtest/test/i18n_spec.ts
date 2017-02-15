@@ -68,7 +68,7 @@ describe('template i18n extraction output', () => {
   const genDir = 'out';
 
   it('should extract i18n messages as xmb', () => {
-    const xmbOutput = path.join(outDir, 'messages.xmb');
+    const xmbOutput = path.join(outDir, 'custom_file.xmb');
     expect(fs.existsSync(xmbOutput)).toBeTruthy();
     const xmb = fs.readFileSync(xmbOutput, {encoding: 'utf-8'});
     expect(xmb).toEqual(EXPECTED_XMB);
