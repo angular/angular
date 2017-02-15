@@ -11,13 +11,19 @@ export class CliOptions {
 }
 
 export class I18nExtractionCliOptions extends CliOptions {
-  public i18nFormat: string;
-  public locale: string;
+  i18nFormat: string|null;
+  locale: string|null;
+  outFile: string|null;
 
-  constructor({i18nFormat = null, locale = null}: {i18nFormat?: string, locale: string|null}) {
+  constructor({i18nFormat = null, locale = null, outFile = null}: {
+    i18nFormat?: string,
+    locale?: string,
+    outFile?: string,
+  }) {
     super({});
     this.i18nFormat = i18nFormat;
     this.locale = locale;
+    this.outFile = outFile;
   }
 }
 

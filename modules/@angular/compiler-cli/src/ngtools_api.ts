@@ -62,6 +62,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
   locale?: string;
+  outFile?: string;
 }
 
 /**
@@ -147,6 +148,6 @@ export class NgTools_InternalApi_NG_2 {
     const extractor = Extractor.create(
         options.angularCompilerOptions, options.program, options.host, locale, hostContext);
 
-    return extractor.extract(options.i18nFormat);
+    return extractor.extract(options.i18nFormat, options.outFile || null);
   }
 }
