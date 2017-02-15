@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, Provider, Type, destroyPlatform} from '@angular/core';
+import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, Provider, Type} from '@angular/core';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
@@ -40,7 +40,7 @@ function _render<T>(
         .call(first.call(filter.call(applicationRef.isStable, (isStable: boolean) => isStable)))
         .then(() => {
           const output = platform.injector.get(PlatformState).renderToString();
-          destroyPlatform();
+          platform.destroy();
           return output;
         });
   });
