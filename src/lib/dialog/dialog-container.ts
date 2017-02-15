@@ -27,7 +27,6 @@ import 'rxjs/add/operator/first';
   host: {
     '[class.mat-dialog-container]': 'true',
     '[attr.role]': 'dialogConfig?.role',
-    '(keydown.escape)': 'handleEscapeKey()',
   },
   encapsulation: ViewEncapsulation.None,
 })
@@ -91,16 +90,6 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
       this._elementFocusedBeforeDialogWasOpened = document.activeElement;
       this._focusTrap.focusFirstTabbableElement();
     });
-  }
-
-  /**
-   * Handles the user pressing the Escape key.
-   * @docs-private
-   */
-  handleEscapeKey() {
-    if (!this.dialogConfig.disableClose) {
-      this.dialogRef.close();
-    }
   }
 
   ngOnDestroy() {

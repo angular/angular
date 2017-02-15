@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Overlay, OverlayRef, ComponentType, OverlayState, ComponentPortal} from '../core';
 import {extendObject} from '../core/util/object-extend';
+import {ESCAPE} from '../core/keyboard/keycodes';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
@@ -22,6 +23,7 @@ export class MdDialog {
   private _openDialogsAtThisLevel: MdDialogRef<any>[] = [];
   private _afterAllClosedAtThisLevel = new Subject<void>();
   private _afterOpenAtThisLevel = new Subject<MdDialogRef<any>>();
+  private _boundKeydown = this._handleKeydown.bind(this);
 
   /** Keeps track of the currently-open dialogs. */
   get _openDialogs(): MdDialogRef<any>[] {
@@ -64,6 +66,10 @@ export class MdDialog {
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
     let dialogRef =
         this._attachDialogContent(componentOrTemplateRef, dialogContainer, overlayRef, config);
+
+    if (!this._openDialogs.length && !this._parentDialog) {
+      document.addEventListener('keydown', this._boundKeydown);
+    }
 
     this._openDialogs.push(dialogRef);
     dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
@@ -129,7 +135,7 @@ export class MdDialog {
       config?: MdDialogConfig): MdDialogRef<T> {
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    let dialogRef = <MdDialogRef<T>> new MdDialogRef(overlayRef);
+    let dialogRef = <MdDialogRef<T>> new MdDialogRef(overlayRef, config);
 
     if (!config.disableClose) {
       // When the dialog backdrop is clicked, we want to close it.
@@ -199,7 +205,20 @@ export class MdDialog {
       // no open dialogs are left, call next on afterAllClosed Subject
       if (!this._openDialogs.length) {
         this._afterAllClosed.next();
+        document.removeEventListener('keydown', this._boundKeydown);
       }
+    }
+  }
+
+  /**
+   * Handles global key presses while there are open dialogs. Closes the
+   * top dialog when the user presses escape.
+   */
+  private _handleKeydown(event: KeyboardEvent): void {
+    let topDialog = this._openDialogs[this._openDialogs.length - 1];
+
+    if (event.keyCode === ESCAPE && topDialog && !topDialog.config.disableClose) {
+      topDialog.close();
     }
   }
 }

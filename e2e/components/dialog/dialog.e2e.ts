@@ -35,6 +35,16 @@ describe('dialog', () => {
     });
   });
 
+  it('should close by pressing escape when the first tabbable element has lost focus', () => {
+    element(by.id('default')).click();
+
+    waitForDialog().then(() => {
+      clickElementAtPoint('md-dialog-container', { x: 0, y: 0 });
+      pressKeys(Key.ESCAPE);
+      expectToExist('md-dialog-container', false);
+    });
+  });
+
   it('should close by clicking on the "close" button', () => {
     element(by.id('default')).click();
 

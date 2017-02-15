@@ -15,13 +15,12 @@ import {NgModule,
   Injector,
   Inject,
 } from '@angular/core';
-import {By} from '@angular/platform-browser';
 import {MdDialogModule} from './index';
 import {MdDialog} from './dialog';
 import {OverlayContainer} from '../core';
 import {MdDialogRef} from './dialog-ref';
-import {MdDialogContainer} from './dialog-container';
 import {MD_DIALOG_DATA} from './dialog-injector';
+import {ESCAPE} from '../core/keyboard/keycodes';
 
 
 describe('MdDialog', () => {
@@ -136,11 +135,7 @@ describe('MdDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    let dialogContainer: MdDialogContainer =
-        viewContainerFixture.debugElement.query(By.directive(MdDialogContainer)).componentInstance;
-
-    // Fake the user pressing the escape key by calling the handler directly.
-    dialogContainer.handleEscapeKey();
+    dispatchKeydownEvent(document, ESCAPE);
 
     expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
   });
@@ -324,11 +319,7 @@ describe('MdDialog', () => {
 
       viewContainerFixture.detectChanges();
 
-      let dialogContainer: MdDialogContainer = viewContainerFixture.debugElement.query(
-          By.directive(MdDialogContainer)).componentInstance;
-
-      // Fake the user pressing the escape key by calling the handler directly.
-      dialogContainer.handleEscapeKey();
+      dispatchKeydownEvent(document, ESCAPE);
 
       expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
     });
@@ -565,3 +556,15 @@ const TEST_DIRECTIVES = [
   ],
 })
 class DialogTestModule { }
+
+
+// TODO(crisbeto): switch to using function from common testing utils once #2943 is merged.
+function dispatchKeydownEvent(element: Node, keyCode: number) {
+  let event: any = document.createEvent('KeyboardEvent');
+  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
+      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
+  Object.defineProperty(event, 'keyCode', {
+    get: function() { return keyCode; }
+  });
+  element.dispatchEvent(event);
+}

@@ -1,4 +1,5 @@
 import {OverlayRef} from '../core';
+import {MdDialogConfig} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -17,7 +18,7 @@ export class MdDialogRef<T> {
   /** Subject for notifying the user that the dialog has finished closing. */
   private _afterClosed: Subject<any> = new Subject();
 
-  constructor(private _overlayRef: OverlayRef) { }
+  constructor(private _overlayRef: OverlayRef, public config: MdDialogConfig) { }
 
   /**
    * Close the dialog.
