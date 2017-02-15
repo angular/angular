@@ -14,6 +14,7 @@ export {RouterOutlet} from './directives/router_outlet';
 export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Resolve} from './interfaces';
 export {DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
+export {NavigationExtras, Router} from './router';
 export {ROUTES} from './router_config_loader';
 export {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule, provideRoutes} from './router_module';
 export {RouterOutletMap} from './router_outlet_map';
