@@ -7,13 +7,14 @@
  */
 
 import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
 import * as url from 'url';
 
 import {scheduleMicroTask} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 
 
@@ -28,7 +29,16 @@ export class ServerPlatformLocation implements PlatformLocation {
   private _hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {}
+  constructor(
+      @Inject(DOCUMENT) private _doc: any, @Optional() @Inject(INITIAL_CONFIG) _config: any) {
+    const config = _config as PlatformConfig | null;
+    if (!!config && !!config.url) {
+      const parsedUrl = url.parse(config.url);
+      this._path = parsedUrl.pathname;
+      this._search = parsedUrl.search;
+      this._hash = parsedUrl.hash;
+    }
+  }
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc); }
 
@@ -59,7 +69,7 @@ export class ServerPlatformLocation implements PlatformLocation {
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
     const parsedUrl = url.parse(newUrl, true);
-    this._path = parsedUrl.path;
+    this._path = parsedUrl.pathname;
     this._search = parsedUrl.search;
     this.setHash(parsedUrl.hash, oldUrl);
   }

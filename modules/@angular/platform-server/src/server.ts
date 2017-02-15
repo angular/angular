@@ -17,6 +17,7 @@ import {PlatformState} from './platform_state';
 import {DebugDomRootRenderer} from './private_import_core';
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRootRenderer} from './server_renderer';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 
 function notSupported(feature: string): Error {
@@ -47,23 +48,6 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
   // use plain SharedStylesHost, not the DomSharedStylesHost
   SharedStylesHost
 ];
-
-/**
- * Config object passed to initialize the platform.
- *
- * @experimental
- */
-export interface PlatformConfig {
-  document?: string;
-  url?: string;
-}
-
-/**
- * The DI token for setting the initial config for the platform.
- *
- * @experimental
- */
-export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
 
 /**
  * The ng module for the server.
