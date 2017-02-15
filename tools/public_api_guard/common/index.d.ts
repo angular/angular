@@ -32,6 +32,10 @@ export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
 
+/** @deprecated */
+export declare class DeprecatedCommonModule {
+}
+
 /** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
