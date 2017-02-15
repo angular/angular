@@ -15,7 +15,6 @@ import {RouterStateSnapshot} from './router_state';
  * @stable
  */
 export class NavigationStart {
-  // TODO: vsavkin: make internal
   constructor(
       /** @docsNotRequired */
       public id: number,
@@ -32,7 +31,6 @@ export class NavigationStart {
  * @stable
  */
 export class NavigationEnd {
-  // TODO: vsavkin: make internal
   constructor(
       /** @docsNotRequired */
       public id: number,
@@ -53,7 +51,6 @@ export class NavigationEnd {
  * @stable
  */
 export class NavigationCancel {
-  // TODO: vsavkin: make internal
   constructor(
       /** @docsNotRequired */
       public id: number,
@@ -72,7 +69,6 @@ export class NavigationCancel {
  * @stable
  */
 export class NavigationError {
-  // TODO: vsavkin: make internal
   constructor(
       /** @docsNotRequired */
       public id: number,
@@ -93,7 +89,6 @@ export class NavigationError {
  * @stable
  */
 export class RoutesRecognized {
-  // TODO: vsavkin: make internal
   constructor(
       /** @docsNotRequired */
       public id: number,
@@ -111,23 +106,40 @@ export class RoutesRecognized {
 }
 
 /**
- * @whatItDoes Represents an event triggered when route is lazy loaded.
+ * @whatItDoes Represents an event triggered before lazy loading a route config.
  *
  * @experimental
  */
-export class RouteConfigLoaded {
+export class RouteConfigLoadStart {
   constructor(public route: Route) {}
 
-  toString(): string { return `RouteConfigLoaded(path: ${this.route.path})`; }
+  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
+}
+
+/**
+ * @whatItDoes Represents an event triggered when a route has been lazy loaded.
+ *
+ * @experimental
+ */
+export class RouteConfigLoadEnd {
+  constructor(public route: Route) {}
+
+  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
 }
 
 /**
  * @whatItDoes Represents a router event.
  *
- * Please see {@link NavigationStart}, {@link NavigationEnd}, {@link NavigationCancel}, {@link
-  * NavigationError}, {@link RoutesRecognized}, {@link RouteConfigLoaded} for more information.
+ * One of:
+ * - {@link NavigationStart},
+ * - {@link NavigationEnd},
+ * - {@link NavigationCancel},
+ * - {@link NavigationError},
+ * - {@link RoutesRecognized},
+ * - {@link RouteConfigLoadStart},
+ * - {@link RouteConfigLoadEnd}
  *
  * @stable
  */
 export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError |
-    RoutesRecognized | RouteConfigLoaded;
+    RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd;
