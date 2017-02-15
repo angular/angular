@@ -107,7 +107,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     }
 
     templateVisitAll(this, astNodes, {elementDepth});
-    if (astNodes.length === 0 || (this.parent && hasViewContainer(astNodes[astNodes.length - 1]))) {
+    if (astNodes.length === 0 ||
+        (this.parent && needsAdditionalRootNode(astNodes[astNodes.length - 1]))) {
       // if the view is empty, or an embedded view has a view container as last root nde,
       // create an additional root node.
       this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
@@ -752,13 +753,16 @@ function depDef(dep: CompileDiDependencyMetadata): o.Expression {
   return flags === viewEngine.DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
 }
 
-function hasViewContainer(ast: TemplateAst): boolean {
+function needsAdditionalRootNode(ast: TemplateAst): boolean {
   if (ast instanceof EmbeddedTemplateAst) {
     return ast.hasViewContainer;
-  } else if (ast instanceof ElementAst) {
+  }
+
+  if (ast instanceof ElementAst) {
     return ast.hasViewContainer;
   }
-  return false;
+
+  return ast instanceof NgContentAst;
 }
 
 function calcQueryId(queryId: QueryId): string {

@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
-import {isBlank, isPresent, stringify} from '../facade/lang';
+import {isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
-import {camelCaseToDashCase} from './util';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'xlink': 'http://www.w3.org/1999/xlink',
@@ -231,7 +230,7 @@ export class DomRenderer implements Renderer {
     } else {
       // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
       if (propertyName[propertyName.length - 1] === '$') {
-        const attrNode: Attr = createAttrNode(propertyName).cloneNode(true) as Attr;
+        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
         attrNode.value = propertyValue;
         renderElement.setAttributeNode(attrNode);
       } else {
@@ -348,19 +347,140 @@ export function splitNamespace(name: string): string[] {
   return [match[1], match[2]];
 }
 
+
 let attrCache: Map<string, Attr>;
 
-function createAttrNode(name: string): Attr {
+function createAttributeNode(name: string): Attr {
   if (!attrCache) {
     attrCache = new Map<string, Attr>();
   }
   if (attrCache.has(name)) {
     return attrCache.get(name);
-  } else {
-    const div = document.createElement('div');
-    div.innerHTML = `<div ${name}>`;
-    const attr: Attr = div.firstChild.attributes[0];
-    attrCache.set(name, attr);
-    return attr;
+  }
+
+  const div = document.createElement('div');
+  div.innerHTML = `<div ${name}>`;
+  const attr: Attr = div.firstChild.attributes[0];
+  attrCache.set(name, attr);
+  return attr;
+}
+
+@Injectable()
+export class DomRendererV2 implements RendererV2 {
+  constructor(private eventManager: EventManager){};
+
+  createElement(name: string, namespace?: string, debugInfo?: any): any {
+    if (namespace) {
+      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+    }
+
+    return document.createElement(name);
+  }
+
+  createComment(value: string, debugInfo?: any): any { return document.createComment(value); }
+
+  createText(value: string, debugInfo?: any): any { return document.createTextNode(value); }
+
+  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    if (parent) {
+      parent.insertBefore(newChild, refChild);
+    }
+  }
+
+  removeChild(parent: any, oldChild: any): void { parent.removeChild(oldChild); }
+
+  selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
+    let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
+                                                       selectorOrNode;
+    el.textContent = '';
+    return el;
+  }
+
+  parentNode(node: any): any { return node.parentNode; }
+
+  nextSibling(node: any): any { return node.nextSibling; }
+
+  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    if (namespace) {
+      el.setAttributeNS(NAMESPACE_URIS[namespace], namespace + ':' + name, value);
+    } else {
+      el.setAttribute(name, value);
+    }
+  }
+
+  removeAttribute(el: any, name: string, namespace?: string): void {
+    if (namespace) {
+      el.removeAttributeNS(NAMESPACE_URIS[namespace], name);
+    } else {
+      el.removeAttribute(name);
+    }
+  }
+
+
+  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
+    if (el.nodeType === Node.COMMENT_NODE) {
+      const m = el.nodeValue.replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
+      const obj = m === null ? {} : JSON.parse(m[1]);
+      obj[propertyName] = propertyValue;
+      el.nodeValue = TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2));
+    } else {
+      // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
+      if (propertyName[propertyName.length - 1] === '$') {
+        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
+        attrNode.value = propertyValue;
+        el.setAttributeNode(attrNode);
+      } else {
+        this.setAttribute(el, propertyName, propertyValue);
+      }
+    }
+  }
+
+  removeBindingDebugInfo(el: any, propertyName: string): void {
+    if (el.nodeType === Node.COMMENT_NODE) {
+      const m = el.nodeValue.replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
+      const obj = m === null ? {} : JSON.parse(m[1]);
+      delete obj[propertyName];
+      el.nodeValue = TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2));
+    } else {
+      // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
+      if (propertyName[propertyName.length - 1] === '$') {
+        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
+        attrNode.value = '';
+        el.setAttributeNode(attrNode);
+      } else {
+        this.removeAttribute(el, propertyName);
+      }
+    }
+  }
+
+  addClass(el: any, name: string): void { el.classList.add(name); }
+
+  removeClass(el: any, name: string): void { el.classList.remove(name); }
+
+  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
+      void {
+    el.style[style] = value;
+  }
+
+  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    el.style[style] = '';
+  }
+
+  setProperty(el: any, name: string, value: any): void { el[name] = value; }
+
+  setText(node: any, value: string): void { node.nodeValue = value; }
+
+  listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
+      () => void {
+    if (typeof target === 'string') {
+      return <() => void>this.eventManager.addGlobalEventListener(
+          target, event, decoratePreventDefault(callback));
+    }
+    return <() => void>this.eventManager.addEventListener(
+               target, event, decoratePreventDefault(callback)) as() => void;
   }
 }

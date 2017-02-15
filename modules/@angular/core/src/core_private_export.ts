@@ -92,6 +92,8 @@ export const __core_private__: {
   makeDecorator: typeof decorators.makeDecorator,
   DebugDomRootRenderer: typeof debug.DebugDomRootRenderer,
   _DebugDomRootRenderer: debug.DebugDomRootRenderer,
+  DebugDomRendererV2: typeof debug.DebugDomRendererV2,
+  _DebugDomRendererV2: debug.DebugDomRendererV2,
   Console: typeof console.Console,
   _Console: console.Console,
   reflector: typeof reflection.reflector,
@@ -101,9 +103,6 @@ export const __core_private__: {
   _NoOpAnimationPlayer: NoOpAnimationPlayer_,
   AnimationPlayer: typeof AnimationPlayer_,
   _AnimationPlayer: AnimationPlayer_,
-
-
-
   AnimationSequencePlayer: typeof AnimationSequencePlayer_,
   _AnimationSequencePlayer: AnimationSequencePlayer_,
   AnimationGroupPlayer: typeof AnimationGroupPlayer_,
@@ -157,6 +156,7 @@ export const __core_private__: {
   ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
   makeDecorator: decorators.makeDecorator,
   DebugDomRootRenderer: debug.DebugDomRootRenderer,
+  DebugDomRendererV2: debug.DebugDomRendererV2,
   Console: console.Console,
   reflector: reflection.reflector,
   Reflector: reflection.Reflector,

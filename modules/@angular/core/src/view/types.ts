@@ -14,6 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
+import {RenderDebugContext, RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 // -------------------------------------
@@ -406,61 +407,6 @@ export interface RootData {
   selectorOrNode: any;
   renderer: RendererV2;
   sanitizer: Sanitizer;
-}
-
-/**
- * TODO(tbosch): move this interface into @angular/core/src/render/api,
- * and implement it in @angular/platform-browser, ...
- */
-export interface RendererV2 {
-  createElement(name: string, debugInfo?: RenderDebugContext): any;
-  createComment(value: string, debugInfo?: RenderDebugContext): any;
-  createText(value: string, debugInfo?: RenderDebugContext): any;
-  appendChild(parent: any, newChild: any): void;
-  insertBefore(parent: any, newChild: any, refChild: any): void;
-  removeChild(parent: any, oldChild: any): void;
-  selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugContext): any;
-  /**
-   * Attention: On WebWorkers, this will always return a value,
-   * as we are asking for a result synchronously. I.e.
-   * the caller can't rely on checking whether this is null or not.
-   */
-  parentNode(node: any): any;
-  /**
-   * Attention: On WebWorkers, this will always return a value,
-   * as we are asking for a result synchronously. I.e.
-   * the caller can't rely on checking whether this is null or not.
-   */
-  nextSibling(node: any): any;
-  /**
-   * Used only in debug mode to serialize property changes to dom nodes as attributes.
-   */
-  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void;
-  /**
-   * Used only in debug mode to serialize property changes to dom nodes as attributes.
-   */
-  removeBindingDebugInfo(el: any, propertyName: string): void;
-  setAttribute(el: any, name: string, value: string): void;
-  removeAttribute(el: any, name: string): void;
-  addClass(el: any, name: string): void;
-  removeClass(el: any, name: string): void;
-  setStyle(el: any, style: string, value: any): void;
-  removeStyle(el: any, style: string): void;
-  setProperty(el: any, name: string, value: any): void;
-  setText(node: any, value: string): void;
-  listen(target: 'window'|'document'|any, eventName: string, callback: (event: any) => boolean):
-      () => void;
-}
-
-export abstract class RenderDebugContext {
-  abstract get injector(): Injector;
-  abstract get component(): any;
-  abstract get providerTokens(): any[];
-  abstract get references(): {[key: string]: any};
-  abstract get context(): any;
-  abstract get source(): string;
-  abstract get componentRenderElement(): any;
-  abstract get renderNode(): any;
 }
 
 export abstract class DebugContext extends RenderDebugContext {

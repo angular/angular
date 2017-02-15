@@ -15,7 +15,7 @@ export function main() {
 
     function detectChangesAndExpectClassName(classes: string): void {
       fixture.detectChanges();
-      expect(fixture.debugElement.children[0].nativeElement.className).toEqual(classes);
+      expect(fixture.debugElement.children[0].nativeElement.className.trim()).toEqual(classes);
     }
 
     function getComponent(): TestComponent { return fixture.debugElement.componentInstance; }

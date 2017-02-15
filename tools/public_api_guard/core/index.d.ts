@@ -349,6 +349,7 @@ export declare class DebugElement extends DebugNode {
     };
     constructor(nativeNode: any, parent: any, _debugInfo: RenderDebugInfo);
     addChild(child: DebugNode): void;
+    insertBefore(refChild: DebugNode, newChild: DebugNode): void;
     insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]): void;
     query(predicate: Predicate<DebugElement>): DebugElement;
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
@@ -844,6 +845,33 @@ export declare abstract class Renderer {
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
     abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
     abstract setText(renderNode: any, text: string): void;
+}
+
+/** @experimental */
+export declare const RENDERER_V2_DIRECT: InjectionToken<RendererV2>;
+
+/** @experimental */
+export declare abstract class RendererV2 {
+    abstract addClass(el: any, name: string): void;
+    abstract appendChild(parent: any, newChild: any): void;
+    abstract createComment(value: string, debugInfo?: RenderDebugContext): any;
+    abstract createElement(name: string, namespace?: string, debugInfo?: RenderDebugContext): any;
+    abstract createText(value: string, debugInfo?: RenderDebugContext): any;
+    abstract insertBefore(parent: any, newChild: any, refChild: any): void;
+    abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean): () => void;
+    abstract nextSibling(node: any): any;
+    abstract parentNode(node: any): any;
+    abstract removeAttribute(el: any, name: string, namespace?: string): void;
+    abstract removeBindingDebugInfo(el: any, propertyName: string): void;
+    abstract removeChild(parent: any, oldChild: any): void;
+    abstract removeClass(el: any, name: string): void;
+    abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugContext): any;
+    abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
+    abstract setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void;
+    abstract setProperty(el: any, name: string, value: any): void;
+    abstract setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
+    abstract setText(node: any, value: string): void;
 }
 
 /** @experimental */
