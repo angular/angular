@@ -498,12 +498,13 @@ export declare class RequiredValidator implements Validator {
 }
 
 /** @stable */
-export declare class SelectControlValueAccessor implements ControlValueAccessor {
+export declare class SelectControlValueAccessor implements ControlValueAccessor, AfterViewInit {
     compareWith: (o1: any, o2: any) => boolean;
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;
     constructor(_renderer: Renderer, _elementRef: ElementRef);
+    ngAfterViewInit(): void;
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
     setDisabledState(isDisabled: boolean): void;

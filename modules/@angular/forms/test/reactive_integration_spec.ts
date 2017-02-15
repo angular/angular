@@ -385,6 +385,16 @@ export function main() {
         expect(select.nativeElement.value).toEqual('0: Object');
         expect(sfOption.nativeElement.selected).toBe(true);
       });
+
+      it('should show a blank line when nothing is selected', fakeAsync(() => {
+           const fixture = initTest(SelectWithoutSelectedOption);
+           fixture.detectChanges();
+           tick();
+
+           const select = fixture.debugElement.query(By.css('select'));
+           expect(select.nativeElement.selectedIndex).toEqual(-1);
+           expect(select.nativeElement.value).toEqual('');
+         }));
     });
 
     describe('select multiple controls', () => {
@@ -2241,4 +2251,19 @@ class FormControlCheckboxRequiredValidator {
 })
 class UniqLoginWrapper {
   form: FormGroup;
+}
+
+@Component({
+  selector: 'some-cmp',
+  template: `
+      <form [formGroup]="form"> 
+        <select formControlName="select">
+          <option *ngFor="let option of options" [value]="option">{{option}}</option>
+        </select>
+      </form>
+  `,
+})
+export class SelectWithoutSelectedOption {
+  form: FormGroup = new FormGroup({select: new FormControl(null)});
+  options: number[] = [1, 2];
 }

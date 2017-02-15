@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef} from '@angular/core';
-
+import {AfterViewInit, Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef} from '@angular/core';
 import {isPrimitive, looseIdentical} from '../facade/lang';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: Provider = {
@@ -97,12 +95,15 @@ function _extractId(valueString: string): string {
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
-export class SelectControlValueAccessor implements ControlValueAccessor {
+export class SelectControlValueAccessor implements ControlValueAccessor,
+    AfterViewInit {
   value: any;
   /** @internal */
   _optionMap: Map<string, any> = new Map<string, any>();
   /** @internal */
-  _idCounter: number = 0;
+  _values: any[] = [];
+  private _idCounter: number = 0;
+  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
 
   onChange = (_: any) => {};
   onTouched = () => {};
@@ -115,16 +116,11 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._compareWith = fn;
   }
 
-  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
-
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     this.value = value;
     const id: string = this._getOptionId(value);
-    if (id == null) {
-      this._renderer.setElementProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
-    }
     const valueString = _buildValueString(id, value);
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', valueString);
   }
@@ -135,25 +131,32 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
       fn(this._getOptionValue(valueString));
     };
   }
+
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
+  ngAfterViewInit(): void {
+    // workaround for IE/Edge bug
+    if (!this._values.some(option => this._compareWith(option, this.value))) {
+      this._renderer.setElementProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+    }
+    this._values = null;  // we don't need it any more
+  }
+
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 
-  /** @internal */
-  _getOptionId(value: any): string {
+  private _getOptionId(value: any): string {
     for (const id of Array.from(this._optionMap.keys())) {
       if (this._compareWith(this._optionMap.get(id), value)) return id;
     }
     return null;
   }
 
-  /** @internal */
-  _getOptionValue(valueString: string): any {
+  private _getOptionValue(valueString: string): any {
     const id: string = _extractId(valueString);
     return this._optionMap.has(id) ? this._optionMap.get(id) : valueString;
   }
@@ -178,22 +181,28 @@ export class NgSelectOption implements OnDestroy {
     if (this._select) this.id = this._select._registerOption();
   }
 
-  @Input('ngValue')
+  @Input()
   set ngValue(value: any) {
     if (this._select == null) return;
     this._select._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
     this._select.writeValue(this._select.value);
+    if (this._select._values) {
+      this._select._values.push(value);
+    }
   }
 
-  @Input('value')
+  @Input()
   set value(value: any) {
+    if (this._select == null) return;
     this._setElementValue(value);
-    if (this._select) this._select.writeValue(this._select.value);
+    this._select.writeValue(this._select.value);
+    if (this._select._values) {
+      this._select._values.push(value);
+    }
   }
 
-  /** @internal */
-  _setElementValue(value: string): void {
+  private _setElementValue(value: string): void {
     this._renderer.setElementProperty(this._element.nativeElement, 'value', value);
   }
 
