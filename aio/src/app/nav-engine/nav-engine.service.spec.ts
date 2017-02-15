@@ -5,42 +5,35 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/delay';
 
 import { DocService } from './doc.service';
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, DocMetadata, NavNode } from './doc.model';
 
 import { NavEngine } from './nav-engine.service';
 
-const fakeDoc: Doc = {
-  metadata: {
-    id: 'fake',
-    title: 'All about the fake',
-    url: 'assets/documents/fake.html'
-  },
-  content: 'fake content'
-};
-
 describe('NavEngine', () => {
 
+  let fakeDoc: Doc;
   let navEngine: NavEngine;
 
   beforeEach(() => {
-    this.fakeDoc = {
+    fakeDoc = {
       metadata: {
-        id: 'fake',
-        title: 'All about the fake',
-        url: 'assets/documents/fake.html'
+        docId: 'fake',
+        title: 'All about the fake'
       },
       content: 'fake content'
     };
 
     const docService: any = jasmine.createSpyObj('docService', ['getDoc']);
-    docService.getDoc.and.callFake((id: string) => of(this.fakeDoc).delay(0));
+    docService.getDoc.and.returnValue(of(fakeDoc).delay(0));
 
     navEngine = new NavEngine(docService);
   });
 
   it('should set currentDoc to fake doc when navigate to fake id', fakeAsync(() => {
     navEngine.navigate('fake');
+    navEngine.currentDoc.subscribe(doc =>
+      expect(doc.content).toBe(fakeDoc.content)
+    );
     tick();
-    expect(navEngine.currentDoc.content).toBe(this.fakeDoc.content);
   }));
 });
