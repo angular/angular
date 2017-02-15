@@ -6,20 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {Injectable, Injector} from '../di';
+import {Injector} from '../di';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
-import * as v1renderer from '../render/api';
-import {Sanitizer, SecurityContext} from '../security';
 import {Type} from '../type';
 
-import {DirectDomRenderer, LegacyRendererAdapter} from './renderer';
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
 import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentElIndex} from './util';
 
 const EMPTY_CONTEXT = new Object();

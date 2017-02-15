@@ -175,11 +175,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return node;
   }
-  insertBefore(el: Node, node: Node) { el.parentNode.insertBefore(node, el); }
-  insertAllBefore(el: Node, nodes: Node[]) {
-    nodes.forEach((n: any) => el.parentNode.insertBefore(n, el));
+  insertBefore(parent: Node, ref: Node, node: Node) { parent.insertBefore(node, ref); }
+  insertAllBefore(parent: Node, ref: Node, nodes: Node[]) {
+    nodes.forEach((n: any) => parent.insertBefore(n, ref));
   }
-  insertAfter(el: Node, node: any) { el.parentNode.insertBefore(node, el.nextSibling); }
+  insertAfter(parent: Node, ref: Node, node: any) { parent.insertBefore(node, ref.nextSibling); }
   setInnerHTML(el: Element, value: string) { el.innerHTML = value; }
   getText(el: Node): string { return el.textContent; }
   setText(el: Node, value: string) { el.textContent = value; }

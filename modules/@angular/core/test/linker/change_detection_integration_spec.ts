@@ -9,8 +9,8 @@
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
-import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RENDERER_V2_DIRECT, RenderComponentType, Renderer, RendererV2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {DebugDomRenderer, DebugDomRendererV2} from '@angular/core/src/debug/debug_renderer';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -24,8 +24,12 @@ export function main() {
 
   describe('View Engine compiler', () => {
     beforeEach(() => {
-      TestBed.configureCompiler(
-          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+      TestBed.configureCompiler({
+        useJit: true,
+        providers: [
+          {provide: USE_VIEW_ENGINE, useValue: true},
+        ]
+      });
     });
 
     createTests({viewEngine: true});
@@ -115,8 +119,16 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
           IdentityPipe,
           WrappedPipe,
         ],
-        providers:
-            [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer}]
+        providers: [
+          RenderLog,
+          DirectiveLog,
+          {provide: RootRenderer, useClass: LoggingRootRenderer},
+          {
+            provide: RendererV2,
+            useFactory: (r: RendererV2, log: RenderLog) => new LoggingRendererV2(r, log),
+            deps: [[new Inject(RENDERER_V2_DIRECT)], [RenderLog]],
+          },
+        ],
       });
     });
 
@@ -1301,6 +1313,20 @@ class LoggingRenderer extends DebugDomRenderer {
 
 class DirectiveLogEntry {
   constructor(public directiveName: string, public method: string) {}
+}
+
+class LoggingRendererV2 extends DebugDomRendererV2 {
+  constructor(private delegate: RendererV2, private log: RenderLog) { super(delegate); }
+
+  setProperty(el: any, name: string, value: any): void {
+    this.log.setElementProperty(el, name, value);
+    super.setProperty(el, name, value);
+  }
+
+  setText(node: any, value: string): void {
+    this.log.setText(node, value);
+    super.setText(node, value);
+  }
 }
 
 @Injectable()

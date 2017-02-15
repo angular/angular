@@ -7,20 +7,16 @@
  */
 
 import {isDevMode} from '../application_ref';
-import {Injectable, Injector} from '../di';
-import {looseIdentical} from '../facade/lang';
-import {ElementRef} from '../linker/element_ref';
-import * as v1renderer from '../render/api';
+import {Injector} from '../di';
+import {RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
-import {Type} from '../type';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {getQueryValue} from './query';
 import {createInjector} from './refs';
-import {DirectDomRenderer, LegacyRendererAdapter} from './renderer';
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RendererV2, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, ViewUpdateFn, asElementData, asProviderData} from './types';
-import {checkBinding, isComponentView, queryIdIsReference, renderNode, resolveViewDefinition, rootRenderNodes, viewParentElIndex} from './util';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
+import {checkBinding, isComponentView, queryIdIsReference, renderNode, viewParentElIndex} from './util';
 import {checkAndUpdateView, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 
@@ -112,10 +108,8 @@ function debugCreateRootView(
 function createRootData(
     injector: Injector, projectableNodes: any[][], rootSelectorOrNode: any): RootData {
   const sanitizer = injector.get(Sanitizer);
-  // TODO(tbosch): once the new renderer interface is implemented via platform-browser,
-  // just get it via the injector and drop LegacyRendererAdapter and DirectDomRenderer.
-  const renderer = isDevMode() ? new LegacyRendererAdapter(injector.get(v1renderer.RootRenderer)) :
-                                 new DirectDomRenderer();
+  const renderer = injector.get(RendererV2);
+
   const rootElement =
       rootSelectorOrNode ? renderer.selectRootElement(rootSelectorOrNode) : undefined;
   return {injector, projectableNodes, selectorOrNode: rootSelectorOrNode, sanitizer, renderer};
@@ -183,7 +177,7 @@ function debugUpdateRenderer(check: NodeCheckFn, view: ViewData) {
     const result = debugCheckFn(check, view, nodeIndex, argStyle, values);
     debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
     return result;
-  };
+  }
 }
 
 function debugCheckFn(
@@ -249,8 +243,9 @@ function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number {
 
 class DebugRenderer implements RendererV2 {
   constructor(private _delegate: RendererV2) {}
-  createElement(name: string): any {
-    return this._delegate.createElement(name, getCurrentDebugContext());
+
+  createElement(name: string, namespace?: string): any {
+    return this._delegate.createElement(name, namespace, getCurrentDebugContext());
   }
   createComment(value: string): any {
     return this._delegate.createComment(value, getCurrentDebugContext());
@@ -272,10 +267,12 @@ class DebugRenderer implements RendererV2 {
   }
   parentNode(node: any): any { return this._delegate.parentNode(node); }
   nextSibling(node: any): any { return this._delegate.nextSibling(node); }
-  setAttribute(el: any, name: string, value: string): void {
-    return this._delegate.setAttribute(el, name, value);
+  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    return this._delegate.setAttribute(el, name, value, namespace);
   }
-  removeAttribute(el: any, name: string): void { return this._delegate.removeAttribute(el, name); }
+  removeAttribute(el: any, name: string, namespace?: string): void {
+    return this._delegate.removeAttribute(el, name, namespace);
+  }
   setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
     this._delegate.setBindingDebugInfo(el, propertyName, propertyValue);
   }
@@ -284,16 +281,20 @@ class DebugRenderer implements RendererV2 {
   }
   addClass(el: any, name: string): void { return this._delegate.addClass(el, name); }
   removeClass(el: any, name: string): void { return this._delegate.removeClass(el, name); }
-  setStyle(el: any, style: string, value: any): void {
-    return this._delegate.setStyle(el, style, value);
+  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
+      void {
+    return this._delegate.setStyle(el, style, value, hasVendorPrefix, hasImportant);
   }
-  removeStyle(el: any, style: string): void { return this._delegate.removeStyle(el, style); }
+  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+    return this._delegate.removeStyle(el, style, hasVendorPrefix);
+  }
   setProperty(el: any, name: string, value: any): void {
     return this._delegate.setProperty(el, name, value);
   }
   setText(node: any, value: string): void { return this._delegate.setText(node, value); }
-  listen(target: 'window'|'document'|any, eventName: string, callback: (event: any) => boolean):
-      () => void {
+  listen(
+      target: 'window'|'document'|'body'|any, eventName: string,
+      callback: (event: any) => boolean): () => void {
     return this._delegate.listen(target, eventName, callback);
   }
 }
