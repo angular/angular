@@ -13,7 +13,8 @@ import {
   EventEmitter,
   Renderer,
   ViewEncapsulation,
-  ViewChild
+  ViewChild,
+  NgZone
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Dir, MdError, coerceBooleanProperty, CompatibilityModule} from '../core';
@@ -21,6 +22,7 @@ import {A11yModule} from '../core/a11y/index';
 import {FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {OverlayModule} from '../core/overlay/overlay-directives';
+import 'rxjs/add/operator/first';
 
 
 /** Exception thrown when two MdSidenav are matching the same side. */
@@ -321,6 +323,7 @@ export class MdSidenav implements AfterContentInit {
   ],
   host: {
     '[class.mat-sidenav-container]': 'true',
+    '[class.mat-sidenav-transition]': '_enableTransitions',
   },
   encapsulation: ViewEncapsulation.None,
 })
@@ -349,8 +352,11 @@ export class MdSidenavContainer implements AfterContentInit {
   private _left: MdSidenav;
   private _right: MdSidenav;
 
+  /** Whether to enable open/close trantions. */
+  _enableTransitions = false;
+
   constructor(@Optional() private _dir: Dir, private _element: ElementRef,
-              private _renderer: Renderer) {
+              private _renderer: Renderer, private _ngZone: NgZone) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
@@ -366,6 +372,9 @@ export class MdSidenavContainer implements AfterContentInit {
       this._watchSidenavAlign(sidenav);
     });
     this._validateDrawers();
+
+    // Give the view a chance to render the initial state, then enable transitions.
+    this._ngZone.onMicrotaskEmpty.first().subscribe(() => this._enableTransitions = true);
   }
 
   /**
