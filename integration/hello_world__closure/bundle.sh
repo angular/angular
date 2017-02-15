@@ -35,6 +35,7 @@ CLOSURE_ARGS=(
   node_modules/zone.js/dist/zone.js
   $(find -L vendor/rxjs -name *.js)
   node_modules/@angular/{core,common,compiler,platform-browser}/index.js
+  node_modules/@angular/{core,common}/public_api.js
   $(find node_modules/@angular/{core,common,compiler,platform-browser}/src -name *.js)
   "built/src/*.js"
   "--entry_point=./built/src/main"

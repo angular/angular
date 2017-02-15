@@ -17,7 +17,7 @@ import {NgModule} from '@angular/core';
 
 // We cannot depend directly to @angular/router.
 type Route = any;
-const ROUTER_MODULE_PATH = '@angular/router/src/router_config_loader';
+const ROUTER_MODULE_PATH = '@angular/router';
 const ROUTER_ROUTES_SYMBOL_NAME = 'ROUTES';
 
 

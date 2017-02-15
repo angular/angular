@@ -24,12 +24,15 @@
     "types": []
   },
   "files": [
+    "public_api_static.ts",
     "index.ts",
-    "static.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true
+    "strictMetadataEmit": true,
+    "bundleIndex": "static",
+    "libraryIndex": "./public_api_static",
+    "importAs": "@angular/upgrade/static"
   }
 }

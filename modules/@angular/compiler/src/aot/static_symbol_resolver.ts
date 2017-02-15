@@ -202,9 +202,16 @@ export class StaticSymbolResolver {
           new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
       Object.keys(metadata['metadata']).forEach((metadataKey) => {
         const symbolMeta = metadata['metadata'][metadataKey];
-        resolvedSymbols.push(this.createResolvedSymbol(
-            this.getStaticSymbol(filePath, unescapeIdentifier(metadataKey)), topLevelSymbolNames,
-            symbolMeta));
+        const name = unescapeIdentifier(metadataKey);
+        const canonicalSymbol = this.getStaticSymbol(filePath, name);
+        if (metadata['importAs']) {
+          // Index bundle indexes should use the importAs module name instead of a reference
+          // to the .d.ts file directly.
+          const importSymbol = this.getStaticSymbol(metadata['importAs'], name);
+          this.recordImportAs(canonicalSymbol, importSymbol);
+        }
+        resolvedSymbols.push(
+            this.createResolvedSymbol(canonicalSymbol, topLevelSymbolNames, symbolMeta));
       });
     }
 
@@ -372,7 +379,7 @@ export class StaticSymbolResolver {
       return this.host.moduleNameToFileName(module, containingFile);
     } catch (e) {
       console.error(`Could not resolve module '${module}' relative to file ${containingFile}`);
-      this.reportError(new e, null, containingFile);
+      this.reportError(e, null, containingFile);
     }
   }
 }
