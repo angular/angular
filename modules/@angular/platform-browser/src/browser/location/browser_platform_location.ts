@@ -7,9 +7,10 @@
  */
 
 import {LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
+import {DOCUMENT} from '../../dom/dom_tokens';
 
 import {supportsState} from './history';
 
@@ -25,7 +26,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   private _location: Location;
   private _history: History;
 
-  constructor() {
+  constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
     this._init();
   }
@@ -39,14 +40,14 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   get location(): Location { return this._location; }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc); }
 
   onPopState(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
   }
 
   onHashChange(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
   get pathname(): string { return this._location.pathname; }
