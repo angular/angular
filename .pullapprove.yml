@@ -117,6 +117,8 @@ groups:
         - "modules/@angular/compiler/*"
     users:
       - tbosch #primary
+      - vicb
+      - chuckjaz
       - mhevery
       - IgorMinar #fallback
 
@@ -209,6 +211,8 @@ groups:
     users:
       - vikerman #primary
       - alxhub
+      - vicb
+      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -219,6 +223,7 @@ groups:
     users:
       - vicb #primary
       # needs secondary
+      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
