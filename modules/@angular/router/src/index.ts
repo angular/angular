@@ -11,9 +11,10 @@ export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, Routes} fr
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet} from './directives/router_outlet';
+export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoaded, RoutesRecognized} from './events';
 export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Resolve} from './interfaces';
 export {DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
-export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationExtras, NavigationStart, Router, RoutesRecognized} from './router';
+export {NavigationExtras, Router} from './router';
 export {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule, provideRoutes} from './router_module';
 export {RouterOutletMap} from './router_outlet_map';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
