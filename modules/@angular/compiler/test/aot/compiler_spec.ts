@@ -9,15 +9,18 @@
 import {AotCompiler, AotCompilerHost, createAotCompiler} from '@angular/compiler';
 import {RenderComponentType} from '@angular/core';
 import {async} from '@angular/core/testing';
+import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ReflectionCapabilities, reflector} from './private_import_core';
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, settings} from './test_util';
+import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockMetadataBundlerHost, settings} from './test_util';
 
 const DTS = /\.d\.ts$/;
 
 const minCoreIndex = `
+  export * from './src/application_module';
+  export * from './src/change_detection';
   export * from './src/metadata';
   export * from './src/di/metadata';
   export * from './src/di/injector';
@@ -28,7 +31,7 @@ const minCoreIndex = `
   export * from './src/codegen_private_exports';
 `;
 
-describe('compiler', () => {
+describe('compiler (unbundled Angular)', () => {
   let angularFiles: Map<string, string>;
 
   beforeAll(() => {
@@ -55,17 +58,64 @@ describe('compiler', () => {
     it('should compile',
        async(() => compile(host, aotHost, expectNoDiagnostics).then(generatedFiles => {
          expect(generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
-             .not.toBeUndefined();
+             .toBeDefined();
          expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
-             .not.toBeUndefined();
+             .toBeDefined();
        })));
 
     it('should compile using summaries',
        async(() => summaryCompile(host, aotHost).then(generatedFiles => {
          expect(generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
-             .not.toBeUndefined();
+             .toBeDefined();
          expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
-             .not.toBeUndefined();
+             .toBeDefined();
+       })));
+  });
+});
+
+describe('compiler (bundled Angular)', () => {
+  let angularFiles: Map<string, string>;
+
+  beforeAll(() => {
+    const emittingHost = new EmittingCompilerHost(['@angular/core/index'], {emitMetadata: false});
+
+    // Create the metadata bundled
+    const indexModule = emittingHost.effectiveName('@angular/core/index');
+    const bundler = new MetadataBundler(
+        indexModule, '@angular/core', new MockMetadataBundlerHost(emittingHost));
+    const bundle = bundler.getMetadataBundle();
+    const metadata = JSON.stringify(bundle.metadata, null, ' ');
+    const bundleIndexSource = privateEntriesToIndex('./index', bundle.privates);
+    emittingHost.override('@angular/core/bundle_index.ts', bundleIndexSource);
+    emittingHost.addWrittenFile(
+        '@angular/core/package.json', JSON.stringify({typings: 'bundle_index.d.ts'}));
+    emittingHost.addWrittenFile('@angular/core/bundle_index.metadata.json', metadata);
+
+    // Emit the sources
+    const bundleIndexName = emittingHost.effectiveName('@angular/core/bundle_index.ts');
+    const emittingProgram = ts.createProgram([bundleIndexName], settings, emittingHost);
+    emittingProgram.emit();
+    angularFiles = emittingHost.written;
+  });
+
+  describe('Quickstart', () => {
+    let host: MockCompilerHost;
+    let aotHost: MockAotCompilerHost;
+
+    beforeEach(() => {
+      host = new MockCompilerHost(QUICKSTART, FILES, angularFiles);
+      aotHost = new MockAotCompilerHost(host);
+    });
+
+    // Restore reflector since AoT compiler will update it with a new static reflector
+    afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
+
+    it('should compile',
+       async(() => compile(host, aotHost, expectNoDiagnostics).then(generatedFiles => {
+         expect(generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
+             .toBeDefined();
+         expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
+             .toBeDefined();
        })));
   });
 });

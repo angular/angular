@@ -6,16 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @module
- * @description
- * Entry point for all public APIs of the upgrade/static package, allowing
- * Angular 1 and Angular 2+ to run side by side in the same application.
- */
-export {downgradeComponent} from './src/common/downgrade_component';
-export {downgradeInjectable} from './src/common/downgrade_injectable';
-export {VERSION} from './src/common/version';
-export {UpgradeComponent} from './src/static/upgrade_component';
-export {UpgradeModule} from './src/static/upgrade_module';
+// This file is not used to build this module. It is only used during editing
+// by the TypeScript language serivce and during build for verifcation. `ngc`
+// replaces this file with production static.ts when it rewrites private symbol
+// names.
 
-// This file only re-exports content of the `src` folder. Keep it that way.
+export * from './public_api_static';

@@ -44,14 +44,10 @@ describe('StaticReflector', () => {
 
   it('should get constructor for NgFor', () => {
     const NgFor = reflector.findDeclaration('@angular/common/src/directives/ng_for', 'NgFor');
-    const ViewContainerRef = reflector.findDeclaration(
-        '@angular/core/src/linker/view_container_ref', 'ViewContainerRef');
-    const TemplateRef =
-        reflector.findDeclaration('@angular/core/src/linker/template_ref', 'TemplateRef');
-    const IterableDiffers = reflector.findDeclaration(
-        '@angular/core/src/change_detection/differs/iterable_differs', 'IterableDiffers');
-    const ChangeDetectorRef = reflector.findDeclaration(
-        '@angular/core/src/change_detection/change_detector_ref', 'ChangeDetectorRef');
+    const ViewContainerRef = reflector.findDeclaration('@angular/core', 'ViewContainerRef');
+    const TemplateRef = reflector.findDeclaration('@angular/core', 'TemplateRef');
+    const IterableDiffers = reflector.findDeclaration('@angular/core', 'IterableDiffers');
+    const ChangeDetectorRef = reflector.findDeclaration('@angular/core', 'ChangeDetectorRef');
 
     const parameters = reflector.parameters(NgFor);
     expect(parameters).toEqual([
@@ -732,7 +728,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                 'expression': {
                   '__symbolic': 'reference',
                   'name': 'Directive',
-                  'module': '@angular/core/src/metadata'
+                  'module': '@angular/core'
                 },
                 'arguments': [
                   {
@@ -749,22 +745,22 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                   'parameters': [
                     {
                       '__symbolic': 'reference',
-                      'module': '@angular/core/src/linker/view_container_ref',
+                      'module': '@angular/core',
                       'name': 'ViewContainerRef'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '@angular/core/src/linker/template_ref',
+                      'module': '@angular/core',
                       'name': 'TemplateRef'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '@angular/core/src/change_detection/differs/iterable_differs',
+                      'module': '@angular/core',
                       'name': 'IterableDiffers'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '@angular/core/src/change_detection/change_detector_ref',
+                      'module': '@angular/core',
                       'name': 'ChangeDetectorRef'
                     }
                   ]
@@ -794,7 +790,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                 'expression': {
                   '__symbolic': 'reference',
                   'name': 'Component',
-                  'module': '@angular/core/src/metadata'
+                  'module': '@angular/core'
                 },
                 'arguments': [
                   {
@@ -806,7 +802,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                       'expression': {
                         '__symbolic': 'reference',
                         'name': 'trigger',
-                        'module': '@angular/core/src/animation/metadata'
+                        'module': '@angular/core'
                       },
                       'arguments': [
                         'myAnimation',
@@ -814,7 +810,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                            'expression': {
                              '__symbolic': 'reference',
                              'name': 'state',
-                             'module': '@angular/core/src/animation/metadata'
+                             'module': '@angular/core'
                            },
                            'arguments': [
                              'state1',
@@ -822,7 +818,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                 'expression': {
                                   '__symbolic': 'reference',
                                   'name': 'style',
-                                  'module': '@angular/core/src/animation/metadata'
+                                  'module': '@angular/core'
                                 },
                                 'arguments': [
                                   { 'background':'white' }
@@ -834,7 +830,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                             'expression': {
                               '__symbolic':'reference',
                               'name':'transition',
-                              'module': '@angular/core/src/animation/metadata'
+                              'module': '@angular/core'
                             },
                             'arguments': [
                               '* => *',
@@ -843,20 +839,20 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                 'expression':{
                                   '__symbolic':'reference',
                                   'name':'sequence',
-                                  'module': '@angular/core/src/animation/metadata'
+                                  'module': '@angular/core'
                                 },
                                 'arguments':[[{ '__symbolic': 'call',
                                   'expression': {
                                     '__symbolic':'reference',
                                     'name':'group',
-                                    'module': '@angular/core/src/animation/metadata'
+                                    'module': '@angular/core'
                                   },
                                   'arguments':[[{
                                     '__symbolic': 'call',
                                     'expression': {
                                       '__symbolic':'reference',
                                       'name':'animate',
-                                      'module': '@angular/core/src/animation/metadata'
+                                      'module': '@angular/core'
                                     },
                                     'arguments':[
                                       '1s 0.5s',
@@ -864,13 +860,13 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                         'expression': {
                                           '__symbolic':'reference',
                                           'name':'keyframes',
-                                          'module': '@angular/core/src/animation/metadata'
+                                          'module': '@angular/core'
                                         },
                                         'arguments':[[{ '__symbolic': 'call',
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': '@angular/core/src/animation/metadata'
+                                            'module': '@angular/core'
                                           },
                                           'arguments':[ { 'background': 'blue'} ]
                                         }, {
@@ -878,7 +874,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': '@angular/core/src/animation/metadata'
+                                            'module': '@angular/core'
                                           },
                                           'arguments':[ { 'background': 'red'} ]
                                         }]]
@@ -904,7 +900,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                       'expression': {
                         '__symbolic': 'reference',
                         'name': 'Input',
-                        'module': '@angular/core/src/metadata'
+                        'module': '@angular/core'
                       }
                     }
                   ]
@@ -918,7 +914,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                 '__symbolic': 'call',
                                 'expression': {
                                     '__symbolic': 'reference',
-                                    'module': '@angular/core/src/metadata',
+                                    'module': '@angular/core',
                                     'name': 'HostListener'
                                 },
                                 'arguments': [
@@ -948,7 +944,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                 expression: {
                   __symbolic: 'reference',
                   name: 'Component',
-                  module: '@angular/core/src/metadata'
+                  module: '@angular/core'
                 },
                 arguments: [
                   {
@@ -1149,7 +1145,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       `,
       '/tmp/src/invalid-calls.ts': `
         import {someFunction} from './nvalid-calll-definitions.ts';
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
         import {NgIf} from '@angular/common';
 
         @Component({
@@ -1193,7 +1189,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       `,
       '/tmp/src/static-method-call.ts': `
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
         import {MyModule} from './static-method';
 
         @Component({
@@ -1225,7 +1221,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       `,
       '/tmp/src/static-field-reference.ts': `
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
         import {MyModule} from './static-field';
 
         @Component({
@@ -1239,7 +1235,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       `,
       '/tmp/src/static-method-ref.ts': `
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
         import {ClassWithStatics} from './static-method-def';
 
         @Component({
@@ -1250,7 +1246,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       `,
       '/tmp/src/invalid-metadata.ts': `
-        import {Component} from '@angular/core/src/metadata';
+        import {Component} from '@angular/core';
 
         @Component({
           providers: [ { provider: 'a', useValue: (() => 1)() }]
@@ -1259,8 +1255,8 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       `,
       '/tmp/src/forward-ref.ts': `
         import {forwardRef} from '@angular/core';
-        import {Component} from '@angular/core/src/metadata';
-        import {Inject} from '@angular/core/src/di/metadata';
+        import {Component} from '@angular/core';
+        import {Inject} from '@angular/core';
         @Component({})
         export class Forward {
           constructor(@Inject(forwardRef(() => Dep)) d: Dep) {}

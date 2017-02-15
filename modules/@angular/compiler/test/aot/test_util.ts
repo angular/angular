@@ -7,7 +7,7 @@
  */
 
 import {AotCompilerHost} from '@angular/compiler';
-import {MetadataCollector} from '@angular/tsc-wrapped';
+import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -216,12 +216,15 @@ export class MockCompilerHost implements ts.CompilerHost {
     }
     const effectiveName = this.getEffectiveName(fileName);
     if (effectiveName == fileName) {
-      return open(fileName, this.data) != null;
+      let result = open(fileName, this.data) != null;
+      return result;
     } else {
       if (fileName.match(rxjs)) {
-        return fs.existsSync(effectiveName);
+        let result = fs.existsSync(effectiveName);
+        return result;
       }
-      return this.angular.has(effectiveName);
+      let result = this.angular.has(effectiveName);
+      return result;
     }
   }
 
@@ -386,6 +389,17 @@ export class MockAotCompilerHost implements AotCompilerHost {
 
   loadResource(path: string): Promise<string> {
     return Promise.resolve(this.tsHost.readFile(path));
+  }
+}
+
+export class MockMetadataBundlerHost implements MetadataBundlerHost {
+  private collector = new MetadataCollector();
+
+  constructor(private host: ts.CompilerHost) {}
+
+  getMetadataFor(moduleName: string): ModuleMetadata {
+    const source = this.host.getSourceFile(moduleName + '.ts', ts.ScriptTarget.Latest);
+    return this.collector.getMetadata(source);
   }
 }
 
