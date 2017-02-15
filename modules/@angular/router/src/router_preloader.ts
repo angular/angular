@@ -17,7 +17,7 @@ import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {Route, Routes} from './config';
-import {NavigationEnd, RouteConfigLoaded} from './events';
+import {NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 
@@ -80,8 +80,10 @@ export class RouterPreloader {
   constructor(
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
       private injector: Injector, private preloadingStrategy: PreloadingStrategy) {
-    this.loader = new RouterConfigLoader(
-        moduleLoader, compiler, (r: Route) => router.routerEvents.next(new RouteConfigLoaded(r)));
+    const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
+    const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
+
+    this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
   };
 
   setUpPreloading(): void {

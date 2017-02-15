@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoaded, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -1949,15 +1949,16 @@ describe('Integration', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
             providers: [
-              {provide: 'alwaysFalse', useValue: (a: any) => false}, {
+              {provide: 'alwaysFalse', useValue: (a: any) => false},
+              {
                 provide: 'returnFalseAndNavigate',
                 useFactory: (router: any) => (a: any) => {
                   router.navigate(['blank']);
                   return false;
                 },
-                deps: [Router]
+                deps: [Router],
               },
-              {provide: 'alwaysTrue', useValue: (a: any) => true}
+              {provide: 'alwaysTrue', useValue: (a: any) => true},
             ]
           });
         });
@@ -1999,7 +2000,7 @@ describe('Integration', () => {
 
                  expectEvents(recordedEvents, [
                    [NavigationStart, '/lazyFalse/loaded'],
-                   [NavigationCancel, '/lazyFalse/loaded']
+                   [NavigationCancel, '/lazyFalse/loaded'],
                  ]);
 
                  recordedEvents.splice(0);
@@ -2011,8 +2012,11 @@ describe('Integration', () => {
                  expect(location.path()).toEqual('/lazyTrue/loaded');
 
                  expectEvents(recordedEvents, [
-                   [NavigationStart, '/lazyTrue/loaded'], [RouteConfigLoaded, undefined],
-                   [RoutesRecognized, '/lazyTrue/loaded'], [NavigationEnd, '/lazyTrue/loaded']
+                   [NavigationStart, '/lazyTrue/loaded'],
+                   [RouteConfigLoadStart],
+                   [RouteConfigLoadEnd],
+                   [RoutesRecognized, '/lazyTrue/loaded'],
+                   [NavigationEnd, '/lazyTrue/loaded'],
                  ]);
                })));
 
@@ -2299,13 +2303,13 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
-    it('should emit RouteConfigLoaded event when route is lazy loaded',
+    it('should emit RouteConfigLoadStart and RouteConfigLoadEnd event when route is lazy loaded',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Component({
                selector: 'lazy',
-               template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
+               template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
              })
              class ParentLazyLoadedComponent {
              }
@@ -2319,16 +2323,16 @@ describe('Integration', () => {
                imports: [RouterModule.forChild([{
                  path: 'loaded',
                  component: ParentLazyLoadedComponent,
-                 children: [{path: 'child', component: ChildLazyLoadedComponent}]
+                 children: [{path: 'child', component: ChildLazyLoadedComponent}],
                }])]
              })
              class LoadedModule {
              }
 
-             const events: RouteConfigLoaded[] = [];
+             const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
 
              router.events.subscribe(e => {
-               if (e instanceof RouteConfigLoaded) {
+               if (e instanceof RouteConfigLoadStart || e instanceof RouteConfigLoadEnd) {
                  events.push(e);
                }
              });
@@ -2340,8 +2344,9 @@ describe('Integration', () => {
              router.navigateByUrl('/lazy/loaded/child');
              advance(fixture);
 
-             expect(events.length).toEqual(1);
-             expect(events[0].route.path).toEqual('lazy');
+             expect(events.length).toEqual(2);
+             expect(events[0].toString()).toEqual('RouteConfigLoadStart(path: lazy)');
+             expect(events[1].toString()).toEqual('RouteConfigLoadEnd(path: lazy)');
            })));
 
     it('throws an error when forRoot() is used in a lazy context',
@@ -2535,9 +2540,11 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/');
 
-             expectEvents(
-                 recordedEvents,
-                 [[NavigationStart, '/lazy/loaded'], [NavigationError, '/lazy/loaded']]);
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/lazy/loaded'],
+               [RouteConfigLoadStart],
+               [NavigationError, '/lazy/loaded'],
+             ]);
            })));
 
     it('should work with complex redirect rules',

@@ -70,7 +70,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoaded;
+export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd;
 
 /** @stable */
 export interface ExtraOptions {
@@ -200,7 +200,14 @@ export interface Route {
 }
 
 /** @experimental */
-export declare class RouteConfigLoaded {
+export declare class RouteConfigLoadEnd {
+    route: Route;
+    constructor(route: Route);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class RouteConfigLoadStart {
     route: Route;
     constructor(route: Route);
     toString(): string;

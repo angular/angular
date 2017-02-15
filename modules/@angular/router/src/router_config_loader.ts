@@ -30,14 +30,24 @@ export class LoadedRouterConfig {
 export class RouterConfigLoader {
   constructor(
       private loader: NgModuleFactoryLoader, private compiler: Compiler,
-      private onLoadListener: (r: Route) => void) {}
+      private onLoadStartListener?: (r: Route) => void,
+      private onLoadEndListener?: (r: Route) => void) {}
 
   load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
+    if (this.onLoadStartListener) {
+      this.onLoadStartListener(route);
+    }
+
     const moduleFactory$ = this.loadModuleFactory(route.loadChildren);
+
     return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
+      if (this.onLoadEndListener) {
+        this.onLoadEndListener(route);
+      }
+
       const module = factory.create(parentInjector);
       const injectorFactory = (parent: Injector) => factory.create(parent).injector;
-      this.onLoadListener(route);
+
       return new LoadedRouterConfig(
           flatten(module.injector.get(ROUTES)), module.injector, module.componentFactoryResolver,
           injectorFactory);

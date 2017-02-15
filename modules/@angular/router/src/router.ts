@@ -26,7 +26,7 @@ import {QueryParamsHandling, ResolveData, Route, Routes, validateConfig} from '.
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
-import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoaded, RoutesRecognized} from './events';
+import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {recognize} from './recognize';
 import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
@@ -208,8 +208,7 @@ export class Router {
   private rawUrlTree: UrlTree;
 
   private navigations = new BehaviorSubject<NavigationParams>(null);
-  /** @internal */
-  routerEvents = new Subject<Event>();
+  private routerEvents = new Subject<Event>();
 
   private currentRouterState: RouterState;
   private locationSubscription: Subscription;
@@ -243,11 +242,14 @@ export class Router {
       private rootComponentType: Type<any>, private urlSerializer: UrlSerializer,
       private outletMap: RouterOutletMap, private location: Location, private injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
+    const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
+    const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
+
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
-    this.configLoader = new RouterConfigLoader(
-        loader, compiler, (r: Route) => this.routerEvents.next(new RouteConfigLoaded(r)));
+
+    this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
     this.processNavigations();
   }
@@ -296,6 +298,9 @@ export class Router {
 
   /** An observable of router events */
   get events(): Observable<Event> { return this.routerEvents; }
+
+  /** @internal */
+  triggerEvent(e: Event) { this.routerEvents.next(e); }
 
   /**
    * Resets the configuration used for navigation and generating links.
