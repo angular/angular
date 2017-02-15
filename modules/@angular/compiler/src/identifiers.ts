@@ -368,6 +368,12 @@ export class Identifiers {
       {name: 'ɵviewEngine', moduleUrl: CORE, member: 'pipeDef', runtime: ɵviewEngine.pipeDef};
   static nodeValue: IdentifierSpec =
       {name: 'ɵviewEngine', moduleUrl: CORE, member: 'nodeValue', runtime: ɵviewEngine.nodeValue};
+  static ngContentDef: IdentifierSpec = {
+    name: 'ɵviewEngine',
+    moduleUrl: CORE,
+    member: 'ngContentDef',
+    runtime: ɵviewEngine.ngContentDef
+  };
   static unwrapValue: IdentifierSpec = {
     name: 'ɵviewEngine',
     moduleUrl: CORE,
