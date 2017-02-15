@@ -3,9 +3,11 @@ import {
   DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation
 } from '@angular/core';
 
-import { Doc, DocMetadata, DocMetadataService, NavNode } from '../nav-engine';
-import { EmbeddedComponents } from '../embedded';
+import { Doc, DocMetadata, NavNode } from '../doc-manager';
+import { DocMetadataService } from '../doc-manager/doc-metadata.service';
 
+import { EmbeddedComponents } from '../embedded';
+console.log()
 interface EmbeddedComponentFactory {
   contentPropertyName: string;
   factory: ComponentFactory<any>;

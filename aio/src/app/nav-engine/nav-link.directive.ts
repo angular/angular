@@ -1,4 +1,4 @@
-import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, HostBinding, Input } from '@angular/core';
 import { NavEngine } from './nav-engine.service';
 
 @Directive({
@@ -7,6 +7,7 @@ import { NavEngine } from './nav-engine.service';
 export class NavLinkDirective {
 
   @Input()
+  @HostBinding('attr.href')
   aioNavLink: string;
 
   constructor(private navEngine: NavEngine) { }

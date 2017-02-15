@@ -10,7 +10,7 @@ import { Doc, NavNode } from './doc.model';
 import { DocFetchingService } from './doc-fetching.service';
 import { Logger } from '../logger.service';
 
-import { NavMapService } from './nav-map.service';
+//import { NavMapService } from './nav-map.service';
 
 @Injectable()
 export class DocService {
@@ -28,6 +28,7 @@ export class DocService {
    * Constructs and caches a "Not Found" doc when fileservice returns a doc with no content.
    */
   getDoc(docId: string): Observable<Doc> {
+    console.log('getting docId', docId)
     const cached = this.cache.get(docId);
     if (cached) {
       this.logger.log(`Returned cached document for '${docId}'`);

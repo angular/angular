@@ -5,8 +5,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/delay';
 
-import { DocFetchingService } from './doc-fetching.service';
-import { NavNode, NavMap } from './doc.model';
+import { DocFetchingService, NavNode, NavMap } from '../doc-manager';
 import { NavMapService } from './nav-map.service';
 
 import { getTestNavMapResponse } from '../../testing/nav-map-json-response';

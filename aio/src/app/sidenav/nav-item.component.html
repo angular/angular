@@ -1,5 +1,5 @@
 <div *ngIf="isItem">
-  <a href={{href}} [ngClass]="classes" target={{target}} title={{tooltip}}
+  <a aioNavLink="{{href}}" [ngClass]="classes" target={{target}} title={{tooltip}}
     (click)="itemClicked()" class="vertical-menu">
     {{label}}
   </a>
@@ -14,6 +14,6 @@
   </a>
   <div class="heading-children" [ngClass]="classes">
     <aio-navitem *ngFor="let node of node.children" [level]="level + 1"
-    [node]="node" [selectedNode]="selectedNode"></aio-navitem>
+    [node]="node" [selectedNode]="selectedNode" (select)="itemClicked($event)"></aio-navitem>
   </div>
 </div>

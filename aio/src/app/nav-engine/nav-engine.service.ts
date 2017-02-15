@@ -1,29 +1,50 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Inject } from '@angular/core';
+import { Location, LocationChangeEvent, APP_BASE_HREF } from '@angular/common';
 
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
-import { Doc } from './doc.model';
-import { DocService } from './doc.service';
+import 'rxjs/add/operator/merge'
+import 'rxjs/add/operator/mergeMap'
+import 'rxjs/add/operator/concat'
+import 'rxjs/add/operator/scan'
+import 'rxjs/add/observable/from'
+import 'rxjs/add/operator/publishReplay'
 
 @Injectable()
 export class NavEngine implements OnDestroy {
-
-  private docSubject = new ReplaySubject<Doc>(1);
+  private _navigationEvents:Subject<string> = new Subject<string>();
   private subscription: Subscription;
 
-  /** Observable of the most recent document from a `navigate` call */
-  currentDoc = this.docSubject.asObservable();
+  currentUrl: Observable<string>;
 
-  constructor(private docService: DocService) {}
+  constructor(
+    private location:Location,
+    @Inject(APP_BASE_HREF) baseHref:string,
+  ) {
+
+    const currentUrl = this._navigationEvents
+      .do(url => location.go(url))
+      .merge(
+        Observable.of(location.path()),
+        Observable.create(obs => this.location.subscribe(e => obs.next(e.url)))
+
+      )
+      .map(p => location.normalize(p))
+      .publishReplay(1);
+
+    this.subscription = currentUrl.connect();
+
+    this.currentUrl = currentUrl;
+  }
 
   /**
    * Navigate pushes new doc for the given `id` into the `currentDoc` observable.
    * TODO: handle document retrieval error
    */
   navigate(docId: string) {
-    this.ngOnDestroy();
-    this.subscription = this.docService.getDoc(docId).subscribe(doc => this.docSubject.next(doc));
+    this._navigationEvents.next(this.location.normalize(docId));
   }
 
   ngOnDestroy() {

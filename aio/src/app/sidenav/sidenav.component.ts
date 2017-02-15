@@ -5,8 +5,9 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
-
-import { Doc, NavEngine, NavMap, NavMapService, NavNode } from '../nav-engine';
+import 'rxjs/add/operator/combineLatest';
+import { Doc, NavMap, NavNode, DocService } from '../doc-manager';
+import { NavEngine, NavMapService} from '../nav-engine'
 
 @Component({
   selector: 'aio-sidenav',
@@ -23,36 +24,32 @@ export class SidenavComponent implements OnInit {
   currentDocId: string;
   isSideBySide = false;
   nodes: Observable<NavNode[]>;
-  selectedNode = new EventEmitter<NavNode>();
+  selectedNode:NavNode;
   sideBySideWidth = 600;
   windowWidth = 0;
 
   constructor(
     private navEngine: NavEngine,
-    private navMapService: NavMapService ) {}
+    private docService: DocService,
+    private navMapService: NavMapService )
+  {
+    this.nodes = this.navMapService.navMap.map( navMap => navMap.nodes );
+
+    const currentDoc = this.navEngine.currentUrl
+    .switchMap(url => this.docService.getDoc(url))
+    .publishReplay(1);
+
+    currentDoc.connect();
+
+    this.currentDoc = currentDoc;
+  }
 
   ngOnInit() {
     this.onResize(window.innerWidth);
-
-    this.nodes = this.navMapService.navMap.map( navMap => navMap.nodes );
-
-    this.currentDoc = this.navEngine.currentDoc
-      .do(doc => {
-        // Side effect: when the current doc changes,
-        // get its NavNode and alert the navigation panel
-        this.currentDocId = doc.metadata.docId;
-        this.navMapService.navMap.first() // take makes sure it completes!
-        .map(navMap => navMap.docs.get(this.currentDocId))
-        .subscribe( node => this.selectedNode.emit(node));
-      });
-
-    this.selectedNode.subscribe((node: NavNode) => {
-      // Navigate when the user selects a doc other than the current doc
-      const docId = node && node.docId;
-      if (docId && docId !== this.currentDocId) {
-        this.navEngine.navigate(docId);
-      }
-    });
+  }
+  onSelect(node:NavNode){
+    console.log('selected', node)
+    this.selectedNode = node;
   }
 
   onResize(width) {

@@ -7,17 +7,17 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 
-import { Doc, NavNode, NavMap } from './doc.model';
-import { DocFetchingService } from './doc-fetching.service';
+import { Doc, NavNode, NavMap } from '../doc-manager';
+import { DocFetchingService } from '../doc-manager';
 import { Logger } from '../logger.service';
 
 const navMapUrl = 'content/navmap.json';
 
 @Injectable()
 export class NavMapService {
-
+  navMap: Observable<NavMap>;
+  selectedNo
   private getDocPath: (string) => string;
-  private navMapSubject: ReplaySubject<NavMap>;
   private nextNodeId = 1;
 
   constructor(
@@ -25,24 +25,12 @@ export class NavMapService {
     private http: Http,
     private logger: Logger) {
       this.getDocPath = docFetchingService.getPath.bind(docFetchingService);
+      this.navMap = this.http.get(navMapUrl)
+      .do(() => this.logger.log(`Fetched navigation map JSON at '${navMapUrl}'`))
+      .map(res => this.createNavMap(res.json().nodes))
     }
 
-  get navMap(): Observable<NavMap> {
-    return (this.navMapSubject ? this.navMapSubject : this.createNavMapSubject()).asObservable() ;
-  }
-
-  private createNavMapSubject(): ReplaySubject<NavMap> {
-    this.navMapSubject = new ReplaySubject<NavMap>(1);
-
-    this.http.get(navMapUrl)
-      .map(res => res.json().nodes)
-      .do(() => this.logger.log(`Fetched navigation map JSON at '${navMapUrl}'`))
-      .subscribe(
-        navNodes => this.navMapSubject.next(this.createNavMap(navNodes))
-      );
-
-    return this.navMapSubject;
-  }
+    selectNode(node:NavNode){}
 
 
   ////// private helper functions ////
@@ -62,7 +50,7 @@ export class NavMapService {
 
     if (node.docId) {
       // This node is associated with a document
-      node.docId = node.docId.toLocaleLowerCase();
+      //node.docId = node.docId.toLocaleLowerCase();
       node.docPath = this.getDocPath(node.docId);
       navMap.docs.set(node.docId, node);
     }

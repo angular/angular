@@ -1,39 +1,37 @@
 import { fakeAsync, tick} from '@angular/core/testing';
-
+import { ReflectiveInjector } from '@angular/core';
+import { Location, LocationStrategy, APP_BASE_HREF } from '@angular/common';
+import { MockLocationStrategy } from '@angular/common/testing';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/delay';
 
-import { DocService } from './doc.service';
-import { Doc, DocMetadata, NavNode } from './doc.model';
-
 import { NavEngine } from './nav-engine.service';
 
 describe('NavEngine', () => {
-
-  let fakeDoc: Doc;
+  let injector: ReflectiveInjector;
+  let location: MockLocationStrategy;
   let navEngine: NavEngine;
 
   beforeEach(() => {
-    fakeDoc = {
-      metadata: {
-        docId: 'fake',
-        title: 'All about the fake'
-      },
-      content: 'fake content'
-    };
 
-    const docService: any = jasmine.createSpyObj('docService', ['getDoc']);
-    docService.getDoc.and.returnValue(of(fakeDoc).delay(0));
+    injector = ReflectiveInjector.resolveAndCreate([
+      { provide: APP_BASE_HREF, useValue: 'http://localhost:4200'},
+      NavEngine,
+      Location,
+      { provide: LocationStrategy, useClass: MockLocationStrategy }
+    ]);
+    navEngine = injector.get(NavEngine);
+    location = injector.get(Location);
 
-    navEngine = new NavEngine(docService);
   });
 
-  it('should set currentDoc to fake doc when navigate to fake id', fakeAsync(() => {
+  it('should set currentUrl fake url when navigate to fake url', fakeAsync(() => {
     navEngine.navigate('fake');
-    navEngine.currentDoc.subscribe(doc =>
-      expect(doc.content).toBe(fakeDoc.content)
-    );
     tick();
+    navEngine.currentUrl.subscribe(url => {
+      expect(url).toBe('fake');
+    });
   }));
+
 });
