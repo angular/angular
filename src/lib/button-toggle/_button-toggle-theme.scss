@@ -18,5 +18,9 @@
   .mat-button-toggle-disabled {
     background-color: map_get($mat-grey, 200);
     color: mat-color($foreground, disabled-button);
+
+    &.mat-button-toggle-checked {
+      background-color: mat-color($mat-grey, 400);
+    }
   }
 }
