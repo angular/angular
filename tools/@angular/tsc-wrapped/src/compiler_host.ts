@@ -51,6 +51,7 @@ export abstract class DelegatingHost implements ts.CompilerHost {
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
+const DTS = /\.d\.ts$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector({quotedNames: true});
@@ -108,6 +109,48 @@ export class MetadataWriterHost extends DelegatingHost {
         if (sourceFiles.length > 1) {
           throw new Error('Bundled emit with --out is not supported');
         }
-        this.writeMetadata(fileName, sourceFiles[0]);
+        if (!this.ngOptions.skipMetadataEmit && !this.ngOptions.bundleIndex) {
+          this.writeMetadata(fileName, sourceFiles[0]);
+        }
       }
+}
+
+export class SyntheticIndexHost extends DelegatingHost {
+  constructor(
+      delegate: ts.CompilerHost,
+      private syntheticIndex: {name: string, content: string, metadata: string}) {
+    super(delegate);
+  }
+
+  fileExists = (fileName: string):
+      boolean => {
+        return fileName == this.syntheticIndex.name || this.delegate.fileExists(fileName);
+      }
+
+  readFile =
+      (fileName: string) => {
+        return fileName == this.syntheticIndex.name ? this.syntheticIndex.content :
+                                                      this.delegate.readFile(fileName);
+      }
+
+  getSourceFile =
+      (fileName: string, languageVersion: ts.ScriptTarget,
+       onError?: (message: string) => void) => {
+        if (fileName == this.syntheticIndex.name) {
+          return ts.createSourceFile(fileName, this.syntheticIndex.content, languageVersion, true);
+        }
+        return this.delegate.getSourceFile(fileName, languageVersion, onError);
+      }
+
+                                               writeFile: ts.WriteFileCallback =
+          (fileName: string, data: string, writeByteOrderMark: boolean,
+           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+            this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+            if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
+                sourceFiles[0].fileName == this.syntheticIndex.name) {
+              // If we are writing the synthetic index, write the metadata along side.
+              const metadataName = fileName.replace(DTS, '.metadata.json');
+              writeFileSync(metadataName, this.syntheticIndex.metadata, 'utf8');
+            }
+          }
 }
