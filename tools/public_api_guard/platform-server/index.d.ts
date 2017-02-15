@@ -2,6 +2,12 @@
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 /** @experimental */
+export interface PlatformConfig {
+    document?: string;
+    url?: string;
+}
+
+/** @experimental */
 export declare const platformDynamicServer: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
