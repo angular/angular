@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, tokenReference} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, componentRenderTypeName, identifierModuleUrl, identifierName, tokenReference, viewClassName} from '../compile_metadata';
 import {BuiltinConverter, BuiltinConverterFactory, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
@@ -20,7 +20,6 @@ import {convertValueToOutputAst} from '../output/value_util';
 import {LifecycleHooks, viewEngine} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
-import {ViewEncapsulationEnum} from '../view_compiler/constants';
 import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
 const CLASS_ATTR = 'class';
@@ -44,19 +43,33 @@ export class ViewCompilerNext extends ViewCompiler {
     let embeddedViewCount = 0;
     const staticQueryIds = findStaticQueryIds(template);
 
+    const statements: o.Statement[] = [];
+
+    const renderComponentVar = o.variable(componentRenderTypeName(component.type.reference));
+    statements.push(
+        renderComponentVar
+            .set(o.importExpr(createIdentifier(Identifiers.createComponentRenderTypeV2)).callFn([
+              new o.LiteralMapExpr([
+                new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
+                new o.LiteralMapEntry('styles', styles),
+                // TODO: copy this from the @Component directive...
+                new o.LiteralMapEntry('data', o.literalMap([])),
+              ])
+            ]))
+            .toDeclStmt());
+
     const viewBuilderFactory = (parent: ViewBuilder): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
-      const viewName = `view_${compName}_${embeddedViewIndex}`;
+      const viewName = viewClassName(component.type.reference, embeddedViewIndex);
       return new ViewBuilder(parent, viewName, usedPipes, staticQueryIds, viewBuilderFactory);
     };
 
     const visitor = viewBuilderFactory(null);
     visitor.visitAll([], template);
 
-    const statements: o.Statement[] = [];
     statements.push(...visitor.build(component));
 
-    return new ViewCompileResult(statements, visitor.viewName, []);
+    return new ViewCompileResult(statements, visitor.viewName, renderComponentVar.name, []);
   }
 }
 
@@ -458,9 +471,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       }
     });
 
+    let compRenderType = o.NULL_EXPR;
     let compView = o.NULL_EXPR;
     if (directiveAst.directive.isComponent) {
       compView = o.importExpr({reference: directiveAst.directive.componentViewType});
+      compRenderType = o.importExpr({reference: directiveAst.directive.componentRenderType});
     }
 
     const inputDefs = directiveAst.inputs.map((inputAst, inputIndex) => {
@@ -507,7 +522,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       o.literal(childCount), providerExpr, depsExpr,
       inputDefs.length ? new o.LiteralMapExpr(inputDefs) : o.NULL_EXPR,
-      outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR, compView
+      outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR, compView, compRenderType
     ]);
     this.nodeDefs[nodeIndex] = nodeDef;
 

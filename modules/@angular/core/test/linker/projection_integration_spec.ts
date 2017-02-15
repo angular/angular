@@ -378,7 +378,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
     });
 
-    if (!viewEngine && getDOM().supportsNativeShadowDOM()) {
+    if (getDOM().supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component', () => {
         TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
         TestBed.overrideComponent(MainComp, {
@@ -396,7 +396,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
       });
     }
 
-    if (!viewEngine && getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       it('should support non emulated styles', () => {
         TestBed.configureTestingModule({declarations: [OtherComp]});
         TestBed.overrideComponent(MainComp, {
