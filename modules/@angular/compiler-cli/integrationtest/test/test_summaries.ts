@@ -31,8 +31,9 @@ function main() {
 
   class AssertingHostContext extends NodeCompilerHostContext {
     readFile(fileName: string): string {
-      if (/.*\/node_modules\/.*/.test(fileName) && !/.*ngsummary\.json$/.test(fileName)) {
-        // Only allow to read summaries from node_modules
+      if (/.*\/node_modules\/.*/.test(fileName) && !/.*ngsummary\.json$/.test(fileName) &&
+          !/package\.json$/.test(fileName)) {
+        // Only allow to read summaries and package.json files from node_modules
         return null;
       }
       readFiles.push(path.relative(basePath, fileName));
