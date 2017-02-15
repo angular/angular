@@ -421,14 +421,10 @@ export class Router {
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    if (url instanceof UrlTree) {
-      return this.scheduleNavigation(
-          this.urlHandlingStrategy.merge(url, this.rawUrlTree), 'imperative', extras);
-    }
+    const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
+    const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    const urlTree = this.urlSerializer.parse(url);
-    return this.scheduleNavigation(
-        this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), 'imperative', extras);
+    return this.scheduleNavigation(mergedTree, 'imperative', extras);
   }
 
   /**
@@ -517,8 +513,8 @@ export class Router {
     }
 
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
-    // hashchange)
-    // every single time. The second one should be ignored. Otherwise, the URL will flicker.
+    // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
+    // flicker.
     if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return null;  // return value is not used
