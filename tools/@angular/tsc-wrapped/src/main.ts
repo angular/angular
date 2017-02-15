@@ -14,11 +14,14 @@ import * as ts from 'typescript';
 import {check, tsc} from './tsc';
 
 import NgOptions from './options';
-import {MetadataWriterHost} from './compiler_host';
+import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
 import {CliOptions} from './cli_options';
 import {VinylFile, isVinylFile} from './vinyl_file';
-
+import {MetadataBundler, CompilerHostAdapter} from './bundler';
+import {privateEntriesToIndex} from './index_writer';
 export {UserError} from './tsc';
+
+const DTS = /\.d\.ts$/;
 
 export type CodegenExtension =
     (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>
@@ -49,12 +52,45 @@ export function main(
     const diagnostics = (parsed.options as any).diagnostics;
     if (diagnostics) (ts as any).performance.enable();
 
-    const host = ts.createCompilerHost(parsed.options, true);
+    let host = ts.createCompilerHost(parsed.options, true);
 
     // HACK: patch the realpath to solve symlink issue here:
     // https://github.com/Microsoft/TypeScript/issues/9552
     // todo(misko): remove once facade symlinks are removed
     host.realpath = (path) => path;
+
+    // If the comilation is a bundle index then produce the bundle index metadata and
+    // the synthetic bundle index.
+    if (ngOptions.bundleIndex && !ngOptions.skipMetadataEmit) {
+      const files = parsed.fileNames.filter(f => !DTS.test(f));
+      if (files.length != 1 && (!ngOptions.libraryIndex || files.length < 1)) {
+        check([{
+          file: null,
+          start: null,
+          length: null,
+          messageText:
+              'Angular compiler option "bundleIndex" requires one and only one .ts file in the "files" field or "libraryIndex" to also be specified in order to select which module to use as the library index',
+          category: ts.DiagnosticCategory.Error,
+          code: 0
+        }]);
+      }
+      const file = files[0];
+      const indexModule = file.replace(/\.ts$/, '');
+      const libraryIndexModule = ngOptions.libraryIndex ?
+          MetadataBundler.resolveModule(ngOptions.libraryIndex, indexModule) :
+          indexModule;
+      const bundler =
+          new MetadataBundler(indexModule, ngOptions.importAs, new CompilerHostAdapter(host));
+      if (diagnostics) console.time('NG bundle index');
+      const metadataBundle = bundler.getMetadataBundle();
+      if (diagnostics) console.timeEnd('NG bundle index');
+      const metadata = JSON.stringify(metadataBundle.metadata);
+      const name = path.join(path.dirname(libraryIndexModule), ngOptions.bundleIndex + '.ts');
+      const libraryIndex = ngOptions.libraryIndex || `./${path.basename(indexModule)}`;
+      const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
+      host = new SyntheticIndexHost(host, {name, content, metadata});
+      parsed.fileNames.push(name);
+    }
 
     const program = createProgram(host);
     const errors = program.getOptionsDiagnostics();
