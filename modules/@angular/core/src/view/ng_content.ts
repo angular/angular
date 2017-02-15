@@ -7,7 +7,7 @@
  */
 
 import {NodeDef, NodeType, ViewData, asElementData} from './types';
-import {RenderNodeAction, visitProjectedRenderNodes} from './util';
+import {RenderNodeAction, getParentRenderElement, visitProjectedRenderNodes} from './util';
 
 export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
   return {
@@ -16,13 +16,16 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags: 0,
-    matchedQueries: {}, ngContentIndex,
+    childFlags: 0,
+    childMatchedQueries: 0,
+    matchedQueries: {},
+    matchedQueryIds: 0,
+    references: {}, ngContentIndex,
     childCount: 0,
     bindings: [],
     disposableCount: 0,
@@ -36,11 +39,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
 }
 
 export function appendNgContent(view: ViewData, renderHost: any, def: NodeDef) {
-  if (def.ngContentIndex != null) {
-    // Do nothing if we are reprojected!
-    return;
-  }
-  const parentEl = def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
+  const parentEl = getParentRenderElement(view, renderHost, def);
   if (!parentEl) {
     // Nothing to do if there is no parent element.
     return;

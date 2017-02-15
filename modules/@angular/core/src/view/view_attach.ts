@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {dirtyParentQuery} from './query';
+import {dirtyParentQueries} from './query';
 import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, ViewData, asElementData, asProviderData, asTextData} from './types';
 import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, rootRenderNodes, visitProjectedRenderNodes, visitRootRenderNodes} from './util';
 
@@ -25,9 +25,7 @@ export function attachEmbeddedView(elementData: ElementData, viewIndex: number, 
     projectedViews.push(view);
   }
 
-  for (let queryId in view.def.nodeMatchedQueries) {
-    dirtyParentQuery(queryId, view);
-  }
+  dirtyParentQueries(view);
 
   const prevView = viewIndex > 0 ? embeddedViews[viewIndex - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
@@ -47,9 +45,7 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
     removeFromArray(projectedViews, projectedViews.indexOf(view));
   }
 
-  for (let queryId in view.def.nodeMatchedQueries) {
-    dirtyParentQuery(queryId, view);
-  }
+  dirtyParentQueries(view);
 
   renderDetachEmbeddedView(elementData, view);
 
@@ -69,9 +65,7 @@ export function moveEmbeddedView(
   // Note: Don't need to change projectedViews as the order in there
   // as always invalid...
 
-  for (let queryId in view.def.nodeMatchedQueries) {
-    dirtyParentQuery(queryId, view);
-  }
+  dirtyParentQueries(view);
 
   renderDetachEmbeddedView(elementData, view);
   const prevView = newViewIndex > 0 ? embeddedViews[newViewIndex - 1] : null;

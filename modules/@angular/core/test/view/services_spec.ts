@@ -39,7 +39,7 @@ export function main() {
           directiveDef(
               NodeFlags.None, null, 0, AComp, [], null, null,
               () => compViewDef([
-                elementDef(NodeFlags.None, [['#ref', QueryValueType.ElementRef]], null, 2, 'span'),
+                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null, 2, 'span'),
                 directiveDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
               ])),
         ]));

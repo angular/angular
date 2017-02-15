@@ -170,7 +170,7 @@ export class DirectiveAst implements TemplateAst {
   constructor(
       public directive: CompileDirectiveSummary, public inputs: BoundDirectivePropertyAst[],
       public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
-      public sourceSpan: ParseSourceSpan) {}
+      public contentQueryStartId: number, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitDirective(this, context);
   }
@@ -241,17 +241,8 @@ export enum PropertyBindingType {
   Animation
 }
 
-/**
- * This id differentiates a query on an element from any query on any child.
- */
-export interface QueryId {
-  elementDepth: number;
-  directiveIndex: number;
-  queryIndex: number;
-}
-
 export interface QueryMatch {
-  query: QueryId;
+  queryId: number;
   value: CompileTokenMetadata;
 }
 
