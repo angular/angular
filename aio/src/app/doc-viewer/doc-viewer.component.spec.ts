@@ -4,7 +4,7 @@ import { Component, DebugElement } from '@angular/core';
 
 import { ComponentFactoryResolver, ElementRef, Injector, NgModule, OnInit, ViewChild } from '@angular/core';
 
-import { Doc, DocMetadata } from '../nav-engine';
+import { Doc, NavigationNode } from '../nav-engine';
 import { DocViewerComponent } from '../doc-viewer/doc-viewer.component';
 
 import { embeddedComponents, EmbeddedComponents } from '../embedded';
@@ -101,7 +101,7 @@ class TestComponent {
 //////// Tests //////////////
 
 describe('DocViewerComponent', () => {
-  const mockDocMetadata: DocMetadata = { id: 'mock', title: 'Mock Doc', url: '' };
+  const fakeDocMetadata = { id: 'mock', title: 'Mock Doc', path: '' } as NavigationNode;
   let component: TestComponent;
   let docViewerDE: DebugElement;
   let docViewerEl: HTMLElement;
@@ -135,21 +135,21 @@ describe('DocViewerComponent', () => {
   });
 
   it(('should display nothing when set DocViewer.doc to doc w/o content'), () => {
-    component.docViewer.doc = { metadata: mockDocMetadata, content: '' };
+    component.docViewer.doc = { node: fakeDocMetadata, content: '' };
     expect(docViewerEl.innerHTML).toBe('');
   });
 
   it(('should display simple static content doc'), () => {
     const content = '<p>Howdy, doc viewer</p>';
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
     expect(docViewerEl.innerHTML).toEqual(content);
   });
 
   it(('should display nothing after reset static content doc'), () => {
     const content = '<p>Howdy, doc viewer</p>';
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
     fixture.detectChanges();
-    component.docViewer.doc = { metadata: mockDocMetadata, content: '' };
+    component.docViewer.doc = { node: fakeDocMetadata, content: '' };
     expect(docViewerEl.innerHTML).toEqual('');
   });
 
@@ -159,7 +159,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Below Foo</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
     const fooHtml = docViewerEl.querySelector('aio-foo').innerHTML;
     expect(fooHtml).toContain('Foo Component');
   });
@@ -174,7 +174,7 @@ describe('DocViewerComponent', () => {
       </div>
       <p>Below Foo</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
     const foos = docViewerEl.querySelectorAll('aio-foo');
     expect(foos.length).toBe(2);
   });
@@ -185,7 +185,7 @@ describe('DocViewerComponent', () => {
       <aio-bar></aio-bar>
       <p>Below Bar</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
     const barHtml = docViewerEl.querySelector('aio-bar').innerHTML;
     expect(barHtml).toContain('Bar Component');
   });
@@ -196,7 +196,7 @@ describe('DocViewerComponent', () => {
       <aio-bar>###bar content###</aio-bar>
       <p>Below Bar</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
 
     // necessary to trigger projection within ngOnInit
     fixture.detectChanges();
@@ -214,7 +214,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Bottom</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -237,7 +237,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo><p>
       <p>Bottom</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -261,7 +261,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Bottom</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -289,7 +289,7 @@ describe('DocViewerComponent', () => {
       <p><aio-baz>---More baz--</aio-baz></p>
       <p>Bottom</p>
     `;
-    component.docViewer.doc = { metadata: mockDocMetadata, content };
+    component.docViewer.doc = { node: fakeDocMetadata, content };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();

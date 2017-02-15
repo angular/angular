@@ -1,0 +1,136 @@
+{
+  "menu": {
+    "children": [
+      {
+        "path": "home",
+        "title": "Home",
+        "tooltip": ""
+      },
+      {
+        "path": "features",
+        "title": "Features",
+        "tooltip": ""
+      },
+      {
+        "path": "news",
+        "title": "News",
+        "tooltip": ""
+      },
+      {
+        "id": "menu-quickstart",
+        "path": "guide/quickstart",
+        "title": "Getting started",
+        "tooltip": ""
+      }
+    ]
+  },
+
+  "quickstart": {
+    "path": "guide/quickstart",
+    "primary": true,
+    "title": "Quickstart",
+    "tooltip": "A quick look at an Angular app."
+  },
+
+  "cli-quickstart": {
+    "path": "guide/cli-quickstart",
+    "title": "CLI Quickstart",
+    "tooltip": "A quick look at an Angular app built with the Angular CLI."
+  },
+
+  "tutorial": {
+    "title": "Tutorial",
+    "children": [
+      {
+        "id": " tutorial",
+        "path": "tutorial/",
+        "title": "Tutorial: Tour of Heroes",
+        "navTitle": "Introduction",
+        "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript."
+      },
+      {
+        "path": "tutorial/toh-1",
+        "title": "The Hero Editor",
+        "tooltip": "Build a simple hero editor."
+      }
+    ]
+  },
+
+  "getting-started": {
+    "title": "Getting started",
+    "children": [
+      {
+        "path": "guide/docs-overview",
+        "title": "Documentation overview",
+        "navTitle": "Overview",
+        "tooltip": "How to read and use this documentation."
+      },
+      {
+        "path": "guide/setup",
+        "title": "Setup for local development",
+        "navTitle": "Setup",
+        "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+      }
+    ]
+  },
+
+  "core": {
+    "title": "Core",
+    "tooltip": "Learn the core capabilities of Angular",
+    "children": [
+      {
+        "path": "guide/ngmodule",
+        "title": "Angular Modules (NgModule)",
+        "tooltip": "Define application modules with @NgModule."
+      },
+      {
+        "title": "Directives",
+        "children": [
+          {
+            "path": "guide/attribute-directives",
+            "title": "Attribute directives",
+            "tooltip": "Attribute directives attach behavior to elements."
+          },
+          {
+            "path": "guide/structural-directives",
+            "title": "Structural directives",
+            "tooltip": "Structural directives manipulate the layout of the page."
+          }
+        ]
+      },
+      {
+        "path": "guide/pipes",
+        "title": "Pipes",
+        "tooltip": "Pipes transform displayed values within a template."
+      }
+    ]
+  },
+
+  "resources": {
+    "title": "Resources",
+    "children": [
+      {
+        "path": "about",
+        "title": "Moving the web forward",
+        "navTitle": "About",
+        "tooltip": "The people behind Angular"
+      }
+    ]
+  },
+
+  "help": {
+    "title": "Help",
+    "children": [
+      {
+        "url": "http://stackoverflow.com/questions/tagged/angular2.html",
+        "title": "Stack Overflow",
+        "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
+      },
+      {
+        "url": "https://gitter.im/angular/angular.html",
+        "title": "Gitter",
+        "tooltip": "Chat about Angular with other birds of a feather"
+      }
+    ]
+  }
+}

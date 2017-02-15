@@ -5,16 +5,16 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/delay';
 
 import { DocService } from './doc.service';
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, NavigationNode } from './doc.model';
 
 import { NavEngine } from './nav-engine.service';
 
 const fakeDoc: Doc = {
-  metadata: {
+  node: {
     id: 'fake',
     title: 'All about the fake',
-    url: 'assets/documents/fake.html'
-  },
+    path: 'content/documents/fake.html'
+  } as NavigationNode,
   content: 'fake content'
 };
 

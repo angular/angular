@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 
 import { DocService } from './doc.service';
-import { Doc, DocMetadata } from './doc.model';
+import { Doc, NavigationNode } from './doc.model';
 import { DocFetchingService } from './doc-fetching.service';
 import { SiteMapService } from './sitemap.service';
 
@@ -13,29 +13,29 @@ import 'rxjs/add/operator/delay';
 describe('DocService', () => {
   let docFetchingService: DocFetchingService;
   let getFileSpy: jasmine.Spy;
+  let fakeDocMetadata: NavigationNode;
   let loggerSpy: any;
-  let siteMapService: SiteMapService;
+  let siteMapServiceSpy: any;
   let docService: DocService;
 
   beforeEach(() => {
 
     this.content = 'fake file contents';
-    this.metadata = {
+    fakeDocMetadata = {
       id: 'fake',
       title: 'All about the fake',
-      url: 'assets/documents/fake.html'
-    };
+      path: 'guide/fake.html'
+    } as NavigationNode;
 
     loggerSpy = jasmine.createSpyObj('logger', ['log', 'warn', 'error']);
-    siteMapService = new SiteMapService();
-    spyOn(siteMapService, 'getDocMetadata').and
-      .callFake((id: string) => of(this.metadata).delay(0));
+    siteMapServiceSpy = jasmine.createSpyObj('SiteMapService', ['getDocMetadata']);
+    siteMapServiceSpy.getDocMetadata.and.returnValue(of(fakeDocMetadata).delay(0));
 
     docFetchingService = new DocFetchingService(null, loggerSpy);
     getFileSpy = spyOn(docFetchingService, 'getFile').and
       .callFake((url: string) => of(this.content).delay(0));
 
-    docService = new DocService(docFetchingService, loggerSpy, siteMapService);
+    docService = new DocService(docFetchingService, loggerSpy, siteMapServiceSpy);
   });
 
   it('should return fake doc for fake id', fakeAsync(() => {
@@ -50,6 +50,12 @@ describe('DocService', () => {
     expect(getFileSpy.calls.count()).toBe(0, 'no call before tick');
     tick();
     expect(getFileSpy.calls.count()).toBe(1, 'one call after tick');
+  }));
+
+  it('should try to get file from expected URL for first file request', fakeAsync(() => {
+    docService.getDoc('fake').subscribe();
+    tick();
+    expect(getFileSpy.calls.argsFor(0)[0]).toBe(fakeDocMetadata.path);
   }));
 
   it('should retrieve file from cache the second time', fakeAsync(() => {

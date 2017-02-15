@@ -3,7 +3,7 @@ import {
   DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation
 } from '@angular/core';
 
-import { Doc, DocMetadata } from '../nav-engine';
+import { Doc, NavigationNode } from '../nav-engine';
 import { EmbeddedComponents } from '../embedded';
 
 interface EmbeddedComponentFactory {
@@ -105,13 +105,13 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
 
 class DisplayedDoc {
 
-  metadata: DocMetadata;
+  node: NavigationNode;
 
   private embeddedComponents: ComponentRef<any>[] = [];
 
   constructor(doc: Doc) {
     // ignore doc.content ... don't need to keep it around
-    this.metadata = doc.metadata;
+    this.node = doc.node;
   }
 
   addEmbeddedComponent(component: ComponentRef<any>) {

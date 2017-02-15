@@ -11,12 +11,12 @@ export class NavEngine {
   constructor(private docService: DocService) {}
 
   /**
-   * Navigate sets `currentDoc` to the document for `documentId`.
+   * Navigate sets `currentDoc` to the document for the given `id`.
    * TODO: handle 'Document not found', signaled by empty string content
    * TODO: handle document retrieval error
    */
-  navigate(documentId: string) {
-    this.docService.getDoc(documentId).subscribe(
+  navigate(id: string) {
+    this.docService.getDoc(id).subscribe(
       doc => this.currentDoc = doc
     );
   }
