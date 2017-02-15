@@ -200,7 +200,7 @@ groups:
         - "modules/@angular/platform-browser/*"
     users:
       - tbosch #primary
-      - vicb
+      - vicb #secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -222,8 +222,7 @@ groups:
         - "modules/@angular/platform-webworker/*"
     users:
       - vicb #primary
-      # needs secondary
-      - tbosch
+      - tbosch #secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
