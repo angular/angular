@@ -20,6 +20,7 @@ import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRendererV2, DebugDomRootRenderer} from
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRendererV2, ServerRootRenderer} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -64,23 +65,6 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
     multi: true
   },
 ];
-
-/**
- * Config object passed to initialize the platform.
- *
- * @experimental
- */
-export interface PlatformConfig {
-  document?: string;
-  url?: string;
-}
-
-/**
- * The DI token for setting the initial config for the platform.
- *
- * @experimental
- */
-export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
 
 /**
  * The ng module for the server.
