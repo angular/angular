@@ -42,7 +42,7 @@ export class ElementRef {
    * </div>
    * @stable
    */
-  public nativeElement: any;
+  public nativeElement: Element;
 
-  constructor(nativeElement: any) { this.nativeElement = nativeElement; }
+  constructor(nativeElement: Element) { this.nativeElement = nativeElement; }
 }
