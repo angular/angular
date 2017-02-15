@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone} from '@angular/core';
+import {Inject, Injectable, NgZone} from '@angular/core';
+
 import {getDOM} from '../dom_adapter';
+import {DOCUMENT} from '../dom_tokens';
+
 import {EventManagerPlugin} from './event_manager';
 
 const MODIFIER_KEYS = ['alt', 'control', 'meta', 'shift'];
@@ -23,7 +26,7 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  constructor() { super(); }
+  constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
 
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 

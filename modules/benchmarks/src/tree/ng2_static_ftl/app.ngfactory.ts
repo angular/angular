@@ -120,8 +120,8 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   get _EVENT_MANAGER_PLUGINS_15(): any[] {
     if ((this.__EVENT_MANAGER_PLUGINS_15 == (null as any))) {
       (this.__EVENT_MANAGER_PLUGINS_15 = [
-        new import20.DomEventsPlugin(), new import21.KeyEventsPlugin(),
-        new import10.HammerGesturesPlugin(this._HAMMER_GESTURE_CONFIG_14)
+        new import20.DomEventsPlugin(document), new import21.KeyEventsPlugin(document),
+        new import10.HammerGesturesPlugin(document, this._HAMMER_GESTURE_CONFIG_14)
       ]);
     }
     return this.__EVENT_MANAGER_PLUGINS_15;
@@ -163,7 +163,7 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   }
   get _DomSanitizer_21(): import14.DomSanitizerImpl {
     if ((this.__DomSanitizer_21 == (null as any))) {
-      (this.__DomSanitizer_21 = new import14.DomSanitizerImpl());
+      (this.__DomSanitizer_21 = new import14.DomSanitizerImpl(document));
     }
     return this.__DomSanitizer_21;
   }
@@ -206,7 +206,7 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   }
   get _Title_27(): import16.Title {
     if ((this.__Title_27 == (null as any))) {
-      (this.__Title_27 = new import16.Title());
+      (this.__Title_27 = new import16.Title(document));
     }
     return this.__Title_27;
   }

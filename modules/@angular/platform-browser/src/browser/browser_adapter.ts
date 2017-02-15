@@ -107,10 +107,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   get attrToPropMap(): any { return _attrToPropMap; }
 
-  query(selector: string): any { return document.querySelector(selector); }
-  querySelector(el: Element, selector: string): HTMLElement {
-    return el.querySelector(selector) as HTMLElement;
-  }
+  querySelector(el: Element, selector: string): any { return el.querySelector(selector); }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
@@ -274,7 +271,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
-  defaultDoc(): HTMLDocument { return document; }
   getBoundingClientRect(el: Element): any {
     try {
       return el.getBoundingClientRect();
@@ -282,8 +278,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }
-  getTitle(): string { return document.title; }
-  setTitle(newTitle: string) { document.title = newTitle || ''; }
+  getTitle(doc: Document): string { return document.title; }
+  setTitle(doc: Document, newTitle: string) { document.title = newTitle || ''; }
   elementMatches(n: any, selector: string): boolean {
     if (n instanceof HTMLElement) {
       return n.matches && n.matches(selector) ||
@@ -330,7 +326,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
     return _keyMap[key] || key;
   }
-  getGlobalEventTarget(target: string): EventTarget {
+  getGlobalEventTarget(doc: Document, target: string): EventTarget {
     if (target === 'window') {
       return window;
     }
@@ -343,7 +339,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getHistory(): History { return window.history; }
   getLocation(): Location { return window.location; }
-  getBaseHref(): string {
+  getBaseHref(doc: Document): string {
     const href = getBaseElementHref();
     return isBlank(href) ? null : relativePath(href);
   }

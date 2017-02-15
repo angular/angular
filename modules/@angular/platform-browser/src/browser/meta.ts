@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {DomAdapter} from '../dom/dom_adapter';
+import {Inject, Injectable} from '@angular/core';
+
+import {DomAdapter, getDOM} from '../dom/dom_adapter';
+import {DOCUMENT} from '../dom/dom_tokens';
+
 
 /**
  * Represents a meta element.
@@ -33,7 +36,8 @@ export type MetaDefinition = {
  */
 @Injectable()
 export class Meta {
-  constructor(private _dom: DomAdapter) {}
+  private _dom: DomAdapter;
+  constructor(@Inject(DOCUMENT) private _doc: any) { this._dom = getDOM(); }
 
   addTag(tag: MetaDefinition, forceCreation: boolean = false): HTMLMetaElement {
     if (!tag) return null;
@@ -52,13 +56,12 @@ export class Meta {
 
   getTag(attrSelector: string): HTMLMetaElement {
     if (!attrSelector) return null;
-    return this._dom.query(`meta[${attrSelector}]`);
+    return this._dom.querySelector(this._doc, `meta[${attrSelector}]`);
   }
 
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
-    const list /*NodeList*/ =
-        this._dom.querySelectorAll(this._dom.defaultDoc(), `meta[${attrSelector}]`);
+    const list /*NodeList*/ = this._dom.querySelectorAll(this._doc, `meta[${attrSelector}]`);
     return list ? [].slice.call(list) : [];
   }
 
@@ -92,7 +95,7 @@ export class Meta {
     }
     const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
     this._setMetaElementAttributes(meta, element);
-    const head = this._dom.getElementsByTagName(this._dom.defaultDoc(), 'head')[0];
+    const head = this._dom.getElementsByTagName(this._doc, 'head')[0];
     this._dom.appendChild(head, element);
     return element;
   }

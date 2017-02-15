@@ -14,7 +14,7 @@ import {DomSanitizerImpl} from '../../src/security/dom_sanitization_service';
 export function main() {
   t.describe('DOM Sanitization Service', () => {
     t.it('accepts resource URL values for resource contexts', () => {
-      const svc = new DomSanitizerImpl();
+      const svc = new DomSanitizerImpl(null);
       const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
       t.expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
     });

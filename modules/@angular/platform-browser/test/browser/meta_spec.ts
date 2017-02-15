@@ -14,9 +14,8 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('Meta service', () => {
-
-    const metaService: Meta = new Meta(getDOM());
-    const doc: HTMLDocument = getDOM().defaultDoc();
+    const doc: HTMLDocument = getDOM().createHtmlDocument();
+    const metaService: Meta = new Meta(doc);
     let defaultMeta: HTMLMetaElement;
 
     beforeEach(() => {

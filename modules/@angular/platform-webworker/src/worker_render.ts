@@ -135,7 +135,7 @@ function _exceptionHandler(): ErrorHandler {
 }
 
 function _document(): any {
-  return getDOM().defaultDoc();
+  return document;
 }
 
 function createNgZone(): NgZone {

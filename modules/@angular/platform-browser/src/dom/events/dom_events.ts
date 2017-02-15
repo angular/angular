@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
+
+import {DOCUMENT} from '../dom_tokens';
+
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
+  constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
+
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
   supports(eventName: string): boolean { return true; }

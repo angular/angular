@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
@@ -60,7 +61,7 @@ export function setupWebWorker(): void {
  */
 @NgModule({
   providers: [
-    BROWSER_SANITIZATION_PROVIDERS, Serializer,
+    BROWSER_SANITIZATION_PROVIDERS, Serializer, {provide: DOCUMENT, useValue: null},
     {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
     WebWorkerRootRenderer, {provide: RootRenderer, useExisting: WebWorkerRootRenderer},

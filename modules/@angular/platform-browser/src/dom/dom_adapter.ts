@@ -53,8 +53,7 @@ export abstract class DomAdapter {
   _attrToPropMap: {[key: string]: string};
 
   abstract parse(templateHtml: string): any /** TODO #9100 */;
-  abstract query(selector: string): any;
-  abstract querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement;
+  abstract querySelector(el: any /** TODO #9100 */, selector: string): any;
   abstract querySelectorAll(el: any /** TODO #9100 */, selector: string): any[];
   abstract on(
       el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): any
@@ -145,10 +144,9 @@ export abstract class DomAdapter {
       /** TODO #9100 */;
   abstract templateAwareRoot(el: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract createHtmlDocument(): HTMLDocument;
-  abstract defaultDoc(): HTMLDocument;
   abstract getBoundingClientRect(el: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract getTitle(): string;
-  abstract setTitle(newTitle: string): any /** TODO #9100 */;
+  abstract getTitle(doc: Document): string;
+  abstract setTitle(doc: Document, newTitle: string): any /** TODO #9100 */;
   abstract elementMatches(n: any /** TODO #9100 */, selector: string): boolean;
   abstract isTemplateElement(el: any): boolean;
   abstract isTextNode(node: any /** TODO #9100 */): boolean;
@@ -164,10 +162,10 @@ export abstract class DomAdapter {
       /** TODO #9100 */;
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
-  abstract getGlobalEventTarget(target: string): any;
+  abstract getGlobalEventTarget(doc: Document, target: string): any;
   abstract getHistory(): History;
   abstract getLocation(): Location;
-  abstract getBaseHref(): string;
+  abstract getBaseHref(doc: Document): string;
   abstract resetBaseElement(): void;
   abstract getUserAgent(): string;
   abstract setData(element: any /** TODO #9100 */, name: string, value: string): any

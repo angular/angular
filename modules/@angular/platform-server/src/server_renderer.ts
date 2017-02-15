@@ -136,7 +136,7 @@ export class ServerRenderer implements Renderer {
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    const renderElement = getDOM().getGlobalEventTarget(target);
+    const renderElement = getDOM().getGlobalEventTarget(this._rootRenderer.document, target);
     return this.listen(renderElement, name, callback);
   }
 

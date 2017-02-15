@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Sanitizer, SecurityContext} from '@angular/core';
+import {Inject, Injectable, Sanitizer, SecurityContext} from '@angular/core';
+
+import {DOCUMENT} from '../dom/dom_tokens';
 
 import {sanitizeHtml} from './html_sanitizer';
 import {sanitizeStyle} from './style_sanitizer';
 import {sanitizeUrl} from './url_sanitizer';
 
 export {SecurityContext};
+
 
 
 /**
@@ -147,6 +150,8 @@ export abstract class DomSanitizer implements Sanitizer {
 
 @Injectable()
 export class DomSanitizerImpl extends DomSanitizer {
+  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+
   sanitize(ctx: SecurityContext, value: any): string {
     if (value == null) return null;
     switch (ctx) {
@@ -155,7 +160,7 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'HTML');
-        return sanitizeHtml(String(value));
+        return sanitizeHtml(this._doc, String(value));
       case SecurityContext.STYLE:
         if (value instanceof SafeStyleImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Style');

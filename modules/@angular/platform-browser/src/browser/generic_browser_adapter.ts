@@ -23,7 +23,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   constructor() {
     super();
     try {
-      const element = this.createElement('div', this.defaultDoc());
+      const element = this.createElement('div', document);
       if (isPresent(this.getStyle(element, 'animationName'))) {
         this._animationPrefix = '';
       } else {
@@ -61,7 +61,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { return true; }
   supportsNativeShadowDOM(): boolean {
-    return typeof(<any>this.defaultDoc().body).createShadowRoot === 'function';
+    return typeof(<any>document.body).createShadowRoot === 'function';
   }
   getAnimationPrefix(): string { return this._animationPrefix ? this._animationPrefix : ''; }
   getTransitionEnd(): string { return this._transitionEnd ? this._transitionEnd : ''; }
