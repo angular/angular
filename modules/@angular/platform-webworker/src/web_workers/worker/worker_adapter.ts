@@ -55,7 +55,6 @@ export class WorkerDomAdapter extends DomAdapter {
   set attrToPropMap(value: {[key: string]: string}) { throw 'not implemented'; }
 
   parse(templateHtml: string) { throw 'not implemented'; }
-  query(selector: string): any { throw 'not implemented'; }
   querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement {
     throw 'not implemented';
   }
@@ -169,10 +168,9 @@ export class WorkerDomAdapter extends DomAdapter {
   }
   templateAwareRoot(el: any /** TODO #9100 */) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
-  defaultDoc(): HTMLDocument { throw 'not implemented'; }
   getBoundingClientRect(el: any /** TODO #9100 */) { throw 'not implemented'; }
-  getTitle(): string { throw 'not implemented'; }
-  setTitle(newTitle: string) { throw 'not implemented'; }
+  getTitle(doc: Document): string { throw 'not implemented'; }
+  setTitle(doc: Document, newTitle: string) { throw 'not implemented'; }
   elementMatches(n: any /** TODO #9100 */, selector: string): boolean { throw 'not implemented'; }
   isTemplateElement(el: any): boolean { throw 'not implemented'; }
   isTextNode(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
@@ -189,10 +187,10 @@ export class WorkerDomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { throw 'not implemented'; }
   supportsNativeShadowDOM(): boolean { throw 'not implemented'; }
-  getGlobalEventTarget(target: string): any { throw 'not implemented'; }
+  getGlobalEventTarget(doc: Document, target: string): any { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }
-  getBaseHref(): string { throw 'not implemented'; }
+  getBaseHref(doc: Document): string { throw 'not implemented'; }
   resetBaseElement(): void { throw 'not implemented'; }
   getUserAgent(): string { throw 'not implemented'; }
   setData(element: any /** TODO #9100 */, name: string, value: string) { throw 'not implemented'; }

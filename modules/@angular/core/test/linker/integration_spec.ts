@@ -21,6 +21,7 @@ import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListe
 import {Renderer} from '@angular/core/src/render';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -838,19 +839,20 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         const template = '<div listener></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
+        const doc = TestBed.get(DOCUMENT);
 
         const tc = fixture.debugElement.children[0];
         const listener = tc.injector.get(DirectiveListeningDomEvent);
-        dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
 
         listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget('document'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
         expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
         fixture.destroy();
         listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget('body'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
         expect(listener.eventTypes).toEqual([]);
       });
 
@@ -990,6 +992,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         const template = '<div *ngIf="ctxBoolProp" listener listenerother></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
+        const doc = TestBed.get(DOCUMENT);
 
         globalCounter = 0;
         fixture.componentInstance.ctxBoolProp = true;
@@ -999,7 +1002,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
 
         const listener = tc.injector.get(DirectiveListeningDomEvent);
         const listenerother = tc.injector.get(DirectiveListeningDomEventOther);
-        dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
         expect(listenerother.eventType).toEqual('other_domEvent');
         expect(globalCounter).toEqual(1);
@@ -1007,12 +1010,12 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
 
         fixture.componentInstance.ctxBoolProp = false;
         fixture.detectChanges();
-        dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(globalCounter).toEqual(1);
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
-        dispatchEvent(getDOM().getGlobalEventTarget('window'), 'domEvent');
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(globalCounter).toEqual(2);
 
         // need to destroy to release all remaining global event listeners

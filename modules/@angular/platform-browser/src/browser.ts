@@ -30,7 +30,8 @@ import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_servic
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
-  {provide: PlatformLocation, useClass: BrowserPlatformLocation}
+  {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+  {provide: DOCUMENT, useFactory: _document, deps: []},
 ];
 
 /**
@@ -59,12 +60,8 @@ export function errorHandler(): ErrorHandler {
   return new ErrorHandler();
 }
 
-export function meta(): Meta {
-  return new Meta(getDOM());
-}
-
 export function _document(): any {
-  return getDOM().defaultDoc();
+  return document;
 }
 
 export function _resolveDefaultAnimationDriver(): AnimationDriver {
@@ -83,7 +80,6 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
   providers: [
     BROWSER_SANITIZATION_PROVIDERS,
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},
-    {provide: DOCUMENT, useFactory: _document, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
@@ -92,11 +88,11 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
     {provide: RootRenderer, useExisting: DomRootRenderer},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
-    {provide: Meta, useFactory: meta},
     DomSharedStylesHost,
     Testability,
     EventManager,
     ELEMENT_PROBE_PROVIDERS,
+    Meta,
     Title,
   ],
   exports: [CommonModule, ApplicationModule]

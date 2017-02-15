@@ -59,7 +59,7 @@ export function main() {
     });
 
     it('should implement addGlobalEventListener', () => {
-      const plugin = new KeyEventsPlugin();
+      const plugin = new KeyEventsPlugin(document);
 
       spyOn(plugin, 'addEventListener').and.callFake(() => {});
 

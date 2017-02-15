@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Inject, Injectable} from '@angular/core';
+
 import {getDOM} from '../dom/dom_adapter';
+import {DOCUMENT} from '../dom/dom_tokens';
+
+
 /**
  * A service that can be used to get and set the title of a current HTML document.
  *
@@ -17,16 +22,18 @@ import {getDOM} from '../dom/dom_adapter';
  *
  * @experimental
  */
+@Injectable()
 export class Title {
+  constructor(@Inject(DOCUMENT) private _doc: any) {}
   /**
    * Get the title of the current HTML document.
    * @returns {string}
    */
-  getTitle(): string { return getDOM().getTitle(); }
+  getTitle(): string { return getDOM().getTitle(this._doc); }
 
   /**
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { getDOM().setTitle(newTitle); }
+  setTitle(newTitle: string) { getDOM().setTitle(this._doc, newTitle); }
 }
