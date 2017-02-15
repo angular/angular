@@ -18,7 +18,6 @@ import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
-import {Renderer} from '@angular/core/src/render';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
@@ -26,7 +25,7 @@ import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util'
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {EventEmitter} from '../../src/facade/async';
-import {isBlank, isPresent, stringify} from '../../src/facade/lang';
+import {stringify} from '../../src/facade/lang';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
@@ -37,18 +36,24 @@ export function main() {
 
   describe('view engine', () => {
     beforeEach(() => {
-      TestBed.configureCompiler(
-          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+      TestBed.configureCompiler({
+        useJit: true,
+        providers: [{
+          provide: USE_VIEW_ENGINE,
+          useValue: true,
+        }],
+      });
     });
 
     declareTests({useJit: true, viewEngine: true});
   });
 }
 
+
 function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolean}) {
   describe('integration tests', function() {
 
-    beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+    beforeEach(() => { TestBed.configureCompiler({useJit}); });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
@@ -1472,7 +1477,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         fixture.detectChanges();
 
         const el = getDOM().querySelector(fixture.nativeElement, 'span');
-        expect(isBlank(el.title) || el.title == '').toBeTruthy();
+        expect(el.title).toBeFalsy();
       });
 
       it('should work when a directive uses hostProperty to update the DOM element', () => {
@@ -2084,8 +2089,7 @@ class ToolbarPart {
 
 @Directive({selector: '[toolbarVc]', inputs: ['toolbarVc']})
 class ToolbarViewContainer {
-  vc: ViewContainerRef;
-  constructor(vc: ViewContainerRef) { this.vc = vc; }
+  constructor(public vc: ViewContainerRef) {}
 
   set toolbarVc(part: ToolbarPart) {
     this.vc.createEmbeddedView(part.templateRef, new ToolbarContext('From toolbar'), 0);
@@ -2098,9 +2102,9 @@ class ToolbarViewContainer {
 })
 class ToolbarComponent {
   @ContentChildren(ToolbarPart) query: QueryList<ToolbarPart>;
-  ctxProp: string;
+  ctxProp: string = 'hello world';
 
-  constructor() { this.ctxProp = 'hello world'; }
+  constructor() {}
 }
 
 @Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
@@ -2238,10 +2242,11 @@ class SomeImperativeViewport {
   }
 
   set someImpvp(value: boolean) {
-    if (isPresent(this.view)) {
+    if (this.view) {
       this.vc.clear();
       this.view = null;
     }
+
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
       const nodes = this.view.rootNodes;

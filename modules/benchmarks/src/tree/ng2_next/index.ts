@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModuleRef, enableProdMode} from '@angular/core';
+import {enableProdMode} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';

@@ -8,7 +8,6 @@
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
 import {ArgumentType, BindingType, NodeCheckFn, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
-import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {createRootView, isBrowser, removeNodes} from './helper';
@@ -182,23 +181,19 @@ export function main() {
           const update = jasmine.createSpy('updater');
 
           const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
-          const {view, rootNodes} =
-              createAndGetRootNodes(
-                  compViewDef(
-                      [
-                        elementDef(NodeFlags.None, null, null, 1, 'div'),
-                        directiveDef(
-                            NodeFlags.None, null, 0, AComp, [], {a: [0, 'a']}, null,
-                            () =>
-                                compViewDef(
-                                    [
-                                      elementDef(NodeFlags.None, null, null, 0, 'span', null, null, ['click']),
-                                    ],
-                                    update, null, null, ViewFlags.OnPush)),
-                      ],
-                      (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 
-          const compView = asProviderData(view, 1).componentView;
+          const {view} = createAndGetRootNodes(compViewDef(
+              [
+                elementDef(NodeFlags.None, null, null, 1, 'div'),
+                directiveDef(
+                    NodeFlags.None, null, 0, AComp, [], {a: [0, 'a']}, null,
+                    () => compViewDef(
+                        [
+                          elementDef(NodeFlags.None, null, null, 0, 'span', null, null, ['click']),
+                        ],
+                        update, null, null, ViewFlags.OnPush)),
+              ],
+              (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 
           Services.checkAndUpdateView(view);
 

@@ -8,16 +8,15 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RENDERER_V2_DIRECT, RendererV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
-import {DebugDomRootRenderer} from './private_import_core';
+import {DebugDomRendererV2, DebugDomRootRenderer} from './private_import_core';
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
-import {ServerRootRenderer} from './server_renderer';
-
+import {ServerRendererV2, ServerRootRenderer} from './server_renderer';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -35,14 +34,16 @@ function initParse5Adapter(injector: Injector) {
 }
 
 export function _createConditionalRootRenderer(rootRenderer: any) {
-  if (isDevMode()) {
-    return new DebugDomRootRenderer(rootRenderer);
-  }
-  return rootRenderer;
+  return isDevMode() ? new DebugDomRootRenderer(rootRenderer) : rootRenderer;
+}
+
+export function _createDebugRendererV2(renderer: RendererV2): RendererV2 {
+  return isDevMode() ? new DebugDomRendererV2(renderer) : renderer;
 }
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
-  ServerRootRenderer,
+  ServerRootRenderer, {provide: RENDERER_V2_DIRECT, useClass: ServerRendererV2},
+  {provide: RendererV2, useFactory: _createDebugRendererV2, deps: [RENDERER_V2_DIRECT]},
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
   // use plain SharedStylesHost, not the DomSharedStylesHost
   SharedStylesHost

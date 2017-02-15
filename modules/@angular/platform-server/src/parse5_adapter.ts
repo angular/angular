@@ -228,16 +228,22 @@ export class Parse5DomAdapter extends DomAdapter {
     el.parent = null;
     return el;
   }
-  insertBefore(el: any, node: any) {
-    this.remove(node);
-    treeAdapter.insertBefore(el.parent, node, el);
-  }
-  insertAllBefore(el: any, nodes: any) { nodes.forEach((n: any) => this.insertBefore(el, n)); }
-  insertAfter(el: any, node: any) {
-    if (el.nextSibling) {
-      this.insertBefore(el.nextSibling, node);
+  insertBefore(parent: any, ref: any, newNode: any) {
+    this.remove(newNode);
+    if (ref) {
+      treeAdapter.insertBefore(parent, newNode, ref);
     } else {
-      this.appendChild(el.parent, node);
+      this.appendChild(parent, newNode);
+    }
+  }
+  insertAllBefore(parent: any, ref: any, nodes: any) {
+    nodes.forEach((n: any) => this.insertBefore(parent, ref, n));
+  }
+  insertAfter(parent: any, ref: any, node: any) {
+    if (ref.nextSibling) {
+      this.insertBefore(parent, ref.nextSibling, node);
+    } else {
+      this.appendChild(parent, node);
     }
   }
   setInnerHTML(el: any, value: any) {

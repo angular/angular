@@ -9,7 +9,6 @@
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingType, DebugContext, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
-import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, removeNodes} from './helper';

@@ -18,7 +18,7 @@ import {DomAdapter, setRootDomAdapter} from '../../private_import_platform-brows
 export class WorkerDomAdapter extends DomAdapter {
   static makeCurrent() { setRootDomAdapter(new WorkerDomAdapter()); }
 
-  logError(error: any /** TODO #9100 */) {
+  logError(error: any) {
     if (console.error) {
       console.error(error);
     } else {
@@ -28,9 +28,9 @@ export class WorkerDomAdapter extends DomAdapter {
   }
 
   // tslint:disable-next-line:no-console
-  log(error: any /** TODO #9100 */) { console.log(error); }
+  log(error: any) { console.log(error); }
 
-  logGroup(error: any /** TODO #9100 */) {
+  logGroup(error: any) {
     if (console.group) {
       console.group(error);
       this.logError(error);
@@ -46,7 +46,7 @@ export class WorkerDomAdapter extends DomAdapter {
     }
   }
 
-  hasProperty(element: any /** TODO #9100 */, name: string): boolean { throw 'not implemented'; }
+  hasProperty(element: any, name: string): boolean { throw 'not implemented'; }
   setProperty(el: Element, name: string, value: any) { throw 'not implemented'; }
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
   invoke(el: Element, methodName: string, args: any[]): any { throw 'not implemented'; }
@@ -55,136 +55,95 @@ export class WorkerDomAdapter extends DomAdapter {
   set attrToPropMap(value: {[key: string]: string}) { throw 'not implemented'; }
 
   parse(templateHtml: string) { throw 'not implemented'; }
-  querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement {
-    throw 'not implemented';
-  }
-  querySelectorAll(el: any /** TODO #9100 */, selector: string): any[] { throw 'not implemented'; }
-  on(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */) {
-    throw 'not implemented';
-  }
-  onAndCancel(
-      el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
-      listener: any /** TODO #9100 */): Function {
-    throw 'not implemented';
-  }
-  dispatchEvent(el: any /** TODO #9100 */, evt: any /** TODO #9100 */) { throw 'not implemented'; }
-  createMouseEvent(eventType: any /** TODO #9100 */): any { throw 'not implemented'; }
+  querySelector(el: any, selector: string): HTMLElement { throw 'not implemented'; }
+  querySelectorAll(el: any, selector: string): any[] { throw 'not implemented'; }
+  on(el: any, evt: any, listener: any) { throw 'not implemented'; }
+  onAndCancel(el: any, evt: any, listener: any): Function { throw 'not implemented'; }
+  dispatchEvent(el: any, evt: any) { throw 'not implemented'; }
+  createMouseEvent(eventType: any): any { throw 'not implemented'; }
   createEvent(eventType: string): any { throw 'not implemented'; }
-  preventDefault(evt: any /** TODO #9100 */) { throw 'not implemented'; }
-  isPrevented(evt: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  getInnerHTML(el: any /** TODO #9100 */): string { throw 'not implemented'; }
-  getTemplateContent(el: any /** TODO #9100 */): any { throw 'not implemented'; }
-  getOuterHTML(el: any /** TODO #9100 */): string { throw 'not implemented'; }
-  nodeName(node: any /** TODO #9100 */): string { throw 'not implemented'; }
-  nodeValue(node: any /** TODO #9100 */): string { throw 'not implemented'; }
-  type(node: any /** TODO #9100 */): string { throw 'not implemented'; }
-  content(node: any /** TODO #9100 */): any { throw 'not implemented'; }
-  firstChild(el: any /** TODO #9100 */): Node { throw 'not implemented'; }
-  nextSibling(el: any /** TODO #9100 */): Node { throw 'not implemented'; }
-  parentElement(el: any /** TODO #9100 */): Node { throw 'not implemented'; }
-  childNodes(el: any /** TODO #9100 */): Node[] { throw 'not implemented'; }
-  childNodesAsList(el: any /** TODO #9100 */): Node[] { throw 'not implemented'; }
-  clearNodes(el: any /** TODO #9100 */) { throw 'not implemented'; }
-  appendChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { throw 'not implemented'; }
-  removeChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { throw 'not implemented'; }
-  replaceChild(
-      el: any /** TODO #9100 */, newNode: any /** TODO #9100 */, oldNode: any /** TODO #9100 */) {
-    throw 'not implemented';
-  }
-  remove(el: any /** TODO #9100 */): Node { throw 'not implemented'; }
-  insertBefore(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { throw 'not implemented'; }
-  insertAllBefore(el: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-    throw 'not implemented';
-  }
-  insertAfter(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { throw 'not implemented'; }
-  setInnerHTML(el: any /** TODO #9100 */, value: any /** TODO #9100 */) { throw 'not implemented'; }
-  getText(el: any /** TODO #9100 */): string { throw 'not implemented'; }
-  setText(el: any /** TODO #9100 */, value: string) { throw 'not implemented'; }
-  getValue(el: any /** TODO #9100 */): string { throw 'not implemented'; }
-  setValue(el: any /** TODO #9100 */, value: string) { throw 'not implemented'; }
-  getChecked(el: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  setChecked(el: any /** TODO #9100 */, value: boolean) { throw 'not implemented'; }
+  preventDefault(evt: any) { throw 'not implemented'; }
+  isPrevented(evt: any): boolean { throw 'not implemented'; }
+  getInnerHTML(el: any): string { throw 'not implemented'; }
+  getTemplateContent(el: any): any { throw 'not implemented'; }
+  getOuterHTML(el: any): string { throw 'not implemented'; }
+  nodeName(node: any): string { throw 'not implemented'; }
+  nodeValue(node: any): string { throw 'not implemented'; }
+  type(node: any): string { throw 'not implemented'; }
+  content(node: any): any { throw 'not implemented'; }
+  firstChild(el: any): Node { throw 'not implemented'; }
+  nextSibling(el: any): Node { throw 'not implemented'; }
+  parentElement(el: any): Node { throw 'not implemented'; }
+  childNodes(el: any): Node[] { throw 'not implemented'; }
+  childNodesAsList(el: any): Node[] { throw 'not implemented'; }
+  clearNodes(el: any) { throw 'not implemented'; }
+  appendChild(el: any, node: any) { throw 'not implemented'; }
+  removeChild(el: any, node: any) { throw 'not implemented'; }
+  replaceChild(el: any, newNode: any, oldNode: any) { throw 'not implemented'; }
+  remove(el: any): Node { throw 'not implemented'; }
+  insertBefore(parent: any, el: any, node: any) { throw 'not implemented'; }
+  insertAllBefore(parent: any, el: any, nodes: any) { throw 'not implemented'; }
+  insertAfter(parent: any, el: any, node: any) { throw 'not implemented'; }
+  setInnerHTML(el: any, value: any) { throw 'not implemented'; }
+  getText(el: any): string { throw 'not implemented'; }
+  setText(el: any, value: string) { throw 'not implemented'; }
+  getValue(el: any): string { throw 'not implemented'; }
+  setValue(el: any, value: string) { throw 'not implemented'; }
+  getChecked(el: any): boolean { throw 'not implemented'; }
+  setChecked(el: any, value: boolean) { throw 'not implemented'; }
   createComment(text: string): any { throw 'not implemented'; }
-  createTemplate(html: any /** TODO #9100 */): HTMLElement { throw 'not implemented'; }
-  createElement(tagName: any /** TODO #9100 */, doc?: any /** TODO #9100 */): HTMLElement {
+  createTemplate(html: any): HTMLElement { throw 'not implemented'; }
+  createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
+  createElementNS(ns: string, tagName: string, doc?: any): Element { throw 'not implemented'; }
+  createTextNode(text: string, doc?: any): Text { throw 'not implemented'; }
+  createScriptTag(attrName: string, attrValue: string, doc?: any): HTMLElement {
     throw 'not implemented';
   }
-  createElementNS(ns: string, tagName: string, doc?: any /** TODO #9100 */): Element {
-    throw 'not implemented';
-  }
-  createTextNode(text: string, doc?: any /** TODO #9100 */): Text { throw 'not implemented'; }
-  createScriptTag(attrName: string, attrValue: string, doc?: any /** TODO #9100 */): HTMLElement {
-    throw 'not implemented';
-  }
-  createStyleElement(css: string, doc?: any /** TODO #9100 */): HTMLStyleElement {
-    throw 'not implemented';
-  }
-  createShadowRoot(el: any /** TODO #9100 */): any { throw 'not implemented'; }
-  getShadowRoot(el: any /** TODO #9100 */): any { throw 'not implemented'; }
-  getHost(el: any /** TODO #9100 */): any { throw 'not implemented'; }
-  getDistributedNodes(el: any /** TODO #9100 */): Node[] { throw 'not implemented'; }
+  createStyleElement(css: string, doc?: any): HTMLStyleElement { throw 'not implemented'; }
+  createShadowRoot(el: any): any { throw 'not implemented'; }
+  getShadowRoot(el: any): any { throw 'not implemented'; }
+  getHost(el: any): any { throw 'not implemented'; }
+  getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
   clone(node: Node): Node { throw 'not implemented'; }
-  getElementsByClassName(element: any /** TODO #9100 */, name: string): HTMLElement[] {
+  getElementsByClassName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
+  getElementsByTagName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
+  classList(element: any): any[] { throw 'not implemented'; }
+  addClass(element: any, className: string) { throw 'not implemented'; }
+  removeClass(element: any, className: string) { throw 'not implemented'; }
+  hasClass(element: any, className: string): boolean { throw 'not implemented'; }
+  setStyle(element: any, styleName: string, styleValue: string) { throw 'not implemented'; }
+  removeStyle(element: any, styleName: string) { throw 'not implemented'; }
+  getStyle(element: any, styleName: string): string { throw 'not implemented'; }
+  hasStyle(element: any, styleName: string, styleValue?: string): boolean {
     throw 'not implemented';
   }
-  getElementsByTagName(element: any /** TODO #9100 */, name: string): HTMLElement[] {
-    throw 'not implemented';
-  }
-  classList(element: any /** TODO #9100 */): any[] { throw 'not implemented'; }
-  addClass(element: any /** TODO #9100 */, className: string) { throw 'not implemented'; }
-  removeClass(element: any /** TODO #9100 */, className: string) { throw 'not implemented'; }
-  hasClass(element: any /** TODO #9100 */, className: string): boolean { throw 'not implemented'; }
-  setStyle(element: any /** TODO #9100 */, styleName: string, styleValue: string) {
-    throw 'not implemented';
-  }
-  removeStyle(element: any /** TODO #9100 */, styleName: string) { throw 'not implemented'; }
-  getStyle(element: any /** TODO #9100 */, styleName: string): string { throw 'not implemented'; }
-  hasStyle(element: any /** TODO #9100 */, styleName: string, styleValue?: string): boolean {
-    throw 'not implemented';
-  }
-  tagName(element: any /** TODO #9100 */): string { throw 'not implemented'; }
-  attributeMap(element: any /** TODO #9100 */): Map<string, string> { throw 'not implemented'; }
-  hasAttribute(element: any /** TODO #9100 */, attribute: string): boolean {
-    throw 'not implemented';
-  }
-  hasAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): boolean {
-    throw 'not implemented';
-  }
-  getAttribute(element: any /** TODO #9100 */, attribute: string): string {
-    throw 'not implemented';
-  }
-  getAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): string {
-    throw 'not implemented';
-  }
-  setAttribute(element: any /** TODO #9100 */, name: string, value: string) {
-    throw 'not implemented';
-  }
-  setAttributeNS(element: any /** TODO #9100 */, ns: string, name: string, value: string) {
-    throw 'not implemented';
-  }
-  removeAttribute(element: any /** TODO #9100 */, attribute: string) { throw 'not implemented'; }
-  removeAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string) {
-    throw 'not implemented';
-  }
-  templateAwareRoot(el: any /** TODO #9100 */) { throw 'not implemented'; }
+  tagName(element: any): string { throw 'not implemented'; }
+  attributeMap(element: any): Map<string, string> { throw 'not implemented'; }
+  hasAttribute(element: any, attribute: string): boolean { throw 'not implemented'; }
+  hasAttributeNS(element: any, ns: string, attribute: string): boolean { throw 'not implemented'; }
+  getAttribute(element: any, attribute: string): string { throw 'not implemented'; }
+  getAttributeNS(element: any, ns: string, attribute: string): string { throw 'not implemented'; }
+  setAttribute(element: any, name: string, value: string) { throw 'not implemented'; }
+  setAttributeNS(element: any, ns: string, name: string, value: string) { throw 'not implemented'; }
+  removeAttribute(element: any, attribute: string) { throw 'not implemented'; }
+  removeAttributeNS(element: any, ns: string, attribute: string) { throw 'not implemented'; }
+  templateAwareRoot(el: any) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
-  getBoundingClientRect(el: any /** TODO #9100 */) { throw 'not implemented'; }
+  getBoundingClientRect(el: any) { throw 'not implemented'; }
   getTitle(doc: Document): string { throw 'not implemented'; }
   setTitle(doc: Document, newTitle: string) { throw 'not implemented'; }
-  elementMatches(n: any /** TODO #9100 */, selector: string): boolean { throw 'not implemented'; }
+  elementMatches(n: any, selector: string): boolean { throw 'not implemented'; }
   isTemplateElement(el: any): boolean { throw 'not implemented'; }
-  isTextNode(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  isCommentNode(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  isElementNode(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  hasShadowRoot(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
-  isShadowRoot(node: any /** TODO #9100 */): boolean { throw 'not implemented'; }
+  isTextNode(node: any): boolean { throw 'not implemented'; }
+  isCommentNode(node: any): boolean { throw 'not implemented'; }
+  isElementNode(node: any): boolean { throw 'not implemented'; }
+  hasShadowRoot(node: any): boolean { throw 'not implemented'; }
+  isShadowRoot(node: any): boolean { throw 'not implemented'; }
   importIntoDoc(node: Node): Node { throw 'not implemented'; }
   adoptNode(node: Node): Node { throw 'not implemented'; }
-  getHref(element: any /** TODO #9100 */): string { throw 'not implemented'; }
-  getEventKey(event: any /** TODO #9100 */): string { throw 'not implemented'; }
-  resolveAndSetHref(element: any /** TODO #9100 */, baseUrl: string, href: string) {
-    throw 'not implemented';
-  }
+  getHref(element: any): string { throw 'not implemented'; }
+  getEventKey(event: any): string { throw 'not implemented'; }
+  resolveAndSetHref(element: any, baseUrl: string, href: string) { throw 'not implemented'; }
   supportsDOMEvents(): boolean { throw 'not implemented'; }
   supportsNativeShadowDOM(): boolean { throw 'not implemented'; }
   getGlobalEventTarget(doc: Document, target: string): any { throw 'not implemented'; }
@@ -193,9 +152,9 @@ export class WorkerDomAdapter extends DomAdapter {
   getBaseHref(doc: Document): string { throw 'not implemented'; }
   resetBaseElement(): void { throw 'not implemented'; }
   getUserAgent(): string { throw 'not implemented'; }
-  setData(element: any /** TODO #9100 */, name: string, value: string) { throw 'not implemented'; }
-  getComputedStyle(element: any /** TODO #9100 */): any { throw 'not implemented'; }
-  getData(element: any /** TODO #9100 */, name: string): string { throw 'not implemented'; }
+  setData(element: any, name: string, value: string) { throw 'not implemented'; }
+  getComputedStyle(element: any): any { throw 'not implemented'; }
+  getData(element: any, name: string): string { throw 'not implemented'; }
   setGlobalVar(name: string, value: any) { throw 'not implemented'; }
   performanceNow(): number { throw 'not implemented'; }
   getAnimationPrefix(): string { throw 'not implemented'; }
