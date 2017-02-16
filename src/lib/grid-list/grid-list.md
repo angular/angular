@@ -5,7 +5,7 @@ See Material Design spec [here](https://www.google.com/design/spec/components/gr
 
 ### Setting the number of columns
 
-An `md-grid-list` must specify a `cols` attribute which sets the number of columns in the gird. The
+An `md-grid-list` must specify a `cols` attribute which sets the number of columns in the grid. The
 number of rows will be automatically determined based on the number of columns and the number of
 items.
 
