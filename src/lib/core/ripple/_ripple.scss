@@ -1,6 +1,6 @@
 @import '../theming/theming';
 
-$mat-ripple-element-color: rgba(0, 0, 0, 0.1);
+$mat-ripple-color-opacity: 0.1;
 
 @mixin mat-ripple() {
   // The host element of an md-ripple directive should always have a position of "absolute" or
@@ -18,14 +18,20 @@ $mat-ripple-element-color: rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     pointer-events: none;
 
-    background-color: $mat-ripple-element-color;
-
     transition: opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1);
     transform: scale(0);
   }
 }
 
-@mixin mat-ripple-theme($theme) {}
+/* Theme for the ripple elements.*/
+@mixin mat-ripple-theme($theme) {
+  $foreground: map_get($theme, foreground);
+  $foreground-base: map_get($foreground, base);
+
+  .mat-ripple-element {
+    background-color: rgba($foreground-base, $mat-ripple-color-opacity);
+  }
+}
 
 
 // A mixin, which generates temporary ink ripple on a given component.
