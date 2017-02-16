@@ -1,19 +1,19 @@
-.demo-button.cdk-focused {
+.demo-focusable.cdk-focused {
   border: 2px solid red;
 }
 
-.demo-button.cdk-mouse-focused {
+.demo-focusable.cdk-mouse-focused {
   background: green;
 }
 
-.demo-button.cdk-keyboard-focused {
+.demo-focusable.cdk-keyboard-focused {
   background: yellow;
 }
 
-.demo-button.cdk-program-focused {
+.demo-focusable.cdk-program-focused {
   background: blue;
 }
 
-.demo-button.cdk-touch-focused {
+.demo-focusable.cdk-touch-focused {
   background: purple;
 }

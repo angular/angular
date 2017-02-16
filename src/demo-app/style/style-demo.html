@@ -1,4 +1,4 @@
-<button #b class="demo-button" cdkFocusClasses>focus me!</button>
+<button #b class="demo-focusable" cdkMonitorElementFocus>focus me!</button>
 <button (click)="b.focus()">focus programmatically</button>
 
 <button (click)="fom.focusVia(b, renderer, 'mouse')">focusVia: mouse</button>
@@ -7,3 +7,15 @@
 <button (click)="fom.focusVia(b, renderer, 'program')">focusVia: program</button>
 
 <div>Active classes: {{b.classList}}</div>
+
+<br>
+
+<div class="demo-focusable" tabindex="0" cdkMonitorElementFocus>
+  <p>div with element focus monitored</p>
+  <button>1</button><button>2</button>
+</div>
+
+<div class="demo-focusable" tabindex="0" cdkMonitorSubtreeFocus>
+  <p>div with subtree focus monitored</p>
+  <button>1</button><button>2</button>
+</div>
