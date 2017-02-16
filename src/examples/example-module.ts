@@ -39,6 +39,10 @@ import {
   DialogResultExampleDialog,
   DialogResultExample
 } from './dialog-result/dialog-result-example';
+import {
+  DialogElementsExampleDialog,
+  DialogElementsExample
+} from './dialog-elements/dialog-elements-example';
 import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
 import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
 import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
@@ -100,10 +104,16 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog',
   },
   'dialog-result': {
-    title: 'Dailog with a result',
+    title: 'Dialog with a result',
     component: DialogResultExample,
     additionalFiles: ['dialog-result-example-dialog.html'],
     selectorName: 'DialogResultExample, DialogResultExampleDialog',
+  },
+  'dialog-elements': {
+    title: 'Dialog elements',
+    component: DialogElementsExample,
+    additionalFiles: ['dialog-elements-example-dialog.html'],
+    selectorName: 'DialogElementsExample, DialogElementsExampleDialog',
   },
   'grid-list-dynamic': {title: 'Dynamic grid-list', component: GridListDynamicExample},
   'grid-list-overview': {title: 'Basic grid-list', component: GridListOverviewExample},
@@ -173,6 +183,8 @@ export const EXAMPLE_LIST = [
   DialogOverviewExampleDialog,
   DialogResultExample,
   DialogResultExampleDialog,
+  DialogElementsExample,
+  DialogElementsExampleDialog,
   GridListDynamicExample,
   GridListOverviewExample,
   IconOverviewExample,
