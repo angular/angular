@@ -61,6 +61,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   i18nFormat: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
+  locale?: string;
 }
 
 /**
@@ -142,8 +143,9 @@ export class NgTools_InternalApi_NG_2 {
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 
     // Create the i18n extractor.
+    const locale = options.locale || null;
     const extractor = Extractor.create(
-        options.angularCompilerOptions, options.program, options.host, hostContext);
+        options.angularCompilerOptions, options.program, options.host, locale, hostContext);
 
     return extractor.extract(options.i18nFormat);
   }

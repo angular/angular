@@ -73,7 +73,8 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
-      compilerHostContext?: CompilerHostContext, ngCompilerHost?: CompilerHost): Extractor {
+      locale?: string|null, compilerHostContext?: CompilerHostContext,
+      ngCompilerHost?: CompilerHost): Extractor {
     if (!ngCompilerHost) {
       const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
       const context = compilerHostContext || new ModuleResolutionHostAdapter(tsCompilerHost);
@@ -81,7 +82,7 @@ export class Extractor {
                                         new CompilerHost(program, options, context);
     }
 
-    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost);
+    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost, locale || null);
 
     return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program);
   }
