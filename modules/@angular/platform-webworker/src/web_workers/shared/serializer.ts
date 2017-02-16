@@ -8,7 +8,7 @@
 
 import {Injectable, RenderComponentType, Type, ViewEncapsulation} from '@angular/core';
 
-import {isPresent} from '../../facade/lang';
+import {stringify} from '../../facade/lang';
 
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
@@ -25,11 +25,11 @@ export class Serializer {
   constructor(private _renderStore: RenderStore) {}
 
   serialize(obj: any, type: any): Object {
-    if (!isPresent(obj)) {
+    if (obj == null) {
       return null;
     }
     if (Array.isArray(obj)) {
-      return (<any[]>obj).map(v => this.serialize(v, type));
+      return obj.map(v => this.serialize(v, type));
     }
     if (type == PRIMITIVE) {
       return obj;
@@ -46,16 +46,16 @@ export class Serializer {
     if (type === LocationType) {
       return this._serializeLocation(obj);
     }
-    throw new Error('No serializer for ' + type.toString());
+    throw new Error(`No serializer for type ${stringify}`);
   }
 
   deserialize(map: any, type: any, data?: any): any {
-    if (!isPresent(map)) {
+    if (map == null) {
       return null;
     }
 
     if (Array.isArray(map)) {
-      return (<any[]>map).map(val => this.deserialize(val, type, data));
+      return map.map(val => this.deserialize(val, type, data));
     }
 
     if (type === PRIMITIVE) {
@@ -91,7 +91,7 @@ export class Serializer {
       'pathname': loc.pathname,
       'search': loc.search,
       'hash': loc.hash,
-      'origin': loc.origin
+      'origin': loc.origin,
     };
   }
 
@@ -107,7 +107,7 @@ export class Serializer {
       'templateUrl': obj.templateUrl,
       'slotCount': obj.slotCount,
       'encapsulation': this.serialize(obj.encapsulation, ViewEncapsulation),
-      'styles': this.serialize(obj.styles, PRIMITIVE)
+      'styles': this.serialize(obj.styles, PRIMITIVE),
     };
   }
 

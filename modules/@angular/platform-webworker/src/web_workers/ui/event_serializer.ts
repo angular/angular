@@ -61,10 +61,10 @@ function addTarget(e: Event, serializedEvent: {[key: string]: any}): {[key: stri
 }
 
 function serializeEvent(e: any, properties: string[]): {[key: string]: any} {
-  const serialized = {};
+  const serialized: {[k: string]: any} = {};
   for (let i = 0; i < properties.length; i++) {
     const prop = properties[i];
-    (serialized as any /** TODO #9100 */)[prop] = e[prop];
+    serialized[prop] = e[prop];
   }
   return serialized;
 }

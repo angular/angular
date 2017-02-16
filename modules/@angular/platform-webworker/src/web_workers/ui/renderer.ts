@@ -229,18 +229,16 @@ export class MessageBasedRenderer {
 
   private _listen(renderer: Renderer, renderElement: any, eventName: string, unlistenId: number) {
     const unregisterCallback = renderer.listen(
-        renderElement, eventName,
-        (event: any /** TODO #9100 */) =>
-            this._eventDispatcher.dispatchRenderEvent(renderElement, null, eventName, event));
+        renderElement, eventName, (event: any) => this._eventDispatcher.dispatchRenderEvent(
+                                      renderElement, null, eventName, event));
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 
   private _listenGlobal(
       renderer: Renderer, eventTarget: string, eventName: string, unlistenId: number) {
     const unregisterCallback = renderer.listenGlobal(
-        eventTarget, eventName,
-        (event: any /** TODO #9100 */) =>
-            this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
+        eventTarget, eventName, (event: any) => this._eventDispatcher.dispatchRenderEvent(
+                                    null, eventTarget, eventName, event));
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 

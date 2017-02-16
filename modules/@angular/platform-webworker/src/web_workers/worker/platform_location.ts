@@ -43,7 +43,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
             listeners = this._hashChangeListeners;
           }
 
-          if (listeners !== null) {
+          if (listeners) {
             const e = deserializeGenericEvent(msg['event']);
             // There was a popState or hashChange event, so the location object thas been updated
             this._location = this._serializer.deserialize(msg['location'], LocationType);
@@ -58,14 +58,13 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   init(): Promise<boolean> {
     const args: UiArguments = new UiArguments('getLocation');
 
-    const locationPromise: Promise<LocationType> = this._broker.runOnService(args, LocationType);
-    return locationPromise.then(
-        (val: LocationType):
-            boolean => {
+    return this._broker.runOnService(args, LocationType)
+        .then(
+            (val: LocationType) => {
               this._location = val;
               return true;
             },
-        (err): boolean => { throw new Error(err); });
+            err => { throw new Error(err); });
   }
 
   getBaseHrefFromDOM(): string {
@@ -77,29 +76,11 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
 
-  get pathname(): string {
-    if (this._location === null) {
-      return null;
-    }
+  get pathname(): string { return this._location ? this._location.pathname : null; }
 
-    return this._location.pathname;
-  }
+  get search(): string { return this._location ? this._location.search : null; }
 
-  get search(): string {
-    if (this._location === null) {
-      return null;
-    }
-
-    return this._location.search;
-  }
-
-  get hash(): string {
-    if (this._location === null) {
-      return null;
-    }
-
-    return this._location.hash;
-  }
+  get hash(): string { return this._location ? this._location.hash : null; }
 
   set pathname(newPath: string) {
     if (this._location === null) {

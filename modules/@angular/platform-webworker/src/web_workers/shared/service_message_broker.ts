@@ -56,9 +56,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   private _sink: EventEmitter<any>;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
-  constructor(
-      messageBus: MessageBus, private _serializer: Serializer,
-      public channel: any /** TODO #9100 */) {
+  constructor(messageBus: MessageBus, private _serializer: Serializer, public channel: string) {
     super();
     this._sink = messageBus.to(channel);
     const source = messageBus.from(channel);
@@ -71,14 +69,14 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
       const numArgs = signature === null ? 0 : signature.length;
-      const deserializedArgs: any[] = new Array(numArgs);
+      const deserializedArgs = new Array(numArgs);
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
       }
 
       const promise = method(...deserializedArgs);
-      if (isPresent(returnType) && promise) {
+      if (returnType && promise) {
         this._wrapWebWorkerPromise(message.id, promise, returnType);
       }
     });
@@ -93,8 +91,11 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
 
   private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type<any>): void {
     promise.then((result: any) => {
-      this._sink.emit(
-          {'type': 'result', 'value': this._serializer.serialize(result, type), 'id': id});
+      this._sink.emit({
+        'type': 'result',
+        'value': this._serializer.serialize(result, type),
+        'id': id,
+      });
     });
   }
 }

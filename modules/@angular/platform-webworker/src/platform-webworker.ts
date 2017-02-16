@@ -29,9 +29,10 @@ export {platformWorkerUi} from './worker_render';
 export function bootstrapWorkerUi(
     workerScriptUri: string, customProviders: Provider[] = []): Promise<PlatformRef> {
   // For now, just creates the worker ui platform...
-  return Promise.resolve(platformWorkerUi(([{
-                                            provide: WORKER_SCRIPT,
-                                            useValue: workerScriptUri,
-                                          }] as Provider[])
-                                              .concat(customProviders)));
+  const platform = platformWorkerUi([
+    {provide: WORKER_SCRIPT, useValue: workerScriptUri},
+    ...customProviders,
+  ]);
+
+  return Promise.resolve(platform);
 }

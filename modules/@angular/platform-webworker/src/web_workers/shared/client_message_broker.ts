@@ -9,7 +9,7 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {isPresent, print, stringify} from '../../facade/lang';
+import {stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
@@ -55,13 +55,12 @@ interface PromiseCompleter {
 }
 
 export class ClientMessageBroker_ extends ClientMessageBroker {
-  private _pending: Map<string, PromiseCompleter> = new Map<string, PromiseCompleter>();
+  private _pending = new Map<string, PromiseCompleter>();
   private _sink: EventEmitter<any>;
   /** @internal */
   public _serializer: Serializer;
 
-  constructor(
-      messageBus: MessageBus, _serializer: Serializer, public channel: any /** TODO #9100 */) {
+  constructor(messageBus: MessageBus, _serializer: Serializer, public channel: any) {
     super();
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
@@ -74,7 +73,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     const time: string = stringify(new Date().getTime());
     let iteration: number = 0;
     let id: string = name + time + stringify(iteration);
-    while (isPresent((this as any /** TODO #9100 */)._pending[id])) {
+    while (this._pending.has(id)) {
       id = `${name}${time}${iteration}`;
       iteration++;
     }
@@ -82,8 +81,8 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
-    const fnArgs: any[] /** TODO #9100 */ = [];
-    if (isPresent(args.args)) {
+    const fnArgs: any[] = [];
+    if (args.args) {
       args.args.forEach(argument => {
         if (argument.type != null) {
           fnArgs.push(this._serializer.serialize(argument.value, argument.type));
@@ -100,26 +99,26 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
       promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
       id = this._generateMessageId(args.method);
       this._pending.set(id, completer);
+
       promise.catch((err) => {
-        print(err);
+        if (console && console.log) {
+          // tslint:disable-next-line:no-console
+          console.log(err);
+        }
+
         completer.reject(err);
       });
 
-      promise = promise.then((value: any) => {
-        if (this._serializer == null) {
-          return value;
-        } else {
-          return this._serializer.deserialize(value, returnType);
-        }
-      });
+      promise = promise.then(
+          (value: any) =>
+              this._serializer ? value : this._serializer.deserialize(value, returnType));
     } else {
       promise = null;
     }
 
-    // TODO(jteplitz602): Create a class for these messages so we don't keep using StringMap #3685
     const message = {'method': args.method, 'args': fnArgs};
     if (id != null) {
-      (message as any /** TODO #9100 */)['id'] = id;
+      (message as any)['id'] = id;
     }
     this._sink.emit(message);
 
@@ -128,7 +127,6 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
 
   private _handleMessage(message: {[key: string]: any}): void {
     const data = new MessageData(message);
-    // TODO(jteplitz602): replace these strings with messaging constants #3685
     if (data.type === 'result' || data.type === 'error') {
       const id = data.id;
       if (this._pending.has(id)) {
@@ -167,7 +165,7 @@ class MessageData {
  * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
-  constructor(public value: any /** TODO #9100 */, public type: Type<any>) {}
+  constructor(public value: any, public type: Type<any>) {}
 }
 
 /**

@@ -61,16 +61,23 @@ export function setupWebWorker(): void {
  */
 @NgModule({
   providers: [
-    BROWSER_SANITIZATION_PROVIDERS, Serializer, {provide: DOCUMENT, useValue: null},
+    BROWSER_SANITIZATION_PROVIDERS,
+    Serializer,
+    {provide: DOCUMENT, useValue: null},
     {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
-    WebWorkerRootRenderer, {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
-    {provide: ON_WEB_WORKER, useValue: true}, RenderStore,
+    WebWorkerRootRenderer,
+    {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
+    {provide: ON_WEB_WORKER, useValue: true},
+    RenderStore,
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
-    {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
+    {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true},
   ],
-  exports: [CommonModule, ApplicationModule]
+  exports: [
+    CommonModule,
+    ApplicationModule,
+  ]
 })
 export class WorkerAppModule {
 }
