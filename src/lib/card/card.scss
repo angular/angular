@@ -9,13 +9,16 @@ $mat-card-border-radius: 2px !default;
 $mat-card-header-size: 40px !default;
 
 .mat-card {
-  @include mat-elevation(2);
   @include mat-elevation-transition;
   display: block;
   position: relative;
   padding: $mat-card-default-padding;
   border-radius: $mat-card-border-radius;
   font-family: $mat-font-family;
+
+  &:not([class*='mat-elevation-z']) {
+    @include mat-elevation(2);
+  }
 
   @include cdk-high-contrast {
     outline: solid 1px;
