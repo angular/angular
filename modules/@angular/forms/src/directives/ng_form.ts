@@ -139,9 +139,12 @@ export class NgForm extends ControlContainer implements Form {
   setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
   onSubmit($event: Event): boolean {
+    $event.preventDefault();
+    $event.stopPropagation();
+    $event.returnValue = false;
     this._submitted = true;
     this.ngSubmit.emit($event);
-    return false;
+    return true;
   }
 
   onReset(): void { this.resetForm(); }

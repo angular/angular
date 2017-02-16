@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/t
 import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+import {browserDetection, dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('template-driven forms integration tests', () => {
@@ -311,7 +311,11 @@ export function main() {
            dispatchEvent(form.nativeElement, 'submit');
            tick();
 
-           expect(fixture.componentInstance.event.type).toEqual('submit');
+           const receivedEvent = fixture.componentInstance.event;
+           expect(receivedEvent.type).toEqual('submit');
+           if (!browserDetection.isIE) {
+             expect(receivedEvent.defaultPrevented).toEqual(true);
+           }
          }));
 
       it('should mark NgForm as submitted on submit event', fakeAsync(() => {
