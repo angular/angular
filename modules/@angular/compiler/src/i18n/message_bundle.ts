@@ -23,7 +23,7 @@ export class MessageBundle {
 
   constructor(
       private _htmlParser: HtmlParser, private _implicitTags: string[],
-      private _implicitAttrs: {[k: string]: string[]}) {}
+      private _implicitAttrs: {[k: string]: string[]}, private _locale: string|null = null) {}
 
   updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
       ParseError[] {
@@ -67,7 +67,7 @@ export class MessageBundle {
       return new i18n.Message(nodes, {}, {}, src.meaning, src.description, id);
     });
 
-    return serializer.write(msgList);
+    return serializer.write(msgList, this._locale);
   }
 }
 

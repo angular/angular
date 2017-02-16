@@ -19,7 +19,7 @@ const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb extends Serializer {
-  write(messages: i18n.Message[]): string { throw new Error('Unsupported'); }
+  write(messages: i18n.Message[], locale: string|null): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
