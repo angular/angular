@@ -56,7 +56,11 @@ export function main(): void {
 </messagebundle>
 `;
 
-    it('should write a valid xmb file', () => { expect(toXmb(HTML)).toEqual(XMB); });
+    it('should write a valid xmb file', () => {
+      expect(toXmb(HTML)).toEqual(XMB);
+      // the locale is not specified in the xmb file
+      expect(toXmb(HTML, 'fr')).toEqual(XMB);
+    });
 
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
@@ -67,8 +71,8 @@ export function main(): void {
   });
 }
 
-function toXmb(html: string): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {});
+function toXmb(html: string, locale: string | null = null): string {
+  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
   const serializer = new Xmb();
 
   catalog.updateFromTemplate(html, '', DEFAULT_INTERPOLATION_CONFIG);

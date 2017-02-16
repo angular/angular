@@ -12,10 +12,12 @@ export class CliOptions {
 
 export class I18nExtractionCliOptions extends CliOptions {
   public i18nFormat: string;
+  public locale: string;
 
-  constructor({i18nFormat = null}: {i18nFormat?: string}) {
+  constructor({i18nFormat = null, locale = null}: {i18nFormat?: string, locale: string|null}) {
     super({});
     this.i18nFormat = i18nFormat;
+    this.locale = locale;
   }
 }
 

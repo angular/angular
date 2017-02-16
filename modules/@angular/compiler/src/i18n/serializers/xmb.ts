@@ -38,7 +38,7 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb extends Serializer {
-  write(messages: i18n.Message[]): string {
+  write(messages: i18n.Message[], locale: string|null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
     let rootNode = new xml.Tag(_MESSAGES_TAG);

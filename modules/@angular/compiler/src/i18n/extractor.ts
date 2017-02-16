@@ -86,7 +86,8 @@ export class Extractor {
         });
   }
 
-  static create(host: ExtractorHost): {extractor: Extractor, staticReflector: StaticReflector} {
+  static create(host: ExtractorHost, locale: string|null):
+      {extractor: Extractor, staticReflector: StaticReflector} {
     const htmlParser = new I18NHtmlParser(new HtmlParser());
 
     const urlResolver = createOfflineCompileUrlResolver();
@@ -112,7 +113,7 @@ export class Extractor {
         symbolCache, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
-    const messageBundle = new MessageBundle(htmlParser, [], {});
+    const messageBundle = new MessageBundle(htmlParser, [], {}, locale);
 
     const extractor = new Extractor(host, staticSymbolResolver, messageBundle, resolver);
     return {extractor, staticReflector};
