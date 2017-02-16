@@ -17,7 +17,7 @@ import { SidenavComponent } from './sidenav.component';
   selector: 'md-sidenav',
   template: ''
 })
-export class FakeMdSideNavComponent {
+class FakeMdSideNavComponent {
   _isOpen = false;
   @Input() opened: boolean;
   @Input() mode: 'side' | 'over';
@@ -28,7 +28,7 @@ export class FakeMdSideNavComponent {
   selector: 'aio-doc-viewer',
   template: ''
 })
-export class FakeDocViewerComponent {
+class FakeDocViewerComponent {
   @Input() doc: Doc;
 }
 
