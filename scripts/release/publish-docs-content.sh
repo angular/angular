@@ -5,10 +5,10 @@
 
 cd "$(dirname $0)/../../"
 
-docsPath="/dist/docs"
+docsPath="./dist/docs"
 repoPath="/tmp/material2-docs-content"
 repoUrl="https://github.com/DevVersion/material2-docs-content"
-examplesSource="/dist/docs/examples"
+examplesSource="./dist/docs/examples"
 
 # If the docs directory is not present, generate docs
 if [ ! -d $docsPath ]; then
@@ -22,7 +22,7 @@ commitAuthorEmail="$(git --no-pager show -s --format='%ae' HEAD)"
 commitMessage="$(git log --oneline -n 1)"
 
 # create directory and clone test repo
-rm -rf /tmp/
+rm -rf $repoPath
 mkdir -p $repoPath
 git clone $repoUrl $repoPath
 
