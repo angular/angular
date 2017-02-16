@@ -88,7 +88,7 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
     multi: true,
     deps: [Injector]
   },
-  {provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance]}
+  {provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance]},
 ];
 
 function initializeGenericWorkerRenderer(injector: Injector) {
@@ -155,8 +155,5 @@ function spawnWebWorker(uri: string, instance: WebWorkerInstance): void {
 }
 
 function _resolveDefaultAnimationDriver(): AnimationDriver {
-  if (getDOM().supportsWebAnimation()) {
-    return new WebAnimationsDriver();
-  }
-  return AnimationDriver.NOOP;
+  return getDOM().supportsWebAnimation() ? new WebAnimationsDriver() : AnimationDriver.NOOP;
 }

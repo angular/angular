@@ -10,14 +10,9 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class RenderStore {
-  private _nextIndex: number = 0;
-  private _lookupById: Map<number, any>;
-  private _lookupByObject: Map<any, number>;
-
-  constructor() {
-    this._lookupById = new Map<number, any>();
-    this._lookupByObject = new Map<any, number>();
-  }
+  private _nextIndex = 0;
+  private _lookupById = new Map<number, any>();
+  private _lookupByObject = new Map<any, number>();
 
   allocateId(): number { return this._nextIndex++; }
 
@@ -33,21 +28,8 @@ export class RenderStore {
   }
 
   deserialize(id: number): any {
-    if (id == null) {
-      return null;
-    }
-
-    if (!this._lookupById.has(id)) {
-      return null;
-    }
-
-    return this._lookupById.get(id);
+    return id == null || !this._lookupById.has(id) ? null : this._lookupById.get(id);
   }
 
-  serialize(obj: any): number {
-    if (obj == null) {
-      return null;
-    }
-    return this._lookupByObject.get(obj);
-  }
+  serialize(obj: any): number { return obj == null ? null : this._lookupByObject.get(obj); }
 }

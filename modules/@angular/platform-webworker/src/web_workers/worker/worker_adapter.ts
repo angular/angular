@@ -8,8 +8,6 @@
 
 import {DomAdapter, setRootDomAdapter} from '../../private_import_platform-browser';
 
-
-
 /**
  * This adapter is required to log error messages.
  *
