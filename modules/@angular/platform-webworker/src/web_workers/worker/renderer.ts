@@ -9,7 +9,6 @@
 import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {isPresent} from '../../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -21,7 +20,7 @@ import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
-  private _messageBroker: any /** TODO #9100 */;
+  private _messageBroker: ClientMessageBroker;
   public globalEvents: NamedEventEmitter = new NamedEventEmitter();
   private _componentRenderers: Map<string, WebWorkerRenderer> =
       new Map<string, WebWorkerRenderer>();
@@ -39,6 +38,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
     const element =
         <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
     const playerData = message['animationPlayer'];
+
     if (playerData) {
       const phaseName = message['phaseName'];
       const player = <AnimationPlayer>this._serializer.deserialize(playerData, RenderStoreObject);
@@ -47,7 +47,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
       const eventName = message['eventName'];
       const target = message['eventTarget'];
       const event = deserializeGenericEvent(message['event']);
-      if (isPresent(target)) {
+      if (target) {
         this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
       } else {
         element.events.dispatchEvent(eventName, event);

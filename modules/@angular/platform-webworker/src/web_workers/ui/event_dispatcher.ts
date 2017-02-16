@@ -17,13 +17,13 @@ export class EventDispatcher {
     this._sink.emit({
       'element': this._serializer.serialize(element, RenderStoreObject),
       'animationPlayer': this._serializer.serialize(player, RenderStoreObject),
-      'phaseName': phaseName
+      'phaseName': phaseName,
     });
     return true;
   }
 
   dispatchRenderEvent(element: any, eventTarget: string, eventName: string, event: any): boolean {
-    let serializedEvent: any /** TODO #9100 */;
+    let serializedEvent: any;
     // TODO (jteplitz602): support custom events #3350
     switch (event.type) {
       case 'click':
@@ -109,7 +109,7 @@ export class EventDispatcher {
       'element': this._serializer.serialize(element, RenderStoreObject),
       'eventName': eventName,
       'eventTarget': eventTarget,
-      'event': serializedEvent
+      'event': serializedEvent,
     });
 
     // TODO(kegluneq): Eventually, we want the user to indicate from the UI side whether the event
