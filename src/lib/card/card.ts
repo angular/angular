@@ -112,7 +112,7 @@ export class MdCardImage {}
  * Large image used in a card, needed to add the mat- CSS styling.
  */
 @Directive({
-  selector: 'md-card-xl-image, mat-card-xl-image',
+  selector: '[md-card-xl-image], [mat-card-xl-image]',
   host: {
     '[class.mat-card-xl-image]': 'true'
   }
@@ -123,7 +123,7 @@ export class MdCardXlImage {}
  * Avatar image used in a card, needed to add the mat- CSS styling.
  */
 @Directive({
-  selector: 'md-card-avatar, mat-card-avatar',
+  selector: '[md-card-avatar], [mat-card-avatar]',
   host: {
     '[class.mat-card-avatar]': 'true'
   }
