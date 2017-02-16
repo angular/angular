@@ -17,6 +17,14 @@ import {getDOM} from './private_import_platform-browser';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 
+function parseUrl(urlStr: string): {pathname: string, search: string, hash: string} {
+  const parsedUrl = url.parse(urlStr);
+  return {
+    pathname: parsedUrl.pathname || '',
+    search: parsedUrl.search || '',
+    hash: parsedUrl.hash || '',
+  };
+}
 
 /**
  * Server-side implementation of URL state. Implements `pathname`, `search`, and `hash`
@@ -33,7 +41,7 @@ export class ServerPlatformLocation implements PlatformLocation {
       @Inject(DOCUMENT) private _doc: any, @Optional() @Inject(INITIAL_CONFIG) _config: any) {
     const config = _config as PlatformConfig | null;
     if (!!config && !!config.url) {
-      const parsedUrl = url.parse(config.url);
+      const parsedUrl = parseUrl(config.url);
       this._path = parsedUrl.pathname;
       this._search = parsedUrl.search;
       this._hash = parsedUrl.hash;
@@ -68,7 +76,7 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const parsedUrl = url.parse(newUrl, true);
+    const parsedUrl = parseUrl(newUrl);
     this._path = parsedUrl.pathname;
     this._search = parsedUrl.search;
     this.setHash(parsedUrl.hash, oldUrl);
