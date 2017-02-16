@@ -10,13 +10,8 @@ $mat-slide-toggle-bar-height: 14px !default;
 $mat-slide-toggle-thumb-size: 20px !default;
 $mat-slide-toggle-margin: 16px !default;
 $mat-slide-toggle-spacing: 8px !default;
+$mat-slide-toggle-ripple-radius: 23px !default;
 
-
-@mixin mat-switch-ripple() {
-  // Temporary ripple effect for the thumb of the slide-toggle.
-  // Bind to the parent selector and specify the current palette.
-  @include mat-temporary-ink-ripple(slide-toggle, true);
-}
 
 .mat-slide-toggle {
   display: flex;
@@ -38,8 +33,6 @@ $mat-slide-toggle-spacing: 8px !default;
       transform: translate3d(100%, 0, 0);
     }
   }
-
-  @include mat-switch-ripple();
 
   &.mat-disabled {
 
@@ -168,4 +161,16 @@ $mat-slide-toggle-spacing: 8px !default;
   transition: $swift-linear;
   transition-property: background-color;
   transition-delay: 50ms;
+}
+
+// Ripple positioning for the slide-toggle. Moves the ripple container into the center of the thumb.
+.mat-slide-toggle-ripple {
+  position: absolute;
+  top: $mat-slide-toggle-thumb-size / 2 - $mat-slide-toggle-ripple-radius;
+  left: $mat-slide-toggle-thumb-size / 2 - $mat-slide-toggle-ripple-radius;
+  height: $mat-slide-toggle-ripple-radius * 2;
+  width: $mat-slide-toggle-ripple-radius * 2;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
 }

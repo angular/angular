@@ -23,6 +23,7 @@ import {
   CompatibilityModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
+import {MdRippleModule} from '../core/ripple/ripple';
 
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -339,7 +340,7 @@ class SlideToggleRenderer {
 
 
 @NgModule({
-  imports: [FormsModule, CompatibilityModule],
+  imports: [FormsModule, MdRippleModule, CompatibilityModule],
   exports: [MdSlideToggle, CompatibilityModule],
   declarations: [MdSlideToggle],
   providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}],

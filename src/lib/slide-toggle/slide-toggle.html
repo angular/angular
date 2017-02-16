@@ -1,4 +1,4 @@
-<label class="mat-slide-toggle-label">
+<label class="mat-slide-toggle-label" #label>
 
   <div class="mat-slide-toggle-container">
     <div class="mat-slide-toggle-bar"></div>
@@ -9,7 +9,12 @@
          (slideend)="_onDragEnd()">
 
       <div class="mat-slide-toggle-thumb">
-        <div class="mat-ink-ripple"></div>
+        <div class="mat-slide-toggle-ripple" md-ripple
+             [mdRippleTrigger]="label"
+             [mdRippleCentered]="true"
+             [mdRippleDisabled]="disabled"
+             [mdRippleSpeedFactor]="0.3">
+        </div>
       </div>
     </div>
 
