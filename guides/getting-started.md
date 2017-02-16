@@ -27,7 +27,7 @@ npm install --save @angular/material
 import { MaterialModule } from '@angular/material';
 // other imports 
 @NgModule({
-  imports: [MaterialModule.forRoot()],
+  imports: [MaterialModule],
   ...
 })
 export class PizzaPartyAppModule { }
