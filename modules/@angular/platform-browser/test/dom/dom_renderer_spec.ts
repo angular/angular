@@ -8,7 +8,6 @@
 import {CommonModule} from '@angular/common';
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {describe, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
@@ -21,23 +20,37 @@ export function main() {
 
     // other browsers don't support shadow dom
     if (browserDetection.isChromeDesktop) {
-      it('should add only styles with native encapsulation to the shadow DOM', () => {
-        const fixture = TestBed.createComponent(SomeApp);
-        fixture.detectChanges();
+      it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
+         () => {
+           TestBed.overrideComponent(CmpEncapsulationNative, {
+             set: {
+               template:
+                   '<div class="native"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>'
+             }
+           });
 
-        const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
-        const styles = cmp.shadowRoot.querySelectorAll('style');
-        expect(styles.length).toBe(1);
-        expect(styles[0]).toHaveText('.cmp-native { color: red; }');
-      });
+           const fixture = TestBed.createComponent(SomeApp);
+
+           const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
+
+
+           const native = cmp.shadowRoot.querySelector('.native');
+           expect(window.getComputedStyle(native).color).toEqual('rgb(255, 0, 0)');
+
+           const emulated = cmp.shadowRoot.querySelector('.emulated');
+           expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
+
+           const none = cmp.shadowRoot.querySelector('.none');
+           expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
+         });
     }
   });
 }
 
 @Component({
   selector: 'cmp-native',
-  template: ``,
-  styles: [`.cmp-native { color: red; }`],
+  template: `<div class="native"></div>`,
+  styles: [`.native { color: red; }`],
   encapsulation: ViewEncapsulation.Native
 })
 class CmpEncapsulationNative {
@@ -45,8 +58,8 @@ class CmpEncapsulationNative {
 
 @Component({
   selector: 'cmp-emulated',
-  template: ``,
-  styles: [`.cmp-emulated { color: blue; }`],
+  template: `<div class="emulated"></div>`,
+  styles: [`.emulated { color: blue; }`],
   encapsulation: ViewEncapsulation.Emulated
 })
 class CmpEncapsulationEmulated {
@@ -54,8 +67,8 @@ class CmpEncapsulationEmulated {
 
 @Component({
   selector: 'cmp-none',
-  template: ``,
-  styles: [`.cmp-none { color: yellow; }`],
+  template: `<div class="none"></div>`,
+  styles: [`.none { color: lime; }`],
   encapsulation: ViewEncapsulation.None
 })
 class CmpEncapsulationNone {
