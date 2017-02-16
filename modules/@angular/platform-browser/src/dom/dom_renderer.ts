@@ -126,6 +126,7 @@ export class DomRenderer implements Renderer {
     let nodesParent: Element|DocumentFragment;
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
       nodesParent = (hostElement as any).createShadowRoot();
+      this._rootRenderer.sharedStylesHost.addHost(nodesParent);
       for (let i = 0; i < this._styles.length; i++) {
         const styleEl = document.createElement('style');
         styleEl.textContent = this._styles[i];
