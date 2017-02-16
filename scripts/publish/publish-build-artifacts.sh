@@ -18,7 +18,6 @@ function getLatestTag {
 
     # Increase the clone depth and look for a tag.
     depth=$((depth + 50))
-    echo "Looking for latest tag at depth $depth..."
     git fetch --depth=$depth
     latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
   done
