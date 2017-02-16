@@ -34,7 +34,6 @@ export class ScrollDispatcher {
   /**
    * Registers a Scrollable with the service and listens for its scrolled events. When the
    * scrollable is scrolled, the service emits the event in its scrolled observable.
-   *
    * @param scrollable Scrollable instance to be registered.
    */
   register(scrollable: Scrollable): void {
@@ -44,12 +43,13 @@ export class ScrollDispatcher {
 
   /**
    * Deregisters a Scrollable reference and unsubscribes from its scroll event observable.
-   *
    * @param scrollable Scrollable instance to be deregistered.
    */
   deregister(scrollable: Scrollable): void {
-    this.scrollableReferences.get(scrollable).unsubscribe();
-    this.scrollableReferences.delete(scrollable);
+    if (this.scrollableReferences.has(scrollable)) {
+      this.scrollableReferences.get(scrollable).unsubscribe();
+      this.scrollableReferences.delete(scrollable);
+    }
   }
 
   /**
