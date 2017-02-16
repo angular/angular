@@ -98,7 +98,7 @@
   top: 0;
   bottom: 0;
   z-index: 3;
-  min-width: 5%;
+  min-width: 5vw;
   outline: 0;
 
   @include mat-sidenav-transition(0, -100%);
