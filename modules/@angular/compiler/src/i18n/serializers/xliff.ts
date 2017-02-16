@@ -18,7 +18,7 @@ import * as xml from './xml_helper';
 const _VERSION = '1.2';
 const _XMLNS = 'urn:oasis:names:tc:xliff:document:1.2';
 // TODO(vicb): make this a param (s/_/-/)
-const _SOURCE_LANG = 'en';
+const _DEFAULT_SOURCE_LANG = 'en';
 const _PLACEHOLDER_TAG = 'x';
 
 const _FILE_TAG = 'file';
@@ -29,7 +29,7 @@ const _UNIT_TAG = 'trans-unit';
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
 export class Xliff extends Serializer {
-  write(messages: i18n.Message[]): string {
+  write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const transUnits: xml.Node[] = [];
 
@@ -59,7 +59,11 @@ export class Xliff extends Serializer {
 
     const body = new xml.Tag('body', {}, [...transUnits, new xml.CR(4)]);
     const file = new xml.Tag(
-        'file', {'source-language': _SOURCE_LANG, datatype: 'plaintext', original: 'ng2.template'},
+        'file', {
+          'source-language': locale || _DEFAULT_SOURCE_LANG,
+          datatype: 'plaintext',
+          original: 'ng2.template',
+        },
         [new xml.CR(4), body, new xml.CR(2)]);
     const xliff = new xml.Tag(
         'xliff', {version: _VERSION, xmlns: _XMLNS}, [new xml.CR(2), file, new xml.CR()]);

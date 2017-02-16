@@ -186,7 +186,7 @@ export function main(): void {
       });
 
       it('should throw when trying to save an xtb file',
-         () => { expect(() => { serializer.write([]); }).toThrowError(/Unsupported/); });
+         () => { expect(() => { serializer.write([], null); }).toThrowError(/Unsupported/); });
 
     });
   });
