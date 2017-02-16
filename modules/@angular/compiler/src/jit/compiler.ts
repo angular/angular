@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRenderTypeV2, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
@@ -133,11 +133,11 @@ export class JitCompiler implements Compiler {
       const compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
       if (!this._compilerConfig.useJit) {
         ngModuleFactory =
-            interpretStatements(compileResult.statements, compileResult.ngModuleFactoryVar);
+            interpretStatements(compileResult.statements, [compileResult.ngModuleFactoryVar])[0];
       } else {
         ngModuleFactory = jitStatements(
             `/${identifierName(moduleMeta.type)}/module.ngfactory.js`, compileResult.statements,
-            compileResult.ngModuleFactoryVar);
+            [compileResult.ngModuleFactoryVar])[0];
       }
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
     }
@@ -252,11 +252,12 @@ export class JitCompiler implements Compiler {
     const statements = compileResult.statements;
     let directiveWrapperClass: any;
     if (!this._compilerConfig.useJit) {
-      directiveWrapperClass = interpretStatements(statements, compileResult.dirWrapperClassVar);
+      directiveWrapperClass =
+          interpretStatements(statements, [compileResult.dirWrapperClassVar])[0];
     } else {
       directiveWrapperClass = jitStatements(
           `/${identifierName(moduleMeta.type)}/${identifierName(dirMeta.type)}/wrapper.ngfactory.js`,
-          statements, compileResult.dirWrapperClassVar);
+          statements, [compileResult.dirWrapperClassVar])[0];
     }
     (<ProxyClass>dirMeta.wrapperType).setDelegate(directiveWrapperClass);
     this._compiledDirectiveWrapperCache.set(dirMeta.type.reference, directiveWrapperClass);
@@ -290,14 +291,18 @@ export class JitCompiler implements Compiler {
                            .concat(...compiledAnimations.map(ca => ca.statements))
                            .concat(compileResult.statements);
     let viewClass: any;
+    let componentRenderType: any;
     if (!this._compilerConfig.useJit) {
-      viewClass = interpretStatements(statements, compileResult.viewClassVar);
+      [viewClass, componentRenderType] = interpretStatements(
+          statements, [compileResult.viewClassVar, compileResult.componentRenderTypeVar]);
     } else {
-      viewClass = jitStatements(
-          `/${identifierName(template.ngModule.type)}/${identifierName(template.compType)}/${template.isHost?'host':'component'}.ngfactory.js`,
-          statements, compileResult.viewClassVar);
+      const sourceUrl =
+          `/${identifierName(template.ngModule.type)}/${identifierName(template.compType)}/${template.isHost?'host':'component'}.ngfactory.js`;
+      [viewClass, componentRenderType] = jitStatements(
+          sourceUrl, statements,
+          [compileResult.viewClassVar, compileResult.componentRenderTypeVar]);
     }
-    template.compiled(viewClass);
+    template.compiled(viewClass, componentRenderType);
   }
 
   private _resolveStylesCompileResult(
@@ -315,10 +320,10 @@ export class JitCompiler implements Compiler {
       externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>): string[] {
     this._resolveStylesCompileResult(result, externalStylesheetsByModuleUrl);
     if (!this._compilerConfig.useJit) {
-      return interpretStatements(result.statements, result.stylesVar);
+      return interpretStatements(result.statements, [result.stylesVar])[0];
     } else {
       return jitStatements(
-          `/${result.meta.moduleUrl}.ngstyle.js`, result.statements, result.stylesVar);
+          `/${result.meta.moduleUrl}.ngstyle.js`, result.statements, [result.stylesVar])[0];
     }
   }
 }
@@ -332,9 +337,12 @@ class CompiledTemplate {
       public compMeta: CompileDirectiveMetadata, public ngModule: CompileNgModuleMetadata,
       public directives: CompileIdentifierMetadata[]) {}
 
-  compiled(viewClass: Function) {
+  compiled(viewClass: Function, componentRenderType: any) {
     this._viewClass = viewClass;
     (<ProxyClass>this.compMeta.componentViewType).setDelegate(viewClass);
+    for (let prop in componentRenderType) {
+      (<any>this.compMeta.componentRenderType)[prop] = componentRenderType[prop];
+    }
     this.isCompiled = true;
   }
 }
