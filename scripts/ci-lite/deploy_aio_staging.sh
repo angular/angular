@@ -18,7 +18,7 @@ source ./env.sh
 echo 'travis_fold:start:aio.deploy.staging'
 
 # Deploy angular.io to staging
-cd "`dirname $0`/../../aio"
+cd ../../aio
 yarn run deploy-staging
 cd -
 
