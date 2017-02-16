@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
 import {isBlank, isPresent, stringify} from './facade/lang';
@@ -204,6 +204,7 @@ export class ServerRenderer implements Renderer {
           renderElement,
           TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(parsedBindings, null, 2)));
     } else {
+      propertyName = propertyName.replace(/\$/g, '_');
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
   }
@@ -262,8 +263,51 @@ function appendNodes(parent: any, nodes: any) {
 }
 
 @Injectable()
-export class ServerRendererV2 implements RendererV2 {
-  constructor(private ngZone: NgZone, @Inject(DOCUMENT) private document: any) {}
+export class ServerRendererFactoryV2 implements RendererFactoryV2 {
+  private rendererByCompId = new Map<string, RendererV2>();
+  private defaultRenderer: RendererV2;
+
+  constructor(
+      private ngZone: NgZone, @Inject(DOCUMENT) private document: any,
+      private sharedStylesHost: SharedStylesHost) {
+    this.defaultRenderer = new DefaultServerRendererV2(document, ngZone);
+  };
+
+  createRenderer(element: any, type: ComponentRenderTypeV2): RendererV2 {
+    if (!element || !type) {
+      return this.defaultRenderer;
+    }
+    switch (type.encapsulation) {
+      case ViewEncapsulation.Emulated: {
+        let renderer = this.rendererByCompId.get(type.id);
+        if (!renderer) {
+          renderer = new EmulatedEncapsulationServerRendererV2(
+              this.document, this.ngZone, this.sharedStylesHost, type);
+          this.rendererByCompId.set(type.id, renderer);
+        }
+        (<EmulatedEncapsulationServerRendererV2>renderer).applyToHost(element);
+        return renderer;
+      }
+      case ViewEncapsulation.Native:
+        throw new Error('Native encapsulation is not supported on the server!');
+      default: {
+        if (!this.rendererByCompId.has(type.id)) {
+          const styles = flattenStyles(type.id, type.styles, []);
+          this.sharedStylesHost.addStyles(styles);
+          this.rendererByCompId.set(type.id, this.defaultRenderer);
+        }
+        return this.defaultRenderer;
+      }
+    }
+  }
+}
+
+class DefaultServerRendererV2 implements RendererV2 {
+  constructor(private document: any, private ngZone: NgZone) {}
+
+  destroy(): void {}
+
+  destroyNode: null;
 
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {
@@ -325,28 +369,6 @@ export class ServerRendererV2 implements RendererV2 {
     }
   }
 
-  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
-    if (getDOM().isCommentNode(el)) {
-      const m = getDOM().getText(el).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      const obj = m === null ? {} : JSON.parse(m[1]);
-      obj[propertyName] = propertyValue;
-      getDOM().setText(el, TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2)));
-    } else {
-      this.setAttribute(el, propertyName, propertyValue);
-    }
-  }
-
-  removeBindingDebugInfo(el: any, propertyName: string): void {
-    if (getDOM().isCommentNode(el)) {
-      const m = getDOM().getText(el).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      const obj = m === null ? {} : JSON.parse(m[1]);
-      delete obj[propertyName];
-      getDOM().setText(el, TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2)));
-    } else {
-      this.removeAttribute(el, propertyName);
-    }
-  }
-
   addClass(el: any, name: string): void { getDOM().addClass(el, name); }
 
   removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
@@ -362,7 +384,7 @@ export class ServerRendererV2 implements RendererV2 {
 
   setProperty(el: any, name: string, value: any): void { getDOM().setProperty(el, name, value); }
 
-  setText(node: any, value: string): void { getDOM().setText(node, value); }
+  setValue(node: any, value: string): void { getDOM().setText(node, value); }
 
   listen(
       target: 'document'|'window'|'body'|any, eventName: string,
@@ -373,5 +395,29 @@ export class ServerRendererV2 implements RendererV2 {
         typeof target === 'string' ? getDOM().getGlobalEventTarget(this.document, target) : target;
     const outsideHandler = (event: any) => this.ngZone.runGuarded(() => callback(event));
     return this.ngZone.runOutsideAngular(() => getDOM().onAndCancel(el, eventName, outsideHandler));
+  }
+}
+
+class EmulatedEncapsulationServerRendererV2 extends DefaultServerRendererV2 {
+  private contentAttr: string;
+  private hostAttr: string;
+
+  constructor(
+      document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
+      private component: ComponentRenderTypeV2) {
+    super(document, ngZone);
+    const styles = flattenStyles(component.id, component.styles, []);
+    sharedStylesHost.addStyles(styles);
+
+    this.contentAttr = shimContentAttribute(component.id);
+    this.hostAttr = shimHostAttribute(component.id);
+  }
+
+  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+
+  createElement(parent: any, name: string): Element {
+    const el = super.createElement(parent, name);
+    super.setAttribute(el, this.contentAttr, '');
+    return el;
   }
 }

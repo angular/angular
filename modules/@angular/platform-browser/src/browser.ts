@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RENDERER_V2_DIRECT, RendererV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
@@ -19,7 +19,7 @@ import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
-import {DomRendererV2, DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
+import {DomRendererFactoryV2, DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
@@ -86,8 +86,8 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
     {provide: DomRootRenderer, useClass: DomRootRenderer_},
     {provide: RootRenderer, useExisting: DomRootRenderer},
-    {provide: RENDERER_V2_DIRECT, useClass: DomRendererV2},
-    {provide: RendererV2, useExisting: RENDERER_V2_DIRECT},
+    DomRendererFactoryV2,
+    {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
     DomSharedStylesHost,

@@ -54,7 +54,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
 
 export function createText(view: ViewData, renderHost: any, def: NodeDef): TextData {
   let renderNode: any;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   renderNode = renderer.createText(def.text.prefix);
   const parentEl = getParentRenderElement(view, renderHost, def);
   if (parentEl) {
@@ -119,7 +119,7 @@ export function checkAndUpdateTextInline(
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    view.root.renderer.setText(renderNode, value);
+    view.renderer.setValue(renderNode, value);
   }
 }
 
@@ -140,7 +140,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    view.root.renderer.setText(renderNode, value);
+    view.renderer.setValue(renderNode, value);
   }
 }
 

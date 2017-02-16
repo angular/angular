@@ -386,7 +386,7 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
 
 
   const renderCompTypeVar: o.ReadVarExpr =
-      o.variable(`renderType_${identifierName(view.component.type)}`);  // fix highlighting: `
+      o.variable(view.renderComponentTypeName);  // fix highlighting: `
   if (view.viewIndex === 0) {
     let templateUrlInfo: string;
     if (view.component.template.templateUrl == identifierModuleUrl(view.component.type)) {

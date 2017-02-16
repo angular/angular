@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RendererV2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingType, DebugContext, DepFlags, NodeDef, NodeFlags, ProviderType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {TestBed, inject, withModule} from '@angular/core/testing';
@@ -19,9 +19,7 @@ export function main() {
     function compViewDef(
         nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
         handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(
-          viewFlags, nodes, updateDirectives, updateRenderer, handleEvent, 'someCompId',
-          ViewEncapsulation.None, []);
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
     }
 
     function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinitionFactory {
@@ -292,11 +290,25 @@ export function main() {
           it('should inject RendererV1', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(NodeFlags.None, null, 0, SomeService, [Renderer])
+              directiveDef(
+                  NodeFlags.None, null, 0, SomeService, [Renderer], null, null,
+                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)]))
             ]));
 
             expect(instance.dep.createElement).toBeTruthy();
           });
+
+          it('should inject RendererV2', () => {
+            createAndGetRootNodes(compViewDef([
+              elementDef(NodeFlags.None, null, null, 1, 'span'),
+              directiveDef(
+                  NodeFlags.None, null, 0, SomeService, [RendererV2], null, null,
+                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)]))
+            ]));
+
+            expect(instance.dep.createElement).toBeTruthy();
+          });
+
         });
 
       });

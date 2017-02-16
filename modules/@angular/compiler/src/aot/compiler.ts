@@ -101,11 +101,12 @@ export class AotCompiler {
       });
 
       // compile components
+      const compViewVars = this._compileComponent(
+          compMeta, ngModule, ngModule.transitiveModule.directives,
+          stylesCompileResults.componentStylesheet, fileSuffix, statements);
       exportedVars.push(
           this._compileComponentFactory(compMeta, ngModule, fileSuffix, statements),
-          this._compileComponent(
-              compMeta, ngModule, ngModule.transitiveModule.directives,
-              stylesCompileResults.componentStylesheet, fileSuffix, statements));
+          compViewVars.viewClassVar, compViewVars.compRenderTypeVar);
     });
     if (statements.length > 0) {
       const srcModule = this._codegenSourceModule(
@@ -175,8 +176,10 @@ export class AotCompiler {
     const hostType = this._metadataResolver.getHostComponentType(compMeta.type.reference);
     const hostMeta = createHostComponentMeta(
         hostType, compMeta, this._metadataResolver.getHostComponentViewClass(hostType));
-    const hostViewFactoryVar = this._compileComponent(
-        hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements);
+    const hostViewFactoryVar =
+        this._compileComponent(
+                hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements)
+            .viewClassVar;
     const compFactoryVar = componentFactoryName(compMeta.type.reference);
     targetStatements.push(
         o.variable(compFactoryVar)
@@ -198,7 +201,8 @@ export class AotCompiler {
   private _compileComponent(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
       directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet,
-      fileSuffix: string, targetStatements: o.Statement[]): string {
+      fileSuffix: string,
+      targetStatements: o.Statement[]): {viewClassVar: string, compRenderTypeVar: string} {
     const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const directives =
         directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
@@ -219,7 +223,10 @@ export class AotCompiler {
     }
     compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
     targetStatements.push(...viewResult.statements);
-    return viewResult.viewClassVar;
+    return {
+      viewClassVar: viewResult.viewClassVar,
+      compRenderTypeVar: viewResult.componentRenderTypeVar
+    };
   }
 
   private _codgenStyles(

@@ -9,9 +9,9 @@
 import * as core from '@angular/core';
 
 import {StringMapWrapper} from '../../facade/collection';
-import {DebugDomRendererV2, DebugDomRootRenderer} from '../../private_import_core';
+import {DebugDomRootRenderer} from '../../private_import_core';
 import {getDOM} from '../dom_adapter';
-import {DomRootRenderer} from '../dom_renderer';
+import {DomRendererFactoryV2, DomRootRenderer} from '../dom_renderer';
 
 const CORE_TOKENS = {
   'ApplicationRef': core.ApplicationRef,
@@ -58,10 +58,6 @@ function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
   return tokens.reduce((prev: any, t: any) => (prev[t.name] = t.token, prev), {});
 }
 
-export function _createDebugRendererV2(renderer: core.RendererV2): core.RendererV2 {
-  return core.isDevMode() ? new DebugDomRendererV2(renderer) : renderer;
-}
-
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
@@ -75,9 +71,4 @@ export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [
       [core.NgProbeToken, new core.Optional()],
     ],
   },
-  {
-    provide: core.RendererV2,
-    useFactory: _createDebugRendererV2,
-    deps: [core.RENDERER_V2_DIRECT],
-  }
 ];

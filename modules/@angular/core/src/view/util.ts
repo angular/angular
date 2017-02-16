@@ -14,7 +14,8 @@ import {looseIdentical, stringify} from '../facade/lang';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
-import {Renderer} from '../render/api';
+import {ViewEncapsulation} from '../metadata/view';
+import {ComponentRenderTypeV2, Renderer} from '../render/api';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
@@ -38,6 +39,23 @@ export function unwrapValue(value: any): any {
     unwrapCounter++;
   }
   return value;
+}
+
+let _renderCompCount = 0;
+
+export function createComponentRenderTypeV2(values: {
+  styles: (string | any[])[],
+  encapsulation: ViewEncapsulation,
+  data: {[kind: string]: any[]}
+}): ComponentRenderTypeV2 {
+  const isFilled = values && (values.encapsulation !== ViewEncapsulation.None ||
+                              values.styles.length || Object.keys(values.data).length);
+  if (isFilled) {
+    const id = `c${_renderCompCount++}`;
+    return {id: id, styles: values.styles, encapsulation: values.encapsulation, data: values.data};
+  } else {
+    return null;
+  }
 }
 
 export function checkBinding(
@@ -220,7 +238,7 @@ export function visitRootRenderNodes(
     view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
   // We need to re-compute the parent node in case the nodes have been moved around manually
   if (action === RenderNodeAction.RemoveChild) {
-    parentNode = view.root.renderer.parentNode(renderNode(view, view.def.lastRootNode));
+    parentNode = view.renderer.parentNode(renderNode(view, view.def.lastRootNode));
   }
   visitSiblingRenderNodes(
       view, action, 0, view.def.nodes.length - 1, parentNode, nextSibling, target);
@@ -298,7 +316,7 @@ function visitRenderNode(
 function execRenderNodeAction(
     view: ViewData, renderNode: any, action: RenderNodeAction, parentNode: any, nextSibling: any,
     target: any[]) {
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   switch (action) {
     case RenderNodeAction.AppendChild:
       renderer.appendChild(parentNode, renderNode);

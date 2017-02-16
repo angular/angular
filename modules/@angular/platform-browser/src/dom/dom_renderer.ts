@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
@@ -229,13 +229,8 @@ export class DomRenderer implements Renderer {
           TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(parsedBindings, null, 2));
     } else {
       // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
-      if (propertyName[propertyName.length - 1] === '$') {
-        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
-        attrNode.value = propertyValue;
-        renderElement.setAttributeNode(attrNode);
-      } else {
-        this.setElementAttribute(renderElement, propertyName, propertyValue);
-      }
+      propertyName = propertyName.replace(/\$/g, '_');
+      this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
   }
 
@@ -366,10 +361,51 @@ function createAttributeNode(name: string): Attr {
 }
 
 @Injectable()
-export class DomRendererV2 implements RendererV2 {
-  constructor(private eventManager: EventManager){};
+export class DomRendererFactoryV2 implements RendererFactoryV2 {
+  private rendererByCompId = new Map<string, RendererV2>();
+  private defaultRenderer: RendererV2;
 
-  createElement(name: string, namespace?: string, debugInfo?: any): any {
+  constructor(private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost) {
+    this.defaultRenderer = new DefaultDomRendererV2(eventManager);
+  };
+
+  createRenderer(element: any, type: ComponentRenderTypeV2): RendererV2 {
+    if (!element || !type) {
+      return this.defaultRenderer;
+    }
+    switch (type.encapsulation) {
+      case ViewEncapsulation.Emulated: {
+        let renderer = this.rendererByCompId.get(type.id);
+        if (!renderer) {
+          renderer = new EmulatedEncapsulationDomRendererV2(
+              this.eventManager, this.sharedStylesHost, type);
+          this.rendererByCompId.set(type.id, renderer);
+        }
+        (<EmulatedEncapsulationDomRendererV2>renderer).applyToHost(element);
+        return renderer;
+      }
+      case ViewEncapsulation.Native:
+        return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
+      default: {
+        if (!this.rendererByCompId.has(type.id)) {
+          const styles = flattenStyles(type.id, type.styles, []);
+          this.sharedStylesHost.addStyles(styles);
+          this.rendererByCompId.set(type.id, this.defaultRenderer);
+        }
+        return this.defaultRenderer;
+      }
+    }
+  }
+}
+
+class DefaultDomRendererV2 implements RendererV2 {
+  constructor(private eventManager: EventManager) {}
+
+  destroy(): void {}
+
+  destroyNode: null;
+
+  createElement(name: string, namespace?: string): any {
     if (namespace) {
       return document.createElementNS(NAMESPACE_URIS[namespace], name);
     }
@@ -377,9 +413,9 @@ export class DomRendererV2 implements RendererV2 {
     return document.createElement(name);
   }
 
-  createComment(value: string, debugInfo?: any): any { return document.createComment(value); }
+  createComment(value: string): any { return document.createComment(value); }
 
-  createText(value: string, debugInfo?: any): any { return document.createTextNode(value); }
+  createText(value: string): any { return document.createTextNode(value); }
 
   appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
 
@@ -395,7 +431,7 @@ export class DomRendererV2 implements RendererV2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
+  selectRootElement(selectorOrNode: string|any): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     el.textContent = '';
@@ -422,43 +458,6 @@ export class DomRendererV2 implements RendererV2 {
     }
   }
 
-
-  setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void {
-    if (el.nodeType === Node.COMMENT_NODE) {
-      const m = el.nodeValue.replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      const obj = m === null ? {} : JSON.parse(m[1]);
-      obj[propertyName] = propertyValue;
-      el.nodeValue = TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2));
-    } else {
-      // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
-      if (propertyName[propertyName.length - 1] === '$') {
-        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
-        attrNode.value = propertyValue;
-        el.setAttributeNode(attrNode);
-      } else {
-        this.setAttribute(el, propertyName, propertyValue);
-      }
-    }
-  }
-
-  removeBindingDebugInfo(el: any, propertyName: string): void {
-    if (el.nodeType === Node.COMMENT_NODE) {
-      const m = el.nodeValue.replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      const obj = m === null ? {} : JSON.parse(m[1]);
-      delete obj[propertyName];
-      el.nodeValue = TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(obj, null, 2));
-    } else {
-      // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
-      if (propertyName[propertyName.length - 1] === '$') {
-        const attrNode: Attr = createAttributeNode(propertyName).cloneNode(true) as Attr;
-        attrNode.value = '';
-        el.setAttributeNode(attrNode);
-      } else {
-        this.removeAttribute(el, propertyName);
-      }
-    }
-  }
-
   addClass(el: any, name: string): void { el.classList.add(name); }
 
   removeClass(el: any, name: string): void { el.classList.remove(name); }
@@ -476,7 +475,7 @@ export class DomRendererV2 implements RendererV2 {
 
   setProperty(el: any, name: string, value: any): void { el[name] = value; }
 
-  setText(node: any, value: string): void { node.nodeValue = value; }
+  setValue(node: any, value: string): void { node.nodeValue = value; }
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
@@ -486,5 +485,64 @@ export class DomRendererV2 implements RendererV2 {
     }
     return <() => void>this.eventManager.addEventListener(
                target, event, decoratePreventDefault(callback)) as() => void;
+  }
+}
+
+class EmulatedEncapsulationDomRendererV2 extends DefaultDomRendererV2 {
+  private contentAttr: string;
+  private hostAttr: string;
+
+  constructor(
+      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
+      private component: ComponentRenderTypeV2) {
+    super(eventManager);
+    const styles = flattenStyles(component.id, component.styles, []);
+    sharedStylesHost.addStyles(styles);
+
+    this.contentAttr = shimContentAttribute(component.id);
+    this.hostAttr = shimHostAttribute(component.id);
+  }
+
+  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+
+  createElement(parent: any, name: string): Element {
+    const el = super.createElement(parent, name);
+    super.setAttribute(el, this.contentAttr, '');
+    return el;
+  }
+}
+
+class ShadowDomRenderer extends DefaultDomRendererV2 {
+  private shadowRoot: any;
+
+  constructor(
+      eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      private hostEl: any, private component: ComponentRenderTypeV2) {
+    super(eventManager);
+    this.shadowRoot = (hostEl as any).createShadowRoot();
+    this.sharedStylesHost.addHost(this.shadowRoot);
+    const styles = flattenStyles(component.id, component.styles, []);
+    for (let i = 0; i < styles.length; i++) {
+      const styleEl = document.createElement('style');
+      styleEl.textContent = styles[i];
+      this.shadowRoot.appendChild(styleEl);
+    }
+  }
+
+  private nodeOrShadowRoot(node: any): any { return node === this.hostEl ? this.shadowRoot : node; }
+
+  destroy() { this.sharedStylesHost.removeHost(this.shadowRoot); }
+
+  appendChild(parent: any, newChild: any): void {
+    return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
+  }
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
+  }
+  removeChild(parent: any, oldChild: any): void {
+    return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
+  }
+  parentNode(node: any): any {
+    return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
   }
 }

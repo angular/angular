@@ -13,13 +13,6 @@ import {InjectionToken, Injector} from '../di';
 import {ViewEncapsulation} from '../metadata/view';
 
 /**
- * Provide a concrete implementation of {@link RendererV2}
- *
- * @experimental
- */
-export const RENDERER_V2_DIRECT = new InjectionToken<RendererV2>('Renderer V2');
-
-/**
  * @experimental
  */
 // TODO (matsko): add typing for the animation function
@@ -99,56 +92,6 @@ export abstract class Renderer {
 }
 
 /**
- * @experimental
- */
-export abstract class RendererV2 {
-  abstract createElement(name: string, namespace?: string, debugInfo?: RenderDebugContext): any;
-  abstract createComment(value: string, debugInfo?: RenderDebugContext): any;
-  abstract createText(value: string, debugInfo?: RenderDebugContext): any;
-  abstract appendChild(parent: any, newChild: any): void;
-  abstract insertBefore(parent: any, newChild: any, refChild: any): void;
-  abstract removeChild(parent: any, oldChild: any): void;
-  abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugContext): any;
-  /**
-   * Attention: On WebWorkers, this will always return a value,
-   * as we are asking for a result synchronously. I.e.
-   * the caller can't rely on checking whether this is null or not.
-   */
-  abstract parentNode(node: any): any;
-  /**
-   * Attention: On WebWorkers, this will always return a value,
-   * as we are asking for a result synchronously. I.e.
-   * the caller can't rely on checking whether this is null or not.
-   */
-  abstract nextSibling(node: any): any;
-  abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
-  abstract removeAttribute(el: any, name: string, namespace?: string): void;
-  abstract setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void;
-  abstract removeBindingDebugInfo(el: any, propertyName: string): void;
-  abstract addClass(el: any, name: string): void;
-  abstract removeClass(el: any, name: string): void;
-  abstract setStyle(
-      el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
-  abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
-  abstract setProperty(el: any, name: string, value: any): void;
-  abstract setText(node: any, value: string): void;
-  abstract listen(
-      target: 'window'|'document'|'body'|any, eventName: string,
-      callback: (event: any) => boolean): () => void;
-}
-
-export abstract class RenderDebugContext {
-  abstract get injector(): Injector;
-  abstract get component(): any;
-  abstract get providerTokens(): any[];
-  abstract get references(): {[key: string]: any};
-  abstract get context(): any;
-  abstract get source(): string;
-  abstract get componentRenderElement(): any;
-  abstract get renderNode(): any;
-}
-
-/**
  * Injectable service that provides a low-level interface for modifying the UI.
  *
  * Use this service to bypass Angular's templating and make custom UI changes that can't be
@@ -163,4 +106,65 @@ export abstract class RenderDebugContext {
  */
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
+}
+
+/**
+ * @experimental
+ */
+export interface ComponentRenderTypeV2 {
+  id: string;
+  encapsulation: ViewEncapsulation;
+  styles: (string|any[])[];
+  data: {[kind: string]: any[]};
+}
+
+/**
+ * @experimental
+ */
+export abstract class RendererFactoryV2 {
+  abstract createRenderer(hostElement: any, type: ComponentRenderTypeV2): RendererV2;
+}
+
+/**
+ * @experimental
+ */
+export abstract class RendererV2 {
+  abstract destroy(): void;
+  abstract createElement(name: string, namespace?: string): any;
+  abstract createComment(value: string): any;
+  abstract createText(value: string): any;
+  /**
+   * This property is allowed to be null / undefined,
+   * in which case the view engine won't call it.
+   * This is used as a performance optimization for production mode.
+   */
+  destroyNode: (node: any) => void | null;
+  abstract appendChild(parent: any, newChild: any): void;
+  abstract insertBefore(parent: any, newChild: any, refChild: any): void;
+  abstract removeChild(parent: any, oldChild: any): void;
+  abstract selectRootElement(selectorOrNode: string|any): any;
+  /**
+   * Attention: On WebWorkers, this will always return a value,
+   * as we are asking for a result synchronously. I.e.
+   * the caller can't rely on checking whether this is null or not.
+   */
+  abstract parentNode(node: any): any;
+  /**
+   * Attention: On WebWorkers, this will always return a value,
+   * as we are asking for a result synchronously. I.e.
+   * the caller can't rely on checking whether this is null or not.
+   */
+  abstract nextSibling(node: any): any;
+  abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
+  abstract removeAttribute(el: any, name: string, namespace?: string): void;
+  abstract addClass(el: any, name: string): void;
+  abstract removeClass(el: any, name: string): void;
+  abstract setStyle(
+      el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
+  abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+  abstract setProperty(el: any, name: string, value: any): void;
+  abstract setValue(node: any, value: string): void;
+  abstract listen(
+      target: 'window'|'document'|'body'|any, eventName: string,
+      callback: (event: any) => boolean): () => void;
 }

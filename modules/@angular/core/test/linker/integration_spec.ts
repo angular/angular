@@ -1515,7 +1515,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test$="hello"');
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test_="hello"');
       });
 
       it('should reflect property values on template comments', () => {

@@ -132,7 +132,7 @@ export function elementDef(
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
   const elDef = def.element;
   const rootSelectorOrNode = view.root.selectorOrNode;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   let el: any;
   if (view.parent || !rootSelectorOrNode) {
     if (elDef.name) {
@@ -240,7 +240,7 @@ function setElementAttribute(
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   // TODO(vicb): move the namespace to the node definition
   const nsAndName = splitNamespace(name);
   if (value != null) {
@@ -251,7 +251,7 @@ function setElementAttribute(
 }
 
 function setElementClass(view: ViewData, renderNode: any, name: string, value: boolean) {
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   if (value) {
     renderer.addClass(renderNode, name);
   } else {
@@ -271,7 +271,7 @@ function setElementStyle(
   } else {
     renderValue = null;
   }
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   if (renderValue != null) {
     renderer.setStyle(renderNode, name, renderValue, false, false);
   } else {
@@ -283,7 +283,7 @@ function setElementProperty(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
-  view.root.renderer.setProperty(renderNode, name, renderValue);
+  view.renderer.setProperty(renderNode, name, renderValue);
 }
 
 const NS_PREFIX_RE = /^:([^:]+):(.+)$/;

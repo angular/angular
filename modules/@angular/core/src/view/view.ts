@@ -7,6 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
+import {ComponentRenderTypeV2, RendererV2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
@@ -15,15 +16,14 @@ import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAn
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ArgumentType, ComponentDefinition, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList} from './types';
+import {ArgumentType, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
 import {checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
 
 const NOOP = (): any => undefined;
 
 export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
-    updateRenderer?: ViewUpdateFn, handleEvent?: ViewHandleEventFn, compId?: string,
-    encapsulation?: ViewEncapsulation, styles?: string[]): ViewDefinition {
+    updateRenderer?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
   // clone nodes and set auto calculated values
   if (nodes.length === 0) {
     throw new Error(`Illegal State: Views without nodes are not allowed!`);
@@ -57,8 +57,11 @@ export function viewDef(
 
     let currentRenderParent: NodeDef;
     if (currentParent &&
-        !(currentParent.type === NodeType.Element && currentParent.element.component)) {
-      // children of components should never be attached!
+        (currentParent.type !== NodeType.Element || !currentParent.element.component ||
+         (currentParent.element.component.provider.componentRenderType &&
+          currentParent.element.component.provider.componentRenderType.encapsulation ===
+              ViewEncapsulation.Native))) {
+      // children of components that don't use native encapsulation should never be attached!
       if (currentParent && currentParent.type === NodeType.Element && !currentParent.element.name) {
         currentRenderParent = currentParent.renderParent;
       } else {
@@ -134,8 +137,6 @@ export function viewDef(
     }
     currentParent = newParent;
   }
-  const componentDef =
-      compId ? <ComponentDefinition>{id: compId, encapsulation, styles} : undefined;
   return {
     nodeFlags: viewNodeFlags,
     nodeMatchedQueries: viewMatchedQueries, flags,
@@ -143,7 +144,6 @@ export function viewDef(
     updateDirectives: updateDirectives || NOOP,
     updateRenderer: updateRenderer || NOOP,
     handleEvent: handleEvent || NOOP,
-    component: componentDef,
     bindingCount: viewBindingCount,
     disposableCount: viewDisposableCount, lastRootNode
   };
@@ -222,21 +222,23 @@ function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view = createView(parent.root, parent, anchorDef, anchorDef.element.template);
+  const view =
+      createView(parent.root, parent.renderer, parent, anchorDef, anchorDef.element.template);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
 }
 
 export function createRootView(root: RootData, def: ViewDefinition, context?: any): ViewData {
-  const view = createView(root, null, null, def);
+  const view = createView(root, root.renderer, null, null, def);
   initView(view, context, context);
   createViewNodes(view);
   return view;
 }
 
 function createView(
-    root: RootData, parent: ViewData, parentNodeDef: NodeDef, def: ViewDefinition): ViewData {
+    root: RootData, renderer: RendererV2, parent: ViewData, parentNodeDef: NodeDef,
+    def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   const disposables = def.disposableCount ? new Array(def.disposableCount) : undefined;
   const view: ViewData = {
@@ -245,7 +247,7 @@ function createView(
     parentNodeDef,
     context: undefined,
     component: undefined, nodes,
-    state: ViewState.FirstCheck | ViewState.ChecksEnabled, root,
+    state: ViewState.FirstCheck | ViewState.ChecksEnabled, root, renderer,
     oldValues: new Array(def.bindingCount), disposables
   };
   return view;
@@ -259,9 +261,9 @@ function initView(view: ViewData, component: any, context: any) {
 function createViewNodes(view: ViewData) {
   let renderHost: any;
   if (isComponentView(view)) {
-    renderHost = asElementData(view.parent, viewParentEl(view).index).renderElement;
+    const hostDef = view.parentNodeDef;
+    renderHost = asElementData(view.parent, hostDef.parent.index).renderElement;
   }
-
   const def = view.def;
   const nodes = view.nodes;
   for (let i = 0; i < def.nodes.length; i++) {
@@ -291,8 +293,16 @@ function createViewNodes(view: ViewData) {
           // Components can inject a ChangeDetectorRef that needs a references to
           // the component view. Therefore, we create the component view first
           // and set the ProviderData in ViewData, and then instantiate the provider.
-          const componentView = createView(
-              view.root, view, nodeDef, resolveViewDefinition(nodeDef.provider.component));
+          const compViewDef = resolveViewDefinition(nodeDef.provider.component);
+          const compRenderType = nodeDef.provider.componentRenderType;
+          let compRenderer: RendererV2;
+          if (!compRenderType) {
+            compRenderer = view.root.renderer;
+          } else {
+            const hostEl = asElementData(view, nodeDef.parent.index).renderElement;
+            compRenderer = view.root.rendererFactory.createRenderer(hostEl, compRenderType);
+          }
+          const componentView = createView(view.root, compRenderer, view, nodeDef, compViewDef);
           const providerData = <ProviderData>{componentView, instance: undefined};
           nodes[i] = providerData as any;
           const instance = providerData.instance = createDirectiveInstance(view, nodeDef);
@@ -473,7 +483,25 @@ export function destroyView(view: ViewData) {
       view.disposables[i]();
     }
   }
+  if (view.renderer.destroyNode) {
+    destroyViewNodes(view);
+  }
+  if (view.parentNodeDef && view.parentNodeDef.flags & NodeFlags.HasComponent) {
+    view.renderer.destroy();
+  }
   view.state |= ViewState.Destroyed;
+}
+
+function destroyViewNodes(view: ViewData) {
+  const len = view.def.nodes.length;
+  for (let i = 0; i < len; i++) {
+    const def = view.def.nodes[i];
+    if (def.type === NodeType.Element) {
+      view.renderer.destroyNode(asElementData(view, i).renderElement);
+    } else if (def.type === NodeType.Text) {
+      view.renderer.destroyNode(asTextData(view, i).renderText);
+    }
+  }
 }
 
 enum ViewAction {

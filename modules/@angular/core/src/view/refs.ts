@@ -201,8 +201,9 @@ export function createInjector(view: ViewData, elDef: NodeDef): Injector {
 class Injector_ implements Injector {
   constructor(private view: ViewData, private elDef: NodeDef) {}
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+    const allowPrivateServices = !!this.elDef.element.component;
     return Services.resolveDep(
-        this.view, this.elDef, true, {flags: DepFlags.None, token, tokenKey: tokenKey(token)},
-        notFoundValue);
+        this.view, this.elDef, allowPrivateServices,
+        {flags: DepFlags.None, token, tokenKey: tokenKey(token)}, notFoundValue);
   }
 }
