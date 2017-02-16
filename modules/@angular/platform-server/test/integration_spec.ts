@@ -185,6 +185,19 @@ export function main() {
               expect(location.hash).toBe('#hash');
             });
       });
+      it('handles empty search and hash portions of the url', () => {
+        platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com/deep/path'}
+        }])
+            .bootstrapModule(ExampleModule)
+            .then(appRef => {
+              const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+              expect(location.pathname).toBe('/deep/path');
+              expect(location.search).toBe('');
+              expect(location.hash).toBe('');
+            });
+      });
       it('pushState causes the URL to update', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
