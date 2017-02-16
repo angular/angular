@@ -1,5 +1,6 @@
 import {browser, element, by, Key} from 'protractor';
 import {expectToExist} from '../../util/asserts';
+import {screenshot} from '../../screenshot';
 
 describe('slide-toggle', () => {
   const getInput = () => element(by.css('#normal-slide-toggle input'));
@@ -9,6 +10,7 @@ describe('slide-toggle', () => {
 
   it('should render a slide-toggle', () => {
     expectToExist('md-slide-toggle');
+    screenshot();
   });
 
   it('should change the checked state on click', () => {
@@ -19,6 +21,7 @@ describe('slide-toggle', () => {
     getNormalToggle().click();
 
     expect(inputEl.getAttribute('checked')).toBeTruthy('Expect slide-toggle to be checked');
+    screenshot();
   });
 
   it('should change the checked state on click', () => {
@@ -29,6 +32,7 @@ describe('slide-toggle', () => {
     getNormalToggle().click();
 
     expect(inputEl.getAttribute('checked')).toBeTruthy('Expect slide-toggle to be checked');
+    screenshot();
   });
 
   it('should not change the checked state on click when disabled', () => {
@@ -39,6 +43,7 @@ describe('slide-toggle', () => {
     element(by.css('#disabled-slide-toggle')).click();
 
     expect(inputEl.getAttribute('checked')).toBeFalsy('Expect slide-toggle to be unchecked');
+    screenshot();
   });
 
   it('should move the thumb on state change', () => {
@@ -52,6 +57,7 @@ describe('slide-toggle', () => {
     let newX = thumbEl.getLocation().then(pos => pos.x);
 
     expect(previousX).not.toBe(newX);
+    screenshot();
   });
 
   it('should toggle the slide-toggle on space key', () => {

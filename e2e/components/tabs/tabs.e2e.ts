@@ -1,5 +1,14 @@
-import {browser, by, element, ElementArrayFinder, ElementFinder, Key} from 'protractor';
+import {
+  browser,
+  by,
+  element,
+  ElementArrayFinder,
+  ElementFinder,
+  Key,
+  ExpectedConditions
+} from 'protractor';
 import {pressKeys} from '../../util/actions';
+import {screenshot} from '../../screenshot';
 
 describe('tabs', () => {
   describe('basic behavior', () => {
@@ -18,10 +27,16 @@ describe('tabs', () => {
       tabLabels.get(1).click();
       expect(getLabelActiveStates(tabLabels)).toEqual([false, true, false]);
       expect(getBodyActiveStates(tabBodies)).toEqual([false, true, false]);
+      browser.wait(ExpectedConditions.not(
+        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
+        .then(() => screenshot('click1'));
 
       tabLabels.get(0).click();
       expect(getLabelActiveStates(tabLabels)).toEqual([true, false, false]);
       expect(getBodyActiveStates(tabBodies)).toEqual([true, false, false]);
+      browser.wait(ExpectedConditions.not(
+        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
+        .then(() => screenshot('click0'));
     });
 
     it('should change focus with keyboard interaction', () => {
