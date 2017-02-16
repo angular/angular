@@ -10,19 +10,24 @@ import {Component} from '@angular/core';
   styleUrls: ['progress-bar-demo.css'],
 })
 export class ProgressBarDemo {
+  color: string = 'primary';
   determinateProgressValue: number = 30;
   bufferProgressValue: number = 30;
   bufferBufferValue: number = 40;
 
   stepDeterminateProgressVal(val: number) {
-    this.determinateProgressValue += val;
+    this.determinateProgressValue = this.clampValue(val + this.determinateProgressValue);
   }
 
   stepBufferProgressVal(val: number) {
-    this.bufferProgressValue += val;
+    this.bufferProgressValue = this.clampValue(val + this.bufferProgressValue);
   }
 
   stepBufferBufferVal(val: number) {
-    this.bufferBufferValue += val;
+    this.bufferBufferValue = this.clampValue(val + this.bufferBufferValue);
+  }
+
+  private clampValue(value: number) {
+    return Math.max(0, Math.min(100, value));
   }
 }

@@ -1,21 +1,26 @@
 <h1>Determinate</h1>
-<div class="demo-progress-spinner">
-  <md-progress-spinner mode="determinate"
-                      [value]="progressValue"
-                      class="mat-primary"></md-progress-spinner>
-  <md-progress-spinner [value]="progressValue"
-                      color="accent"></md-progress-spinner>
+
+<div class="demo-progress-spinner-controls">
+  <p>Value: {{progressValue}}</p>
+  <button md-raised-button (click)="step(10)">Increase</button>
+  <button md-raised-button (click)="step(-10)">Decrease</button>
 </div>
-<span>Value: {{progressValue}}</span>
-<button md-raised-button (click)="step(10)">Increase</button>
-<button md-raised-button (click)="step(-10)">Decrease</button>
 
-
+<div class="demo-progress-spinner">
+  <md-progress-spinner mode="determinate" [value]="progressValue" color="primary"></md-progress-spinner>
+  <md-progress-spinner [value]="progressValue" color="accent"></md-progress-spinner>
+</div>
 
 <h1>Indeterminate</h1>
+
+<md-button-toggle-group class="demo-progress-spinner-controls" [(ngModel)]="color">
+  <md-button-toggle value="primary">Primary Color</md-button-toggle>
+  <md-button-toggle value="accent">Accent Color</md-button-toggle>
+  <md-button-toggle value="warn">Warn Color</md-button-toggle>
+</md-button-toggle-group>
+
 <div class="demo-progress-spinner">
-  <md-progress-spinner mode="indeterminate"></md-progress-spinner>
-  <md-progress-spinner mode="indeterminate"
-                      color="accent"></md-progress-spinner>
-  <md-spinner></md-spinner>
+  <md-progress-spinner mode="indeterminate" [color]="color"></md-progress-spinner>
+  <md-progress-spinner mode="indeterminate" [color]="color"></md-progress-spinner>
+  <md-spinner [color]="color"></md-spinner>
 </div>

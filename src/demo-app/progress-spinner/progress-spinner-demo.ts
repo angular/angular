@@ -9,9 +9,10 @@ import {Component} from '@angular/core';
 })
 export class ProgressSpinnerDemo {
   progressValue: number = 40;
+  color: string = 'primary';
 
   step(val: number) {
-    this.progressValue += val;
+    this.progressValue = Math.max(0, Math.min(100, val + this.progressValue));
   }
 
 }
