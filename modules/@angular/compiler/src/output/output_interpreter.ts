@@ -12,8 +12,9 @@ import {isPresent} from '../facade/lang';
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
-export function interpretStatements(statements: o.Statement[], resultVar: string): any {
-  const stmtsWithReturn = statements.concat([new o.ReturnStatement(o.variable(resultVar))]);
+export function interpretStatements(statements: o.Statement[], resultVars: string[]): any[] {
+  const stmtsWithReturn = statements.concat(
+      [new o.ReturnStatement(o.literalArr(resultVars.map(resultVar => o.variable(resultVar))))]);
   const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
   const visitor = new StatementInterpreter();
   const result = visitor.visitAllStatements(stmtsWithReturn, ctx);

@@ -292,6 +292,16 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
+/** @experimental */
+export interface ComponentRenderTypeV2 {
+    data: {
+        [kind: string]: any[];
+    };
+    encapsulation: ViewEncapsulation;
+    id: string;
+    styles: (string | any[])[];
+}
+
 /** @stable */
 export declare const ContentChild: ContentChildDecorator;
 
@@ -848,30 +858,32 @@ export declare abstract class Renderer {
 }
 
 /** @experimental */
-export declare const RENDERER_V2_DIRECT: InjectionToken<RendererV2>;
+export declare abstract class RendererFactoryV2 {
+    abstract createRenderer(hostElement: any, type: ComponentRenderTypeV2): RendererV2;
+}
 
 /** @experimental */
 export declare abstract class RendererV2 {
+    destroyNode: (node: any) => void | null;
     abstract addClass(el: any, name: string): void;
     abstract appendChild(parent: any, newChild: any): void;
-    abstract createComment(value: string, debugInfo?: RenderDebugContext): any;
-    abstract createElement(name: string, namespace?: string, debugInfo?: RenderDebugContext): any;
-    abstract createText(value: string, debugInfo?: RenderDebugContext): any;
+    abstract createComment(value: string): any;
+    abstract createElement(name: string, namespace?: string): any;
+    abstract createText(value: string): any;
+    abstract destroy(): void;
     abstract insertBefore(parent: any, newChild: any, refChild: any): void;
     abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean): () => void;
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string): void;
-    abstract removeBindingDebugInfo(el: any, propertyName: string): void;
     abstract removeChild(parent: any, oldChild: any): void;
     abstract removeClass(el: any, name: string): void;
     abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
-    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugContext): any;
+    abstract selectRootElement(selectorOrNode: string | any): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
-    abstract setBindingDebugInfo(el: any, propertyName: string, propertyValue: string): void;
     abstract setProperty(el: any, name: string, value: any): void;
     abstract setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
-    abstract setText(node: any, value: string): void;
+    abstract setValue(node: any, value: string): void;
 }
 
 /** @experimental */

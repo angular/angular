@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RENDERER_V2_DIRECT, RendererV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 
@@ -16,9 +16,9 @@ import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
-import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRendererV2, DebugDomRootRenderer} from './private_import_core';
+import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRootRenderer} from './private_import_core';
 import {SharedStylesHost, getDOM} from './private_import_platform-browser';
-import {ServerRendererV2, ServerRootRenderer} from './server_renderer';
+import {ServerRendererFactoryV2, ServerRootRenderer} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
@@ -42,10 +42,6 @@ export function _createConditionalRootRenderer(rootRenderer: any) {
   return isDevMode() ? new DebugDomRootRenderer(rootRenderer) : rootRenderer;
 }
 
-export function _createDebugRendererV2(renderer: RendererV2): RendererV2 {
-  return isDevMode() ? new DebugDomRendererV2(renderer) : renderer;
-}
-
 export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
   const initializer = () => stylesHost.rootComponentIsReady();
   return initializer;
@@ -53,9 +49,9 @@ export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
-  {provide: RENDERER_V2_DIRECT, useClass: ServerRendererV2},
-  {provide: RendererV2, useFactory: _createDebugRendererV2, deps: [RENDERER_V2_DIRECT]},
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
+  ServerRendererFactoryV2,
+  {provide: RendererFactoryV2, useExisting: ServerRendererFactoryV2},
   ServerStylesHost,
   {provide: SharedStylesHost, useExisting: ServerStylesHost},
   {

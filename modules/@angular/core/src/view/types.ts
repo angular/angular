@@ -14,7 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {RenderDebugContext, RendererV2} from '../render/api';
+import {ComponentRenderTypeV2, RendererFactoryV2, RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 // -------------------------------------
@@ -23,7 +23,6 @@ import {Sanitizer, SecurityContext} from '../security';
 
 export interface ViewDefinition {
   flags: ViewFlags;
-  component: ComponentDefinition;
   updateDirectives: ViewUpdateFn;
   updateRenderer: ViewUpdateFn;
   handleEvent: ViewHandleEventFn;
@@ -75,13 +74,7 @@ export enum ArgumentType {
  */
 export enum ViewFlags {
   None = 0,
-  OnPush = 1 << 1
-}
-
-export interface ComponentDefinition {
-  id: string;
-  encapsulation: ViewEncapsulation;
-  styles: string[];
+  OnPush = 1 << 1,
 }
 
 /**
@@ -223,6 +216,7 @@ export interface ProviderDef {
   value: any;
   deps: DepDef[];
   outputs: DirectiveOutputDef[];
+  componentRenderType: ComponentRenderTypeV2;
   // closure to allow recursive components
   component: ViewDefinitionFactory;
 }
@@ -306,6 +300,7 @@ export interface NgContentDef {
 export interface ViewData {
   def: ViewDefinition;
   root: RootData;
+  renderer: RendererV2;
   // index of component provider / anchor.
   parentNodeDef: NodeDef;
   parent: ViewData;
@@ -426,12 +421,21 @@ export interface RootData {
   projectableNodes: any[][];
   selectorOrNode: any;
   renderer: RendererV2;
+  rendererFactory: RendererFactoryV2;
   sanitizer: Sanitizer;
 }
 
-export abstract class DebugContext extends RenderDebugContext {
+export abstract class DebugContext {
   abstract get view(): ViewData;
   abstract get nodeIndex(): number;
+  abstract get injector(): Injector;
+  abstract get component(): any;
+  abstract get providerTokens(): any[];
+  abstract get references(): {[key: string]: any};
+  abstract get context(): any;
+  abstract get source(): string;
+  abstract get componentRenderElement(): any;
+  abstract get renderNode(): any;
 }
 
 // -------------------------------------

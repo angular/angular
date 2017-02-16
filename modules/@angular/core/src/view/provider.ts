@@ -11,13 +11,15 @@ import {Injector} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import * as v1renderer from '../render/api';
+import {ViewEncapsulation} from '../metadata/view';
+import {ComponentRenderTypeV2, RenderComponentType as RenderComponentTypeV1, Renderer as RendererV1, RendererFactoryV2, RendererV2, RootRenderer as RootRendererV1} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createTemplateRef, createViewContainerRef} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DirectiveOutputDef, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
 import {checkAndUpdateBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
-const RendererV1TokenKey = tokenKey(v1renderer.Renderer);
+const RendererV1TokenKey = tokenKey(RendererV1);
+const RendererV2TokenKey = tokenKey(RendererV2);
 const ElementRefTokenKey = tokenKey(ElementRef);
 const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
@@ -29,7 +31,8 @@ const NOT_CREATED = new Object();
 export function directiveDef(
     flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], childCount: number,
     ctor: any, deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
-    outputs?: {[name: string]: string}, component?: () => ViewDefinition): NodeDef {
+    outputs?: {[name: string]: string}, component?: () => ViewDefinition,
+    componentRenderType?: ComponentRenderTypeV2): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -50,7 +53,7 @@ export function directiveDef(
   }
   return _def(
       NodeType.Directive, flags, matchedQueries, childCount, ProviderType.Class, ctor, ctor, deps,
-      bindings, outputDefs, component);
+      bindings, outputDefs, component, componentRenderType);
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
@@ -67,8 +70,13 @@ export function _def(
     type: NodeType, flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     childCount: number, providerType: ProviderType, token: any, value: any,
     deps: ([DepFlags, any] | any)[], bindings?: BindingDef[], outputs?: DirectiveOutputDef[],
-    component?: () => ViewDefinition): NodeDef {
+    component?: () => ViewDefinition, componentRenderType?: ComponentRenderTypeV2): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
+  // This is needed as the jit compiler always uses an empty hash as default ComponentRenderTypeV2,
+  // which is not filled for host views.
+  if (componentRenderType && componentRenderType.encapsulation == null) {
+    componentRenderType = null;
+  }
   if (!outputs) {
     outputs = [];
   }
@@ -111,7 +119,7 @@ export function _def(
       type: providerType,
       token,
       tokenKey: tokenKey(token), value,
-      deps: depDefs, outputs, component
+      deps: depDefs, outputs, component, componentRenderType
     },
     text: undefined,
     pureExpression: undefined,
@@ -328,16 +336,19 @@ export function resolveDep(
     if (elDef) {
       switch (tokenKey) {
         case RendererV1TokenKey: {
-          let compView = view;
-          while (compView && !isComponentView(compView)) {
-            compView = compView.parent;
-          }
-          const rootRenderer: v1renderer.RootRenderer =
-              view.root.injector.get(v1renderer.RootRenderer);
+          const compView = findCompView(view, elDef, allowPrivateServices);
+          const compDef = compView.parentNodeDef;
+          const rootRendererV1: RootRendererV1 = view.root.injector.get(RootRendererV1);
 
-          // Note: Don't fill in the styles as they have been installed already!
-          return rootRenderer.renderComponent(new v1renderer.RenderComponentType(
-              view.def.component.id, '', 0, view.def.component.encapsulation, [], {}));
+          // Note: Don't fill in the styles as they have been installed already via the RendererV2!
+          const compRenderType = compDef.provider.componentRenderType;
+          return rootRendererV1.renderComponent(new RenderComponentTypeV1(
+              compRenderType ? compRenderType.id : '0', '', 0,
+              compRenderType ? compRenderType.encapsulation : ViewEncapsulation.None, [], {}));
+        }
+        case RendererV2TokenKey: {
+          const compView = findCompView(view, elDef, allowPrivateServices);
+          return compView.renderer;
         }
         case ElementRefTokenKey:
           return new ElementRef(asElementData(view, elDef.index).renderElement);
@@ -350,15 +361,7 @@ export function resolveDep(
           break;
         }
         case ChangeDetectorRefTokenKey: {
-          let cdView: ViewData;
-          if (allowPrivateServices) {
-            cdView = asProviderData(view, elDef.element.component.index).componentView;
-          } else {
-            cdView = view;
-            while (cdView.parent && !isComponentView(cdView)) {
-              cdView = cdView.parent;
-            }
-          }
+          let cdView = findCompView(view, elDef, allowPrivateServices);
           return createChangeDetectorRef(cdView);
         }
         case InjectorRefTokenKey:
@@ -381,6 +384,19 @@ export function resolveDep(
     view = view.parent;
   }
   return startView.root.injector.get(depDef.token, notFoundValue);
+}
+
+function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {
+  let compView: ViewData;
+  if (allowPrivateServices) {
+    compView = asProviderData(view, elDef.element.component.index).componentView;
+  } else {
+    compView = view;
+    while (compView.parent && !isComponentView(compView)) {
+      compView = compView.parent;
+    }
+  }
+  return compView;
 }
 
 function checkAndUpdateProp(
