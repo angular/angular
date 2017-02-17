@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetterFn, MethodFn, ReflectionCapabilities, SetterFn, reflector} from '../private_import_core';
+import {ɵGetterFn, ɵMethodFn, ɵReflectionCapabilities, ɵSetterFn, ɵreflector} from '@angular/core';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 
 export class StaticAndDynamicReflectionCapabilities {
   static install(staticDelegate: StaticReflector) {
-    reflector.updateCapabilities(new StaticAndDynamicReflectionCapabilities(staticDelegate));
+    ɵreflector.updateCapabilities(new StaticAndDynamicReflectionCapabilities(staticDelegate));
   }
 
-  private dynamicDelegate = new ReflectionCapabilities();
+  private dynamicDelegate = new ɵReflectionCapabilities();
 
   constructor(private staticDelegate: StaticReflector) {}
 
@@ -38,9 +38,9 @@ export class StaticAndDynamicReflectionCapabilities {
     return isStaticType(typeOrFunc) ? this.staticDelegate.propMetadata(typeOrFunc) :
                                       this.dynamicDelegate.propMetadata(typeOrFunc);
   }
-  getter(name: string): GetterFn { return this.dynamicDelegate.getter(name); }
-  setter(name: string): SetterFn { return this.dynamicDelegate.setter(name); }
-  method(name: string): MethodFn { return this.dynamicDelegate.method(name); }
+  getter(name: string): ɵGetterFn { return this.dynamicDelegate.getter(name); }
+  setter(name: string): ɵSetterFn { return this.dynamicDelegate.setter(name); }
+  method(name: string): ɵMethodFn { return this.dynamicDelegate.method(name); }
   importUri(type: any): string { return this.staticDelegate.importUri(type); }
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any) {
     return this.staticDelegate.resolveIdentifier(name, moduleUrl, members);

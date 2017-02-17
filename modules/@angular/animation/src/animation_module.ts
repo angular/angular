@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NgModule} from '@angular/core';
+import {NgModule, ɵTransitionEngine} from '@angular/core';
 import {AnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
 import {WebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
 import {AnimationDriver, NoOpAnimationDriver} from './engine/animation_driver';
 import {DomAnimationTransitionEngine} from './engine/dom_animation_transition_engine';
 import {WebAnimationsDriver, supportsWebAnimations} from './engine/web_animations/web_animations_driver';
-import {TransitionEngine} from './private_import_core';
 
 export function resolveDefaultAnimationDriver(): AnimationDriver {
   if (supportsWebAnimations()) {
@@ -29,7 +28,7 @@ export function resolveDefaultAnimationDriver(): AnimationDriver {
   providers: [
     {provide: AnimationDriver, useFactory: resolveDefaultAnimationDriver},
     {provide: AnimationStyleNormalizer, useClass: WebAnimationsStyleNormalizer},
-    {provide: TransitionEngine, useClass: DomAnimationTransitionEngine}
+    {provide: ɵTransitionEngine, useClass: DomAnimationTransitionEngine}
   ]
 })
 export class AnimationModule {

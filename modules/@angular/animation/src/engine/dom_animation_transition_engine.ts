@@ -5,12 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, Injectable} from '@angular/core';
+import {AnimationPlayer, Injectable, ɵAnimationGroupPlayer, ɵNoOpAnimationPlayer, ɵTransitionEngine} from '@angular/core';
 import {StyleData} from '../common/style_data';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {AnimationGroupPlayer, NoOpAnimationPlayer, TransitionEngine} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {AnimationEngineInstruction, AnimationTransitionInstructionType} from './animation_engine_instruction';
@@ -20,7 +19,7 @@ export declare type AnimationPlayerTuple = {
 };
 
 @Injectable()
-export class DomAnimationTransitionEngine extends TransitionEngine {
+export class DomAnimationTransitionEngine extends ɵTransitionEngine {
   private _flaggedInserts = new Set<any>();
   private _queuedRemovals: any[] = [];
   private _queuedAnimations: AnimationPlayerTuple[] = [];
@@ -48,7 +47,7 @@ export class DomAnimationTransitionEngine extends TransitionEngine {
         return this._handleTimelineAnimation(
             element, <AnimationTimelineInstruction>instruction, []);
       }
-      return new NoOpAnimationPlayer();
+      return new ɵNoOpAnimationPlayer();
     });
     return optimizeGroupPlayer(players);
   }
@@ -224,7 +223,7 @@ function eraseStyles(element: any, styles: StyleData) {
 }
 
 function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
-  return players.length == 1 ? players[0] : new AnimationGroupPlayer(players);
+  return players.length == 1 ? players[0] : new ɵAnimationGroupPlayer(players);
 }
 
 function copyArray(source: any[]): any[] {

@@ -9,7 +9,6 @@
 import * as core from '@angular/core';
 
 import {StringMapWrapper} from '../../facade/collection';
-import {DebugDomRootRenderer} from '../../private_import_core';
 import {getDOM} from '../dom_adapter';
 import {DomRendererFactoryV2, DomRootRenderer} from '../dom_renderer';
 
@@ -51,7 +50,7 @@ function _createRootRenderer(rootRenderer: any, extraTokens: NgProbeToken[]) {
   getDOM().setGlobalVar(
       CORE_TOKENS_GLOBAL_NAME,
       StringMapWrapper.merge(CORE_TOKENS, _ngProbeTokensToMap(extraTokens || [])));
-  return new DebugDomRootRenderer(rootRenderer);
+  return new core.ɵDebugDomRootRenderer(rootRenderer);
 }
 
 function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
