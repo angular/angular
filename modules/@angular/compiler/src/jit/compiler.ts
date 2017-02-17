@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, RendererTypeV2, Type} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRenderTypeV2, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵview_utils as view_utils} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
@@ -20,7 +20,6 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import * as ir from '../output/output_ast';
 import {interpretStatements} from '../output/output_interpreter';
 import {jitStatements} from '../output/output_jit';
-import {view_utils} from '../private_import_core';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {SyncAsyncResult} from '../util';

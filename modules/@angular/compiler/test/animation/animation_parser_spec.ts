@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationMetadata, animate, group, keyframes, sequence, style, transition, trigger} from '@angular/core';
+import {AnimationMetadata, animate, group, keyframes, sequence, style, transition, trigger, ɵFILL_STYLE_FLAG as FILL_STYLE_FLAG, ɵflattenStyles as flattenStyles} from '@angular/core';
 import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
 import {AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
 import {AnimationParser} from '../../src/animation/animation_parser';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
-import {FILL_STYLE_FLAG, flattenStyles} from '../private_import_core';
 
 export function main() {
   describe('parseAnimationEntry', () => {

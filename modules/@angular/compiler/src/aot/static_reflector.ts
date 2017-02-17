@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-
-import {ReflectorReader} from '../private_import_core';
+import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger, ɵReflectorReader} from '@angular/core';
 import {syntaxError} from '../util';
-
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 
@@ -22,7 +19,7 @@ const HIDDEN_KEY = /^\$.*\$$/;
  * A static reflector implements enough of the Reflector API that is necessary to compile
  * templates statically.
  */
-export class StaticReflector implements ReflectorReader {
+export class StaticReflector implements ɵReflectorReader {
   private annotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();

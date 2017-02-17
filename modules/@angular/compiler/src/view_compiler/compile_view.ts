@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵViewType as ViewType} from '@angular/core';
+
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenName, viewClassName} from '../compile_metadata';
 import {EventHandlerVars, LegacyNameResolver} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
-import {ViewType} from '../private_import_core';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';

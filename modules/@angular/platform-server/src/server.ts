@@ -8,16 +8,13 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵDebugDomRootRenderer as DebugDomRootRenderer} from '@angular/core';
 import {HttpModule} from '@angular/http';
-import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
-
+import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
-import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRootRenderer} from './private_import_core';
-import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ServerRendererFactoryV2, ServerRootRenderer} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';

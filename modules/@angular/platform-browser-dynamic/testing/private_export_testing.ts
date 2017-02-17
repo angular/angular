@@ -6,9 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as testing from './dom_test_component_renderer';
-
-export const __platform_browser_dynamic_private__:
-    {DOMTestComponentRenderer: typeof testing.DOMTestComponentRenderer} = {
-      DOMTestComponentRenderer: testing.DOMTestComponentRenderer
-    };
+export {DOMTestComponentRenderer as ɵDOMTestComponentRenderer} from './dom_test_component_renderer';

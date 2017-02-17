@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, ComponentRenderTypeV2, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵreflector, ɵviewEngine} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -21,7 +21,6 @@ import {CompilerInjectable} from './injectable';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ERROR_COMPONENT_TYPE, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector, viewEngine} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
@@ -54,7 +53,7 @@ export class CompileMetadataResolver {
       private _schemaRegistry: ElementSchemaRegistry,
       private _directiveNormalizer: DirectiveNormalizer,
       @Optional() private _staticSymbolCache: StaticSymbolCache,
-      private _reflector: ReflectorReader = reflector,
+      private _reflector: ɵReflectorReader = ɵreflector,
       @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector) {}
 
   clearCacheFor(type: Type<any>) {
@@ -152,7 +151,7 @@ export class CompileMetadataResolver {
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
       if (this._config.useViewEngine) {
-        return viewEngine.createComponentFactory(selector, dirType, <any>hostView);
+        return ɵviewEngine.createComponentFactory(selector, dirType, <any>hostView);
       } else {
         return new ComponentFactory(selector, <any>hostView, dirType);
       }
@@ -742,7 +741,7 @@ export class CompileMetadataResolver {
       reference: identifier.reference,
       diDeps: this._getDependenciesMetadata(identifier.reference, dependencies),
       lifecycleHooks:
-          LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, identifier.reference)),
+          ɵLIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, identifier.reference)),
     };
   }
 
@@ -1092,7 +1091,7 @@ function isValidType(value: any): boolean {
 }
 
 export function componentModuleUrl(
-    reflector: ReflectorReader, type: Type<any>, cmpMetadata: Component): string {
+    reflector: ɵReflectorReader, type: Type<any>, cmpMetadata: Component): string {
   if (type instanceof StaticSymbol) {
     return type.filePath;
   }
@@ -1136,6 +1135,6 @@ function componentStillLoadingError(compType: Type<any>) {
   debugger;
   const error =
       Error(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
-  (error as any)[ERROR_COMPONENT_TYPE] = compType;
+  (error as any)[ɵERROR_COMPONENT_TYPE] = compType;
   return error;
 }

@@ -8,16 +8,6 @@
 
 
 
-import {ROUTES} from './router_config_loader';
-import {ROUTER_PROVIDERS} from './router_module';
-import {flatten} from './utils/collection';
-
-export const __router_private__: {
-  ROUTER_PROVIDERS: typeof ROUTER_PROVIDERS,
-  ROUTES: typeof ROUTES,
-  flatten: typeof flatten,
-} = {
-  ROUTER_PROVIDERS: ROUTER_PROVIDERS,
-  ROUTES: ROUTES,
-  flatten: flatten,
-};
+export {ROUTES as ɵROUTES} from './router_config_loader';
+export {ROUTER_PROVIDERS as ɵROUTER_PROVIDERS} from './router_module';
+export {flatten as ɵflatten} from './utils/collection';

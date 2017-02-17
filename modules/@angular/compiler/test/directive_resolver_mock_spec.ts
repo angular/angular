@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injector} from '@angular/core';
+import {Component, Directive, Injector, ɵViewMetadata as ViewMetadata} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-
 import {MockDirectiveResolver} from '../testing/index';
-
-import {ViewMetadata} from './private_import_core';
 
 export function main() {
   describe('MockDirectiveResolver', () => {

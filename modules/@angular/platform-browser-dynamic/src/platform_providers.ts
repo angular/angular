@@ -9,7 +9,7 @@
 import {ResourceLoader} from '@angular/compiler';
 import {COMPILER_OPTIONS, Provider} from '@angular/core';
 
-import {INTERNAL_BROWSER_PLATFORM_PROVIDERS} from './private_import_platform-browser';
+import {ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS as INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
 
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
 
