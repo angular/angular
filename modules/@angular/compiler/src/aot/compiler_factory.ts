@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation} from '@angular/core';
-
+import {MissingTranslationStrategy, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
@@ -22,7 +21,6 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {NgModuleResolver} from '../ng_module_resolver';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 import {PipeResolver} from '../pipe_resolver';
-import {Console} from '../private_import_core';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';

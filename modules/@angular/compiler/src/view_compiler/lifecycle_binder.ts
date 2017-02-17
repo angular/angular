@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵLifecycleHooks as LifecycleHooks} from '@angular/core';
+
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {isFirstViewCheck} from '../compiler_util/binding_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import * as o from '../output/output_ast';
-import {LifecycleHooks} from '../private_import_core';
 import {DirectiveAst, ProviderAst, ProviderAstType} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
