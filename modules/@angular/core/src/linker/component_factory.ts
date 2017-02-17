@@ -92,8 +92,12 @@ export class ComponentRef_<C> extends ComponentRef<C> {
  * @stable
  */
 export class ComponentFactory<C> {
-  /** @internal */
-  _viewClass: Type<AppView<any>>;
+  /**
+   * TODO(tbosch): type this properly to ViewDefinitionFactory again once the view engine
+   * is the default.
+   * @internal
+   */
+  _viewClass: any;
   constructor(
       public selector: string, _viewClass: Type<AppView<any>>, public componentType: Type<any>) {
     this._viewClass = _viewClass;

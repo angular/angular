@@ -7,11 +7,11 @@
  */
 
 import {ComponentRef} from '@angular/core';
-import {global} from '../../facade/lang';
+import {getDOM} from '../../dom/dom_adapter';
 
-import {AngularTools} from './common_tools';
+import {AngularProfiler} from './common_tools';
 
-const context = <any>global;
+const PROFILER_GLOBAL_NAME = 'ng.profiler';
 
 /**
  * Enabled Angular debug tools that are accessible via your browser's
@@ -27,7 +27,7 @@ const context = <any>global;
  * @experimental All debugging apis are currently experimental.
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
-  (<any>Object).assign(context.ng, new AngularTools(ref));
+  getDOM().setGlobalVar(PROFILER_GLOBAL_NAME, new AngularProfiler(ref));
   return ref;
 }
 
@@ -37,7 +37,5 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
  * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
-  if (context.ng) {
-    delete context.ng.profiler;
-  }
+  getDOM().setGlobalVar(PROFILER_GLOBAL_NAME, null);
 }

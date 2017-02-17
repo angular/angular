@@ -434,6 +434,9 @@ class DefaultDomRendererV2 implements RendererV2 {
   selectRootElement(selectorOrNode: string|any): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                        selectorOrNode;
+    if (!el) {
+      throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
+    }
     el.textContent = '';
     return el;
   }
@@ -464,13 +467,21 @@ class DefaultDomRendererV2 implements RendererV2 {
 
   setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
       void {
-    el.style[style] = value;
+    if (hasVendorPrefix || hasImportant) {
+      el.style.setProperty(style, value, hasImportant ? 'important' : '');
+    } else {
+      el.style[style] = value;
+    }
   }
 
   removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
-    // IE requires '' instead of null
-    // see https://github.com/angular/angular/issues/7916
-    el.style[style] = '';
+    if (hasVendorPrefix) {
+      el.style.removeProperty(style);
+    } else {
+      // IE requires '' instead of null
+      // see https://github.com/angular/angular/issues/7916
+      el.style[style] = '';
+    }
   }
 
   setProperty(el: any, name: string, value: any): void { el[name] = value; }

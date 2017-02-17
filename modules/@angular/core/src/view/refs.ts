@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NoOpAnimationPlayer} from '../animation/animation_player';
+import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
@@ -13,10 +15,12 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
+import {Renderer as RendererV1, RendererV2} from '../render/api';
 import {Type} from '../type';
+import {VERSION} from '../version';
 
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData} from './types';
-import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, tokenKey, viewParentEl} from './util';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 
 const EMPTY_CONTEXT = new Object();
 
@@ -26,16 +30,9 @@ export function createComponentFactory(
   return new ComponentFactory_(selector, componentType, viewDefFactory);
 }
 
-class ComponentFactory_ implements ComponentFactory<any> {
-  /**
-   * We are not renaming this field as the old ComponentFactory is using it.
-   * @internal */
-  _viewClass: any;
-
-  constructor(
-      public selector: string, public componentType: Type<any>,
-      _viewDefFactory: ViewDefinitionFactory) {
-    this._viewClass = _viewDefFactory;
+class ComponentFactory_ extends ComponentFactory<any> {
+  constructor(selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory) {
+    super(selector, <any>viewDefFactory, componentType);
   }
 
   /**
@@ -49,13 +46,16 @@ class ComponentFactory_ implements ComponentFactory<any> {
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
+    view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
+
     return new ComponentRef_(view, new ViewRef_(view), component);
   }
 }
 
-class ComponentRef_ implements ComponentRef<any> {
+class ComponentRef_ extends ComponentRef<any> {
   private _elDef: NodeDef;
   constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {
+    super();
     this._elDef = this._view.def.nodes[0];
   }
   get location(): ElementRef {
@@ -103,7 +103,11 @@ class ViewContainerRef_ implements ViewContainerRef {
     }
   }
 
-  get(index: number): ViewRef { return new ViewRef_(this._data.embeddedViews[index]); }
+  get(index: number): ViewRef {
+    const ref = new ViewRef_(this._data.embeddedViews[index]);
+    ref.attachToViewContainerRef(this);
+    return ref;
+  }
 
   get length(): number { return this._data.embeddedViews.length; };
 
@@ -124,8 +128,10 @@ class ViewContainerRef_ implements ViewContainerRef {
   }
 
   insert(viewRef: ViewRef, index?: number): ViewRef {
-    const viewData = (<ViewRef_>viewRef)._view;
+    const viewRef_ = <ViewRef_>viewRef;
+    const viewData = viewRef_._view;
     Services.attachEmbeddedView(this._data, index, viewData);
+    viewRef_.attachToViewContainerRef(this);
     return viewRef;
   }
 
@@ -147,6 +153,7 @@ class ViewContainerRef_ implements ViewContainerRef {
   detach(index?: number): ViewRef {
     const view = this.get(index);
     Services.detachEmbeddedView(this._data, index);
+    (view as ViewRef_).detachFromContainer();
     return view;
   }
 }
@@ -155,11 +162,17 @@ export function createChangeDetectorRef(view: ViewData): ChangeDetectorRef {
   return new ViewRef_(view);
 }
 
-class ViewRef_ implements EmbeddedViewRef<any> {
+export class ViewRef_ implements EmbeddedViewRef<any> {
   /** @internal */
   _view: ViewData;
+  private _viewContainerRef: ViewContainerRef;
+  private _appRef: ApplicationRef;
 
-  constructor(_view: ViewData) { this._view = _view; }
+  constructor(_view: ViewData) {
+    this._view = _view;
+    this._viewContainerRef = null;
+    this._appRef = null;
+  }
 
   get rootNodes(): any[] { return rootRenderNodes(this._view); }
 
@@ -173,9 +186,40 @@ class ViewRef_ implements EmbeddedViewRef<any> {
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
 
   reattach(): void { this._view.state |= ViewState.ChecksEnabled; }
-  onDestroy(callback: Function) { this._view.disposables.push(<any>callback); }
+  onDestroy(callback: Function) {
+    if (!this._view.disposables) {
+      this._view.disposables = [];
+    }
+    this._view.disposables.push(<any>callback);
+  }
 
-  destroy() { Services.destroyView(this._view); }
+  destroy() {
+    if (this._appRef) {
+      this._appRef.detachView(this);
+    } else if (this._viewContainerRef) {
+      this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
+    }
+    Services.destroyView(this._view);
+  }
+
+  detachFromContainer() {
+    this._appRef = null;
+    this._viewContainerRef = null;
+  }
+
+  attachToAppRef(appRef: ApplicationRef) {
+    if (this._viewContainerRef) {
+      throw new Error('This view is already attached to a ViewContainer!');
+    }
+    this._appRef = appRef;
+  }
+
+  attachToViewContainerRef(vcRef: ViewContainerRef) {
+    if (this._appRef) {
+      throw new Error('This view is already attached directly to the ApplicationRef!');
+    }
+    this._viewContainerRef = vcRef;
+  }
 }
 
 export function createTemplateRef(view: ViewData, def: NodeDef): TemplateRef<any> {
@@ -206,4 +250,138 @@ class Injector_ implements Injector {
         this.view, this.elDef, allowPrivateServices,
         {flags: DepFlags.None, token, tokenKey: tokenKey(token)}, notFoundValue);
   }
+}
+
+export function nodeValue(view: ViewData, index: number): any {
+  const def = view.def.nodes[index];
+  switch (def.type) {
+    case NodeType.Element:
+      if (def.element.template) {
+        return createTemplateRef(view, def);
+      } else {
+        return asElementData(view, def.index).renderElement;
+      }
+    case NodeType.Text:
+      return asTextData(view, def.index).renderText;
+    case NodeType.Directive:
+    case NodeType.Pipe:
+    case NodeType.Provider:
+      return asProviderData(view, def.index).instance;
+  }
+  return undefined;
+}
+
+export function createRendererV1(view: ViewData): RendererV1 {
+  return new RendererAdapter(view.renderer);
+}
+
+class RendererAdapter implements RendererV1 {
+  constructor(private delegate: RendererV2) {}
+  selectRootElement(selectorOrNode: string|Element): Element {
+    return this.delegate.selectRootElement(selectorOrNode);
+  }
+
+  createElement(parent: Element|DocumentFragment, namespaceAndName: string): Element {
+    const [ns, name] = splitNamespace(namespaceAndName);
+    const el = this.delegate.createElement(name, ns);
+    if (parent) {
+      this.delegate.appendChild(parent, el);
+    }
+    return el;
+  }
+
+  createViewRoot(hostElement: Element): Element|DocumentFragment { return hostElement; }
+
+  createTemplateAnchor(parentElement: Element|DocumentFragment): Comment {
+    const comment = this.delegate.createComment('');
+    if (parentElement) {
+      this.delegate.appendChild(parentElement, comment);
+    }
+    return comment;
+  }
+
+  createText(parentElement: Element|DocumentFragment, value: string): any {
+    const node = this.delegate.createText(value);
+    if (parentElement) {
+      this.delegate.appendChild(parentElement, node);
+    }
+    return node;
+  }
+
+  projectNodes(parentElement: Element|DocumentFragment, nodes: Node[]) {
+    for (let i = 0; i < nodes.length; i++) {
+      this.delegate.appendChild(parentElement, nodes[i]);
+    }
+  }
+
+  attachViewAfter(node: Node, viewRootNodes: Node[]) {
+    const parentElement = this.delegate.parentNode(node);
+    const nextSibling = this.delegate.nextSibling(node);
+    for (let i = 0; i < viewRootNodes.length; i++) {
+      this.delegate.insertBefore(parentElement, viewRootNodes[i], nextSibling);
+    }
+  }
+
+  detachView(viewRootNodes: (Element|Text|Comment)[]) {
+    for (let i = 0; i < viewRootNodes.length; i++) {
+      const node = viewRootNodes[i];
+      const parentElement = this.delegate.parentNode(node);
+      this.delegate.removeChild(parentElement, node);
+    }
+  }
+
+  destroyView(hostElement: Element|DocumentFragment, viewAllNodes: Node[]) {
+    for (let i = 0; i < viewAllNodes.length; i++) {
+      this.delegate.destroyNode(viewAllNodes[i]);
+    }
+  }
+
+  listen(renderElement: any, name: string, callback: Function): Function {
+    return this.delegate.listen(renderElement, name, <any>callback);
+  }
+
+  listenGlobal(target: string, name: string, callback: Function): Function {
+    return this.delegate.listen(target, name, <any>callback);
+  }
+
+  setElementProperty(
+      renderElement: Element|DocumentFragment, propertyName: string, propertyValue: any): void {
+    this.delegate.setProperty(renderElement, propertyName, propertyValue);
+  }
+
+  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue: string):
+      void {
+    const [ns, name] = splitNamespace(namespaceAndName);
+    if (attributeValue != null) {
+      this.delegate.setAttribute(renderElement, name, attributeValue, ns);
+    } else {
+      this.delegate.removeAttribute(renderElement, name, ns);
+    }
+  }
+
+  setBindingDebugInfo(renderElement: Element, propertyName: string, propertyValue: string): void {}
+
+  setElementClass(renderElement: Element, className: string, isAdd: boolean): void {
+    if (isAdd) {
+      this.delegate.addClass(renderElement, className);
+    } else {
+      this.delegate.removeClass(renderElement, className);
+    }
+  }
+
+  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
+    if (styleValue != null) {
+      this.delegate.setStyle(renderElement, styleName, styleValue, false, false);
+    } else {
+      this.delegate.removeStyle(renderElement, styleName, false);
+    }
+  }
+
+  invokeElementMethod(renderElement: Element, methodName: string, args: any[]): void {
+    (renderElement as any)[methodName].apply(renderElement, args);
+  }
+
+  setText(renderNode: Text, text: string): void { this.delegate.setValue(renderNode, text); }
+
+  animate(): NoOpAnimationPlayer { return new NoOpAnimationPlayer(); }
 }

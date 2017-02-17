@@ -8,7 +8,6 @@
 
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 

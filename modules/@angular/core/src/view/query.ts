@@ -80,14 +80,14 @@ export function dirtyParentQueries(view: ViewData) {
   }
 
   // view queries
-  let compDef = view.parentNodeDef;
-  view = view.parent;
-  if (view) {
-    for (let i = compDef.index + 1; i <= compDef.index + compDef.childCount; i++) {
+  if (view.def.nodeFlags & NodeFlags.HasViewQuery) {
+    for (let i = 0; i < view.def.nodes.length; i++) {
       const nodeDef = view.def.nodes[i];
       if ((nodeDef.flags & NodeFlags.HasViewQuery) && (nodeDef.flags & NodeFlags.HasDynamicQuery)) {
         asQueryList(view, i).setDirty();
       }
+      // only visit the root nodes
+      i += nodeDef.childCount;
     }
   }
 }
@@ -97,16 +97,16 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
   if (!queryList.dirty) {
     return;
   }
-  const providerDef = nodeDef.parent;
-  const providerData = asProviderData(view, providerDef.index);
+  let directiveInstance: any;
   let newValues: any[];
   if (nodeDef.flags & NodeFlags.HasContentQuery) {
-    const elementDef = providerDef.parent;
+    const elementDef = nodeDef.parent.parent;
     newValues = calcQueryValues(
         view, elementDef.index, elementDef.index + elementDef.childCount, nodeDef.query, []);
+    directiveInstance = asProviderData(view, nodeDef.parent.index).instance;
   } else if (nodeDef.flags & NodeFlags.HasViewQuery) {
-    const compView = providerData.componentView;
-    newValues = calcQueryValues(compView, 0, compView.def.nodes.length - 1, nodeDef.query, []);
+    newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query, []);
+    directiveInstance = view.component;
   }
   queryList.reset(newValues);
   const bindings = nodeDef.query.bindings;
@@ -123,7 +123,7 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
         notify = true;
         break;
     }
-    providerData.instance[binding.propName] = boundValue;
+    directiveInstance[binding.propName] = boundValue;
   }
   if (notify) {
     queryList.notifyOnChanges();

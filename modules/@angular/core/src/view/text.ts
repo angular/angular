@@ -20,6 +20,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     bindings[i - 1] = {
       type: BindingType.TextInterpolation,
       name: undefined,
+      ns: undefined,
       nonMinifiedName: undefined,
       securityContext: undefined,
       suffix: constants[i]

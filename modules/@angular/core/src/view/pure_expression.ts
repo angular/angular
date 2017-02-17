@@ -29,6 +29,7 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     bindings[i] = {
       type: BindingType.PureExpressionProperty,
       name: prop,
+      ns: undefined,
       nonMinifiedName: prop,
       securityContext: undefined,
       suffix: undefined

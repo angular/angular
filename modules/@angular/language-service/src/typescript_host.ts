@@ -131,7 +131,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
       result = this._resolver = new CompileMetadataResolver(
-          moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
+          config, moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
           elementSchemaRegistry, directiveNormalizer, this._staticSymbolCache, this.reflector,
           (error, type) => this.collectError(error, type && type.filePath));
     }

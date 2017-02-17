@@ -57,7 +57,7 @@ export function main() {
 
       it('should set fixed attributes', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, null, 0, 'div', {'title': 'a'}),
+                            elementDef(NodeFlags.None, null, null, 0, 'div', [['title', 'a']]),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');

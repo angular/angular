@@ -11,7 +11,7 @@ import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -19,6 +19,10 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../src/facade/lang';
+
+@Component({selector: 'non-existent', template: ''})
+class NonExistentComp {
+}
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -124,29 +128,32 @@ function bootstrap(
 }
 
 export function main() {
-  let fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
-      testProviders: Provider[], lightDom: any /** TODO #9100 */;
+  let el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: Provider[],
+      lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     let compilerConsole: DummyConsole;
 
     beforeEachProviders(() => { return [Log]; });
 
-    beforeEach(() => {
+    beforeEach(inject([DOCUMENT], (doc: any) => {
       destroyPlatform();
+      compilerConsole = new DummyConsole();
+      testProviders = [{provide: Console, useValue: compilerConsole}];
 
-      fakeDoc = getDOM().createHtmlDocument();
-      el = getDOM().createElement('hello-app', fakeDoc);
-      el2 = getDOM().createElement('hello-app-2', fakeDoc);
-      lightDom = getDOM().createElement('light-dom-el', fakeDoc);
-      getDOM().appendChild(fakeDoc.body, el);
-      getDOM().appendChild(fakeDoc.body, el2);
+      const oldRoots = getDOM().querySelectorAll(doc, 'hello-app,hello-app-2,light-dom-el');
+      for (let i = 0; i < oldRoots.length; i++) {
+        getDOM().remove(oldRoots[i]);
+      }
+
+      el = getDOM().createElement('hello-app', doc);
+      el2 = getDOM().createElement('hello-app-2', doc);
+      lightDom = getDOM().createElement('light-dom-el', doc);
+      getDOM().appendChild(doc.body, el);
+      getDOM().appendChild(doc.body, el2);
       getDOM().appendChild(el, lightDom);
       getDOM().setText(lightDom, 'loading');
-      compilerConsole = new DummyConsole();
-      testProviders =
-          [{provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useValue: compilerConsole}];
-    });
+    }));
 
     afterEach(destroyPlatform);
 
@@ -167,10 +174,11 @@ export function main() {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler(false);
          errorHandler._console = logger as any;
-         bootstrap(HelloRootCmp, [
+         bootstrap(NonExistentComp, [
            {provide: ErrorHandler, useValue: errorHandler}
          ]).then(null, (reason) => {
-           expect(reason.message).toContain('The selector "hello-app" did not match any elements');
+           expect(reason.message)
+               .toContain('The selector "non-existent" did not match any elements');
            async.done();
            return null;
          });
@@ -184,10 +192,10 @@ export function main() {
            errorHandler._console = logger as any;
 
            const refPromise =
-               bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
+               bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason: any) => {
              expect(reason.message)
-                 .toContain('The selector "hello-app" did not match any elements');
+                 .toContain('The selector "non-existent" did not match any elements');
              async.done();
            });
          }));
@@ -199,10 +207,10 @@ export function main() {
            errorHandler._console = logger as any;
 
            const refPromise =
-               bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
+               bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason) => {
              expect(logger.res.join(''))
-                 .toContain('The selector "hello-app" did not match any elements');
+                 .toContain('The selector "non-existent" did not match any elements');
              async.done();
              return null;
            });

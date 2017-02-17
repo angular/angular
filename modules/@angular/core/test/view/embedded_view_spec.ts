@@ -55,10 +55,10 @@ export function main() {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 2, 'div'),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child0'})
+                    elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
         anchorDef(NodeFlags.None, null, null, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child1'})
+                    elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child1']])
                   ]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
@@ -85,10 +85,10 @@ export function main() {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 2, 'div'),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child0'})
+                    elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
         anchorDef(NodeFlags.None, null, null, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child1'})
+                    elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child1']])
                   ]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
@@ -112,9 +112,9 @@ export function main() {
     it('should include embedded views in root nodes', () => {
       const {view: parentView} = createAndGetRootNodes(compViewDef([
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
-                    elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'child0'})
+                    elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        elementDef(NodeFlags.None, null, null, 0, 'span', {'name': 'after'})
+        elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'after']])
       ]));
 
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[0]);

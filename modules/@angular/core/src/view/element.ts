@@ -10,7 +10,7 @@ import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl} from './util';
+import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -36,6 +36,7 @@ export function anchorDef(
     bindings: [],
     disposableCount: 0,
     element: {
+      ns: undefined,
       name: undefined,
       attrs: undefined,
       outputs: [], template, source,
@@ -54,8 +55,8 @@ export function anchorDef(
 
 export function elementDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    ngContentIndex: number, childCount: number, name: string,
-    fixedAttrs: {[name: string]: string} = {},
+    ngContentIndex: number, childCount: number, namespaceAndName: string,
+    fixedAttrs: [string, string][] = [],
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
@@ -63,13 +64,18 @@ export function elementDef(
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
+  let ns: string;
+  let name: string;
+  if (namespaceAndName) {
+    [ns, name] = splitNamespace(namespaceAndName);
+  }
   bindings = bindings || [];
   const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
     const entry = bindings[i];
     let bindingDef: BindingDef;
     const bindingType = entry[0];
-    const name = entry[1];
+    const [ns, name] = splitNamespace(entry[1]);
     let securityContext: SecurityContext;
     let suffix: string;
     switch (bindingType) {
@@ -81,7 +87,7 @@ export function elementDef(
         securityContext = <SecurityContext>entry[2];
         break;
     }
-    bindingDefs[i] = {type: bindingType, name, nonMinifiedName: name, securityContext, suffix};
+    bindingDefs[i] = {type: bindingType, ns, name, nonMinifiedName: name, securityContext, suffix};
   }
   outputs = outputs || [];
   const outputDefs: ElementOutputDef[] = new Array(outputs.length);
@@ -96,6 +102,11 @@ export function elementDef(
     }
     outputDefs[i] = {eventName: eventName, target: target};
   }
+  fixedAttrs = fixedAttrs || [];
+  const attrs = <[string, string, string][]>fixedAttrs.map(([namespaceAndName, value]) => {
+    const [ns, name] = splitNamespace(namespaceAndName);
+    return [ns, name, value];
+  });
   return {
     type: NodeType.Element,
     // will bet set by the view definition
@@ -112,8 +123,9 @@ export function elementDef(
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
     element: {
+      ns,
       name,
-      attrs: fixedAttrs,
+      attrs,
       outputs: outputDefs, source,
       template: undefined,
       // will bet set by the view definition
@@ -136,9 +148,7 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   let el: any;
   if (view.parent || !rootSelectorOrNode) {
     if (elDef.name) {
-      // TODO(vicb): move the namespace to the node definition
-      const nsAndName = splitNamespace(elDef.name);
-      el = renderer.createElement(nsAndName[1], nsAndName[0]);
+      el = renderer.createElement(elDef.name, elDef.ns);
     } else {
       el = renderer.createComment('');
     }
@@ -150,10 +160,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
     el = renderer.selectRootElement(rootSelectorOrNode);
   }
   if (elDef.attrs) {
-    for (let attrName in elDef.attrs) {
-      // TODO(vicb): move the namespace to the node definition
-      const nsAndName = splitNamespace(attrName);
-      renderer.setAttribute(el, nsAndName[1], elDef.attrs[attrName], nsAndName[0]);
+    for (let i = 0; i < elDef.attrs.length; i++) {
+      const [ns, name, value] = elDef.attrs[i];
+      renderer.setAttribute(el, name, value, ns);
     }
   }
   if (elDef.outputs.length) {
@@ -217,11 +226,11 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
     return;
   }
   const binding = def.bindings[bindingIdx];
-  const name = binding.name;
   const renderNode = asElementData(view, def.index).renderElement;
+  const name = binding.name;
   switch (binding.type) {
     case BindingType.ElementAttribute:
-      setElementAttribute(view, binding, renderNode, name, value);
+      setElementAttribute(view, binding, renderNode, binding.ns, name, value);
       break;
     case BindingType.ElementClass:
       setElementClass(view, renderNode, name, value);
@@ -236,17 +245,15 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 }
 
 function setElementAttribute(
-    view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
+    view: ViewData, binding: BindingDef, renderNode: any, ns: string, name: string, value: any) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
   const renderer = view.renderer;
-  // TODO(vicb): move the namespace to the node definition
-  const nsAndName = splitNamespace(name);
   if (value != null) {
-    renderer.setAttribute(renderNode, nsAndName[1], renderValue, nsAndName[0]);
+    renderer.setAttribute(renderNode, name, renderValue, ns);
   } else {
-    renderer.removeAttribute(renderNode, nsAndName[1], nsAndName[0]);
+    renderer.removeAttribute(renderNode, name, ns);
   }
 }
 
@@ -284,14 +291,4 @@ function setElementProperty(
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   view.renderer.setProperty(renderNode, name, renderValue);
-}
-
-const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
-
-function splitNamespace(name: string): string[] {
-  if (name[0] === ':') {
-    const match = name.match(NS_PREFIX_RE);
-    return [match[1], match[2]];
-  }
-  return ['', name];
 }

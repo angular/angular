@@ -161,6 +161,7 @@ export enum NodeFlags {
 
 export interface BindingDef {
   type: BindingType;
+  ns: string;
   name: string;
   nonMinifiedName: string;
   securityContext: SecurityContext;
@@ -187,7 +188,9 @@ export enum QueryValueType {
 
 export interface ElementDef {
   name: string;
-  attrs: {[name: string]: string};
+  ns: string;
+  /** ns, name, value */
+  attrs: [string, string, string][];
   outputs: ElementOutputDef[];
   template: ViewDefinition;
   component: NodeDef;
