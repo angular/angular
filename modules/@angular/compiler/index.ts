@@ -28,6 +28,7 @@ export {CompilerConfig, RenderTypes} from './src/config';
 export * from './src/compile_metadata';
 export * from './src/aot/compiler_factory';
 export * from './src/aot/compiler';
+export * from './src/aot/compiler_options';
 export * from './src/aot/compiler_host';
 export * from './src/aot/static_reflector';
 export * from './src/aot/static_reflection_capabilities';
