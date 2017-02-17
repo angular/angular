@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
@@ -369,7 +369,7 @@ export class DomRendererFactoryV2 implements RendererFactoryV2 {
     this.defaultRenderer = new DefaultDomRendererV2(eventManager);
   };
 
-  createRenderer(element: any, type: ComponentRenderTypeV2): RendererV2 {
+  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -505,7 +505,7 @@ class EmulatedEncapsulationDomRendererV2 extends DefaultDomRendererV2 {
 
   constructor(
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: ComponentRenderTypeV2) {
+      private component: RendererTypeV2) {
     super(eventManager);
     const styles = flattenStyles(component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
@@ -528,7 +528,7 @@ class ShadowDomRenderer extends DefaultDomRendererV2 {
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: ComponentRenderTypeV2) {
+      private hostEl: any, private component: RendererTypeV2) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).createShadowRoot();
     this.sharedStylesHost.addHost(this.shadowRoot);

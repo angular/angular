@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, componentRenderTypeName, identifierModuleUrl, identifierName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {BuiltinConverter, BuiltinConverterFactory, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
@@ -45,10 +45,10 @@ export class ViewCompilerNext extends ViewCompiler {
 
     const statements: o.Statement[] = [];
 
-    const renderComponentVar = o.variable(componentRenderTypeName(component.type.reference));
+    const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
     statements.push(
         renderComponentVar
-            .set(o.importExpr(createIdentifier(Identifiers.createComponentRenderTypeV2)).callFn([
+            .set(o.importExpr(createIdentifier(Identifiers.createRendererTypeV2)).callFn([
               new o.LiteralMapExpr([
                 new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
                 new o.LiteralMapEntry('styles', styles),
@@ -481,11 +481,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       }
     });
 
-    let compRenderType = o.NULL_EXPR;
+    let rendererType = o.NULL_EXPR;
     let compView = o.NULL_EXPR;
     if (directiveAst.directive.isComponent) {
       compView = o.importExpr({reference: directiveAst.directive.componentViewType});
-      compRenderType = o.importExpr({reference: directiveAst.directive.componentRenderType});
+      rendererType = o.importExpr({reference: directiveAst.directive.rendererType});
     }
 
     const inputDefs = directiveAst.inputs.map((inputAst, inputIndex) => {
@@ -533,7 +533,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       o.literal(childCount), providerExpr, depsExpr,
       inputDefs.length ? new o.LiteralMapExpr(inputDefs) : o.NULL_EXPR,
-      outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR, compView, compRenderType
+      outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR, compView, rendererType
     ]);
     this.nodeDefs[nodeIndex] = nodeDef;
 

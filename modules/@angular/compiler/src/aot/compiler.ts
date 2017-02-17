@@ -223,10 +223,7 @@ export class AotCompiler {
     }
     compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
     targetStatements.push(...viewResult.statements);
-    return {
-      viewClassVar: viewResult.viewClassVar,
-      compRenderTypeVar: viewResult.componentRenderTypeVar
-    };
+    return {viewClassVar: viewResult.viewClassVar, compRenderTypeVar: viewResult.rendererTypeVar};
   }
 
   private _codgenStyles(

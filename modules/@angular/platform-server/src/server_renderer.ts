@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
 import {isBlank, isPresent, stringify} from './facade/lang';
@@ -273,7 +273,7 @@ export class ServerRendererFactoryV2 implements RendererFactoryV2 {
     this.defaultRenderer = new DefaultServerRendererV2(document, ngZone);
   };
 
-  createRenderer(element: any, type: ComponentRenderTypeV2): RendererV2 {
+  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -404,7 +404,7 @@ class EmulatedEncapsulationServerRendererV2 extends DefaultServerRendererV2 {
 
   constructor(
       document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
-      private component: ComponentRenderTypeV2) {
+      private component: RendererTypeV2) {
     super(document, ngZone);
     const styles = flattenStyles(component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);

@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {ComponentRenderTypeV2, RendererFactoryV2, RendererV2} from '../render/api';
+import {RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
@@ -399,7 +399,7 @@ export function getCurrentDebugContext(): DebugContext {
 class DebugRendererFactoryV2 implements RendererFactoryV2 {
   constructor(private delegate: RendererFactoryV2) {}
 
-  createRenderer(element: any, renderData: ComponentRenderTypeV2): RendererV2 {
+  createRenderer(element: any, renderData: RendererTypeV2): RendererV2 {
     return new DebugRendererV2(this.delegate.createRenderer(element, renderData));
   }
 }

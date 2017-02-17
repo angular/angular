@@ -14,7 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {ComponentRenderTypeV2, RendererFactoryV2, RendererV2} from '../render/api';
+import {RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 // -------------------------------------
@@ -219,7 +219,7 @@ export interface ProviderDef {
   value: any;
   deps: DepDef[];
   outputs: DirectiveOutputDef[];
-  componentRenderType: ComponentRenderTypeV2;
+  rendererType: RendererTypeV2;
   // closure to allow recursive components
   component: ViewDefinitionFactory;
 }

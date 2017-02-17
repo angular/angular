@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, ComponentRenderTypeV2, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
@@ -117,7 +117,7 @@ export function viewClassName(compType: any, embeddedTemplateIndex: number): str
   return `View_${identifierName({reference: compType})}_${embeddedTemplateIndex}`;
 }
 
-export function componentRenderTypeName(compType: any): string {
+export function rendererTypeName(compType: any): string {
   return `RenderType_${identifierName({reference: compType})}`;
 }
 
@@ -315,7 +315,7 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
   template: CompileTemplateSummary;
   wrapperType: StaticSymbol|ProxyClass;
   componentViewType: StaticSymbol|ProxyClass;
-  componentRenderType: StaticSymbol|ComponentRenderTypeV2;
+  rendererType: StaticSymbol|RendererTypeV2;
   componentFactory: StaticSymbol|ComponentFactory<any>;
 }
 
@@ -326,7 +326,7 @@ export class CompileDirectiveMetadata {
   static create(
       {isHost, type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
        providers, viewProviders, queries, viewQueries, entryComponents, template, wrapperType,
-       componentViewType, componentRenderType, componentFactory}: {
+       componentViewType, rendererType, componentFactory}: {
         isHost?: boolean,
         type?: CompileTypeMetadata,
         isComponent?: boolean,
@@ -344,7 +344,7 @@ export class CompileDirectiveMetadata {
         template?: CompileTemplateMetadata,
         wrapperType?: StaticSymbol|ProxyClass,
         componentViewType?: StaticSymbol|ProxyClass,
-        componentRenderType?: StaticSymbol|ComponentRenderTypeV2,
+        rendererType?: StaticSymbol|RendererTypeV2,
         componentFactory?: StaticSymbol|ComponentFactory<any>,
       } = {}): CompileDirectiveMetadata {
     const hostListeners: {[key: string]: string} = {};
@@ -399,7 +399,7 @@ export class CompileDirectiveMetadata {
       template,
       wrapperType,
       componentViewType,
-      componentRenderType,
+      rendererType,
       componentFactory,
     });
   }
@@ -424,13 +424,13 @@ export class CompileDirectiveMetadata {
 
   wrapperType: StaticSymbol|ProxyClass;
   componentViewType: StaticSymbol|ProxyClass;
-  componentRenderType: StaticSymbol|ComponentRenderTypeV2;
+  rendererType: StaticSymbol|RendererTypeV2;
   componentFactory: StaticSymbol|ComponentFactory<any>;
 
   constructor({isHost,          type,      isComponent,   selector,          exportAs,
                changeDetection, inputs,    outputs,       hostListeners,     hostProperties,
                hostAttributes,  providers, viewProviders, queries,           viewQueries,
-               entryComponents, template,  wrapperType,   componentViewType, componentRenderType,
+               entryComponents, template,  wrapperType,   componentViewType, rendererType,
                componentFactory}: {
     isHost?: boolean,
     type?: CompileTypeMetadata,
@@ -451,7 +451,7 @@ export class CompileDirectiveMetadata {
     template?: CompileTemplateMetadata,
     wrapperType?: StaticSymbol|ProxyClass,
     componentViewType?: StaticSymbol|ProxyClass,
-    componentRenderType?: StaticSymbol|ComponentRenderTypeV2,
+    rendererType?: StaticSymbol|RendererTypeV2,
     componentFactory?: StaticSymbol|ComponentFactory<any>,
   } = {}) {
     this.isHost = !!isHost;
@@ -474,7 +474,7 @@ export class CompileDirectiveMetadata {
 
     this.wrapperType = wrapperType;
     this.componentViewType = componentViewType;
-    this.componentRenderType = componentRenderType;
+    this.rendererType = rendererType;
     this.componentFactory = componentFactory;
   }
 
@@ -499,7 +499,7 @@ export class CompileDirectiveMetadata {
       template: this.template && this.template.toSummary(),
       wrapperType: this.wrapperType,
       componentViewType: this.componentViewType,
-      componentRenderType: this.componentRenderType,
+      rendererType: this.rendererType,
       componentFactory: this.componentFactory
     };
   }
@@ -535,8 +535,7 @@ export function createHostComponentMeta(
     queries: [],
     viewQueries: [],
     componentViewType: hostViewType,
-    componentRenderType:
-        {id: '__Host__', encapsulation: ViewEncapsulation.None, styles: [], data: {}}
+    rendererType: {id: '__Host__', encapsulation: ViewEncapsulation.None, styles: [], data: {}}
   });
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentRenderTypeV2, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type} from '@angular/core';
+import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, RendererTypeV2, Type} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
@@ -290,18 +290,17 @@ export class JitCompiler implements Compiler {
                            .concat(...compiledAnimations.map(ca => ca.statements))
                            .concat(compileResult.statements);
     let viewClass: any;
-    let componentRenderType: any;
+    let rendererType: any;
     if (!this._compilerConfig.useJit) {
-      [viewClass, componentRenderType] = interpretStatements(
-          statements, [compileResult.viewClassVar, compileResult.componentRenderTypeVar]);
+      [viewClass, rendererType] = interpretStatements(
+          statements, [compileResult.viewClassVar, compileResult.rendererTypeVar]);
     } else {
       const sourceUrl =
           `/${identifierName(template.ngModule.type)}/${identifierName(template.compType)}/${template.isHost?'host':'component'}.ngfactory.js`;
-      [viewClass, componentRenderType] = jitStatements(
-          sourceUrl, statements,
-          [compileResult.viewClassVar, compileResult.componentRenderTypeVar]);
+      [viewClass, rendererType] = jitStatements(
+          sourceUrl, statements, [compileResult.viewClassVar, compileResult.rendererTypeVar]);
     }
-    template.compiled(viewClass, componentRenderType);
+    template.compiled(viewClass, rendererType);
   }
 
   private _resolveStylesCompileResult(
@@ -336,11 +335,11 @@ class CompiledTemplate {
       public compMeta: CompileDirectiveMetadata, public ngModule: CompileNgModuleMetadata,
       public directives: CompileIdentifierMetadata[]) {}
 
-  compiled(viewClass: Function, componentRenderType: any) {
+  compiled(viewClass: Function, rendererType: any) {
     this._viewClass = viewClass;
     (<ProxyClass>this.compMeta.componentViewType).setDelegate(viewClass);
-    for (let prop in componentRenderType) {
-      (<any>this.compMeta.componentRenderType)[prop] = componentRenderType[prop];
+    for (let prop in rendererType) {
+      (<any>this.compMeta.rendererType)[prop] = rendererType[prop];
     }
     this.isCompiled = true;
   }
