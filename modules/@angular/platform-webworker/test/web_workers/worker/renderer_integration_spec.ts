@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Injectable} from '@angular/core';
+import {Component, ComponentRef} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
+import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
-import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
-import {Serializer} from '@angular/platform-webworker/src/web_workers/shared/serializer';
-import {ServiceMessageBrokerFactory_} from '@angular/platform-webworker/src/web_workers/shared/service_message_broker';
-import {MessageBasedRenderer} from '@angular/platform-webworker/src/web_workers/ui/renderer';
-import {WebWorkerRootRenderer} from '@angular/platform-webworker/src/web_workers/worker/renderer';
 
-import {platformBrowserDynamicTesting} from '../../../../platform-browser-dynamic/testing';
-import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
+import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '../../../src/web_workers/shared/client_message_broker';
+import {RenderStore} from '../../../src/web_workers/shared/render_store';
+import {Serializer} from '../../../src/web_workers/shared/serializer';
+import {ServiceMessageBrokerFactory_} from '../../../src/web_workers/shared/service_message_broker';
+import {MessageBasedRenderer} from '../../../src/web_workers/ui/renderer';
+import {WebWorkerRootRenderer} from '../../../src/web_workers/worker/renderer';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {
@@ -70,19 +70,23 @@ export function main() {
       testUiInjector.ngModule = BrowserTestingModule;
       testUiInjector.configureTestingModule({
         providers: [
-          Serializer, {provide: RenderStore, useValue: uiRenderStore},
+          Serializer,
+          {provide: RenderStore, useValue: uiRenderStore},
           {provide: DomRootRenderer, useClass: DomRootRenderer_},
-          {provide: RootRenderer, useExisting: DomRootRenderer}
+          {provide: RootRenderer, useExisting: DomRootRenderer},
         ]
       });
       const uiSerializer = testUiInjector.get(Serializer);
       const domRootRenderer = testUiInjector.get(DomRootRenderer);
+
       workerRenderStore = new RenderStore();
 
       TestBed.configureTestingModule({
         declarations: [MyComp2],
         providers: [
-          Serializer, {provide: RenderStore, useValue: workerRenderStore}, {
+          Serializer,
+          {provide: RenderStore, useValue: workerRenderStore},
+          {
             provide: RootRenderer,
             useFactory: (workerSerializer: Serializer) => {
               return createWorkerRenderer(
@@ -90,12 +94,12 @@ export function main() {
                   workerRenderStore);
             },
             deps: [Serializer]
-          }
+          },
         ]
       });
     });
 
-    function getRenderElement(workerEl: any) {
+    function getRenderElement(workerEl: any): any {
       const id = workerRenderStore.serialize(workerEl);
       return uiRenderStore.deserialize(id);
     }
@@ -122,26 +126,25 @@ export function main() {
              MyComp2, {set: {template: '<input [title]="y" style="position:absolute">'}});
          const fixture = TestBed.createComponent(MyComp2);
 
-         const checkSetters =
-             (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
-               const renderer = getRenderer(componentRef);
-               const el = getRenderElement(workerEl);
-               renderer.setElementProperty(workerEl, 'tabIndex', 1);
-               expect((<HTMLInputElement>el).tabIndex).toEqual(1);
+         const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
+           const renderer = getRenderer(componentRef);
+           const el = getRenderElement(workerEl);
+           renderer.setElementProperty(workerEl, 'tabIndex', 1);
+           expect(el.tabIndex).toEqual(1);
 
-               renderer.setElementClass(workerEl, 'a', true);
-               expect(getDOM().hasClass(el, 'a')).toBe(true);
-               renderer.setElementClass(workerEl, 'a', false);
-               expect(getDOM().hasClass(el, 'a')).toBe(false);
+           renderer.setElementClass(workerEl, 'a', true);
+           expect(getDOM().hasClass(el, 'a')).toBe(true);
+           renderer.setElementClass(workerEl, 'a', false);
+           expect(getDOM().hasClass(el, 'a')).toBe(false);
 
-               renderer.setElementStyle(workerEl, 'width', '10px');
-               expect(getDOM().getStyle(el, 'width')).toEqual('10px');
-               renderer.setElementStyle(workerEl, 'width', null);
-               expect(getDOM().getStyle(el, 'width')).toEqual('');
+           renderer.setElementStyle(workerEl, 'width', '10px');
+           expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+           renderer.setElementStyle(workerEl, 'width', null);
+           expect(getDOM().getStyle(el, 'width')).toEqual('');
 
-               renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
-               expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
-             };
+           renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
+           expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
+         };
 
          // root element
          checkSetters(fixture.componentRef, fixture.nativeElement);
@@ -150,12 +153,11 @@ export function main() {
        });
 
     it('should update any template comment property/attributes', () => {
-
       TestBed.overrideComponent(
           MyComp2, {set: {template: '<ng-container *ngIf="ctxBoolProp"></ng-container>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      (<MyComp2>fixture.componentInstance).ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
       const el = getRenderElement(fixture.nativeElement);
       expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
@@ -183,6 +185,7 @@ export function main() {
         TestBed.overrideComponent(MyComp2, {set: {template: '<input [title]="y">'}});
         const fixture = TestBed.createComponent(MyComp2);
         const el = fixture.debugElement.children[0];
+
         getRenderer(fixture.componentRef).invokeElementMethod(el.nativeElement, 'setAttribute', [
           'a', 'b'
         ]);
@@ -207,16 +210,8 @@ export function main() {
 
 
 @Component({selector: 'my-comp'})
-@Injectable()
 class MyComp2 {
-  ctxProp: string;
-  ctxNumProp: any /** TODO #9100 */;
-  ctxBoolProp: boolean;
-  constructor() {
-    this.ctxProp = 'initial value';
-    this.ctxNumProp = 0;
-    this.ctxBoolProp = false;
-  }
-
-  throwError() { throw 'boom'; }
+  ctxProp = 'initial value';
+  ctxNumProp = 0;
+  ctxBoolProp = false;
 }
