@@ -22,7 +22,7 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
   'xhtml': 'http://www.w3.org/1999/xhtml'
 };
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
+export const TEMPLATE_BINDINGS_EXP = /^template bindings=([\s\S]*)$/;
 
 export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
