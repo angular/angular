@@ -12,7 +12,9 @@ import {EventEmitter} from '../../facade/async';
 import {stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
+import {SerializerTypes} from './serialized_types';
 import {Serializer} from './serializer';
+
 
 /**
  * @experimental WebWorker support in Angular is experimental.
@@ -165,7 +167,7 @@ class MessageData {
  * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
-  constructor(public value: any, public type: Type<any>) {}
+  constructor(public value: any, public type: Type<any>|SerializerTypes = null) {}
 }
 
 /**

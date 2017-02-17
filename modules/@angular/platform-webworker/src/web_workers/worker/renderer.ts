@@ -6,24 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
-import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
+import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
-import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
+import {EVENT_CHANNEL, EVENT_V2_CHANNEL, RENDERER_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
+import {SerializerTypes} from '../shared/serialized_types';
 import {ANIMATION_WORKER_PLAYER_PREFIX, RenderStoreObject, Serializer} from '../shared/serializer';
-
-import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
+  globalEvents = new NamedEventEmitter();
+
   private _messageBroker: ClientMessageBroker;
-  public globalEvents: NamedEventEmitter = new NamedEventEmitter();
-  private _componentRenderers: Map<string, WebWorkerRenderer> =
-      new Map<string, WebWorkerRenderer>();
+  private _componentRenderers = new Map<string, WebWorkerRenderer>();
 
   constructor(
       messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
@@ -46,7 +45,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
     } else {
       const eventName = message['eventName'];
       const target = message['eventTarget'];
-      const event = deserializeGenericEvent(message['event']);
+      const event = message['event'];
       if (target) {
         this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
       } else {
@@ -259,20 +258,12 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 }
 
+function eventNameWithTarget(target: string, eventName: string): string {
+  return `${target}:${eventName}`;
+}
+
 export class NamedEventEmitter {
   private _listeners: Map<string, Function[]>;
-
-  private _getListeners(eventName: string): Function[] {
-    if (!this._listeners) {
-      this._listeners = new Map<string, Function[]>();
-    }
-    let listeners = this._listeners.get(eventName);
-    if (!listeners) {
-      listeners = [];
-      this._listeners.set(eventName, listeners);
-    }
-    return listeners;
-  }
 
   listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
 
@@ -285,6 +276,271 @@ export class NamedEventEmitter {
     for (let i = 0; i < listeners.length; i++) {
       listeners[i](event);
     }
+  }
+
+  private _getListeners(eventName: string): Function[] {
+    if (!this._listeners) {
+      this._listeners = new Map<string, Function[]>();
+    }
+    let listeners = this._listeners.get(eventName);
+    if (!listeners) {
+      listeners = [];
+      this._listeners.set(eventName, listeners);
+    }
+    return listeners;
+  }
+}
+
+const globalEvents = new NamedEventEmitter();
+
+@Injectable()
+export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
+  private _messageBroker: ClientMessageBroker;
+
+  constructor(
+      messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
+      private _serializer: Serializer, public renderStore: RenderStore) {
+    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_V2_CHANNEL);
+    bus.initChannel(EVENT_V2_CHANNEL);
+    const source = bus.from(EVENT_V2_CHANNEL);
+    source.subscribe({next: (message: any) => this._dispatchEvent(message)});
+  }
+
+  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
+    const renderer = new WebWorkerRendererV2(this);
+
+    const id = this.renderStore.allocateId();
+    this.renderStore.store(renderer, id);
+    this.callUI('createRenderer', [
+      new FnArg(element, RenderStoreObject),
+      new FnArg(type, SerializerTypes.RENDERER_TYPE_V2),
+      new FnArg(renderer, RenderStoreObject),
+    ]);
+
+    return renderer;
+  }
+
+  callUI(fnName: string, fnArgs: FnArg[]) {
+    const args = new UiArguments(fnName, fnArgs);
+    this._messageBroker.runOnService(args, null);
+  }
+
+  allocateNode(): WebWorkerRenderNode {
+    const result = new WebWorkerRenderNode();
+    const id = this.renderStore.allocateId();
+    this.renderStore.store(result, id);
+    return result;
+  }
+
+  allocateId(): number { return this.renderStore.allocateId(); }
+
+  private _dispatchEvent(message: {[key: string]: any}): void {
+    const element: WebWorkerRenderNode =
+        this._serializer.deserialize(message['element'], RenderStoreObject);
+
+    const eventName = message['eventName'];
+    const target = message['eventTarget'];
+    const event = message['event'];
+
+    if (target) {
+      globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+    } else {
+      element.events.dispatchEvent(eventName, event);
+    }
+  }
+}
+
+
+export class WebWorkerRendererV2 implements RendererV2 {
+  constructor(private _rendererFactory: WebWorkerRendererFactoryV2) {}
+  destroyNode: (node: any) => void | null = null;
+
+  private asFnArg = new FnArg(this, RenderStoreObject);
+
+  // TODO(vicb): destroy the allocated nodes
+  destroy(): void { this.callUIWithRenderer('destroy'); }
+
+  createElement(name: string, namespace?: string): any {
+    const node = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('createElement', [
+      new FnArg(name),
+      new FnArg(namespace),
+      new FnArg(node, RenderStoreObject),
+    ]);
+    return node;
+  }
+
+  createComment(value: string): any {
+    const node = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('createComment', [
+      new FnArg(value),
+      new FnArg(node, RenderStoreObject),
+    ]);
+    return node;
+  }
+
+  createText(value: string): any {
+    const node = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('createText', [
+      new FnArg(value),
+      new FnArg(node, RenderStoreObject),
+    ]);
+    return node;
+  }
+
+  appendChild(parent: any, newChild: any): void {
+    this.callUIWithRenderer('appendChild', [
+      new FnArg(parent, RenderStoreObject),
+      new FnArg(newChild, RenderStoreObject),
+    ]);
+  }
+
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    if (!parent) {
+      return;
+    }
+
+    this.callUIWithRenderer('insertBefore', [
+      new FnArg(parent, RenderStoreObject),
+      new FnArg(newChild, RenderStoreObject),
+      new FnArg(refChild, RenderStoreObject),
+    ]);
+  }
+
+  removeChild(parent: any, oldChild: any): void {
+    this.callUIWithRenderer('removeChild', [
+      new FnArg(parent, RenderStoreObject),
+      new FnArg(oldChild, RenderStoreObject),
+    ]);
+  }
+
+  selectRootElement(selectorOrNode: string|any): any {
+    const node = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('selectRootElement', [
+      new FnArg(selectorOrNode),
+      new FnArg(node, RenderStoreObject),
+    ]);
+    return node;
+  }
+
+  parentNode(node: any): any {
+    const res = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('parentNode', [
+      new FnArg(node, RenderStoreObject),
+      new FnArg(res, RenderStoreObject),
+    ]);
+    return res;
+  }
+
+  nextSibling(node: any): any {
+    const res = this._rendererFactory.allocateNode();
+    this.callUIWithRenderer('nextSibling', [
+      new FnArg(node, RenderStoreObject),
+      new FnArg(res, RenderStoreObject),
+    ]);
+    return res;
+  }
+
+  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    this.callUIWithRenderer('setAttribute', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(name),
+      new FnArg(value),
+      new FnArg(namespace),
+    ]);
+  }
+
+  removeAttribute(el: any, name: string, namespace?: string): void {
+    this.callUIWithRenderer('removeAttribute', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(name),
+      new FnArg(namespace),
+    ]);
+  }
+
+  addClass(el: any, name: string): void {
+    this.callUIWithRenderer('addClass', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(name),
+    ]);
+  }
+
+  removeClass(el: any, name: string): void {
+    this.callUIWithRenderer('removeClass', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(name),
+    ]);
+  }
+
+  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
+      void {
+    this.callUIWithRenderer('setStyle', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(style),
+      new FnArg(value),
+      new FnArg(hasVendorPrefix),
+      new FnArg(hasImportant),
+    ]);
+  }
+
+  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+    this.callUIWithRenderer('removeStyle', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(style),
+      new FnArg(hasVendorPrefix),
+    ]);
+  }
+
+  setProperty(el: any, name: string, value: any): void {
+    this.callUIWithRenderer('setProperty', [
+      new FnArg(el, RenderStoreObject),
+      new FnArg(name),
+      new FnArg(value),
+    ]);
+  }
+
+  setValue(node: any, value: string): void {
+    this.callUIWithRenderer('setValue', [
+      new FnArg(node, RenderStoreObject),
+      new FnArg(value),
+    ]);
+  }
+
+  listen(
+      target: 'window'|'document'|'body'|any, eventName: string,
+      listener: (event: any) => boolean): () => void {
+    const unlistenId = this._rendererFactory.allocateId();
+
+    const [targetEl, targetName, fullName]: [any, string, string] = typeof target === 'string' ?
+        [null, target, `${target}:${eventName}`] :
+        [target, null, null];
+
+    if (fullName) {
+      globalEvents.listen(fullName, listener);
+    } else {
+      targetEl.events.listen(eventName, listener);
+    }
+
+    this.callUIWithRenderer('listen', [
+      new FnArg(targetEl, RenderStoreObject),
+      new FnArg(targetName),
+      new FnArg(eventName),
+      new FnArg(unlistenId),
+    ]);
+
+    return () => {
+      if (fullName) {
+        globalEvents.unlisten(fullName, listener);
+      } else {
+        targetEl.events.unlisten(eventName, listener);
+      }
+      this.callUIWithRenderer('unlisten', [new FnArg(unlistenId)]);
+    };
+  }
+
+  private callUIWithRenderer(fnName: string, fnArgs: FnArg[] = []) {
+    // always pass the renderer as the first arg
+    this._rendererFactory.callUI(fnName, [this.asFnArg, ...fnArgs]);
   }
 }
 
@@ -318,10 +574,6 @@ export class AnimationPlayerEmitter {
       listeners[i]();
     }
   }
-}
-
-function eventNameWithTarget(target: string, eventName: string): string {
-  return `${target}:${eventName}`;
 }
 
 export class WebWorkerRenderNode {

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Type, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, RendererTypeV2, Type, ViewEncapsulation} from '@angular/core';
 
 import {stringify} from '../../facade/lang';
 
 import {RenderStore} from './render_store';
-import {LocationType} from './serialized_types';
+import {LocationType, SerializerTypes} from './serialized_types';
+
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
@@ -40,45 +41,44 @@ export class Serializer {
     if (type === RenderComponentType) {
       return this._serializeRenderComponentType(obj);
     }
+    if (type === SerializerTypes.RENDERER_TYPE_V2) {
+      return this._serializeRendererTypeV2(obj);
+    }
     if (type === ViewEncapsulation) {
       return obj;
     }
     if (type === LocationType) {
       return this._serializeLocation(obj);
     }
-    throw new Error(`No serializer for type ${stringify}`);
+    throw new Error(`No serializer for type ${stringify(type)}`);
   }
 
   deserialize(map: any, type: any, data?: any): any {
     if (map == null) {
       return null;
     }
-
     if (Array.isArray(map)) {
       return map.map(val => this.deserialize(val, type, data));
     }
-
     if (type === PRIMITIVE) {
       return map;
     }
-
     if (type === RenderStoreObject) {
       return this._renderStore.deserialize(map);
     }
-
     if (type === RenderComponentType) {
       return this._deserializeRenderComponentType(map);
     }
-
+    if (type === SerializerTypes.RENDERER_TYPE_V2) {
+      return this._deserializeRendererTypeV2(map);
+    }
     if (type === ViewEncapsulation) {
       return map as ViewEncapsulation;
     }
-
     if (type === LocationType) {
       return this._deserializeLocation(map);
     }
-
-    throw new Error('No deserializer for ' + type.toString());
+    throw new Error(`No deserializer for type ${stringify(type)}`);
   }
 
   private _serializeLocation(loc: LocationType): Object {
@@ -101,21 +101,39 @@ export class Serializer {
         loc['search'], loc['hash'], loc['origin']);
   }
 
-  private _serializeRenderComponentType(obj: RenderComponentType): Object {
+  private _serializeRenderComponentType(type: RenderComponentType): Object {
     return {
-      'id': obj.id,
-      'templateUrl': obj.templateUrl,
-      'slotCount': obj.slotCount,
-      'encapsulation': this.serialize(obj.encapsulation, ViewEncapsulation),
-      'styles': this.serialize(obj.styles, PRIMITIVE),
+      'id': type.id,
+      'templateUrl': type.templateUrl,
+      'slotCount': type.slotCount,
+      'encapsulation': this.serialize(type.encapsulation, ViewEncapsulation),
+      'styles': this.serialize(type.styles, PRIMITIVE),
     };
   }
 
-  private _deserializeRenderComponentType(map: {[key: string]: any}): RenderComponentType {
+  private _deserializeRenderComponentType(props: {[key: string]: any}): RenderComponentType {
     return new RenderComponentType(
-        map['id'], map['templateUrl'], map['slotCount'],
-        this.deserialize(map['encapsulation'], ViewEncapsulation),
-        this.deserialize(map['styles'], PRIMITIVE), {});
+        props['id'], props['templateUrl'], props['slotCount'],
+        this.deserialize(props['encapsulation'], ViewEncapsulation),
+        this.deserialize(props['styles'], PRIMITIVE), {});
+  }
+
+  private _serializeRendererTypeV2(type: RendererTypeV2): {[key: string]: any} {
+    return {
+      'id': type.id,
+      'encapsulation': this.serialize(type.encapsulation, ViewEncapsulation),
+      'styles': this.serialize(type.styles, PRIMITIVE),
+      'data': this.serialize(type.data, PRIMITIVE),
+    };
+  }
+
+  private _deserializeRendererTypeV2(props: {[key: string]: any}): RendererTypeV2 {
+    return {
+      id: props['id'],
+      encapsulation: props['encapsulation'],
+      styles: this.deserialize(props['styles'], PRIMITIVE),
+      data: this.deserialize(props['data'], PRIMITIVE)
+    };
   }
 }
 

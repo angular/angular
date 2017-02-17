@@ -74,8 +74,7 @@ export class BrowserDetection {
 
 BrowserDetection.setup();
 
-export function dispatchEvent(
-    element: any /** TODO #9100 */, eventType: any /** TODO #9100 */): void {
+export function dispatchEvent(element: any, eventType: any): void {
   getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }
 
