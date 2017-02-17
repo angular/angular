@@ -68,9 +68,9 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const expressionParser = new Parser(new Lexer());
   const elementSchemaRegistry = new DomElementSchemaRegistry();
   const tmplParser =
-      new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
+      new TemplateParser(config, expressionParser, elementSchemaRegistry, htmlParser, console, []);
   const resolver = new CompileMetadataResolver(
-      new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
+      config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here

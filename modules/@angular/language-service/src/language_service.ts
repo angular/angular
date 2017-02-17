@@ -8,6 +8,7 @@
 
 import {NgAnalyzedModules} from '@angular/compiler/src/aot/compiler';
 import {CompileNgModuleMetadata} from '@angular/compiler/src/compile_metadata';
+import {CompilerConfig} from '@angular/compiler/src/config';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser} from '@angular/compiler/src/expression_parser/parser';
 import {I18NHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
@@ -22,6 +23,7 @@ import {getDefinition} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics} from './diagnostics';
 import {getHover} from './hover';
 import {Completion, CompletionKind, Completions, Declaration, Declarations, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Location, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+
 
 /**
  * Create an instance of an Angular `LanguageService`.
@@ -114,8 +116,9 @@ class LanguageServiceImpl implements LanguageService {
         const rawHtmlParser = new HtmlParser();
         const htmlParser = new I18NHtmlParser(rawHtmlParser);
         const expressionParser = new Parser(new Lexer());
+        const config = new CompilerConfig();
         const parser = new TemplateParser(
-            expressionParser, new DomElementSchemaRegistry(), htmlParser, null, []);
+            config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null, []);
         const htmlResult = htmlParser.parse(template.source, '');
         const analyzedModules = this.host.getAnalyzedModules();
         let errors: Diagnostic[] = undefined;

@@ -357,7 +357,8 @@ function parseHostBindings(
   const sourceSpan = new ParseSourceSpan(
       new ParseLocation(sourceFile, null, null, null),
       new ParseLocation(sourceFile, null, null, null));
-  const parsedHostProps = parser.createDirectiveHostPropertyAsts(dirMeta.toSummary(), sourceSpan);
+  const parsedHostProps =
+      parser.createDirectiveHostPropertyAsts(dirMeta.toSummary(), dirMeta.selector, sourceSpan);
   const parsedHostListeners = parser.createDirectiveHostEventAsts(dirMeta.toSummary(), sourceSpan);
 
   return new ParseResult(parsedHostProps, parsedHostListeners, errors);

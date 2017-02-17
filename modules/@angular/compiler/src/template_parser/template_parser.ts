@@ -9,6 +9,7 @@
 import {Inject, InjectionToken, Optional, SchemaMetadata} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
+import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
@@ -31,6 +32,7 @@ import {syntaxError} from '../util';
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
+
 
 
 // Group 1 = "bind-"
@@ -88,8 +90,9 @@ export class TemplateParseResult {
 @CompilerInjectable()
 export class TemplateParser {
   constructor(
-      private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
-      private _htmlParser: I18NHtmlParser, private _console: Console,
+      private _config: CompilerConfig, private _exprParser: Parser,
+      private _schemaRegistry: ElementSchemaRegistry, private _htmlParser: I18NHtmlParser,
+      private _console: Console,
       @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
 
   parse(
@@ -144,8 +147,8 @@ export class TemplateParser {
       const bindingParser = new BindingParser(
           this._exprParser, interpolationConfig, this._schemaRegistry, uniqPipes, errors);
       const parseVisitor = new TemplateParseVisitor(
-          providerViewContext, uniqDirectives, bindingParser, this._schemaRegistry, schemas,
-          errors);
+          this._config, providerViewContext, uniqDirectives, bindingParser, this._schemaRegistry,
+          schemas, errors);
       result = html.visitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors.push(...providerViewContext.errors);
       usedPipes.push(...bindingParser.getUsedPipes());
@@ -211,9 +214,10 @@ class TemplateParseVisitor implements html.Visitor {
   contentQueryStartId: number;
 
   constructor(
-      public providerViewContext: ProviderViewContext, directives: CompileDirectiveSummary[],
-      private _bindingParser: BindingParser, private _schemaRegistry: ElementSchemaRegistry,
-      private _schemas: SchemaMetadata[], private _targetErrors: TemplateParseError[]) {
+      private config: CompilerConfig, public providerViewContext: ProviderViewContext,
+      directives: CompileDirectiveSummary[], private _bindingParser: BindingParser,
+      private _schemaRegistry: ElementSchemaRegistry, private _schemas: SchemaMetadata[],
+      private _targetErrors: TemplateParseError[]) {
     // Note: queries start with id 1 so we can use the number in a Bloom filter!
     this.contentQueryStartId = providerViewContext.component.viewQueries.length + 1;
     directives.forEach((directive, index) => {
@@ -574,8 +578,8 @@ class TemplateParseVisitor implements html.Visitor {
         component = directive;
       }
       const directiveProperties: BoundDirectivePropertyAst[] = [];
-      let hostProperties =
-          this._bindingParser.createDirectiveHostPropertyAsts(directive, sourceSpan);
+      let hostProperties = this._bindingParser.createDirectiveHostPropertyAsts(
+          directive, this.config.useViewEngine ? elementName : directive.selector, sourceSpan);
       // Note: We need to check the host properties here as well,
       // as we don't know the element name in the DirectiveWrapperCompiler yet.
       hostProperties = this._checkPropertiesInSchema(elementName, hostProperties);

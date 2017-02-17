@@ -168,7 +168,9 @@ function debugUpdateDirectives(check: NodeCheckFn, view: ViewData) {
   function debugCheckDirectivesFn(
       view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
     const result = debugCheckFn(check, view, nodeIndex, argStyle, values);
-    debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
+    if (view.def.nodes[nodeIndex].type === NodeType.Directive) {
+      debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
+    }
     return result;
   };
 }
@@ -183,7 +185,10 @@ function debugUpdateRenderer(check: NodeCheckFn, view: ViewData) {
   function debugCheckRenderNodeFn(
       view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
     const result = debugCheckFn(check, view, nodeIndex, argStyle, values);
-    debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
+    const nodeDef = view.def.nodes[nodeIndex];
+    if (nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text) {
+      debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
+    }
     return result;
   }
 }
@@ -271,7 +276,7 @@ class DebugContext_ implements DebugContext {
   private compProviderDef: NodeDef;
   constructor(public view: ViewData, public nodeIndex: number) {
     if (nodeIndex == null) {
-      this.nodeIndex = 0;
+      this.nodeIndex = nodeIndex = 0;
     }
     this.nodeDef = view.def.nodes[nodeIndex];
     let elDef = this.nodeDef;
