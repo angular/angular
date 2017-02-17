@@ -12,7 +12,7 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {ComponentRenderTypeV2, Renderer as RendererV1, RendererFactoryV2, RendererV2} from '../render/api';
+import {Renderer as RendererV1, RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1, createTemplateRef, createViewContainerRef} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DirectiveOutputDef, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
@@ -32,7 +32,7 @@ export function directiveDef(
     flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], childCount: number,
     ctor: any, deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
     outputs?: {[name: string]: string}, component?: () => ViewDefinition,
-    componentRenderType?: ComponentRenderTypeV2): NodeDef {
+    rendererType?: RendererTypeV2): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -54,7 +54,7 @@ export function directiveDef(
   }
   return _def(
       NodeType.Directive, flags, matchedQueries, childCount, ProviderType.Class, ctor, ctor, deps,
-      bindings, outputDefs, component, componentRenderType);
+      bindings, outputDefs, component, rendererType);
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
@@ -71,12 +71,12 @@ export function _def(
     type: NodeType, flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     childCount: number, providerType: ProviderType, token: any, value: any,
     deps: ([DepFlags, any] | any)[], bindings?: BindingDef[], outputs?: DirectiveOutputDef[],
-    component?: () => ViewDefinition, componentRenderType?: ComponentRenderTypeV2): NodeDef {
+    component?: () => ViewDefinition, rendererType?: RendererTypeV2): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  // This is needed as the jit compiler always uses an empty hash as default ComponentRenderTypeV2,
+  // This is needed as the jit compiler always uses an empty hash as default RendererTypeV2,
   // which is not filled for host views.
-  if (componentRenderType && componentRenderType.encapsulation == null) {
-    componentRenderType = null;
+  if (rendererType && rendererType.encapsulation == null) {
+    rendererType = null;
   }
   if (!outputs) {
     outputs = [];
@@ -120,7 +120,7 @@ export function _def(
       type: providerType,
       token,
       tokenKey: tokenKey(token), value,
-      deps: depDefs, outputs, component, componentRenderType
+      deps: depDefs, outputs, component, rendererType
     },
     text: undefined,
     pureExpression: undefined,

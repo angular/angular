@@ -14,7 +14,7 @@ export {queryDef} from './query';
 export {ViewRef_, createComponentFactory, nodeValue} from './refs';
 export {initServicesIfNeeded} from './services';
 export {textDef} from './text';
-export {createComponentRenderTypeV2, elementEventFullName, rootRenderNodes, unwrapValue} from './util';
+export {createRendererTypeV2, elementEventFullName, rootRenderNodes, unwrapValue} from './util';
 export {viewDef} from './view';
 export {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView} from './view_attach';
 

@@ -292,16 +292,6 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
-/** @experimental */
-export interface ComponentRenderTypeV2 {
-    data: {
-        [kind: string]: any[];
-    };
-    encapsulation: ViewEncapsulation;
-    id: string;
-    styles: (string | any[])[];
-}
-
 /** @stable */
 export declare const ContentChild: ContentChildDecorator;
 
@@ -859,7 +849,17 @@ export declare abstract class Renderer {
 
 /** @experimental */
 export declare abstract class RendererFactoryV2 {
-    abstract createRenderer(hostElement: any, type: ComponentRenderTypeV2): RendererV2;
+    abstract createRenderer(hostElement: any, type: RendererTypeV2): RendererV2;
+}
+
+/** @experimental */
+export interface RendererTypeV2 {
+    data: {
+        [kind: string]: any[];
+    };
+    encapsulation: ViewEncapsulation;
+    id: string;
+    styles: (string | any[])[];
 }
 
 /** @experimental */

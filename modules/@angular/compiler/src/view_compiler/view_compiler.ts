@@ -24,8 +24,7 @@ export {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDep
 
 export class ViewCompileResult {
   constructor(
-      public statements: o.Statement[], public viewClassVar: string,
-      public componentRenderTypeVar: string,
+      public statements: o.Statement[], public viewClassVar: string, public rendererTypeVar: string,
       public dependencies:
           Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 }
@@ -52,6 +51,6 @@ export class ViewCompiler {
     finishView(view, statements);
 
     return new ViewCompileResult(
-        statements, view.classExpr.name, view.renderComponentTypeName, dependencies);
+        statements, view.classExpr.name, view.rendererTypeName, dependencies);
   }
 }
