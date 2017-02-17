@@ -10,7 +10,7 @@ import {isDevMode} from '../application_ref';
 import {looseIdentical} from '../facade/lang';
 
 import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
-import {checkAndUpdateBinding, sliceErrorStack} from './util';
+import {checkAndUpdateBinding, getParentRenderElement, sliceErrorStack} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   // skip the call to sliceErrorStack itself + the call to this function.
@@ -31,13 +31,16 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags: 0,
-    matchedQueries: {}, ngContentIndex,
+    childFlags: 0,
+    childMatchedQueries: 0,
+    matchedQueries: {},
+    matchedQueryIds: 0,
+    references: {}, ngContentIndex,
     childCount: 0, bindings,
     disposableCount: 0,
     element: undefined,
@@ -50,13 +53,12 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
 }
 
 export function createText(view: ViewData, renderHost: any, def: NodeDef): TextData {
-  const parentNode =
-      def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
   let renderNode: any;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   renderNode = renderer.createText(def.text.prefix);
-  if (parentNode) {
-    renderer.appendChild(parentNode, renderNode);
+  const parentEl = getParentRenderElement(view, renderHost, def);
+  if (parentEl) {
+    renderer.appendChild(parentEl, renderNode);
   }
   return {renderText: renderNode};
 }
@@ -117,7 +119,7 @@ export function checkAndUpdateTextInline(
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    view.root.renderer.setText(renderNode, value);
+    view.renderer.setValue(renderNode, value);
   }
 }
 
@@ -138,7 +140,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
     }
     value = def.text.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
-    view.root.renderer.setText(renderNode, value);
+    view.renderer.setValue(renderNode, value);
   }
 }
 

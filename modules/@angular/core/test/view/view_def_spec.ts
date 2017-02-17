@@ -7,6 +7,7 @@
  */
 
 import {NodeFlags, QueryValueType, ViewData, ViewDefinition, ViewFlags, anchorDef, directiveDef, elementDef, textDef, viewDef} from '@angular/core/src/view/index';
+import {filterQueryId} from '@angular/core/src/view/util';
 
 export function main() {
   describe('viewDef', () => {
@@ -76,7 +77,7 @@ export function main() {
 
     describe('parent', () => {
       function parents(viewDef: ViewDefinition): number[] {
-        return viewDef.nodes.map(node => node.parent);
+        return viewDef.nodes.map(node => node.parent ? node.parent.index : null);
       }
 
       it('should calculate parents for one level', () => {
@@ -86,7 +87,7 @@ export function main() {
           textDef(null, ['a']),
         ]);
 
-        expect(parents(vd)).toEqual([undefined, 0, 0]);
+        expect(parents(vd)).toEqual([null, 0, 0]);
       });
 
       it('should calculate parents for one level, multiple roots', () => {
@@ -98,7 +99,7 @@ export function main() {
           textDef(null, ['a']),
         ]);
 
-        expect(parents(vd)).toEqual([undefined, 0, undefined, 2, undefined]);
+        expect(parents(vd)).toEqual([null, 0, null, 2, null]);
       });
 
       it('should calculate parents for multiple levels', () => {
@@ -111,7 +112,7 @@ export function main() {
           textDef(null, ['a']),
         ]);
 
-        expect(parents(vd)).toEqual([undefined, 0, 1, undefined, 3, undefined]);
+        expect(parents(vd)).toEqual([null, 0, 1, null, 3, null]);
       });
     });
 
@@ -175,52 +176,56 @@ export function main() {
     });
 
     describe('childMatchedQueries', () => {
-      function childMatchedQueries(viewDef: ViewDefinition): string[][] {
-        return viewDef.nodes.map(node => Object.keys(node.childMatchedQueries).sort());
+      function childMatchedQueries(viewDef: ViewDefinition): number[] {
+        return viewDef.nodes.map(node => node.childMatchedQueries);
       }
 
       it('should calculate childMatchedQueries for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
+          directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
         ]);
 
-        expect(childMatchedQueries(vd)).toEqual([['q1'], []]);
+        expect(childMatchedQueries(vd)).toEqual([filterQueryId(1), 0]);
       });
 
       it('should calculate childMatchedQueries for two levels', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, [])
+          directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
         ]);
 
-        expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], []]);
+        expect(childMatchedQueries(vd)).toEqual([filterQueryId(1), filterQueryId(1), 0]);
       });
 
       it('should calculate childMatchedQueries for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          directiveDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
-          directiveDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[2, QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[3, QueryValueType.Provider]], 0, AService, []),
         ]);
 
-        expect(childMatchedQueries(vd)).toEqual([['q1'], [], ['q2', 'q3'], [], []]);
+        expect(childMatchedQueries(vd)).toEqual([
+          filterQueryId(1), 0, filterQueryId(2) | filterQueryId(3), 0, 0
+        ]);
       });
 
       it('should calculate childMatchedQueries for multiple levels', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 2, 'span'),
           elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.None, [['q1', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
           elementDef(NodeFlags.None, null, null, 2, 'span'),
-          directiveDef(NodeFlags.None, [['q2', QueryValueType.Provider]], 0, AService, []),
-          directiveDef(NodeFlags.None, [['q3', QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[2, QueryValueType.Provider]], 0, AService, []),
+          directiveDef(NodeFlags.None, [[3, QueryValueType.Provider]], 0, AService, []),
         ]);
 
-        expect(childMatchedQueries(vd)).toEqual([['q1'], ['q1'], [], ['q2', 'q3'], [], []]);
+        expect(childMatchedQueries(vd)).toEqual([
+          filterQueryId(1), filterQueryId(1), 0, filterQueryId(2) | filterQueryId(3), 0, 0
+        ]);
       });
 
       it('should included embedded views into childMatchedQueries', () => {
@@ -231,12 +236,12 @@ export function main() {
               () => viewDef(
                   ViewFlags.None,
                   [
-                    elementDef(NodeFlags.None, [['q1', QueryValueType.Provider]], null, 0, 'span'),
+                    elementDef(NodeFlags.None, [[1, QueryValueType.Provider]], null, 0, 'span'),
                   ]))
         ]);
 
         // Note: the template will become a sibling to the anchor once stamped out,
-        expect(childMatchedQueries(vd)).toEqual([['q1'], []]);
+        expect(childMatchedQueries(vd)).toEqual([filterQueryId(1), 0]);
       });
     });
   });

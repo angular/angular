@@ -11,14 +11,15 @@ import {Injector} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import * as v1renderer from '../render/api';
-import {Type} from '../type';
+import {ViewEncapsulation} from '../metadata/view';
+import {ComponentRenderTypeV2, RenderComponentType as RenderComponentTypeV1, Renderer as RendererV1, RendererFactoryV2, RendererV2, RootRenderer as RootRendererV1} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createTemplateRef, createViewContainerRef} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DirectiveOutputDef, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, isComponentView, tokenKey, viewParentElIndex} from './util';
+import {checkAndUpdateBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
-const RendererV1TokenKey = tokenKey(v1renderer.Renderer);
+const RendererV1TokenKey = tokenKey(RendererV1);
+const RendererV2TokenKey = tokenKey(RendererV2);
 const ElementRefTokenKey = tokenKey(ElementRef);
 const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
@@ -28,9 +29,10 @@ const InjectorRefTokenKey = tokenKey(Injector);
 const NOT_CREATED = new Object();
 
 export function directiveDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number, ctor: any,
-    deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
-    outputs?: {[name: string]: string}, component?: () => ViewDefinition): NodeDef {
+    flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], childCount: number,
+    ctor: any, deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
+    outputs?: {[name: string]: string}, component?: () => ViewDefinition,
+    componentRenderType?: ComponentRenderTypeV2): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -51,7 +53,7 @@ export function directiveDef(
   }
   return _def(
       NodeType.Directive, flags, matchedQueries, childCount, ProviderType.Class, ctor, ctor, deps,
-      bindings, outputDefs, component);
+      bindings, outputDefs, component, componentRenderType);
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
@@ -59,19 +61,21 @@ export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | an
 }
 
 export function providerDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], type: ProviderType, token: any,
-    value: any, deps: ([DepFlags, any] | any)[]): NodeDef {
+    flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], type: ProviderType,
+    token: any, value: any, deps: ([DepFlags, any] | any)[]): NodeDef {
   return _def(NodeType.Provider, flags, matchedQueries, 0, type, token, value, deps);
 }
 
 export function _def(
-    type: NodeType, flags: NodeFlags, matchedQueries: [string, QueryValueType][],
+    type: NodeType, flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     childCount: number, providerType: ProviderType, token: any, value: any,
     deps: ([DepFlags, any] | any)[], bindings?: BindingDef[], outputs?: DirectiveOutputDef[],
-    component?: () => ViewDefinition): NodeDef {
-  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
-  if (matchedQueries) {
-    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
+    component?: () => ViewDefinition, componentRenderType?: ComponentRenderTypeV2): NodeDef {
+  const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
+  // This is needed as the jit compiler always uses an empty hash as default ComponentRenderTypeV2,
+  // which is not filled for host views.
+  if (componentRenderType && componentRenderType.encapsulation == null) {
+    componentRenderType = null;
   }
   if (!outputs) {
     outputs = [];
@@ -101,13 +105,13 @@ export function _def(
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs,
+    childFlags: 0,
+    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
     ngContentIndex: undefined, childCount, bindings,
     disposableCount: outputs.length,
     element: undefined,
@@ -115,7 +119,7 @@ export function _def(
       type: providerType,
       token,
       tokenKey: tokenKey(token), value,
-      deps: depDefs, outputs, component
+      deps: depDefs, outputs, component, componentRenderType
     },
     text: undefined,
     pureExpression: undefined,
@@ -134,21 +138,26 @@ export function createPipeInstance(view: ViewData, def: NodeDef): any {
   while (compView.parent && !isComponentView(compView)) {
     compView = compView.parent;
   }
+  // pipes can see the private services of the component
+  const allowPrivateServices = true;
   // pipes are always eager and classes!
   return createClass(
-      compView.parent, compView.parentIndex, viewParentElIndex(compView), def.provider.value,
+      compView.parent, viewParentEl(compView), allowPrivateServices, def.provider.value,
       def.provider.deps);
 }
 
 export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
+  // components can see other private services, other directives can't.
+  const allowPrivateServices = (def.flags & NodeFlags.HasComponent) > 0;
   const providerDef = def.provider;
   // directives are always eager and classes!
-  const instance = createClass(view, def.index, def.parent, def.provider.value, def.provider.deps);
+  const instance =
+      createClass(view, def.parent, allowPrivateServices, def.provider.value, def.provider.deps);
   if (providerDef.outputs.length) {
     for (let i = 0; i < providerDef.outputs.length; i++) {
       const output = providerDef.outputs[i];
       const subscription = instance[output.propName].subscribe(
-          eventHandlerClosure(view, def.parent, output.eventName));
+          eventHandlerClosure(view, def.parent.index, output.eventName));
       view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
@@ -218,17 +227,21 @@ export function checkAndUpdateDirectiveDynamic(view: ViewData, def: NodeDef, val
 }
 
 function _createProviderInstance(view: ViewData, def: NodeDef): any {
+  // private services can see other private services
+  const allowPrivateServices = (def.flags & NodeFlags.PrivateProvider) > 0;
   const providerDef = def.provider;
   let injectable: any;
   switch (providerDef.type) {
     case ProviderType.Class:
-      injectable = createClass(view, def.index, def.parent, providerDef.value, providerDef.deps);
+      injectable =
+          createClass(view, def.parent, allowPrivateServices, providerDef.value, providerDef.deps);
       break;
     case ProviderType.Factory:
-      injectable = callFactory(view, def.index, def.parent, providerDef.value, providerDef.deps);
+      injectable =
+          callFactory(view, def.parent, allowPrivateServices, providerDef.value, providerDef.deps);
       break;
     case ProviderType.UseExisting:
-      injectable = resolveDep(view, def.index, def.parent, providerDef.deps[0]);
+      injectable = resolveDep(view, def.parent, allowPrivateServices, providerDef.deps[0]);
       break;
     case ProviderType.Value:
       injectable = providerDef.value;
@@ -238,7 +251,7 @@ function _createProviderInstance(view: ViewData, def: NodeDef): any {
 }
 
 function createClass(
-    view: ViewData, requestorNodeIndex: number, elIndex: number, ctor: any, deps: DepDef[]): any {
+    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, ctor: any, deps: DepDef[]): any {
   const len = deps.length;
   let injectable: any;
   switch (len) {
@@ -246,23 +259,23 @@ function createClass(
       injectable = new ctor();
       break;
     case 1:
-      injectable = new ctor(resolveDep(view, requestorNodeIndex, elIndex, deps[0]));
+      injectable = new ctor(resolveDep(view, elDef, allowPrivateServices, deps[0]));
       break;
     case 2:
       injectable = new ctor(
-          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[1]));
+          resolveDep(view, elDef, allowPrivateServices, deps[0]),
+          resolveDep(view, elDef, allowPrivateServices, deps[1]));
       break;
     case 3:
       injectable = new ctor(
-          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[1]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[2]));
+          resolveDep(view, elDef, allowPrivateServices, deps[0]),
+          resolveDep(view, elDef, allowPrivateServices, deps[1]),
+          resolveDep(view, elDef, allowPrivateServices, deps[2]));
       break;
     default:
       const depValues = new Array(len);
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, requestorNodeIndex, elIndex, deps[i]);
+        depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
       }
       injectable = new ctor(...depValues);
   }
@@ -270,7 +283,7 @@ function createClass(
 }
 
 function callFactory(
-    view: ViewData, requestorNodeIndex: number, elIndex: number, factory: any,
+    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, factory: any,
     deps: DepDef[]): any {
   const len = deps.length;
   let injectable: any;
@@ -279,23 +292,23 @@ function callFactory(
       injectable = factory();
       break;
     case 1:
-      injectable = factory(resolveDep(view, requestorNodeIndex, elIndex, deps[0]));
+      injectable = factory(resolveDep(view, elDef, allowPrivateServices, deps[0]));
       break;
     case 2:
       injectable = factory(
-          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[1]));
+          resolveDep(view, elDef, allowPrivateServices, deps[0]),
+          resolveDep(view, elDef, allowPrivateServices, deps[1]));
       break;
     case 3:
       injectable = factory(
-          resolveDep(view, requestorNodeIndex, elIndex, deps[0]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[1]),
-          resolveDep(view, requestorNodeIndex, elIndex, deps[2]));
+          resolveDep(view, elDef, allowPrivateServices, deps[0]),
+          resolveDep(view, elDef, allowPrivateServices, deps[1]),
+          resolveDep(view, elDef, allowPrivateServices, deps[2]));
       break;
     default:
       const depValues = Array(len);
       for (let i = 0; i < len; i++) {
-        depValues[i] = resolveDep(view, requestorNodeIndex, elIndex, deps[i]);
+        depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
       }
       injectable = factory(...depValues);
   }
@@ -303,7 +316,7 @@ function callFactory(
 }
 
 export function resolveDep(
-    view: ViewData, requestNodeIndex: number, elIndex: number, depDef: DepDef,
+    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
     notFoundValue = Injector.THROW_IF_NOT_FOUND): any {
   if (depDef.flags & DepFlags.Value) {
     return depDef.token;
@@ -315,62 +328,75 @@ export function resolveDep(
   const tokenKey = depDef.tokenKey;
 
   if (depDef.flags & DepFlags.SkipSelf) {
-    requestNodeIndex = null;
-    elIndex = view.def.nodes[elIndex].parent;
-    while (elIndex == null && view) {
-      elIndex = viewParentElIndex(view);
-      view = view.parent;
-    }
+    allowPrivateServices = false;
+    elDef = elDef.parent;
   }
 
   while (view) {
-    const elDef = view.def.nodes[elIndex];
-    switch (tokenKey) {
-      case RendererV1TokenKey: {
-        let compView = view;
-        while (compView && !isComponentView(compView)) {
-          compView = compView.parent;
-        }
-        const rootRenderer: v1renderer.RootRenderer =
-            view.root.injector.get(v1renderer.RootRenderer);
+    if (elDef) {
+      switch (tokenKey) {
+        case RendererV1TokenKey: {
+          const compView = findCompView(view, elDef, allowPrivateServices);
+          const compDef = compView.parentNodeDef;
+          const rootRendererV1: RootRendererV1 = view.root.injector.get(RootRendererV1);
 
-        // Note: Don't fill in the styles as they have been installed already!
-        return rootRenderer.renderComponent(new v1renderer.RenderComponentType(
-            view.def.component.id, '', 0, view.def.component.encapsulation, [], {}));
+          // Note: Don't fill in the styles as they have been installed already via the RendererV2!
+          const compRenderType = compDef.provider.componentRenderType;
+          return rootRendererV1.renderComponent(new RenderComponentTypeV1(
+              compRenderType ? compRenderType.id : '0', '', 0,
+              compRenderType ? compRenderType.encapsulation : ViewEncapsulation.None, [], {}));
+        }
+        case RendererV2TokenKey: {
+          const compView = findCompView(view, elDef, allowPrivateServices);
+          return compView.renderer;
+        }
+        case ElementRefTokenKey:
+          return new ElementRef(asElementData(view, elDef.index).renderElement);
+        case ViewContainerRefTokenKey:
+          return createViewContainerRef(view, elDef);
+        case TemplateRefTokenKey: {
+          if (elDef.element.template) {
+            return createTemplateRef(view, elDef);
+          }
+          break;
+        }
+        case ChangeDetectorRefTokenKey: {
+          let cdView = findCompView(view, elDef, allowPrivateServices);
+          return createChangeDetectorRef(cdView);
+        }
+        case InjectorRefTokenKey:
+          return createInjector(view, elDef);
+        default:
+          const providerDef =
+              (allowPrivateServices ? elDef.element.allProviders :
+                                      elDef.element.publicProviders)[tokenKey];
+          if (providerDef) {
+            const providerData = asProviderData(view, providerDef.index);
+            if (providerData.instance === NOT_CREATED) {
+              providerData.instance = _createProviderInstance(view, providerDef);
+            }
+            return providerData.instance;
+          }
       }
-      case ElementRefTokenKey:
-        return new ElementRef(asElementData(view, elIndex).renderElement);
-      case ViewContainerRefTokenKey:
-        return createViewContainerRef(view, elIndex);
-      case TemplateRefTokenKey:
-        return createTemplateRef(view, elDef);
-      case ChangeDetectorRefTokenKey:
-        let cdView = view;
-        // If we are still checking dependencies on the initial element...
-        if (requestNodeIndex != null) {
-          const requestorNodeDef = view.def.nodes[requestNodeIndex];
-          if (requestorNodeDef.flags & NodeFlags.HasComponent) {
-            cdView = asProviderData(view, requestNodeIndex).componentView;
-          }
-        }
-        return createChangeDetectorRef(cdView);
-      case InjectorRefTokenKey:
-        return createInjector(view, elIndex);
-      default:
-        const providerIndex = elDef.element.providerIndices[tokenKey];
-        if (providerIndex != null) {
-          const providerData = asProviderData(view, providerIndex);
-          if (providerData.instance === NOT_CREATED) {
-            providerData.instance = _createProviderInstance(view, view.def.nodes[providerIndex]);
-          }
-          return providerData.instance;
-        }
     }
-    requestNodeIndex = null;
-    elIndex = viewParentElIndex(view);
+    allowPrivateServices = isComponentView(view);
+    elDef = viewParentEl(view);
     view = view.parent;
   }
   return startView.root.injector.get(depDef.token, notFoundValue);
+}
+
+function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {
+  let compView: ViewData;
+  if (allowPrivateServices) {
+    compView = asProviderData(view, elDef.element.component.index).componentView;
+  } else {
+    compView = view;
+    while (compView.parent && !isComponentView(compView)) {
+      compView = compView.parent;
+    }
+  }
+  return compView;
 }
 
 function checkAndUpdateProp(

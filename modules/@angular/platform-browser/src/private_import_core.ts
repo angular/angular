@@ -16,6 +16,7 @@ export const ReflectionCapabilities: typeof r.ReflectionCapabilities = r.Reflect
 
 export type DebugDomRootRenderer = typeof r._DebugDomRootRenderer;
 export const DebugDomRootRenderer: typeof r.DebugDomRootRenderer = r.DebugDomRootRenderer;
+
 export const reflector: typeof r.reflector = r.reflector;
 
 export type NoOpAnimationPlayer = typeof r._NoOpAnimationPlayer;

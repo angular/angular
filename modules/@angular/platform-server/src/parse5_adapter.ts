@@ -22,13 +22,19 @@ const _attrToPropMap: {[key: string]: string} = {
   'tabindex': 'tabIndex',
 };
 
-let defDoc: any = null;
-
 const mapProps = ['attribs', 'x-attribsNamespace', 'x-attribsPrefix'];
 
 function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in Parse5DomAdapter: ' + methodName);
 }
+
+/**
+ * Parses a document string to a Document object.
+ */
+export function parseDocument(html: string) {
+  return parse5.parse(html, {treeAdapter: parse5.treeAdapters.htmlparser2});
+}
+
 
 /* tslint:disable:requireParameterType */
 /**
@@ -72,7 +78,6 @@ export class Parse5DomAdapter extends DomAdapter {
 
   get attrToPropMap() { return _attrToPropMap; }
 
-  query(selector: any) { throw _notImplemented('query'); }
   querySelector(el: any, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
   querySelectorAll(el: any, selector: string): any[] {
     const res: any[] = [];
@@ -223,16 +228,22 @@ export class Parse5DomAdapter extends DomAdapter {
     el.parent = null;
     return el;
   }
-  insertBefore(el: any, node: any) {
-    this.remove(node);
-    treeAdapter.insertBefore(el.parent, node, el);
-  }
-  insertAllBefore(el: any, nodes: any) { nodes.forEach((n: any) => this.insertBefore(el, n)); }
-  insertAfter(el: any, node: any) {
-    if (el.nextSibling) {
-      this.insertBefore(el.nextSibling, node);
+  insertBefore(parent: any, ref: any, newNode: any) {
+    this.remove(newNode);
+    if (ref) {
+      treeAdapter.insertBefore(parent, newNode, ref);
     } else {
-      this.appendChild(el.parent, node);
+      this.appendChild(parent, newNode);
+    }
+  }
+  insertAllBefore(parent: any, ref: any, nodes: any) {
+    nodes.forEach((n: any) => this.insertBefore(parent, ref, n));
+  }
+  insertAfter(parent: any, ref: any, node: any) {
+    if (ref.nextSibling) {
+      this.insertBefore(parent, ref.nextSibling, node);
+    } else {
+      this.appendChild(parent, node);
     }
   }
   setInnerHTML(el: any, value: any) {
@@ -356,7 +367,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return this.querySelectorAll(element, '.' + name);
   }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
-    throw _notImplemented('getElementsByTagName');
+    return this.querySelectorAll(element, name);
   }
   classList(element: any): string[] {
     let classAttrValue: any = null;
@@ -468,7 +479,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   createHtmlDocument(): Document {
     const newDoc = treeAdapter.createDocument();
-    newDoc.title = 'fake title';
+    newDoc.title = 'fakeTitle';
     const head = treeAdapter.createElement('head', null, []);
     const body = treeAdapter.createElement('body', 'http://www.w3.org/1999/xhtml', []);
     this.appendChild(newDoc, head);
@@ -478,10 +489,9 @@ export class Parse5DomAdapter extends DomAdapter {
     newDoc['_window'] = {};
     return newDoc;
   }
-  defaultDoc(): Document { return defDoc = defDoc || this.createHtmlDocument(); }
   getBoundingClientRect(el: any): any { return {left: 0, top: 0, width: 0, height: 0}; }
-  getTitle(): string { return this.defaultDoc().title || ''; }
-  setTitle(newTitle: string) { this.defaultDoc().title = newTitle; }
+  getTitle(doc: Document): string { return doc.title || ''; }
+  setTitle(doc: Document, newTitle: string) { doc.title = newTitle; }
   isTemplateElement(el: any): boolean {
     return this.isElementNode(el) && this.tagName(el) === 'template';
   }
@@ -538,17 +548,17 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { return false; }
   supportsNativeShadowDOM(): boolean { return false; }
-  getGlobalEventTarget(target: string): any {
+  getGlobalEventTarget(doc: Document, target: string): any {
     if (target == 'window') {
-      return (<any>this.defaultDoc())._window;
+      return (<any>doc)._window;
     } else if (target == 'document') {
-      return this.defaultDoc();
+      return doc;
     } else if (target == 'body') {
-      return this.defaultDoc().body;
+      return doc.body;
     }
   }
-  getBaseHref(): string {
-    const base = this.querySelector(this.defaultDoc(), 'base');
+  getBaseHref(doc: Document): string {
+    const base = this.querySelector(doc, 'base');
     let href = '';
     if (base) {
       href = this.getHref(base);

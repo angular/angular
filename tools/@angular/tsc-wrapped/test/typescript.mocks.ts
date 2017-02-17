@@ -45,18 +45,23 @@ export class Host implements ts.LanguageServiceHost {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
-    const names = fileName.split('/');
-    if (names[names.length - 1] === 'lib.d.ts') {
+    if (fileName.endsWith('lib.d.ts')) {
       return fs.readFileSync(ts.getDefaultLibFilePath(this.getCompilationSettings()), 'utf8');
     }
-    let current: Directory|string = this.directory;
-    if (names.length && names[0] === '') names.shift();
-    for (const name of names) {
-      if (!current || typeof current === 'string') return undefined;
-      current = (<any>current)[name];
-    }
+    const current = open(this.directory, fileName);
     if (typeof current === 'string') return current;
   }
+}
+
+export function open(directory: Directory, fileName: string): Directory|string|undefined {
+  const names = fileName.split('/');
+  let current: Directory|string = directory;
+  if (names.length && names[0] === '') names.shift();
+  for (const name of names) {
+    if (!current || typeof current === 'string') return undefined;
+    current = current[name];
+  }
+  return current;
 }
 
 export class MockNode implements ts.Node {

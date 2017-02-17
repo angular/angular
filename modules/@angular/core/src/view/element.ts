@@ -10,39 +10,39 @@ import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, resolveViewDefinition, sliceErrorStack} from './util';
+import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
-    childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef {
-  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
-  if (matchedQueries) {
-    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
-  }
+    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
+    ngContentIndex: number, childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef {
+  const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
+
   return {
     type: NodeType.Element,
     // will bet set by the view definition
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
+    childFlags: 0,
+    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: [],
     disposableCount: 0,
     element: {
       name: undefined,
       attrs: undefined,
-      outputs: [], template,
+      outputs: [], template, source,
       // will bet set by the view definition
-      providerIndices: undefined, source,
+      component: undefined,
+      publicProviders: undefined,
+      allProviders: undefined,
     },
     provider: undefined,
     text: undefined,
@@ -53,18 +53,16 @@ export function anchorDef(
 }
 
 export function elementDef(
-    flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
-    childCount: number, name: string, fixedAttrs: {[name: string]: string} = {},
+    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
+    ngContentIndex: number, childCount: number, name: string,
+    fixedAttrs: {[name: string]: string} = {},
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
     outputs?: (string | [string, string])[]): NodeDef {
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
-  const matchedQueryDefs: {[queryId: string]: QueryValueType} = {};
-  if (matchedQueries) {
-    matchedQueries.forEach(([queryId, valueType]) => { matchedQueryDefs[queryId] = valueType; });
-  }
+  const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   bindings = bindings || [];
   const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
@@ -104,22 +102,24 @@ export function elementDef(
     index: undefined,
     reverseChildIndex: undefined,
     parent: undefined,
-    childFlags: undefined,
-    childMatchedQueries: undefined,
+    renderParent: undefined,
     bindingIndex: undefined,
     disposableIndex: undefined,
     // regular values
     flags,
-    matchedQueries: matchedQueryDefs, ngContentIndex, childCount,
+    childFlags: 0,
+    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: bindingDefs,
     disposableCount: outputDefs.length,
     element: {
       name,
       attrs: fixedAttrs,
-      outputs: outputDefs,
+      outputs: outputDefs, source,
       template: undefined,
       // will bet set by the view definition
-      providerIndices: undefined, source,
+      component: undefined,
+      publicProviders: undefined,
+      allProviders: undefined,
     },
     provider: undefined,
     text: undefined,
@@ -132,21 +132,28 @@ export function elementDef(
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
   const elDef = def.element;
   const rootSelectorOrNode = view.root.selectorOrNode;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   let el: any;
   if (view.parent || !rootSelectorOrNode) {
-    const parentNode =
-        def.parent != null ? asElementData(view, def.parent).renderElement : renderHost;
-    el = elDef.name ? renderer.createElement(elDef.name) : renderer.createComment('');
-    if (parentNode) {
-      renderer.appendChild(parentNode, el);
+    if (elDef.name) {
+      // TODO(vicb): move the namespace to the node definition
+      const nsAndName = splitNamespace(elDef.name);
+      el = renderer.createElement(nsAndName[1], nsAndName[0]);
+    } else {
+      el = renderer.createComment('');
+    }
+    const parentEl = getParentRenderElement(view, renderHost, def);
+    if (parentEl) {
+      renderer.appendChild(parentEl, el);
     }
   } else {
     el = renderer.selectRootElement(rootSelectorOrNode);
   }
   if (elDef.attrs) {
     for (let attrName in elDef.attrs) {
-      renderer.setAttribute(el, attrName, elDef.attrs[attrName]);
+      // TODO(vicb): move the namespace to the node definition
+      const nsAndName = splitNamespace(attrName);
+      renderer.setAttribute(el, nsAndName[1], elDef.attrs[attrName], nsAndName[0]);
     }
   }
   if (elDef.outputs.length) {
@@ -233,16 +240,18 @@ function setElementAttribute(
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
+  // TODO(vicb): move the namespace to the node definition
+  const nsAndName = splitNamespace(name);
   if (value != null) {
-    renderer.setAttribute(renderNode, name, renderValue);
+    renderer.setAttribute(renderNode, nsAndName[1], renderValue, nsAndName[0]);
   } else {
-    renderer.removeAttribute(renderNode, name);
+    renderer.removeAttribute(renderNode, nsAndName[1], nsAndName[0]);
   }
 }
 
 function setElementClass(view: ViewData, renderNode: any, name: string, value: boolean) {
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   if (value) {
     renderer.addClass(renderNode, name);
   } else {
@@ -262,11 +271,11 @@ function setElementStyle(
   } else {
     renderValue = null;
   }
-  const renderer = view.root.renderer;
+  const renderer = view.renderer;
   if (renderValue != null) {
-    renderer.setStyle(renderNode, name, renderValue);
+    renderer.setStyle(renderNode, name, renderValue, false, false);
   } else {
-    renderer.removeStyle(renderNode, name);
+    renderer.removeStyle(renderNode, name, false);
   }
 }
 
@@ -274,5 +283,15 @@ function setElementProperty(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
-  view.root.renderer.setProperty(renderNode, name, renderValue);
+  view.renderer.setProperty(renderNode, name, renderValue);
+}
+
+const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
+
+function splitNamespace(name: string): string[] {
+  if (name[0] === ':') {
+    const match = name.match(NS_PREFIX_RE);
+    return [match[1], match[2]];
+  }
+  return ['', name];
 }

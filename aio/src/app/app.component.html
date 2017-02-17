@@ -1,11 +1,11 @@
 <md-toolbar color="primary" class="app-toolbar">
-    <span>Angular</span>
-    <span><a class="nav-link" aioNavLink="home"> Home </a></span>
-    <span><a class="nav-link" aioNavLink="news"> News</a></span>
-    <span><a class="nav-link" aioNavLink="features"> Features</a></span>
-    <span><a class="nav-link" aioNavLink="docs/api/common/DatePipe"> DatePipe</a></span>
+    <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="toggleSideNav()"><md-icon>menu</md-icon></button>
+    <aio-menu></aio-menu>
+    <md-input-container >
+      <input #search md-input placeholder="Search">
+    </md-input-container>
     <span class="fill-remaining-space"></span>
 </md-toolbar>
-<section class="app-content">
-  <aio-doc-viewer [doc]="navEngine.currentDoc"></aio-doc-viewer>
-</section>
+
+<aio-sidenav></aio-sidenav>
+

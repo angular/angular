@@ -21,3 +21,6 @@ export type RenderDebugInfo = typeof r._RenderDebugInfo;
 export const RenderDebugInfo: typeof r.RenderDebugInfo = r.RenderDebugInfo;
 export type DebugDomRootRenderer = typeof r._DebugDomRootRenderer;
 export const DebugDomRootRenderer: typeof r.DebugDomRootRenderer = r.DebugDomRootRenderer;
+export type ALLOW_MULTIPLE_PLATFORMS = typeof r.ALLOW_MULTIPLE_PLATFORMS;
+export const ALLOW_MULTIPLE_PLATFORMS: typeof r.ALLOW_MULTIPLE_PLATFORMS =
+    r.ALLOW_MULTIPLE_PLATFORMS;

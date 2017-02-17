@@ -22,7 +22,7 @@ export class DebugDomRootRenderer implements RootRenderer {
   }
 }
 
-export class DebugDomRenderer {
+export class DebugDomRenderer implements Renderer {
   constructor(private _delegate: Renderer) {}
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any {
@@ -81,7 +81,7 @@ export class DebugDomRenderer {
   detachView(viewRootNodes: any[]) {
     viewRootNodes.forEach((node) => {
       const debugNode = getDebugNode(node);
-      if (isPresent(debugNode) && isPresent(debugNode.parent)) {
+      if (debugNode && debugNode.parent) {
         debugNode.parent.removeChild(debugNode);
       }
     });

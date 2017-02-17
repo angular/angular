@@ -227,7 +227,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return `./${stringify(type)}`;
   }
 
-  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any { return runtime; }
+  resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any {
+    return runtime;
+  }
   resolveEnum(enumIdentifier: any, name: string): any { return enumIdentifier[name]; }
 }
 

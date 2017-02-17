@@ -8,42 +8,58 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {HttpModule} from '@angular/http';
+import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 
+import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
-import {Parse5DomAdapter} from './parse5_adapter';
-import {DebugDomRootRenderer} from './private_import_core';
-import {DomAdapter, SharedStylesHost} from './private_import_platform-browser';
-import {ServerRootRenderer} from './server_renderer';
-
+import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
+import {PlatformState} from './platform_state';
+import {ALLOW_MULTIPLE_PLATFORMS, DebugDomRootRenderer} from './private_import_core';
+import {SharedStylesHost, getDOM} from './private_import_platform-browser';
+import {ServerRendererFactoryV2, ServerRootRenderer} from './server_renderer';
+import {ServerStylesHost} from './styles_host';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
 }
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  {provide: PLATFORM_INITIALIZER, useValue: initParse5Adapter, multi: true},
-  {provide: PlatformLocation, useClass: ServerPlatformLocation},
+  {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
+  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]},
+  {provide: PlatformLocation, useClass: ServerPlatformLocation}, PlatformState,
+  // Add special provider that allows multiple instances of platformServer* to be created.
+  {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
-function initParse5Adapter() {
-  Parse5DomAdapter.makeCurrent();
+function initParse5Adapter(injector: Injector) {
+  return () => { Parse5DomAdapter.makeCurrent(); };
 }
 
-
 export function _createConditionalRootRenderer(rootRenderer: any) {
-  if (isDevMode()) {
-    return new DebugDomRootRenderer(rootRenderer);
-  }
-  return rootRenderer;
+  return isDevMode() ? new DebugDomRootRenderer(rootRenderer) : rootRenderer;
+}
+
+export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
+  const initializer = () => stylesHost.rootComponentIsReady();
+  return initializer;
 }
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
-  // use plain SharedStylesHost, not the DomSharedStylesHost
-  SharedStylesHost
+  ServerRendererFactoryV2,
+  {provide: RendererFactoryV2, useExisting: ServerRendererFactoryV2},
+  ServerStylesHost,
+  {provide: SharedStylesHost, useExisting: ServerStylesHost},
+  {
+    provide: APP_BOOTSTRAP_LISTENER,
+    useFactory: _addStylesToRootComponentFactory,
+    deps: [ServerStylesHost],
+    multi: true
+  },
 ];
 
 /**
@@ -51,8 +67,21 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
  *
  * @experimental
  */
-@NgModule({exports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
+@NgModule({
+  exports: [BrowserModule],
+  imports: [HttpModule],
+  providers: [SERVER_RENDER_PROVIDERS, SERVER_HTTP_PROVIDERS],
+})
 export class ServerModule {
+}
+
+function _document(injector: Injector) {
+  let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+  if (config && config.document) {
+    return parseDocument(config.document);
+  } else {
+    return getDOM().createHtmlDocument();
+  }
 }
 
 /**

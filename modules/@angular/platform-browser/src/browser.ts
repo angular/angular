@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
@@ -19,7 +19,7 @@ import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
-import {DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
+import {DomRendererFactoryV2, DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
@@ -30,7 +30,8 @@ import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_servic
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
-  {provide: PlatformLocation, useClass: BrowserPlatformLocation}
+  {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+  {provide: DOCUMENT, useFactory: _document, deps: []},
 ];
 
 /**
@@ -59,12 +60,8 @@ export function errorHandler(): ErrorHandler {
   return new ErrorHandler();
 }
 
-export function meta(): Meta {
-  return new Meta(getDOM());
-}
-
 export function _document(): any {
-  return getDOM().defaultDoc();
+  return document;
 }
 
 export function _resolveDefaultAnimationDriver(): AnimationDriver {
@@ -83,20 +80,21 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
   providers: [
     BROWSER_SANITIZATION_PROVIDERS,
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},
-    {provide: DOCUMENT, useFactory: _document, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
     {provide: DomRootRenderer, useClass: DomRootRenderer_},
     {provide: RootRenderer, useExisting: DomRootRenderer},
+    DomRendererFactoryV2,
+    {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
-    {provide: Meta, useFactory: meta},
     DomSharedStylesHost,
     Testability,
     EventManager,
     ELEMENT_PROBE_PROVIDERS,
+    Meta,
     Title,
   ],
   exports: [CommonModule, ApplicationModule]

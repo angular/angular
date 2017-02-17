@@ -10,7 +10,6 @@ import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 
 import {getDOM} from '../dom_adapter';
 
-
 /**
  * @stable
  */
@@ -62,6 +61,8 @@ export class EventManager {
 }
 
 export abstract class EventManagerPlugin {
+  constructor(private _doc: any) {}
+
   manager: EventManager;
 
   abstract supports(eventName: string): boolean;
@@ -69,7 +70,7 @@ export abstract class EventManagerPlugin {
   abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    const target: HTMLElement = getDOM().getGlobalEventTarget(element);
+    const target: HTMLElement = getDOM().getGlobalEventTarget(this._doc, element);
     if (!target) {
       throw new Error(`Unsupported event target ${target} for event ${eventName}`);
     }

@@ -5,15 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, AnimationStyles} from '@angular/core';
-
+import {AnimationStyles} from '@angular/core';
 import {StyleData} from '../common/style_data';
 import {copyStyles, normalizeStyles, parseTimeExpression} from '../common/util';
-
 import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
 import * as meta from './animation_metadata';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
-
 
 /*
  * The code within this file aims to generate web-animations-compatible keyframes from Angular's
@@ -51,17 +48,10 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  *
  * [TimelineBuilder]
  * This class is responsible for tracking the styles and building a series of keyframe objects for a
- * timeline between a start and end time. There is always one top-level timeline and sub timelines
- * are forked in two specific cases:
- *
- * 1. When keyframes() is used it will create a sub timeline. Upon creation, ALL OF THE COLLECTED
- * STYLES from the parent timeline up until this point will be inherited into the keyframes
- * timeline.
- *
- * 2. When group() is used it will create a sub timeline. Upon creation, NONE OF THE COLLECTED
- * STYLES from the parent timeline will be inherited. Although, if the sub timeline does reference a
- * style that was previously used within the parent then it will be copied over into the sub
- * timeline.
+ * timeline between a start and end time. The builder starts off with an initial timeline and each
+ * time the AST comes across a `group()`, `keyframes()` or a combination of the two wihtin a
+ * `sequence()` then it will generate a sub timeline for each step as well as a new one after
+ * they are complete.
  *
  * As the AST is traversed, the timing state on each of the timelines will be incremented. If a sub
  * timeline was created (based on one of the cases above) then the parent timeline will attempt to
@@ -96,22 +86,14 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  * keyframes. Therefore the missing `height` value will be properly filled into the already
  * processed keyframes.
  *
+ * When a sub-timeline is created it will have its own backFill property. This is done so that
+ * styles present within the sub-timeline do not accidentally seep into the previous/future timeline
+ * keyframes
+ *
  * (For prototypically-inherited contents to be detected a `for(i in obj)` loop must be used.)
  *
- * Based on whether the styles are inherited into a sub timeline (depending on the two cases
- * mentioned above), the functionality of the backFill will behave differently:
- *
- * 1. If the styles are inherited from the parent then the backFill property will also be inherited
- * and therefore any newly added styles to the backFill will be propagated to the parent timeline
- * and its already processed keyframes.
- *
- * 2. If the styles are not inherited from the parent then the sub timeline will have its own
- * backFill. Then if the sub timeline comes across a property that was not defined already then it
- * will read that from the parent's styles and pass that into its own backFill (which will then
- * propagate the missing styles across the sub timeline only).
- *
  * [Validation]
- * The code in this file is not responsible for validation. That functionaliy happens with within
+ * The code in this file is not responsible for validation. That functionality happens with within
  * the `AnimationValidatorVisitor` code.
  */
 export function buildAnimationKeyframes(
@@ -139,9 +121,9 @@ export class AnimationTimelineContext {
     timelines.push(this.currentTimeline);
   }
 
-  createSubContext(inherit: boolean = false): AnimationTimelineContext {
-    const context = new AnimationTimelineContext(
-        this.errors, this.timelines, this.currentTimeline.fork(inherit));
+  createSubContext(): AnimationTimelineContext {
+    const context =
+        new AnimationTimelineContext(this.errors, this.timelines, this.currentTimeline.fork());
     context.previousNode = this.previousNode;
     context.currentAnimateTimings = this.currentAnimateTimings;
     this.subContextCount++;
@@ -149,19 +131,13 @@ export class AnimationTimelineContext {
   }
 
   transformIntoNewTimeline(newTime = 0) {
-    const oldTimeline = this.currentTimeline;
-    const oldTime = oldTimeline.time;
-    if (newTime > 0) {
-      oldTimeline.time = newTime;
-    }
-    this.currentTimeline = oldTimeline.fork(true);
-    oldTimeline.time = oldTime;
+    this.currentTimeline = this.currentTimeline.fork(newTime);
     this.timelines.push(this.currentTimeline);
     return this.currentTimeline;
   }
 
   incrementTime(time: number) {
-    this.currentTimeline.forwardTime(this.currentTimeline.time + time);
+    this.currentTimeline.forwardTime(this.currentTimeline.duration + time);
   }
 }
 
@@ -216,36 +192,35 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       context.currentTimeline.forwardFrame();
       context.currentTimeline.snapshotCurrentStyles();
     }
-    ast.steps.map(s => visitAnimationNode(this, s, context));
-    context.previousNode = ast;
+
+    ast.steps.forEach(s => visitAnimationNode(this, s, context));
+
+    // this means that some animation function within the sequence
+    // ended up creating a sub timeline (which means the current
+    // timeline cannot overlap with the contents of the sequence)
     if (context.subContextCount > subContextCount) {
       context.transformIntoNewTimeline();
-      context.currentTimeline.snapshotCurrentStyles();
     }
+
+    context.previousNode = ast;
   }
 
   visitGroup(ast: meta.AnimationGroupMetadata, context: AnimationTimelineContext) {
     const innerTimelines: TimelineBuilder[] = [];
     let furthestTime = context.currentTimeline.currentTime;
-    ast.steps.map(s => {
-      const innerContext = context.createSubContext(false);
-      innerContext.currentTimeline.snapshotCurrentStyles();
+    ast.steps.forEach(s => {
+      const innerContext = context.createSubContext();
       visitAnimationNode(this, s, innerContext);
       furthestTime = Math.max(furthestTime, innerContext.currentTimeline.currentTime);
       innerTimelines.push(innerContext.currentTimeline);
     });
-
-    context.transformIntoNewTimeline(furthestTime);
 
     // this operation is run after the AST loop because otherwise
     // if the parent timeline's collected styles were updated then
     // it would pass in invalid data into the new-to-be forked items
     innerTimelines.forEach(
         timeline => context.currentTimeline.mergeTimelineCollectedStyles(timeline));
-
-    // we do this because the window between this timeline and the sub timeline
-    // should ensure that the styles within are exactly the same as they were before
-    context.currentTimeline.snapshotCurrentStyles();
+    context.transformIntoNewTimeline(furthestTime);
     context.previousNode = ast;
   }
 
@@ -306,22 +281,17 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       offsetGap = MAX_KEYFRAME_OFFSET / limit;
     }
 
-    const keyframeDuration = context.currentAnimateTimings.duration;
-    const innerContext = context.createSubContext(true);
+    const startTime = context.currentTimeline.duration;
+    const duration = context.currentAnimateTimings.duration;
+    const innerContext = context.createSubContext();
     const innerTimeline = innerContext.currentTimeline;
     innerTimeline.easing = context.currentAnimateTimings.easing;
 
-    // this will ensure that all collected styles so far
-    // are populated into the first keyframe of the keyframes()
-    // timeline (even if there exists a starting keyframe then
-    // it will override the contents of the first frame later)
-    innerTimeline.snapshotCurrentStyles();
-
-    ast.steps.map((step: meta.AnimationStyleMetadata, i: number) => {
+    ast.steps.forEach((step: meta.AnimationStyleMetadata, i: number) => {
       const normalizedStyles = normalizeStyles(new AnimationStyles(step.styles));
       const offset = containsOffsets ? <number>normalizedStyles['offset'] :
                                        (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
-      innerTimeline.forwardTime(offset * keyframeDuration);
+      innerTimeline.forwardTime(offset * duration);
       innerTimeline.setStyles(normalizedStyles);
     });
 
@@ -331,14 +301,13 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
     // we do this because the window between this timeline and the sub timeline
     // should ensure that the styles within are exactly the same as they were before
-    context.transformIntoNewTimeline(context.currentTimeline.time + keyframeDuration);
-    context.currentTimeline.snapshotCurrentStyles();
+    context.transformIntoNewTimeline(startTime + duration);
     context.previousNode = ast;
   }
 }
 
 export class TimelineBuilder {
-  public time: number = 0;
+  public duration: number = 0;
   public easing: string = '';
   private _currentKeyframe: StyleData;
   private _keyframes = new Map<number, StyleData>();
@@ -346,18 +315,8 @@ export class TimelineBuilder {
   private _localTimelineStyles: StyleData;
   private _backFill: StyleData = {};
 
-  constructor(
-      public startTime: number, private _globalTimelineStyles: StyleData = null,
-      inheritedBackFill: StyleData = null, inheritedStyles: StyleData = null) {
-    if (inheritedBackFill) {
-      this._backFill = inheritedBackFill;
-    }
-
+  constructor(public startTime: number, private _globalTimelineStyles: StyleData = null) {
     this._localTimelineStyles = Object.create(this._backFill, {});
-    if (inheritedStyles) {
-      this._localTimelineStyles = copyStyles(inheritedStyles, false, this._localTimelineStyles);
-    }
-
     if (!this._globalTimelineStyles) {
       this._globalTimelineStyles = this._localTimelineStyles;
     }
@@ -366,38 +325,32 @@ export class TimelineBuilder {
 
   hasStyling(): boolean { return this._keyframes.size > 1; }
 
-  get currentTime() { return this.startTime + this.time; }
+  get currentTime() { return this.startTime + this.duration; }
 
-  fork(inherit: boolean = false): TimelineBuilder {
-    let inheritedBackFill = inherit ? this._backFill : null;
-    let inheritedStyles = inherit ? this._localTimelineStyles : null;
-    return new TimelineBuilder(
-        this.currentTime, this._globalTimelineStyles, inheritedBackFill, inheritedStyles);
+  fork(currentTime = 0): TimelineBuilder {
+    return new TimelineBuilder(currentTime || this.currentTime, this._globalTimelineStyles);
   }
 
   private _loadKeyframe() {
-    this._currentKeyframe = this._keyframes.get(this.time);
+    this._currentKeyframe = this._keyframes.get(this.duration);
     if (!this._currentKeyframe) {
       this._currentKeyframe = Object.create(this._backFill, {});
-      this._keyframes.set(this.time, this._currentKeyframe);
+      this._keyframes.set(this.duration, this._currentKeyframe);
     }
   }
 
   forwardFrame() {
-    this.time++;
+    this.duration++;
     this._loadKeyframe();
   }
 
   forwardTime(time: number) {
-    this.time = time;
+    this.duration = time;
     this._loadKeyframe();
   }
 
   private _updateStyle(prop: string, value: string|number) {
     if (prop != 'easing') {
-      if (!this._localTimelineStyles[prop]) {
-        this._backFill[prop] = this._globalTimelineStyles[prop] || meta.AUTO_STYLE;
-      }
       this._localTimelineStyles[prop] = value;
       this._globalTimelineStyles[prop] = value;
       this._styleSummary[prop] = {time: this.currentTime, value};
@@ -409,6 +362,9 @@ export class TimelineBuilder {
       if (prop !== 'offset') {
         const val = styles[prop];
         this._currentKeyframe[prop] = val;
+        if (prop !== 'easing' && !this._localTimelineStyles[prop]) {
+          this._backFill[prop] = this._globalTimelineStyles[prop] || meta.AUTO_STYLE;
+        }
         this._updateStyle(prop, val);
       }
     });
@@ -421,7 +377,7 @@ export class TimelineBuilder {
 
   snapshotCurrentStyles() { copyStyles(this._localTimelineStyles, false, this._currentKeyframe); }
 
-  getFinalKeyframe() { return this._keyframes.get(this.time); }
+  getFinalKeyframe() { return this._keyframes.get(this.duration); }
 
   get properties() {
     const properties: string[] = [];
@@ -445,7 +401,7 @@ export class TimelineBuilder {
     const finalKeyframes: StyleData[] = [];
     // special case for when there are only start/destination
     // styles but no actual animation animate steps...
-    if (this.time == 0) {
+    if (this.duration == 0) {
       const targetKeyframe = this.getFinalKeyframe();
 
       const firstKeyframe = copyStyles(targetKeyframe, true);
@@ -458,11 +414,11 @@ export class TimelineBuilder {
     } else {
       this._keyframes.forEach((keyframe, time) => {
         const finalKeyframe = copyStyles(keyframe, true);
-        finalKeyframe['offset'] = time / this.time;
+        finalKeyframe['offset'] = time / this.duration;
         finalKeyframes.push(finalKeyframe);
       });
     }
 
-    return createTimelineInstruction(finalKeyframes, this.time, this.startTime, this.easing);
+    return createTimelineInstruction(finalKeyframes, this.duration, this.startTime, this.easing);
   }
 }

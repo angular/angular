@@ -7,6 +7,9 @@
  */
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
+
+import {DOCUMENT} from '../dom_tokens';
+
 import {EventManagerPlugin} from './event_manager';
 
 const EVENT_NAMES = {
@@ -85,7 +88,11 @@ export class HammerGestureConfig {
 
 @Injectable()
 export class HammerGesturesPlugin extends EventManagerPlugin {
-  constructor(@Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) { super(); }
+  constructor(
+      @Inject(DOCUMENT) doc: any,
+      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) {
+    super(doc);
+  }
 
   supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {

@@ -9,6 +9,7 @@
 import {isDevMode} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
+import {DOCUMENT} from '../dom/dom_tokens';
 
 import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
@@ -243,7 +244,7 @@ function stripCustomNsAttrs(el: Element) {
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function sanitizeHtml(unsafeHtmlInput: string): string {
+export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   try {
     const containerEl = getInertElement();
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
@@ -262,7 +263,7 @@ export function sanitizeHtml(unsafeHtmlInput: string): string {
 
       unsafeHtml = parsedHtml;
       DOM.setInnerHTML(containerEl, unsafeHtml);
-      if ((DOM.defaultDoc() as any).documentMode) {
+      if (defaultDoc.documentMode) {
         // strip custom-namespaced attributes on IE<=11
         stripCustomNsAttrs(containerEl);
       }

@@ -36,7 +36,7 @@ export function main() {
       const parentContext = new Object();
       const childContext = new Object();
 
-      const {view: parentView, rootNodes} = createAndGetRootNodes(
+      const {view: parentView} = createAndGetRootNodes(
           compViewDef([
             elementDef(NodeFlags.None, null, null, 1, 'div'),
             anchorDef(
@@ -146,7 +146,6 @@ export function main() {
 
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
 
-      const rootEl = rootNodes[0];
       attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
 
       Services.checkAndUpdateView(parentView);
@@ -171,7 +170,7 @@ export function main() {
         ngOnDestroy() { log.push('ngOnDestroy'); };
       }
 
-      const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
+      const {view: parentView} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 1, 'div'),
         anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 1, 'span'),

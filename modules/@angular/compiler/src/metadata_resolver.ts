@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, ComponentRenderTypeV2, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -131,6 +131,17 @@ export class CompileMetadataResolver {
     }
   }
 
+  private getComponentRenderType(dirType: any): StaticSymbol|ComponentRenderTypeV2 {
+    if (dirType instanceof StaticSymbol) {
+      return this._staticSymbolCache.get(
+          ngfactoryFilePath(dirType.filePath), cpl.componentRenderTypeName(dirType));
+    } else {
+      // returning an object as proxy,
+      // that we fill later during runtime compilation.
+      return <any>{};
+    }
+  }
+
   private getComponentFactory(selector: string, dirType: any): StaticSymbol|ComponentFactory<any> {
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(
@@ -235,6 +246,7 @@ export class CompileMetadataResolver {
         entryComponents: metadata.entryComponents,
         wrapperType: metadata.wrapperType,
         componentViewType: metadata.componentViewType,
+        componentRenderType: metadata.componentRenderType,
         componentFactory: metadata.componentFactory,
         template: templateMetadata
       });
@@ -372,6 +384,8 @@ export class CompileMetadataResolver {
       wrapperType: this.getDirectiveWrapperClass(directiveType),
       componentViewType: nonNormalizedTemplateMetadata ? this.getComponentViewClass(directiveType) :
                                                          undefined,
+      componentRenderType:
+          nonNormalizedTemplateMetadata ? this.getComponentRenderType(directiveType) : undefined,
       componentFactory: nonNormalizedTemplateMetadata ?
           this.getComponentFactory(selector, directiveType) :
           undefined
