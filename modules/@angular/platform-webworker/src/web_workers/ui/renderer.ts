@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer, Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
+import {AnimationPlayer, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer} from '@angular/core';
+
 import {MessageBus} from '../shared/message_bus';
-import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
+import {EVENT_CHANNEL, EVENT_V2_CHANNEL, RENDERER_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
+import {SerializerTypes} from '../shared/serialized_types';
 import {ANIMATION_WORKER_PLAYER_PREFIX, PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
 import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 import {EventDispatcher} from '../ui/event_dispatcher';
@@ -25,73 +27,39 @@ export class MessageBasedRenderer {
 
   start(): void {
     const broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+
     this._bus.initChannel(EVENT_CHANNEL);
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
 
-    broker.registerMethod(
-        'renderComponent', [RenderComponentType, PRIMITIVE], this._renderComponent.bind(this));
+    const [RCT, RSO, P] = [RenderComponentType, RenderStoreObject, PRIMITIVE];
 
-    broker.registerMethod(
-        'selectRootElement', [RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._selectRootElement.bind(this));
-    broker.registerMethod(
-        'createElement', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._createElement.bind(this));
-    broker.registerMethod(
-        'createViewRoot', [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-        this._createViewRoot.bind(this));
-    broker.registerMethod(
-        'createTemplateAnchor', [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-        this._createTemplateAnchor.bind(this));
-    broker.registerMethod(
-        'createText', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._createText.bind(this));
-    broker.registerMethod(
-        'projectNodes', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        this._projectNodes.bind(this));
-    broker.registerMethod(
-        'attachViewAfter', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        this._attachViewAfter.bind(this));
-    broker.registerMethod(
-        'detachView', [RenderStoreObject, RenderStoreObject], this._detachView.bind(this));
-    broker.registerMethod(
-        'destroyView', [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-        this._destroyView.bind(this));
-    broker.registerMethod(
-        'setElementProperty', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._setElementProperty.bind(this));
-    broker.registerMethod(
-        'setElementAttribute', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._setElementAttribute.bind(this));
-    broker.registerMethod(
-        'setBindingDebugInfo', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._setBindingDebugInfo.bind(this));
-    broker.registerMethod(
-        'setElementClass', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._setElementClass.bind(this));
-    broker.registerMethod(
-        'setElementStyle', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._setElementStyle.bind(this));
-    broker.registerMethod(
-        'invokeElementMethod', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._invokeElementMethod.bind(this));
-    broker.registerMethod(
-        'setText', [RenderStoreObject, RenderStoreObject, PRIMITIVE], this._setText.bind(this));
-    broker.registerMethod(
-        'listen', [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-        this._listen.bind(this));
-    broker.registerMethod(
-        'listenGlobal', [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
-        this._listenGlobal.bind(this));
-    broker.registerMethod(
-        'listenDone', [RenderStoreObject, RenderStoreObject], this._listenDone.bind(this));
-    broker.registerMethod(
-        'animate',
-        [
-          RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE, PRIMITIVE,
-          PRIMITIVE, PRIMITIVE, PRIMITIVE
-        ],
-        this._animate.bind(this));
+    const methods: any[][] = [
+      ['renderComponent', this._renderComponent, RCT, P],
+      ['selectRootElement', this._selectRootElement, RSO, P, P],
+      ['createElement', this._createElement, RSO, RSO, P, P],
+      ['createViewRoot', this._createViewRoot, RSO, RSO, P],
+      ['createTemplateAnchor', this._createTemplateAnchor, RSO, RSO, P],
+      ['createText', this._createText, RSO, RSO, P, P],
+      ['projectNodes', this._projectNodes, RSO, RSO, RSO],
+      ['attachViewAfter', this._attachViewAfter, RSO, RSO, RSO],
+      ['detachView', this._detachView, RSO, RSO],
+      ['destroyView', this._destroyView, RSO, RSO, RSO],
+      ['setElementProperty', this._setElementProperty, RSO, RSO, P, P],
+      ['setElementAttribute', this._setElementAttribute, RSO, RSO, P, P],
+      ['setBindingDebugInfo', this._setBindingDebugInfo, RSO, RSO, P, P],
+      ['setElementClass', this._setElementClass, RSO, RSO, P, P],
+      ['setElementStyle', this._setElementStyle, RSO, RSO, P, P],
+      ['invokeElementMethod', this._invokeElementMethod, RSO, RSO, P, P],
+      ['setText', this._setText, RSO, RSO, P],
+      ['listen', this._listen, RSO, RSO, P, P],
+      ['listenGlobal', this._listenGlobal, RSO, P, P, P],
+      ['listenDone', this._listenDone, RSO, RSO],
+      ['animate', this._animate, RSO, RSO, P, P, P, P, P, P, P],
+    ];
+
+    methods.forEach(([name, method, ...argTypes]: any[]) => {
+      broker.registerMethod(name, argTypes, method.bind(this));
+    });
 
     this._bindAnimationPlayerMethods(broker);
   }
@@ -269,4 +237,125 @@ export class MessageBasedRenderer {
       player.onStart(() => onEventComplete());
     }
   }
+}
+
+@Injectable()
+export class MessageBasedRendererV2 {
+  private _eventDispatcher: EventDispatcher;
+
+  constructor(
+      private _brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
+      private _serializer: Serializer, private _renderStore: RenderStore,
+      private _rendererFactory: RendererFactoryV2) {}
+
+  start(): void {
+    const broker = this._brokerFactory.createMessageBroker(RENDERER_V2_CHANNEL);
+
+    this._bus.initChannel(EVENT_V2_CHANNEL);
+    this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_V2_CHANNEL), this._serializer);
+
+    const [RSO, P, CRT] = [RenderStoreObject, PRIMITIVE, SerializerTypes.RENDERER_TYPE_V2];
+
+    const methods: any[][] = [
+      ['createRenderer', this.createRenderer, RSO, CRT, P],
+      ['createElement', this.createElement, RSO, P, P, P],
+      ['createComment', this.createComment, RSO, P, P],
+      ['createText', this.createText, RSO, P, P],
+      ['appendChild', this.appendChild, RSO, RSO, RSO],
+      ['insertBefore', this.insertBefore, RSO, RSO, RSO, RSO],
+      ['removeChild', this.removeChild, RSO, RSO, RSO],
+      ['selectRootElement', this.selectRootElement, RSO, P, P],
+      ['parentNode', this.parentNode, RSO, RSO, P],
+      ['nextSibling', this.nextSibling, RSO, RSO, P],
+      ['setAttribute', this.setAttribute, RSO, RSO, P, P, P],
+      ['removeAttribute', this.removeAttribute, RSO, RSO, P, P],
+      ['addClass', this.addClass, RSO, RSO, P],
+      ['removeClass', this.removeClass, RSO, RSO, P],
+      ['setStyle', this.setStyle, RSO, RSO, P, P, P, P],
+      ['removeStyle', this.removeStyle, RSO, RSO, P, P],
+      ['setProperty', this.setProperty, RSO, RSO, P, P],
+      ['setValue', this.setValue, RSO, RSO, P],
+      ['listen', this.listen, RSO, RSO, P, P, P],
+      ['unlisten', this.unlisten, RSO, RSO],
+    ];
+
+    methods.forEach(([name, method, ...argTypes]: any[]) => {
+      broker.registerMethod(name, argTypes, method.bind(this));
+    });
+  }
+
+  private createRenderer(el: any, type: RendererTypeV2, id: number) {
+    this._renderStore.store(this._rendererFactory.createRenderer(el, type), id);
+  }
+
+  private createElement(r: RendererV2, name: string, namespace: string, id: number) {
+    this._renderStore.store(r.createElement(name, namespace), id);
+  }
+
+  private createComment(r: RendererV2, value: string, id: number) {
+    this._renderStore.store(r.createComment(value), id);
+  }
+
+  private createText(r: RendererV2, value: string, id: number) {
+    this._renderStore.store(r.createText(value), id);
+  }
+
+  private appendChild(r: RendererV2, parent: any, child: any) { r.appendChild(parent, child); }
+
+  private insertBefore(r: RendererV2, parent: any, child: any, ref: any) {
+    r.insertBefore(parent, child, ref);
+  }
+
+  private removeChild(r: RendererV2, parent: any, child: any) { r.removeChild(parent, child); }
+
+  private selectRootElement(r: RendererV2, selector: string, id: number) {
+    this._renderStore.store(r.selectRootElement(selector), id);
+  }
+
+  private parentNode(r: RendererV2, node: any, id: number) {
+    this._renderStore.store(r.parentNode(node), id);
+  }
+
+  private nextSibling(r: RendererV2, node: any, id: number) {
+    this._renderStore.store(r.nextSibling(node), id);
+  }
+
+  private setAttribute(r: RendererV2, el: any, name: string, value: string, namespace: string) {
+    r.setAttribute(el, name, value, namespace);
+  }
+
+  private removeAttribute(r: RendererV2, el: any, name: string, namespace: string) {
+    r.removeAttribute(el, name, namespace);
+  }
+
+  private addClass(r: RendererV2, el: any, name: string) { r.addClass(el, name); }
+
+  private removeClass(r: RendererV2, el: any, name: string) { r.removeClass(el, name); }
+
+  private setStyle(
+      r: RendererV2, el: any, style: string, value: any, hasVendorPrefix: boolean,
+      hasImportant: boolean) {
+    r.setStyle(el, style, value, hasVendorPrefix, hasImportant);
+  }
+
+  private removeStyle(r: RendererV2, el: any, style: string, hasVendorPrefix: boolean) {
+    r.removeStyle(el, style, hasVendorPrefix);
+  }
+
+  private setProperty(r: RendererV2, el: any, name: string, value: any) {
+    r.setProperty(el, name, value);
+  }
+
+  private setValue(r: RendererV2, node: any, value: string) { r.setValue(node, value); }
+
+  private listen(r: RendererV2, el: any, elName: string, eventName: string, unlistenId: number) {
+    const listener = (event: any) => {
+      return this._eventDispatcher.dispatchRenderEvent(el, elName, eventName, event);
+    };
+
+    const unlisten = r.listen(el || elName, eventName, listener);
+    this._renderStore.store(unlisten, unlistenId);
+  }
+
+  private unlisten(r: RendererV2, unlisten: () => boolean) { unlisten(); }
 }

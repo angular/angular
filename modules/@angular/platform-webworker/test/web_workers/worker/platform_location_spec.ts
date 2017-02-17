@@ -7,7 +7,6 @@
  */
 
 import {Type} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
 import {LocationType} from '@angular/platform-webworker/src/web_workers/shared/serialized_types';
@@ -75,16 +74,15 @@ export function main() {
       expect(() => platformLocation.pathname = 'TEST').toThrowError();
     });
 
-    it('should send pathname to render thread',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
-         platformLocation.init().then((_) => {
-           const PATHNAME = '/test';
-           expectBrokerCall(broker, 'setPathname', [PATHNAME]);
-           platformLocation.pathname = PATHNAME;
-           async.done();
-         });
-       }));
+    it('should send pathname to render thread', done => {
+      const platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
+      platformLocation.init().then((_) => {
+        const PATHNAME = '/test';
+        expectBrokerCall(broker, 'setPathname', [PATHNAME]);
+        platformLocation.pathname = PATHNAME;
+        done();
+      });
+    });
 
     it('should send pushState to render thread', () => { testPushOrReplaceState(true); });
 

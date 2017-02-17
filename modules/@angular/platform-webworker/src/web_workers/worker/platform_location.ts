@@ -16,8 +16,6 @@ import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType} from '../shared/serialized_types';
 import {PRIMITIVE, Serializer} from '../shared/serializer';
 
-import {deserializeGenericEvent} from './event_deserializer';
-
 @Injectable()
 export class WebWorkerPlatformLocation extends PlatformLocation {
   private _broker: ClientMessageBroker;
@@ -44,10 +42,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
           }
 
           if (listeners) {
-            const e = deserializeGenericEvent(msg['event']);
             // There was a popState or hashChange event, so the location object thas been updated
             this._location = this._serializer.deserialize(msg['location'], LocationType);
-            listeners.forEach((fn: Function) => fn(e));
+            listeners.forEach((fn: Function) => fn(msg['event']));
           }
         }
       }

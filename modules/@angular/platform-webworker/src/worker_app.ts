@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './private_import_platform-browser';
@@ -18,7 +18,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_wo
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
-import {WebWorkerRootRenderer} from './web_workers/worker/renderer';
+import {WebWorkerRendererFactoryV2, WebWorkerRootRenderer} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 
@@ -40,7 +40,6 @@ const _postMessage = {
   }
 };
 
-
 export function createMessageBus(zone: NgZone): MessageBus {
   const sink = new PostMessageBusSink(_postMessage);
   const source = new PostMessageBusSource();
@@ -48,7 +47,6 @@ export function createMessageBus(zone: NgZone): MessageBus {
   bus.attachToZone(zone);
   return bus;
 }
-
 
 export function setupWebWorker(): void {
   WorkerDomAdapter.makeCurrent();
@@ -68,6 +66,8 @@ export function setupWebWorker(): void {
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
     WebWorkerRootRenderer,
     {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
+    WebWorkerRendererFactoryV2,
+    {provide: RendererFactoryV2, useExisting: WebWorkerRendererFactoryV2},
     {provide: ON_WEB_WORKER, useValue: true},
     RenderStore,
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},

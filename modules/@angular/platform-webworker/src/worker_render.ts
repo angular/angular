@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {AnimationDriver, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
 
 import {APP_ID_RANDOM_PROVIDER} from './private_import_core';
-import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, WebAnimationsDriver, getDOM} from './private_import_platform-browser';
+import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRendererFactoryV2, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, WebAnimationsDriver, getDOM} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -19,8 +19,6 @@ import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from './web_workers/ui/renderer';
-
-
 
 /**
  * Wrapper class that exposes the Worker
@@ -71,6 +69,8 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   APP_ID_RANDOM_PROVIDER,
   {provide: DomRootRenderer, useClass: DomRootRenderer_},
   {provide: RootRenderer, useExisting: DomRootRenderer},
+  DomRendererFactoryV2,
+  {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
   {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},

@@ -14,3 +14,11 @@ export class LocationType {
       public port: string, public pathname: string, public search: string, public hash: string,
       public origin: string) {}
 }
+
+/**
+ * @experimental WebWorker support in Angular is currently experimental.
+ */
+export const enum SerializerTypes {
+  // RendererTypeV2
+  RENDERER_TYPE_V2,
+}

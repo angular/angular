@@ -105,6 +105,7 @@ export class EventDispatcher {
       default:
         throw new Error(eventName + ' not supported on WebWorkers');
     }
+
     this._sink.emit({
       'element': this._serializer.serialize(element, RenderStoreObject),
       'eventName': eventName,

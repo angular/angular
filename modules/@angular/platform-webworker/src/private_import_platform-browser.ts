@@ -17,6 +17,8 @@ export const BrowserDomAdapter: typeof _.BrowserDomAdapter = _.BrowserDomAdapter
 export const BrowserGetTestability: typeof _.BrowserGetTestability = _.BrowserGetTestability;
 export const DomRootRenderer: typeof _.DomRootRenderer = _.DomRootRenderer;
 export const DomRootRenderer_: typeof _.DomRootRenderer_ = _.DomRootRenderer_;
+export const DomRendererFactoryV2: typeof _.DomRendererFactoryV2 = _.DomRendererFactoryV2;
+
 export const DomEventsPlugin: typeof _.DomEventsPlugin = _.DomEventsPlugin;
 export const DomSharedStylesHost: typeof _.DomSharedStylesHost = _.DomSharedStylesHost;
 export const SharedStylesHost: typeof _.SharedStylesHost = _.SharedStylesHost;
