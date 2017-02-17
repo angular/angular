@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵConsole as Console, ɵLifecycleHooks as LifecycleHooks} from '@angular/core';
+
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, dirWrapperClassName, identifierModuleUrl, identifierName} from './compile_metadata';
 import {createCheckBindingField, isFirstViewCheck} from './compiler_util/binding_util';
 import {EventHandlerVars, convertActionBinding, legacyConvertPropertyBinding} from './compiler_util/expression_converter';
@@ -18,7 +20,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from './ml_parser/interpolation_config';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
-import {Console, LifecycleHooks} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {BindingParser} from './template_parser/binding_parser';
 import {BoundElementPropertyAst, BoundEventAst} from './template_parser/template_ast';

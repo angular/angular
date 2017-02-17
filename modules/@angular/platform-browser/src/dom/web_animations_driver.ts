@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '@angular/core';
+import {AnimationPlayer, ɵAnimationKeyframe as AnimationKeyframe, ɵAnimationStyles as AnimationStyles} from '@angular/core';
 import {isPresent} from '../facade/lang';
-import {AnimationKeyframe, AnimationStyles} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {WebAnimationsPlayer} from './web_animations_player';

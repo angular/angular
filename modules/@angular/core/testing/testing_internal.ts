@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵisPromise as isPromise} from '@angular/core';
+
 import {AsyncTestCompleter} from './async_test_completer';
 import {StringMapWrapper} from './facade/collection';
 import {global} from './facade/lang';
-import {isPromise} from './private_import_core';
 import {getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';

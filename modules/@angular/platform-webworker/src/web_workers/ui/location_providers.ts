@@ -8,7 +8,7 @@
 
 import {Injector, NgZone, PLATFORM_INITIALIZER, Provider} from '@angular/core';
 
-import {BrowserPlatformLocation} from '../../private_import_platform-browser';
+import {ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/platform-browser';
 import {MessageBasedPlatformLocation} from './platform_location';
 
 

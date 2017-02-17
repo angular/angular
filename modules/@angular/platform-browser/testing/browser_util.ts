@@ -7,9 +7,9 @@
  */
 
 import {NgZone} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {global} from './facade/lang';
-import {getDOM} from './private_import_platform-browser';
 
 export let browserDetection: BrowserDetection;
 

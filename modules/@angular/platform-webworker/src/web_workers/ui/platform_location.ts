@@ -8,9 +8,9 @@
 
 import {LocationChangeListener} from '@angular/common';
 import {Injectable} from '@angular/core';
+import {ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/platform-browser';
 
 import {EventEmitter} from '../../facade/async';
-import {BrowserPlatformLocation} from '../../private_import_platform-browser';
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType, Serializer, SerializerTypes} from '../shared/serializer';

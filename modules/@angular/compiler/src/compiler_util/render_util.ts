@@ -5,11 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {SecurityContext} from '@angular/core';
-
+import {SecurityContext, ɵEMPTY_STATE as EMPTY_ANIMATION_STATE} from '@angular/core';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE} from '../private_import_core';
 import {BoundElementPropertyAst, BoundEventAst, PropertyBindingType} from '../template_parser/template_ast';
 
 import {isFirstViewCheck} from './binding_util';

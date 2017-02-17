@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵReflectionCapabilities, ɵreflector} from '@angular/core';
 import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import {main} from '../src/main';
-import {ReflectionCapabilities, reflector} from './private_import_core';
 
 
 describe('compiler-cli', () => {
@@ -43,7 +43,7 @@ describe('compiler-cli', () => {
   });
 
   // Restore reflector since AoT compiler will update it with a new static reflector
-  afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
+  afterEach(() => { ɵreflector.updateCapabilities(new ɵReflectionCapabilities()); });
 
   it('should compile without errors', (done) => {
     write('test.ts', 'export const A = 1;');

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '@angular/core';
+import {AnimationPlayer, ɵNoOpAnimationPlayer} from '@angular/core';
 import {StyleData} from '../common/style_data';
-import {NoOpAnimationPlayer} from '../private_import_core';
 
 /**
  * @experimental
@@ -17,7 +16,7 @@ export class NoOpAnimationDriver implements AnimationDriver {
   animate(
       element: any, keyframes: StyleData[], duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    return new NoOpAnimationPlayer();
+    return new ɵNoOpAnimationPlayer();
   }
 }
 

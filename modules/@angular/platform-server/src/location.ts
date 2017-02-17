@@ -8,12 +8,10 @@
 
 import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Inject, Injectable, Optional} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
 import * as url from 'url';
-
 import {scheduleMicroTask} from './facade/lang';
-import {getDOM} from './private_import_platform-browser';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 

@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {__platform_browser_private__} from '@angular/platform-browser';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {ResponseOptions} from '../base_response_options';
@@ -195,7 +195,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
       private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
 
   configureRequest(req: Request): void {
-    const xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
+    const xsrfToken = getDOM().getCookie(this._cookieName);
     if (xsrfToken) {
       req.headers.set(this._headerName, xsrfToken);
     }

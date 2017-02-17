@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, ɵLifecycleHooks as LifecycleHooks, ɵviewEngine as viewEngine} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
@@ -17,7 +17,6 @@ import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier}
 import {CompilerInjectable} from '../injectable';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
-import {LifecycleHooks, viewEngine} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';

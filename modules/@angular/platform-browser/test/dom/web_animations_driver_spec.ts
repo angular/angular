@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '@angular/core';
+import {AnimationPlayer, ɵAnimationKeyframe as AnimationKeyframe, ɵAnimationStyles as AnimationStyles, ɵNoOpAnimationPlayer as NoOpAnimationPlayer} from '@angular/core';
 import {el} from '@angular/platform-browser/testing/browser_util';
-
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {AnimationKeyframe, AnimationStyles, NoOpAnimationPlayer} from '../../src/private_import_core';
 
 function _makeStyles(styles: {[key: string]: string | number}): AnimationStyles {
   return new AnimationStyles([styles]);

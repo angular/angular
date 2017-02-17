@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, ComponentRenderTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
-import {LifecycleHooks, reflector} from './private_import_core';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
 
@@ -110,7 +109,7 @@ export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata
   if (ref instanceof StaticSymbol) {
     return ref.filePath;
   }
-  return reflector.importUri(ref);
+  return ɵreflector.importUri(ref);
 }
 
 export function viewClassName(compType: any, embeddedTemplateIndex: number): string {
@@ -203,7 +202,7 @@ export interface CompileTokenMetadata {
  */
 export interface CompileTypeMetadata extends CompileIdentifierMetadata {
   diDeps: CompileDiDependencyMetadata[];
-  lifecycleHooks: LifecycleHooks[];
+  lifecycleHooks: ɵLifecycleHooks[];
   reference: any;
 }
 

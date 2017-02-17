@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '@angular/core';
-
+import {SecurityContext, ɵisDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy} from '@angular/core';
 import {createCheckBindingField} from '../compiler_util/binding_util';
 import {legacyConvertPropertyBinding} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
@@ -15,7 +14,6 @@ import {createCheckAnimationBindingStmts, createCheckRenderBindingStmt} from '..
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 

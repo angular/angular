@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '@angular/core';
+import {AnimationPlayer, ɵAnimationKeyframe as AnimationKeyframe, ɵAnimationStyles as AnimationStyles} from '@angular/core';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
 import {AnimationDriver} from '@angular/platform-browser';
-
 import {ListWrapper} from './facade/collection';
-import {AnimationKeyframe, AnimationStyles} from './private_import_core';
 
 export class MockAnimationDriver extends AnimationDriver {
   public log: {[key: string]: any}[] = [];

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵANY_STATE, ɵFILL_STYLE_FLAG} from '@angular/core';
+
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
 import {ParseError} from '../parse_util';
-import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStateTransitionFnExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
@@ -164,7 +165,7 @@ function _parseAnimationTransitionExpr(
     const toState = match[3];
     expressions.push(new AnimationStateTransitionExpression(fromState, toState));
 
-    const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
+    const isFullAnyStateExpr = fromState == ɵANY_STATE && toState == ɵANY_STATE;
     if (separator[0] == '<' && !isFullAnyStateExpr) {
       expressions.push(new AnimationStateTransitionExpression(toState, fromState));
     }
@@ -399,7 +400,7 @@ function _parseAnimationKeyframes(
 
     Object.keys(styles).forEach(prop => {
       if (!isPresent(firstKeyframeStyles[prop])) {
-        firstKeyframeStyles[prop] = FILL_STYLE_FLAG;
+        firstKeyframeStyles[prop] = ɵFILL_STYLE_FLAG;
       }
     });
   }
@@ -588,7 +589,7 @@ function _createStartKeyframeFromEndKeyframe(
         // this is a flag that the runtime code uses to pass
         // in a value either from the state declaration styles
         // or using the AUTO_STYLE value (e.g. getComputedStyle)
-        value = FILL_STYLE_FLAG;
+        value = ɵFILL_STYLE_FLAG;
       }
 
       if (isPresent(nextEntry) && !nextEntry.matches(endTime, val)) {

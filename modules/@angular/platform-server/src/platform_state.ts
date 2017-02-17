@@ -9,9 +9,7 @@
 const parse5 = require('parse5');
 
 import {Injectable, Inject} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
-
-import {getDOM} from './private_import_platform-browser';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 /**
  * Representation of the current platform state.

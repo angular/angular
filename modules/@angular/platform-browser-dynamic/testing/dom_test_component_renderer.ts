@@ -8,8 +8,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
-import {DOCUMENT} from '@angular/platform-browser';
-import {getDOM} from './private_import_platform-browser';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 /**
  * A DOM based implementation of the TestComponentRenderer.

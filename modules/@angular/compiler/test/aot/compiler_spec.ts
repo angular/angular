@@ -7,13 +7,11 @@
  */
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, createAotCompiler} from '@angular/compiler';
-import {RenderComponentType} from '@angular/core';
+import {RenderComponentType, ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
-
-import {ReflectionCapabilities, reflector} from './private_import_core';
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockMetadataBundlerHost, settings} from './test_util';
 
 const DTS = /\.d\.ts$/;

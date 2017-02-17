@@ -7,10 +7,11 @@
  */
 
 
+import {ɵViewType as ViewType} from '@angular/core';
+
 import {CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import * as o from '../output/output_ast';
-import {ViewType} from '../private_import_core';
 
 import {CompileView} from './compile_view';
 

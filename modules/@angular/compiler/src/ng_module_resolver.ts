@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Type} from '@angular/core';
+import {NgModule, Type, ɵReflectorReader, ɵreflector} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
 import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
-import {ReflectorReader, reflector} from './private_import_core';
 
 function _isNgModuleMetadata(obj: any): obj is NgModule {
   return obj instanceof NgModule;
@@ -22,7 +21,7 @@ function _isNgModuleMetadata(obj: any): obj is NgModule {
  */
 @CompilerInjectable()
 export class NgModuleResolver {
-  constructor(private _reflector: ReflectorReader = reflector) {}
+  constructor(private _reflector: ɵReflectorReader = ɵreflector) {}
 
   isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
 

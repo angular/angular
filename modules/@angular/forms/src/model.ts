@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {isObservable, isPromise} from './private_import_core';
 
 
 

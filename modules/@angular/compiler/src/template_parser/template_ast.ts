@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '@angular/core';
+import {SecurityContext, ɵLifecycleHooks as LifecycleHooks} from '@angular/core';
 
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {AST} from '../expression_parser/ast';
 import {ParseSourceSpan} from '../parse_util';
-import {LifecycleHooks} from '../private_import_core';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.

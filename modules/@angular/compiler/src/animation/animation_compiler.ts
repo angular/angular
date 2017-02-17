@@ -7,10 +7,11 @@
  */
 
 
+import {ɵANY_STATE, ɵDEFAULT_STATE, ɵEMPTY_STATE} from '@angular/core';
+
 import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionFnExpression, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 
@@ -171,11 +172,11 @@ class _AnimationBuilder implements AnimationAstVisitor {
             _compareToAnimationStateExpr(_ANIMATION_CURRENT_STATE_VAR, stateChange.fromState)
                 .and(_compareToAnimationStateExpr(_ANIMATION_NEXT_STATE_VAR, stateChange.toState)));
 
-        if (stateChange.fromState != ANY_STATE) {
+        if (stateChange.fromState != ɵANY_STATE) {
           context.stateMap.registerState(stateChange.fromState);
         }
 
-        if (stateChange.toState != ANY_STATE) {
+        if (stateChange.toState != ɵANY_STATE) {
           context.stateMap.registerState(stateChange.toState);
         }
       }
@@ -198,7 +199,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     ast.stateDeclarations.forEach(def => def.visit(this, context));
 
     // this should always be defined even if the user overrides it
-    context.stateMap.registerState(DEFAULT_STATE, {});
+    context.stateMap.registerState(ɵDEFAULT_STATE, {});
 
     const statements: o.Statement[] = [];
     statements.push(_PREVIOUS_ANIMATION_PLAYERS
@@ -206,7 +207,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
                             'getAnimationPlayers',
                             [
                               _ANIMATION_FACTORY_ELEMENT_VAR,
-                              _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE))
+                              _ANIMATION_NEXT_STATE_VAR.equals(o.literal(ɵEMPTY_STATE))
                                   .conditional(o.NULL_EXPR, o.literal(this.animationName))
                             ]))
                         .toDeclStmt());
@@ -216,7 +217,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
 
     statements.push(
-        _ANIMATION_DEFAULT_STATE_VAR.set(this._statesMapVar.key(o.literal(DEFAULT_STATE)))
+        _ANIMATION_DEFAULT_STATE_VAR.set(this._statesMapVar.key(o.literal(ɵDEFAULT_STATE)))
             .toDeclStmt());
 
     statements.push(
@@ -361,12 +362,12 @@ class _AnimationBuilderStateMap {
 }
 
 function _compareToAnimationStateExpr(value: o.Expression, animationState: string): o.Expression {
-  const emptyStateLiteral = o.literal(EMPTY_STATE);
+  const emptyStateLiteral = o.literal(ɵEMPTY_STATE);
   switch (animationState) {
-    case EMPTY_STATE:
+    case ɵEMPTY_STATE:
       return value.equals(emptyStateLiteral);
 
-    case ANY_STATE:
+    case ɵANY_STATE:
       return o.literal(true);
 
     default:

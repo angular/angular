@@ -9,10 +9,10 @@
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {NgModule, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
+import {ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
-import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './private_import_platform-browser-dynamic';
 
 export * from './private_export_testing'
 

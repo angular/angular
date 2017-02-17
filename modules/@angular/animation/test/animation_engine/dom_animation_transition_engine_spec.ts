@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵNoOpAnimationPlayer} from '@angular/core';
 import {el} from '@angular/platform-browser/testing/browser_util';
+
 import {animate, keyframes, state, style, transition} from '../../src/dsl/animation_metadata';
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
 import {trigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoOpAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationEngineInstruction} from '../../src/engine/animation_engine_instruction';
 import {DomAnimationTransitionEngine} from '../../src/engine/dom_animation_transition_engine';
-import {NoOpAnimationPlayer} from '../../src/private_import_core';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/mock_animation_driver';
 
 export function main() {
@@ -81,7 +82,7 @@ export function main() {
         expect(MockAnimationDriver.log.length).toEqual(0);
         const player = engine.process(element, [instruction]);
         expect(MockAnimationDriver.log.length).toEqual(0);
-        expect(player instanceof NoOpAnimationPlayer).toBeTruthy();
+        expect(player instanceof ɵNoOpAnimationPlayer).toBeTruthy();
       });
     });
 
