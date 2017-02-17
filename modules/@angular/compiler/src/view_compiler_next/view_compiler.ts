@@ -38,8 +38,6 @@ export class ViewCompilerNext extends ViewCompiler {
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
       usedPipes: CompilePipeSummary[],
       compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
-    const compName = identifierName(component.type) + (component.isHost ? `_Host` : '');
-
     let embeddedViewCount = 0;
     const staticQueryIds = findStaticQueryIds(template);
 
@@ -56,13 +54,14 @@ export class ViewCompilerNext extends ViewCompiler {
                 new o.LiteralMapEntry('data', o.literalMap([])),
               ])
             ]))
-            .toDeclStmt());
+            .toDeclStmt(
+                o.importType(createIdentifier(Identifiers.RendererTypeV2)),
+                [o.StmtModifier.Final]));
 
     const viewBuilderFactory = (parent: ViewBuilder): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
-      const viewName = viewClassName(component.type.reference, embeddedViewIndex);
       return new ViewBuilder(
-          parent, component, viewName, usedPipes, staticQueryIds, viewBuilderFactory);
+          parent, component, embeddedViewIndex, usedPipes, staticQueryIds, viewBuilderFactory);
     };
 
     const visitor = viewBuilderFactory(null);
@@ -109,9 +108,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
   constructor(
       private parent: ViewBuilder, private component: CompileDirectiveMetadata,
-      public viewName: string, private usedPipes: CompilePipeSummary[],
+      private embeddedViewIndex: number, private usedPipes: CompilePipeSummary[],
       private staticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>,
       private viewBuilderFactory: ViewBuilderFactory) {}
+
+  get viewName(): string {
+    return viewClassName(this.component.type.reference, this.embeddedViewIndex);
+  }
 
   visitAll(variables: VariableAst[], astNodes: TemplateAst[]) {
     this.variables = variables;
@@ -155,7 +158,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
   }
 
   build(targetStatements: o.Statement[] = []): o.Statement[] {
-    const compType = o.importType(this.component.type);
+    // TODO(tbosch): The old view compiler used to use an `any` type
+    // for the context in any embedded view. We keep this behaivor for now
+    // to be able to introduce the new view compiler without too many errors.
+    const compType =
+        this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type);
     this.children.forEach((child) => child.build(targetStatements));
 
     const updateDirectivesFn = this._createUpdateFn(this.updateDirectivesExpressions, compType);
@@ -180,16 +187,20 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     });
     let handleEventFn: o.Expression;
     if (handleEventStmts.length > 0) {
+      const preStmts: o.Statement[] =
+          [ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
+      if (!this.component.isHost) {
+        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType));
+      }
       handleEventFn = o.fn(
           [
-            new o.FnParam(VIEW_VAR.name), new o.FnParam(NODE_INDEX_VAR.name),
-            new o.FnParam(EVENT_NAME_VAR.name), new o.FnParam(EventHandlerVars.event.name)
+            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(NODE_INDEX_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(EVENT_NAME_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(EventHandlerVars.event.name, o.INFERRED_TYPE)
           ],
-          [
-            ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE),
-            COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType), ...handleEventStmts,
-            new o.ReturnStatement(ALLOW_DEFAULT_VAR)
-          ]);
+          [...preStmts, ...handleEventStmts, new o.ReturnStatement(ALLOW_DEFAULT_VAR)],
+          o.INFERRED_TYPE);
     } else {
       handleEventFn = o.NULL_EXPR;
     }
@@ -203,7 +214,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         [new o.ReturnStatement(o.importExpr(createIdentifier(Identifiers.viewDef)).callFn([
           o.literal(viewFlags), o.literalArr(this.nodeDefs), updateDirectivesFn, updateRendererFn,
           handleEventFn
-        ]))]);
+        ]))],
+        o.importType(createIdentifier(Identifiers.ViewDefinition)));
 
     targetStatements.push(viewFactory);
     return targetStatements;
@@ -225,9 +237,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     });
     let updateFn: o.Expression;
     if (updateStmts.length > 0) {
+      const preStmts: o.Statement[] = [];
+      if (!this.component.isHost) {
+        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType));
+      }
       updateFn = o.fn(
-          [new o.FnParam(CHECK_VAR.name), new o.FnParam(VIEW_VAR.name)],
-          [COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType), ...updateStmts]);
+          [
+            new o.FnParam(CHECK_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE)
+          ],
+          [...preStmts, ...updateStmts], o.INFERRED_TYPE);
     } else {
       updateFn = o.NULL_EXPR;
     }
@@ -306,7 +325,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     let outputDefs: o.Expression[] = [];
     if (elName) {
       ast.inputs.forEach(
-          (inputAst) => { hostBindings.push({context: COMP_VAR, value: inputAst.value}); });
+          (inputAst) => hostBindings.push({context: COMP_VAR, value: inputAst.value}));
       if (hostBindings.length) {
         this._addUpdateExpressions(nodeIndex, hostBindings, this.updateRendererExpressions);
       }
@@ -760,7 +779,8 @@ function multiProviderDef(providers: CompileProviderMetadata[]):
     }
     return expr;
   });
-  const providerExpr = o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))]);
+  const providerExpr =
+      o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
   return {
     providerExpr,
     providerType: viewEngine.ProviderType.Factory,
@@ -876,6 +896,11 @@ function elementBindingDefs(inputAsts: BoundElementPropertyAst[]): o.Expression[
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Property:
+        return o.literalArr([
+          o.literal(viewEngine.BindingType.ElementProperty), o.literal(inputAst.name),
+          o.literal(inputAst.securityContext)
+        ]);
+      case PropertyBindingType.Animation:
         return o.literalArr([
           o.literal(viewEngine.BindingType.ElementProperty), o.literal(inputAst.name),
           o.literal(inputAst.securityContext)

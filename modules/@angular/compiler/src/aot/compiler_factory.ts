@@ -28,6 +28,7 @@ import {StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
 import {ViewCompiler} from '../view_compiler/view_compiler';
+import {ViewCompilerNext} from '../view_compiler_next/view_compiler';
 
 import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
@@ -61,7 +62,8 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
     genDebugInfo: options.debug === true,
     defaultEncapsulation: ViewEncapsulation.Emulated,
     logBindingUpdate: false,
-    useJit: false
+    useJit: false,
+    useViewEngine: options.useViewEngine
   });
   const normalizer = new DirectiveNormalizer(
       {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);
@@ -80,9 +82,10 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
                               compilerHost.fileNameToModuleName(fileName, containingFilePath),
     getTypeArity: (symbol: StaticSymbol) => symbolResolver.getTypeArity(symbol)
   };
+  const viewCompiler = config.useViewEngine ? new ViewCompilerNext(config, elementSchemaRegistry) :
+                                              new ViewCompiler(config, elementSchemaRegistry);
   const compiler = new AotCompiler(
-      compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver),
-      new ViewCompiler(config, elementSchemaRegistry),
+      config, compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver), viewCompiler,
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
       new NgModuleCompiler(), new TypeScriptEmitter(importResolver), summaryResolver,
       options.locale, options.i18nFormat, new AnimationParser(elementSchemaRegistry),

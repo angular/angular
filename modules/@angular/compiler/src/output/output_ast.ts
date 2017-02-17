@@ -34,7 +34,7 @@ export enum BuiltinTypeName {
   Int,
   Number,
   Function,
-  Null
+  Inferred
 }
 
 export class BuiltinType extends Type {
@@ -66,12 +66,12 @@ export class MapType extends Type {
 }
 
 export const DYNAMIC_TYPE = new BuiltinType(BuiltinTypeName.Dynamic);
+export const INFERRED_TYPE = new BuiltinType(BuiltinTypeName.Inferred);
 export const BOOL_TYPE = new BuiltinType(BuiltinTypeName.Bool);
 export const INT_TYPE = new BuiltinType(BuiltinTypeName.Int);
 export const NUMBER_TYPE = new BuiltinType(BuiltinTypeName.Number);
 export const STRING_TYPE = new BuiltinType(BuiltinTypeName.String);
 export const FUNCTION_TYPE = new BuiltinType(BuiltinTypeName.Function);
-export const NULL_TYPE = new BuiltinType(BuiltinTypeName.Null);
 
 export interface TypeVisitor {
   visitBuiltintType(type: BuiltinType, context: any): any;
@@ -493,7 +493,7 @@ export const SUPER_EXPR = new ReadVarExpr(BuiltinVar.Super);
 export const CATCH_ERROR_VAR = new ReadVarExpr(BuiltinVar.CatchError);
 export const CATCH_STACK_VAR = new ReadVarExpr(BuiltinVar.CatchStack);
 export const NULL_EXPR = new LiteralExpr(null, null);
-export const TYPED_NULL_EXPR = new LiteralExpr(null, NULL_TYPE);
+export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE);
 
 //// Statements
 export enum StmtModifier {

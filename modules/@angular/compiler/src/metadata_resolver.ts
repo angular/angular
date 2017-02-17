@@ -108,7 +108,10 @@ export class CompileMetadataResolver {
   }
 
   private getDirectiveWrapperClass(dirType: any): StaticSymbol|cpl.ProxyClass {
-    return this.getGeneratedClass(dirType, cpl.dirWrapperClassName(dirType));
+    if (!this._config.useViewEngine) {
+      return this.getGeneratedClass(dirType, cpl.dirWrapperClassName(dirType));
+    }
+    return null;
   }
 
   private getComponentViewClass(dirType: any): StaticSymbol|cpl.ProxyClass {

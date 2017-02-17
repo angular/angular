@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, createAotCompiler} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, createAotCompiler} from '@angular/compiler';
 import {RenderComponentType} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
@@ -117,6 +117,19 @@ describe('compiler (bundled Angular)', () => {
          expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
              .toBeDefined();
        })));
+
+    it('should compile with view engine',
+       async(() => compile(host, aotHost, expectNoDiagnostics, undefined, {
+                     useViewEngine: true
+                   }).then(generatedFiles => {
+         const genCompFile =
+             generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl));
+         expect(genCompFile).toBeDefined();
+         expect(genCompFile.source).toContain('viewDef');
+         expect(genCompFile.source).not.toContain('AppView');
+         expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
+             .toBeDefined();
+       })));
   });
 });
 
@@ -203,11 +216,12 @@ function summaryCompile(
 
 function compile(
     host: MockCompilerHost, aotHost: AotCompilerHost, preCompile?: (program: ts.Program) => void,
-    postCompile: (program: ts.Program) => void = expectNoDiagnostics) {
+    postCompile: (program: ts.Program) => void = expectNoDiagnostics,
+    options: AotCompilerOptions = {}) {
   const scripts = host.scriptNames.slice(0);
   const program = ts.createProgram(scripts, settings, host);
   if (preCompile) preCompile(program);
-  const {compiler, reflector} = createAotCompiler(aotHost, {});
+  const {compiler, reflector} = createAotCompiler(aotHost, options);
   return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName))
       .then(generatedFiles => {
         generatedFiles.forEach(

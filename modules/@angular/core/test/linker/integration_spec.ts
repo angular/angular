@@ -1333,7 +1333,6 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
           expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
           expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
           expect((<Injector>c.injector).get).toBeTruthy();
-          expect(c.source).toContain(':0:7');
           expect(c.context).toBe(fixture.componentInstance);
           expect(c.references['local']).toBeDefined();
         }
@@ -1351,7 +1350,6 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
            } catch (e) {
              const c = getDebugContext(e);
              expect(c.renderNode).toBeTruthy();
-             expect(c.source).toContain(':0:5');
            }
          });
 
