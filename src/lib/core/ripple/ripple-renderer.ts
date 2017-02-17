@@ -132,7 +132,9 @@ export class RippleRenderer {
 
     if (element) {
       // If the element is not null, register all event listeners on the trigger element.
-      this._triggerEvents.forEach((fn, type) => element.addEventListener(type, fn));
+      this._ngZone.runOutsideAngular(() => {
+        this._triggerEvents.forEach((fn, type) => element.addEventListener(type, fn));
+      });
     }
 
     this._triggerElement = element;
@@ -140,12 +142,10 @@ export class RippleRenderer {
 
   /** Listener being called on mousedown event. */
   private onMousedown(event: MouseEvent) {
-    if (this.rippleDisabled) {
-      return;
+    if (!this.rippleDisabled) {
+      this._isMousedown = true;
+      this.fadeInRipple(event.pageX, event.pageY, this.rippleConfig);
     }
-
-    this._isMousedown = true;
-    this.fadeInRipple(event.pageX, event.pageY, this.rippleConfig);
   }
 
   /** Listener being called on mouseup event. */

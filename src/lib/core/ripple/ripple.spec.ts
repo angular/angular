@@ -167,6 +167,17 @@ describe('MdRipple', () => {
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
 
+    it('does not run events inside the NgZone', () => {
+      const spy = jasmine.createSpy('zone unstable callback');
+      const subscription = fixture.ngZone.onUnstable.subscribe(spy);
+
+      dispatchMouseEvent('mousedown');
+      dispatchMouseEvent('mouseup');
+
+      expect(spy).not.toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
     describe('when page is scrolled', () => {
       const startingWindowWidth = window.innerWidth;
       const startingWindowHeight = window.innerHeight;
@@ -374,7 +385,7 @@ describe('MdRipple', () => {
 
 @Component({
   template: `
-    <div id="container" mat-ripple [mdRippleSpeedFactor]="0" 
+    <div id="container" mat-ripple [mdRippleSpeedFactor]="0"
          style="position: relative; width:300px; height:200px;">
     </div>
   `,
@@ -387,7 +398,7 @@ class BasicRippleContainer {
   template: `
     <div id="container" style="position: relative; width:300px; height:200px;"
       mat-ripple
-      [mdRippleSpeedFactor]="0"   
+      [mdRippleSpeedFactor]="0"
       [mdRippleTrigger]="trigger"
       [mdRippleCentered]="centered"
       [mdRippleRadius]="radius"
@@ -406,7 +417,7 @@ class RippleContainerWithInputBindings {
   @ViewChild(MdRipple) ripple: MdRipple;
 }
 
-@Component({ template: `<div id="container" mat-ripple [mdRippleSpeedFactor]="0" 
+@Component({ template: `<div id="container" mat-ripple [mdRippleSpeedFactor]="0"
                              *ngIf="!isDestroyed"></div>` })
 class RippleContainerWithNgIf {
   @ViewChild(MdRipple) ripple: MdRipple;
