@@ -14,7 +14,7 @@ import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef, ViewRef} from '../linker/view_ref';
+import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, RendererV2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
@@ -162,7 +162,7 @@ export function createChangeDetectorRef(view: ViewData): ChangeDetectorRef {
   return new ViewRef_(view);
 }
 
-export class ViewRef_ implements EmbeddedViewRef<any> {
+export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
   /** @internal */
   _view: ViewData;
   private _viewContainerRef: ViewContainerRef;

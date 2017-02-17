@@ -7,9 +7,12 @@
  */
 
 import {AnimationQueue} from '../animation/animation_queue';
+import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectorStatus} from '../change_detection/constants';
+
 import {AppView} from './view';
+
 
 /**
  * @stable
@@ -85,7 +88,12 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   abstract get rootNodes(): any[];
 }
 
-export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
+export interface InternalViewRef extends ViewRef {
+  detachFromContainer(): void;
+  attachToAppRef(appRef: ApplicationRef): void;
+}
+
+export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef, InternalViewRef {
   /** @internal */
   _originalMode: ChangeDetectorStatus;
 
@@ -122,4 +130,8 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   }
 
   destroy() { this._view.detachAndDestroy(); }
+
+  detachFromContainer() { this._view.detach(); }
+
+  attachToAppRef(appRef: ApplicationRef) { this._view.attachToAppRef(appRef); }
 }

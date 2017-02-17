@@ -63,6 +63,8 @@ export function main() {
           .toEqual(`export var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(o.INT_TYPE)))
           .toEqual(`var someVar:number = 1;`);
+      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(o.INFERRED_TYPE)))
+          .toEqual(`var someVar = 1;`);
     });
 
     describe('declare variables with ExternExpressions as values', () => {
