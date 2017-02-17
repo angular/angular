@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, ComponentRef, InjectionToken} from '@angular/core';
-import {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, Router, RouterPreloader} from '@angular/router';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
+import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 
@@ -36,38 +36,17 @@ import {UpgradeModule} from '@angular/upgrade/static';
  * @experimental
  */
 export const RouterUpgradeInitializer = {
-  provide: ROUTER_INITIALIZER,
-  useFactory: initialRouterNavigation,
-  deps: [UpgradeModule, ApplicationRef, RouterPreloader, ROUTER_CONFIGURATION]
+  provide: APP_BOOTSTRAP_LISTENER,
+  multi: true,
+  useFactory: locationSyncBootstrapListener,
+  deps: [UpgradeModule]
 };
 
 /**
  * @internal
  */
-export function initialRouterNavigation(
-    ngUpgrade: UpgradeModule, ref: ApplicationRef, preloader: RouterPreloader,
-    opts: ExtraOptions): Function {
-  return () => {
-    if (!ngUpgrade.$injector) {
-      throw new Error(`
-        RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.
-        Remove RouterUpgradeInitializer and call setUpLocationSync after UpgradeModule.bootstrap.
-      `);
-    }
-
-    const router = ngUpgrade.injector.get(Router);
-    const ref = ngUpgrade.injector.get(ApplicationRef);
-
-    (router as any).resetRootComponentType(ref.componentTypes[0]);
-    preloader.setUpPreloading();
-    if (opts.initialNavigation === false) {
-      router.setUpLocationChangeListener();
-    } else {
-      router.initialNavigation();
-    }
-
-    setUpLocationSync(ngUpgrade);
-  };
+export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
+  return () => { setUpLocationSync(ngUpgrade); };
 }
 
 /**
@@ -78,7 +57,14 @@ export function initialRouterNavigation(
  *
  * @experimental
  */
-export function setUpLocationSync(ngUpgrade: UpgradeModule): void {
+export function setUpLocationSync(ngUpgrade: UpgradeModule) {
+  if (!ngUpgrade.$injector) {
+    throw new Error(`
+        RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.
+        Remove RouterUpgradeInitializer and call setUpLocationSync after UpgradeModule.bootstrap.
+      `);
+  }
+
   const router: Router = ngUpgrade.injector.get(Router);
   const url = document.createElement('a');
 
