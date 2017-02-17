@@ -7,7 +7,7 @@
  */
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompilePipeSummary, componentRenderTypeName, tokenName, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenName, viewClassName} from '../compile_metadata';
 import {EventHandlerVars, LegacyNameResolver} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
@@ -70,7 +70,7 @@ export class CompileView implements LegacyNameResolver {
   public pipes: CompilePipe[] = [];
   public locals = new Map<string, o.Expression>();
   public className: string;
-  public renderComponentTypeName: string;
+  public rendererTypeName: string;
   public classType: o.Type;
   public classExpr: o.ReadVarExpr;
 
@@ -103,7 +103,7 @@ export class CompileView implements LegacyNameResolver {
 
     this.viewType = getViewType(component, viewIndex);
     this.className = viewClassName(component.type.reference, viewIndex);
-    this.renderComponentTypeName = componentRenderTypeName(component.type.reference);
+    this.rendererTypeName = rendererTypeName(component.type.reference);
     this.classType = o.expressionType(o.variable(this.className));
     this.classExpr = o.variable(this.className);
     if (this.viewType === ViewType.COMPONENT || this.viewType === ViewType.HOST) {

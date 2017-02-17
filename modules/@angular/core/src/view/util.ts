@@ -15,7 +15,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {ComponentRenderTypeV2, Renderer} from '../render/api';
+import {Renderer, RendererTypeV2} from '../render/api';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
@@ -43,11 +43,11 @@ export function unwrapValue(value: any): any {
 
 let _renderCompCount = 0;
 
-export function createComponentRenderTypeV2(values: {
+export function createRendererTypeV2(values: {
   styles: (string | any[])[],
   encapsulation: ViewEncapsulation,
   data: {[kind: string]: any[]}
-}): ComponentRenderTypeV2 {
+}): RendererTypeV2 {
   const isFilled = values && (values.encapsulation !== ViewEncapsulation.None ||
                               values.styles.length || Object.keys(values.data).length);
   if (isFilled) {
@@ -173,8 +173,8 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
   if (renderParent) {
     const parent = def.parent;
     if (parent && (parent.type !== NodeType.Element || !parent.element.component ||
-                   (parent.element.component.provider.componentRenderType &&
-                    parent.element.component.provider.componentRenderType.encapsulation ===
+                   (parent.element.component.provider.rendererType &&
+                    parent.element.component.provider.rendererType.encapsulation ===
                         ViewEncapsulation.Native))) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
