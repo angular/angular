@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {ComponentRenderTypeV2, RendererV2} from '../render/api';
+import {RendererTypeV2, RendererV2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
@@ -291,13 +291,13 @@ function createViewNodes(view: ViewData) {
           // the component view. Therefore, we create the component view first
           // and set the ProviderData in ViewData, and then instantiate the provider.
           const compViewDef = resolveViewDefinition(nodeDef.provider.component);
-          const compRenderType = nodeDef.provider.componentRenderType;
+          const rendererType = nodeDef.provider.rendererType;
           let compRenderer: RendererV2;
-          if (!compRenderType) {
+          if (!rendererType) {
             compRenderer = view.root.renderer;
           } else {
             const hostEl = asElementData(view, nodeDef.parent.index).renderElement;
-            compRenderer = view.root.rendererFactory.createRenderer(hostEl, compRenderType);
+            compRenderer = view.root.rendererFactory.createRenderer(hostEl, rendererType);
           }
           const componentView = createView(view.root, compRenderer, view, nodeDef, compViewDef);
           const providerData = <ProviderData>{componentView, instance: undefined};
