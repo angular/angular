@@ -8,9 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
-
-import {BROWSER_SANITIZATION_PROVIDERS} from './private_import_platform-browser';
+import {DOCUMENT, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';

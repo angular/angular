@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE} from '@angular/core';
-
+import {AUTO_STYLE, ɵAnimationPlayer as AnimationPlayer} from '@angular/core';
 import {isPresent} from '../facade/lang';
-import {AnimationPlayer} from '../private_import_core';
-
 import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 
