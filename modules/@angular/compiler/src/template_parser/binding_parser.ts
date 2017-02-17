@@ -62,8 +62,9 @@ export class BindingParser {
 
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
-  createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
-      BoundElementPropertyAst[] {
+  createDirectiveHostPropertyAsts(
+      dirMeta: CompileDirectiveSummary, elementSelector: string,
+      sourceSpan: ParseSourceSpan): BoundElementPropertyAst[] {
     if (dirMeta.hostProperties) {
       const boundProps: BoundProperty[] = [];
       Object.keys(dirMeta.hostProperties).forEach(propName => {
@@ -76,7 +77,7 @@ export class BindingParser {
               sourceSpan);
         }
       });
-      return boundProps.map((prop) => this.createElementPropertyAst(dirMeta.selector, prop));
+      return boundProps.map((prop) => this.createElementPropertyAst(elementSelector, prop));
     }
   }
 

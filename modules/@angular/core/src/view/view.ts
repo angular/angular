@@ -55,18 +55,12 @@ export function viewDef(
     node.reverseChildIndex =
         calculateReverseChildIndex(currentParent, i, node.childCount, nodes.length);
 
+    // renderParent needs to account for ng-container!
     let currentRenderParent: NodeDef;
-    if (currentParent &&
-        (currentParent.type !== NodeType.Element || !currentParent.element.component ||
-         (currentParent.element.component.provider.componentRenderType &&
-          currentParent.element.component.provider.componentRenderType.encapsulation ===
-              ViewEncapsulation.Native))) {
-      // children of components that don't use native encapsulation should never be attached!
-      if (currentParent && currentParent.type === NodeType.Element && !currentParent.element.name) {
-        currentRenderParent = currentParent.renderParent;
-      } else {
-        currentRenderParent = currentParent;
-      }
+    if (currentParent && currentParent.type === NodeType.Element && !currentParent.element.name) {
+      currentRenderParent = currentParent.renderParent;
+    } else {
+      currentRenderParent = currentParent;
     }
     node.renderParent = currentRenderParent;
 
@@ -98,7 +92,7 @@ export function viewDef(
     viewBindingCount += node.bindings.length;
     viewDisposableCount += node.disposableCount;
 
-    if (!currentParent) {
+    if (!currentRenderParent) {
       lastRootNode = node;
     }
     if (node.type === NodeType.Provider || node.type === NodeType.Directive) {
@@ -204,10 +198,13 @@ function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
     }
   }
   if (node.query) {
-    const parentType = parent ? parent.type : null;
-    if (parentType !== NodeType.Directive) {
+    if (node.flags & NodeFlags.HasContentQuery && (!parent || parent.type !== NodeType.Directive)) {
       throw new Error(
-          `Illegal State: Query nodes need to be children of directives, at index ${node.index}!`);
+          `Illegal State: Content Query nodes need to be children of directives, at index ${node.index}!`);
+    }
+    if (node.flags & NodeFlags.HasViewQuery && parent) {
+      throw new Error(
+          `Illegal State: View Query nodes have to be top level nodes, at index ${node.index}!`);
     }
   }
   if (node.childCount) {
@@ -593,8 +590,6 @@ function execQueriesAction(
   for (let i = 0; i < nodeCount; i++) {
     const nodeDef = view.def.nodes[i];
     if ((nodeDef.flags & queryFlags) && (nodeDef.flags & staticDynamicQueryFlag)) {
-      const elDef = nodeDef.parent.parent;
-
       Services.setCurrentNode(view, nodeDef.index);
       switch (action) {
         case QueryAction.CheckAndUpdate:

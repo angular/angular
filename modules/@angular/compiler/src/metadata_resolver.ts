@@ -12,7 +12,7 @@ import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
-import {USE_VIEW_ENGINE} from './config';
+import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
 import {stringify} from './facade/lang';
@@ -48,14 +48,14 @@ export class CompileMetadataResolver {
   private _ngModuleOfTypes = new Map<Type<any>, Type<any>>();
 
   constructor(
-      private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
-      private _pipeResolver: PipeResolver, private _summaryResolver: SummaryResolver<any>,
+      private _config: CompilerConfig, private _ngModuleResolver: NgModuleResolver,
+      private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
+      private _summaryResolver: SummaryResolver<any>,
       private _schemaRegistry: ElementSchemaRegistry,
       private _directiveNormalizer: DirectiveNormalizer,
       @Optional() private _staticSymbolCache: StaticSymbolCache,
       private _reflector: ReflectorReader = reflector,
-      @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector,
-      @Optional() @Inject(USE_VIEW_ENGINE) private _useViewEngine?: boolean) {}
+      @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector) {}
 
   clearCacheFor(type: Type<any>) {
     const dirMeta = this._directiveCache.get(type);
@@ -148,7 +148,7 @@ export class CompileMetadataResolver {
           ngfactoryFilePath(dirType.filePath), cpl.componentFactoryName(dirType));
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
-      if (this._useViewEngine) {
+      if (this._config.useViewEngine) {
         return viewEngine.createComponentFactory(selector, dirType, <any>hostView);
       } else {
         return new ComponentFactory(selector, <any>hostView, dirType);

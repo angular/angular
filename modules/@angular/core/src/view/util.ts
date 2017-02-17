@@ -131,21 +131,6 @@ export function renderNode(view: ViewData, def: NodeDef): any {
   }
 }
 
-export function nodeValue(view: ViewData, index: number): any {
-  const def = view.def.nodes[index];
-  switch (def.type) {
-    case NodeType.Element:
-      return asElementData(view, def.index).renderElement;
-    case NodeType.Text:
-      return asTextData(view, def.index).renderText;
-    case NodeType.Directive:
-    case NodeType.Pipe:
-    case NodeType.Provider:
-      return asProviderData(view, def.index).instance;
-  }
-  return undefined;
-}
-
 export function elementEventFullName(target: string, name: string): string {
   return target ? `${target}:${name}` : name;
 }
@@ -184,13 +169,20 @@ export function splitMatchedQueriesDsl(matchedQueriesDsl: [string | number, Quer
 }
 
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {
-  let parentEl: any;
-  if (!def.parent) {
-    parentEl = renderHost;
-  } else if (def.renderParent) {
-    parentEl = asElementData(view, def.renderParent.index).renderElement;
+  let renderParent = def.renderParent;
+  if (renderParent) {
+    const parent = def.parent;
+    if (parent && (parent.type !== NodeType.Element || !parent.element.component ||
+                   (parent.element.component.provider.componentRenderType &&
+                    parent.element.component.provider.componentRenderType.encapsulation ===
+                        ViewEncapsulation.Native))) {
+      // only children of non components, or children of components with native encapsulation should
+      // be attached.
+      return asElementData(view, def.renderParent.index).renderElement;
+    }
+  } else {
+    return renderHost;
   }
-  return parentEl;
 }
 
 const VIEW_DEFINITION_CACHE = new WeakMap<any, ViewDefinition>();
@@ -331,4 +323,14 @@ function execRenderNodeAction(
       target.push(renderNode);
       break;
   }
+}
+
+const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
+
+export function splitNamespace(name: string): string[] {
+  if (name[0] === ':') {
+    const match = name.match(NS_PREFIX_RE);
+    return [match[1], match[2]];
+  }
+  return ['', name];
 }

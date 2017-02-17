@@ -13,9 +13,14 @@ export function main() {
   describe('binding to CSS class list', () => {
     let fixture: ComponentFixture<any>;
 
+    function normalizeClassNames(classes: string) {
+      return classes.trim().split(' ').sort().join(' ');
+    }
+
     function detectChangesAndExpectClassName(classes: string): void {
       fixture.detectChanges();
-      expect(fixture.debugElement.children[0].nativeElement.className.trim()).toEqual(classes);
+      let nonNormalizedClassName = fixture.debugElement.children[0].nativeElement.className;
+      expect(normalizeClassNames(nonNormalizedClassName)).toEqual(normalizeClassNames(classes));
     }
 
     function getComponent(): TestComponent { return fixture.debugElement.componentInstance; }
