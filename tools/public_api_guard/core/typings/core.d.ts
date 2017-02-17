@@ -811,17 +811,13 @@ export declare class ReflectiveKey {
 
 /** @experimental */
 export declare class RenderComponentType {
-    animations: {
-        [key: string]: Function;
-    };
+    animations: any;
     encapsulation: ViewEncapsulation;
     id: string;
     slotCount: number;
     styles: Array<string | any[]>;
     templateUrl: string;
-    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: {
-        [key: string]: Function;
-    });
+    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: any);
 }
 
 /** @experimental */
@@ -1032,15 +1028,6 @@ export interface TrackByFunction<T> {
 export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
-export interface TransitionFactory {
-    match(currentState: any, nextState: any): TransitionInstruction;
-}
-
-/** @experimental */
-export interface TransitionInstruction {
-}
-
-/** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
 
 /** @experimental */
@@ -1048,12 +1035,6 @@ export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
-
-/** @experimental */
-export interface Trigger {
-    name: string;
-    transitionFactories: TransitionFactory[];
-}
 
 /** @stable */
 export declare const Type: FunctionConstructor;

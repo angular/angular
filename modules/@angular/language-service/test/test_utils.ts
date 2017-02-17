@@ -52,7 +52,8 @@ export function validateCache(): {exists: string[], unused: string[], reported: 
 }
 
 missingCache.set('/node_modules/@angular/core.d.ts', true);
-missingCache.set('/node_modules/@angular/animation.d.ts', true);
+missingCache.set('/node_modules/@angular/animations.d.ts', true);
+missingCache.set('/node_modules/@angular/platform-browser/animations.d.ts', true);
 missingCache.set('/node_modules/@angular/common.d.ts', true);
 missingCache.set('/node_modules/@angular/forms.d.ts', true);
 missingCache.set('/node_modules/@angular/core/src/di/provider.metadata.json', true);

@@ -10,6 +10,9 @@ System.config({
   map: {
     '@angular/common': '/vendor/@angular/common/bundles/common.umd.js',
     '@angular/compiler': '/vendor/@angular/compiler/bundles/compiler.umd.js',
+    '@angular/animations': '/vendor/@angular/animations/bundles/animations.umd.js',
+    '@angular/platform-browser/animations':
+        '/vendor/@angular/platform-browser/animations/bundles/platform-browser-animations.umd.js',
     '@angular/core': '/vendor/@angular/core/bundles/core.umd.js',
     '@angular/forms': '/vendor/@angular/forms/bundles/forms.umd.js',
     '@angular/http': '/vendor/@angular/forms/bundles/http.umd.js',

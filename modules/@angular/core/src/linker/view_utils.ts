@@ -40,7 +40,7 @@ let nextRenderComponentTypeId = 0;
 
 export function createRenderComponentType(
     templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
-    styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
+    styles: Array<string|any[]>, animations: any): RenderComponentType {
   return new RenderComponentType(
       `${nextRenderComponentTypeId++}`, templateUrl, slotCount, encapsulation, styles, animations);
 }
