@@ -7,12 +7,9 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
-import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
-
+import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation, ɵAnimationKeyframe as AnimationKeyframe, ɵAnimationPlayer as AnimationPlayer, ɵAnimationStyles as AnimationStyles, ɵRenderDebugInfo as RenderDebugInfo} from '@angular/core';
+import {AnimationDriver, DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵisNamespaced as isNamespaced, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute, ɵsplitNamespace as splitNamespace} from '@angular/platform-browser';
 import {isBlank, isPresent, stringify} from './facade/lang';
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from './private_import_core';
-import {NAMESPACE_URIS, SharedStylesHost, flattenStyles, getDOM, isNamespaced, shimContentAttribute, shimHostAttribute, splitNamespace} from './private_import_platform-browser';
 
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;

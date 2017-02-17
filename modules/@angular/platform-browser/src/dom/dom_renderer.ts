@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, ComponentRenderTypeV2, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererV2, RootRenderer, ViewEncapsulation, ɵAnimationKeyframe as AnimationKeyframe, ɵAnimationPlayer as AnimationPlayer, ɵAnimationStyles as AnimationStyles, ɵDirectRenderer as DirectRenderer, ɵNoOpAnimationPlayer as NoOpAnimationPlayer, ɵRenderDebugInfo as RenderDebugInfo} from '@angular/core';
 
 import {isPresent, stringify} from '../facade/lang';
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
