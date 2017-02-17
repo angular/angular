@@ -26,17 +26,19 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
+  public useViewEngine: boolean;
   public missingTranslation: MissingTranslationStrategy;
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation}: {
+       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation, useViewEngine}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
         useJit?: boolean,
         missingTranslation?: MissingTranslationStrategy,
+        useViewEngine?: boolean
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
@@ -44,6 +46,7 @@ export class CompilerConfig {
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
     this.missingTranslation = missingTranslation;
+    this.useViewEngine = useViewEngine;
   }
 
   get genDebugInfo(): boolean {

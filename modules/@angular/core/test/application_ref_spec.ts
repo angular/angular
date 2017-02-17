@@ -10,6 +10,7 @@ import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgM
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
+import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
@@ -19,21 +20,26 @@ import {ServerModule} from '@angular/platform-server';
 
 import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
-@Component({selector: 'comp', template: 'hello'})
+@Component({selector: 'bootstrap-app', template: 'hello'})
 class SomeComponent {
 }
 
 export function main() {
   describe('bootstrap', () => {
     let mockConsole: MockConsole;
-    let fakeDoc: Document;
 
-    beforeEach(() => {
-      fakeDoc = getDOM().createHtmlDocument();
-      const el = getDOM().createElement('comp', fakeDoc);
-      getDOM().appendChild(fakeDoc.body, el);
-      mockConsole = new MockConsole();
-    });
+    beforeEach(() => { mockConsole = new MockConsole(); });
+
+    function createRootEl() {
+      const doc = TestBed.get(DOCUMENT);
+      const rootEl = <HTMLElement>getDOM().firstChild(
+          getDOM().content(getDOM().createTemplate(`<bootstrap-app></bootstrap-app>`)));
+      const oldRoots = getDOM().querySelectorAll(doc, 'bootstrap-app');
+      for (let i = 0; i < oldRoots.length; i++) {
+        getDOM().remove(oldRoots[i]);
+      }
+      getDOM().appendChild(doc.body, rootEl);
+    }
 
     type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
 
@@ -52,10 +58,7 @@ export function main() {
       const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
 
       @NgModule({
-        providers: [
-          {provide: ErrorHandler, useValue: errorHandler}, {provide: DOCUMENT, useValue: fakeDoc},
-          options.providers || []
-        ],
+        providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
         imports: [platformModule],
         declarations: [SomeComponent],
         entryComponents: [SomeComponent],
@@ -74,7 +77,8 @@ export function main() {
 
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
            const view = jasmine.createSpyObj('view', ['detach', 'attachToAppRef']);
-           const viewRef = jasmine.createSpyObj('viewRef', ['detectChanges']);
+           const viewRef = jasmine.createSpyObj(
+               'viewRef', ['detectChanges', 'detachFromContainer', 'attachToAppRef']);
            viewRef.internalView = view;
            view.ref = viewRef;
            try {
@@ -101,16 +105,13 @@ export function main() {
 
         it('should be called when a component is bootstrapped',
            inject([ApplicationRef], (ref: ApplicationRef_) => {
+             createRootEl();
              const compRef = ref.bootstrap(SomeComponent);
              expect(capturedCompRefs).toEqual([compRef]);
            }));
       });
 
       describe('bootstrap', () => {
-        beforeEach(
-            () => {
-
-            });
         it('should throw if an APP_INITIIALIZER is not yet resolved',
            withModule(
                {
@@ -119,6 +120,7 @@ export function main() {
                  ]
                },
                inject([ApplicationRef], (ref: ApplicationRef_) => {
+                 createRootEl();
                  expect(() => ref.bootstrap(SomeComponent))
                      .toThrowError(
                          'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
@@ -128,8 +130,10 @@ export function main() {
 
     describe('bootstrapModule', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(
-          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+        createRootEl();
+        defaultPlatform = _platform;
+      }));
 
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
@@ -221,8 +225,10 @@ export function main() {
 
     describe('bootstrapModuleFactory', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(
-          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+        createRootEl();
+        defaultPlatform = _platform;
+      }));
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => { resolve = res; });
@@ -346,7 +352,7 @@ export function main() {
       it('should not allow to attach a view to both, a view container and the ApplicationRef',
          () => {
            const comp = TestBed.createComponent(MyComp);
-           const hostView = comp.componentRef.hostView;
+           let hostView = comp.componentRef.hostView;
            const containerComp = TestBed.createComponent(ContainerComp);
            containerComp.detectChanges();
            const vc = containerComp.componentInstance.vc;
@@ -355,7 +361,7 @@ export function main() {
            vc.insert(hostView);
            expect(() => appRef.attachView(hostView))
                .toThrowError('This view is already attached to a ViewContainer!');
-           vc.detach(0);
+           hostView = vc.detach(0);
 
            appRef.attachView(hostView);
            expect(() => vc.insert(hostView))

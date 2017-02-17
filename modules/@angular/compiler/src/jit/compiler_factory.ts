@@ -43,9 +43,8 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
 
 const baseHtmlParser = new InjectionToken('HtmlParser');
 
-function viewCompilerFactory(
-    useViewEngine: boolean, cc: CompilerConfig, sr: ElementSchemaRegistry) {
-  return useViewEngine ? new ViewCompilerNext(cc, sr) : new ViewCompiler(cc, sr);
+function viewCompilerFactory(cc: CompilerConfig, sr: ElementSchemaRegistry) {
+  return cc.useViewEngine ? new ViewCompilerNext(cc, sr) : new ViewCompiler(cc, sr);
 }
 
 /**
@@ -91,7 +90,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   {
     provide: ViewCompiler,
     useFactory: viewCompilerFactory,
-    deps: [USE_VIEW_ENGINE, CompilerConfig, ElementSchemaRegistry]
+    deps: [CompilerConfig, ElementSchemaRegistry]
   },
   NgModuleCompiler,
   DirectiveWrapperCompiler,
@@ -124,7 +123,7 @@ export class JitCompilerFactory implements CompilerFactory {
     const injector = ReflectiveInjector.resolveAndCreate([
       COMPILER_PROVIDERS, {
         provide: CompilerConfig,
-        useFactory: () => {
+        useFactory: (useViewEngine: boolean) => {
           return new CompilerConfig({
             // let explicit values from the compiler options overwrite options
             // from the app providers. E.g. important for the testing platform.
@@ -136,10 +135,10 @@ export class JitCompilerFactory implements CompilerFactory {
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
             logBindingUpdate: opts.useDebug,
-            missingTranslation: opts.missingTranslation,
+            missingTranslation: opts.missingTranslation, useViewEngine
           });
         },
-        deps: []
+        deps: [USE_VIEW_ENGINE]
       },
       opts.providers
     ]);

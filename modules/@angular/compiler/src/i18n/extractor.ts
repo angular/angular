@@ -107,7 +107,7 @@ export class Extractor {
         {get: (url: string) => host.loadResource(url)}, urlResolver, htmlParser, config);
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resolver = new CompileMetadataResolver(
-        new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
+        config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
         new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
         symbolCache, staticReflector);
 

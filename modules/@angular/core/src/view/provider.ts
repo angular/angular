@@ -12,9 +12,9 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {ComponentRenderTypeV2, RenderComponentType as RenderComponentTypeV1, Renderer as RendererV1, RendererFactoryV2, RendererV2, RootRenderer as RootRendererV1} from '../render/api';
+import {ComponentRenderTypeV2, Renderer as RendererV1, RendererFactoryV2, RendererV2} from '../render/api';
 
-import {createChangeDetectorRef, createInjector, createTemplateRef, createViewContainerRef} from './refs';
+import {createChangeDetectorRef, createInjector, createRendererV1, createTemplateRef, createViewContainerRef} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DirectiveOutputDef, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
 import {checkAndUpdateBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
@@ -40,6 +40,7 @@ export function directiveDef(
       bindings[bindingIndex] = {
         type: BindingType.DirectiveProperty,
         name: prop, nonMinifiedName,
+        ns: undefined,
         securityContext: undefined,
         suffix: undefined
       };
@@ -337,14 +338,7 @@ export function resolveDep(
       switch (tokenKey) {
         case RendererV1TokenKey: {
           const compView = findCompView(view, elDef, allowPrivateServices);
-          const compDef = compView.parentNodeDef;
-          const rootRendererV1: RootRendererV1 = view.root.injector.get(RootRendererV1);
-
-          // Note: Don't fill in the styles as they have been installed already via the RendererV2!
-          const compRenderType = compDef.provider.componentRenderType;
-          return rootRendererV1.renderComponent(new RenderComponentTypeV1(
-              compRenderType ? compRenderType.id : '0', '', 0,
-              compRenderType ? compRenderType.encapsulation : ViewEncapsulation.None, [], {}));
+          return createRendererV1(compView);
         }
         case RendererV2TokenKey: {
           const compView = findCompView(view, elDef, allowPrivateServices);
