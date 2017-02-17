@@ -2,7 +2,7 @@ import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/
 import {Component, ViewChild} from '@angular/core';
 import {MdRipple, MdRippleModule} from './ripple';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
-import {RIPPLE_FADE_OUT_DURATION, RIPPLE_SPEED_PX_PER_SECOND} from './ripple-renderer';
+import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 
 
 /** Creates a DOM mouse event. */
@@ -104,11 +104,8 @@ describe('MdRipple', () => {
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-      // Determines the diagonal distance of the ripple target.
-      let diagonal = Math.sqrt(TARGET_HEIGHT * TARGET_HEIGHT + TARGET_WIDTH * TARGET_WIDTH);
-
-      // Calculates the duration for fading in the ripple. Also adds the fade-out duration.
-      tick((diagonal / RIPPLE_SPEED_PX_PER_SECOND * 1000) + RIPPLE_FADE_OUT_DURATION);
+      // Calculates the duration for fading-in and fading-out the ripple.
+      tick(RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));

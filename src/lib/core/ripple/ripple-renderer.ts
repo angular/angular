@@ -1,11 +1,11 @@
 import {ElementRef, NgZone} from '@angular/core';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 
-/** Fade-in speed in pixels per second. Can be modified with the speedFactor option. */
-export const RIPPLE_SPEED_PX_PER_SECOND = 170;
+/** Fade-in duration for the ripples. Can be modified with the speedFactor option. */
+export const RIPPLE_FADE_IN_DURATION = 450;
 
-/** Fade-out speed for the ripples in milliseconds. This can't be modified by the speedFactor. */
-export const RIPPLE_FADE_OUT_DURATION = 600;
+/** Fade-out duration for the ripples in milliseconds. This can't be modified by the speedFactor. */
+export const RIPPLE_FADE_OUT_DURATION = 400;
 
 /**
  * Returns the distance from the point (x, y) to the furthest corner of a rectangle.
@@ -81,7 +81,7 @@ export class RippleRenderer {
     }
 
     let radius = config.radius || distanceToFurthestCorner(pageX, pageY, containerRect);
-    let duration = 1 / (config.speedFactor || 1) * (radius / RIPPLE_SPEED_PX_PER_SECOND);
+    let duration = RIPPLE_FADE_IN_DURATION * (1 / (config.speedFactor || 1));
     let offsetX = pageX - containerRect.left;
     let offsetY = pageY - containerRect.top;
 
@@ -95,7 +95,7 @@ export class RippleRenderer {
 
     // If the color is not set, the default CSS color will be used.
     ripple.style.backgroundColor = config.color;
-    ripple.style.transitionDuration = `${duration}s`;
+    ripple.style.transitionDuration = `${duration}ms`;
 
     this._containerElement.appendChild(ripple);
 
@@ -109,7 +109,7 @@ export class RippleRenderer {
     // if the mouse is released.
     this.runTimeoutOutsideZone(() => {
       this._isMousedown ? this._activeRipples.push(ripple) : this.fadeOutRipple(ripple);
-    }, duration * 1000);
+    }, duration);
   }
 
   /** Fades out a ripple element. */
