@@ -81,6 +81,8 @@
   pointer-events: none;
   opacity: 0;
 
+  transition: $mat-button-focus-transition;
+
   @include cdk-high-contrast {
     // Note that IE will render this in the same way, no
     // matter whether the theme is light or dark. This helps
