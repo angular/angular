@@ -149,7 +149,7 @@ $mat-input-underline-disabled-background-image:
   }
 
   // Show the placeholder above the input when it's not empty, or focused.
-  &.mat-float:not(.mat-empty), &.mat-float.mat-focused {
+  &.mat-float:not(.mat-empty), .mat-focused &.mat-float {
     @include mat-input-placeholder-floating;
   }
 
@@ -207,7 +207,7 @@ $mat-input-underline-disabled-background-image:
     transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
                 opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 
-    &.mat-focused {
+    .mat-focused & {
       opacity: 1;
       transform: scaleY(1);
     }

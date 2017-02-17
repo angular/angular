@@ -25,7 +25,7 @@
 
     // :focus is applied to the input, but we apply mat-focused to the other elements
     // that need to listen to it.
-    &.mat-focused {
+    .mat-focused & {
       color: $input-floating-placeholder-color;
 
       &.mat-accent {
@@ -43,7 +43,7 @@
 
   // See mat-input-placeholder-floating mixin in input.scss
   input.mat-input-element:-webkit-autofill + .mat-input-placeholder,
-  .mat-input-placeholder.mat-float.mat-focused {
+  .mat-focused .mat-input-placeholder.mat-float {
     .mat-placeholder-required {
       color: $input-required-placeholder-color;
     }
@@ -61,6 +61,17 @@
       &.mat-warn {
         background-color: $input-underline-color-warn;
       }
+    }
+  }
+
+  .mat-input-container.ng-invalid.ng-touched:not(.mat-focused) {
+    .mat-input-placeholder,
+    .mat-placeholder-required {
+      color: $input-underline-color-warn;
+    }
+
+    .mat-input-underline {
+      border-color: $input-underline-color-warn;
     }
   }
 }

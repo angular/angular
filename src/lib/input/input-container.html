@@ -12,7 +12,6 @@
         <label class="mat-input-placeholder"
                [attr.for]="_mdInputChild.id"
                [class.mat-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
-               [class.mat-focused]="_mdInputChild.focused"
                [class.mat-float]="_canPlaceholderFloat"
                [class.mat-accent]="dividerColor == 'accent'"
                [class.mat-warn]="dividerColor == 'warn'"
@@ -33,7 +32,6 @@
   <div class="mat-input-underline"
        [class.mat-disabled]="_mdInputChild.disabled">
     <span class="mat-input-ripple"
-          [class.mat-focused]="_mdInputChild.focused"
           [class.mat-accent]="dividerColor == 'accent'"
           [class.mat-warn]="dividerColor == 'warn'"></span>
   </div>

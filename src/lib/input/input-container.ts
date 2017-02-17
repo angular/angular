@@ -235,9 +235,10 @@ export class MdInputDirective {
   templateUrl: 'input-container.html',
   styleUrls: ['input-container.css'],
   host: {
-    '[class.mat-input-container]': 'true',
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
+    '[class.mat-input-container]': 'true',
+    '[class.mat-focused]': '_mdInputChild.focused',
     '[class.ng-untouched]': '_shouldForward("untouched")',
     '[class.ng-touched]': '_shouldForward("touched")',
     '[class.ng-pristine]': '_shouldForward("pristine")',
