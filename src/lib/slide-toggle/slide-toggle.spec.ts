@@ -438,6 +438,7 @@ describe('MdSlideToggle', () => {
     let slideToggleElement: HTMLElement;
     let slideToggleControl: NgControl;
     let slideThumbContainer: HTMLElement;
+    let inputElement: HTMLInputElement;
 
     beforeEach(async(() => {
       fixture = TestBed.createComponent(SlideToggleTestApp);
@@ -453,6 +454,8 @@ describe('MdSlideToggle', () => {
       slideToggleElement = slideToggleDebug.nativeElement;
       slideToggleControl = slideToggleDebug.injector.get(NgControl);
       slideThumbContainer = thumbContainerDebug.nativeElement;
+
+      inputElement = slideToggleElement.querySelector('input');
     }));
 
     it('should drag from start to end', fakeAsync(() => {
@@ -495,7 +498,7 @@ describe('MdSlideToggle', () => {
       expect(slideThumbContainer.classList).not.toContain('mat-dragging');
     }));
 
-    it('should not drag when disbaled', fakeAsync(() => {
+    it('should not drag when disabled', fakeAsync(() => {
       slideToggle.disabled = true;
 
       expect(slideToggle.checked).toBe(false);
@@ -536,6 +539,28 @@ describe('MdSlideToggle', () => {
       expect(slideToggle.checked).toBe(true);
       expect(slideThumbContainer.classList).not.toContain('mat-dragging');
       expect(testComponent.lastEvent.checked).toBe(true);
+    }));
+
+    it('should update the checked property of the input', fakeAsync(() => {
+      expect(inputElement.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('mat-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
     }));
 
   });
