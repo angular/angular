@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {__platform_browser_private__} from '@angular/platform-browser';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -115,7 +115,6 @@ export function main() {
          () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
     });
 
-    const getDOM = __platform_browser_private__.getDOM;
     if (getDOM().supportsCookies()) {
       describe('XSRF support', () => {
         it('sets an XSRF header by default', () => {

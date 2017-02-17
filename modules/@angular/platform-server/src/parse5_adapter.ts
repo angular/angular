@@ -9,7 +9,7 @@
 const parse5 = require('parse5');
 
 import {ListWrapper} from '../src/facade/collection';
-import {DomAdapter, setRootDomAdapter} from './private_import_platform-browser';
+import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
 import {isPresent, isBlank, global, setValueOnPath} from '../src/facade/lang';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
 

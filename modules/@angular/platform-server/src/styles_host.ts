@@ -7,10 +7,9 @@
  */
 
 import {ApplicationRef, Inject, Injectable} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';
-import {SharedStylesHost, getDOM} from './private_import_platform-browser';
 
 @Injectable()
 export class ServerStylesHost extends SharedStylesHost {
