@@ -386,6 +386,25 @@ export class Identifiers {
     member: 'createRendererTypeV2',
     runtime: ɵviewEngine.createRendererTypeV2
   };
+  static RendererTypeV2: IdentifierSpec = {
+    name: 'RendererTypeV2',
+    moduleUrl: CORE,
+    // type only
+    runtime: null
+  };
+  static ViewDefinition: IdentifierSpec = {
+    name: 'ɵviewEngine',
+    moduleUrl: CORE,
+    member: 'ViewDefinition',
+    // type only
+    runtime: null
+  };
+  static createComponentFactory: IdentifierSpec = {
+    name: 'ɵviewEngine',
+    moduleUrl: CORE,
+    member: 'createComponentFactory',
+    runtime: ɵviewEngine.createComponentFactory
+  };
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
