@@ -13,9 +13,9 @@ export declare abstract class ClientMessageBrokerFactory {
 
 /** @experimental */
 export declare class FnArg {
-    type: Type<any>;
+    type: Type<any> | SerializerTypes;
     value: any;
-    constructor(value: any, type: Type<any>);
+    constructor(value: any, type?: Type<any> | SerializerTypes);
 }
 
 /** @experimental */
@@ -58,6 +58,11 @@ export declare class ReceivedMessage {
     constructor(data: {
         [key: string]: any;
     });
+}
+
+/** @experimental */
+export declare const enum SerializerTypes {
+    RENDERER_TYPE_V2 = 0,
 }
 
 /** @experimental */

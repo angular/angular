@@ -344,23 +344,6 @@ export function splitNamespace(name: string): string[] {
 }
 
 
-let attrCache: Map<string, Attr>;
-
-function createAttributeNode(name: string): Attr {
-  if (!attrCache) {
-    attrCache = new Map<string, Attr>();
-  }
-  if (attrCache.has(name)) {
-    return attrCache.get(name);
-  }
-
-  const div = document.createElement('div');
-  div.innerHTML = `<div ${name}>`;
-  const attr: Attr = div.firstChild.attributes[0];
-  attrCache.set(name, attr);
-  return attr;
-}
-
 @Injectable()
 export class DomRendererFactoryV2 implements RendererFactoryV2 {
   private rendererByCompId = new Map<string, RendererV2>();

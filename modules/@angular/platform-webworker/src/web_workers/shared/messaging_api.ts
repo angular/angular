@@ -12,4 +12,8 @@
  */
 export const RENDERER_CHANNEL = 'ng-Renderer';
 export const EVENT_CHANNEL = 'ng-Events';
+
+export const RENDERER_V2_CHANNEL = 'v2.ng-Renderer';
+export const EVENT_V2_CHANNEL = 'v2.ng-Events';
+
 export const ROUTER_CHANNEL = 'ng-Router';
