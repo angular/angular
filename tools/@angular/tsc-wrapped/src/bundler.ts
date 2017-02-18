@@ -79,6 +79,7 @@ export class MetadataBundler {
   private metadataCache = new Map<string, ModuleMetadata>();
   private exports = new Map<string, Symbol[]>();
   private rootModule: string;
+  private exported: Set<Symbol>;
 
   constructor(
       private root: string, private importAs: string|undefined, private host: MetadataBundlerHost) {
@@ -191,16 +192,18 @@ export class MetadataBundler {
    */
   private canonicalizeSymbols(exportedSymbols: Symbol[]) {
     const symbols = Array.from(this.symbolMap.values());
-    const exported = new Set(exportedSymbols);
-    symbols.forEach(symbol => {
-      const rootExport = getRootExport(symbol);
-      const declaration = getSymbolDeclaration(symbol);
-      const isPrivate = !exported.has(rootExport);
-      const canonicalSymbol = isPrivate ? declaration : rootExport;
-      symbol.isPrivate = isPrivate;
-      symbol.declaration = declaration;
-      symbol.canonicalSymbol = canonicalSymbol;
-    });
+    this.exported = new Set(exportedSymbols);;
+    symbols.forEach(this.canonicalizeSymbol, this);
+  }
+
+  private canonicalizeSymbol(symbol: Symbol) {
+    const rootExport = getRootExport(symbol);
+    const declaration = getSymbolDeclaration(symbol);
+    const isPrivate = !this.exported.has(rootExport);
+    const canonicalSymbol = isPrivate ? declaration : rootExport;
+    symbol.isPrivate = isPrivate;
+    symbol.declaration = declaration;
+    symbol.canonicalSymbol = canonicalSymbol;
   }
 
   private getEntries(exportedSymbols: Symbol[]): BundleEntries {
@@ -487,14 +490,11 @@ export class MetadataBundler {
   }
 
   private canonicalSymbolOf(module: string, name: string): Symbol {
+    // Ensure the module has been seen.
+    this.exportAll(module);
     const symbol = this.symbolOf(module, name);
     if (!symbol.canonicalSymbol) {
-      // If we get a symbol after canonical symbols have been assigned it must be a private
-      // symbol so treat it as one.
-      symbol.declaration = symbol;
-      symbol.canonicalSymbol = symbol;
-      symbol.isPrivate = true;
-      this.convertSymbol(symbol);
+      this.canonicalizeSymbol(symbol);
     }
     return symbol;
   }
