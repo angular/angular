@@ -41,7 +41,7 @@ export class SidenavComponent implements OnInit {
         // Side effect: when the current doc changes,
         // get its NavNode and alert the navigation panel
         this.currentDocId = doc.metadata.docId;
-        this.navMapService.navMap.take(1) // take makes sure it completes!
+        this.navMapService.navMap.first() // take makes sure it completes!
         .map(navMap => navMap.docs.get(this.currentDocId))
         .subscribe( node => this.selectedNode.emit(node));
       });
