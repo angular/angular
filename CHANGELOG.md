@@ -1,3 +1,18 @@
+<a name="2.4.8"></a>
+## [2.4.8](https://github.com/angular/angular/compare/2.4.7...2.4.8) (2017-02-18)
+
+
+### Bug Fixes
+
+* **forms:** getRawValue should correctly work with nested FormGroups/Arrays ([#12964](https://github.com/angular/angular/issues/12964)) ([ea7737e](https://github.com/angular/angular/commit/ea7737e)), closes [#12963](https://github.com/angular/angular/issues/12963)
+* **http:** REVERT: remove dots from jsonp callback name ([#13219](https://github.com/angular/angular/issues/13219)) ([9ceb5d1](https://github.com/angular/angular/commit/9ceb5d1))
+* **platform-browser:** should only add styles with native encapsulation in shadow DOM ([#14313](https://github.com/angular/angular/issues/14313)) ([fadaf1e](https://github.com/angular/angular/commit/fadaf1e)), closes [#7887](https://github.com/angular/angular/issues/7887)
+* **router:** do not finish bootstrap until all the routes are resolved ([#14327](https://github.com/angular/angular/issues/14327)) ([541de26](https://github.com/angular/angular/commit/541de26)), closes [#12162](https://github.com/angular/angular/issues/12162)
+* **upgrade:** correctly project content on downgraded components with structural directives ([#14274](https://github.com/angular/angular/issues/14274)) ([74cb575](https://github.com/angular/angular/commit/74cb575)), closes [#14260](https://github.com/angular/angular/issues/14260)
+* **upgrade:** pass correct values to `ngOnChanges` for interpolation bindings ([#14400](https://github.com/angular/angular/issues/14400)) ([7c87c52](https://github.com/angular/angular/commit/7c87c52))
+
+
+
 <a name="2.4.7"></a>
 ## [2.4.7](https://github.com/angular/angular/compare/2.4.6...2.4.7) (2017-02-09)
 
@@ -185,10 +200,10 @@
 
 ### Note ###
 
-Due to regression in the 2.3.0 release that was fixed by [#13464](https://github.com/angular/angular/pull/13464), 
+Due to regression in the 2.3.0 release that was fixed by [#13464](https://github.com/angular/angular/pull/13464),
 components that have been compiled using 2.3.0 and published to npm will need to be recompiled and republished.
 
-The >=2.3.1 compiler will issue is the following error if it encounters components compiled with 2.3.0:  
+The >=2.3.1 compiler will issue is the following error if it encounters components compiled with 2.3.0:
 `Unsupported metadata version 2 for module ${module}. This module should be compiled with a newer version of ngc`.
 
 We are adding more tests to our test suite to catch these kinds of problems before we cut a release.
