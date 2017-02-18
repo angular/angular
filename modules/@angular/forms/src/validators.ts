@@ -48,6 +48,10 @@ export const NG_ASYNC_VALIDATORS =
 const EMAIL_REGEXP =
     /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
 
+// See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
+const URL_REGEXP =
+    /^[a-z][a-z\d.+-]*:\/*(?:[^:@]+(?::[^@]+)?@)?(?:[^\s:/?#]+|\[[a-f\d:]+])(?::\d+)?(?:\/[^?#]*)?(?:\?[^#]*)?(?:#.*)?$/i;
+
 /**
  * Provides a set of validators used by form controls.
  *
@@ -106,6 +110,13 @@ export class Validators {
    */
   static email(control: AbstractControl): {[key: string]: boolean} {
     return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
+  }
+
+  /**
+   * Validator that performs url validation.
+   */
+  static url(control: AbstractControl): {[key: string]: boolean} {
+    return URL_REGEXP.test(control.value) ? null : {'url': true};
   }
 
   /**

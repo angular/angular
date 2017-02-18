@@ -109,7 +109,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 /**
  * Provider which adds {@link EmailValidator} to {@link NG_VALIDATORS}.
  */
-export const EMAIL_VALIDATOR: any = {
+export const EMAIL_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => EmailValidator),
   multi: true
@@ -145,6 +145,50 @@ export class EmailValidator implements Validator {
 
   validate(c: AbstractControl): {[key: string]: any} {
     return this._enabled ? Validators.email(c) : null;
+  }
+
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
+}
+
+/**
+ * Provider which adds {@link UrlValidator} to {@link NG_VALIDATORS}.
+ */
+export const URL_VALIDATOR: Provider = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => UrlValidator),
+  multi: true
+};
+
+/**
+ * A Directive that adds the `url` validator to controls marked with the
+ * `url` attribute, via the {@link NG_VALIDATORS} binding.
+ *
+ * ### Example
+ *
+ * ```
+ * <input type="url" name="url" ngModel url>
+ * <input type="url" name="url" ngModel url="true">
+ * <input type="url" name="url" ngModel [url]="true">
+ * ```
+ *
+ * @experimental
+ */
+@Directive({
+  selector: '[url][formControlName],[url][formControl],[url][ngModel]',
+  providers: [URL_VALIDATOR]
+})
+export class UrlValidator implements Validator {
+  private _enabled: boolean;
+  private _onChange: () => void;
+
+  @Input()
+  set url(value: boolean|string) {
+    this._enabled = value === '' || value === true || value === 'true';
+    if (this._onChange) this._onChange();
+  }
+
+  validate(c: AbstractControl): {[key: string]: any} {
+    return this._enabled ? Validators.url(c) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }

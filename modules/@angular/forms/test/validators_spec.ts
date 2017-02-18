@@ -38,8 +38,8 @@ export function main() {
   describe('Validators', () => {
     describe('equalsTo', () => {
       it('should not error when equal', () => {
-        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')});
-        let validator = Validators.equalsTo('f2');
+        const group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')});
+        const validator = Validators.equalsTo('f2');
         expect(validator(group.controls['f1'])).toBeNull();
       });
 
@@ -50,26 +50,24 @@ export function main() {
       });
 
       it('should throw if passed a form control', () => {
-        let validator = Validators.equalsTo('f1', 'f2');
+        const validator = Validators.equalsTo('f1', 'f2');
         // cast it to any so we don't get TS errors
         expect(() => validator(<any>new FormGroup({f1: new FormControl('')}))).toThrow();
       });
 
       it('should throw if passed a form array', () => {
-        let validator = Validators.equalsTo('f1', 'f2');
+        const validator = Validators.equalsTo('f1', 'f2');
         // cast it to any so we don't get TS errors
         expect(() => validator(<any>new FormArray([]))).toThrow();
       });
 
       it('should throw if not passed any field to compare', () => {
-        let validator = Validators.equalsTo();
+        const validator = Validators.equalsTo();
         expect(() => validator(new FormControl('a'))).toThrow();
       });
 
       it('should throw if field passed does not exist in the group', () => {
-        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
-        let validator = Validators.equalsTo('f3', 'f4');
-        // cast it to any so we don't get TS errors
+        const validator = Validators.equalsTo('f3', 'f4');
         expect(() => validator(new FormControl('a'))).toThrow();
       });
     });
@@ -96,6 +94,20 @@ export function main() {
 
       it('should not error on a non-empty array',
          () => expect(Validators.required(new FormControl([1, 2]))).toBeNull());
+    });
+
+    describe('url', () => {
+      it('should accept valid url',
+         () => expect(Validators.url(new FormControl('http://google.com'))).toBeNull());
+
+      it('should error on null',
+         () => expect(Validators.url(new FormControl(null))).toEqual({'url': true}));
+
+      it('should error on undefined',
+         () => expect(Validators.url(new FormControl(undefined))).toEqual({'url': true}));
+
+      it('should error on invalid url',
+         () => expect(Validators.url(new FormControl('someurl'))).toEqual({'url': true}));
     });
 
     describe('requiredTrue', () => {
