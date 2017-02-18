@@ -51,7 +51,7 @@ describe('SidenavComponent', () => {
     };
 
     navEngine = {
-      currentDoc: of(fakeDoc).delay(0).take(1),
+      currentDoc: of(fakeDoc).delay(0).first(),
       navigate: (docId: string) => { }
     } as NavEngine;
     navigateSpy = spyOn(navEngine, 'navigate');
@@ -69,7 +69,7 @@ describe('SidenavComponent', () => {
     };
 
     navMapService = {
-      navMap: of(fakeNavMap).delay(0).take(1)
+      navMap: of(fakeNavMap).delay(0).first()
     } as NavMapService;
 
     TestBed.configureTestingModule({

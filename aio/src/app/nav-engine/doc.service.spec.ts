@@ -9,7 +9,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/first';
 
 describe('DocService', () => {
   let docFetchingService: DocFetchingService;
@@ -31,7 +31,7 @@ describe('DocService', () => {
     loggerSpy = jasmine.createSpyObj('logger', ['log', 'warn', 'error']);
     docFetchingService = new DocFetchingService(null, loggerSpy);
     getFileSpy = spyOn(docFetchingService, 'getDocFile').and
-      .returnValue(of(testDoc).delay(0).take(1)); // take(1) -> completes
+      .returnValue(of(testDoc).delay(0).first()); // first() -> completes
 
     docService = new DocService(docFetchingService, loggerSpy);
   });
