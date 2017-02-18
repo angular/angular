@@ -26,7 +26,7 @@ export function main() {
   class AsyncValidatorDirective {
     constructor(private expected: string, private error: any) {}
 
-    validate(c: any): {[key: string]: any;} {
+    validate(c: any): Observable<{[key: string]: any;}> {
       return Observable.create((obs: any) => {
         const error = this.expected !== c.value ? this.error : null;
         obs.next(error);
@@ -271,7 +271,7 @@ export function main() {
            ]);
 
            let value: any /** TODO #9100 */ = null;
-           (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
+           (<Promise<{[key: string]: any}>>c(new FormControl('invalid'))).then(v  => value = v);
 
            tick(1);
 
@@ -283,7 +283,7 @@ export function main() {
                [normalizeAsyncValidator(new AsyncValidatorDirective('expected', {'one': true}))]);
 
            let value: any = null;
-           c(new FormControl()).then((v: any) => value = v);
+           (<Promise<{[key: string]: any}>>c(new FormControl())).then((v: any) => value = v);
            tick(1);
 
            expect(value).toEqual({'one': true});
@@ -293,7 +293,7 @@ export function main() {
            const c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
 
            let value: any /** TODO #9100 */ = null;
-           (<Promise<any>>c(new FormControl('expected'))).then(v => value = v);
+           (<Promise<{[key: string]: any}>>c(new FormControl('expected'))).then(v => value = v);
            tick(1);
 
            expect(value).toBeNull();
@@ -303,7 +303,7 @@ export function main() {
            const c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
 
            let value: any /** TODO #9100 */ = null;
-           (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
+           (<Promise<{[key: string]: any}>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);
 
