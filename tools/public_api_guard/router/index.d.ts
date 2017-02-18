@@ -197,6 +197,7 @@ export interface Route {
     pathMatch?: string;
     redirectTo?: string;
     resolve?: ResolveData;
+    runGuardsAndResolvers?: RunGuardsAndResolvers;
 }
 
 /** @experimental */
@@ -375,6 +376,9 @@ export declare class RoutesRecognized {
         state: RouterStateSnapshot);
     toString(): string;
 }
+
+/** @experimental */
+export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /** @experimental */
 export declare abstract class UrlHandlingStrategy {
