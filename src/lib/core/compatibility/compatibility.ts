@@ -68,8 +68,6 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-slider,
   mat-spinner,
   mat-tab,
-  mat-tab-body,
-  mat-tab-header,
   mat-tab-group,
   mat-toolbar`;
 
@@ -131,8 +129,6 @@ export const MD_ELEMENTS_SELECTOR = `
   md-slider,
   md-spinner,
   md-tab,
-  md-tab-body,
-  md-tab-header,
   md-tab-group,
   md-toolbar`;
 
