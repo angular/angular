@@ -129,12 +129,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         // Note: queries start with id 1 so we can use the number in a Bloom filter!
         const queryId = queryIndex + 1;
         const bindingType =
-            query.first ? viewEngine.QueryBindingType.First : viewEngine.QueryBindingType.All;
-        let flags = viewEngine.NodeFlags.HasViewQuery;
+            query.first ? QueryBindingType.First : QueryBindingType.All;
+        let flags = NodeFlags.HasViewQuery;
         if (queryIds.staticQueryIds.has(queryId)) {
-          flags |= viewEngine.NodeFlags.HasStaticQuery;
+          flags |= NodeFlags.HasStaticQuery;
         } else {
-          flags |= viewEngine.NodeFlags.HasDynamicQuery;
+          flags |= NodeFlags.HasDynamicQuery;
         }
         this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
           o.literal(flags), o.literal(queryId),
@@ -500,7 +500,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       }
     });
     if (directiveAst.inputs.length ||
-        (flags & (viewEngine.NodeFlags.DoCheck | viewEngine.NodeFlags.OnInit)) > 0) {
+        (flags & (NodeFlags.DoCheck | NodeFlags.OnInit)) > 0) {
       this._addUpdateExpressions(
           nodeIndex,
           directiveAst.inputs.map((input) => { return {context: COMP_VAR, value: input.value}; }),

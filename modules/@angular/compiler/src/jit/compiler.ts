@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentRenderTypeV2, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentFactoryViewClass as getComponentFactoryViewClass} from '@angular/core';
+import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentFactoryViewClass as getComponentFactoryViewClass} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
