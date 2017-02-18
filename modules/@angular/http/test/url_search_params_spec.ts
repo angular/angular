@@ -167,5 +167,13 @@ export function main() {
       expect(params.toString()).toEqual('q=Q');
     });
 
+    it('constructor should accept object literals', () => {
+      const params = new URLSearchParams({a: 1, b: 'test', c: [1, 2, '3']});
+      expect(params.paramsMap.size).toEqual(3);
+      expect(params.paramsMap.get('a')).toEqual(['1']);
+      expect(params.paramsMap.get('b')).toEqual(['test']);
+      expect(params.paramsMap.get('c')).toEqual(['1', '2', '3']);
+    });
+
   });
 }
