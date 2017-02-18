@@ -22,15 +22,40 @@
       },
       {
         "docId": "tutorial/toh-1",
-        "navTitle": "The Hero Editor",
-        "tooltip": "Build a simple hero editor."
+        "navTitle": "The hero editor",
+        "tooltip": "Build a simple hero editor"
+      },
+      {
+        "docId": "tutorial/toh-2",
+        "navTitle": "Master/detail",
+        "tooltip": "Build a master/detail page with a list of heroes."
+      },
+      {
+        "docId": "tutorial/toh-3",
+        "navTitle": "Multiple components",
+        "tooltip": "Refactor the master/detail view into separate components."
+      },
+      {
+        "docId": "tutorial/toh-4",
+        "navTitle": "Services",
+        "tooltip": "Create a reusable service to manage hero data."
+      },
+      {
+        "docId": "tutorial/toh-5",
+        "navTitle": "Routing",
+        "tooltip": "Add the Angular router and navigate among the views."
+      },
+      {
+        "docId": "tutorial/toh-6",
+        "navTitle": "HTTP",
+        "tooltip": "Use HTTP to retrieve and save hero data."
       }
     ]
   },
 
   {
     "navTitle": "Getting started",
-    "tooltip": "A gentle introduction to Angular",
+    "tooltip": "A gentle introduction to Angular.",
     "children": [
       {
         "docId": "guide/docs-overview",
@@ -41,19 +66,137 @@
         "docId": "guide/setup",
         "navTitle": "Setup",
         "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+      },
+
+      {
+        "docId": "guide/learning-angular",
+        "navTitle": "Learning Angular",
+        "tooltip": "A suggested path through the documentation for Angular newcomers."
+      },
+
+      {
+        "docId": "guide/architecture",
+        "navTitle": "Architecture",
+        "tooltip": "The basic building blocks of Angular applications."
+      },
+
+      {
+        "docId": "guide/appmodule",
+        "navTitle": "The root AppModule",
+        "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+      },
+
+      {
+        "docId": "guide/displaying-data",
+        "navTitle": "Displaying data",
+        "tooltip": "Property binding helps show app data in the UI."
+      },
+
+      {
+        "docId": "guide/user-input",
+        "navTitle": "User Input",
+        "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
+      },
+
+      {
+        "docId": "guide/forms",
+        "navTitle": "Forms",
+        "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+      },
+
+      {
+        "docId": "guide/dependency-injection",
+        "navTitle": "Dependency Injection",
+        "tooltip": "Angular's dependency injection system creates and delivers dependent services \"just-in-time\"."
+      },
+
+      {
+        "docId": "guide/template-syntax",
+        "navTitle": "Template Syntax",
+        "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
+      },
+
+      {
+        "docId": "guide/cheatsheet",
+        "navTitle": "Cheat Sheet",
+        "tooltip": "A quick guide to common Angular coding techniques."
+      },
+
+      {
+        "docId": "guide/style-guide",
+        "navTitle": "Style guide",
+        "tooltip": "Write Angular with style."
+      },
+
+      {
+        "docId": "guide/glossary",
+        "navTitle": "Glossary",
+        "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
+      },
+
+      {
+        "docId": "guide/change-log",
+        "navTitle": "Change Log",
+        "tooltip": "An annotated history of recent documentation improvements."
       }
-    ]
-  },
+  ]},
 
   {
     "navTitle": "Core",
     "tooltip": "Learn the core capabilities of Angular",
     "children": [
       {
-        "docId": "guide/ngmodule",
-        "navTitle": "Angular Modules (NgModule)",
-        "tooltip": "Define application modules with @NgModule."
+        "navTitle": "Angular Modules",
+        "tooltip": "Learn how directives modify the layout and behavior of elements.",
+        "children": [
+          {
+            "docId": "guide/ngmodule",
+            "navTitle": "NgModule",
+            "tooltip": "Define application modules with @NgModule."
+          },
+
+          {
+            "docId": "guide/ngmodule-faq",
+            "navTitle": "Angular module FAQs",
+            "tooltip": "Answers to frequently asked questions about @NgModule."
+          }
+      ]},
+
+      {
+        "docId": "guide/component-communication",
+        "navTitle": "Component interaction",
+        "tooltip": "Share information between different directives and components."
       },
+
+      {
+        "docId": "guide/component-relative-paths",
+        "navTitle": "Component-relative paths",
+        "tooltip": "Use relative URLs for component templates and styles."
+      },
+
+      {
+        "navTitle": "Dependency Injection",
+        "tooltip": "More about Dependency Injection",
+        "children": [
+          {
+            "docId": "guide/cb-dependency-injection",
+            "navTitle": "Dependency injection",
+            "tooltip": "Techniques for Dependency Injection."
+          },
+
+          {
+            "docId": "guide/hierarchical-dependency-injection",
+            "navTitle": "Hierarchical injectors",
+            "tooltip": "Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree."
+          }
+      ]},
+
+      {
+        "docId": "guide/dynamic-component-loader",
+        "navTitle": "Dynamic components",
+        "tooltip": "Load components dynamically."
+      },
+
       {
         "docId": "guide/directives",
         "navTitle": "Directives",
@@ -71,21 +214,170 @@
           }
         ]
       },
+
+      {
+        "navTitle": "Forms",
+        "tooltip": "More about forms",
+        "children": [
+          {
+            "docId": "guide/dynamic-form",
+            "navTitle": "Dynamic forms",
+            "tooltip": "Render dynamic forms with FormGroup."
+          },
+
+          {
+            "docId": "guide/form-validation",
+            "navTitle": "Form validation",
+            "tooltip": "Validate user's form entries."
+          },
+
+          {
+            "docId": "guide/reactive-forms",
+            "navTitle": "Reactive forms",
+            "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+          }
+      ]},
+
+      {
+        "docId": "guide/server-communication",
+        "navTitle": "HTTP client",
+        "tooltip": "Use an HTTP Client to talk to a remote server."
+      },
+
+      {
+        "docId": "guide/lifecycle-hooks",
+        "navTitle": "Lifecycle hooks",
+        "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
+      },
+
       {
         "docId": "guide/pipes",
         "navTitle": "Pipes",
         "tooltip": "Pipes transform displayed values within a template."
+      },
+
+      {
+        "docId": "guide/router",
+        "navTitle": "Routing & navigation",
+        "tooltip": "Discover the basics of screen navigation with the Angular Router."
+      }
+  ]},
+
+  {
+    "navTitle": "Additional Techniques",
+    "tooltip": "Other",
+    "children": [
+      {
+        "docId": "guide/aot-compiler",
+        "navTitle": "Ahead-of-Time compilation",
+        "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+      },
+
+      {
+        "docId": "guide/animations",
+        "navTitle": "Animations",
+        "tooltip": "A guide to Angular's animation system."
+      },
+
+      {
+        "docId": "guide/ajs-quick-reference",
+        "navTitle": "AngularJS to Angular",
+        "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+      },
+
+      {
+        "docId": "guide/component-styles",
+        "navTitle": "Component styles",
+        "tooltip": "Learn how to apply CSS styles to components."
+      },
+
+      {
+        "docId": "guide/deployment",
+        "navTitle": "Deployment",
+        "tooltip": "Learn how to deploy your Angular app."
+      },
+
+      {
+        "docId": "guide/i18n",
+        "navTitle": "Internationalization (i18n)",
+        "tooltip": "Translate the app's template text into multiple languages."
+      },
+
+      {
+        "docId": "guide/security",
+        "navTitle": "Security",
+        "tooltip": "Developing for content security in Angular applications."
+      },
+
+      {
+        "navTitle": "Setup",
+        "tooltip": "Details of the local development setup",
+        "children": [
+          {
+            "docId": "guide/setup-systemjs-anatomy",
+            "navTitle": "Setup Anatomy",
+            "tooltip": "Inside the local development environment for SystemJS."
+          },
+
+          {
+            "docId": "guide/browser-support",
+            "navTitle": "Browser support",
+            "tooltip": "Browser support and polyfills guide."
+          },
+
+          {
+            "docId": "guide/npm-packages",
+            "navTitle": "Npm packages",
+            "tooltip": "Recommended npm packages, and how to specify package dependencies."
+          },
+
+          {
+            "docId": "guide/typescript-configuration",
+            "navTitle": "TypeScript configuration",
+            "tooltip": "TypeScript configuration for Angular developers."
+          }
+      ]},
+
+      {
+        "docId": "guide/testing",
+        "navTitle": "Testing",
+        "tooltip": "Techniques and practices for testing an Angular app."
+      },
+
+      {
+        "docId": "guide/upgrade",
+        "navTitle": "Upgrading from AngularJS",
+        "tooltip": "Incrementally upgrade an AngularJS application to Angular."
+      },
+
+      {
+        "docId": "guide/ts-to-js",
+        "navTitle": "TypeScript to JavaScript",
+        "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
+      },
+
+      {
+        "docId": "guide/visual-studio-2015",
+        "navTitle": "Visual Studio 2015 QuickStart",
+        "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+      },
+
+      {
+        "docId": "guide/webpack",
+        "navTitle": "Webpack: an introduction",
+        "tooltip": "Create Angular applications with a Webpack based tooling."
       }
     ]
   },
 
   {
+    "docId": "resources/",
     "navTitle": "Resources",
     "children": [
       {
         "docId": "about",
         "navTitle": "About",
-        "tooltip": "The people behind Angular"
+        "tooltip": "The people behind Angular."
       }
     ]
   },
@@ -103,7 +395,7 @@
       {
         "url": "https://gitter.im/angular/angular",
         "navTitle": "Gitter",
-        "tooltip": "Chat about Angular with other birds of a feather"
+        "tooltip": "Chat about Angular with other birds of a feather."
       }
     ]
   }
