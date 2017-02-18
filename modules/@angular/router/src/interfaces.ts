@@ -329,9 +329,7 @@ export interface Resolve<T> {
  * class CanLoadTeamSection implements CanLoad {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   canLoad(route: Route(
- *     route: Route
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean {
  *     return this.permissions.canLoadChildren(this.currentUser, route);
  *   }
  * }
