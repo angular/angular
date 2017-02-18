@@ -19,12 +19,12 @@ describe('NavMapService', () => {
 
   beforeEach(done => {
     httpSpy = jasmine.createSpyObj('http', ['get']);
-    httpSpy.get.and.returnValue(of(getTestNavMapResponse()).delay(0).take(1)); // take(1) -> completes
+    httpSpy.get.and.returnValue(of(getTestNavMapResponse()).delay(0).first()); // first() -> completes
     loggerSpy = jasmine.createSpyObj('logger', ['log', 'warn', 'error']);
 
     navMapService = new NavMapService(new DocFetchingService(null, null), httpSpy, loggerSpy);
 
-    navMapService.navMap.take(1).subscribe(
+    navMapService.navMap.first().subscribe(
       nm => navMap = nm,
       null,
       done);
