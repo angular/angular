@@ -192,7 +192,8 @@ export class MetadataBundler {
    */
   private canonicalizeSymbols(exportedSymbols: Symbol[]) {
     const symbols = Array.from(this.symbolMap.values());
-    this.exported = new Set(exportedSymbols);;
+    this.exported = new Set(exportedSymbols);
+    ;
     symbols.forEach(this.canonicalizeSymbol, this);
   }
 

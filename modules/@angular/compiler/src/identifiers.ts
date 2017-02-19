@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵEMPTY_ARRAY, ɵEMPTY_INLINE_ARRAY, ɵEMPTY_MAP, ɵInlineArray16, ɵInlineArray2, ɵInlineArray4, ɵInlineArray8, ɵInlineArrayDynamic, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵViewUtils, ɵanchorDef, ɵbalanceAnimationKeyframes, ɵcastByValue, ɵcheckBinding, ɵcheckBindingChange, ɵcheckRenderAttribute, ɵcheckRenderClass, ɵcheckRenderProperty, ɵcheckRenderStyle, ɵcheckRenderText, ɵclearStyles, ɵcollectAndResolveStyles, ɵcreateRendererTypeV2, ɵcreateRenderComponentType, ɵcreateRenderElement, ɵdevModeEqual, ɵdirectiveDef, ɵelementDef, ɵinlineInterpolate, ɵinterpolate, ɵngContentDef, ɵnodeValue, ɵnoop, ɵpipeDef, ɵprepareFinalAnimationStyles, ɵproviderDef, ɵpureArrayDef, ɵpureObjectDef, ɵpurePipeDef, ɵpureProxy1, ɵpureProxy10, ɵpureProxy2, ɵpureProxy3, ɵpureProxy4, ɵpureProxy5, ɵpureProxy6, ɵpureProxy7, ɵpureProxy8, ɵpureProxy9, ɵqueryDef, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵselectOrCreateRenderHostElement, ɵsetBindingDebugInfo, ɵsetBindingDebugInfoForChanges, ɵsubscribeToRenderElement, ɵtextDef, ɵunwrapValue, ɵviewDef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵEMPTY_ARRAY, ɵEMPTY_INLINE_ARRAY, ɵEMPTY_MAP, ɵInlineArray16, ɵInlineArray2, ɵInlineArray4, ɵInlineArray8, ɵInlineArrayDynamic, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵViewUtils, ɵanchorDef, ɵbalanceAnimationKeyframes, ɵcastByValue, ɵcheckBinding, ɵcheckBindingChange, ɵcheckRenderAttribute, ɵcheckRenderClass, ɵcheckRenderProperty, ɵcheckRenderStyle, ɵcheckRenderText, ɵclearStyles, ɵcollectAndResolveStyles, ɵcreateComponentFactory, ɵcreateRenderComponentType, ɵcreateRenderElement, ɵcreateRendererTypeV2, ɵdevModeEqual, ɵdirectiveDef, ɵelementDef, ɵinlineInterpolate, ɵinterpolate, ɵngContentDef, ɵnodeValue, ɵnoop, ɵpipeDef, ɵprepareFinalAnimationStyles, ɵproviderDef, ɵpureArrayDef, ɵpureObjectDef, ɵpurePipeDef, ɵpureProxy1, ɵpureProxy10, ɵpureProxy2, ɵpureProxy3, ɵpureProxy4, ɵpureProxy5, ɵpureProxy6, ɵpureProxy7, ɵpureProxy8, ɵpureProxy9, ɵqueryDef, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵselectOrCreateRenderHostElement, ɵsetBindingDebugInfo, ɵsetBindingDebugInfoForChanges, ɵsubscribeToRenderElement, ɵtextDef, ɵunwrapValue, ɵviewDef} from '@angular/core';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 
@@ -276,17 +276,15 @@ export class Identifiers {
     runtime: null
   };
   static ViewDefinition: IdentifierSpec = {
-    name: 'ɵviewEngine',
+    name: 'ɵViewDefinition',
     moduleUrl: CORE,
-    member: 'ViewDefinition',
     // type only
     runtime: null
   };
   static createComponentFactory: IdentifierSpec = {
-    name: 'ɵviewEngine',
+    name: 'ɵcreateComponentFactory',
     moduleUrl: CORE,
-    member: 'createComponentFactory',
-    runtime: ɵviewEngine.createComponentFactory
+    runtime: ɵcreateComponentFactory
   };
 }
 

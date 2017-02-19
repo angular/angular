@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ChangeDetectionStrategy, ComponentFactory, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector,
-  RendererTypeV2
-} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
+
 
 
 // group 0: "[prop] or (event) or @trigger"
