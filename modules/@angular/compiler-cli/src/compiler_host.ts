@@ -31,6 +31,8 @@ export class CompilerHost implements AotCompilerHost {
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
+  private bundleIndexCache = new Map<string, boolean>();
+  private bundleIndexNames = new Set<string>();
   protected resolveModuleNameHost: CompilerHostContext;
 
   constructor(
@@ -263,7 +265,16 @@ export class CompilerHost implements AotCompilerHost {
   isSourceFile(filePath: string): boolean {
     const excludeRegex =
         this.options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
-    return !excludeRegex.test(filePath);
+    if (excludeRegex.test(filePath)) {
+      return false;
+    }
+    if (DTS.test(filePath)) {
+      // Check for a bundle index.
+      if (this.hasBundleIndex(filePath)) {
+        return this.bundleIndexNames.has(filePath);
+      }
+    }
+    return true;
   }
 
   calculateEmitPath(filePath: string): string {
@@ -287,6 +298,57 @@ export class CompilerHost implements AotCompilerHost {
     }
 
     return path.join(this.options.genDir, relativePath);
+  }
+
+  private hasBundleIndex(filePath: string): boolean {
+    const checkBundleIndex = (directory: string): boolean => {
+      let result = this.bundleIndexCache.get(directory);
+      if (result == null) {
+        if (path.basename(directory) == 'node_module') {
+          // Don't look outside the node_modules this package is installed in.
+          result = false;
+        } else {
+          // A bundle index exists if the typings .d.ts file has a metadata.json that has an
+          // importAs.
+          try {
+            const packageFile = path.join(directory, 'package.json');
+            if (this.context.fileExists(packageFile)) {
+              // Once we see a package.json file, assume false until it we find the bundle index.
+              result = false;
+              const packageContent: any = JSON.parse(this.context.readFile(packageFile));
+              if (packageContent.typings) {
+                const typings = path.normalize(path.join(directory, packageContent.typings));
+                if (DTS.test(typings)) {
+                  const metadataFile = typings.replace(DTS, '.metadata.json');
+                  if (this.context.fileExists(metadataFile)) {
+                    const metadata = JSON.parse(this.context.readFile(metadataFile));
+                    if (metadata.importAs) {
+                      this.bundleIndexNames.add(typings);
+                      result = true;
+                    }
+                  }
+                }
+              }
+            } else {
+              const parent = path.dirname(directory);
+              if (parent != directory) {
+                // Try the parent directory.
+                result = checkBundleIndex(parent);
+              } else {
+                result = false;
+              }
+            }
+          } catch (e) {
+            // If we encounter any errors assume we this isn't a bundle index.
+            result = false;
+          }
+        }
+        this.bundleIndexCache.set(directory, result);
+      }
+      return result;
+    };
+
+    return checkBundleIndex(path.dirname(filePath));
   }
 }
 
