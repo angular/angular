@@ -13,8 +13,7 @@ import {EventEmitter} from '../../facade/async';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
-import {LocationType} from '../shared/serialized_types';
-import {PRIMITIVE, Serializer} from '../shared/serializer';
+import {LocationType, Serializer, SerializerTypes} from '../shared/serializer';
 
 @Injectable()
 export class WebWorkerPlatformLocation extends PlatformLocation {
@@ -28,8 +27,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
     super();
     this._broker = brokerFactory.createMessageBroker(ROUTER_CHANNEL);
-
     this._channelSource = bus.from(ROUTER_CHANNEL);
+
     this._channelSource.subscribe({
       next: (msg: {[key: string]: any}) => {
         let listeners: Array<Function> = null;
@@ -86,21 +85,27 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
     this._location.pathname = newPath;
 
-    const fnArgs = [new FnArg(newPath, PRIMITIVE)];
+    const fnArgs = [new FnArg(newPath, SerializerTypes.PRIMITIVE)];
     const args = new UiArguments('setPathname', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   pushState(state: any, title: string, url: string): void {
-    const fnArgs =
-        [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
+    const fnArgs = [
+      new FnArg(state, SerializerTypes.PRIMITIVE),
+      new FnArg(title, SerializerTypes.PRIMITIVE),
+      new FnArg(url, SerializerTypes.PRIMITIVE),
+    ];
     const args = new UiArguments('pushState', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   replaceState(state: any, title: string, url: string): void {
-    const fnArgs =
-        [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
+    const fnArgs = [
+      new FnArg(state, SerializerTypes.PRIMITIVE),
+      new FnArg(title, SerializerTypes.PRIMITIVE),
+      new FnArg(url, SerializerTypes.PRIMITIVE),
+    ];
     const args = new UiArguments('replaceState', fnArgs);
     this._broker.runOnService(args, null);
   }

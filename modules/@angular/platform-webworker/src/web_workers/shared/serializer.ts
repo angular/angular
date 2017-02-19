@@ -6,36 +6,52 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, RendererTypeV2, Type, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, RendererTypeV2, Type} from '@angular/core';
 
 import {stringify} from '../../facade/lang';
 
 import {RenderStore} from './render_store';
-import {LocationType, SerializerTypes} from './serialized_types';
 
 
-// PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
-// We set it to String so that it is considered a Type.
+/**
+ * Any type that does not need to be serialized (string, number, boolean)
+ *
+ * @experimental WebWorker support in Angular is currently experimental.
+ * @deprecated in v4. Use SerializerTypes.PRIMITIVE instead
+ */
+export const PRIMITIVE: Type<any> = String;
+
+export class LocationType {
+  constructor(
+      public href: string, public protocol: string, public host: string, public hostname: string,
+      public port: string, public pathname: string, public search: string, public hash: string,
+      public origin: string) {}
+}
+
 /**
  * @experimental WebWorker support in Angular is currently experimental.
  */
-export const PRIMITIVE: Type<any> = String;
+export const enum SerializerTypes {
+  // RendererTypeV2
+  RENDERER_TYPE_V2,
+  // Primitive types
+  PRIMITIVE,
+  // An object stored in a RenderStore
+  RENDER_STORE_OBJECT,
+}
 
 @Injectable()
 export class Serializer {
   constructor(private _renderStore: RenderStore) {}
 
-  serialize(obj: any, type: any): Object {
-    if (obj == null) {
-      return null;
+  serialize(obj: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE): Object {
+    if (obj == null || type === PRIMITIVE || type === SerializerTypes.PRIMITIVE) {
+      return obj;
     }
     if (Array.isArray(obj)) {
       return obj.map(v => this.serialize(v, type));
     }
-    if (type == PRIMITIVE) {
-      return obj;
-    }
-    if (type == RenderStoreObject) {
+    if (type === SerializerTypes.RENDER_STORE_OBJECT) {
       return this._renderStore.serialize(obj);
     }
     if (type === RenderComponentType) {
@@ -44,26 +60,21 @@ export class Serializer {
     if (type === SerializerTypes.RENDERER_TYPE_V2) {
       return this._serializeRendererTypeV2(obj);
     }
-    if (type === ViewEncapsulation) {
-      return obj;
-    }
     if (type === LocationType) {
       return this._serializeLocation(obj);
     }
     throw new Error(`No serializer for type ${stringify(type)}`);
   }
 
-  deserialize(map: any, type: any, data?: any): any {
-    if (map == null) {
-      return null;
+  deserialize(map: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE, data?: any):
+      any {
+    if (map == null || type === PRIMITIVE || type === SerializerTypes.PRIMITIVE) {
+      return map;
     }
     if (Array.isArray(map)) {
       return map.map(val => this.deserialize(val, type, data));
     }
-    if (type === PRIMITIVE) {
-      return map;
-    }
-    if (type === RenderStoreObject) {
+    if (type === SerializerTypes.RENDER_STORE_OBJECT) {
       return this._renderStore.deserialize(map);
     }
     if (type === RenderComponentType) {
@@ -71,9 +82,6 @@ export class Serializer {
     }
     if (type === SerializerTypes.RENDERER_TYPE_V2) {
       return this._deserializeRendererTypeV2(map);
-    }
-    if (type === ViewEncapsulation) {
-      return map as ViewEncapsulation;
     }
     if (type === LocationType) {
       return this._deserializeLocation(map);
@@ -106,24 +114,23 @@ export class Serializer {
       'id': type.id,
       'templateUrl': type.templateUrl,
       'slotCount': type.slotCount,
-      'encapsulation': this.serialize(type.encapsulation, ViewEncapsulation),
-      'styles': this.serialize(type.styles, PRIMITIVE),
+      'encapsulation': this.serialize(type.encapsulation),
+      'styles': this.serialize(type.styles),
     };
   }
 
   private _deserializeRenderComponentType(props: {[key: string]: any}): RenderComponentType {
     return new RenderComponentType(
         props['id'], props['templateUrl'], props['slotCount'],
-        this.deserialize(props['encapsulation'], ViewEncapsulation),
-        this.deserialize(props['styles'], PRIMITIVE), {});
+        this.deserialize(props['encapsulation']), this.deserialize(props['styles']), {});
   }
 
   private _serializeRendererTypeV2(type: RendererTypeV2): {[key: string]: any} {
     return {
       'id': type.id,
-      'encapsulation': this.serialize(type.encapsulation, ViewEncapsulation),
-      'styles': this.serialize(type.styles, PRIMITIVE),
-      'data': this.serialize(type.data, PRIMITIVE),
+      'encapsulation': this.serialize(type.encapsulation),
+      'styles': this.serialize(type.styles),
+      'data': this.serialize(type.data),
     };
   }
 
@@ -131,12 +138,10 @@ export class Serializer {
     return {
       id: props['id'],
       encapsulation: props['encapsulation'],
-      styles: this.deserialize(props['styles'], PRIMITIVE),
-      data: this.deserialize(props['data'], PRIMITIVE)
+      styles: this.deserialize(props['styles']),
+      data: this.deserialize(props['data'])
     };
   }
 }
 
 export const ANIMATION_WORKER_PLAYER_PREFIX = 'AnimationPlayer.';
-
-export class RenderStoreObject {}
