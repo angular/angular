@@ -6,30 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LifecycleHooks, reflector} from './private_import_core';
+import {ɵLifecycleHooks, ɵreflector} from '@angular/core';
 
 
-export function hasLifecycleHook(hook: LifecycleHooks, token: any): boolean {
-  return reflector.hasLifecycleHook(token, getHookName(hook));
+export function hasLifecycleHook(hook: ɵLifecycleHooks, token: any): boolean {
+  return ɵreflector.hasLifecycleHook(token, getHookName(hook));
 }
 
-function getHookName(hook: LifecycleHooks): string {
+function getHookName(hook: ɵLifecycleHooks): string {
   switch (hook) {
-    case LifecycleHooks.OnInit:
+    case ɵLifecycleHooks.OnInit:
       return 'ngOnInit';
-    case LifecycleHooks.OnDestroy:
+    case ɵLifecycleHooks.OnDestroy:
       return 'ngOnDestroy';
-    case LifecycleHooks.DoCheck:
+    case ɵLifecycleHooks.DoCheck:
       return 'ngDoCheck';
-    case LifecycleHooks.OnChanges:
+    case ɵLifecycleHooks.OnChanges:
       return 'ngOnChanges';
-    case LifecycleHooks.AfterContentInit:
+    case ɵLifecycleHooks.AfterContentInit:
       return 'ngAfterContentInit';
-    case LifecycleHooks.AfterContentChecked:
+    case ɵLifecycleHooks.AfterContentChecked:
       return 'ngAfterContentChecked';
-    case LifecycleHooks.AfterViewInit:
+    case ɵLifecycleHooks.AfterViewInit:
       return 'ngAfterViewInit';
-    case LifecycleHooks.AfterViewChecked:
+    case ɵLifecycleHooks.AfterViewChecked:
       return 'ngAfterViewChecked';
   }
 }

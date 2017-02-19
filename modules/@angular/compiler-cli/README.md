@@ -106,7 +106,7 @@ This CLI is intended for demos, prototyping, or for users with simple build syst
 that run bare `tsc`.
 
 Users with a build system should expect an Angular template plugin. Such a plugin would be
-based on the `index.ts` in this directory, but should share the TypeScript compiler instance
+based on the `public_api.ts` in this directory, but should share the TypeScript compiler instance
 with the one already used in the plugin for TypeScript typechecking and emit.
 
 ## Design

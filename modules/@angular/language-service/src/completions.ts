@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ImplicitReceiver, ParseSpan, PropertyRead} from '@angular/compiler/src/expression_parser/ast';
-import {Attribute, Element, Node as HtmlAst, Text} from '@angular/compiler/src/ml_parser/ast';
-import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
-import {NAMED_ENTITIES, TagContentType, splitNsName} from '@angular/compiler/src/ml_parser/tags';
-import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
+import {AST, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
 
 import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
 import {getExpressionCompletions, getExpressionScope} from './expressions';

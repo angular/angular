@@ -20,7 +20,7 @@
     "sourceMap": true,
     "inlineSources": true,
     "lib": ["es2015", "dom"],
-    "target": "es5",
+    "target": "es2015",
     "skipLibCheck": true
   },
   "files": [

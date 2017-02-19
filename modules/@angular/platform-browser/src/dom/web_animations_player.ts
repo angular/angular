@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE} from '@angular/core';
-
+import {AUTO_STYLE, ɵAnimationPlayer as AnimationPlayer} from '@angular/core';
 import {isPresent} from '../facade/lang';
-import {AnimationPlayer} from '../private_import_core';
-
 import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 
@@ -80,9 +77,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       });
 
       if (missingStyleProps.length) {
-        for (let i = 1; i < keyframes.length; i++) {
+        const self = this;
+        // tslint:disable-next-line
+        for (var i = 1; i < keyframes.length; i++) {
           let kf = keyframes[i];
-          missingStyleProps.forEach(prop => { kf[prop] = _computeStyle(this.element, prop); });
+          // tslint:disable-next-line
+          missingStyleProps.forEach(function(prop) {
+            kf[prop] = _computeStyle(self.element, prop);
+          });
         }
       }
     }

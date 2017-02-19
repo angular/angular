@@ -2,9 +2,10 @@
   "name": "@angular/http",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the http service",
-  "main": "bundles/http.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/http.umd.js",
+  "module": "./@angular/http.es5.js",
+  "es2015": "./@angular/http.js",
+  "typings": "./typings/http.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
