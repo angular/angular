@@ -9,9 +9,8 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
-import {Serializer} from '../shared/serializer';
+import {Serializer, SerializerTypes} from '../shared/serializer';
 
 /**
  * @experimental WebWorker support in Angular is currently experimental.
@@ -49,12 +48,13 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
  */
 export abstract class ServiceMessageBroker {
   abstract registerMethod(
-      methodName: string, signature: Type<any>[], method: Function, returnType?: Type<any>): void;
+      methodName: string, signature: Array<Type<any>|SerializerTypes>, method: Function,
+      returnType?: Type<any>|SerializerTypes): void;
 }
 
 export class ServiceMessageBroker_ extends ServiceMessageBroker {
   private _sink: EventEmitter<any>;
-  private _methods: Map<string, Function> = new Map<string, Function>();
+  private _methods = new Map<string, Function>();
 
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel: string) {
     super();
@@ -64,11 +64,11 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   }
 
   registerMethod(
-      methodName: string, signature: Type<any>[], method: (..._: any[]) => Promise<any>| void,
-      returnType?: Type<any>): void {
+      methodName: string, signature: Array<Type<any>|SerializerTypes>,
+      method: (..._: any[]) => Promise<any>| void, returnType?: Type<any>|SerializerTypes): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
-      const numArgs = signature === null ? 0 : signature.length;
+      const numArgs = signature ? signature.length : 0;
       const deserializedArgs = new Array(numArgs);
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
@@ -82,14 +82,14 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     });
   }
 
-  private _handleMessage(map: {[key: string]: any}): void {
-    const message = new ReceivedMessage(map);
+  private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
       this._methods.get(message.method)(message);
     }
   }
 
-  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type<any>): void {
+  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type<any>|SerializerTypes):
+      void {
     promise.then((result: any) => {
       this._sink.emit({
         'type': 'result',
@@ -103,16 +103,9 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
 /**
  * @experimental WebWorker support in Angular is currently experimental.
  */
-export class ReceivedMessage {
+export interface ReceivedMessage {
   method: string;
   args: any[];
   id: string;
   type: string;
-
-  constructor(data: {[key: string]: any}) {
-    this.method = data['method'];
-    this.args = data['args'];
-    this.id = data['id'];
-    this.type = data['type'];
-  }
 }

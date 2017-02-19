@@ -9,7 +9,7 @@
 import {Type} from '@angular/core';
 import {UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {LocationType} from '@angular/platform-webworker/src/web_workers/shared/serialized_types';
+import {LocationType, SerializerTypes} from '@angular/platform-webworker/src/web_workers/shared/serializer';
 import {WebWorkerPlatformLocation} from '@angular/platform-webworker/src/web_workers/worker/platform_location';
 
 import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} from '../shared/web_worker_test_util';
@@ -21,17 +21,19 @@ export function main() {
     let uiBus: MessageBus = null;
     let workerBus: MessageBus = null;
     let broker: any = null;
+
     const TEST_LOCATION = new LocationType(
         'http://www.example.com', 'http', 'example.com', 'example.com', '80', '/', '', '',
         'http://www.example.com');
 
 
     function createWebWorkerPlatformLocation(loc: LocationType): WebWorkerPlatformLocation {
-      broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
-        if (args.method === 'getLocation') {
-          return Promise.resolve(loc);
-        }
-      });
+      broker.spy('runOnService')
+          .and.callFake((args: UiArguments, returnType: Type<any>| SerializerTypes) => {
+            if (args.method === 'getLocation') {
+              return Promise.resolve(loc);
+            }
+          });
       const factory = new MockMessageBrokerFactory(broker);
       return new WebWorkerPlatformLocation(factory, workerBus, null);
     }

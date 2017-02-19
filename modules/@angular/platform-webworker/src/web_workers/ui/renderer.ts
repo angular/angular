@@ -11,8 +11,7 @@ import {AnimationPlayer, Injectable, RenderComponentType, Renderer, RendererFact
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, EVENT_V2_CHANNEL, RENDERER_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {SerializerTypes} from '../shared/serialized_types';
-import {ANIMATION_WORKER_PLAYER_PREFIX, PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
+import {ANIMATION_WORKER_PLAYER_PREFIX, Serializer, SerializerTypes} from '../shared/serializer';
 import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 import {EventDispatcher} from '../ui/event_dispatcher';
 
@@ -31,7 +30,11 @@ export class MessageBasedRenderer {
     this._bus.initChannel(EVENT_CHANNEL);
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
 
-    const [RCT, RSO, P] = [RenderComponentType, RenderStoreObject, PRIMITIVE];
+    const [RCT, RSO, P] = [
+      RenderComponentType,
+      SerializerTypes.RENDER_STORE_OBJECT,
+      SerializerTypes.PRIMITIVE,
+    ];
 
     const methods: any[][] = [
       ['renderComponent', this._renderComponent, RCT, P],
@@ -65,52 +68,51 @@ export class MessageBasedRenderer {
   }
 
   private _bindAnimationPlayerMethods(broker: ServiceMessageBroker) {
+    const [P, RSO] = [SerializerTypes.PRIMITIVE, SerializerTypes.RENDER_STORE_OBJECT];
+
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'play', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'play', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.play());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'pause', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'pause', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.pause());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'init', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'init', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.init());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'restart', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'restart', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.restart());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'destroy', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'destroy', [RSO, RSO],
         (player: AnimationPlayer, element: any) => {
           player.destroy();
           this._renderStore.remove(player);
         });
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'finish', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'finish', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.finish());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'getPosition', [RenderStoreObject, RenderStoreObject],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'getPosition', [RSO, RSO],
         (player: AnimationPlayer, element: any) => player.getPosition());
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'onStart',
-        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onStart', [RSO, RSO, P],
         (player: AnimationPlayer, element: any) =>
             this._listenOnAnimationPlayer(player, element, 'onStart'));
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'onDone',
-        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onDone', [RSO, RSO, P],
         (player: AnimationPlayer, element: any) =>
             this._listenOnAnimationPlayer(player, element, 'onDone'));
 
     broker.registerMethod(
-        ANIMATION_WORKER_PLAYER_PREFIX + 'setPosition',
-        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        ANIMATION_WORKER_PLAYER_PREFIX + 'setPosition', [RSO, RSO, P],
         (player: AnimationPlayer, element: any, position: number) => player.setPosition(position));
   }
 
@@ -254,7 +256,11 @@ export class MessageBasedRendererV2 {
     this._bus.initChannel(EVENT_V2_CHANNEL);
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_V2_CHANNEL), this._serializer);
 
-    const [RSO, P, CRT] = [RenderStoreObject, PRIMITIVE, SerializerTypes.RENDERER_TYPE_V2];
+    const [RSO, P, CRT] = [
+      SerializerTypes.RENDER_STORE_OBJECT,
+      SerializerTypes.PRIMITIVE,
+      SerializerTypes.RENDERER_TYPE_V2,
+    ];
 
     const methods: any[][] = [
       ['createRenderer', this.createRenderer, RSO, CRT, P],
