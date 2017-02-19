@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
-
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵConsole as Console, ɵReflectionCapabilities as ReflectionCapabilities, ɵReflector as Reflector, ɵReflectorReader as ReflectorReader, ɵreflector as reflector} from '@angular/core';
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig, USE_VIEW_ENGINE} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
@@ -22,7 +21,6 @@ import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {NgModuleResolver} from '../ng_module_resolver';
 import {PipeResolver} from '../pipe_resolver';
-import {Console, ReflectionCapabilities, Reflector, ReflectorReader, reflector} from '../private_import_core';
 import {ResourceLoader} from '../resource_loader';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';

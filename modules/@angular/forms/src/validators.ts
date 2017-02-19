@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
+import {InjectionToken, ɵisPromise as isPromise} from '@angular/core';
 import {toPromise} from 'rxjs/operator/toPromise';
-
 import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
 import {isPresent} from './facade/lang';
 import {AbstractControl, FormControl, FormGroup} from './model';
-import {isPromise} from './private_import_core';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays

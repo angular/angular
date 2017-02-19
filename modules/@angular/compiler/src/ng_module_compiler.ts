@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵLifecycleHooks} from '@angular/core';
+
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, tokenName, tokenReference} from './compile_metadata';
 import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
@@ -15,9 +17,9 @@ import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
-import {LifecycleHooks} from './private_import_core';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {ProviderAst} from './template_parser/template_ast';
+
 
 /**
  * This is currently not read, but will probably be used in the future.
@@ -109,7 +111,7 @@ class _InjectorBuilder implements ClassBuilder {
     const instance = this._createProviderProperty(
         propName, resolvedProvider, providerValueExpressions, resolvedProvider.multiProvider,
         resolvedProvider.eager);
-    if (resolvedProvider.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
+    if (resolvedProvider.lifecycleHooks.indexOf(ɵLifecycleHooks.OnDestroy) !== -1) {
       this._destroyStmts.push(instance.callMethod('ngOnDestroy', []).toStmt());
     }
     this._tokens.push(resolvedProvider.token);

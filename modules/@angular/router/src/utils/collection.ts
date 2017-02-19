@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory} from '@angular/core';
+import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -15,8 +15,6 @@ import {every} from 'rxjs/operator/every';
 import * as l from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeAll} from 'rxjs/operator/mergeAll';
-
-import {isObservable, isPromise} from '../private_import_core';
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {

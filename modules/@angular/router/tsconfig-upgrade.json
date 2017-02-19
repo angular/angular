@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig-build",
   "compilerOptions": {
+    "outDir": "../../../dist/packages-dist/router/upgrade",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],

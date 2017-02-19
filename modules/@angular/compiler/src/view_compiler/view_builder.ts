@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '@angular/core';
-
+import {ViewEncapsulation, ɵChangeDetectorStatus as ChangeDetectorStatus, ɵViewType as ViewType, ɵisDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy} from '@angular/core';
 import {CompileDirectiveSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
 import {legacyCreateSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
 import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
@@ -15,7 +14,6 @@ import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier, identifierToken} from '../identifiers';
 import {createClassStmt} from '../output/class_builder';
 import * as o from '../output/output_ast';
-import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 
 import {CompileElement, CompileNode} from './compile_element';

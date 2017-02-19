@@ -1,0 +1,9 @@
+
+{
+  "extends": "./tsconfig-build",
+
+  "compilerOptions": {
+    "outDir": "../../../dist/packages-dist/compiler/es5",
+    "target": "es5"
+  }
+}

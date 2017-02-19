@@ -2,9 +2,10 @@
   "name": "@angular/platform-webworker",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with web workers",
-  "main": "bundles/platform-webworker.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/platform-webworker.umd.js",
+  "module": "./@angular/platform-webworker.es5.js",
+  "es2015": "./@angular/platform-webworker.js",
+  "typings": "./typings/platform-webworker.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
