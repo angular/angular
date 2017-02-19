@@ -13,8 +13,7 @@ import {EventEmitter} from '../../facade/async';
 import {BrowserPlatformLocation} from '../../private_import_platform-browser';
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
-import {LocationType} from '../shared/serialized_types';
-import {PRIMITIVE, Serializer} from '../shared/serializer';
+import {LocationType, Serializer, SerializerTypes} from '../shared/serializer';
 import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 
 @Injectable()
@@ -34,13 +33,14 @@ export class MessageBasedPlatformLocation {
   }
 
   start(): void {
+    const P = SerializerTypes.PRIMITIVE;
+
     this._broker.registerMethod('getLocation', null, this._getLocation.bind(this), LocationType);
-    this._broker.registerMethod('setPathname', [PRIMITIVE], this._setPathname.bind(this));
+    this._broker.registerMethod('setPathname', [P], this._setPathname.bind(this));
     this._broker.registerMethod(
-        'pushState', [PRIMITIVE, PRIMITIVE, PRIMITIVE],
-        this._platformLocation.pushState.bind(this._platformLocation));
+        'pushState', [P, P, P], this._platformLocation.pushState.bind(this._platformLocation));
     this._broker.registerMethod(
-        'replaceState', [PRIMITIVE, PRIMITIVE, PRIMITIVE],
+        'replaceState', [P, P, P],
         this._platformLocation.replaceState.bind(this._platformLocation));
     this._broker.registerMethod(
         'forward', null, this._platformLocation.forward.bind(this._platformLocation));
@@ -52,11 +52,11 @@ export class MessageBasedPlatformLocation {
     return Promise.resolve(this._platformLocation.location);
   }
 
-
   private _sendUrlChangeEvent(e: Event): void {
-    const loc = this._serializer.serialize(this._platformLocation.location, LocationType);
-    const serializedEvent = {'type': e.type};
-    this._channelSink.emit({'event': serializedEvent, 'location': loc});
+    this._channelSink.emit({
+      'event': {'type': e.type},
+      'location': this._serializer.serialize(this._platformLocation.location, LocationType),
+    });
   }
 
   private _setPathname(pathname: string): void { this._platformLocation.pathname = pathname; }

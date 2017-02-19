@@ -12,8 +12,7 @@ import {EventEmitter} from '../../facade/async';
 import {stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
-import {SerializerTypes} from './serialized_types';
-import {Serializer} from './serializer';
+import {Serializer, SerializerTypes} from './serializer';
 
 
 /**
@@ -48,7 +47,7 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
  * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBroker {
-  abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
+  abstract runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any>;
 }
 
 interface PromiseCompleter {
@@ -68,7 +67,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     this._serializer = _serializer;
     const source = messageBus.from(channel);
 
-    source.subscribe({next: (message: {[key: string]: any}) => this._handleMessage(message)});
+    source.subscribe({next: (message: MessageData) => this._handleMessage(message)});
   }
 
   private _generateMessageId(name: string): string {
@@ -82,7 +81,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
+  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any> {
     const fnArgs: any[] = [];
     if (args.args) {
       args.args.forEach(argument => {
@@ -127,15 +126,14 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return promise;
   }
 
-  private _handleMessage(message: {[key: string]: any}): void {
-    const data = new MessageData(message);
-    if (data.type === 'result' || data.type === 'error') {
-      const id = data.id;
+  private _handleMessage(message: MessageData): void {
+    if (message.type === 'result' || message.type === 'error') {
+      const id = message.id;
       if (this._pending.has(id)) {
-        if (data.type === 'result') {
-          this._pending.get(id).resolve(data.value);
+        if (message.type === 'result') {
+          this._pending.get(id).resolve(message.value);
         } else {
-          this._pending.get(id).reject(data.value);
+          this._pending.get(id).reject(message.value);
         }
         this._pending.delete(id);
       }
@@ -143,31 +141,18 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 }
 
-class MessageData {
-  type: string;
-  value: any;
-  id: string;
-
-  constructor(data: {[key: string]: any}) {
-    this.type = data['type'];
-    this.id = this._getValueIfPresent(data, 'id');
-    this.value = this._getValueIfPresent(data, 'value');
-  }
-
-  /**
-   * Returns the value if present, otherwise returns null
-   * @internal
-   */
-  _getValueIfPresent(data: {[key: string]: any}, key: string) {
-    return data.hasOwnProperty(key) ? data[key] : null;
-  }
+interface MessageData {
+  type: 'result'|'error';
+  value?: any;
+  id?: string;
 }
 
 /**
  * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
-  constructor(public value: any, public type: Type<any>|SerializerTypes = null) {}
+  constructor(
+      public value: any, public type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE) {}
 }
 
 /**

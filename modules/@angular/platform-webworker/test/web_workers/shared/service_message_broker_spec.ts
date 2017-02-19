@@ -9,9 +9,8 @@
 import {beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {ON_WEB_WORKER} from '@angular/platform-webworker/src/web_workers/shared/api';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
-import {PRIMITIVE, Serializer} from '@angular/platform-webworker/src/web_workers/shared/serializer';
+import {Serializer, SerializerTypes} from '@angular/platform-webworker/src/web_workers/shared/serializer';
 import {ServiceMessageBroker_} from '@angular/platform-webworker/src/web_workers/shared/service_message_broker';
-
 
 import {createPairedMessageBuses} from './web_worker_test_util';
 
@@ -36,17 +35,20 @@ export function main() {
     it('should call registered method with correct arguments',
        inject([Serializer], (serializer: Serializer) => {
          const broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(TEST_METHOD, [PRIMITIVE, PRIMITIVE], (arg1, arg2) => {
-           expect(arg1).toEqual(PASSED_ARG_1);
-           expect(arg2).toEqual(PASSED_ARG_2);
+         broker.registerMethod(
+             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE], (arg1, arg2) => {
+               expect(arg1).toEqual(PASSED_ARG_1);
+               expect(arg2).toEqual(PASSED_ARG_2);
+             });
+         messageBuses.worker.to(CHANNEL).emit({
+           'method': TEST_METHOD,
+           'args': [PASSED_ARG_1, PASSED_ARG_2],
          });
-         messageBuses.worker.to(CHANNEL).emit(
-             {'method': TEST_METHOD, 'args': [PASSED_ARG_1, PASSED_ARG_2]});
        }));
 
     it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
          const broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
+         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return new Promise((res, rej) => {
              try {

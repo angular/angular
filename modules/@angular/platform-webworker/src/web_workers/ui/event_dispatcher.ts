@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {EventEmitter} from '../../facade/async';
-import {RenderStoreObject, Serializer} from '../shared/serializer';
+import {Serializer, SerializerTypes} from '../shared/serializer';
 
 import {serializeEventWithTarget, serializeGenericEvent, serializeKeyboardEvent, serializeMouseEvent, serializeTransitionEvent} from './event_serializer';
 
@@ -15,8 +15,8 @@ export class EventDispatcher {
 
   dispatchAnimationEvent(player: any, phaseName: string, element: any): boolean {
     this._sink.emit({
-      'element': this._serializer.serialize(element, RenderStoreObject),
-      'animationPlayer': this._serializer.serialize(player, RenderStoreObject),
+      'element': this._serializer.serialize(element, SerializerTypes.RENDER_STORE_OBJECT),
+      'animationPlayer': this._serializer.serialize(player, SerializerTypes.RENDER_STORE_OBJECT),
       'phaseName': phaseName,
     });
     return true;
@@ -107,7 +107,7 @@ export class EventDispatcher {
     }
 
     this._sink.emit({
-      'element': this._serializer.serialize(element, RenderStoreObject),
+      'element': this._serializer.serialize(element, SerializerTypes.RENDER_STORE_OBJECT),
       'eventName': eventName,
       'eventTarget': eventTarget,
       'event': serializedEvent,

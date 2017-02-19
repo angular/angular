@@ -8,19 +8,50 @@
 
 import {Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
-import {ListWrapper} from '../../facade/collection';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, EVENT_V2_CHANNEL, RENDERER_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {SerializerTypes} from '../shared/serialized_types';
-import {ANIMATION_WORKER_PLAYER_PREFIX, RenderStoreObject, Serializer} from '../shared/serializer';
+import {ANIMATION_WORKER_PLAYER_PREFIX, Serializer, SerializerTypes} from '../shared/serializer';
+
+export class NamedEventEmitter {
+  private _listeners: Map<string, Function[]>;
+
+  listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
+
+  unlisten(eventName: string, listener: Function) {
+    const listeners = this._getListeners(eventName);
+    const index = listeners.indexOf(listener);
+    if (index > -1) {
+      listeners.splice(index, 1);
+    }
+  }
+
+  dispatchEvent(eventName: string, event: any) {
+    const listeners = this._getListeners(eventName);
+    for (let i = 0; i < listeners.length; i++) {
+      listeners[i](event);
+    }
+  }
+
+  private _getListeners(eventName: string): Function[] {
+    if (!this._listeners) {
+      this._listeners = new Map<string, Function[]>();
+    }
+    let listeners = this._listeners.get(eventName);
+    if (!listeners) {
+      listeners = [];
+      this._listeners.set(eventName, listeners);
+    }
+    return listeners;
+  }
+}
+
+const globalEvents = new NamedEventEmitter();
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
-  globalEvents = new NamedEventEmitter();
-
   private _messageBroker: ClientMessageBroker;
   private _componentRenderers = new Map<string, WebWorkerRenderer>();
 
@@ -34,20 +65,21 @@ export class WebWorkerRootRenderer implements RootRenderer {
   }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
-    const element =
-        <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
+    const element: WebWorkerRenderNode =
+        this._serializer.deserialize(message['element'], SerializerTypes.RENDER_STORE_OBJECT);
     const playerData = message['animationPlayer'];
 
     if (playerData) {
       const phaseName = message['phaseName'];
-      const player = <AnimationPlayer>this._serializer.deserialize(playerData, RenderStoreObject);
+      const player: AnimationPlayer =
+          this._serializer.deserialize(playerData, SerializerTypes.RENDER_STORE_OBJECT);
       element.animationPlayerEvents.dispatchEvent(player, phaseName);
     } else {
       const eventName = message['eventName'];
       const target = message['eventTarget'];
       const event = message['event'];
       if (target) {
-        this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+        globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
       } else {
         element.events.dispatchEvent(eventName, event);
       }
@@ -63,7 +95,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
       this.renderStore.store(result, id);
       this.runOnService('renderComponent', [
         new FnArg(componentType, RenderComponentType),
-        new FnArg(result, RenderStoreObject),
+        new FnArg(result, SerializerTypes.RENDER_STORE_OBJECT),
       ]);
     }
     return result;
@@ -90,27 +122,30 @@ export class WebWorkerRootRenderer implements RootRenderer {
   }
 }
 
-export class WebWorkerRenderer implements Renderer, RenderStoreObject {
+export class WebWorkerRenderer implements Renderer {
   constructor(
       private _rootRenderer: WebWorkerRootRenderer, private _componentType: RenderComponentType) {}
 
   private _runOnService(fnName: string, fnArgs: FnArg[]) {
-    const fnArgsWithRenderer = [new FnArg(this, RenderStoreObject)].concat(fnArgs);
+    const fnArgsWithRenderer = [new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT), ...fnArgs];
     this._rootRenderer.runOnService(fnName, fnArgsWithRenderer);
   }
 
   selectRootElement(selectorOrNode: string, debugInfo?: RenderDebugInfo): any {
     const node = this._rootRenderer.allocateNode();
-    this._runOnService(
-        'selectRootElement', [new FnArg(selectorOrNode, null), new FnArg(node, RenderStoreObject)]);
+    this._runOnService('selectRootElement', [
+      new FnArg(selectorOrNode),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
     return node;
   }
 
   createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
     const node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
-      new FnArg(parentElement, RenderStoreObject), new FnArg(name, null),
-      new FnArg(node, RenderStoreObject)
+      new FnArg(parentElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(name),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
@@ -119,121 +154,139 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     const viewRoot = this._componentType.encapsulation === ViewEncapsulation.Native ?
         this._rootRenderer.allocateNode() :
         hostElement;
-    this._runOnService(
-        'createViewRoot',
-        [new FnArg(hostElement, RenderStoreObject), new FnArg(viewRoot, RenderStoreObject)]);
+    this._runOnService('createViewRoot', [
+      new FnArg(hostElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(viewRoot, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
     return viewRoot;
   }
 
   createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
     const node = this._rootRenderer.allocateNode();
-    this._runOnService(
-        'createTemplateAnchor',
-        [new FnArg(parentElement, RenderStoreObject), new FnArg(node, RenderStoreObject)]);
+    this._runOnService('createTemplateAnchor', [
+      new FnArg(parentElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
     return node;
   }
 
   createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any {
     const node = this._rootRenderer.allocateNode();
     this._runOnService('createText', [
-      new FnArg(parentElement, RenderStoreObject), new FnArg(value, null),
-      new FnArg(node, RenderStoreObject)
+      new FnArg(parentElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(value),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
 
   projectNodes(parentElement: any, nodes: any[]) {
-    this._runOnService(
-        'projectNodes',
-        [new FnArg(parentElement, RenderStoreObject), new FnArg(nodes, RenderStoreObject)]);
+    this._runOnService('projectNodes', [
+      new FnArg(parentElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(nodes, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
   }
 
   attachViewAfter(node: any, viewRootNodes: any[]) {
-    this._runOnService(
-        'attachViewAfter',
-        [new FnArg(node, RenderStoreObject), new FnArg(viewRootNodes, RenderStoreObject)]);
+    this._runOnService('attachViewAfter', [
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(viewRootNodes, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
   }
 
   detachView(viewRootNodes: any[]) {
-    this._runOnService('detachView', [new FnArg(viewRootNodes, RenderStoreObject)]);
+    this._runOnService(
+        'detachView', [new FnArg(viewRootNodes, SerializerTypes.RENDER_STORE_OBJECT)]);
   }
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
-    this._runOnService(
-        'destroyView',
-        [new FnArg(hostElement, RenderStoreObject), new FnArg(viewAllNodes, RenderStoreObject)]);
+    this._runOnService('destroyView', [
+      new FnArg(hostElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(viewAllNodes, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
     this._rootRenderer.destroyNodes(viewAllNodes);
   }
 
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any) {
     this._runOnService('setElementProperty', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(propertyName, null),
-      new FnArg(propertyValue, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(propertyName),
+      new FnArg(propertyValue),
     ]);
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string) {
     this._runOnService('setElementAttribute', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(attributeName, null),
-      new FnArg(attributeValue, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(attributeName),
+      new FnArg(attributeValue),
     ]);
   }
 
   setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string) {
     this._runOnService('setBindingDebugInfo', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(propertyName, null),
-      new FnArg(propertyValue, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(propertyName),
+      new FnArg(propertyValue),
     ]);
   }
 
   setElementClass(renderElement: any, className: string, isAdd: boolean) {
     this._runOnService('setElementClass', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(className, null),
-      new FnArg(isAdd, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(className),
+      new FnArg(isAdd),
     ]);
   }
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
     this._runOnService('setElementStyle', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(styleName, null),
-      new FnArg(styleValue, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(styleName),
+      new FnArg(styleValue),
     ]);
   }
 
   invokeElementMethod(renderElement: any, methodName: string, args?: any[]) {
     this._runOnService('invokeElementMethod', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(methodName, null),
-      new FnArg(args, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(methodName),
+      new FnArg(args),
     ]);
   }
 
   setText(renderNode: any, text: string) {
-    this._runOnService(
-        'setText', [new FnArg(renderNode, RenderStoreObject), new FnArg(text, null)]);
+    this._runOnService('setText', [
+      new FnArg(renderNode, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(text),
+    ]);
   }
 
   listen(renderElement: WebWorkerRenderNode, name: string, callback: Function): Function {
     renderElement.events.listen(name, callback);
     const unlistenCallbackId = this._rootRenderer.allocateId();
     this._runOnService('listen', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(name, null),
-      new FnArg(unlistenCallbackId, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(name),
+      new FnArg(unlistenCallbackId),
     ]);
     return () => {
       renderElement.events.unlisten(name, callback);
-      this._runOnService('listenDone', [new FnArg(unlistenCallbackId, null)]);
+      this._runOnService('listenDone', [new FnArg(unlistenCallbackId)]);
     };
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    this._rootRenderer.globalEvents.listen(eventNameWithTarget(target, name), callback);
+    globalEvents.listen(eventNameWithTarget(target, name), callback);
     const unlistenCallbackId = this._rootRenderer.allocateId();
-    this._runOnService(
-        'listenGlobal',
-        [new FnArg(target, null), new FnArg(name, null), new FnArg(unlistenCallbackId, null)]);
+    this._runOnService('listenGlobal', [
+      new FnArg(target),
+      new FnArg(name, null),
+      new FnArg(unlistenCallbackId),
+    ]);
     return () => {
-      this._rootRenderer.globalEvents.unlisten(eventNameWithTarget(target, name), callback);
-      this._runOnService('listenDone', [new FnArg(unlistenCallbackId, null)]);
+      globalEvents.unlisten(eventNameWithTarget(target, name), callback);
+      this._runOnService('listenDone', [new FnArg(unlistenCallbackId)]);
     };
   }
 
@@ -246,9 +299,14 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
         previousPlayers.map(player => this._rootRenderer.renderStore.serialize(player));
 
     this._runOnService('animate', [
-      new FnArg(renderElement, RenderStoreObject), new FnArg(startingStyles, null),
-      new FnArg(keyframes, null), new FnArg(duration, null), new FnArg(delay, null),
-      new FnArg(easing, null), new FnArg(previousPlayerIds, null), new FnArg(playerId, null)
+      new FnArg(renderElement, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(startingStyles),
+      new FnArg(keyframes),
+      new FnArg(duration),
+      new FnArg(delay),
+      new FnArg(easing),
+      new FnArg(previousPlayerIds),
+      new FnArg(playerId),
     ]);
 
     const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement);
@@ -261,37 +319,6 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
 function eventNameWithTarget(target: string, eventName: string): string {
   return `${target}:${eventName}`;
 }
-
-export class NamedEventEmitter {
-  private _listeners: Map<string, Function[]>;
-
-  listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
-
-  unlisten(eventName: string, callback: Function) {
-    ListWrapper.remove(this._getListeners(eventName), callback);
-  }
-
-  dispatchEvent(eventName: string, event: any) {
-    const listeners = this._getListeners(eventName);
-    for (let i = 0; i < listeners.length; i++) {
-      listeners[i](event);
-    }
-  }
-
-  private _getListeners(eventName: string): Function[] {
-    if (!this._listeners) {
-      this._listeners = new Map<string, Function[]>();
-    }
-    let listeners = this._listeners.get(eventName);
-    if (!listeners) {
-      listeners = [];
-      this._listeners.set(eventName, listeners);
-    }
-    return listeners;
-  }
-}
-
-const globalEvents = new NamedEventEmitter();
 
 @Injectable()
 export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
@@ -312,9 +339,9 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
     const id = this.renderStore.allocateId();
     this.renderStore.store(renderer, id);
     this.callUI('createRenderer', [
-      new FnArg(element, RenderStoreObject),
+      new FnArg(element, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(type, SerializerTypes.RENDERER_TYPE_V2),
-      new FnArg(renderer, RenderStoreObject),
+      new FnArg(renderer, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
 
     return renderer;
@@ -336,7 +363,7 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
 
   private _dispatchEvent(message: {[key: string]: any}): void {
     const element: WebWorkerRenderNode =
-        this._serializer.deserialize(message['element'], RenderStoreObject);
+        this._serializer.deserialize(message['element'], SerializerTypes.RENDER_STORE_OBJECT);
 
     const eventName = message['eventName'];
     const target = message['eventTarget'];
@@ -355,7 +382,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
   constructor(private _rendererFactory: WebWorkerRendererFactoryV2) {}
   destroyNode: (node: any) => void | null = null;
 
-  private asFnArg = new FnArg(this, RenderStoreObject);
+  private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);
 
   // TODO(vicb): destroy the allocated nodes
   destroy(): void { this.callUIWithRenderer('destroy'); }
@@ -365,7 +392,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
     this.callUIWithRenderer('createElement', [
       new FnArg(name),
       new FnArg(namespace),
-      new FnArg(node, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
@@ -374,7 +401,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
     const node = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('createComment', [
       new FnArg(value),
-      new FnArg(node, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
@@ -383,15 +410,15 @@ export class WebWorkerRendererV2 implements RendererV2 {
     const node = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('createText', [
       new FnArg(value),
-      new FnArg(node, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
 
   appendChild(parent: any, newChild: any): void {
     this.callUIWithRenderer('appendChild', [
-      new FnArg(parent, RenderStoreObject),
-      new FnArg(newChild, RenderStoreObject),
+      new FnArg(parent, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(newChild, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
   }
 
@@ -401,16 +428,16 @@ export class WebWorkerRendererV2 implements RendererV2 {
     }
 
     this.callUIWithRenderer('insertBefore', [
-      new FnArg(parent, RenderStoreObject),
-      new FnArg(newChild, RenderStoreObject),
-      new FnArg(refChild, RenderStoreObject),
+      new FnArg(parent, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(newChild, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(refChild, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
   }
 
   removeChild(parent: any, oldChild: any): void {
     this.callUIWithRenderer('removeChild', [
-      new FnArg(parent, RenderStoreObject),
-      new FnArg(oldChild, RenderStoreObject),
+      new FnArg(parent, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(oldChild, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
   }
 
@@ -418,7 +445,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
     const node = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('selectRootElement', [
       new FnArg(selectorOrNode),
-      new FnArg(node, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return node;
   }
@@ -426,8 +453,8 @@ export class WebWorkerRendererV2 implements RendererV2 {
   parentNode(node: any): any {
     const res = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('parentNode', [
-      new FnArg(node, RenderStoreObject),
-      new FnArg(res, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(res, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return res;
   }
@@ -435,15 +462,15 @@ export class WebWorkerRendererV2 implements RendererV2 {
   nextSibling(node: any): any {
     const res = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('nextSibling', [
-      new FnArg(node, RenderStoreObject),
-      new FnArg(res, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(res, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
     return res;
   }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     this.callUIWithRenderer('setAttribute', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
       new FnArg(value),
       new FnArg(namespace),
@@ -452,7 +479,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     this.callUIWithRenderer('removeAttribute', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
       new FnArg(namespace),
     ]);
@@ -460,14 +487,14 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
   addClass(el: any, name: string): void {
     this.callUIWithRenderer('addClass', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
     ]);
   }
 
   removeClass(el: any, name: string): void {
     this.callUIWithRenderer('removeClass', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
     ]);
   }
@@ -475,7 +502,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
   setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
       void {
     this.callUIWithRenderer('setStyle', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(style),
       new FnArg(value),
       new FnArg(hasVendorPrefix),
@@ -485,7 +512,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
   removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
     this.callUIWithRenderer('removeStyle', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(style),
       new FnArg(hasVendorPrefix),
     ]);
@@ -493,7 +520,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
   setProperty(el: any, name: string, value: any): void {
     this.callUIWithRenderer('setProperty', [
-      new FnArg(el, RenderStoreObject),
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
       new FnArg(value),
     ]);
@@ -501,7 +528,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
   setValue(node: any, value: string): void {
     this.callUIWithRenderer('setValue', [
-      new FnArg(node, RenderStoreObject),
+      new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(value),
     ]);
   }
@@ -522,7 +549,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
     }
 
     this.callUIWithRenderer('listen', [
-      new FnArg(targetEl, RenderStoreObject),
+      new FnArg(targetEl, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(targetName),
       new FnArg(eventName),
       new FnArg(unlistenId),
@@ -581,7 +608,7 @@ export class WebWorkerRenderNode {
   animationPlayerEvents = new AnimationPlayerEmitter();
 }
 
-class _AnimationWorkerRendererPlayer implements RenderStoreObject {
+class _AnimationWorkerRendererPlayer {
   public parentPlayer: AnimationPlayer = null;
 
   private _destroyed: boolean = false;
@@ -592,8 +619,9 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
   private _runOnService(fnName: string, fnArgs: FnArg[]) {
     if (!this._destroyed) {
       const fnArgsWithRenderer = [
-        new FnArg(this, RenderStoreObject), new FnArg(this._renderElement, RenderStoreObject)
-      ].concat(fnArgs);
+        new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT),
+        new FnArg(this._renderElement, SerializerTypes.RENDER_STORE_OBJECT), ...fnArgs
+      ];
       this._rootRenderer.runOnService(ANIMATION_WORKER_PLAYER_PREFIX + fnName, fnArgsWithRenderer);
     }
   }
@@ -639,7 +667,7 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
 
   reset(): void { this._runOnService('reset', []); }
 
-  setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p, null)]); }
+  setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p)]); }
 
   getPosition(): number { return 0; }
 }
