@@ -129,8 +129,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       this.component.viewQueries.forEach((query, queryIndex) => {
         // Note: queries start with id 1 so we can use the number in a Bloom filter!
         const queryId = queryIndex + 1;
-        const bindingType =
-            query.first ? QueryBindingType.First : QueryBindingType.All;
+        const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
         let flags = NodeFlags.HasViewQuery;
         if (queryIds.staticQueryIds.has(queryId)) {
           flags |= NodeFlags.HasStaticQuery;
@@ -439,8 +438,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       } else {
         flags |= NodeFlags.HasDynamicQuery;
       }
-      const bindingType =
-          query.first ? QueryBindingType.First : QueryBindingType.All;
+      const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
         o.literal(flags), o.literal(queryId),
         new o.LiteralMapExpr([new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
@@ -486,8 +484,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         outputDefs.push(new o.LiteralMapEntry(propName, o.literal(eventName), false));
       }
     });
-    if (directiveAst.inputs.length ||
-        (flags & (NodeFlags.DoCheck | NodeFlags.OnInit)) > 0) {
+    if (directiveAst.inputs.length || (flags & (NodeFlags.DoCheck | NodeFlags.OnInit)) > 0) {
       this._addUpdateExpressions(
           nodeIndex,
           directiveAst.inputs.map((input) => { return {context: COMP_VAR, value: input.value}; }),
@@ -716,7 +713,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       if (allowDefault) {
         trueStmts.push(ALLOW_DEFAULT_VAR.set(allowDefault.and(ALLOW_DEFAULT_VAR)).toStmt());
       }
-      const fullEventName = viewEngine.elementEventFullName(eventAst.target, eventAst.name);
+      const fullEventName = elementEventFullName(eventAst.target, eventAst.name);
       handleEventStmts.push(
           new o.IfStmt(o.literal(fullEventName).identical(EVENT_NAME_VAR), trueStmts));
     });
@@ -778,11 +775,7 @@ function multiProviderDef(providers: CompileProviderMetadata[]):
   });
   const providerExpr =
       o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
-  return {
-    providerExpr,
-    providerType: ProviderType.Factory,
-    depsExpr: o.literalArr(allDepDefs)
-  };
+  return {providerExpr, providerType: ProviderType.Factory, depsExpr: o.literalArr(allDepDefs)};
 
   function convertDeps(providerIndex: number, deps: CompileDiDependencyMetadata[]) {
     return deps.map((dep, depIndex) => {
@@ -902,7 +895,7 @@ function elementBindingDefs(inputAsts: BoundElementPropertyAst[]): o.Expression[
         ]);
       case PropertyBindingType.Animation:
         return o.literalArr([
-          o.literal(viewEngine.BindingType.ElementProperty), o.literal(inputAst.name),
+          o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Class:
