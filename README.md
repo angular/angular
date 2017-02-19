@@ -14,7 +14,7 @@ Angular
 Angular is a development platform for building mobile and desktop web applications using Typescript/JavaScript (JS) and other languages.
 
 
-## Quickstart
+## Quickstart Mangular 
 
 [Get started in 5 minutes][quickstart].
 
