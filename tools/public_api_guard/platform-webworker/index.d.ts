@@ -3,7 +3,7 @@ export declare function bootstrapWorkerUi(workerScriptUri: string, customProvide
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
+    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes): Promise<any>;
 }
 
 /** @experimental */
@@ -50,24 +50,23 @@ export declare const platformWorkerUi: (extraProviders?: Provider[]) => Platform
 export declare const PRIMITIVE: Type<any>;
 
 /** @experimental */
-export declare class ReceivedMessage {
+export interface ReceivedMessage {
     args: any[];
     id: string;
     method: string;
     type: string;
-    constructor(data: {
-        [key: string]: any;
-    });
 }
 
 /** @experimental */
 export declare const enum SerializerTypes {
     RENDERER_TYPE_V2 = 0,
+    PRIMITIVE = 1,
+    RENDER_STORE_OBJECT = 2,
 }
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Type<any>[], method: Function, returnType?: Type<any>): void;
+    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes>, method: Function, returnType?: Type<any> | SerializerTypes): void;
 }
 
 /** @experimental */
