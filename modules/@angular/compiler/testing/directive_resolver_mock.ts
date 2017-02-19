@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DirectiveResolver} from '@angular/compiler';
-import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
-
+import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef, ɵViewMetadata as ViewMetadata} from '@angular/core';
 import {isPresent} from './facade/lang';
-import {ViewMetadata} from './private_import_core';
 
 
 

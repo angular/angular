@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, StaticSymbol} from '@angular/compiler';
-import {NgAnalyzedModules} from '@angular/compiler/src/aot/compiler';
-import {AST} from '@angular/compiler/src/expression_parser/ast';
-import {Attribute} from '@angular/compiler/src/ml_parser/ast';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
+import {AST, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveMetadata, CompileDirectiveSummary, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, NgContentAst, ReferenceAst, StaticSymbol, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler';
 
 import {AstResult, SelectorInfo, TemplateInfo} from './common';
 import {getExpressionDiagnostics, getExpressionScope} from './expressions';

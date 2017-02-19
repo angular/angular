@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, StaticSymbol} from '@angular/compiler';
-import {NgAnalyzedModules} from '@angular/compiler/src/aot/compiler';
-import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
+import {CompileDirectiveMetadata, CompileMetadataResolver, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
+
 
 
 /**
@@ -47,7 +46,7 @@ export interface TemplateSource {
 
   /**
    * The version of the source. As files are modified the version should change. That is, if the
-   * `LanguageSerivce` requesting
+   * `LanguageService` requesting
    * template infomration for a source file and that file has changed since the last time the host
    * was asked for the file then
    * this version string should be different. No assumptions are made about the format of this
@@ -411,7 +410,7 @@ export interface SymbolQuery {
 }
 
 /**
- * The host for a `LanguageService`. This provides all the `LanguageSerivce` requires to respond to
+ * The host for a `LanguageService`. This provides all the `LanguageService` requires to respond to
  * the `LanguageService` requests.
  *
  * This interface describes the requirements of the `LanguageService` on its host.
@@ -419,7 +418,7 @@ export interface SymbolQuery {
  * The host interface is host language agnostic.
  *
  * Adding optional member to this interface or any interface that is described as a
- * `LanguageSerivceHost`
+ * `LanguageServiceHost`
  * interface is not considered a breaking change as defined by SemVer. Removing a method or changing
  * a
  * member from required to optional will also not be considered a breaking change.
@@ -678,7 +677,7 @@ export interface Hover {
  * beginning
  * of the file reference by `fileName`.
  *
- * This interface and all interfaces and types marked as `LanguageSerivce` types, describe  a
+ * This interface and all interfaces and types marked as `LanguageService` types, describe  a
  * particlar
  * implementation of the Angular language service and is not intented to be implemented. Adding
  * members

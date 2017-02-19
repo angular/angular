@@ -2,9 +2,10 @@
   "name": "@angular/router",
   "version": "0.0.0-ROUTERPLACEHOLDER",
   "description": "Angular - the routing library",
-  "main": "bundles/router.umd.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "./bundles/router.umd.js",
+  "module": "./@angular/router.es5.js",
+  "es2015": "./@angular/router.js",
+  "typings": "./typings/router.d.ts",
   "keywords": [
     "angular",
     "router"
