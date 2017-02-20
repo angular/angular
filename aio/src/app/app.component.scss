@@ -2,13 +2,22 @@
   flex: 1 1 auto;
 }
 
+.hamburger {
+  transition-duration: 150ms;
+  transition-property: background-color, color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    background-color: #fdfdfd;
+    color:#00bcd4;
+  }
+}
+
 md-input-container {
   margin-left: 10px;
   input {
     min-width:200px;
   }
 }
-
 
 .md-input-element {
   font-size: 70%;
