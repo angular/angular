@@ -48,10 +48,10 @@ export class NamedEventEmitter {
   }
 }
 
-const globalEvents = new NamedEventEmitter();
-
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
+  globalEvents = new NamedEventEmitter();
+
   private _messageBroker: ClientMessageBroker;
   private _componentRenderers = new Map<string, WebWorkerRenderer>();
 
@@ -79,7 +79,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
       const target = message['eventTarget'];
       const event = message['event'];
       if (target) {
-        globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+        this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
       } else {
         element.events.dispatchEvent(eventName, event);
       }
@@ -277,7 +277,7 @@ export class WebWorkerRenderer implements Renderer {
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    globalEvents.listen(eventNameWithTarget(target, name), callback);
+    this._rootRenderer.globalEvents.listen(eventNameWithTarget(target, name), callback);
     const unlistenCallbackId = this._rootRenderer.allocateId();
     this._runOnService('listenGlobal', [
       new FnArg(target),
@@ -285,7 +285,7 @@ export class WebWorkerRenderer implements Renderer {
       new FnArg(unlistenCallbackId),
     ]);
     return () => {
-      globalEvents.unlisten(eventNameWithTarget(target, name), callback);
+      this._rootRenderer.globalEvents.unlisten(eventNameWithTarget(target, name), callback);
       this._runOnService('listenDone', [new FnArg(unlistenCallbackId)]);
     };
   }
@@ -322,6 +322,8 @@ function eventNameWithTarget(target: string, eventName: string): string {
 
 @Injectable()
 export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
+  globalEvents = new NamedEventEmitter();
+
   private _messageBroker: ClientMessageBroker;
 
   constructor(
@@ -359,6 +361,8 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
     return result;
   }
 
+  freeNode(node: any) { this.renderStore.remove(node); }
+
   allocateId(): number { return this.renderStore.allocateId(); }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
@@ -370,7 +374,7 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
     const event = message['event'];
 
     if (target) {
-      globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+      this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
     } else {
       element.events.dispatchEvent(eventName, event);
     }
@@ -380,12 +384,15 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
 
 export class WebWorkerRendererV2 implements RendererV2 {
   constructor(private _rendererFactory: WebWorkerRendererFactoryV2) {}
-  destroyNode: (node: any) => void | null = null;
 
   private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);
 
-  // TODO(vicb): destroy the allocated nodes
   destroy(): void { this.callUIWithRenderer('destroy'); }
+
+  destroyNode(node: any) {
+    this.callUIWithRenderer('destroyNode', [new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT)]);
+    this._rendererFactory.freeNode(node);
+  }
 
   createElement(name: string, namespace?: string): any {
     const node = this._rendererFactory.allocateNode();
@@ -543,7 +550,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
         [target, null, null];
 
     if (fullName) {
-      globalEvents.listen(fullName, listener);
+      this._rendererFactory.globalEvents.listen(fullName, listener);
     } else {
       targetEl.events.listen(eventName, listener);
     }
@@ -557,7 +564,7 @@ export class WebWorkerRendererV2 implements RendererV2 {
 
     return () => {
       if (fullName) {
-        globalEvents.unlisten(fullName, listener);
+        this._rendererFactory.globalEvents.unlisten(fullName, listener);
       } else {
         targetEl.events.unlisten(eventName, listener);
       }

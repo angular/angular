@@ -47,7 +47,7 @@ export declare const platformWorkerApp: (extraProviders?: Provider[]) => Platfor
 export declare const platformWorkerUi: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
-export declare const PRIMITIVE: Type<any>;
+export declare const PRIMITIVE: SerializerTypes;
 
 /** @experimental */
 export interface ReceivedMessage {

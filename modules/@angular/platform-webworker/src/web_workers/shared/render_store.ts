@@ -17,18 +17,21 @@ export class RenderStore {
   allocateId(): number { return this._nextIndex++; }
 
   store(obj: any, id: number): void {
+    if (id == null) return;
     this._lookupById.set(id, obj);
     this._lookupByObject.set(obj, id);
   }
 
   remove(obj: any): void {
     const index = this._lookupByObject.get(obj);
-    this._lookupByObject.delete(obj);
-    this._lookupById.delete(index);
+    if (index != null) {
+      this._lookupByObject.delete(obj);
+      this._lookupById.delete(index);
+    }
   }
 
   deserialize(id: number): any {
-    return id == null || !this._lookupById.has(id) ? null : this._lookupById.get(id);
+    return this._lookupById.has(id) ? this._lookupById.get(id) : null;
   }
 
   serialize(obj: any): number { return obj == null ? null : this._lookupByObject.get(obj); }

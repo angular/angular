@@ -67,7 +67,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     this._serializer = _serializer;
     const source = messageBus.from(channel);
 
-    source.subscribe({next: (message: MessageData) => this._handleMessage(message)});
+    source.subscribe({next: (message: ResponseMessageData) => this._handleMessage(message)});
   }
 
   private _generateMessageId(name: string): string {
@@ -102,31 +102,33 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
       this._pending.set(id, completer);
 
       promise.catch((err) => {
-        if (console && console.log) {
+        if (console && console.error) {
           // tslint:disable-next-line:no-console
-          console.log(err);
+          console.error(err);
         }
 
         completer.reject(err);
       });
 
       promise = promise.then(
-          (value: any) =>
-              this._serializer ? value : this._serializer.deserialize(value, returnType));
+          (v: any) => this._serializer ? this._serializer.deserialize(v, returnType) : v);
     } else {
       promise = null;
     }
 
-    const message = {'method': args.method, 'args': fnArgs};
+    const message: RequestMessageData = {
+      'method': args.method,
+      'args': fnArgs,
+    };
     if (id != null) {
-      (message as any)['id'] = id;
+      message['id'] = id;
     }
     this._sink.emit(message);
 
     return promise;
   }
 
-  private _handleMessage(message: MessageData): void {
+  private _handleMessage(message: ResponseMessageData): void {
     if (message.type === 'result' || message.type === 'error') {
       const id = message.id;
       if (this._pending.has(id)) {
@@ -141,7 +143,13 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 }
 
-interface MessageData {
+interface RequestMessageData {
+  method: string;
+  args?: any[];
+  id?: string;
+}
+
+interface ResponseMessageData {
   type: 'result'|'error';
   value?: any;
   id?: string;
