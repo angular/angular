@@ -67,58 +67,32 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): TextD
 export function checkAndUpdateTextInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
     v7: any, v8: any, v9: any) {
-  const bindings = def.bindings;
   let changed = false;
-  // Note: fallthrough is intended!
-  switch (bindings.length) {
-    case 10:
-      if (checkAndUpdateBinding(view, def, 9, v9)) changed = true;
-    case 9:
-      if (checkAndUpdateBinding(view, def, 8, v8)) changed = true;
-    case 8:
-      if (checkAndUpdateBinding(view, def, 7, v7)) changed = true;
-    case 7:
-      if (checkAndUpdateBinding(view, def, 6, v6)) changed = true;
-    case 6:
-      if (checkAndUpdateBinding(view, def, 5, v5)) changed = true;
-    case 5:
-      if (checkAndUpdateBinding(view, def, 4, v4)) changed = true;
-    case 4:
-      if (checkAndUpdateBinding(view, def, 3, v3)) changed = true;
-    case 3:
-      if (checkAndUpdateBinding(view, def, 2, v2)) changed = true;
-    case 2:
-      if (checkAndUpdateBinding(view, def, 1, v1)) changed = true;
-    case 1:
-      if (checkAndUpdateBinding(view, def, 0, v0)) changed = true;
-  }
+  const bindings = def.bindings;
+  const bindLen = bindings.length;
+  if (bindLen > 0 && checkAndUpdateBinding(view, def, 0, v0)) changed = true;
+  if (bindLen > 1 && checkAndUpdateBinding(view, def, 1, v1)) changed = true;
+  if (bindLen > 2 && checkAndUpdateBinding(view, def, 2, v2)) changed = true;
+  if (bindLen > 3 && checkAndUpdateBinding(view, def, 3, v3)) changed = true;
+  if (bindLen > 4 && checkAndUpdateBinding(view, def, 4, v4)) changed = true;
+  if (bindLen > 5 && checkAndUpdateBinding(view, def, 5, v5)) changed = true;
+  if (bindLen > 6 && checkAndUpdateBinding(view, def, 6, v6)) changed = true;
+  if (bindLen > 7 && checkAndUpdateBinding(view, def, 7, v7)) changed = true;
+  if (bindLen > 8 && checkAndUpdateBinding(view, def, 8, v8)) changed = true;
+  if (bindLen > 9 && checkAndUpdateBinding(view, def, 9, v9)) changed = true;
 
   if (changed) {
-    let value = '';
-    // Note: fallthrough is intended!
-    switch (bindings.length) {
-      case 10:
-        value = _addInterpolationPart(v9, bindings[9]);
-      case 9:
-        value = _addInterpolationPart(v8, bindings[8]) + value;
-      case 8:
-        value = _addInterpolationPart(v7, bindings[7]) + value;
-      case 7:
-        value = _addInterpolationPart(v6, bindings[6]) + value;
-      case 6:
-        value = _addInterpolationPart(v5, bindings[5]) + value;
-      case 5:
-        value = _addInterpolationPart(v4, bindings[4]) + value;
-      case 4:
-        value = _addInterpolationPart(v3, bindings[3]) + value;
-      case 3:
-        value = _addInterpolationPart(v2, bindings[2]) + value;
-      case 2:
-        value = _addInterpolationPart(v1, bindings[1]) + value;
-      case 1:
-        value = _addInterpolationPart(v0, bindings[0]) + value;
-    }
-    value = def.text.prefix + value;
+    let value = def.text.prefix;
+    if (bindLen > 0) value += _addInterpolationPart(v0, bindings[0]);
+    if (bindLen > 1) value += _addInterpolationPart(v1, bindings[1]);
+    if (bindLen > 2) value += _addInterpolationPart(v2, bindings[2]);
+    if (bindLen > 3) value += _addInterpolationPart(v3, bindings[3]);
+    if (bindLen > 4) value += _addInterpolationPart(v4, bindings[4]);
+    if (bindLen > 5) value += _addInterpolationPart(v5, bindings[5]);
+    if (bindLen > 6) value += _addInterpolationPart(v6, bindings[6]);
+    if (bindLen > 7) value += _addInterpolationPart(v7, bindings[7]);
+    if (bindLen > 8) value += _addInterpolationPart(v8, bindings[8]);
+    if (bindLen > 9) value += _addInterpolationPart(v9, bindings[9]);
     const renderNode = asTextData(view, def.index).renderText;
     view.renderer.setValue(renderNode, value);
   }
