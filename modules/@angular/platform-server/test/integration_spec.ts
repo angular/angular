@@ -7,14 +7,14 @@
  */
 
 import {PlatformLocation} from '@angular/common';
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
-import {async, inject} from '@angular/core/testing';
+import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {DOCUMENT} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
@@ -99,6 +99,25 @@ class ImageExampleModule {
 }
 
 export function main() {
+  describe('regular', () => { declareTests({viewEngine: false}); });
+
+  describe('view engine', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler({
+        useJit: true,
+        providers: [{
+          provide: USE_VIEW_ENGINE,
+          useValue: true,
+        }],
+      });
+    });
+
+    declareTests({viewEngine: true});
+  });
+}
+
+
+function declareTests({viewEngine}: {viewEngine: boolean}) {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {

@@ -103,10 +103,15 @@ class ViewContainerRef_ implements ViewContainerRef {
     }
   }
 
-  get(index: number): ViewRef {
-    const ref = new ViewRef_(this._data.embeddedViews[index]);
-    ref.attachToViewContainerRef(this);
-    return ref;
+  get(index: number): ViewRef { return this._getViewRef(this._data.embeddedViews[index]); }
+
+  private _getViewRef(view: ViewData) {
+    if (view) {
+      const ref = new ViewRef_(view);
+      ref.attachToViewContainerRef(this);
+      return ref;
+    }
+    return null;
   }
 
   get length(): number { return this._data.embeddedViews.length; };
@@ -147,14 +152,19 @@ class ViewContainerRef_ implements ViewContainerRef {
 
   remove(index?: number): void {
     const viewData = Services.detachEmbeddedView(this._data, index);
-    Services.destroyView(viewData);
+    if (viewData) {
+      Services.destroyView(viewData);
+    }
   }
 
   detach(index?: number): ViewRef {
-    const view = this.get(index);
-    Services.detachEmbeddedView(this._data, index);
-    (view as ViewRef_).detachFromContainer();
-    return view;
+    const view = Services.detachEmbeddedView(this._data, index);
+    if (view) {
+      const viewRef = this._getViewRef(view);
+      viewRef.detachFromContainer();
+      return viewRef;
+    }
+    return null;
   }
 }
 

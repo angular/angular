@@ -38,7 +38,7 @@ export interface ViewDefinition {
    * Especially providers are after elements / anchors.
    */
   reverseChildNodes: NodeDef[];
-  lastRootNode: NodeDef;
+  lastRenderRootNode: NodeDef;
   bindingCount: number;
   disposableCount: number;
   /**
