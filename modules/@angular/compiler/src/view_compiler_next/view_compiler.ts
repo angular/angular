@@ -294,9 +294,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       if (hostBindings.length) {
         this._addUpdateExpressions(nodeIndex, hostBindings, this.updateRendererExpressions);
       }
-      inputDefs = elementBindingDefs(ast.inputs);
+      // Note: inputDefs have to be in the same order as hostBindings:
+      // - first the entries from the directives, then the ones from the element.
       ast.directives.forEach(
           (dirAst, dirIndex) => inputDefs.push(...elementBindingDefs(dirAst.hostProperties)));
+      inputDefs.push(...elementBindingDefs(ast.inputs));
+
       outputDefs = usedEvents.map(([target, eventName]) => {
         return target ? o.literalArr([o.literal(target), o.literal(eventName)]) :
                         o.literal(eventName);
@@ -847,6 +850,9 @@ function needsAdditionalRootNode(ast: TemplateAst): boolean {
   }
 
   if (ast instanceof ElementAst) {
+    if (ast.name === NG_CONTAINER_TAG && ast.children.length) {
+      return needsAdditionalRootNode(ast.children[ast.children.length - 1]);
+    }
     return ast.hasViewContainer;
   }
 
