@@ -265,29 +265,35 @@ export class MessageBasedRendererV2 {
     const methods: any[][] = [
       ['createRenderer', this.createRenderer, RSO, CRT, P],
       ['createElement', this.createElement, RSO, P, P, P],
-      ['createComment', this.createComment, RSO, P, P],
-      ['createText', this.createText, RSO, P, P],
+      ['createComment', this.createComment, RSO, P, P], ['createText', this.createText, RSO, P, P],
       ['appendChild', this.appendChild, RSO, RSO, RSO],
       ['insertBefore', this.insertBefore, RSO, RSO, RSO, RSO],
       ['removeChild', this.removeChild, RSO, RSO, RSO],
       ['selectRootElement', this.selectRootElement, RSO, P, P],
-      ['parentNode', this.parentNode, RSO, RSO, P],
-      ['nextSibling', this.nextSibling, RSO, RSO, P],
+      ['parentNode', this.parentNode, RSO, RSO, P], ['nextSibling', this.nextSibling, RSO, RSO, P],
       ['setAttribute', this.setAttribute, RSO, RSO, P, P, P],
       ['removeAttribute', this.removeAttribute, RSO, RSO, P, P],
-      ['addClass', this.addClass, RSO, RSO, P],
-      ['removeClass', this.removeClass, RSO, RSO, P],
+      ['addClass', this.addClass, RSO, RSO, P], ['removeClass', this.removeClass, RSO, RSO, P],
       ['setStyle', this.setStyle, RSO, RSO, P, P, P, P],
       ['removeStyle', this.removeStyle, RSO, RSO, P, P],
-      ['setProperty', this.setProperty, RSO, RSO, P, P],
-      ['setValue', this.setValue, RSO, RSO, P],
-      ['listen', this.listen, RSO, RSO, P, P, P],
-      ['unlisten', this.unlisten, RSO, RSO],
+      ['setProperty', this.setProperty, RSO, RSO, P, P], ['setValue', this.setValue, RSO, RSO, P],
+      ['listen', this.listen, RSO, RSO, P, P, P], ['unlisten', this.unlisten, RSO, RSO],
+      ['destroy', this.destroy, RSO], ['destroyNode', this.destroyNode, RSO, P]
+
     ];
 
     methods.forEach(([name, method, ...argTypes]: any[]) => {
       broker.registerMethod(name, argTypes, method.bind(this));
     });
+  }
+
+  private destroy(r: RendererV2) { r.destroy(); }
+
+  private destroyNode(r: RendererV2, node: any) {
+    if (r.destroyNode) {
+      r.destroyNode(node);
+    }
+    this._renderStore.remove(node);
   }
 
   private createRenderer(el: any, type: RendererTypeV2, id: number) {

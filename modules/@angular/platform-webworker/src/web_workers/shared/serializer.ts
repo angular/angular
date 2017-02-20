@@ -19,7 +19,7 @@ import {RenderStore} from './render_store';
  * @experimental WebWorker support in Angular is currently experimental.
  * @deprecated in v4. Use SerializerTypes.PRIMITIVE instead
  */
-export const PRIMITIVE: Type<any> = String;
+export const PRIMITIVE = SerializerTypes.PRIMITIVE;
 
 export class LocationType {
   constructor(
@@ -45,7 +45,7 @@ export class Serializer {
   constructor(private _renderStore: RenderStore) {}
 
   serialize(obj: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE): Object {
-    if (obj == null || type === PRIMITIVE || type === SerializerTypes.PRIMITIVE) {
+    if (obj == null || type === SerializerTypes.PRIMITIVE) {
       return obj;
     }
     if (Array.isArray(obj)) {
@@ -68,7 +68,7 @@ export class Serializer {
 
   deserialize(map: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE, data?: any):
       any {
-    if (map == null || type === PRIMITIVE || type === SerializerTypes.PRIMITIVE) {
+    if (map == null || type === SerializerTypes.PRIMITIVE) {
       return map;
     }
     if (Array.isArray(map)) {
