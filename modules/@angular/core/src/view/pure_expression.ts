@@ -72,29 +72,17 @@ export function checkAndUpdatePureExpressionInline(
     v7: any, v8: any, v9: any) {
   const bindings = def.bindings;
   let changed = false;
-  // Note: fallthrough is intended!
-  switch (bindings.length) {
-    case 10:
-      if (checkAndUpdateBinding(view, def, 9, v9)) changed = true;
-    case 9:
-      if (checkAndUpdateBinding(view, def, 8, v8)) changed = true;
-    case 8:
-      if (checkAndUpdateBinding(view, def, 7, v7)) changed = true;
-    case 7:
-      if (checkAndUpdateBinding(view, def, 6, v6)) changed = true;
-    case 6:
-      if (checkAndUpdateBinding(view, def, 5, v5)) changed = true;
-    case 5:
-      if (checkAndUpdateBinding(view, def, 4, v4)) changed = true;
-    case 4:
-      if (checkAndUpdateBinding(view, def, 3, v3)) changed = true;
-    case 3:
-      if (checkAndUpdateBinding(view, def, 2, v2)) changed = true;
-    case 2:
-      if (checkAndUpdateBinding(view, def, 1, v1)) changed = true;
-    case 1:
-      if (checkAndUpdateBinding(view, def, 0, v0)) changed = true;
-  }
+  const bindLen = bindings.length;
+  if (bindLen > 0 && checkAndUpdateBinding(view, def, 0, v0)) changed = true;
+  if (bindLen > 1 && checkAndUpdateBinding(view, def, 1, v1)) changed = true;
+  if (bindLen > 2 && checkAndUpdateBinding(view, def, 2, v2)) changed = true;
+  if (bindLen > 3 && checkAndUpdateBinding(view, def, 3, v3)) changed = true;
+  if (bindLen > 4 && checkAndUpdateBinding(view, def, 4, v4)) changed = true;
+  if (bindLen > 5 && checkAndUpdateBinding(view, def, 5, v5)) changed = true;
+  if (bindLen > 6 && checkAndUpdateBinding(view, def, 6, v6)) changed = true;
+  if (bindLen > 7 && checkAndUpdateBinding(view, def, 7, v7)) changed = true;
+  if (bindLen > 8 && checkAndUpdateBinding(view, def, 8, v8)) changed = true;
+  if (bindLen > 9 && checkAndUpdateBinding(view, def, 9, v9)) changed = true;
 
   const data = asPureExpressionData(view, def.index);
   if (changed) {
@@ -102,88 +90,62 @@ export function checkAndUpdatePureExpressionInline(
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
         value = new Array(bindings.length);
-        // Note: fallthrough is intended!
-        switch (bindings.length) {
-          case 10:
-            value[9] = v9;
-          case 9:
-            value[8] = v8;
-          case 8:
-            value[7] = v7;
-          case 7:
-            value[6] = v6;
-          case 6:
-            value[5] = v5;
-          case 5:
-            value[4] = v4;
-          case 4:
-            value[3] = v3;
-          case 3:
-            value[2] = v2;
-          case 2:
-            value[1] = v1;
-          case 1:
-            value[0] = v0;
-        }
+        if (bindLen > 0) value[0] = v0;
+        if (bindLen > 1) value[1] = v1;
+        if (bindLen > 2) value[2] = v2;
+        if (bindLen > 3) value[3] = v3;
+        if (bindLen > 4) value[4] = v4;
+        if (bindLen > 5) value[5] = v5;
+        if (bindLen > 6) value[6] = v6;
+        if (bindLen > 7) value[7] = v7;
+        if (bindLen > 8) value[8] = v8;
+        if (bindLen > 9) value[9] = v9;
         break;
       case PureExpressionType.Object:
         value = {};
-        // Note: fallthrough is intended!
-        switch (bindings.length) {
-          case 10:
-            value[bindings[9].name] = v9;
-          case 9:
-            value[bindings[8].name] = v8;
-          case 8:
-            value[bindings[7].name] = v7;
-          case 7:
-            value[bindings[6].name] = v6;
-          case 6:
-            value[bindings[5].name] = v5;
-          case 5:
-            value[bindings[4].name] = v4;
-          case 4:
-            value[bindings[3].name] = v3;
-          case 3:
-            value[bindings[2].name] = v2;
-          case 2:
-            value[bindings[1].name] = v1;
-          case 1:
-            value[bindings[0].name] = v0;
-        }
+        if (bindLen > 0) value[bindings[0].name] = v0;
+        if (bindLen > 1) value[bindings[1].name] = v1;
+        if (bindLen > 2) value[bindings[2].name] = v2;
+        if (bindLen > 3) value[bindings[3].name] = v3;
+        if (bindLen > 4) value[bindings[4].name] = v4;
+        if (bindLen > 5) value[bindings[5].name] = v5;
+        if (bindLen > 6) value[bindings[6].name] = v6;
+        if (bindLen > 7) value[bindings[7].name] = v7;
+        if (bindLen > 8) value[bindings[8].name] = v8;
+        if (bindLen > 9) value[bindings[9].name] = v9;
         break;
       case PureExpressionType.Pipe:
         const pipe = v0;
-        switch (bindings.length) {
-          case 10:
-            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7, v8, v9);
-            break;
-          case 9:
-            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7, v8);
-            break;
-          case 8:
-            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7);
-            break;
-          case 7:
-            value = pipe.transform(v1, v2, v3, v4, v5, v6);
-            break;
-          case 6:
-            value = pipe.transform(v1, v2, v3, v4, v5);
-            break;
-          case 5:
-            value = pipe.transform(v1, v2, v3, v4);
-            break;
-          case 4:
-            value = pipe.transform(v1, v2, v3);
-            break;
-          case 3:
-            value = pipe.transform(v1, v2);
+        switch (bindLen) {
+          case 1:
+            value = pipe.transform(v0);
             break;
           case 2:
             value = pipe.transform(v1);
             break;
-          case 1:
-            value = pipe.transform(v0);
+          case 3:
+            value = pipe.transform(v1, v2);
+            break;
+          case 4:
+            value = pipe.transform(v1, v2, v3);
+            break;
+          case 5:
+            value = pipe.transform(v1, v2, v3, v4);
+            break;
+          case 6:
+            value = pipe.transform(v1, v2, v3, v4, v5);
+            break;
+          case 7:
+            value = pipe.transform(v1, v2, v3, v4, v5, v6);
+            break;
+          case 8:
+            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7);
+            break;
+          case 9:
+            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7, v8);
+            break;
+          case 10:
+            value = pipe.transform(v1, v2, v3, v4, v5, v6, v7, v8, v9);
             break;
         }
         break;
