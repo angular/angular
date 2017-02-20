@@ -67,10 +67,10 @@ function TreeComponent_0(): ViewDefinition {
             NodeFlags.None, null, null, 1, 'span', null,
             [[BindingType.ElementStyle, 'backgroundColor', null]]),
         textDef(null, [' ', ' ']),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_1),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, null, TreeComponent_1),
         directiveDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, TreeComponent_2),
+        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 1, null, TreeComponent_2),
         directiveDef(
             NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
       ],
