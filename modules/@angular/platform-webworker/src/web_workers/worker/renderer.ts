@@ -63,6 +63,8 @@ export class WebWorkerRootRenderer implements RootRenderer {
     bus.initChannel(EVENT_CHANNEL);
     const source = bus.from(EVENT_CHANNEL);
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
+    throw new Error(
+        'RootRenderer is no longer supported. Please use the `RendererFactoryV2` instead!');
   }
 
   private _dispatchEvent(message: {[key: string]: any}): void {

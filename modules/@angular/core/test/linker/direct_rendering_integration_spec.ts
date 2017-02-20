@@ -20,7 +20,8 @@ let destroyViewLogs: any[];
 export function main() {
   // Don't run on server...
   if (!getDOM().supportsDOMEvents()) return;
-  describe('direct dom integration tests', function() {
+  // TODO(tbosch): delete the tests here as they use the old renderer.
+  xdescribe('direct dom integration tests', function() {
 
     beforeEach(() => {
       directRenderer = DIRECT_DOM_RENDERER;

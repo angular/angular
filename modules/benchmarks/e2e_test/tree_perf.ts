@@ -62,7 +62,8 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 ftl', (done) => {
+      // TODO(tbosch): delete ftl benchmarks as they use the old renderer / view engine.
+      xit('should run for ng2 ftl', (done) => {
         runTreeBenchmark({
           id: `deepTree.ng2.ftl.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2_ftl/index.html',
@@ -83,7 +84,8 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 static ftl', (done) => {
+      // TODO(tbosch): delete ftl benchmarks as they use the old renderer / view engine.
+      xit('should run for ng2 static ftl', (done) => {
         runTreeBenchmark({
           id: `deepTree.ng2.ftl.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2_static_ftl/index.html',
