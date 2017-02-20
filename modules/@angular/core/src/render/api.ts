@@ -13,9 +13,8 @@ import {InjectionToken, Injector} from '../di';
 import {ViewEncapsulation} from '../metadata/view';
 
 /**
- * @experimental
+ * @deprecated Use `RendererTypeV2` (and `RendererV2`) instead.
  */
-// TODO (matsko): add typing for the animation function
 export class RenderComponentType {
   constructor(
       public id: string, public templateUrl: string, public slotCount: number,
@@ -23,6 +22,9 @@ export class RenderComponentType {
       public animations: any) {}
 }
 
+/**
+ * @deprecated Debug info is handeled internally in the view engine now.
+ */
 export abstract class RenderDebugInfo {
   abstract get injector(): Injector;
   abstract get component(): any;
@@ -32,6 +34,9 @@ export abstract class RenderDebugInfo {
   abstract get source(): string;
 }
 
+/**
+ * @deprecated Use the `RendererV2` instead.
+ */
 export interface DirectRenderer {
   remove(node: any): void;
   appendChild(node: any, parent: any): void;
@@ -41,7 +46,7 @@ export interface DirectRenderer {
 }
 
 /**
- * @experimental
+ * @deprecated Use the `RendererV2` instead.
  */
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
@@ -104,7 +109,8 @@ export const RendererV2Interceptor = new InjectionToken<RendererV2[]>('RendererV
  * If you are implementing a custom renderer, you must implement this interface.
  *
  * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
- * @experimental
+ *
+ * @deprecated Use `RendererFactoryV2` instead.
  */
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;

@@ -17,7 +17,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_wo
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
-import {MessageBasedRenderer} from './web_workers/ui/renderer';
+import {MessageBasedRenderer, MessageBasedRendererV2} from './web_workers/ui/renderer';
 
 
 /**
@@ -47,16 +47,20 @@ export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
  * A multi-provider used to automatically call the `start()` method after the service is
  * created.
  *
- * TODO(vicb): create an interface for startable services to implement
  * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
-    new InjectionToken<MessageBasedRenderer[]>('WorkerRenderStartableMsgService');
+    new InjectionToken<({start: () => void})[]>('WorkerRenderStartableMsgService');
 
 export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   {provide: NgZone, useFactory: createNgZone, deps: []},
   MessageBasedRenderer,
-  {provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE, useExisting: MessageBasedRenderer, multi: true},
+  MessageBasedRendererV2,
+  {
+    provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE,
+    useExisting: MessageBasedRendererV2,
+    multi: true
+  },
   BROWSER_SANITIZATION_PROVIDERS,
   {provide: ErrorHandler, useFactory: _exceptionHandler, deps: []},
   {provide: DOCUMENT, useFactory: _document, deps: []},

@@ -15,7 +15,10 @@ import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../r
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from './debug_node';
 
 export class DebugDomRootRenderer implements RootRenderer {
-  constructor(private _delegate: RootRenderer) {}
+  constructor(private _delegate: RootRenderer) {
+    throw new Error(
+        'RootRenderer is no longer supported. Please use the `RendererFactoryV2` instead!');
+  }
 
   renderComponent(componentProto: RenderComponentType): Renderer {
     return new DebugDomRenderer(this._delegate.renderComponent(componentProto));

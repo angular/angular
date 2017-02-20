@@ -812,7 +812,7 @@ export declare class ReflectiveKey {
     static get(token: Object): ReflectiveKey;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class RenderComponentType {
     animations: any;
     encapsulation: ViewEncapsulation;
@@ -823,7 +823,7 @@ export declare class RenderComponentType {
     constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: any);
 }
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class Renderer {
     abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string, previousPlayers?: AnimationPlayer[]): AnimationPlayer;
     abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
@@ -904,7 +904,7 @@ export interface ResolvedReflectiveProvider {
 /** @experimental */
 export declare function resolveForwardRef(type: any): any;
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class RootRenderer {
     abstract renderComponent(componentType: RenderComponentType): Renderer;
 }

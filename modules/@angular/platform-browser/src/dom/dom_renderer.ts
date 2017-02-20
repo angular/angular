@@ -50,6 +50,8 @@ export class DomRootRenderer_ extends DomRootRenderer {
       sharedStylesHost: DomSharedStylesHost, animationDriver: AnimationDriver,
       @Inject(APP_ID) appId: string) {
     super(_document, _eventManager, sharedStylesHost, animationDriver, appId);
+    throw new Error(
+        'RootRenderer is no longer supported. Please use the `RendererFactoryV2` instead!');
   }
 }
 
