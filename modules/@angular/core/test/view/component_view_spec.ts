@@ -16,8 +16,8 @@ export function main() {
   describe(`Component Views`, () => {
     function compViewDef(
         nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
-        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
     }
 
     function createAndGetRootNodes(viewDef: ViewDefinition): {rootNodes: any[], view: ViewData} {
@@ -191,7 +191,7 @@ export function main() {
                         [
                           elementDef(NodeFlags.None, null, null, 0, 'span', null, null, ['click']),
                         ],
-                        update, null, null, ViewFlags.OnPush)),
+                        update, null, ViewFlags.OnPush)),
               ],
               (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 

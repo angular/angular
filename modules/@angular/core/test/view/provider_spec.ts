@@ -18,8 +18,8 @@ export function main() {
   describe(`View Providers`, () => {
     function compViewDef(
         nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
-        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
     }
 
     function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinitionFactory {
@@ -238,8 +238,8 @@ export function main() {
 
           it('should inject TemplateRef', () => {
             createAndGetRootNodes(compViewDef([
-              anchorDef(NodeFlags.None, null, null, 1, embeddedViewDef([anchorDef(
-                                                           NodeFlags.None, null, null, 0)])),
+              anchorDef(NodeFlags.None, null, null, 1, null, embeddedViewDef([anchorDef(
+                                                                 NodeFlags.None, null, null, 0)])),
               directiveDef(NodeFlags.None, null, 0, SomeService, [TemplateRef])
             ]));
 
@@ -365,16 +365,14 @@ export function main() {
         const handleEvent = jasmine.createSpy('handleEvent');
         const subscribe = spyOn(emitter, 'subscribe').and.callThrough();
 
-        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-            [
-              elementDef(NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(
-                  NodeFlags.None, null, 0, SomeService, [], null, {emitter: 'someEventName'})
-            ],
-            null, null, handleEvent));
+        const {view, rootNodes} = createAndGetRootNodes(compViewDef([
+          elementDef(NodeFlags.None, null, null, 1, 'span', null, null, null, handleEvent),
+          directiveDef(
+              NodeFlags.None, null, 0, SomeService, [], null, {emitter: 'someEventName'})
+        ]));
 
         emitter.emit('someEventInstance');
-        expect(handleEvent).toHaveBeenCalledWith(view, 0, 'someEventName', 'someEventInstance');
+        expect(handleEvent).toHaveBeenCalledWith(view, 'someEventName', 'someEventInstance');
 
         Services.destroyView(view);
         expect(unsubscribeSpy).toHaveBeenCalled();
@@ -387,13 +385,13 @@ export function main() {
           emitter = emitter;
         }
 
-        const {view, rootNodes} = createAndGetRootNodes(compViewDef(
-            [
-              elementDef(NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(
-                  NodeFlags.None, null, 0, SomeService, [], null, {emitter: 'someEventName'})
-            ],
-            null, null, () => { throw new Error('Test'); }));
+        const {view, rootNodes} = createAndGetRootNodes(compViewDef([
+          elementDef(
+              NodeFlags.None, null, null, 1, 'span', null, null, null,
+              () => { throw new Error('Test'); }),
+          directiveDef(
+              NodeFlags.None, null, 0, SomeService, [], null, {emitter: 'someEventName'})
+        ]));
 
         let err: any;
         try {

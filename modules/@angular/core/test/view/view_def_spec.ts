@@ -232,7 +232,7 @@ export function main() {
         const vd = viewDef(ViewFlags.None, [
           elementDef(NodeFlags.None, null, null, 1, 'span'),
           anchorDef(
-              NodeFlags.None, null, null, 0,
+              NodeFlags.None, null, null, 0, null,
               () => viewDef(
                   ViewFlags.None,
                   [

@@ -23,7 +23,7 @@ const NOOP = (): any => undefined;
 
 export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
-    updateRenderer?: ViewUpdateFn, handleEvent?: ViewHandleEventFn): ViewDefinition {
+    updateRenderer?: ViewUpdateFn): ViewDefinition {
   // clone nodes and set auto calculated values
   if (nodes.length === 0) {
     throw new Error(`Illegal State: Views without nodes are not allowed!`);
@@ -131,6 +131,8 @@ export function viewDef(
     }
     currentParent = newParent;
   }
+  const handleEvent: ViewHandleEventFn = (view, nodeIndex, eventName, event) =>
+      nodes[nodeIndex].element.handleEvent(view, eventName, event);
   return {
     nodeFlags: viewNodeFlags,
     nodeMatchedQueries: viewMatchedQueries, flags,
@@ -142,6 +144,8 @@ export function viewDef(
     disposableCount: viewDisposableCount, lastRootNode
   };
 }
+
+
 
 function calculateReverseChildIndex(
     currentParent: NodeDef, i: number, childCount: number, nodeCount: number) {

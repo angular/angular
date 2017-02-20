@@ -205,12 +205,15 @@ export interface ElementDef {
    */
   allProviders: {[tokenKey: string]: NodeDef};
   source: string;
+  handleEvent: ElementHandleEventFn;
 }
 
 export interface ElementOutputDef {
   target: string;
   eventName: string;
 }
+
+export type ElementHandleEventFn = (view: ViewData, eventName: string, event: any) => boolean;
 
 export interface ProviderDef {
   type: ProviderType;

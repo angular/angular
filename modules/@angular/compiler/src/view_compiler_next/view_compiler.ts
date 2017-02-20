@@ -82,13 +82,6 @@ interface UpdateExpression {
   expressions: {context: o.Expression, value: AST}[];
 }
 
-interface HandleEventExpression {
-  nodeIndex: number;
-  context: o.Expression;
-  eventName: string;
-  expression: AST;
-}
-
 const VIEW_VAR = o.variable('view');
 const CHECK_VAR = o.variable('check');
 const COMP_VAR = o.variable('comp');
@@ -97,20 +90,25 @@ const EVENT_NAME_VAR = o.variable('eventName');
 const ALLOW_DEFAULT_VAR = o.variable(`allowDefault`);
 
 class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverterFactory {
-  private nodeDefs: o.Expression[] = [];
+  private compType: o.Type;
+  private nodeDefs: (() => o.Expression)[] = [];
   private purePipeNodeIndices: {[pipeName: string]: number} = {};
   private refNodeIndices: {[refName: string]: number} = {};
   private variables: VariableAst[] = [];
   private children: ViewBuilder[] = [];
   private updateDirectivesExpressions: UpdateExpression[] = [];
   private updateRendererExpressions: UpdateExpression[] = [];
-  private handleEventExpressions: HandleEventExpression[] = [];
 
   constructor(
       private parent: ViewBuilder, private component: CompileDirectiveMetadata,
       private embeddedViewIndex: number, private usedPipes: CompilePipeSummary[],
       private staticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>,
-      private viewBuilderFactory: ViewBuilderFactory) {}
+      private viewBuilderFactory: ViewBuilderFactory) {
+    // TODO(tbosch): The old view compiler used to use an `any` type
+    // for the context in any embedded view. We keep this behaivor for now
+    // to be able to introduce the new view compiler without too many errors.
+    this.compType = this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type);
+  }
 
   get viewName(): string {
     return viewClassName(this.component.type.reference, this.embeddedViewIndex);
@@ -140,7 +138,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         } else {
           flags |= viewEngine.NodeFlags.HasDynamicQuery;
         }
-        this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
+        this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
           o.literal(flags), o.literal(queryId),
           new o.LiteralMapExpr([new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
         ]));
@@ -151,59 +149,18 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         (this.parent && needsAdditionalRootNode(astNodes[astNodes.length - 1]))) {
       // if the view is empty, or an embedded view has a view container as last root nde,
       // create an additional root node.
-      this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
+      this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
         o.literal(viewEngine.NodeFlags.None), o.NULL_EXPR, o.NULL_EXPR, o.literal(0)
       ]));
     }
   }
 
   build(targetStatements: o.Statement[] = []): o.Statement[] {
-    // TODO(tbosch): The old view compiler used to use an `any` type
-    // for the context in any embedded view. We keep this behaivor for now
-    // to be able to introduce the new view compiler without too many errors.
-    const compType =
-        this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type);
     this.children.forEach((child) => child.build(targetStatements));
 
-    const updateDirectivesFn = this._createUpdateFn(this.updateDirectivesExpressions, compType);
-    const updateRendererFn = this._createUpdateFn(this.updateRendererExpressions, compType);
+    const updateDirectivesFn = this._createUpdateFn(this.updateDirectivesExpressions);
+    const updateRendererFn = this._createUpdateFn(this.updateRendererExpressions);
 
-    const handleEventStmts: o.Statement[] = [];
-    let handleEventBindingCount = 0;
-    this.handleEventExpressions.forEach(({expression, context, nodeIndex, eventName}) => {
-      const bindingId = `${handleEventBindingCount++}`;
-      const nameResolver = context === COMP_VAR ? this : null;
-      const {stmts, allowDefault} =
-          convertActionBinding(nameResolver, context, expression, bindingId);
-      const trueStmts = stmts;
-      if (allowDefault) {
-        trueStmts.push(ALLOW_DEFAULT_VAR.set(allowDefault.and(ALLOW_DEFAULT_VAR)).toStmt());
-      }
-      handleEventStmts.push(new o.IfStmt(
-          o.literal(nodeIndex)
-              .identical(NODE_INDEX_VAR)
-              .and(o.literal(eventName).identical(EVENT_NAME_VAR)),
-          trueStmts));
-    });
-    let handleEventFn: o.Expression;
-    if (handleEventStmts.length > 0) {
-      const preStmts: o.Statement[] =
-          [ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
-      if (!this.component.isHost) {
-        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType));
-      }
-      handleEventFn = o.fn(
-          [
-            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(NODE_INDEX_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(EVENT_NAME_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(EventHandlerVars.event.name, o.INFERRED_TYPE)
-          ],
-          [...preStmts, ...handleEventStmts, new o.ReturnStatement(ALLOW_DEFAULT_VAR)],
-          o.INFERRED_TYPE);
-    } else {
-      handleEventFn = o.NULL_EXPR;
-    }
 
     let viewFlags = viewEngine.ViewFlags.None;
     if (!this.parent && this.component.changeDetection === ChangeDetectionStrategy.OnPush) {
@@ -212,8 +169,10 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     const viewFactory = new o.DeclareFunctionStmt(
         this.viewName, [],
         [new o.ReturnStatement(o.importExpr(createIdentifier(Identifiers.viewDef)).callFn([
-          o.literal(viewFlags), o.literalArr(this.nodeDefs), updateDirectivesFn, updateRendererFn,
-          handleEventFn
+          o.literal(viewFlags),
+          o.literalArr(this.nodeDefs.map(nd => nd())),
+          updateDirectivesFn,
+          updateRendererFn,
         ]))],
         o.importType(createIdentifier(Identifiers.ViewDefinition)));
 
@@ -221,7 +180,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     return targetStatements;
   }
 
-  private _createUpdateFn(expressions: UpdateExpression[], compType: o.Type): o.Expression {
+  private _createUpdateFn(expressions: UpdateExpression[]): o.Expression {
     const updateStmts: o.Statement[] = [];
     let updateBindingCount = 0;
     expressions.forEach(({expressions, nodeIndex}) => {
@@ -239,7 +198,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     if (updateStmts.length > 0) {
       const preStmts: o.Statement[] = [];
       if (!this.component.isHost) {
-        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(compType));
+        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
       }
       updateFn = o.fn(
           [
@@ -255,14 +214,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
   visitNgContent(ast: NgContentAst, context: any): any {
     // ngContentDef(ngContentIndex: number, index: number): NodeDef;
-    this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.ngContentDef)).callFn([
+    this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.ngContentDef)).callFn([
       o.literal(ast.ngContentIndex), o.literal(ast.index)
     ]));
   }
 
   visitText(ast: TextAst, context: any): any {
     // textDef(ngContentIndex: number, constants: string[]): NodeDef;
-    this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
+    this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
       o.literal(ast.ngContentIndex), o.literalArr([o.literal(ast.value)])
     ]));
   }
@@ -280,7 +239,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         this.updateRendererExpressions);
 
     // textDef(ngContentIndex: number, constants: string[]): NodeDef;
-    this.nodeDefs[nodeIndex] = o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
+    this.nodeDefs[nodeIndex] = () => o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
       o.literal(ast.ngContentIndex), o.literalArr(inter.strings.map(s => o.literal(s)))
     ]);
   }
@@ -290,7 +249,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     // reserve the space in the nodeDefs array
     this.nodeDefs.push(null);
 
-    const {flags, queryMatchesExpr} = this._visitElementOrTemplate(nodeIndex, ast);
+    const {flags, queryMatchesExpr, hostEvents} = this._visitElementOrTemplate(nodeIndex, ast);
 
     const childVisitor = this.viewBuilderFactory(this);
     this.children.push(childVisitor);
@@ -300,11 +259,17 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
     // anchorDef(
     //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], ngContentIndex: number,
-    //   childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef;
-    this.nodeDefs[nodeIndex] = o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
-      o.literal(flags), queryMatchesExpr, o.literal(ast.ngContentIndex), o.literal(childCount),
-      o.variable(childVisitor.viewName)
+    //   childCount: number, handleEventFn?: ElementHandleEventFn, templateFactory?:
+    //   ViewDefinitionFactory): NodeDef;
+    const nodeDef = () => o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
+      o.literal(flags),
+      queryMatchesExpr,
+      o.literal(ast.ngContentIndex),
+      o.literal(childCount),
+      this._createElementHandleEventFn(nodeIndex, hostEvents),
+      o.variable(childVisitor.viewName),
     ]);
+    this.nodeDefs[nodeIndex] = nodeDef;
   }
 
   visitElement(ast: ElementAst, context: any): any {
@@ -318,7 +283,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       elName = null;
     }
 
-    let {flags, usedEvents, queryMatchesExpr, hostBindings} =
+    let {flags, usedEvents, queryMatchesExpr, hostBindings, hostEvents} =
         this._visitElementOrTemplate(nodeIndex, ast);
 
     let inputDefs: o.Expression[] = [];
@@ -349,13 +314,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     //       ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
     //         [BindingType.ElementAttribute | BindingType.ElementProperty, string,
     //         SecurityContext])[],
-    //   outputs?: (string | [string, string])[]): NodeDef;
-    this.nodeDefs[nodeIndex] = o.importExpr(createIdentifier(Identifiers.elementDef)).callFn([
+    //   outputs?: (string | [string, string])[], eventHandlerFn: ElementHandleEventFn): NodeDef;
+    const nodeDef = () => o.importExpr(createIdentifier(Identifiers.elementDef)).callFn([
       o.literal(flags), queryMatchesExpr, o.literal(ast.ngContentIndex), o.literal(childCount),
       o.literal(elName), elName ? fixedAttrsDef(ast) : o.NULL_EXPR,
       inputDefs.length ? o.literalArr(inputDefs) : o.NULL_EXPR,
-      outputDefs.length ? o.literalArr(outputDefs) : o.NULL_EXPR
+      outputDefs.length ? o.literalArr(outputDefs) : o.NULL_EXPR,
+      this._createElementHandleEventFn(nodeIndex, hostEvents)
     ]);
+
+    this.nodeDefs[nodeIndex] = nodeDef;
   }
 
   private _visitElementOrTemplate(nodeIndex: number, ast: {
@@ -370,6 +338,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     usedEvents: [string, string][],
     queryMatchesExpr: o.Expression,
     hostBindings: {value: AST, context: o.Expression}[],
+    hostEvents: {context: o.Expression, eventAst: BoundEventAst}[],
   } {
     let flags = viewEngine.NodeFlags.None;
     if (ast.hasViewContainer) {
@@ -441,18 +410,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     });
     ast.outputs.forEach(
         (outputAst) => { hostEvents.push({context: COMP_VAR, eventAst: outputAst}); });
-    hostEvents.forEach((hostEvent) => {
-      this._addHandleEventExpression(
-          nodeIndex, hostEvent.context,
-          viewEngine.elementEventFullName(hostEvent.eventAst.target, hostEvent.eventAst.name),
-          hostEvent.eventAst.handler);
-    });
 
     return {
       flags,
       usedEvents: Array.from(usedEvents.values()),
       queryMatchesExpr: queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       hostBindings,
+      hostEvents
     };
   }
 
@@ -477,7 +441,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       }
       const bindingType =
           query.first ? viewEngine.QueryBindingType.First : viewEngine.QueryBindingType.All;
-      this.nodeDefs.push(o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
+      this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
         o.literal(flags), o.literal(queryId),
         new o.LiteralMapExpr([new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
       ]));
@@ -548,7 +512,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     //   any,
     //   deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
     //   outputs?: {[name: string]: string}, component?: () => ViewDefinition): NodeDef;
-    const nodeDef = o.importExpr(createIdentifier(Identifiers.directiveDef)).callFn([
+    const nodeDef = () => o.importExpr(createIdentifier(Identifiers.directiveDef)).callFn([
       o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       o.literal(childCount), providerExpr, depsExpr,
       inputDefs.length ? new o.LiteralMapExpr(inputDefs) : o.NULL_EXPR,
@@ -571,7 +535,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], type: ProviderType, token:
     //   any,
     //   value: any, deps: ([DepFlags, any] | any)[]): NodeDef;
-    const nodeDef = o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
+    const nodeDef = () => o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
       o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       o.literal(providerType), tokenExpr(providerAst.token), providerExpr, depsExpr
     ]);
@@ -645,7 +609,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
     const nodeIndex = this.nodeDefs.length;
     // pureArrayDef(argCount: number): NodeDef;
-    const nodeDef =
+    const nodeDef = () =>
         o.importExpr(createIdentifier(Identifiers.pureArrayDef)).callFn([o.literal(argCount)]);
     this.nodeDefs.push(nodeDef);
 
@@ -659,8 +623,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 
     const nodeIndex = this.nodeDefs.length;
     // function pureObjectDef(propertyNames: string[]): NodeDef
-    const nodeDef = o.importExpr(createIdentifier(Identifiers.pureObjectDef)).callFn([o.literalArr(
-        keys.map(key => o.literal(key)))]);
+    const nodeDef = () =>
+        o.importExpr(createIdentifier(Identifiers.pureObjectDef)).callFn([o.literalArr(
+            keys.map(key => o.literal(key)))]);
     this.nodeDefs.push(nodeDef);
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
@@ -670,7 +635,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     if (pipe.pure) {
       const nodeIndex = this.nodeDefs.length;
       // function purePipeDef(argCount: number): NodeDef;
-      const nodeDef =
+      const nodeDef = () =>
           o.importExpr(createIdentifier(Identifiers.purePipeDef)).callFn([o.literal(argCount)]);
       this.nodeDefs.push(nodeDef);
 
@@ -716,7 +681,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     const depExprs = pipe.type.diDeps.map(depDef);
     // function pipeDef(
     //   flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef
-    const nodeDef = o.importExpr(createIdentifier(Identifiers.pipeDef)).callFn([
+    const nodeDef = () => o.importExpr(createIdentifier(Identifiers.pipeDef)).callFn([
       o.literal(flags), o.importExpr(pipe.type), o.literalArr(depExprs)
     ]);
     this.nodeDefs.push(nodeDef);
@@ -736,12 +701,44 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     target.push({nodeIndex, expressions: transformedExpressions});
   }
 
-  private _addHandleEventExpression(
-      nodeIndex: number, context: o.Expression, eventName: string, expression: AST) {
-    if (expression instanceof ASTWithSource) {
-      expression = expression.ast;
+  private _createElementHandleEventFn(
+      nodeIndex: number, handlers: {context: o.Expression, eventAst: BoundEventAst}[]) {
+    const handleEventStmts: o.Statement[] = [];
+    let handleEventBindingCount = 0;
+    handlers.forEach(({context, eventAst}) => {
+      const bindingId = `${handleEventBindingCount++}`;
+      const nameResolver = context === COMP_VAR ? this : null;
+      const expression =
+          eventAst.handler instanceof ASTWithSource ? eventAst.handler.ast : eventAst.handler;
+      const {stmts, allowDefault} =
+          convertActionBinding(nameResolver, context, expression, bindingId);
+      const trueStmts = stmts;
+      if (allowDefault) {
+        trueStmts.push(ALLOW_DEFAULT_VAR.set(allowDefault.and(ALLOW_DEFAULT_VAR)).toStmt());
+      }
+      const fullEventName = viewEngine.elementEventFullName(eventAst.target, eventAst.name);
+      handleEventStmts.push(
+          new o.IfStmt(o.literal(fullEventName).identical(EVENT_NAME_VAR), trueStmts));
+    });
+    let handleEventFn: o.Expression;
+    if (handleEventStmts.length > 0) {
+      const preStmts: o.Statement[] =
+          [ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
+      if (!this.component.isHost) {
+        preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
+      }
+      handleEventFn = o.fn(
+          [
+            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(EVENT_NAME_VAR.name, o.INFERRED_TYPE),
+            new o.FnParam(EventHandlerVars.event.name, o.INFERRED_TYPE)
+          ],
+          [...preStmts, ...handleEventStmts, new o.ReturnStatement(ALLOW_DEFAULT_VAR)],
+          o.INFERRED_TYPE);
+    } else {
+      handleEventFn = o.NULL_EXPR;
     }
-    this.handleEventExpressions.push({nodeIndex, context, eventName, expression});
+    return handleEventFn;
   }
 
   visitDirective(ast: DirectiveAst, context: {usedEvents: Set<string>}): any {}
