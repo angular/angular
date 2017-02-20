@@ -25,7 +25,11 @@ export class ServerRootRenderer implements RootRenderer {
   constructor(
       @Inject(DOCUMENT) public document: any, public sharedStylesHost: SharedStylesHost,
       public animationDriver: AnimationDriver, @Inject(APP_ID) public appId: string,
-      private _zone: NgZone) {}
+      private _zone: NgZone) {
+    throw new Error(
+        'RootRenderer is no longer supported. Please use the `RendererFactoryV2` instead!');
+  }
+
   renderComponent(componentProto: RenderComponentType): Renderer {
     let renderer = this.registeredComponents.get(componentProto.id);
     if (!renderer) {

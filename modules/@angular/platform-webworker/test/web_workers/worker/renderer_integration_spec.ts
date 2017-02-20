@@ -56,7 +56,8 @@ export function main() {
     return new DebugDomRootRenderer(workerRootRenderer);
   }
 
-  describe('Web Worker Renderer', () => {
+  // TODO(tbosch): delete the tests here as they use the old renderer.
+  xdescribe('Web Worker Renderer', () => {
     // Don't run on server...
     if (!getDOM().supportsDOMEvents()) return;
 
