@@ -37,7 +37,7 @@ export function viewDef(
   let currentParent: NodeDef = null;
   let currentElementHasPublicProviders = false;
   let currentElementHasPrivateProviders = false;
-  let lastRootNode: NodeDef = null;
+  let lastRenderRootNode: NodeDef = null;
   for (let i = 0; i < nodes.length; i++) {
     while (currentParent && i > currentParent.index + currentParent.childCount) {
       const newParent = currentParent.parent;
@@ -92,8 +92,8 @@ export function viewDef(
     viewBindingCount += node.bindings.length;
     viewDisposableCount += node.disposableCount;
 
-    if (!currentRenderParent) {
-      lastRootNode = node;
+    if (!currentRenderParent && (node.type === NodeType.Element || node.type === NodeType.Text)) {
+      lastRenderRootNode = node;
     }
     if (node.type === NodeType.Provider || node.type === NodeType.Directive) {
       if (!currentElementHasPublicProviders) {
@@ -141,7 +141,7 @@ export function viewDef(
     updateRenderer: updateRenderer || NOOP,
     handleEvent: handleEvent || NOOP,
     bindingCount: viewBindingCount,
-    disposableCount: viewDisposableCount, lastRootNode
+    disposableCount: viewDisposableCount, lastRenderRootNode
   };
 }
 
@@ -189,7 +189,8 @@ function calculateReverseChildIndex(
 function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
   const template = node.element && node.element.template;
   if (template) {
-    if (template.lastRootNode && template.lastRootNode.flags & NodeFlags.HasEmbeddedViews) {
+    if (template.lastRenderRootNode &&
+        template.lastRenderRootNode.flags & NodeFlags.HasEmbeddedViews) {
       throw new Error(
           `Illegal State: Last root node of a template can't have embedded views, at index ${node.index}!`);
     }
@@ -476,6 +477,9 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
 }
 
 export function destroyView(view: ViewData) {
+  if (view.state & ViewState.Destroyed) {
+    return;
+  }
   execEmbeddedViewsAction(view, ViewAction.Destroy);
   execComponentViewsAction(view, ViewAction.Destroy);
   callLifecycleHooksChildrenFirst(view, NodeFlags.OnDestroy);
