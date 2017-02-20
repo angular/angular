@@ -18,8 +18,8 @@ export function main() {
   describe(`Query Views`, () => {
     function compViewDef(
         nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
-        handleEvent?: ViewHandleEventFn, viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer, handleEvent);
+        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
     }
 
     function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinitionFactory {
@@ -145,7 +145,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 5, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 2, embeddedViewDef([
+          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 2, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -171,7 +171,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
+          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -200,7 +200,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
+          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -227,7 +227,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div'),
           ...viewQueryProviders([
-            anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
+            anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
                         elementDef(NodeFlags.None, null, null, 1, 'div'),
                         aServiceProvider(),
                       ])),
@@ -328,7 +328,7 @@ export function main() {
 
         const {view} = createAndGetRootNodes(compViewDef([
           anchorDef(
-              NodeFlags.None, [[someQueryId, QueryValueType.TemplateRef]], null, 2,
+              NodeFlags.None, [[someQueryId, QueryValueType.TemplateRef]], null, 2, null,
               embeddedViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
@@ -367,7 +367,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, embeddedViewDef([
+          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
