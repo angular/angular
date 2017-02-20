@@ -9,12 +9,18 @@
 import {isDevMode} from '../application_ref';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData} from './types';
+import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, ElementOutputDef, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData} from './types';
 import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl, splitNamespace} from './util';
+
+const NOOP: any = () => {};
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    ngContentIndex: number, childCount: number, templateFactory?: ViewDefinitionFactory): NodeDef {
+    ngContentIndex: number, childCount: number, handleEvent?: ElementHandleEventFn,
+    templateFactory?: ViewDefinitionFactory): NodeDef {
+  if (!handleEvent) {
+    handleEvent = NOOP;
+  }
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
@@ -43,7 +49,7 @@ export function anchorDef(
       // will bet set by the view definition
       component: undefined,
       publicProviders: undefined,
-      allProviders: undefined,
+      allProviders: undefined, handleEvent
     },
     provider: undefined,
     text: undefined,
@@ -60,7 +66,10 @@ export function elementDef(
     bindings?:
         ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
          [BindingType.ElementAttribute | BindingType.ElementProperty, string, SecurityContext])[],
-    outputs?: (string | [string, string])[]): NodeDef {
+    outputs?: (string | [string, string])[], handleEvent?: ElementHandleEventFn): NodeDef {
+  if (!handleEvent) {
+    handleEvent = NOOP;
+  }
   // skip the call to sliceErrorStack itself + the call to this function.
   const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
@@ -131,7 +140,7 @@ export function elementDef(
       // will bet set by the view definition
       component: undefined,
       publicProviders: undefined,
-      allProviders: undefined,
+      allProviders: undefined, handleEvent,
     },
     provider: undefined,
     text: undefined,
