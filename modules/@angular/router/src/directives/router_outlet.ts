@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
 
 import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
@@ -42,13 +42,14 @@ export class RouterOutlet implements OnDestroy {
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
+  @Input() name: string;
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
-    parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
+      private resolver: ComponentFactoryResolver) {
+    parentOutletMap.registerOutlet(this.name ? this.name : PRIMARY_OUTLET, this);
   }
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
