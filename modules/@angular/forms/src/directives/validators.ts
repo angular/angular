@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
@@ -30,6 +31,30 @@ import {NG_VALIDATORS, Validators} from '../validators';
  */
 export interface Validator {
   validate(c: AbstractControl): {[key: string]: any};
+  registerOnValidatorChange?(fn: () => void): void;
+}
+
+/**
+ * An interface that can be implemented by classes that can act as AsyncValidators.
+ *
+ * ## Usage
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[custom-async-validator]',
+ *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi: true}]
+ * })
+ * class CustomAsyncValidatorDirective implements AsyncValidator {
+ *   validate(c: Control): Observable<{[key: string]: any}> {
+ *    return Observable.of({custom: true});
+ *   }
+ * }
+ * ```
+ *
+ * @stable
+ */
+export interface AsyncValidator {
+  validate(c: AbstractControl): Promise<{[key: string]: any}> | Observable<{[key: string]: any}>;
   registerOnValidatorChange?(fn: () => void): void;
 }
 
@@ -159,7 +184,7 @@ export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
  * @stable
  */
 export interface AsyncValidatorFn {
-  (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
+  (c: AbstractControl): Promise<{[key: string]: any}>|Observable<{[key: string]: any}>;
 }
 
 /**
