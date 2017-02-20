@@ -199,29 +199,17 @@ function renderEventHandlerClosure(view: ViewData, index: number, eventName: str
 export function checkAndUpdateElementInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
     v7: any, v8: any, v9: any) {
-  // Note: fallthrough is intended!
-  switch (def.bindings.length) {
-    case 10:
-      checkAndUpdateElementValue(view, def, 9, v9);
-    case 9:
-      checkAndUpdateElementValue(view, def, 8, v8);
-    case 8:
-      checkAndUpdateElementValue(view, def, 7, v7);
-    case 7:
-      checkAndUpdateElementValue(view, def, 6, v6);
-    case 6:
-      checkAndUpdateElementValue(view, def, 5, v5);
-    case 5:
-      checkAndUpdateElementValue(view, def, 4, v4);
-    case 4:
-      checkAndUpdateElementValue(view, def, 3, v3);
-    case 3:
-      checkAndUpdateElementValue(view, def, 2, v2);
-    case 2:
-      checkAndUpdateElementValue(view, def, 1, v1);
-    case 1:
-      checkAndUpdateElementValue(view, def, 0, v0);
-  }
+  const bindLen = def.bindings.length;
+  if (bindLen > 0) checkAndUpdateElementValue(view, def, 0, v0);
+  if (bindLen > 1) checkAndUpdateElementValue(view, def, 1, v1);
+  if (bindLen > 2) checkAndUpdateElementValue(view, def, 2, v2);
+  if (bindLen > 3) checkAndUpdateElementValue(view, def, 3, v3);
+  if (bindLen > 4) checkAndUpdateElementValue(view, def, 4, v4);
+  if (bindLen > 5) checkAndUpdateElementValue(view, def, 5, v5);
+  if (bindLen > 6) checkAndUpdateElementValue(view, def, 6, v6);
+  if (bindLen > 7) checkAndUpdateElementValue(view, def, 7, v7);
+  if (bindLen > 8) checkAndUpdateElementValue(view, def, 8, v8);
+  if (bindLen > 9) checkAndUpdateElementValue(view, def, 9, v9);
 }
 
 export function checkAndUpdateElementDynamic(view: ViewData, def: NodeDef, values: any[]) {
