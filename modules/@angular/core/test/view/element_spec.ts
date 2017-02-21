@@ -8,7 +8,7 @@
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {ArgumentType, BindingType, DebugContext, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingType, DebugContext, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, removeNodes} from './helper';
@@ -190,7 +190,8 @@ export function main() {
           const removeListenerSpy =
               spyOn(HTMLElement.prototype, 'removeEventListener').and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, ['click'], handleEventSpy)]));
+              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
+              handleEventSpy)]));
 
           rootNodes[0].click();
 
@@ -256,7 +257,7 @@ export function main() {
           let preventDefaultSpy: jasmine.Spy;
 
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, ['click'],
+              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
               (view, eventName, event) => {
                 preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
                 return eventHandlerResult;
@@ -281,10 +282,9 @@ export function main() {
 
         it('should report debug info on event errors', () => {
           const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
-          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef(
-              [elementDef(NodeFlags.None, null, null, 0, 'button', null, null, ['click'], () => {
-                throw new Error('Test');
-              })]));
+          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
+              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
+              () => { throw new Error('Test'); })]));
 
           let err: any;
           try {

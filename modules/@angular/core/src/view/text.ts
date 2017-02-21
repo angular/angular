@@ -34,7 +34,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
-    disposableIndex: undefined,
+    outputIndex: undefined,
     // regular values
     flags: 0,
     childFlags: 0,
@@ -43,7 +43,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     matchedQueryIds: 0,
     references: {}, ngContentIndex,
     childCount: 0, bindings,
-    disposableCount: 0,
+    outputs: [],
     element: undefined,
     provider: undefined,
     text: {prefix: constants[0], source},

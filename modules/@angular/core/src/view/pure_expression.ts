@@ -43,7 +43,7 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
-    disposableIndex: undefined,
+    outputIndex: undefined,
     // regular values
     flags: 0,
     childFlags: 0,
@@ -53,7 +53,7 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     references: {},
     ngContentIndex: undefined,
     childCount: 0, bindings,
-    disposableCount: 0,
+    outputs: [],
     element: undefined,
     provider: undefined,
     text: undefined,

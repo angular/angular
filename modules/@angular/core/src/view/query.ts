@@ -31,7 +31,7 @@ export function queryDef(
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
-    disposableIndex: undefined,
+    outputIndex: undefined,
     // regular values
     flags,
     childFlags: 0,
@@ -42,7 +42,7 @@ export function queryDef(
     references: {},
     childCount: 0,
     bindings: [],
-    disposableCount: 0,
+    outputs: [],
     element: undefined,
     provider: undefined,
     text: undefined,

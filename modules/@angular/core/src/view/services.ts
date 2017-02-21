@@ -205,6 +205,7 @@ function debugCheckFn(
         const binding = nodeDef.bindings[i];
         const value = values[i];
         if ((binding.type === BindingType.ElementProperty ||
+             binding.type === BindingType.ComponentHostProperty ||
              binding.type === BindingType.DirectiveProperty) &&
             checkBinding(view, nodeDef, i, value)) {
           bindingValues[normalizeDebugBindingName(binding.nonMinifiedName)] =
@@ -273,7 +274,6 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
-  private compProviderDef: NodeDef;
   constructor(public view: ViewData, public nodeIndex: number) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
@@ -292,21 +292,14 @@ class DebugContext_ implements DebugContext {
     }
     this.elDef = elDef;
     this.elView = elView;
-    this.compProviderDef = elView ? this.elDef.element.component : null;
+  }
+  private get elOrCompView() {
+    // Has to be done lazily as we use the DebugContext also during creation of elements...
+    return asElementData(this.elView, this.elDef.index).componentView || this.view;
   }
   get injector(): Injector { return createInjector(this.elView, this.elDef); }
-  get component(): any {
-    if (this.compProviderDef) {
-      return asProviderData(this.elView, this.compProviderDef.index).instance;
-    }
-    return this.view.component;
-  }
-  get context(): any {
-    if (this.compProviderDef) {
-      return asProviderData(this.elView, this.compProviderDef.index).instance;
-    }
-    return this.view.context;
-  }
+  get component(): any { return this.elOrCompView.component; }
+  get context(): any { return this.elOrCompView.context; }
   get providerTokens(): any[] {
     const tokens: any[] = [];
     if (this.elDef) {
@@ -343,10 +336,7 @@ class DebugContext_ implements DebugContext {
     }
   }
   get componentRenderElement() {
-    const view = this.compProviderDef ?
-        asProviderData(this.elView, this.compProviderDef.index).componentView :
-        this.view;
-    const elData = findHostElement(view);
+    const elData = findHostElement(this.elOrCompView);
     return elData ? elData.renderElement : undefined;
   }
   get renderNode(): any {

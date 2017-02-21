@@ -40,7 +40,7 @@ export interface ViewDefinition {
   reverseChildNodes: NodeDef[];
   lastRenderRootNode: NodeDef;
   bindingCount: number;
-  disposableCount: number;
+  outputCount: number;
   /**
    * Binary or of all query ids that are matched by one of the nodes.
    * This includes query ids from templates as well.
@@ -99,8 +99,8 @@ export interface NodeDef {
 
   bindingIndex: number;
   bindings: BindingDef[];
-  disposableIndex: number;
-  disposableCount: number;
+  outputIndex: number;
+  outputs: OutputDef[];
   /**
    * references that the user placed on the element
    */
@@ -151,12 +151,13 @@ export enum NodeFlags {
   AfterViewChecked = 1 << 7,
   HasEmbeddedViews = 1 << 8,
   HasComponent = 1 << 9,
-  HasContentQuery = 1 << 10,
-  HasStaticQuery = 1 << 11,
-  HasDynamicQuery = 1 << 12,
-  HasViewQuery = 1 << 13,
-  LazyProvider = 1 << 14,
-  PrivateProvider = 1 << 15,
+  IsComponent = 1 << 10,
+  HasContentQuery = 1 << 11,
+  HasStaticQuery = 1 << 12,
+  HasDynamicQuery = 1 << 13,
+  HasViewQuery = 1 << 14,
+  LazyProvider = 1 << 15,
+  PrivateProvider = 1 << 16,
 }
 
 export interface BindingDef {
@@ -173,9 +174,22 @@ export enum BindingType {
   ElementClass,
   ElementStyle,
   ElementProperty,
+  ComponentHostProperty,
   DirectiveProperty,
   TextInterpolation,
   PureExpressionProperty
+}
+
+export interface OutputDef {
+  type: OutputType;
+  target: 'window'|'document'|'body'|'component';
+  eventName: string;
+  propName: string;
+}
+
+export enum OutputType {
+  ElementOutput,
+  DirectiveOutput
 }
 
 export enum QueryValueType {
@@ -191,9 +205,11 @@ export interface ElementDef {
   ns: string;
   /** ns, name, value */
   attrs: [string, string, string][];
-  outputs: ElementOutputDef[];
   template: ViewDefinition;
-  component: NodeDef;
+  componentProvider: NodeDef;
+  componentRendererType: RendererTypeV2;
+  // closure to allow recursive components
+  componentView: ViewDefinitionFactory;
   /**
    * visible public providers for DI in the view,
    * as see from this element. This does not include private providers.
@@ -208,11 +224,6 @@ export interface ElementDef {
   handleEvent: ElementHandleEventFn;
 }
 
-export interface ElementOutputDef {
-  target: string;
-  eventName: string;
-}
-
 export type ElementHandleEventFn = (view: ViewData, eventName: string, event: any) => boolean;
 
 export interface ProviderDef {
@@ -221,10 +232,6 @@ export interface ProviderDef {
   tokenKey: string;
   value: any;
   deps: DepDef[];
-  outputs: DirectiveOutputDef[];
-  rendererType: RendererTypeV2;
-  // closure to allow recursive components
-  component: ViewDefinitionFactory;
 }
 
 export enum ProviderType {
@@ -248,11 +255,6 @@ export enum DepFlags {
   SkipSelf = 1 << 0,
   Optional = 1 << 1,
   Value = 2 << 2,
-}
-
-export interface DirectiveOutputDef {
-  propName: string;
-  eventName: string;
 }
 
 export interface TextDef {
@@ -369,6 +371,7 @@ export function asTextData(view: ViewData, index: number): TextData {
  */
 export interface ElementData {
   renderElement: any;
+  componentView: ViewData;
   embeddedViews: ViewData[];
   // views that have been created from the template
   // of this element,
@@ -389,10 +392,7 @@ export function asElementData(view: ViewData, index: number): ElementData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface ProviderData {
-  instance: any;
-  componentView: ViewData;
-}
+export interface ProviderData { instance: any; }
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
