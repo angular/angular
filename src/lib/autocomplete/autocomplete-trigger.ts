@@ -153,15 +153,15 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
    */
   get panelClosingActions(): Observable<MdOptionSelectEvent> {
     return Observable.merge(
-        ...this.optionSelections,
+        this.optionSelections,
         this._blurStream.asObservable(),
         this._keyManager.tabOut
     );
   }
 
   /** Stream of autocomplete option selections. */
-  get optionSelections(): Observable<MdOptionSelectEvent>[] {
-    return this.autocomplete.options.map(option => option.onSelect);
+  get optionSelections(): Observable<MdOptionSelectEvent> {
+    return Observable.merge(...this.autocomplete.options.map(option => option.onSelect));
   }
 
   /** The currently active option, coerced to MdOption type. */
