@@ -263,6 +263,15 @@ export function main() {
              tick();
            }));
 
+        it(`should not fire an event when value hasn't changed`, fakeAsync(() => {
+             form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+             g.valueChanges.subscribe(() => { throw 'Should not happen'; });
+             c.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+             g.setValue({one: '', two: ''}, {notEqual: true});
+             tick();
+           }));
+
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           g.statusChanges.subscribe(() => logger.push('group'));
@@ -374,6 +383,15 @@ export function main() {
              c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
 
              g.patchValue({'one': 'one', 'two': 'two'}, {emitEvent: false});
+             tick();
+           }));
+
+        it(`should not fire an event when value hasn't changed`, fakeAsync(() => {
+             form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+             g.valueChanges.subscribe(() => { throw 'Should not happen'; });
+             c.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+             g.patchValue({one: '', two: ''}, {notEqual: true});
              tick();
            }));
 
