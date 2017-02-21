@@ -106,6 +106,15 @@ export class MdSnackBar {
   }
 
   /**
+   * Dismisses the currently-visible snack bar.
+   */
+  dismiss(): void {
+    if (this._openedSnackBarRef) {
+      this._openedSnackBarRef.dismiss();
+    }
+  }
+
+  /**
    * Attaches the snack bar container component to the overlay.
    */
   private _attachSnackBarContainer(overlayRef: OverlayRef,

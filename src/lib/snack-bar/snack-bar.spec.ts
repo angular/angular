@@ -150,6 +150,19 @@ describe('MdSnackBar', () => {
     });
   }));
 
+  it('should be able to get dismissed through the service', async(() => {
+    snackBar.open(simpleMessage);
+    viewContainerFixture.detectChanges();
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
+
+    snackBar.dismiss();
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(overlayContainerElement.childElementCount).toBe(0);
+    });
+  }));
+
   it('should clean itself up when the view container gets destroyed', async(() => {
     snackBar.open(simpleMessage, null, { viewContainerRef: testViewContainerRef });
     viewContainerFixture.detectChanges();
