@@ -28,7 +28,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/platform-browser"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform-browser"
   }
 }
