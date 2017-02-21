@@ -1,3 +1,4 @@
+const {extname} = require('canonical-path');
 const {mapObject} = require('../utils');
 
 module.exports = function collectExamples(exampleMap, regionParser, log, createDocMessage) {
@@ -19,7 +20,16 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
                 exampleMap[folder] = exampleMap[folder] || {};
                 exampleMap[folder][relativePath] = doc;
 
-                const parsedRegions = regionParser(doc.content, doc.fileInfo.extension);
+                // We treat files that end in `.annotated` specially
+                // They are used to annotate files that cannot contain comments, such as JSON
+                // So you provide two files: `xyz.json` and `xyz.json.annotated`, which is a copy
+                // of the original but contains inline doc region comments
+                let fileType = doc.fileInfo.extension;
+                if (fileType === 'annotated') {
+                  fileType = extname(doc.fileInfo.baseName).substr(1) + '.' + fileType;
+                }
+
+                const parsedRegions = regionParser(doc.content, fileType);
 
                 log.debug(
                     'found example file', folder, relativePath, Object.keys(parsedRegions.regions));
