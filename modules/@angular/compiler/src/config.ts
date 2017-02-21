@@ -46,7 +46,7 @@ export class CompilerConfig {
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
     this.missingTranslation = missingTranslation;
-    this.useViewEngine = useViewEngine;
+    this.useViewEngine = true;
   }
 
   get genDebugInfo(): boolean {
