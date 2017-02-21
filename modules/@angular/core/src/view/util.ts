@@ -172,10 +172,10 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
   let renderParent = def.renderParent;
   if (renderParent) {
     const parent = def.parent;
-    if (parent && (parent.type !== NodeType.Element || !parent.element.component ||
-                   (parent.element.component.provider.rendererType &&
-                    parent.element.component.provider.rendererType.encapsulation ===
-                        ViewEncapsulation.Native))) {
+    if (parent &&
+        (parent.type !== NodeType.Element || (parent.flags & NodeFlags.HasComponent) === 0 ||
+         (parent.element.componentRendererType &&
+          parent.element.componentRendererType.encapsulation === ViewEncapsulation.Native))) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
       return asElementData(view, def.renderParent.index).renderElement;
