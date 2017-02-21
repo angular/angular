@@ -7,6 +7,9 @@ export declare abstract class AnimationDriver {
 /** @stable */
 export declare class BrowserModule {
     constructor(parentModule: BrowserModule);
+    /** @experimental */ static withServerTransition(params: {
+        appId: string;
+    }): ModuleWithProviders;
 }
 
 /** @experimental */
