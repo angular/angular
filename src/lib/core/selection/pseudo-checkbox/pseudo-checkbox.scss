@@ -29,6 +29,10 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
     border-bottom: $mat-checkbox-border-width solid currentColor;
     transition: opacity $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
   }
+
+  &.mat-pseudo-checkbox-checked, &.mat-pseudo-checkbox-indeterminate {
+    border: none;
+  }
 }
 
 .mat-pseudo-checkbox-disabled {

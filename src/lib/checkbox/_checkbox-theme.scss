@@ -9,9 +9,6 @@
   $background: map-get($theme, background);
 
 
-  // The color of the checkbox border.
-  $checkbox-border-color: if($is-dark-theme, rgba(white, 0.7), rgba(black, 0.54)) !default;
-
   // The color of the checkbox's checkmark / mixedmark.
   $checkbox-mark-color: mat-color($background, background);
 
@@ -23,7 +20,7 @@
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
 
   .mat-checkbox-frame {
-    border-color: $checkbox-border-color;
+    border-color: mat-color(map-get($theme, foreground), secondary-text);
   }
 
   .mat-checkbox-checkmark {
