@@ -89,7 +89,7 @@ module.exports =
           readFilesProcessor.sourceFiles = [
             {
               basePath: CONTENTS_PATH,
-              include: CONTENTS_PATH + '/cookbook/**/*.md',
+              include: CONTENTS_PATH + '/{cookbook,guide,tutorial}/**/*.md',
               fileReader: 'contentFileReader'
             },
             {basePath: CONTENTS_PATH, include: CONTENTS_PATH + '/cheatsheet/*.md'},
