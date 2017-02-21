@@ -222,7 +222,6 @@ export class AotCompiler {
       directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet,
       fileSuffix: string,
       targetStatements: o.Statement[]): {viewClassVar: string, compRenderTypeVar: string} {
-    const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const directives =
         directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = ngModule.transitiveModule.pipes.map(
@@ -232,15 +231,12 @@ export class AotCompiler {
         compMeta, compMeta.template.template, directives, pipes, ngModule.schemas,
         identifierName(compMeta.type));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
-    const compiledAnimations =
-        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
-    const viewResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, stylesExpr, usedPipes, compiledAnimations);
+    const viewResult =
+        this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes, null);
     if (componentStyles) {
       targetStatements.push(
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));
     }
-    compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
     targetStatements.push(...viewResult.statements);
     return {viewClassVar: viewResult.viewClassVar, compRenderTypeVar: viewResult.rendererTypeVar};
   }
