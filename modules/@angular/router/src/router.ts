@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type, isDevMode} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, Inject, InjectionToken, Injector, NgModuleFactoryLoader, Optional, ReflectiveInjector, Type, isDevMode} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -27,18 +27,57 @@ import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {getDOM} from './private_import_platform-browser';
 import {recognize} from './recognize';
 import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
-import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
+import {LoadedRouterConfig, ROUTES, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
-import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservables, flatten, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 declare let Zone: any;
+
+/**
+ * @whatItDoes Is used in DI to configure the router.
+ * @stable
+ */
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
+
+/**
+ * @whatItDoes Represents options to configure the router.
+ *
+ * @stable
+ */
+export interface ExtraOptions {
+  /**
+   * Makes the router log all its internal events to the console.
+   */
+  enableTracing?: boolean;
+
+  /**
+   * Enables the location strategy that uses the URL fragment instead of the history API.
+   */
+  useHash?: boolean;
+
+  /**
+   * Disables the initial navigation.
+   */
+  initialNavigation?: boolean;
+
+  /**
+   * A custom error handler.
+   */
+  errorHandler?: ErrorHandler;
+
+  /**
+   * Configures a preloading strategy. See {@link PreloadAllModules}.
+   */
+  preloadingStrategy?: any;
+}
 
 /**
  * @whatItDoes Represents the extra options used during navigation.
@@ -214,6 +253,9 @@ export class Router {
   private locationSubscription: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
+  private rootComponentType: Type<any>;
+
+  config: Routes;
 
   /**
    * Error handler that is invoked when a navigation errors.
@@ -239,16 +281,38 @@ export class Router {
    */
   // TODO: vsavkin make internal after the final is out.
   constructor(
-      private rootComponentType: Type<any>, private urlSerializer: UrlSerializer,
-      private outletMap: RouterOutletMap, private location: Location, private injector: Injector,
-      loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
+      private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
+      private location: Location, private injector: Injector, loader: NgModuleFactoryLoader,
+      compiler: Compiler, @Inject(ROUTES) routes: Routes[],
+      @Inject(ROUTER_CONFIGURATION) opts: any /* ExtraOptions */,
+      @Optional() urlHandlingStrategy?: UrlHandlingStrategy,
+      @Optional() routeReuseStrategy?: RouteReuseStrategy) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
 
-    this.resetConfig(config);
+    this.resetConfig(flatten(routes));
+    if (urlHandlingStrategy) {
+      this.urlHandlingStrategy = urlHandlingStrategy;
+    }
+    if (routeReuseStrategy) {
+      this.routeReuseStrategy = routeReuseStrategy;
+    }
+
+    if (opts.errorHandler) {
+      this.errorHandler = opts.errorHandler;
+    }
+    if (opts.enableTracing) {
+      const dom = getDOM();
+      this.events.subscribe(e => {
+        dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
+        dom.log(e.toString());
+        dom.log(e);
+        dom.logGroupEnd();
+      });
+    }
+
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
-
     this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
     this.processNavigations();
