@@ -106,7 +106,7 @@ function regionParserImpl(contents, fileType) {
 }
 
 function getRegionNames(input) {
-  return input.split(',').map(name => name.trim()).filter(name => name.length > 0);
+  return (input.trim() === '') ? [] : input.split(',').map(name => name.trim());
 }
 
 function removeLast(array, item) {
