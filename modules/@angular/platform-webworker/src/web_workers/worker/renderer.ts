@@ -140,13 +140,20 @@ export class WebWorkerRenderer implements Renderer {
     return node;
   }
 
-  createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
+  createElement(
+      parentElement: any, name: string, debugInfo?: RenderDebugInfo,
+      attrs?: Map<string, string>): any {
     const node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
       new FnArg(parentElement, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(name),
       new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
+    if (attrs) {
+      attrs.forEach(
+          (attrValue: string, attrName: string) =>
+              this.setElementAttribute(node, attrName, attrValue));
+    }
     return node;
   }
 

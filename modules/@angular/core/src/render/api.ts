@@ -46,7 +46,9 @@ export interface DirectRenderer {
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
 
-  abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
+  abstract createElement(
+      parentElement: any, name: string, debugInfo?: RenderDebugInfo,
+      attrs?: Map<string, string>): any;
 
   abstract createViewRoot(hostElement: any): any;
 

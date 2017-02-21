@@ -32,11 +32,18 @@ export class DebugDomRenderer implements Renderer {
     return nativeEl;
   }
 
-  createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
+  createElement(
+      parentElement: any, name: string, debugInfo?: RenderDebugInfo,
+      attrs?: Map<string, string>): any {
     const nativeEl = this._delegate.createElement(parentElement, name, debugInfo);
     const debugEl = new DebugElement(nativeEl, getDebugNode(parentElement), debugInfo);
     debugEl.name = name;
     indexDebugNode(debugEl);
+    if (attrs) {
+      attrs.forEach(
+          (attrValue: string, attrName: string) =>
+              this.setElementAttribute(nativeEl, attrName, attrValue));
+    }
     return nativeEl;
   }
 
