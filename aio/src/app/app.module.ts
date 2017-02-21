@@ -26,11 +26,11 @@ import { MenuComponent } from './sidenav/menu.component';
   imports: [
     BrowserModule,
     HttpModule,
-    MdButtonModule.forRoot(),
-    MdIconModule.forRoot(),
-    MdInputModule.forRoot(),
-    MdToolbarModule.forRoot(),
-    MdSidenavModule.forRoot()
+    MdButtonModule,
+    MdIconModule,
+    MdInputModule,
+    MdToolbarModule,
+    MdSidenavModule
   ],
   declarations: [
     AppComponent,
