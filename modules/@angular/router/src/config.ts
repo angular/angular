@@ -8,11 +8,8 @@
 
 import {NgModuleFactory, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
-
 
 /**
  * @whatItDoes Represents router configuration.
@@ -38,9 +35,6 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `data` is additional data provided to the component via `ActivatedRoute`.
  * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
  *   info.
- * - `runGuardsAndResolvers` defines when guards and resovlers will be run. By default they run only
- *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
- *    will also run when query params change. And when set to `always`, they will run every time.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See {@link LoadChildren} for more
  *   info.
@@ -334,13 +328,6 @@ export type LoadChildren = string | LoadChildrenCallback;
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
- * @whatItDoes The type of `runGuardsAndResolvers`.
- * See {@link Routes} for more details.
- * @experimental
- */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
-
-/**
  * See {@link Routes} for more details.
  * @stable
  */
@@ -359,7 +346,6 @@ export interface Route {
   resolve?: ResolveData;
   children?: Routes;
   loadChildren?: LoadChildren;
-  runGuardsAndResolvers?: RunGuardsAndResolvers;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
@@ -376,8 +362,8 @@ function validateNode(route: Route, fullPath: string): void {
     throw new Error(`
       Invalid configuration of route '${fullPath}': Encountered undefined route.
       The reason might be an extra comma.
-
-      Example:
+       
+      Example: 
       const routes: Routes = [
         { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
         { path: 'dashboard',  component: DashboardComponent },, << two commas

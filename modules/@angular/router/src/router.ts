@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
+import {QueryParamsHandling, ResolveData, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -35,7 +35,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
-import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 declare let Zone: any;
@@ -179,6 +179,7 @@ type NavigationParams = {
   promise: Promise<boolean>,
   source: NavigationSource,
 };
+
 
 /**
  * Does not detach any subtrees. Reuses routes as long as their route config is the same.
@@ -798,8 +799,7 @@ export class PreActivation {
 
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
-      if (this.shouldRunGuardsAndResolvers(
-              curr, future, future._routeConfig.runGuardsAndResolvers)) {
+      if (!equalParamsAndUrlSegments(future, curr)) {
         this.checks.push(new CanDeactivate(outlet.component, curr), new CanActivate(futurePath));
       } else {
         // we need to set the data
@@ -830,23 +830,6 @@ export class PreActivation {
       } else {
         this.traverseChildRoutes(futureNode, null, parentOutletMap, futurePath);
       }
-    }
-  }
-
-  private shouldRunGuardsAndResolvers(
-      curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
-      mode: RunGuardsAndResolvers): boolean {
-    switch (mode) {
-      case 'always':
-        return true;
-
-      case 'paramsOrQueryParamsChange':
-        return !equalParamsAndUrlSegments(curr, future) ||
-            !shallowEqual(curr.queryParams, future.queryParams);
-
-      case 'paramsChange':
-      default:
-        return !equalParamsAndUrlSegments(curr, future);
     }
   }
 
