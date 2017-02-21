@@ -15,7 +15,7 @@ import {ViewEncapsulation} from '../metadata/view';
 import {Renderer as RendererV1, RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1, createTemplateRef, createViewContainerRef} from './refs';
-import {BindingDef, BindingType, DepDef, DepFlags, DirectiveOutputDef, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, NodeType, OutputDef, OutputType, ProviderData, ProviderType, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
 import {checkAndUpdateBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
 const RendererV1TokenKey = tokenKey(RendererV1);
@@ -31,8 +31,7 @@ const NOT_CREATED = new Object();
 export function directiveDef(
     flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], childCount: number,
     ctor: any, deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
-    outputs?: {[name: string]: string}, component?: () => ViewDefinition,
-    rendererType?: RendererTypeV2): NodeDef {
+    outputs?: {[name: string]: string}): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -46,15 +45,16 @@ export function directiveDef(
       };
     }
   }
-  const outputDefs: DirectiveOutputDef[] = [];
+  const outputDefs: OutputDef[] = [];
   if (outputs) {
     for (let propName in outputs) {
-      outputDefs.push({propName, eventName: outputs[propName]});
+      outputDefs.push(
+          {type: OutputType.DirectiveOutput, propName, target: null, eventName: outputs[propName]});
     }
   }
   return _def(
       NodeType.Directive, flags, matchedQueries, childCount, ProviderType.Class, ctor, ctor, deps,
-      bindings, outputDefs, component, rendererType);
+      bindings, outputDefs);
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
@@ -70,14 +70,8 @@ export function providerDef(
 export function _def(
     type: NodeType, flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     childCount: number, providerType: ProviderType, token: any, value: any,
-    deps: ([DepFlags, any] | any)[], bindings?: BindingDef[], outputs?: DirectiveOutputDef[],
-    component?: () => ViewDefinition, rendererType?: RendererTypeV2): NodeDef {
+    deps: ([DepFlags, any] | any)[], bindings?: BindingDef[], outputs?: OutputDef[]): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  // This is needed as the jit compiler always uses an empty hash as default RendererTypeV2,
-  // which is not filled for host views.
-  if (rendererType && rendererType.encapsulation == null) {
-    rendererType = null;
-  }
   if (!outputs) {
     outputs = [];
   }
@@ -96,9 +90,6 @@ export function _def(
     }
     return {flags, token, tokenKey: tokenKey(token)};
   });
-  if (component) {
-    flags = flags | NodeFlags.HasComponent;
-  }
 
   return {
     type,
@@ -108,20 +99,14 @@ export function _def(
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
-    disposableIndex: undefined,
+    outputIndex: undefined,
     // regular values
     flags,
     childFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
-    ngContentIndex: undefined, childCount, bindings,
-    disposableCount: outputs.length,
+    ngContentIndex: undefined, childCount, bindings, outputs,
     element: undefined,
-    provider: {
-      type: providerType,
-      token,
-      tokenKey: tokenKey(token), value,
-      deps: depDefs, outputs, component, rendererType
-    },
+    provider: {type: providerType, token, tokenKey: tokenKey(token), value, deps: depDefs},
     text: undefined,
     pureExpression: undefined,
     query: undefined,
@@ -149,17 +134,17 @@ export function createPipeInstance(view: ViewData, def: NodeDef): any {
 
 export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
   // components can see other private services, other directives can't.
-  const allowPrivateServices = (def.flags & NodeFlags.HasComponent) > 0;
+  const allowPrivateServices = (def.flags & NodeFlags.IsComponent) > 0;
   const providerDef = def.provider;
   // directives are always eager and classes!
   const instance =
       createClass(view, def.parent, allowPrivateServices, def.provider.value, def.provider.deps);
-  if (providerDef.outputs.length) {
-    for (let i = 0; i < providerDef.outputs.length; i++) {
-      const output = providerDef.outputs[i];
+  if (def.outputs.length) {
+    for (let i = 0; i < def.outputs.length; i++) {
+      const output = def.outputs[i];
       const subscription = instance[output.propName].subscribe(
           eventHandlerClosure(view, def.parent.index, output.eventName));
-      view.disposables[def.disposableIndex + i] = subscription.unsubscribe.bind(subscription);
+      view.disposables[def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
   return instance;
@@ -371,7 +356,7 @@ export function resolveDep(
 function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {
   let compView: ViewData;
   if (allowPrivateServices) {
-    compView = asProviderData(view, elDef.element.component.index).componentView;
+    compView = asElementData(view, elDef.index).componentView;
   } else {
     compView = view;
     while (compView.parent && !isComponentView(compView)) {
@@ -396,8 +381,8 @@ function checkAndUpdateProp(
     changed = checkAndUpdateBinding(view, def, bindingIdx, value);
   }
   if (changed) {
-    if (def.flags & NodeFlags.HasComponent) {
-      const compView = providerData.componentView;
+    if (def.flags & NodeFlags.IsComponent) {
+      const compView = asElementData(view, def.parent.index).componentView;
       if (compView.def.flags & ViewFlags.OnPush) {
         compView.state |= ViewState.ChecksEnabled;
       }

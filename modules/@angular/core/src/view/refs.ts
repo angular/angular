@@ -42,7 +42,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
       injector: Injector, projectableNodes: any[][] = null,
       rootSelectorOrNode: string|any = null): ComponentRef<any> {
     const viewDef = resolveViewDefinition(this._viewClass);
-    const componentNodeIndex = viewDef.nodes[0].element.component.index;
+    const componentNodeIndex = viewDef.nodes[0].element.componentProvider.index;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -255,7 +255,7 @@ export function createInjector(view: ViewData, elDef: NodeDef): Injector {
 class Injector_ implements Injector {
   constructor(private view: ViewData, private elDef: NodeDef) {}
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
-    const allowPrivateServices = !!this.elDef.element.component;
+    const allowPrivateServices = (this.elDef.flags & NodeFlags.HasComponent) !== 0;
     return Services.resolveDep(
         this.view, this.elDef, allowPrivateServices,
         {flags: DepFlags.None, token, tokenKey: tokenKey(token)}, notFoundValue);

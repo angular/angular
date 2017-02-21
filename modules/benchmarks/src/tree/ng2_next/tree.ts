@@ -26,8 +26,8 @@ let viewFlags = ViewFlags.None;
 
 function TreeComponent_Host(): ViewDefinition {
   return viewDef(viewFlags, [
-    elementDef(NodeFlags.None, null, null, 1, 'tree'),
-    directiveDef(NodeFlags.None, null, 0, TreeComponent, [], null, null, TreeComponent_0),
+    elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+    directiveDef(NodeFlags.IsComponent, null, 0, TreeComponent, []),
   ]);
 }
 
@@ -35,9 +35,8 @@ function TreeComponent_1() {
   return viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        directiveDef(
-            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+        elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+        directiveDef(NodeFlags.IsComponent, null, 0, TreeComponent, [], {data: [0, 'data']}),
       ],
       (check, view) => {
         const cmp = view.component;
@@ -49,9 +48,8 @@ function TreeComponent_2() {
   return viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, null, 1, 'tree'),
-        directiveDef(
-            NodeFlags.None, null, 0, TreeComponent, [], {data: [0, 'data']}, null, TreeComponent_0),
+        elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+        directiveDef(NodeFlags.IsComponent, null, 0, TreeComponent, [], {data: [0, 'data']}),
       ],
       (check, view) => {
         const cmp = view.component;

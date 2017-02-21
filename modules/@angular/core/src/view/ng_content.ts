@@ -18,7 +18,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
-    disposableIndex: undefined,
+    outputIndex: undefined,
     // regular values
     flags: 0,
     childFlags: 0,
@@ -28,7 +28,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     references: {}, ngContentIndex,
     childCount: 0,
     bindings: [],
-    disposableCount: 0,
+    outputs: [],
     element: undefined,
     provider: undefined,
     text: undefined,

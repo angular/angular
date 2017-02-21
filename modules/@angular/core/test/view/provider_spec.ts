@@ -113,10 +113,10 @@ export function main() {
         try {
           createRootView(
               compViewDef([
-                elementDef(NodeFlags.None, null, null, 1, 'div'),
-                directiveDef(
-                    NodeFlags.None, null, 0, SomeService, [], null, null,
-                    () => compViewDef([textDef(null, ['a'])]))
+                elementDef(
+                    NodeFlags.None, null, null, 1, 'div', null, null, null, null,
+                    () => compViewDef([textDef(null, ['a'])])),
+                directiveDef(NodeFlags.IsComponent, null, 0, SomeService, [])
               ]),
               TestBed.get(Injector), [], getDOM().createElement('div'));
         } catch (e) {
@@ -174,13 +174,13 @@ export function main() {
 
         it('should inject from a parent elment in a parent view', () => {
           createAndGetRootNodes(compViewDef([
-            elementDef(NodeFlags.None, null, null, 1, 'div'),
-            directiveDef(
-                NodeFlags.None, null, 0, Dep, [], null, null,
+            elementDef(
+                NodeFlags.None, null, null, 1, 'div', null, null, null, null,
                 () => compViewDef([
                   elementDef(NodeFlags.None, null, null, 1, 'span'),
                   directiveDef(NodeFlags.None, null, 0, SomeService, [Dep])
                 ])),
+            directiveDef(NodeFlags.IsComponent, null, 0, Dep, []),
           ]));
 
           expect(instance.dep instanceof Dep).toBeTruthy();
@@ -275,24 +275,24 @@ export function main() {
 
           it('should inject ChangeDetectorRef for component providers', () => {
             const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-              elementDef(NodeFlags.None, null, null, 1, 'div'),
-              directiveDef(
-                  NodeFlags.None, null, 0, SomeService, [ChangeDetectorRef], null, null,
+              elementDef(
+                  NodeFlags.None, null, null, 1, 'div', null, null, null, null,
                   () => compViewDef([
                     elementDef(NodeFlags.None, null, null, 0, 'span'),
                   ])),
+              directiveDef(NodeFlags.IsComponent, null, 0, SomeService, [ChangeDetectorRef]),
             ]));
 
-            const compView = asProviderData(view, 1).componentView;
+            const compView = asElementData(view, 0).componentView;
             expect(instance.dep._view).toBe(compView);
           });
 
           it('should inject RendererV1', () => {
             createAndGetRootNodes(compViewDef([
-              elementDef(NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(
-                  NodeFlags.None, null, 0, SomeService, [Renderer], null, null,
-                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)]))
+              elementDef(
+                  NodeFlags.None, null, null, 1, 'span', null, null, null, null,
+                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
+              directiveDef(NodeFlags.IsComponent, null, 0, SomeService, [Renderer])
             ]));
 
             expect(instance.dep.createElement).toBeTruthy();
@@ -300,10 +300,10 @@ export function main() {
 
           it('should inject RendererV2', () => {
             createAndGetRootNodes(compViewDef([
-              elementDef(NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(
-                  NodeFlags.None, null, 0, SomeService, [RendererV2], null, null,
-                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)]))
+              elementDef(
+                  NodeFlags.None, null, null, 1, 'span', null, null, null, null,
+                  () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
+              directiveDef(NodeFlags.IsComponent, null, 0, SomeService, [RendererV2])
             ]));
 
             expect(instance.dep.createElement).toBeTruthy();
