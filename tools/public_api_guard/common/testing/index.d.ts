@@ -21,11 +21,12 @@ export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;
     forward(): void;
-    go(path: string, query?: string): void;
+    /** @deprecated */ go(path: string, query?: string): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     path(): string;
     prepareExternalUrl(url: string): string;
+    pushState(path: string, query?: string): void;
     replaceState(path: string, query?: string): void;
     setBaseHref(url: string): void;
     setInitialPath(url: string): void;

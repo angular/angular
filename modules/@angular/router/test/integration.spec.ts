@@ -1289,8 +1289,8 @@ describe('Integration', () => {
            {path: 'team/:id', component: TeamCmp}
          ]);
 
-         location.go('initial');
-         location.go('old/team/22');
+         location.pushState('initial');
+         location.pushState('old/team/22');
 
          // initial navigation
          router.initialNavigation();
@@ -1302,7 +1302,7 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/initial');
 
          // location change
-         (<any>location).go('/old/team/33');
+         location.pushState('/old/team/33');
 
 
          advance(fixture);
@@ -1492,7 +1492,7 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/one');
 
-             location.go('/two');
+             location.pushState('/two');
              advance(fixture);
              expect(location.path()).toEqual('/one');
 
@@ -2734,14 +2734,14 @@ describe('Integration', () => {
            events.splice(0);
 
            // another unsupported URL
-           location.go('/exclude/two');
+           location.pushState('/exclude/two');
            advance(fixture);
 
            expect(location.path()).toEqual('/exclude/two');
            expectEvents(events, []);
 
            // back to a supported URL
-           location.go('/include/simple');
+           location.pushState('/include/simple');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/simple');
@@ -2768,7 +2768,7 @@ describe('Integration', () => {
            const events: any[] = [];
            router.events.subscribe(e => events.push(e));
 
-           location.go('/include/user/kate(aux:excluded)');
+           location.pushState('/include/user/kate(aux:excluded)');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
@@ -2778,7 +2778,7 @@ describe('Integration', () => {
            ]);
            events.splice(0);
 
-           location.go('/include/user/kate(aux:excluded2)');
+           location.pushState('/include/user/kate(aux:excluded2)');
            advance(fixture);
            expectEvents(events, []);
 
