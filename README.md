@@ -38,16 +38,16 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level items planned for January 2017:
+High level items planned for next few months:
 
-* Initial version of md-autocomplete
-* Prototyping for data-table
-* Improvements to https://material.angular.io
-* Continued expanding e2e test coverage
-* More work on scroll / resize handling for overlays
-* Screenshot tests
-* Better development automation
-
+- Initial version of datepicker
+- Initial version of data table
+- Initial version of tree
+- Select improvements (multi-select, etc)
+- Screenshot test improvements
+- Docs site improvements
+- A11y audit
+- Various bug fixes
 
 #### Feature status:
 
@@ -76,7 +76,7 @@ High level items planned for January 2017:
 | snackbar / toast |                           Available | [README][21] |   [#115][0115] |
 | select           |                           Available | [README][23] |   [#118][0118] |
 | textarea         |                           Available | [README][5]  |              - |
-| autocomplete     |                         In-progress |           -  |   [#117][0117] |
+| autocomplete     |  Initial version, features evolving | [README][24] |   [#117][0117] |
 | chips            |  Initial version, features evolving |           -  |   [#120][0120] |
 | theming          |   Available, need guidance overlays | [Guide][20]  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
@@ -86,36 +86,37 @@ High level items planned for January 2017:
 | bottom-sheet     |                         Not started |           -  |              - |
 | bottom-nav       |                         Not started |           -  |   [#408][0408] |
 | virtual-repeat   |                         Not started |           -  |   [#823][0823] |
-| datepicker       |                         Not started |           -  |   [#675][0675] |
+| datepicker       |                         In progress |           -  |   [#675][0675] |
 | data-table       |                  Design in-progress |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
 | layout           |   See [angular/flex-layout][lay_rp] | [Wiki][0]    |              - |
 
  [lay_rp]:  https://github.com/angular/flex-layout
  [0]: https://github.com/angular/flex-layout/wiki
- [1]: https://github.com/angular/material2/blob/master/src/lib/button/README.md
- [2]: https://github.com/angular/material2/blob/master/src/lib/card/README.md
- [3]: https://github.com/angular/material2/blob/master/src/lib/checkbox/README.md
- [4]: https://github.com/angular/material2/blob/master/src/lib/radio/README.md
- [5]: https://github.com/angular/material2/blob/master/src/lib/input/README.md
- [6]: https://github.com/angular/material2/blob/master/src/lib/sidenav/README.md
- [7]: https://github.com/angular/material2/blob/master/src/lib/toolbar/README.md
- [8]: https://github.com/angular/material2/blob/master/src/lib/list/README.md
- [9]: https://github.com/angular/material2/blob/master/src/lib/grid-list/README.md
-[10]: https://github.com/angular/material2/blob/master/src/lib/icon/README.md
-[11]: https://github.com/angular/material2/blob/master/src/lib/progress-spinner/README.md
-[12]: https://github.com/angular/material2/blob/master/src/lib/progress-bar/README.md
-[13]: https://github.com/angular/material2/blob/master/src/lib/tabs/README.md
-[14]: https://github.com/angular/material2/blob/master/src/lib/slide-toggle/README.md
-[15]: https://github.com/angular/material2/blob/master/src/lib/button-toggle/README.md
-[16]: https://github.com/angular/material2/blob/master/src/lib/slider/README.md
-[17]: https://github.com/angular/material2/blob/master/src/lib/menu/README.md
-[18]: https://github.com/angular/material2/blob/master/src/lib/tooltip/README.md
+ [1]: https://material.angular.io/components/component/button
+ [2]: https://material.angular.io/components/component/card
+ [3]: https://material.angular.io/components/component/checkbox
+ [4]: https://material.angular.io/components/component/radio
+ [5]: https://material.angular.io/components/component/input
+ [6]: https://material.angular.io/components/component/sidenav
+ [7]: https://material.angular.io/components/component/toolbar
+ [8]: https://material.angular.io/components/component/list
+ [9]: https://material.angular.io/components/component/grid-list
+[10]: https://material.angular.io/components/component/icon
+[11]: https://material.angular.io/components/component/progress-spinner
+[12]: https://material.angular.io/components/component/progress-bar
+[13]: https://material.angular.io/components/component/tabs
+[14]: https://material.angular.io/components/component/slide-toggle
+[15]: https://material.angular.io/components/component/button-toggle
+[16]: https://material.angular.io/components/component/slider
+[17]: https://material.angular.io/components/component/menu
+[18]: https://material.angular.io/components/component/tooltip
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
 [20]: https://github.com/angular/material2/blob/master/guides/theming.md
-[21]: https://github.com/angular/material2/blob/master/src/lib/snack-bar/README.md
-[22]: https://github.com/angular/material2/blob/master/src/lib/dialog/README.md
-[23]: https://github.com/angular/material2/blob/master/src/lib/select/README.md
+[21]: https://material.angular.io/components/component/snack-bar
+[22]: https://material.angular.io/components/component/dialog
+[23]: https://material.angular.io/components/component/select
+[24]: https://material.angular.io/components/component/autocomplete
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
