@@ -38,7 +38,6 @@ module.exports =
         .processor(require('./processors/convertPrivateClassesToInterfaces'))
         .processor(require('./processors/generateNavigationDoc'))
         .processor(require('./processors/generateKeywords'))
-        .processor(require('./processors/extractTitleFromGuides'))
         .processor(require('./processors/createOverviewDump'))
         .processor(require('./processors/checkUnbalancedBackTicks'))
         .processor(require('./processors/addNotYetDocumentedProperty'))
