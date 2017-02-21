@@ -10,7 +10,8 @@ import {reflector} from '../reflection/reflection';
 import {Type} from '../type';
 
 import {resolveForwardRef} from './forward_ref';
-import {Host, Inject, Optional, Self, SkipSelf} from './metadata';
+import {InjectionToken} from './injection_token';
+import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
 import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
@@ -245,6 +246,8 @@ function _extractToken(
 
     } else if (paramMetadata instanceof Self || paramMetadata instanceof SkipSelf) {
       visibility = paramMetadata;
+    } else if (paramMetadata instanceof InjectionToken) {
+      token = paramMetadata;
     }
   }
 
