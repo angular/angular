@@ -30,9 +30,10 @@ export function main() {
       const aCompViewDef = compViewDef(viewNodes);
 
       return [
-        elementDef(NodeFlags.None, null, null, 1 + contentNodes.length, 'acomp'),
-        directiveDef(NodeFlags.None, null, 0, AComp, [], null, null, () => aCompViewDef),
-        ...contentNodes
+        elementDef(
+            NodeFlags.None, null, null, 1 + contentNodes.length, 'acomp', null, null, null, null,
+            () => aCompViewDef),
+        directiveDef(NodeFlags.IsComponent, null, 0, AComp, []), ...contentNodes
       ];
     }
 
@@ -110,7 +111,7 @@ export function main() {
                   ])),
       ])));
 
-      const componentView = asProviderData(view, 1).componentView;
+      const componentView = asElementData(view, 0).componentView;
       const view0 = Services.createEmbeddedView(componentView, componentView.def.nodes[1]);
 
       attachEmbeddedView(asElementData(componentView, 1), 0, view0);
