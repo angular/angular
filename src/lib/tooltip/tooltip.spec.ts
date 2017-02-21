@@ -18,7 +18,9 @@ import {TooltipPosition, MdTooltip, MdTooltipModule, SCROLL_THROTTLE_MS} from '.
 import {OverlayContainer} from '../core';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {OverlayModule} from '../core/overlay/overlay-directives';
+import {Platform} from '../core/platform/platform';
 import {Scrollable} from '../core/overlay/scroll/scrollable';
+
 
 const initialTooltipMessage = 'initial tooltip message';
 
@@ -31,6 +33,7 @@ describe('MdTooltip', () => {
       imports: [MdTooltipModule.forRoot(), OverlayModule],
       declarations: [BasicTooltipDemo, ScrollableTooltipDemo, OnPushTooltipDemo],
       providers: [
+        Platform,
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           document.body.appendChild(overlayContainerElement);
@@ -421,10 +424,10 @@ class BasicTooltipDemo {
     <div cdk-scrollable style="padding: 100px; margin: 300px;
                                height: 200px; width: 200px; overflow: auto;">
       <button *ngIf="showButton" style="margin-bottom: 600px"
-              [md-tooltip]="message"		
-              [tooltip-position]="position">		
-        Button		
-      </button>		
+              [md-tooltip]="message"
+              [tooltip-position]="position">
+        Button
+      </button>
     </div>`
 })
 class ScrollableTooltipDemo {

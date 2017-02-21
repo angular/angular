@@ -15,6 +15,7 @@ import {
   NgZone,
   Optional,
   OnDestroy,
+  Renderer,
   OnInit,
   ChangeDetectorRef
 } from '@angular/core';
@@ -32,6 +33,7 @@ import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
+import {PlatformModule, Platform} from '../core/platform/index';
 import 'rxjs/add/operator/first';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {Subscription} from 'rxjs/Subscription';
@@ -55,8 +57,6 @@ export const SCROLL_THROTTLE_MS = 20;
   host: {
     '(longpress)': 'show()',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
-    '(mouseenter)': 'show()',
-    '(mouseleave)': 'hide()',
   },
   exportAs: 'mdTooltip',
 })
@@ -129,12 +129,23 @@ export class MdTooltip implements OnInit, OnDestroy {
   get _matShowDelay() { return this.showDelay; }
   set _matShowDelay(v) { this.showDelay = v; }
 
-  constructor(private _overlay: Overlay,
-              private _scrollDispatcher: ScrollDispatcher,
-              private _elementRef: ElementRef,
-              private _viewContainerRef: ViewContainerRef,
-              private _ngZone: NgZone,
-              @Optional() private _dir: Dir) { }
+  constructor(
+    private _overlay: Overlay,
+    private _elementRef: ElementRef,
+    private _scrollDispatcher: ScrollDispatcher,
+    private _viewContainerRef: ViewContainerRef,
+    private _ngZone: NgZone,
+    private _renderer: Renderer,
+    private _platform: Platform,
+    @Optional() private _dir: Dir) {
+
+    // The mouse events shouldn't be bound on iOS devices, because
+    // they can prevent the first tap from firing it's click event.
+    if (!_platform.IOS) {
+      _renderer.listen(_elementRef.nativeElement, 'mouseenter', () => this.show());
+      _renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
+    }
+  }
 
   ngOnInit() {
     // When a scroll on the page occurs, update the position in case this tooltip needs
@@ -437,7 +448,7 @@ export class TooltipComponent {
 
 
 @NgModule({
-  imports: [OverlayModule, CompatibilityModule],
+  imports: [OverlayModule, CompatibilityModule, PlatformModule],
   exports: [MdTooltip, TooltipComponent, CompatibilityModule],
   declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
