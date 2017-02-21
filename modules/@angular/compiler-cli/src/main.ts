@@ -23,12 +23,13 @@ function codegen(
   return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
 }
 
-export function main(
-    args: any, consoleError: (s: string) => void = console.error): Promise<number> {
+function executeMain(
+    args: any, consoleError: (s: string) => void = console.error,
+    resultHandler: (result: any[]) => number | any[]): Promise<number|any[]> {
   const project = args.p || args.project || '.';
   const cliOptions = new tsc.NgcCliOptions(args);
 
-  return tsc.main(project, cliOptions, codegen).then(() => 0).catch(e => {
+  return tsc.main(project, cliOptions, codegen).then(resultHandler).catch(e => {
     if (e instanceof tsc.UserError || isSyntaxError(e)) {
       consoleError(e.message);
       return Promise.resolve(1);
@@ -38,6 +39,15 @@ export function main(
       return Promise.resolve(1);
     }
   });
+}
+
+export function main(
+    args: any, consoleError: (s: string) => void = console.error): Promise<number> {
+  return executeMain(args, consoleError, () => 0);
+}
+
+export function pipe(args: any, consoleError: (s: string) => void = console.error): Promise<any[]> {
+  return executeMain(args, consoleError, (sources) => sources);
 }
 
 // CLI entry point

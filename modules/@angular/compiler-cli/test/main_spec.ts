@@ -10,7 +10,7 @@ import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {main} from '../src/main';
+import {main, pipe} from '../src/main';
 import {ReflectionCapabilities, reflector} from './private_import_core';
 
 
@@ -56,6 +56,23 @@ describe('compiler-cli', () => {
         .then((exitCode) => {
           expect(mockConsole.error).not.toHaveBeenCalled();
           expect(exitCode).toEqual(0);
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
+  it('should pipe without errors', (done) => {
+    write('test.ts', 'export const A = 1;');
+
+    const mockConsole = {error: (s: string) => {}};
+
+    spyOn(mockConsole, 'error');
+
+    pipe({p: basePath}, mockConsole.error)
+        .then((sources) => {
+          expect(mockConsole.error).not.toHaveBeenCalled();
+          expect(sources).toBeDefined();
+          expect(sources.length).toBeDefined();
           done();
         })
         .catch(e => done.fail(e));

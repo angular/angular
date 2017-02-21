@@ -120,6 +120,33 @@ describe('tsc-wrapped', () => {
         .catch(e => done.fail(e));
   });
 
+  it('should pipe out compiled sources', (done) => {
+    const config = {
+      path: basePath + '/tsconfig.json',
+      contents: new Buffer(JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          types: [],
+          outDir: 'built',
+          moduleResolution: 'node',
+          target: 'es2015'
+        },
+        files: ['test.ts']
+      }))
+    };
+
+    main(config, {basePath})
+        .then((sources) => {
+          expect(sources).toBeDefined();
+          expect(sources.length).toEqual(3);
+          // Item should be vinyl like object
+          expect(sources[0].path).toBeDefined();
+          expect(sources[0].contents).toBeDefined();
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
   it('should allow all options disabled', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {
