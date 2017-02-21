@@ -58,13 +58,10 @@ export class RouterConfigLoader {
     if (typeof loadChildren === 'string') {
       return fromPromise(this.loader.load(loadChildren));
     } else {
-      return mergeMap.call(wrapIntoObservable(loadChildren()), (t: any) => {
-        if (t instanceof NgModuleFactory) {
-          return of (t);
-        } else {
-          return fromPromise(this.compiler.compileModuleAsync(t));
-        }
-      });
+      const offlineMode = this.compiler instanceof Compiler;
+      return mergeMap.call(
+          wrapIntoObservable(loadChildren()),
+          (t: any) => offlineMode ? of (<any>t) : fromPromise(this.compiler.compileModuleAsync(t)));
     }
   }
 }
