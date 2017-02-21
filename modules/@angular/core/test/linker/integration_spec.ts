@@ -1379,40 +1379,6 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
              }
            }));
       }
-
-      // TODO(tbosch): delete these tests once view engine is the default as we handle
-      // these errors via source maps!
-      if (!viewEngine) {
-        it('should specify a location of an error that happened during change detection (text)',
-           () => {
-             TestBed.configureTestingModule({declarations: [MyComp]});
-             const template = '<div>{{a.b}}</div>';
-             TestBed.overrideComponent(MyComp, {set: {template}});
-             const fixture = TestBed.createComponent(MyComp);
-
-             expect(() => fixture.detectChanges()).toThrowError(/:0:5/);
-           });
-
-        it('should specify a location of an error that happened during change detection (element property)',
-           () => {
-             TestBed.configureTestingModule({declarations: [MyComp]});
-             const template = '<div [title]="a.b"></div>';
-             TestBed.overrideComponent(MyComp, {set: {template}});
-             const fixture = TestBed.createComponent(MyComp);
-
-             expect(() => fixture.detectChanges()).toThrowError(/:0:5/);
-           });
-
-        it('should specify a location of an error that happened during change detection (directive property)',
-           () => {
-             TestBed.configureTestingModule({declarations: [MyComp, ChildComp, MyDir]});
-             const template = '<child-cmp [dirProp]="a.b"></child-cmp>';
-             TestBed.overrideComponent(MyComp, {set: {template}});
-             const fixture = TestBed.createComponent(MyComp);
-
-             expect(() => fixture.detectChanges()).toThrowError(/:0:11/);
-           });
-      }
     });
 
     it('should support imperative views', () => {

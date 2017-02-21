@@ -21,27 +21,21 @@ export declare abstract class AfterViewInit {
 /** @experimental */
 export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
-/** @experimental */
-export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
+/** @deprecated */
+export declare function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
 
-/** @experimental */
-export declare class AnimationAnimateMetadata extends AnimationMetadata {
+/** @deprecated */
+export interface AnimationAnimateMetadata extends AnimationMetadata {
     styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata;
-    timings: string | number;
-    constructor(timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata);
+    timings: string | number | AnimateTimings;
 }
 
-/** @experimental */
-export declare class AnimationEntryMetadata {
-    definitions: AnimationStateMetadata[];
-    name: string;
-    constructor(name: string, definitions: AnimationStateMetadata[]);
-}
+/** @deprecated */
+export declare type AnimationEntryMetadata = any;
 
-/** @experimental */
-export declare class AnimationGroupMetadata extends AnimationWithStepsMetadata {
-    readonly steps: AnimationMetadata[];
-    constructor(_steps: AnimationMetadata[]);
+/** @deprecated */
+export interface AnimationGroupMetadata extends AnimationMetadata {
+    steps: AnimationMetadata[];
 }
 
 /** @experimental */
@@ -51,14 +45,14 @@ export declare class AnimationKeyframe {
     constructor(offset: number, styles: AnimationStyles);
 }
 
-/** @experimental */
-export declare class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
+/** @deprecated */
+export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
     steps: AnimationStyleMetadata[];
-    constructor(steps: AnimationStyleMetadata[]);
 }
 
-/** @experimental */
-export declare abstract class AnimationMetadata {
+/** @deprecated */
+export interface AnimationMetadata {
+    type: AnimationMetadataType;
 }
 
 /** @experimental */
@@ -79,39 +73,26 @@ export declare abstract class AnimationPlayer {
     abstract setPosition(p: any): void;
 }
 
-/** @experimental */
-export declare class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
-    readonly steps: AnimationMetadata[];
-    constructor(_steps: AnimationMetadata[]);
+/** @deprecated */
+export interface AnimationSequenceMetadata extends AnimationMetadata {
+    steps: AnimationMetadata[];
 }
 
-/** @experimental */
-export declare class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
-    stateNameExpr: string;
+/** @deprecated */
+export interface AnimationStateMetadata extends AnimationMetadata {
+    name: string;
     styles: AnimationStyleMetadata;
-    constructor(stateNameExpr: string, styles: AnimationStyleMetadata);
 }
 
-/** @experimental */
-export declare abstract class AnimationStateMetadata {
-}
+/** @deprecated */
+export declare type AnimationStateTransitionMetadata = any;
 
-/** @experimental */
-export declare class AnimationStateTransitionMetadata extends AnimationStateMetadata {
-    stateChangeExpr: string | ((fromState: string, toState: string) => boolean);
-    steps: AnimationMetadata;
-    constructor(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata);
-}
-
-/** @experimental */
-export declare class AnimationStyleMetadata extends AnimationMetadata {
+/** @deprecated */
+export interface AnimationStyleMetadata extends AnimationMetadata {
     offset: number;
-    styles: Array<string | {
+    styles: {
         [key: string]: string | number;
-    }>;
-    constructor(styles: Array<string | {
-        [key: string]: string | number;
-    }>, offset?: number);
+    }[];
 }
 
 /** @experimental */
@@ -124,28 +105,26 @@ export declare class AnimationStyles {
     }[]);
 }
 
-/** @experimental */
-export declare class AnimationTransitionEvent {
-    element: ElementRef;
+/** @deprecated */
+export interface AnimationTransitionEvent {
+    element: any;
     fromState: string;
     phaseName: string;
     toState: string;
     totalTime: number;
     triggerName: string;
-    constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
-        fromState: string;
-        toState: string;
-        totalTime: number;
-        phaseName: string;
-        element: any;
-        triggerName: string;
-    });
 }
 
-/** @experimental */
-export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
-    readonly steps: AnimationMetadata[];
-    constructor();
+/** @deprecated */
+export interface AnimationTransitionMetadata extends AnimationMetadata {
+    animation: AnimationMetadata;
+    expr: string | ((fromState: string, toState: string) => boolean);
+}
+
+/** @deprecated */
+export interface AnimationTriggerMetadata {
+    definitions: AnimationMetadata[];
+    name: string;
 }
 
 /** @experimental */
@@ -189,7 +168,7 @@ export declare function assertPlatform(requiredToken: any): PlatformRef;
 /** @stable */
 export declare const Attribute: AttributeDecorator;
 
-/** @experimental */
+/** @deprecated */
 export declare const AUTO_STYLE = "*";
 
 /** @stable */
@@ -477,7 +456,7 @@ export interface GetTestability {
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function group(steps: AnimationMetadata[]): AnimationGroupMetadata;
 
 /** @stable */
@@ -573,7 +552,7 @@ export declare class IterableDiffers {
     static extend(factories: IterableDifferFactory[]): Provider;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
@@ -938,7 +917,7 @@ export interface SelfDecorator {
     new (): Self;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata;
 
 /** @experimental */
@@ -967,13 +946,13 @@ export interface SkipSelfDecorator {
     new (): SkipSelf;
 }
 
-/** @experimental */
-export declare function state(stateNameExpr: string, styles: AnimationStyleMetadata): AnimationStateDeclarationMetadata;
+/** @deprecated */
+export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
 
-/** @experimental */
-export declare function style(tokens: string | {
+/** @deprecated */
+export declare function style(tokens: {
     [key: string]: string | number;
-} | Array<string | {
+} | Array<{
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
 
@@ -1027,8 +1006,8 @@ export interface TrackByFunction<T> {
     (index: number, item: T): any;
 }
 
-/** @experimental */
-export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
+/** @deprecated */
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
@@ -1036,8 +1015,8 @@ export declare const TRANSLATIONS: InjectionToken<string>;
 /** @experimental */
 export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
-/** @experimental */
-export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
+/** @deprecated */
+export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;
 
 /** @stable */
 export declare const Type: FunctionConstructor;
