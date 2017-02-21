@@ -17,7 +17,7 @@ The `MdDialogRef` provides a handle on the opened dialog. It can be used to clos
 receive notification when the dialog has been closed.
 
 ```ts
-dialogRef.afterClosed.then(result => {
+dialogRef.afterClosed.subscribe(result => {
   console.log(`Dialog result: ${result}`); // Pizza!
 });
 
