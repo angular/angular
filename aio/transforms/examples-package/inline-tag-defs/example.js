@@ -14,7 +14,7 @@ var entities = require('entities');
  * @kind function
  */
 module.exports = function exampleInlineTagDef(
-    parseArgString, exampleMap, getExampleFilename, createDocMessage, log, collectExamples) {
+    parseArgString, exampleMap, createDocMessage, log, collectExamples) {
   return {
     name: 'example',
     description:
