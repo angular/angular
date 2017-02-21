@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation} from '@angular/common';
+import {LOCATION_INITIALIZED, PlatformLocation} from '@angular/common';
 import {APP_INITIALIZER, InjectionToken, NgZone} from '@angular/core';
 
 import {WebWorkerPlatformLocation} from './platform_location';
@@ -25,9 +25,18 @@ export const WORKER_APP_LOCATION_PROVIDERS = [
     multi: true,
     deps: [PlatformLocation, NgZone],
   },
+  {
+    provide: LOCATION_INITIALIZED,
+    useFactory: locationInitialized,
+    deps: [PlatformLocation],
+  },
 ];
 
-function appInitFnFactory(platformLocation: WebWorkerPlatformLocation, zone: NgZone): () =>
+export function locationInitialized(platformLocation: WebWorkerPlatformLocation) {
+  return platformLocation.initialized;
+}
+
+export function appInitFnFactory(platformLocation: WebWorkerPlatformLocation, zone: NgZone): () =>
     Promise<boolean> {
   return () => zone.runGuarded(() => platformLocation.init());
 }
