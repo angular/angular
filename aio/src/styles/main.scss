@@ -4,15 +4,15 @@
 
 
 // Include material core styles.
-@include md-core();
+@include mat-core();
 @include docs-site-typography();
 
 
 // Define the light theme.
-$primary: md-palette($md-cyan);
-$accent:  md-palette($md-amber, A200, A100, A400);
+$primary: mat-palette($mat-cyan);
+$accent:  mat-palette($mat-amber, A200, A100, A400);
 
-$theme: md-light-theme($primary, $accent);
+$theme: mat-light-theme($primary, $accent);
 @include angular-material-theme($theme);
 
 body {
@@ -20,7 +20,7 @@ body {
   margin: 0;
 }
 
-[md-button], [md-raised-button] {
+[md-button], [md-raised-button], [mat-button], [mat-raised-button] {
   text-transform: uppercase;
 }
 
