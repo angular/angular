@@ -14,6 +14,7 @@ export class SelectDemo {
   showSelect = false;
   currentDrink: string;
   latestChangeEvent: MdSelectChange;
+  floatPlaceholder: string = 'auto';
   foodControl = new FormControl('pizza-1');
 
   foods = [

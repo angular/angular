@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
-import {MdSelect} from './select';
+import {MdSelect, MdSelectFloatPlaceholderType} from './select';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
 import {
@@ -35,6 +35,7 @@ describe('MdSelect', () => {
         SelectWithChangeEvent,
         CustomSelectAccessor,
         CompWithCustomSelect,
+        FloatPlaceholderSelect,
         SelectWithErrorSibling,
         ThrowsErrorOnInit,
         BasicSelectOnPush
@@ -590,12 +591,12 @@ describe('MdSelect', () => {
     });
 
       it('should float the placeholder when the panel is open and unselected', () => {
-        expect(fixture.componentInstance.select._placeholderState)
+        expect(fixture.componentInstance.select._getPlaceholderAnimationState())
             .toEqual('', 'Expected placeholder to initially have a normal position.');
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._placeholderState)
+        expect(fixture.componentInstance.select._getPlaceholderAnimationState())
             .toEqual('floating-ltr', 'Expected placeholder to animate up to floating position.');
 
         const backdrop =
@@ -603,7 +604,7 @@ describe('MdSelect', () => {
         backdrop.click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.select._placeholderState)
+        expect(fixture.componentInstance.select._getPlaceholderAnimationState())
             .toEqual('', 'Expected placeholder to animate back down to normal position.');
       });
 
@@ -616,7 +617,7 @@ describe('MdSelect', () => {
 
         expect(placeholderEl.classList)
             .toContain('mat-floating-placeholder', 'Expected placeholder to display as floating.');
-        expect(fixture.componentInstance.select._placeholderState)
+        expect(fixture.componentInstance.select._getPlaceholderAnimationState())
             .toEqual('', 'Expected animation state to be empty to avoid animation.');
       });
 
@@ -625,7 +626,8 @@ describe('MdSelect', () => {
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._placeholderState).toEqual('floating-rtl');
+        expect(fixture.componentInstance.select._getPlaceholderAnimationState())
+            .toEqual('floating-rtl');
       });
 
 
@@ -1285,6 +1287,39 @@ describe('MdSelect', () => {
     });
   });
 
+  describe('floatPlaceholder option', () => {
+    let fixture: ComponentFixture<FloatPlaceholderSelect>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FloatPlaceholderSelect);
+    });
+
+    it('should be able to disable the floating placeholder', () => {
+      let placeholder = fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
+
+      fixture.componentInstance.floatPlaceholder = 'never';
+      fixture.detectChanges();
+
+      expect(placeholder.style.visibility).toBe('visible');
+      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
+
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      expect(placeholder.style.visibility).toBe('hidden');
+      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
+    });
+
+    it('should be able to always float the placeholder', () => {
+      expect(fixture.componentInstance.control.value).toBeFalsy();
+
+      fixture.componentInstance.floatPlaceholder = 'always';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBe('floating-ltr');
+    });
+  });
+
   describe('with OnPush change detection', () => {
     let fixture: ComponentFixture<BasicSelectOnPush>;
     let trigger: HTMLElement;
@@ -1308,6 +1343,7 @@ describe('MdSelect', () => {
     });
   });
 });
+
 
 @Component({
   selector: 'basic-select',
@@ -1527,6 +1563,29 @@ class BasicSelectOnPush {
 
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
+}
+
+@Component({
+  selector: 'floating-placeholder-select',
+  template: `
+    <md-select placeholder="Food I want to eat right now" [formControl]="control"
+      [floatPlaceholder]="floatPlaceholder">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    `,
+})
+class FloatPlaceholderSelect {
+  floatPlaceholder: MdSelectFloatPlaceholderType = 'auto';
+  control = new FormControl();
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos'}
+  ];
+
+  @ViewChild(MdSelect) select: MdSelect;
 }
 
 

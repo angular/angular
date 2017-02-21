@@ -73,6 +73,9 @@ export class MdSelectChange {
   constructor(public source: MdSelect, public value: any) { }
 }
 
+/** Allowed values for the floatPlaceholder option. */
+export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
+
 @Component({
   moduleId: module.id,
   selector: 'md-select, mat-select',
@@ -128,7 +131,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   private _placeholder: string;
 
   /** The animation state of the placeholder. */
-  _placeholderState = '';
+  private _placeholderState = '';
 
   /**
    * The width of the trigger. Must be saved to set the min width of the overlay panel
@@ -226,6 +229,14 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   get required() { return this._required; }
   set required(value: any) { this._required = coerceBooleanProperty(value); }
 
+  /** Whether to float the placeholder text. */
+  @Input()
+  get floatPlaceholder(): MdSelectFloatPlaceholderType { return this._floatPlaceholder; }
+  set floatPlaceholder(value: MdSelectFloatPlaceholderType) {
+    this._floatPlaceholder = value || 'auto';
+  }
+  private _floatPlaceholder: MdSelectFloatPlaceholderType = 'auto';
+
   /** Event emitted when the select has been opened. */
   @Output() onOpen: EventEmitter<void> = new EventEmitter<void>();
 
@@ -280,7 +291,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       return;
     }
     this._calculateOverlayPosition();
-    this._placeholderState = this._isRtl() ? 'floating-rtl' : 'floating-ltr';
+    this._placeholderState = this._floatPlaceholderState();
     this._panelOpen = true;
   }
 
@@ -589,6 +600,28 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   }
 
   /**
+   * Figures out the appropriate animation state for the placeholder.
+   */
+  _getPlaceholderAnimationState(): string {
+    if (this.floatPlaceholder === 'never') {
+      return '';
+    }
+
+    if (this.floatPlaceholder === 'always') {
+      return this._floatPlaceholderState();
+    }
+
+    return this._placeholderState;
+  }
+
+  /**
+   * Determines the CSS `visibility` of the placeholder element.
+   */
+  _getPlaceholderVisibility(): 'visible'|'hidden' {
+    return (this.floatPlaceholder !== 'never' || !this.selected) ? 'visible' : 'hidden';
+  }
+
+  /**
    * Calculates the y-offset of the select's overlay panel in relation to the
    * top start corner of the trigger. It has to be adjusted in order for the
    * selected option to be aligned over the trigger when the panel opens.
@@ -699,6 +732,10 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     return `50% ${originY}px 0px`;
   }
 
+  /** Figures out the floating placeholder state value. */
+  private _floatPlaceholderState(): string {
+    return this._isRtl() ? 'floating-rtl' : 'floating-ltr';
+  }
 }
 
 /** Clamps a value n between min and max values. */

@@ -18,7 +18,7 @@
 
   <md-card>
     <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="isRequired" [disabled]="isDisabled"
-      #drinkControl="ngModel">
+      [floatPlaceholder]="floatPlaceholder" #drinkControl="ngModel">
       <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
         {{ drink.viewValue }}
       </md-option>
@@ -27,6 +27,15 @@
     <p> Touched: {{ drinkControl.touched }} </p>
     <p> Dirty: {{ drinkControl.dirty }} </p>
     <p> Status: {{ drinkControl.control?.status }} </p>
+    <p>
+      <label for="floating-placeholder">Floating placeholder:</label>
+      <select [(ngModel)]="floatPlaceholder" id="floating-placeholder">
+        <option value="auto">Auto</option>
+        <option value="always">Always</option>
+        <option value="never">Never</option>
+      </select>
+    </p>
+
     <button md-button (click)="currentDrink='water-2'">SET VALUE</button>
     <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
     <button md-button (click)="isDisabled=!isDisabled">TOGGLE DISABLED</button>
