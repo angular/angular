@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵcreateComponentFactory as createComponentFactory, ɵreflector} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵcreateComponentFactory as createComponentFactory, ɵreflector} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -158,60 +158,6 @@ export class CompileMetadataResolver {
     }
   }
 
-  getAnimationEntryMetadata(entry: AnimationEntryMetadata): cpl.CompileAnimationEntryMetadata {
-    const defs = entry.definitions.map(def => this._getAnimationStateMetadata(def));
-    return new cpl.CompileAnimationEntryMetadata(entry.name, defs);
-  }
-
-  private _getAnimationStateMetadata(value: AnimationStateMetadata):
-      cpl.CompileAnimationStateMetadata {
-    if (value instanceof AnimationStateDeclarationMetadata) {
-      const styles = this._getAnimationStyleMetadata(value.styles);
-      return new cpl.CompileAnimationStateDeclarationMetadata(value.stateNameExpr, styles);
-    }
-
-    if (value instanceof AnimationStateTransitionMetadata) {
-      return new cpl.CompileAnimationStateTransitionMetadata(
-          value.stateChangeExpr, this._getAnimationMetadata(value.steps));
-    }
-
-    return null;
-  }
-
-  private _getAnimationStyleMetadata(value: AnimationStyleMetadata):
-      cpl.CompileAnimationStyleMetadata {
-    return new cpl.CompileAnimationStyleMetadata(value.offset, value.styles);
-  }
-
-  private _getAnimationMetadata(value: AnimationMetadata): cpl.CompileAnimationMetadata {
-    if (value instanceof AnimationStyleMetadata) {
-      return this._getAnimationStyleMetadata(value);
-    }
-
-    if (value instanceof AnimationKeyframesSequenceMetadata) {
-      return new cpl.CompileAnimationKeyframesSequenceMetadata(
-          value.steps.map(entry => this._getAnimationStyleMetadata(entry)));
-    }
-
-    if (value instanceof AnimationAnimateMetadata) {
-      const animateData =
-          <cpl.CompileAnimationStyleMetadata|cpl.CompileAnimationKeyframesSequenceMetadata>this
-              ._getAnimationMetadata(value.styles);
-      return new cpl.CompileAnimationAnimateMetadata(value.timings, animateData);
-    }
-
-    if (value instanceof AnimationWithStepsMetadata) {
-      const steps = value.steps.map(step => this._getAnimationMetadata(step));
-
-      if (value instanceof AnimationGroupMetadata) {
-        return new cpl.CompileAnimationGroupMetadata(steps);
-      }
-
-      return new cpl.CompileAnimationSequenceMetadata(steps);
-    }
-    return null;
-  }
-
   private _loadSummary(type: any, kind: cpl.CompileSummaryKind): cpl.CompileTypeSummary {
     let typeSummary = this._summaryCache.get(type);
     if (!typeSummary) {
@@ -308,14 +254,7 @@ export class CompileMetadataResolver {
       assertArrayOfStrings('styleUrls', dirMeta.styleUrls);
       assertInterpolationSymbols('interpolation', dirMeta.interpolation);
 
-      let animations: any[];
-      if (this._config.useViewEngine) {
-        animations = dirMeta.animations;
-      } else {
-        animations = dirMeta.animations ?
-            dirMeta.animations.map(e => this.getAnimationEntryMetadata(e)) :
-            null;
-      }
+      const animations = dirMeta.animations;
 
       nonNormalizedTemplateMetadata = new cpl.CompileTemplateMetadata({
         encapsulation: dirMeta.encapsulation,
