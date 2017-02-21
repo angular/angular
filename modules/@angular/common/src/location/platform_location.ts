@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '@angular/core';
 /**
  * This class should not be used directly by an application developer. Instead, use
  * {@link Location}.
@@ -49,6 +50,12 @@ export abstract class PlatformLocation {
 
   abstract back(): void;
 }
+
+/**
+ * @whatItDoes indicates when a location is initialized
+ * @experimental
+ */
+export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location Initialized');
 
 /**
  * A serializable version of the event from onPopState or onHashChange
