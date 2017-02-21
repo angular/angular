@@ -54,6 +54,26 @@ export declare type MetadataOverride<T> = {
 };
 
 /** @experimental */
+export declare class MockLogger implements Logger {
+    debugLogs: any[][];
+    errorLogs: any[][];
+    groupEndLogs: string[];
+    groupLogs: string[];
+    infoLogs: any[][];
+    logLogs: any[][];
+    warnLogs: any[][];
+    constructor(_debugEnabled?: boolean);
+    debug(...args: any[]): void;
+    error(...args: any[]): void;
+    group(groupTitle?: string): void;
+    groupEnd(): void;
+    info(...args: any[]): void;
+    log(...args: any[]): void;
+    reset(): void;
+    warn(...args: any[]): void;
+}
+
+/** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
 /** @stable */
