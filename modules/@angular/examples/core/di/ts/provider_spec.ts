@@ -137,7 +137,7 @@ export function main() {
           provide: Hash,
           useFactory: (location: string) => `Hash for: ${location}`,
           // use a nested array to define metadata for dependencies.
-          deps: [[new Optional(), new Inject(Location)]]
+          deps: [[new Optional(), Location]]
         }]);
 
         expect(injector.get(Hash)).toEqual('Hash for: null');

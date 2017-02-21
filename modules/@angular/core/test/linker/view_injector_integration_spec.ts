@@ -7,11 +7,10 @@
  */
 
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -107,32 +106,27 @@ class NeedsAttribute {
 
 @Directive({selector: '[needsAttributeNoType]'})
 class NeedsAttributeNoType {
-  fooAttribute: any;
-  constructor(@Attribute('foo') fooAttribute: any) { this.fooAttribute = fooAttribute; }
+  constructor(@Attribute('foo') public fooAttribute: any) {}
 }
 
 @Directive({selector: '[needsElementRef]'})
 class NeedsElementRef {
-  elementRef: any;
-  constructor(ref: ElementRef) { this.elementRef = ref; }
+  constructor(public elementRef: ElementRef) {}
 }
 
 @Directive({selector: '[needsViewContainerRef]'})
 class NeedsViewContainerRef {
-  viewContainer: any;
-  constructor(vc: ViewContainerRef) { this.viewContainer = vc; }
+  constructor(public viewContainer: ViewContainerRef) {}
 }
 
 @Directive({selector: '[needsTemplateRef]'})
 class NeedsTemplateRef {
-  templateRef: any;
-  constructor(ref: TemplateRef<Object>) { this.templateRef = ref; }
+  constructor(public templateRef: TemplateRef<Object>) {}
 }
 
 @Directive({selector: '[optionallyNeedsTemplateRef]'})
 class OptionallyNeedsTemplateRef {
-  templateRef: any;
-  constructor(@Optional() ref: TemplateRef<Object>) { this.templateRef = ref; }
+  constructor(@Optional() public templateRef: TemplateRef<Object>) {}
 }
 
 @Directive({selector: '[directiveNeedsChangeDetectorRef]'})
@@ -226,10 +220,17 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEach(() => TestBed.configureTestingModule({
-      declarations: [TestComp],
-      providers: [{provide: 'appService', useValue: 'appService'}]
-    }));
+    const TOKEN = new InjectionToken<string>('token');
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComp],
+        providers: [
+          {provide: TOKEN, useValue: 'appService'},
+          {provide: 'appService', useFactory: (v: string) => v, deps: [TOKEN]},
+        ],
+      });
+    });
 
     describe('injection', () => {
       it('should instantiate directives that have no dependencies', () => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self, forwardRef} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self, forwardRef} from '@angular/core';
 import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {getOriginalError} from '@angular/core/src/errors';
@@ -31,14 +31,12 @@ class TurboEngine extends Engine {}
 
 @Injectable()
 class Car {
-  engine: Engine;
-  constructor(engine: Engine) { this.engine = engine; }
+  constructor(public engine: Engine) {}
 }
 
 @Injectable()
 class CarWithOptionalEngine {
-  engine: any /** TODO #9100 */;
-  constructor(@Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() public engine: Engine) {}
 }
 
 @Injectable()
@@ -53,14 +51,11 @@ class CarWithDashboard {
 
 @Injectable()
 class SportsCar extends Car {
-  engine: Engine;
-  constructor(engine: Engine) { super(engine); }
 }
 
 @Injectable()
 class CarWithInject {
-  engine: Engine;
-  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) public engine: Engine) {}
 }
 
 @Injectable()
@@ -151,8 +146,20 @@ export function main() {
       expect(engine).toEqual('fake engine');
     });
 
+    it('should inject dependencies instance of InjectionToken', () => {
+      const TOKEN = new InjectionToken<string>('token');
+
+      const injector = createInjector([
+        {provide: TOKEN, useValue: 'by token'},
+        {provide: Engine, useFactory: (v: string) => v, deps: [[TOKEN]]},
+      ]);
+
+      const engine = injector.get(Engine);
+      expect(engine).toEqual('by token');
+    });
+
     it('should provide to a factory', () => {
-      function sportsCarFactory(e: any /** TODO #9100 */) { return new SportsCar(e); }
+      function sportsCarFactory(e: any) { return new SportsCar(e); }
 
       const injector =
           createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);

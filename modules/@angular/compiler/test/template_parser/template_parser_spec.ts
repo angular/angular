@@ -827,7 +827,6 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         function createProvider(
             token: string, {multi = false, deps = []}: {multi?: boolean, deps?: string[]} = {}):
             CompileProviderMetadata {
-          const name = `provider${nextProviderId++}`;
           const compileToken = createToken(token);
           return {
             token: compileToken,
