@@ -2,7 +2,7 @@ import {task} from 'gulp';
 import {join} from 'path';
 import {statSync, readFileSync} from 'fs';
 import {DIST_COMPONENTS_ROOT} from '../constants';
-import {openFirebaseDatabase, isTravisPushBuild} from '../task_helpers';
+import {openFirebaseDashboardDatabase, isTravisPushBuild} from '../task_helpers';
 import {spawnSync} from 'child_process';
 
 // Those imports lack types.
@@ -48,7 +48,7 @@ function getUglifiedSize(filePath: string) {
 /** Publishes the given results to the firebase database. */
 function publishResults(results: any) {
   let latestSha = spawnSync('git', ['rev-parse', 'HEAD']).stdout.toString().trim();
-  let database = openFirebaseDatabase();
+  let database = openFirebaseDashboardDatabase();
 
   // Write the results to the payloads object with the latest Git SHA as key.
   return database.ref('payloads').child(latestSha).set(results)

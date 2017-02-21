@@ -64,6 +64,7 @@ task('e2e', (done: (err?: string) => void) => {
     'serve:e2eapp',
     ':test:protractor',
     ':serve:e2eapp:stop',
+    'screenshots',
     (err: any) => done(err)
   );
 });
