@@ -6,7 +6,7 @@ describe('html region-matcher', () => {
 
     matches = matcher.regionStartMatcher.exec('<!-- #docregion A b c -->');
     expect(matches).not.toBeNull();
-    expect(matches[1]).toEqual('A b c ');
+    expect(matches[1]).toEqual('A b c');
 
     matches = matcher.regionStartMatcher.exec('<!--#docregion A b c-->');
     expect(matches).not.toBeNull();
@@ -22,7 +22,7 @@ describe('html region-matcher', () => {
 
     matches = matcher.regionEndMatcher.exec('<!-- #enddocregion A b c -->');
     expect(matches).not.toBeNull();
-    expect(matches[1]).toEqual('A b c ');
+    expect(matches[1]).toEqual('A b c');
 
     matches = matcher.regionEndMatcher.exec('<!--#enddocregion A b c-->');
     expect(matches).not.toBeNull();
@@ -33,12 +33,20 @@ describe('html region-matcher', () => {
     expect(matches[1]).toEqual('');
   });
 
+  it('should handle annotations that do not close the comment on the same line', () => {
+    let matches;
+
+    matches = matcher.regionStartMatcher.exec('<!-- #docregion A b c');
+    expect(matches).not.toBeNull();
+    expect(matches[1]).toEqual('A b c');
+  });
+
   it('should match plaster annotations', () => {
     let matches;
 
     matches = matcher.plasterMatcher.exec('<!-- #docplaster A b c -->');
     expect(matches).not.toBeNull();
-    expect(matches[1]).toEqual('A b c ');
+    expect(matches[1]).toEqual('A b c');
 
     matches = matcher.plasterMatcher.exec('<!--#docplaster A b c-->');
     expect(matches).not.toBeNull();
