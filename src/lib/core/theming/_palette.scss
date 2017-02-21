@@ -8,6 +8,8 @@
 
 $black-87-opacity: rgba(black, 0.87);
 $white-87-opacity: rgba(white, 0.87);
+$black-12-opacity: rgba(black, 0.12);
+$white-12-opacity: rgba(white, 0.12);
 
 $mat-red: (
   50: #ffebee,
@@ -649,8 +651,9 @@ $mat-light-theme-background: (
   hover:      rgba(black, 0.04), // TODO(kara): check style with Material Design UX
   card:       white,
   dialog:     white,
-  disabled-button: rgba(black, 0.12),
+  disabled-button: $black-12-opacity,
   raised-button: white,
+  dark-overlay: $black-12-opacity,
 );
 
 // Background palette for dark themes.
@@ -661,15 +664,16 @@ $mat-dark-theme-background: (
   hover:      rgba(white, 0.04), // TODO(kara): check style with Material Design UX
   card:       map_get($mat-grey, 800),
   dialog:     map_get($mat-grey, 800),
-  disabled-button: rgba(white, 0.12),
+  disabled-button: $white-12-opacity,
   raised-button: map-get($mat-grey, 800),
+  dark-overlay: $white-12-opacity,
 );
 
 // Foreground palette for light themes.
 $mat-light-theme-foreground: (
   base:            black,
-  divider:         rgba(black, 0.12),
-  dividers:        rgba(black, 0.12),
+  divider:         $black-12-opacity,
+  dividers:        $black-12-opacity,
   disabled:        rgba(black, 0.38),
   disabled-button: rgba(black, 0.38),
   disabled-text:   rgba(black, 0.38),
@@ -683,8 +687,8 @@ $mat-light-theme-foreground: (
 // Foreground palette for dark themes.
 $mat-dark-theme-foreground: (
   base:            white,
-  divider:         rgba(white, 0.12),
-  dividers:        rgba(white, 0.12),
+  divider:         $white-12-opacity,
+  dividers:        $white-12-opacity,
   disabled:        rgba(white, 0.3),
   disabled-button: rgba(white, 0.3),
   disabled-text:   rgba(white, 0.3),

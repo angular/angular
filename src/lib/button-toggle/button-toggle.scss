@@ -1,4 +1,6 @@
+@import '../core/a11y/a11y';
 @import '../core/style/elevation';
+@import '../core/style/layout-common';
 
 $mat-button-toggle-padding: 0 16px !default;
 $mat-button-toggle-line-height: 36px !default;
@@ -34,6 +36,11 @@ $mat-button-toggle-border-radius: 2px !default;
 .mat-button-toggle {
   white-space: nowrap;
   font-family: $mat-font-family;
+  position: relative;
+}
+
+.mat-button-toggle.cdk-focused .mat-button-toggle-focus-overlay {
+  opacity: 1;
 }
 
 .mat-button-toggle-label-content {
@@ -46,4 +53,14 @@ $mat-button-toggle-border-radius: 2px !default;
 
 .mat-button-toggle-label-content > * {
   vertical-align: middle;
+}
+
+// Overlay to be used as a tint. Note that the same effect can be achieved by using a pseudo
+// element, however we use a proper DOM element in order to be able to disable the default
+// touch action. This makes the buttons more responsive on touch devices.
+.mat-button-toggle-focus-overlay {
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  @include mat-fill;
 }

@@ -21,6 +21,7 @@ import {
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {
+  FocusOriginMonitor,
   UniqueSelectionDispatcher,
   coerceBooleanProperty,
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
@@ -276,7 +277,6 @@ export class MdButtonToggleGroupMultiple {
   set vertical(value) {
     this._vertical = coerceBooleanProperty(value);
   }
-
 }
 
 /** Single button inside of a toggle group. */
@@ -332,7 +332,9 @@ export class MdButtonToggle implements OnInit {
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
               public buttonToggleDispatcher: UniqueSelectionDispatcher,
-              private _renderer: Renderer) {
+              private _renderer: Renderer,
+              private _elementRef: ElementRef,
+              private _focusOriginMonitor: FocusOriginMonitor) {
     this.buttonToggleGroup = toggleGroup;
 
     this.buttonToggleGroupMultiple = toggleGroupMultiple;
@@ -363,6 +365,7 @@ export class MdButtonToggle implements OnInit {
     if (this.buttonToggleGroup && this._value == this.buttonToggleGroup.value) {
       this._checked = true;
     }
+    this._focusOriginMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
   }
 
   /** Unique ID for the underlying `input` element. */
@@ -477,7 +480,7 @@ export class MdButtonToggle implements OnInit {
     CompatibilityModule,
   ],
   declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
+  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, FocusOriginMonitor]
 })
 export class MdButtonToggleModule {
   /** @deprecated */
