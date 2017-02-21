@@ -50,7 +50,6 @@ echo 'travis_fold:end:test.aio.unit'
 echo 'travis_fold:start:test.aio.e2e'
 # Run e2e tests
 cd ../../aio
-yarn start &
 yarn run e2e
 cd -
 echo 'travis_fold:end:test.aio.e2e'
