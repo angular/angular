@@ -17,6 +17,7 @@ import {SCROLL_DISPATCHER_PROVIDER} from '../overlay/scroll/scroll-dispatcher';
 
 @Directive({
   selector: '[md-ripple], [mat-ripple]',
+  exportAs: 'mdRipple',
   host: {
     '[class.mat-ripple]': 'true',
     '[class.mat-ripple-unbounded]': 'unbounded'
@@ -77,7 +78,7 @@ export class MdRipple implements OnChanges, OnDestroy {
     }
 
     this._rippleRenderer.rippleDisabled = this.disabled;
-    this._updateRippleConfig();
+    this._rippleRenderer.rippleConfig = this.rippleConfig;
   }
 
   ngOnDestroy() {
@@ -86,13 +87,13 @@ export class MdRipple implements OnChanges, OnDestroy {
   }
 
   /** Launches a manual ripple at the specified position. */
-  launch(pageX: number, pageY: number, config?: RippleConfig) {
+  launch(pageX: number, pageY: number, config = this.rippleConfig) {
     this._rippleRenderer.fadeInRipple(pageX, pageY, config);
   }
 
-  /** Updates the ripple configuration with the input values. */
-  private _updateRippleConfig() {
-    this._rippleRenderer.rippleConfig = {
+  /** Ripple configuration from the directive's input values. */
+  get rippleConfig(): RippleConfig {
+    return {
       centered: this.centered,
       speedFactor: this.speedFactor,
       radius: this.radius,
