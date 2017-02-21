@@ -28,10 +28,11 @@ export class I18NHtmlParser implements HtmlParser {
 
   constructor(
       private _htmlParser: HtmlParser, translations?: string, translationsFormat?: string,
+      serializer?: Serializer,
       missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
       console?: Console) {
     if (translations) {
-      const serializer = createSerializer(translationsFormat);
+      serializer = serializer || createSerializer(translationsFormat);
       this._translationBundle =
           TranslationBundle.load(translations, 'i18n', serializer, missingTranslation, console);
     }

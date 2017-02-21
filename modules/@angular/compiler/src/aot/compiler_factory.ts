@@ -56,8 +56,8 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
   const console = new Console();
   const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), translations, options.i18nFormat, MissingTranslationStrategy.Warning,
-      console);
+      new HtmlParser(), translations, options.i18nFormat, options.i18nSerializer,
+      MissingTranslationStrategy.Warning, console);
   const config = new CompilerConfig({
     genDebugInfo: options.debug === true,
     defaultEncapsulation: ViewEncapsulation.Emulated,

@@ -26,6 +26,11 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
 /**
  * @experimental i18n support is experimental.
  */
+export const TRANSLATIONS_SERIALIZER = new InjectionToken<string>('TranslationsSerializer');
+
+/**
+ * @experimental i18n support is experimental.
+ */
 export enum MissingTranslationStrategy {
   Error,
   Warning,

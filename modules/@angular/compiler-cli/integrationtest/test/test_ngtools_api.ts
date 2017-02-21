@@ -68,6 +68,7 @@ function codeGenTest() {
 
         // i18n options.
         i18nFormat: null,
+        i18nSerializer: null,
         i18nFile: null,
         locale: null,
 
@@ -131,6 +132,7 @@ function i18nTest() {
         compilerOptions: config.parsed.options, program, host,
         angularCompilerOptions: config.ngOptions,
         i18nFormat: 'xlf',
+        i18nSerializer: null,
         readResource: (fileName: string) => {
           readResources.push(fileName);
           return hostContext.readResource(fileName);

@@ -13,11 +13,11 @@
 import * as compiler from '@angular/compiler';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {getI18nSerializer} from './utils';
 
 const GENERATED_META_FILES = /\.json$/;
 
@@ -71,10 +71,17 @@ export class CodeGenerator {
       }
       transContent = readFileSync(transFile, 'utf8');
     }
+
+    let serializer: compiler.Serializer;
+    const serializerPath = cliOptions.i18nSerializer;
+    if (serializerPath) {
+      serializer = getI18nSerializer(serializerPath);
+    }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
+      i18nSerializer: serializer,
       locale: cliOptions.locale
     });
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);

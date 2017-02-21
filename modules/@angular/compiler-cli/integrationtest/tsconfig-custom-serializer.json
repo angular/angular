@@ -30,5 +30,8 @@
     "benchmarks/src/tree/ng2_switch/index_aot.ts",
     "benchmarks/src/largetable/ng2/index_aot.ts",
     "benchmarks/src/largetable/ng2_switch/index_aot.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "genDir": "./gen_custom_serializer"
+  }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, TRANSLATIONS_SERIALIZER, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig, USE_VIEW_ENGINE} from '../config';
@@ -65,14 +65,16 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   },
   {
     provide: i18n.I18NHtmlParser,
-    useFactory: (parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
-                 console: Console) =>
-                    new i18n.I18NHtmlParser(
-                        parser, translations, format, config.missingTranslation, console),
+    useFactory:
+        (parser: HtmlParser, translations: string, format: string, serializer: i18n.Serializer,
+         config: CompilerConfig, console: Console) =>
+            new i18n.I18NHtmlParser(
+                parser, translations, format, serializer, config.missingTranslation, console),
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
       [new Optional(), new Inject(TRANSLATIONS_FORMAT)],
+      [new Optional(), new Inject(TRANSLATIONS_SERIALIZER)],
       [CompilerConfig],
       [Console],
     ]

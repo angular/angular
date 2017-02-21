@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Serializer} from '../i18n/index';
 
 export interface AotCompilerOptions {
   debug?: boolean;
   locale?: string;
   i18nFormat?: string;
+  i18nSerializer?: Serializer;
   translations?: string;
   useViewEngine?: boolean;
 }
