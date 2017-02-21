@@ -14,7 +14,7 @@ import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_sta
 import {NgForm} from './directives/ng_form';
 import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
-import {NgNovalidate} from './directives/ng_novalidate_directive';
+import {NgNoValidate} from './directives/ng_no_validate_directive';
 import {NumberValueAccessor} from './directives/number_value_accessor';
 import {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 import {RangeValueAccessor} from './directives/range_value_accessor';
@@ -45,7 +45,7 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
-  NgNovalidate,
+  NgNoValidate,
   NgSelectOption,
   NgSelectMultipleOption,
   DefaultValueAccessor,
