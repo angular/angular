@@ -114,7 +114,8 @@ function removeLast(array, item) {
   array.splice(index, 1);
 }
 
-function RegionParserError(message, lineNum) {
+function RegionParserError(message, index) {
+  const lineNum = index + 1;
   this.message = `regionParser: ${message} (at line ${lineNum}).`;
   this.lineNum = lineNum;
   this.stack = (new Error()).stack;
