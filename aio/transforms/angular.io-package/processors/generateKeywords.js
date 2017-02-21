@@ -102,7 +102,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
 
         doc.searchTerms = {
-          titleWords: extractTitleWords(doc.name),
+          titleWords: extractTitleWords(doc.title || doc.name),
           keywords: words.sort().join(' '),
           members: members.sort().join(' ')
         };
