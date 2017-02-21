@@ -96,24 +96,24 @@ describe('regionParser service', () => {
   it('should error if we attempt to open an already open region', () => {
     expect(() => regionParser(t('/* #docregion */', 'abc', '/* #docregion */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to open a region, named "", that is already open (at line 2).');
+            'regionParser: Tried to open a region, named "", that is already open (at line 3).');
 
     expect(
         () =>
             regionParser(t('/* #docregion X */', 'abc', '/* #docregion X */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to open a region, named "X", that is already open (at line 2).');
+            'regionParser: Tried to open a region, named "X", that is already open (at line 3).');
   });
 
   it('should error if we attempt to close an already closed region', () => {
     expect(() => regionParser(t('abc', '/* #enddocregion */', 'def'), 'test-type'))
-        .toThrowError('regionParser: Tried to close a region when none are open (at line 1).');
+        .toThrowError('regionParser: Tried to close a region when none are open (at line 2).');
 
     expect(
         () =>
             regionParser(t('/* #docregion */', 'abc', '/* #enddocregion X */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to close a region, named "X", that is not open (at line 2).');
+            'regionParser: Tried to close a region, named "X", that is not open (at line 3).');
   });
 
   it('should handle whitespace in region names on single annotation', () => {
