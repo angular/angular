@@ -47,7 +47,6 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   fileExists = (fileName: string) => this.delegate.fileExists(fileName);
   readFile = (fileName: string) => this.delegate.readFile(fileName);
   trace = (s: string) => this.delegate.trace(s);
-  directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
