@@ -145,8 +145,9 @@ describe('regionParser service', () => {
   it('should parse multiple region names separated by commas', () => {
     const output = regionParser(
         t('/* #docregion , A, B */', 'abc', '/* #enddocregion B */', '/* #docregion C */', 'xyz',
-          '/* #enddocregion A, C, */'),
+          '/* #enddocregion A, C */', '123', '/* #enddocregion */'),
         'test-type');
+    expect(output.regions['']).toEqual(t('abc', 'xyz', '123'));
     expect(output.regions['A']).toEqual(t('abc', 'xyz'));
     expect(output.regions['B']).toEqual(t('abc'));
     expect(output.regions['C']).toEqual(t('xyz'));
