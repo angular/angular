@@ -17,7 +17,7 @@ import {
 import {HttpModule, Http} from '@angular/http';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MdError, CompatibilityModule} from '../core';
-import {MdIconRegistry} from './icon-registry';
+import {MdIconRegistry, MdIconNameNotFoundError} from './icon-registry';
 export {MdIconRegistry} from './icon-registry';
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
@@ -153,7 +153,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
         this._mdIconRegistry.getNamedSvgIcon(iconName, namespace).first().subscribe(
             svg => this._setSvgElement(svg),
-            (err: any) => console.log(`Error retrieving icon: ${err}`));
+            (err: MdIconNameNotFoundError) => console.log(`Error retrieving icon: ${err.message}`));
       }
     }
     if (this._usingFontIcon()) {
