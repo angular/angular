@@ -47,9 +47,9 @@ export function main() {
          detectChangesAndExpectText('foo');
        }));
 
-    it('should clear content if TemplateRef becomes `null`', async(() => {
+    it('should show its child template if TemplateRef becomes `null`', async(() => {
          const template = `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs>` +
-             `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+             `<ng-container *ngTemplateOutlet="currentTplRef">bar</ng-container>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
          const refs = fixture.debugElement.children[0].references['refs'];
@@ -58,7 +58,7 @@ export function main() {
          detectChangesAndExpectText('foo');
 
          setTplRef(null);
-         detectChangesAndExpectText('');
+         detectChangesAndExpectText('bar');
        }));
 
     it('should swap content if TemplateRef changes', async(() => {
@@ -114,6 +114,15 @@ export function main() {
 
          fixture.componentInstance.context = {shawshank: 'was here'};
          detectChangesAndExpectText('was here');
+       }));
+
+    it('should be compatible with star (*) syntax bindings', async(() => {
+         const template =
+             `<ng-container *ngTemplateOutlet="let item; let myFoo = foo; context: context">{{item}}-{{myFoo}}</ng-container>`;
+         fixture = createTestComponent(template);
+
+         fixture.componentInstance.context = {$implicit: 'the_implicit', foo: 'the_foo'};
+         detectChangesAndExpectText('the_implicit-the_foo');
        }));
   });
 }

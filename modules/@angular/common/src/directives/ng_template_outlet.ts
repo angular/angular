@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, Optional, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -16,6 +16,12 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef
  * @howToUse
  * ```
  * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
+ * ```
+ *
+ * ```
+ * <ng-container *ngTemplateOutlet="let item; context: itemContext">
+ *     {{item.name}}
+ * </ng-container>
  * ```
  *
  * @description
@@ -35,12 +41,24 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
   private _viewRef: EmbeddedViewRef<any>;
+  private _injectedTemplateRef: TemplateRef<any>;
 
   @Input() public ngTemplateOutletContext: Object;
 
-  @Input() public ngTemplateOutlet: TemplateRef<any>;
+  @Input()
+  public set ngTemplateOutlet(value: TemplateRef<any>) {
+    if (value) {
+      this._templateRef = value;
+    } else {
+      this._templateRef = this._injectedTemplateRef;
+    }
+  }
 
-  constructor(private _viewContainerRef: ViewContainerRef) {}
+  constructor(
+      private _viewContainerRef: ViewContainerRef,
+      @Optional() private _templateRef: TemplateRef<any>) {
+    this._injectedTemplateRef = _templateRef;
+  }
 
   /**
    * @deprecated v4.0.0 - Renamed to ngTemplateOutletContext.
@@ -53,9 +71,9 @@ export class NgTemplateOutlet implements OnChanges {
       this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
     }
 
-    if (this.ngTemplateOutlet) {
+    if (this._templateRef) {
       this._viewRef = this._viewContainerRef.createEmbeddedView(
-          this.ngTemplateOutlet, this.ngTemplateOutletContext);
+          this._templateRef, this.ngTemplateOutletContext);
     }
   }
 }
