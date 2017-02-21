@@ -17,7 +17,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
-import {AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -98,7 +98,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          Array<Validator|AsyncValidatorFn>,
+          Array<AsyncValidator|AsyncValidatorFn>,
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
     this._parent = parent;

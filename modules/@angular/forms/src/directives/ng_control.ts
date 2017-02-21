@@ -10,7 +10,7 @@
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
-import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 function unimplemented(): any {
   throw new Error('unimplemented');
@@ -32,7 +32,7 @@ export abstract class NgControl extends AbstractControlDirective {
   /** @internal */
   _rawValidators: Array<Validator|ValidatorFn> = [];
   /** @internal */
-  _rawAsyncValidators: Array<Validator|ValidatorFn> = [];
+  _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
 
   get validator(): ValidatorFn { return <ValidatorFn>unimplemented(); }
   get asyncValidator(): AsyncValidatorFn { return <AsyncValidatorFn>unimplemented(); }

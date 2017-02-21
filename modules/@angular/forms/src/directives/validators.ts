@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
@@ -31,6 +33,11 @@ import {NG_VALIDATORS, Validators} from '../validators';
 export interface Validator {
   validate(c: AbstractControl): {[key: string]: any};
   registerOnValidatorChange?(fn: () => void): void;
+}
+
+/** @experimental */
+export interface AsyncValidator extends Validator {
+  validate(c: AbstractControl): Promise<{[key: string]: any}>|Observable<{[key: string]: any}>;
 }
 
 export const REQUIRED_VALIDATOR: Provider = {

@@ -101,6 +101,15 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
     ngOnInit(): void;
 }
 
+/** @experimental */
+export interface AsyncValidator extends Validator {
+    validate(c: AbstractControl): Promise<{
+        [key: string]: any;
+    }> | Observable<{
+        [key: string]: any;
+    }>;
+}
+
 /** @stable */
 export interface AsyncValidatorFn {
     (c: AbstractControl): any;
@@ -253,7 +262,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     update: EventEmitter<{}>;
     readonly validator: ValidatorFn;
     viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -269,7 +278,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     readonly path: string[];
     update: EventEmitter<{}>;
     readonly validator: ValidatorFn;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -434,7 +443,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<{}>;
     readonly validator: ValidatorFn;
     viewModel: any;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     compositionEnd(): void;
     compositionStart(): void;
     ngOnChanges(changes: SimpleChanges): void;

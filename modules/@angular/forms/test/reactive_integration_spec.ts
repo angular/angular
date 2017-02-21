@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, Output, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -1951,7 +1951,7 @@ class LoginIsEmptyValidator {
     multi: true
   }]
 })
-class UniqLoginValidator implements Validator {
+class UniqLoginValidator implements AsyncValidator {
   @Input('uniq-login-validator') expected: any;
 
   validate(c: AbstractControl) { return uniqLoginAsyncValidator(this.expected)(c); }

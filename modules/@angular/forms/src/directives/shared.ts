@@ -24,7 +24,7 @@ import {RangeValueAccessor} from './range_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
-import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -68,7 +68,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
       (<Validator>validator).registerOnValidatorChange(() => control.updateValueAndValidity());
   });
 
-  dir._rawAsyncValidators.forEach((validator: Validator | ValidatorFn) => {
+  dir._rawAsyncValidators.forEach((validator: AsyncValidator | AsyncValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange(() => control.updateValueAndValidity());
   });

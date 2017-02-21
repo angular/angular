@@ -12,6 +12,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@a
 import {Observable} from 'rxjs/Observable';
 
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
+import {AsyncValidator} from '../src/directives/validators';
 import {EventEmitter} from '../src/facade/async';
 
 export function main() {
@@ -23,10 +24,11 @@ export function main() {
     };
   }
 
-  class AsyncValidatorDirective {
+  class AsyncValidatorDirective implements AsyncValidator {
     constructor(private expected: string, private error: any) {}
 
-    validate(c: any): {[key: string]: any;} {
+    validate(c: any): Observable < { [key: string]: any; }
+    > {
       return Observable.create((obs: any) => {
         const error = this.expected !== c.value ? this.error : null;
         obs.next(error);

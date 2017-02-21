@@ -15,7 +15,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
-import {AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 export const formControlBinding: any = {
   provide: NgControl,
@@ -77,7 +77,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<AsyncValidator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
