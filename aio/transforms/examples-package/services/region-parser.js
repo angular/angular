@@ -19,7 +19,8 @@ regionParserImpl.regionMatchers = {
   html: html,
   css: blockC,
   yaml: inlineHash,
-  jade: inlineCOnly
+  jade: inlineCOnly,
+  'json.annotated': inlineC
 };
 
 /**
