@@ -213,29 +213,33 @@ function renderEventHandlerClosure(view: ViewData, index: number, eventName: str
 
 export function checkAndUpdateElementInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
-    v7: any, v8: any, v9: any) {
+    v7: any, v8: any, v9: any): boolean {
   const bindLen = def.bindings.length;
-  if (bindLen > 0) checkAndUpdateElementValue(view, def, 0, v0);
-  if (bindLen > 1) checkAndUpdateElementValue(view, def, 1, v1);
-  if (bindLen > 2) checkAndUpdateElementValue(view, def, 2, v2);
-  if (bindLen > 3) checkAndUpdateElementValue(view, def, 3, v3);
-  if (bindLen > 4) checkAndUpdateElementValue(view, def, 4, v4);
-  if (bindLen > 5) checkAndUpdateElementValue(view, def, 5, v5);
-  if (bindLen > 6) checkAndUpdateElementValue(view, def, 6, v6);
-  if (bindLen > 7) checkAndUpdateElementValue(view, def, 7, v7);
-  if (bindLen > 8) checkAndUpdateElementValue(view, def, 8, v8);
-  if (bindLen > 9) checkAndUpdateElementValue(view, def, 9, v9);
+  let changed = false;
+  if (bindLen > 0 && checkAndUpdateElementValue(view, def, 0, v0)) changed = true;
+  if (bindLen > 1 && checkAndUpdateElementValue(view, def, 1, v1)) changed = true;
+  if (bindLen > 2 && checkAndUpdateElementValue(view, def, 2, v2)) changed = true;
+  if (bindLen > 3 && checkAndUpdateElementValue(view, def, 3, v3)) changed = true;
+  if (bindLen > 4 && checkAndUpdateElementValue(view, def, 4, v4)) changed = true;
+  if (bindLen > 5 && checkAndUpdateElementValue(view, def, 5, v5)) changed = true;
+  if (bindLen > 6 && checkAndUpdateElementValue(view, def, 6, v6)) changed = true;
+  if (bindLen > 7 && checkAndUpdateElementValue(view, def, 7, v7)) changed = true;
+  if (bindLen > 8 && checkAndUpdateElementValue(view, def, 8, v8)) changed = true;
+  if (bindLen > 9 && checkAndUpdateElementValue(view, def, 9, v9)) changed = true;
+  return changed;
 }
 
-export function checkAndUpdateElementDynamic(view: ViewData, def: NodeDef, values: any[]) {
+export function checkAndUpdateElementDynamic(view: ViewData, def: NodeDef, values: any[]): boolean {
+  let changed = false;
   for (let i = 0; i < values.length; i++) {
-    checkAndUpdateElementValue(view, def, i, values[i]);
+    if (checkAndUpdateElementValue(view, def, i, values[i])) changed = true;
   }
+  return changed;
 }
 
 function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   if (!checkAndUpdateBinding(view, def, bindingIdx, value)) {
-    return;
+    return false;
   }
   const binding = def.bindings[bindingIdx];
   const elData = asElementData(view, def.index);
@@ -258,6 +262,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
       setElementProperty(elData.componentView, binding, renderNode, name, value);
       break;
   }
+  return true;
 }
 
 function setElementAttribute(

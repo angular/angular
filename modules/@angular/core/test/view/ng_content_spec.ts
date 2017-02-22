@@ -114,7 +114,7 @@ export function main() {
       const componentView = asElementData(view, 0).componentView;
       const view0 = Services.createEmbeddedView(componentView, componentView.def.nodes[1]);
 
-      attachEmbeddedView(asElementData(componentView, 1), 0, view0);
+      attachEmbeddedView(view, asElementData(componentView, 1), 0, view0);
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0])).length).toBe(3);
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0]))[1])
           .toBe(asTextData(view, 2).renderText);

@@ -16,7 +16,7 @@ import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAn
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ArgumentType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
+import {ArgumentType, CheckType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, NodeType, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
 import {checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
 
 const NOOP = (): any => undefined;
@@ -246,7 +246,7 @@ function createView(
   const view: ViewData = {
     def,
     parent,
-    parentNodeDef,
+    viewContainerParent: undefined, parentNodeDef,
     context: undefined,
     component: undefined, nodes,
     state: ViewState.FirstCheck | ViewState.ChecksEnabled, root, renderer,
@@ -339,35 +339,35 @@ function createViewNodes(view: ViewData) {
   // fill static content and view queries
   execQueriesAction(
       view, NodeFlags.HasContentQuery | NodeFlags.HasViewQuery, NodeFlags.HasStaticQuery,
-      QueryAction.CheckAndUpdate);
+      CheckType.CheckAndUpdate);
 }
 
 export function checkNoChangesView(view: ViewData) {
-  Services.updateDirectives(checkNoChangesNode, view);
+  Services.updateDirectives(view, CheckType.CheckNoChanges);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
   execQueriesAction(
-      view, NodeFlags.HasContentQuery, NodeFlags.HasDynamicQuery, QueryAction.CheckNoChanges);
-  Services.updateRenderer(checkNoChangesNode, view);
+      view, NodeFlags.HasContentQuery, NodeFlags.HasDynamicQuery, CheckType.CheckNoChanges);
+  Services.updateRenderer(view, CheckType.CheckNoChanges);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
   execQueriesAction(
-      view, NodeFlags.HasViewQuery, NodeFlags.HasDynamicQuery, QueryAction.CheckNoChanges);
+      view, NodeFlags.HasViewQuery, NodeFlags.HasDynamicQuery, CheckType.CheckNoChanges);
 }
 
 export function checkAndUpdateView(view: ViewData) {
-  Services.updateDirectives(checkAndUpdateNode, view);
+  Services.updateDirectives(view, CheckType.CheckAndUpdate);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
-      view, NodeFlags.HasContentQuery, NodeFlags.HasDynamicQuery, QueryAction.CheckAndUpdate);
+      view, NodeFlags.HasContentQuery, NodeFlags.HasDynamicQuery, CheckType.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterContentChecked |
           (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
 
-  Services.updateRenderer(checkAndUpdateNode, view);
+  Services.updateRenderer(view, CheckType.CheckAndUpdate);
 
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
-      view, NodeFlags.HasViewQuery, NodeFlags.HasDynamicQuery, QueryAction.CheckAndUpdate);
+      view, NodeFlags.HasViewQuery, NodeFlags.HasDynamicQuery, CheckType.CheckAndUpdate);
 
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterViewChecked |
@@ -379,61 +379,83 @@ export function checkAndUpdateView(view: ViewData) {
   view.state &= ~ViewState.FirstCheck;
 }
 
-function checkAndUpdateNode(
-    view: ViewData, nodeIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
-    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
+export function checkAndUpdateNode(
+    view: ViewData, nodeDef: NodeDef, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
+    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): boolean {
   if (argStyle === ArgumentType.Inline) {
-    return checkAndUpdateNodeInline(view, nodeIndex, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    return checkAndUpdateNodeInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
   } else {
-    return checkAndUpdateNodeDynamic(view, nodeIndex, v0);
+    return checkAndUpdateNodeDynamic(view, nodeDef, v0);
   }
 }
 
 function checkAndUpdateNodeInline(
-    view: ViewData, nodeIndex: number, v0?: any, v1?: any, v2?: any, v3?: any, v4?: any, v5?: any,
-    v6?: any, v7?: any, v8?: any, v9?: any): any {
-  const nodeDef = view.def.nodes[nodeIndex];
+    view: ViewData, nodeDef: NodeDef, v0?: any, v1?: any, v2?: any, v3?: any, v4?: any, v5?: any,
+    v6?: any, v7?: any, v8?: any, v9?: any): boolean {
+  let changed = false;
   switch (nodeDef.type) {
     case NodeType.Element:
-      return checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      changed = checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      break;
     case NodeType.Text:
-      return checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      changed = checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      break;
     case NodeType.Directive:
-      return checkAndUpdateDirectiveInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      changed =
+          checkAndUpdateDirectiveInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      break;
     case NodeType.PureExpression:
-      return checkAndUpdatePureExpressionInline(
-          view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      changed =
+          checkAndUpdatePureExpressionInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+      break;
   }
+  return changed;
 }
 
-function checkAndUpdateNodeDynamic(view: ViewData, nodeIndex: number, values: any[]): any {
-  const nodeDef = view.def.nodes[nodeIndex];
+function checkAndUpdateNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any[]): boolean {
+  let changed = false;
   switch (nodeDef.type) {
     case NodeType.Element:
-      return checkAndUpdateElementDynamic(view, nodeDef, values);
+      changed = checkAndUpdateElementDynamic(view, nodeDef, values);
+      break;
     case NodeType.Text:
-      return checkAndUpdateTextDynamic(view, nodeDef, values);
+      changed = checkAndUpdateTextDynamic(view, nodeDef, values);
+      break;
     case NodeType.Directive:
-      return checkAndUpdateDirectiveDynamic(view, nodeDef, values);
+      changed = checkAndUpdateDirectiveDynamic(view, nodeDef, values);
+      break;
     case NodeType.PureExpression:
-      return checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
+      changed = checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
+      break;
   }
+  if (changed) {
+    // Update oldValues after all bindings have been updated,
+    // as a setter for a property might update other properties.
+    const bindLen = nodeDef.bindings.length;
+    const bindingStart = nodeDef.bindingIndex;
+    const oldValues = view.oldValues;
+    for (let i = 0; i < bindLen; i++) {
+      oldValues[bindingStart + i] = values[i];
+    }
+  }
+  return changed;
 }
 
-function checkNoChangesNode(
-    view: ViewData, nodeIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
+export function checkNoChangesNode(
+    view: ViewData, nodeDef: NodeDef, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
     v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
   if (argStyle === ArgumentType.Inline) {
-    return checkNoChangesNodeInline(view, nodeIndex, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    checkNoChangesNodeInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
   } else {
-    return checkNoChangesNodeDynamic(view, nodeIndex, v0);
+    checkNoChangesNodeDynamic(view, nodeDef, v0);
   }
+  // Returning false is ok here as we would have thrown in case of a change.
+  return false;
 }
 
 function checkNoChangesNodeInline(
-    view: ViewData, nodeIndex: number, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
-    v6: any, v7: any, v8: any, v9: any): void {
-  const nodeDef = view.def.nodes[nodeIndex];
+    view: ViewData, nodeDef: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
+    v7: any, v8: any, v9: any): void {
   const bindLen = nodeDef.bindings.length;
   if (bindLen > 0) checkBindingNoChanges(view, nodeDef, 0, v0);
   if (bindLen > 1) checkBindingNoChanges(view, nodeDef, 1, v1);
@@ -445,17 +467,12 @@ function checkNoChangesNodeInline(
   if (bindLen > 7) checkBindingNoChanges(view, nodeDef, 7, v7);
   if (bindLen > 8) checkBindingNoChanges(view, nodeDef, 8, v8);
   if (bindLen > 9) checkBindingNoChanges(view, nodeDef, 9, v9);
-  return nodeDef.type === NodeType.PureExpression ? asPureExpressionData(view, nodeIndex).value :
-                                                    undefined;
 }
 
-function checkNoChangesNodeDynamic(view: ViewData, nodeIndex: number, values: any[]): void {
-  const nodeDef = view.def.nodes[nodeIndex];
+function checkNoChangesNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any[]): void {
   for (let i = 0; i < values.length; i++) {
     checkBindingNoChanges(view, nodeDef, i, values[i]);
   }
-  return nodeDef.type === NodeType.PureExpression ? asPureExpressionData(view, nodeIndex).value :
-                                                    undefined;
 }
 
 function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
@@ -574,13 +591,9 @@ function callViewAction(view: ViewData, action: ViewAction) {
   }
 }
 
-enum QueryAction {
-  CheckAndUpdate,
-  CheckNoChanges
-}
-
 function execQueriesAction(
-    view: ViewData, queryFlags: NodeFlags, staticDynamicQueryFlag: NodeFlags, action: QueryAction) {
+    view: ViewData, queryFlags: NodeFlags, staticDynamicQueryFlag: NodeFlags,
+    checkType: CheckType) {
   if (!(view.def.nodeFlags & queryFlags) || !(view.def.nodeFlags & staticDynamicQueryFlag)) {
     return;
   }
@@ -589,11 +602,11 @@ function execQueriesAction(
     const nodeDef = view.def.nodes[i];
     if ((nodeDef.flags & queryFlags) && (nodeDef.flags & staticDynamicQueryFlag)) {
       Services.setCurrentNode(view, nodeDef.index);
-      switch (action) {
-        case QueryAction.CheckAndUpdate:
+      switch (checkType) {
+        case CheckType.CheckAndUpdate:
           checkAndUpdateQuery(view, nodeDef);
           break;
-        case QueryAction.CheckNoChanges:
+        case CheckType.CheckNoChanges:
           checkNoChangesQuery(view, nodeDef);
           break;
       }

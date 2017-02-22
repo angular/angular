@@ -78,7 +78,7 @@ export function main() {
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
            const view = jasmine.createSpyObj('view', ['detach', 'attachToAppRef']);
            const viewRef = jasmine.createSpyObj(
-               'viewRef', ['detectChanges', 'detachFromContainer', 'attachToAppRef']);
+               'viewRef', ['detectChanges', 'detachFromAppRef', 'attachToAppRef']);
            viewRef.internalView = view;
            view.ref = viewRef;
            try {

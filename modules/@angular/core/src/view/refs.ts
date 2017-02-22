@@ -20,7 +20,8 @@ import {Type} from '../type';
 import {VERSION} from '../version';
 
 import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
-import {isComponentView, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
+import {isComponentView, markParentViewsForCheck, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
+import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
 const EMPTY_CONTEXT = new Object();
 
@@ -98,14 +99,13 @@ class ViewContainerRef_ implements ViewContainerRef {
   clear(): void {
     const len = this._data.embeddedViews.length;
     for (let i = len - 1; i >= 0; i--) {
-      const view = Services.detachEmbeddedView(this._data, i);
+      const view = detachEmbeddedView(this._data, i);
       Services.destroyView(view);
     }
   }
 
-  get(index: number): ViewRef { return this._getViewRef(this._data.embeddedViews[index]); }
-
-  private _getViewRef(view: ViewData) {
+  get(index: number): ViewRef {
+    const view = this._data.embeddedViews[index];
     if (view) {
       const ref = new ViewRef_(view);
       ref.attachToViewContainerRef(this);
@@ -135,14 +135,14 @@ class ViewContainerRef_ implements ViewContainerRef {
   insert(viewRef: ViewRef, index?: number): ViewRef {
     const viewRef_ = <ViewRef_>viewRef;
     const viewData = viewRef_._view;
-    Services.attachEmbeddedView(this._data, index, viewData);
+    attachEmbeddedView(this._view, this._data, index, viewData);
     viewRef_.attachToViewContainerRef(this);
     return viewRef;
   }
 
   move(viewRef: ViewRef_, currentIndex: number): ViewRef {
     const previousIndex = this._data.embeddedViews.indexOf(viewRef._view);
-    Services.moveEmbeddedView(this._data, previousIndex, currentIndex);
+    moveEmbeddedView(this._data, previousIndex, currentIndex);
     return viewRef;
   }
 
@@ -151,20 +151,15 @@ class ViewContainerRef_ implements ViewContainerRef {
   }
 
   remove(index?: number): void {
-    const viewData = Services.detachEmbeddedView(this._data, index);
+    const viewData = detachEmbeddedView(this._data, index);
     if (viewData) {
       Services.destroyView(viewData);
     }
   }
 
   detach(index?: number): ViewRef {
-    const view = Services.detachEmbeddedView(this._data, index);
-    if (view) {
-      const viewRef = this._getViewRef(view);
-      viewRef.detachFromContainer();
-      return viewRef;
-    }
-    return null;
+    const view = detachEmbeddedView(this._data, index);
+    return view ? new ViewRef_(view) : null;
   }
 }
 
@@ -190,7 +185,7 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
 
   get destroyed(): boolean { return (this._view.state & ViewState.Destroyed) !== 0; }
 
-  markForCheck(): void { this.reattach(); }
+  markForCheck(): void { markParentViewsForCheck(this._view); }
   detach(): void { this._view.state &= ~ViewState.ChecksEnabled; }
   detectChanges(): void { Services.checkAndUpdateView(this._view); }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
@@ -212,9 +207,10 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     Services.destroyView(this._view);
   }
 
-  detachFromContainer() {
+  detachFromAppRef() {
     this._appRef = null;
-    this._viewContainerRef = null;
+    renderDetachView(this._view);
+    Services.dirtyParentQueries(this._view);
   }
 
   attachToAppRef(appRef: ApplicationRef) {

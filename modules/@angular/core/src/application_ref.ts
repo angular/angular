@@ -493,7 +493,7 @@ export class ApplicationRef_ extends ApplicationRef {
   detachView(viewRef: ViewRef): void {
     const view = (viewRef as InternalViewRef);
     ListWrapper.remove(this._views, view);
-    view.detachFromContainer();
+    view.detachFromAppRef();
   }
 
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>): ComponentRef<C> {

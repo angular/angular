@@ -447,7 +447,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     dirAst.directive.queries.forEach((query, queryIndex) => {
       let flags = NodeFlags.HasContentQuery;
       const queryId = dirAst.contentQueryStartId + queryIndex;
-      if (queryIds.staticQueryIds.has(queryId)) {
+      // Note: We only make queries static that query for a single item.
+      // This is because of backwards compatibility with the old view compiler...
+      if (queryIds.staticQueryIds.has(queryId) && query.first) {
         flags |= NodeFlags.HasStaticQuery;
       } else {
         flags |= NodeFlags.HasDynamicQuery;

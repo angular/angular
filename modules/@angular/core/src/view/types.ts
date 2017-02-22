@@ -312,6 +312,7 @@ export interface ViewData {
   // index of component provider / anchor.
   parentNodeDef: NodeDef;
   parent: ViewData;
+  viewContainerParent: ViewData;
   component: any;
   context: any;
   // Attention: Never loop over this, as this will
@@ -448,6 +449,11 @@ export abstract class DebugContext {
 // Other
 // -------------------------------------
 
+export enum CheckType {
+  CheckAndUpdate,
+  CheckNoChanges
+}
+
 export interface Services {
   setCurrentNode(view: ViewData, nodeIndex: number): void;
   createRootView(
@@ -456,17 +462,15 @@ export interface Services {
   createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;
-  attachEmbeddedView(elementData: ElementData, viewIndex: number, view: ViewData): void;
-  detachEmbeddedView(elementData: ElementData, viewIndex: number): ViewData;
-  moveEmbeddedView(elementData: ElementData, oldViewIndex: number, newViewIndex: number): ViewData;
   destroyView(view: ViewData): void;
   resolveDep(
       view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
       notFoundValue?: any): any;
   createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
   handleEvent: ViewHandleEventFn;
-  updateDirectives: ViewUpdateFn;
-  updateRenderer: ViewUpdateFn;
+  updateDirectives: (view: ViewData, checkType: CheckType) => void;
+  updateRenderer: (view: ViewData, checkType: CheckType) => void;
+  dirtyParentQueries: (view: ViewData) => void;
 }
 
 /**
@@ -480,12 +484,10 @@ export const Services: Services = {
   checkAndUpdateView: undefined,
   checkNoChangesView: undefined,
   destroyView: undefined,
-  attachEmbeddedView: undefined,
-  detachEmbeddedView: undefined,
-  moveEmbeddedView: undefined,
   resolveDep: undefined,
   createDebugContext: undefined,
   handleEvent: undefined,
   updateDirectives: undefined,
   updateRenderer: undefined,
+  dirtyParentQueries: undefined,
 };

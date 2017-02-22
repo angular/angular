@@ -156,7 +156,7 @@ export function main() {
         ]));
 
         const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
-        attachEmbeddedView(asElementData(view, 3), 0, childView);
+        attachEmbeddedView(view, asElementData(view, 3), 0, childView);
         Services.checkAndUpdateView(view);
 
         // queries on parent elements of anchors
@@ -185,7 +185,7 @@ export function main() {
 
         const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
         // attach at a different place than the one where the template was defined
-        attachEmbeddedView(asElementData(view, 7), 0, childView);
+        attachEmbeddedView(view, asElementData(view, 7), 0, childView);
 
         Services.checkAndUpdateView(view);
 
@@ -215,12 +215,13 @@ export function main() {
         expect(qs.a.length).toBe(0);
 
         const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
-        attachEmbeddedView(asElementData(view, 3), 0, childView);
+        attachEmbeddedView(view, asElementData(view, 3), 0, childView);
         Services.checkAndUpdateView(view);
 
         expect(qs.a.length).toBe(1);
 
         detachEmbeddedView(asElementData(view, 3), 0);
+
         Services.checkAndUpdateView(view);
 
         expect(qs.a.length).toBe(0);
@@ -245,7 +246,7 @@ export function main() {
 
         const compView = asElementData(view, 0).componentView;
         const childView = Services.createEmbeddedView(compView, compView.def.nodes[1]);
-        attachEmbeddedView(asElementData(compView, 1), 0, childView);
+        attachEmbeddedView(view, asElementData(compView, 1), 0, childView);
         Services.checkAndUpdateView(view);
 
         expect(comp.a.length).toBe(1);
@@ -381,7 +382,7 @@ export function main() {
         Services.checkNoChangesView(view);
 
         const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
-        attachEmbeddedView(asElementData(view, 3), 0, childView);
+        attachEmbeddedView(view, asElementData(view, 3), 0, childView);
 
         let err: any;
         try {

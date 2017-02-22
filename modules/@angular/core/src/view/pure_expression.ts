@@ -69,7 +69,7 @@ export function createPureExpression(view: ViewData, def: NodeDef): PureExpressi
 
 export function checkAndUpdatePureExpressionInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
-    v7: any, v8: any, v9: any) {
+    v7: any, v8: any, v9: any): boolean {
   const bindings = def.bindings;
   let changed = false;
   const bindLen = bindings.length;
@@ -84,8 +84,8 @@ export function checkAndUpdatePureExpressionInline(
   if (bindLen > 8 && checkAndUpdateBinding(view, def, 8, v8)) changed = true;
   if (bindLen > 9 && checkAndUpdateBinding(view, def, 9, v9)) changed = true;
 
-  const data = asPureExpressionData(view, def.index);
   if (changed) {
+    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -152,10 +152,11 @@ export function checkAndUpdatePureExpressionInline(
     }
     data.value = value;
   }
-  return data.value;
+  return changed;
 }
 
-export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef, values: any[]) {
+export function checkAndUpdatePureExpressionDynamic(
+    view: ViewData, def: NodeDef, values: any[]): boolean {
   const bindings = def.bindings;
   let changed = false;
   for (let i = 0; i < values.length; i++) {
@@ -165,8 +166,8 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
       changed = true;
     }
   }
-  const data = asPureExpressionData(view, def.index);
   if (changed) {
+    const data = asPureExpressionData(view, def.index);
     let value: any;
     switch (def.pureExpression.type) {
       case PureExpressionType.Array:
@@ -186,5 +187,5 @@ export function checkAndUpdatePureExpressionDynamic(view: ViewData, def: NodeDef
     }
     data.value = value;
   }
-  return data.value;
+  return changed;
 }

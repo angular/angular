@@ -89,7 +89,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 }
 
 export interface InternalViewRef extends ViewRef {
-  detachFromContainer(): void;
+  detachFromAppRef(): void;
   attachToAppRef(appRef: ApplicationRef): void;
 }
 
@@ -131,7 +131,7 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef, Inter
 
   destroy() { this._view.detachAndDestroy(); }
 
-  detachFromContainer() { this._view.detach(); }
+  detachFromAppRef() { this._view.detach(); }
 
   attachToAppRef(appRef: ApplicationRef) { this._view.attachToAppRef(appRef); }
 }

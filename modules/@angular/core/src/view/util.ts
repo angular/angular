@@ -60,9 +60,22 @@ export function createRendererTypeV2(values: {
 
 export function checkBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
-  const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  return unwrapCounter > 0 || !!(view.state & ViewState.FirstCheck) ||
-      !devModeEqual(oldValue, value);
+  const oldValues = view.oldValues;
+  if (unwrapCounter > 0 || !!(view.state & ViewState.FirstCheck) ||
+      !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
+    unwrapCounter = 0;
+    return true;
+  }
+  return false;
+}
+
+export function checkAndUpdateBinding(
+    view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
+  if (checkBinding(view, def, bindingIdx, value)) {
+    view.oldValues[def.bindingIndex + bindingIdx] = value;
+    return true;
+  }
+  return false;
 }
 
 export function checkBindingNoChanges(
@@ -76,27 +89,19 @@ export function checkBindingNoChanges(
   }
 }
 
-export function checkAndUpdateBinding(
-    view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
-  const oldValues = view.oldValues;
-  if (unwrapCounter || (view.state & ViewState.FirstCheck) ||
-      !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
-    unwrapCounter = 0;
-    oldValues[def.bindingIndex + bindingIdx] = value;
-    return true;
-  }
-  return false;
-}
-
-export function dispatchEvent(
-    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
+export function markParentViewsForCheck(view: ViewData) {
   let currView = view;
   while (currView) {
     if (currView.def.flags & ViewFlags.OnPush) {
       currView.state |= ViewState.ChecksEnabled;
     }
-    currView = currView.parent;
+    currView = currView.viewContainerParent || currView.parent;
   }
+}
+
+export function dispatchEvent(
+    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
+  markParentViewsForCheck(view);
   return Services.handleEvent(view, nodeIndex, eventName, event);
 }
 

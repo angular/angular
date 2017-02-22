@@ -255,7 +255,7 @@ export class Identifiers {
   static pureArrayDef:
       IdentifierSpec = {name: 'ɵpureArrayDef', moduleUrl: CORE, runtime: ɵpureArrayDef};
   static pureObjectDef:
-      IdentifierSpec = {name: 'ɵpureObjectRef', moduleUrl: CORE, runtime: ɵpureObjectDef};
+      IdentifierSpec = {name: 'ɵpureObjectDef', moduleUrl: CORE, runtime: ɵpureObjectDef};
   static purePipeDef:
       IdentifierSpec = {name: 'ɵpurePipeDef', moduleUrl: CORE, runtime: ɵpurePipeDef};
   static pipeDef: IdentifierSpec = {name: 'ɵpipeDef', moduleUrl: CORE, runtime: ɵpipeDef};

@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {dirtyParentQueries} from './query';
-import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, ViewData, asElementData, asProviderData, asTextData} from './types';
+import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, Services, ViewData, asElementData, asProviderData, asTextData} from './types';
 import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, rootRenderNodes, visitProjectedRenderNodes, visitRootRenderNodes} from './util';
 
-export function attachEmbeddedView(elementData: ElementData, viewIndex: number, view: ViewData) {
+export function attachEmbeddedView(
+    parentView: ViewData, elementData: ElementData, viewIndex: number, view: ViewData) {
   let embeddedViews = elementData.embeddedViews;
   if (viewIndex == null) {
     viewIndex = embeddedViews.length;
   }
+  view.viewContainerParent = parentView;
   addToArray(embeddedViews, viewIndex, view);
   const dvcElementData = declaredViewContainer(view);
   if (dvcElementData && dvcElementData !== elementData) {
@@ -25,7 +26,7 @@ export function attachEmbeddedView(elementData: ElementData, viewIndex: number, 
     projectedViews.push(view);
   }
 
-  dirtyParentQueries(view);
+  Services.dirtyParentQueries(view);
 
   const prevView = viewIndex > 0 ? embeddedViews[viewIndex - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
@@ -40,6 +41,7 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
     return null;
   }
   const view = embeddedViews[viewIndex];
+  view.viewContainerParent = undefined;
   removeFromArray(embeddedViews, viewIndex);
 
   const dvcElementData = declaredViewContainer(view);
@@ -48,9 +50,9 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
     removeFromArray(projectedViews, projectedViews.indexOf(view));
   }
 
-  dirtyParentQueries(view);
+  Services.dirtyParentQueries(view);
 
-  renderDetachEmbeddedView(elementData, view);
+  renderDetachView(view);
 
   return view;
 }
@@ -68,9 +70,9 @@ export function moveEmbeddedView(
   // Note: Don't need to change projectedViews as the order in there
   // as always invalid...
 
-  dirtyParentQueries(view);
+  Services.dirtyParentQueries(view);
 
-  renderDetachEmbeddedView(elementData, view);
+  renderDetachView(view);
   const prevView = newViewIndex > 0 ? embeddedViews[newViewIndex - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
 
@@ -87,9 +89,8 @@ function renderAttachEmbeddedView(elementData: ElementData, prevView: ViewData, 
   visitRootRenderNodes(view, RenderNodeAction.InsertBefore, parentNode, nextSibling, undefined);
 }
 
-function renderDetachEmbeddedView(elementData: ElementData, view: ViewData) {
-  const parentNode = view.renderer.parentNode(elementData.renderElement);
-  visitRootRenderNodes(view, RenderNodeAction.RemoveChild, parentNode, null, undefined);
+export function renderDetachView(view: ViewData) {
+  visitRootRenderNodes(view, RenderNodeAction.RemoveChild, null, null, undefined);
 }
 
 function addToArray(arr: any[], index: number, value: any) {
