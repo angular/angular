@@ -137,6 +137,15 @@ export function main() {
              .toThrowError(`Expected 'styles' to be an array of strings.`);
        }));
 
+    it('should throw with descriptive error message when a module imports itself',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({imports: [SomeModule]})
+         class SomeModule {
+         }
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
+             .toThrowError(`'SomeModule' module can't import itself`);
+       }));
+
     it('should throw with descriptive error message when provider token can not be resolved',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp1]})
@@ -146,6 +155,7 @@ export function main() {
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
        }));
+
     it('should throw with descriptive error message when a directive is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({imports: [ComponentWithoutModuleId]})
