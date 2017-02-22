@@ -30,7 +30,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/upgrade"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/upgrade"
   }
 }

@@ -109,7 +109,7 @@ export class MetadataWriterHost extends DelegatingHost {
         if (sourceFiles.length > 1) {
           throw new Error('Bundled emit with --out is not supported');
         }
-        if (!this.ngOptions.skipMetadataEmit && !this.ngOptions.bundleIndex) {
+        if (!this.ngOptions.skipMetadataEmit && !this.ngOptions.flatModuleOutFile) {
           this.writeMetadata(fileName, sourceFiles[0]);
         }
       }
