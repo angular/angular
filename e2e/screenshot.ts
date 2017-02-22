@@ -3,11 +3,14 @@ import * as path from 'path';
 import {browser} from 'protractor';
 
 const OUTPUT_DIR = './screenshots/';
+const HEIGHT = 768;
+const WIDTH = 1024;
 
 let currentJasmineSpecName = '';
 
 /**  Adds a custom jasmine reporter that simply keeps track of the current test name. */
 function initializeEnvironment(jasmine: any) {
+  browser.manage().window().setSize(WIDTH, HEIGHT);
   let reporter = new jasmine.JsApiReporter({});
   reporter.specStarted = function(result: any) {
     currentJasmineSpecName = result.fullName;
