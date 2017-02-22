@@ -22,7 +22,7 @@ All you need is to create a `@mixin` function in the custom-component-theme.scss
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
 
-  // Use md-color to extract individual colors from a palette as necessary.
+  // Use mat-color to extract individual colors from a palette as necessary.
   .candy-carousel {
     background-color: mat-color($primary);
     border-color: mat-color($accent, A400);
