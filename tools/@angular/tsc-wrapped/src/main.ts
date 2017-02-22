@@ -86,7 +86,25 @@ export function main(
       parsed.fileNames.push(name);
     }
 
-    const program = createProgram(host);
+    const tsickleCompilerHostOptions: tsickle.Options = {
+      googmodule: false,
+      untyped: true,
+      convertIndexImportShorthand:
+          ngOptions.target === ts.ScriptTarget.ES2015,  // This covers ES6 too
+    };
+
+    const tsickleHost: tsickle.TsickleHost = {
+      shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+      pathToModuleName: (context, importPath) => '',
+      shouldIgnoreWarningsForPath: (filePath) => false,
+      fileNameToModuleId: (fileName) => fileName,
+    };
+
+    const tsickleCompilerHost =
+        new tsickle.TsickleCompilerHost(host, ngOptions, tsickleCompilerHostOptions, tsickleHost);
+
+    const program = createProgram(tsickleCompilerHost);
+
     const errors = program.getOptionsDiagnostics();
     check(errors);
 
@@ -97,34 +115,15 @@ export function main(
     if (diagnostics) console.time('NG codegen');
     return codegen(ngOptions, cliOptions, program, host).then(() => {
       if (diagnostics) console.timeEnd('NG codegen');
-      let definitionsHost = host;
+      let definitionsHost: ts.CompilerHost = tsickleCompilerHost;
       if (!ngOptions.skipMetadataEmit) {
-        definitionsHost = new MetadataWriterHost(host, ngOptions);
+        definitionsHost = new MetadataWriterHost(tsickleCompilerHost, ngOptions);
       }
       // Create a new program since codegen files were created after making the old program
       let programWithCodegen = createProgram(definitionsHost, program);
       tsc.typeCheck(host, programWithCodegen);
 
-      let preprocessHost = host;
       let programForJsEmit = programWithCodegen;
-
-
-      const tsickleCompilerHostOptions: tsickle.Options = {
-        googmodule: false,
-        untyped: true,
-        convertIndexImportShorthand:
-            ngOptions.target === ts.ScriptTarget.ES2015,  // This covers ES6 too
-      };
-
-      const tsickleHost: tsickle.TsickleHost = {
-        shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
-        pathToModuleName: (context, importPath) => '',
-        shouldIgnoreWarningsForPath: (filePath) => false,
-        fileNameToModuleId: (fileName) => fileName,
-      };
-
-      const tsickleCompilerHost = new tsickle.TsickleCompilerHost(
-          preprocessHost, ngOptions, tsickleCompilerHostOptions, tsickleHost);
 
       if (ngOptions.annotationsAs !== 'decorators') {
         if (diagnostics) console.time('NG downlevel');
@@ -133,7 +132,6 @@ export function main(
         // metadataWriter
         programForJsEmit = createProgram(tsickleCompilerHost);
         check(tsickleCompilerHost.diagnostics);
-        preprocessHost = tsickleCompilerHost;
         if (diagnostics) console.timeEnd('NG downlevel');
       }
 
