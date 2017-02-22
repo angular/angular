@@ -20,7 +20,7 @@ export class RenderComponentType {
   constructor(
       public id: string, public templateUrl: string, public slotCount: number,
       public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>,
-      public animations: {[key: string]: Function}) {}
+      public animations: any) {}
 }
 
 export abstract class RenderDebugInfo {
@@ -90,6 +90,8 @@ export abstract class Renderer {
       duration: number, delay: number, easing: string,
       previousPlayers?: AnimationPlayer[]): AnimationPlayer;
 }
+
+export const RendererV2Interceptor = new InjectionToken<RendererV2[]>('RendererV2Interceptor');
 
 /**
  * Injectable service that provides a low-level interface for modifying the UI.

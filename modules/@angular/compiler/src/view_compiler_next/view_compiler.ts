@@ -49,8 +49,9 @@ export class ViewCompilerNext extends ViewCompiler {
               new o.LiteralMapExpr([
                 new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
                 new o.LiteralMapEntry('styles', styles),
-                // TODO: copy this from the @Component directive...
-                new o.LiteralMapEntry('data', o.literalMap([])),
+                new o.LiteralMapEntry('data', o.literalMap([
+                  ['animation', convertValueToOutputAst(component.template.animations)]
+                ])),
               ])
             ]))
             .toDeclStmt(
@@ -347,11 +348,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     }
     const usedEvents = new Map<string, [string, string]>();
     ast.outputs.forEach((event) => {
-      usedEvents.set(elementEventFullName(event.target, event.name), [event.target, event.name]);
+      const en = eventName(event);
+      usedEvents.set(elementEventFullName(event.target, en), [event.target, en]);
     });
     ast.directives.forEach((dirAst) => {
       dirAst.hostEvents.forEach((event) => {
-        usedEvents.set(elementEventFullName(event.target, event.name), [event.target, event.name]);
+        const en = eventName(event);
+        usedEvents.set(elementEventFullName(event.target, en), [event.target, en]);
       });
     });
     const hostBindings: {value: AST, context: o.Expression}[] = [];
@@ -713,7 +716,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       if (allowDefault) {
         trueStmts.push(ALLOW_DEFAULT_VAR.set(allowDefault.and(ALLOW_DEFAULT_VAR)).toStmt());
       }
-      const fullEventName = elementEventFullName(eventAst.target, eventAst.name);
+      const fullEventName = elementEventFullName(eventAst.target, eventName(eventAst));
       handleEventStmts.push(
           new o.IfStmt(o.literal(fullEventName).identical(EVENT_NAME_VAR), trueStmts));
     });
@@ -895,7 +898,7 @@ function elementBindingDefs(inputAsts: BoundElementPropertyAst[]): o.Expression[
         ]);
       case PropertyBindingType.Animation:
         return o.literalArr([
-          o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
+          o.literal(BindingType.ElementProperty), o.literal('@' + inputAst.name),
           o.literal(inputAst.securityContext)
         ]);
       case PropertyBindingType.Class:
@@ -1020,4 +1023,8 @@ function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst
         ProviderAstType.PrivateService, [], componentDirMeta.sourceSpan);
   }
   return null;
+}
+
+function eventName(eventAst: BoundEventAst): string {
+  return eventAst.isAnimation ? `@${eventAst.name}.${eventAst.phase}` : eventAst.name;
 }

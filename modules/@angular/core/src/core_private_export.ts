@@ -35,6 +35,5 @@ export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/r
 export {ReflectorReader as ɵReflectorReader} from './reflection/reflector_reader';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
-export {TransitionEngine as ɵTransitionEngine} from './transition/transition_engine';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
