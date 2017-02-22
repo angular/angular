@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 
 
 @Component({
@@ -6,6 +6,7 @@ import {Component} from '@angular/core';
   selector: 'list-demo',
   templateUrl: 'list-demo.html',
   styleUrls: ['list-demo.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ListDemo {
   items: string[] = [

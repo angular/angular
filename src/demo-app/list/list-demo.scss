@@ -1,5 +1,4 @@
-
-.demo {
+.list-demo {
   display: flex;
   flex-flow: row wrap;
 
@@ -9,20 +8,32 @@
     margin: 20px 20px 0 0;
 
   }
+
   h2 {
     margin-top: 20px;
   }
+}
 
-  .mat-icon {
-    color: rgba(0, 0, 0, 0.12);
+/* Theme for the list-item demo elements. */
+@mixin demo-list-item-theme($dark: false) {
+  $base-color: if($dark, white, black);
+
+  .list-demo .mat-icon {
+    color: rgba($base-color, 0.12);
   }
 
-  .mat-list-icon {
+  .list-demo .mat-list-icon {
     color: white;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba($base-color, 0.3);
+  }
+
+  .list-demo .demo-secondary-text {
+    color: rgba($base-color, 0.54);
   }
 }
 
-.demo-secondary-text {
-  color: rgba(0, 0, 0, 0.54);
+@include demo-list-item-theme(false);
+
+.demo-dark-theme {
+  @include demo-list-item-theme(true);
 }

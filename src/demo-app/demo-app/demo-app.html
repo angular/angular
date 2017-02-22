@@ -1,41 +1,46 @@
-<md-sidenav-container class="demo-root" fullscreen>
-  <md-sidenav #start>
-    <md-nav-list>
-      <a *ngFor="let navItem of navItems"
-         md-list-item
-         (click)="start.close()"
-         [routerLink]="[navItem.route]">
-        {{navItem.name}}
-      </a>
+<!-- Theme class needs to be applied above sidenav-container to style content background. -->
+<div [class.demo-dark-theme]="isDarkTheme">
+  <md-sidenav-container class="demo-root" fullscreen>
+    <md-sidenav #start>
+      <md-nav-list>
+        <a *ngFor="let navItem of navItems"
+           md-list-item
+           (click)="start.close()"
+           [routerLink]="[navItem.route]">
+          {{navItem.name}}
+        </a>
 
-      <hr>
+        <hr>
 
-      <a md-list-item
-         (click)="start.close()"
-         [routerLink]="['baseline']">
-        Baseline
-      </a>
-    </md-nav-list>
-    <button md-button (click)="start.close()">CLOSE</button>
-  </md-sidenav>
-  <div>
-    <md-toolbar color="primary">
-      <button md-icon-button (click)="start.open()">
-        <md-icon class="md-24" >menu</md-icon>
-      </button>
-      <div class="demo-toolbar">
-        <h1>Angular Material Demos</h1>
-        <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
-          Fullscreen
+        <a md-list-item
+           (click)="start.close()"
+           [routerLink]="['baseline']">
+          Baseline
+        </a>
+      </md-nav-list>
+      <button md-button (click)="start.close()">CLOSE</button>
+    </md-sidenav>
+    <div>
+      <md-toolbar color="primary">
+        <button md-icon-button (click)="start.open()">
+          <md-icon class="md-24" >menu</md-icon>
         </button>
-        <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
-          {{root.dir.toUpperCase()}}
-        </button>
+        <div class="demo-toolbar">
+          <h1>Angular Material Demos</h1>
+          <span class="demo-flex-fill"></span>
+          <button md-button (click)="isDarkTheme = !isDarkTheme">Toggle Theme</button>
+          <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
+            Fullscreen
+          </button>
+          <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
+            {{root.dir.toUpperCase()}}
+          </button>
+        </div>
+      </md-toolbar>
+
+      <div #root="$implicit" dir="ltr" class="demo-content">
+        <router-outlet></router-outlet>
       </div>
-    </md-toolbar>
-
-    <div #root="$implicit" dir="ltr" class="demo-content">
-      <router-outlet></router-outlet>
     </div>
-  </div>
-</md-sidenav-container>
+  </md-sidenav-container>
+</div>

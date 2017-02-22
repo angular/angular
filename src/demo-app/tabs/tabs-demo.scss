@@ -1,9 +1,6 @@
 .demo-nav-bar {
   border: 1px solid #e0e0e0;
   margin-bottom: 40px;
-  .mat-tab-nav-bar {
-    background: #f9f9f9;
-  }
   sunny-routed-content,
   rainy-routed-content,
   foggy-routed-content {
@@ -15,9 +12,6 @@
 .demo-tab-group {
   border: 1px solid #e0e0e0;
   margin-bottom: 40px;
-  .mat-tab-header {
-    background: #f9f9f9;
-  }
   .mat-tab-body-content {
     padding: 12px;
   }
