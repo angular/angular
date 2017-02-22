@@ -414,6 +414,8 @@ class TemplateParseVisitor implements html.Visitor {
   private _validateElementAnimationInputOutputs(
       inputs: BoundElementPropertyAst[], outputs: BoundEventAst[],
       template: CompileTemplateSummary) {
+    if (this.config.useViewEngine) return;
+
     const triggerLookup = new Set<string>();
     template.animations.forEach(entry => { triggerLookup.add(entry); });
 
