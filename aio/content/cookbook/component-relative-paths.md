@@ -11,7 +11,8 @@ Our components often refer to external template and style files.
 We identify those files with a URL in the `templateUrl` and `styleUrls` properties of the `@Component` metadata
 as seen here:
 
-{@example 'cb-component-relative-paths/ts/app/some.component.ts' -region='absolute-config' -linenums='false' }
+
+{@example 'cb-component-relative-paths/ts/src/app/some.component.ts' region='absolute-config'}
 
 By default, we *must* specify the full path back to the application root.
 We call this an ***absolute path*** because it is *absolute* with respect to the application root.
@@ -20,12 +21,13 @@ There are two problems with an *absolute path*:
 
 1. We have to remember the full path back to the application root.
 
-2. We have to update the URL when we move the component around in the application files structure.
+1. We have to update the URL when we move the component around in the application files structure.
 
 It would be much easier to write and maintain our application components if we could specify template and style locations
 *relative* to their component class file.
 
 *We can!*
+
 
 ~~~ {.alert.is-important}
 
@@ -38,27 +40,44 @@ The Angular CLI uses these technologies and defaults to the
 CLI users can skip this chapter or read on to understand
 how it works.
 
+
 ~~~
+
 
 ## _Component-Relative_ Paths
 
-Our goal is to specify template and style URLs *relative* to their component class files,
+Our goal is to specify template and style URLs *relative* to their component class files, 
 hence the term ***component-relative path***.
 
 The key to success is following a convention that puts related component files in well-known locations.
 
 We recommend keeping component template and component-specific style files as *siblings* of their
-companion component class files.
-Here we see the three files for `SomeComponent` sitting next to each other in the `app` folder.
+companion component class files. 
+Here we see the three files for `SomeComponent` sitting next to each other in the `app` folder. 
 
-<aio-file-tree>
-  <aio-folder>app
-    <aio-file>some.component.css</aio-file>
-    <aio-file>some.component.html</aio-file>
-    <aio-file>some.component.ts</aio-file>
-    <aio-file>...</aio-file>
+<aio-filetree>
+
+  <aio-folder>
+    app
+    <aio-file>
+      some.component.css
+    </aio-file>
+
+
+    <aio-file>
+      some.component.html
+    </aio-file>
+
+
+    <aio-file>
+      some.component.ts
+    </aio-file>
+
+
   </aio-folder>
-</aio-file-tree>
+
+
+</aio-filetree>
 
 We'll have more files and folders &mdash; and greater folder depth &mdash; as our application grows.
 We'll be fine as long as the component files travel together as the inseparable siblings they are.
@@ -68,16 +87,19 @@ We'll be fine as long as the component files travel together as the inseparable 
 Having adopted this file structure convention, we can specify locations of the template and style files
 relative to the component class file simply by setting the `moduleId` property of the `@Component` metadata like this
 
-{@example 'cb-component-relative-paths/ts/app/some.component.ts' -region='module-id' -linenums='false'}
+{@example 'cb-component-relative-paths/ts/src/app/some.component.ts' region='module-id'}
 
-We strip the `app/` base path from the `templateUrl` and `styleUrls` and replace it with `./`.
+We strip the `src/app/` base path from the `templateUrl` and `styleUrls` and replace it with `./`. 
 The result looks like this:
 
-{@example 'cb-component-relative-paths/ts/app/some.component.ts' -region='relative-config' -linenums='false'}
+{@example 'cb-component-relative-paths/ts/src/app/some.component.ts' region='relative-config'}
+
+
 
 ~~~ {.alert.is-helpful}
 
-  Webpack users may prefer [an alternative approach](#webpack).
+Webpack users may prefer [an alternative approach](#webpack).
+
 
 ~~~
 
@@ -87,21 +109,30 @@ The result looks like this:
 **We can see the <live-example name="cb-component-relative-paths"></live-example>**
 and download the source code from there
 or simply read the pertinent source here.
+<md-tab-group>
 
-<md-tab-group>
-  <md-tab label="app/some.component.ts">
-    {@example 'cb-component-relative-paths/ts/app/some.component.ts'}
+  <md-tab label="src/app/some.component.ts">
+    {@example 'cb-component-relative-paths/ts/src/app/some.component.ts'}
   </md-tab>
-  <md-tab label="app/some.component.html">
-    {@example 'cb-component-relative-paths/ts/app/some.component.html'}
+
+
+  <md-tab label="src/app/some.component.html">
+    {@example 'cb-component-relative-paths/ts/src/app/some.component.html'}
   </md-tab>
-  <md-tab label="app/some.component.css">
-    {@example 'cb-component-relative-paths/ts/app/some.component.css'}
+
+
+  <md-tab label="src/app/some.component.css">
+    {@example 'cb-component-relative-paths/ts/src/app/some.component.css'}
   </md-tab>
-  <md-tab label="app/app.component.ts">
-    {@example 'cb-component-relative-paths/ts/app/app.component.ts'}
+
+
+  <md-tab label="src/app/app.component.ts">
+    {@example 'cb-component-relative-paths/ts/src/app/app.component.ts'}
   </md-tab>
-<md-tab-group>
+
+
+</md-tab-group>
+
 
 
 {@a why-default}
@@ -118,15 +149,15 @@ First, let's look at what happens if we use a relative path and omit the `module
 
 Angular can't find the file so it throws an error.
 
-Why can't Angular calculate the template and style URLs from the component file's location?
+Why can't Angular calculate the template and style URLs from the component file's location? 
 
 Because the location of the component can't be determined without the developer's help.
 Angular apps can be loaded in many ways: from individual files, from SystemJS packages, or
-from CommonJS packages, to name a few.
-We might generate modules in any of several formats.
+from CommonJS packages, to name a few. 
+We might generate modules in any of several formats. 
 We might not be writing modular code at all!
 
-With this diversity of packaging and module load strategies,
+With this diversity of packaging and module load strategies, 
 it's not possible for Angular to know with certainty where these files reside at runtime.
 
 The only location Angular can be sure of is the URL of the `index.html` home page, the application root.
@@ -142,7 +173,8 @@ the absolute URL of the component class module file.
 That knowledge enables us to tell Angular where the *component* file is
 by setting the `moduleId`:
 
-{@example 'cb-component-relative-paths/ts/app/some.component.ts' -region='module-id' -linenums='false'}
+{@example 'cb-component-relative-paths/ts/src/app/some.component.ts' region='module-id'}
+
 
 
 {@a webpack}
@@ -153,7 +185,9 @@ Webpack developers have an alternative to `moduleId`.
 They can load templates and styles at runtime by adding `./` at the beginning of the `template` and `styles` / `styleUrls`
 properties that reference *component-relative URLS.
 
-{@example 'webpack/ts/src/app/app.component.ts' --linenums='false'}
+
+{@example 'webpack/ts/src/app/app.component.ts'}
+
 
 Webpack will do a `require` behind the scenes to load the templates and styles. Read more [here](../guide/webpack.html#highlights).
 
