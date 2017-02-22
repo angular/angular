@@ -1,0 +1,10 @@
+{
+  "description": "QuickStart",
+  "basePath": "src/",
+  "files": [
+    "app/app.component.ts",
+    "index.html"
+  ],
+  "open": "app/app.component.ts",
+  "tags": ["quickstart"]
+}

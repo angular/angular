@@ -1,0 +1,38 @@
+<!-- #docregion -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <base href="/app/">
+
+    <title>Google Phone Gallery</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="app.animations.css" />
+
+    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+    <script src="https://code.angularjs.org/1.5.5/angular.js"></script>
+    <script src="https://code.angularjs.org/1.5.5/angular-animate.js"></script>
+    <script src="https://code.angularjs.org/1.5.5/angular-resource.js"></script>
+    <script src="https://code.angularjs.org/1.5.5/angular-route.js"></script>
+
+    <script src="app.module.ajs.js"></script>
+    <script src="app.config.js"></script>
+    <script src="app.animations.js"></script>
+    <script src="core/core.module.js"></script>
+    <script src="core/phone/phone.module.js"></script>
+    <script src="phone-list/phone-list.module.js"></script>
+    <script src="phone-detail/phone-detail.module.js"></script>
+
+    <script src="/node_modules/core-js/client/shim.min.js"></script>
+    <script src="/node_modules/zone.js/dist/zone.min.js"></script>
+
+    <script>window.module = 'aot';</script>
+  </head>
+
+  <body>
+    <phonecat-app></phonecat-app>
+  </body>
+  <script src="/dist/build.js"></script>
+</html>

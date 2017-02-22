@@ -1,0 +1,18 @@
+<!-- #docregion basic-form-->
+<h2>Hero Detail</h2>
+<h3><i>FormControl in a FormGroup</i></h3>
+<form [formGroup]="heroForm" novalidate>
+  <div class="form-group">
+    <label class="center-block">Name:
+      <input class="form-control" formControlName="name">
+    </label>
+  </div>
+</form>
+<!-- #enddocregion basic-form-->
+
+<!-- #docregion form-value-json -->
+<p>Form value: {{ heroForm.value | json }}</p>
+<!-- #enddocregion form-value-json  -->
+
+
+

@@ -1,0 +1,8 @@
+{
+  "description": "QuickStart",
+  "basePath": "src/",
+  "files": [
+    "!**/*.[1].*"
+  ],
+  "tags": ["quickstart"]
+}

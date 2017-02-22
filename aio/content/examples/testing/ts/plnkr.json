@@ -1,0 +1,18 @@
+{
+  "description": "Heroes Test App",
+  "basePath": "src/",
+  "files":[
+    "styles.css",
+    "systemjs.config.extras.js",
+
+    "app/**/*.css",
+    "app/**/*.html",
+    "app/**/*.ts",
+
+    "!app/bag/*.*",
+
+    "main.ts",
+    "index.html"
+  ],
+  "tags": ["testing"]
+}

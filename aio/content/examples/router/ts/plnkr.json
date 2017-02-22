@@ -1,0 +1,12 @@
+{
+  "description": "Router",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*",
+    "!app/crisis-list.component.ts",
+    "!app/hero-list.component.ts"
+  ],
+  "tags": ["router"]
+}

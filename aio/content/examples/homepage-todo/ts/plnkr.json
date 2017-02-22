@@ -1,0 +1,9 @@
+{
+  "description": "Todo",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ]
+}
