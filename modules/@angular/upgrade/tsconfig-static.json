@@ -16,7 +16,7 @@
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
-    "bundleIndex": "static",
-    "importAs": "@angular/upgrade/static"
+    "flatModuleOutFile": "static.js",
+    "flatModuleId": "@angular/upgrade/static"
   }
 }

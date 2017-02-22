@@ -31,7 +31,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/forms"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/forms"
   }
 }
