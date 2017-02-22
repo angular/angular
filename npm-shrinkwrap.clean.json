@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0-rc.3",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -6166,7 +6166,7 @@
       }
     },
     "tsickle": {
-      "version": "0.21.2",
+      "version": "0.21.5",
       "dev": true
     },
     "tslint": {
