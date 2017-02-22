@@ -7,7 +7,7 @@
  */
 
 import {AotCompilerHost, StaticSymbol} from '@angular/compiler';
-import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
+import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -37,7 +37,7 @@ export class CompilerHost implements AotCompilerHost {
 
   constructor(
       protected program: ts.Program, protected options: AngularCompilerOptions,
-      protected context: CompilerHostContext) {
+      protected context: CompilerHostContext, collectorOptions?: CollectorOptions) {
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
