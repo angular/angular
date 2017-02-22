@@ -125,7 +125,6 @@ export class MockSymbol implements ts.Symbol {
   getName(): string { return this.name; }
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
-  getJsDocTags(): ts.JSDocTagInfo[]{return []};
 
   static of (name: string): MockSymbol { return new MockSymbol(name); }
 }
