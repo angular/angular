@@ -66,7 +66,7 @@ export function createText(view: ViewData, renderHost: any, def: NodeDef): TextD
 
 export function checkAndUpdateTextInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
-    v7: any, v8: any, v9: any) {
+    v7: any, v8: any, v9: any): boolean {
   let changed = false;
   const bindings = def.bindings;
   const bindLen = bindings.length;
@@ -96,9 +96,10 @@ export function checkAndUpdateTextInline(
     const renderNode = asTextData(view, def.index).renderText;
     view.renderer.setValue(renderNode, value);
   }
+  return changed;
 }
 
-export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: any[]) {
+export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: any[]): boolean {
   const bindings = def.bindings;
   let changed = false;
   for (let i = 0; i < values.length; i++) {
@@ -117,6 +118,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
     const renderNode = asTextData(view, def.index).renderText;
     view.renderer.setValue(renderNode, value);
   }
+  return changed;
 }
 
 function _addInterpolationPart(value: any, binding: BindingDef): string {
