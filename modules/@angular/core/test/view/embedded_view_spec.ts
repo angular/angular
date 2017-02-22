@@ -66,8 +66,8 @@ export function main() {
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
       const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
 
-      attachEmbeddedView(viewContainerData, 0, childView0);
-      attachEmbeddedView(viewContainerData, 1, childView1);
+      attachEmbeddedView(parentView, viewContainerData, 0, childView0);
+      attachEmbeddedView(parentView, viewContainerData, 1, childView1);
 
       // 2 anchors + 2 elements
       const rootChildren = getDOM().childNodes(rootNodes[0]);
@@ -96,8 +96,8 @@ export function main() {
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
       const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
 
-      attachEmbeddedView(viewContainerData, 0, childView0);
-      attachEmbeddedView(viewContainerData, 1, childView1);
+      attachEmbeddedView(parentView, viewContainerData, 0, childView0);
+      attachEmbeddedView(parentView, viewContainerData, 1, childView1);
 
       moveEmbeddedView(viewContainerData, 0, 1);
 
@@ -118,7 +118,7 @@ export function main() {
       ]));
 
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[0]);
-      attachEmbeddedView(asElementData(parentView, 0), 0, childView0);
+      attachEmbeddedView(parentView, asElementData(parentView, 0), 0, childView0);
 
       const rootNodes = rootRenderNodes(parentView);
       expect(rootNodes.length).toBe(3);
@@ -146,7 +146,7 @@ export function main() {
 
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
 
-      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
+      attachEmbeddedView(parentView, asElementData(parentView, 1), 0, childView0);
 
       Services.checkAndUpdateView(parentView);
 
@@ -180,7 +180,7 @@ export function main() {
 
       const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
 
-      attachEmbeddedView(asElementData(parentView, 1), 0, childView0);
+      attachEmbeddedView(parentView, asElementData(parentView, 1), 0, childView0);
       Services.destroyView(parentView);
 
       expect(log).toEqual(['ngOnDestroy']);
