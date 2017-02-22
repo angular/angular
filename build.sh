@@ -7,6 +7,7 @@ cd `dirname $0`
 PACKAGES=(core
   compiler
   common
+  animations
   forms
   platform-browser
   platform-browser-dynamic
@@ -14,7 +15,6 @@ PACKAGES=(core
   platform-server
   platform-webworker
   platform-webworker-dynamic
-  animation
   upgrade
   router
   compiler-cli
@@ -161,6 +161,10 @@ do
   JS_STATIC_PATH_ES5=${DEST_MODULE}/${PACKAGE}/static.es5.js
   JS_UPGRADE_PATH=${DEST_MODULE}/${PACKAGE}/upgrade.js
   JS_UPGRADE_PATH_ES5=${DEST_MODULE}/${PACKAGE}/upgrade.es5.js
+  JS_ANIMATIONS_PATH=${DEST_MODULE}/${PACKAGE}/animations.js
+  JS_ANIMATIONS_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations.es5.js
+  JS_ANIMATIONS_TESTING_PATH=${DEST_MODULE}/${PACKAGE}/animations/testing.js
+  JS_ANIMATIONS_TESTING_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations/testing.es5.js
 
   # UMD/ES5
   UMD_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}.umd.js
@@ -170,6 +174,9 @@ do
   UMD_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}.umd.min.js
   UMD_STATIC_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-static.umd.min.js
   UMD_UPGRADE_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-upgrade.umd.min.js
+  UMD_ANIMATIONS_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.js
+  UMD_ANIMATIONS_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.min.js
+  UMD_ANIMATIONS_TESTING_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations-testing.umd.js
 
   if [[ ${PACKAGE} != router ]]; then
     LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
@@ -216,6 +223,16 @@ do
   if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
     echo "======      [${PACKAGE}]: COMPILING (TESTING): ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
     $TSC -p ${SRCDIR}/tsconfig-testing.json
+  fi
+
+  if [[ -e ${SRCDIR}/tsconfig-animations.json ]]; then
+    echo "======      [${PACKAGE}]: COMPILING (ANIMATIONS): ${TSC} -p ${SRCDIR}/tsconfig-animations.json"
+    $TSC -p ${SRCDIR}/tsconfig-animations.json
+
+    if [[ -e ${SRCDIR}/tsconfig-animations-testing.json ]]; then
+      echo "======      [${PACKAGE}]: COMPILING (ANIMATION TESTING): ${TSC} -p ${SRCDIR}/tsconfig-animations-testing.json"
+      $TSC -p ${SRCDIR}/tsconfig-animations-testing.json
+    fi
   fi
 
   if [[ -e ${SRCDIR}/tsconfig-static.json ]]; then
@@ -356,6 +373,58 @@ do
         cat ${UMD_UPGRADE_ES5_PATH} >> ${UMD_UPGRADE_ES5_PATH}.tmp
         mv ${UMD_UPGRADE_ES5_PATH}.tmp ${UMD_UPGRADE_ES5_PATH}
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_UPGRADE_ES5_MIN_PATH} ${UMD_UPGRADE_ES5_PATH}
+      fi
+
+      if [[ -d animations ]]; then
+        echo "======         Rollup ${PACKAGE} animations"
+        ../../../node_modules/.bin/rollup -i ${DESTDIR}/animations/index.js -o ${DESTDIR}/animations.tmp.js
+
+        echo "======         Downleveling ${PACKAGE} ANIMATIONS to ES5/UMD"
+        [[ -e ${SRCDIR}/.babelrc-animations ]] && cp ${SRCDIR}/.babelrc-animations ${DESTDIR}/.babelrc
+        $BABELJS ${DESTDIR}/animations.tmp.js -o ${UMD_ANIMATIONS_ES5_PATH}
+        rm -f ${DESTDIR}/.babelrc
+
+        echo "======         Move ${PACKAGE} animations typings"
+        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/animations/ ${DESTDIR}/typings/animations
+        mv ${DESTDIR}/typings/animations/index.d.ts ${DESTDIR}/typings/animations/animations.d.ts
+        mv ${DESTDIR}/typings/animations/index.metadata.json ${DESTDIR}/typings/animations/animations.metadata.json
+
+        echo "======         Rollup ${PACKAGE} animations/testing"
+        ../../../node_modules/.bin/rollup -i ${DESTDIR}/animations/testing/index.js -o ${DESTDIR}/animations-testing.tmp.js
+
+        echo "======         Downleveling ${PACKAGE} ANIMATIONS TESTING to ES5/UMD"
+        [[ -e ${SRCDIR}/.babelrc-animations-testing ]] && cp ${SRCDIR}/.babelrc-animations-testing ${DESTDIR}/.babelrc
+        $BABELJS ${DESTDIR}/animations-testing.tmp.js -o ${UMD_ANIMATIONS_TESTING_ES5_PATH}
+        rm -f ${DESTDIR}/.babelrc
+
+        echo "======         Move ${PACKAGE} animations testing typings"
+        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/animations/testing/ ${DESTDIR}/typings/animations/testing
+        mv ${DESTDIR}/typings/animations/testing/index.d.ts ${DESTDIR}/typings/animations/testing/testing.d.ts
+        mv ${DESTDIR}/typings/animations/testing/index.metadata.json ${DESTDIR}/typings/animations/testing/testing.metadata.json
+
+        rm -rf ${DESTDIR}/animations
+
+        mkdir ${DESTDIR}/animations && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
+        mkdir ${DESTDIR}/animations/testing
+
+        getPackageContents "${PACKAGE}" "animations" > ${DESTDIR}/animations/package.json
+
+        echo '{"typings": "../../typings/animations/testing/testing.d.ts", "main": "../../bundles/platform-browser-animations-testing.umd.js", "module": "../../@angular/platform-browser/animations/testing.es5.js", "es2015": "../../@angular/platform-browser/animations/testing.js"}' > ${DESTDIR}/animations/testing/package.json
+
+        mv ${DESTDIR}/animations.tmp.js ${JS_ANIMATIONS_PATH}
+        $BABELJS ${JS_ANIMATIONS_PATH} -o ${JS_ANIMATIONS_PATH_ES5}
+        cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_ES5_PATH}.tmp
+        cat ${UMD_ANIMATIONS_ES5_PATH} >> ${UMD_ANIMATIONS_ES5_PATH}.tmp
+        mv ${UMD_ANIMATIONS_ES5_PATH}.tmp ${UMD_ANIMATIONS_ES5_PATH}
+        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ANIMATIONS_ES5_MIN_PATH} ${UMD_ANIMATIONS_ES5_PATH}
+
+        mkdir ${DEST_MODULE}/${PACKAGE}/animations
+
+        mv ${DESTDIR}/animations-testing.tmp.js ${JS_ANIMATIONS_TESTING_PATH}
+        $BABELJS ${JS_ANIMATIONS_TESTING_PATH} -o ${JS_ANIMATIONS_TESTING_PATH_ES5}
+        cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
+        cat ${UMD_ANIMATIONS_TESTING_ES5_PATH} >> ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
+        mv ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp ${UMD_ANIMATIONS_TESTING_ES5_PATH}
       fi
     ) 2>&1 | grep -v "as external dependency"
 

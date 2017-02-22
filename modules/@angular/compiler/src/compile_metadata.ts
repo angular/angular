@@ -250,7 +250,7 @@ export class CompileTemplateMetadata {
   styles: string[];
   styleUrls: string[];
   externalStylesheets: CompileStylesheetMetadata[];
-  animations: CompileAnimationEntryMetadata[];
+  animations: any[];
   ngContentSelectors: string[];
   interpolation: [string, string];
   constructor(
@@ -263,7 +263,7 @@ export class CompileTemplateMetadata {
         styleUrls?: string[],
         externalStylesheets?: CompileStylesheetMetadata[],
         ngContentSelectors?: string[],
-        animations?: CompileAnimationEntryMetadata[],
+        animations?: any[],
         interpolation?: [string, string],
       } = {}) {
     this.encapsulation = encapsulation;

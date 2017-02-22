@@ -33,6 +33,8 @@ System.config({
   packages: {
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common/testing': {main: 'index.js', defaultExtension: 'js'},
@@ -45,6 +47,8 @@ System.config({
     '@angular/http/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/http': {main: 'index.js', defaultExtension: 'js'},
     '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-browser/animations/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-browser/animations': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic/testing': {main: 'index.js', defaultExtension: 'js'},

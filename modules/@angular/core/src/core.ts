@@ -32,11 +32,14 @@ export {Type} from './type';
 export {EventEmitter} from './facade/async';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
-export * from './animation/metadata';
-export {AnimationTransitionEvent} from './animation/animation_transition_event';
 export {AnimationPlayer} from './animation/animation_player';
 export {AnimationStyles} from './animation/animation_styles';
 export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
-export {TransitionFactory, TransitionInstruction, Trigger} from './triggers';
 export * from './codegen_private_exports';
+
+// TODO (matsko|tbosch): comment-out the two lines below, and enable the 3rd line when the view
+// engine goes live!
+export {AnimationTransitionEvent} from './animation/animation_transition_event';
+export * from './animation/metadata';
+// export * from './animation_next/animation_metadata_wrapped';

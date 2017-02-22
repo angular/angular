@@ -229,7 +229,7 @@ function debugCheckFn(
 
 function normalizeDebugBindingName(name: string) {
   // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
-  name = camelCaseToDashCase(name.replace(/\$/g, '_'));
+  name = camelCaseToDashCase(name.replace(/[$@]/g, '_'));
   return `ng-reflect-${name}`;
 }
 

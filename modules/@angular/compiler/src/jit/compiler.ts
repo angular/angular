@@ -8,7 +8,7 @@
 
 import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentFactoryViewClass as getComponentFactoryViewClass} from '@angular/core';
 
-import {AnimationCompiler} from '../animation/animation_compiler';
+import {AnimationCompiler, AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
@@ -272,7 +272,8 @@ export class JitCompiler implements Compiler {
         (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r); });
     this._resolveStylesCompileResult(
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
-    const parsedAnimations = this._animationParser.parseComponent(compMeta);
+    const parsedAnimations =
+        this._compilerConfig.useViewEngine ? [] : this._animationParser.parseComponent(compMeta);
     const directives =
         template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
@@ -280,7 +281,8 @@ export class JitCompiler implements Compiler {
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
         identifierName(compMeta.type));
-    const compiledAnimations =
+    const compiledAnimations = this._compilerConfig.useViewEngine ?
+        [] :
         this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),

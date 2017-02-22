@@ -308,9 +308,14 @@ export class CompileMetadataResolver {
       assertArrayOfStrings('styleUrls', dirMeta.styleUrls);
       assertInterpolationSymbols('interpolation', dirMeta.interpolation);
 
-      const animations = dirMeta.animations ?
-          dirMeta.animations.map(e => this.getAnimationEntryMetadata(e)) :
-          null;
+      let animations: any[];
+      if (this._config.useViewEngine) {
+        animations = dirMeta.animations;
+      } else {
+        animations = dirMeta.animations ?
+            dirMeta.animations.map(e => this.getAnimationEntryMetadata(e)) :
+            null;
+      }
 
       nonNormalizedTemplateMetadata = new cpl.CompileTemplateMetadata({
         encapsulation: dirMeta.encapsulation,

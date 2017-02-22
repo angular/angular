@@ -9,6 +9,7 @@
     "outDir": "../../../dist/packages-dist/platform-browser",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/platform-browser/animations": ["../../../dist/packages-dist/platform-browser/animations"],
       "@angular/common": ["../../../dist/packages-dist/common"]
     },
     "rootDir": ".",
