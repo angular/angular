@@ -20,6 +20,7 @@ regionParserImpl.regionMatchers = {
   css: blockC,
   yaml: inlineHash,
   jade: inlineCOnly,
+  json: inlineC,
   'json.annotated': inlineC
 };
 
@@ -97,6 +98,9 @@ function regionParserImpl(contents, fileType) {
       // this line contained an annotation so let's filter it out
       return false;
     });
+    if (!regionMap['']) {
+      regionMap[''] = {lines};
+    }
     return {
       contents: lines.join('\n'),
       regions: mapObject(regionMap, (regionName, region) => region.lines.join('\n'))
