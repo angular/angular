@@ -1,7 +1,7 @@
 import {OverlayRef} from '../core';
-import {MdDialogConfig} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {MdDialogContainer, MdDialogContainerAnimationState} from './dialog-container';
 
 
 // TODO(jelbourn): resizing
@@ -18,16 +18,30 @@ export class MdDialogRef<T> {
   /** Subject for notifying the user that the dialog has finished closing. */
   private _afterClosed: Subject<any> = new Subject();
 
-  constructor(private _overlayRef: OverlayRef, public config: MdDialogConfig) { }
+  /** Result to be passed to afterClosed. */
+  private _result: any;
+
+  constructor(private _overlayRef: OverlayRef, public _containerInstance: MdDialogContainer) {
+    _containerInstance._onAnimationStateChange.subscribe(
+      (state: MdDialogContainerAnimationState) => {
+        if (state === 'exit-start') {
+          // Transition the backdrop in parallel with the dialog.
+          this._overlayRef.detachBackdrop();
+        } else if (state === 'exit') {
+          this._overlayRef.dispose();
+          this._afterClosed.next(this._result);
+          this._afterClosed.complete();
+        }
+      });
+  }
 
   /**
    * Close the dialog.
    * @param dialogResult Optional result to return to the dialog opener.
    */
   close(dialogResult?: any): void {
-    this._overlayRef.dispose();
-    this._afterClosed.next(dialogResult);
-    this._afterClosed.complete();
+    this._result = dialogResult;
+    this._containerInstance._exit();
   }
 
   /**

@@ -52,7 +52,7 @@ export class OverlayRef implements PortalHost {
    * @returns Resolves when the overlay has been detached.
    */
   detach(): Promise<any> {
-    this._detachBackdrop();
+    this.detachBackdrop();
 
     // When the overlay is detached, the pane element should disable pointer events.
     // This is necessary because otherwise the pane element will cover the page and disable
@@ -70,7 +70,7 @@ export class OverlayRef implements PortalHost {
       this._state.positionStrategy.dispose();
     }
 
-    this._detachBackdrop();
+    this.detachBackdrop();
     this._portalHost.dispose();
   }
 
@@ -154,7 +154,7 @@ export class OverlayRef implements PortalHost {
   }
 
   /** Detaches the backdrop (if any) associated with the overlay. */
-  private _detachBackdrop(): void {
+  detachBackdrop(): void {
     let backdropToDetach = this._backdropElement;
 
     if (backdropToDetach) {
