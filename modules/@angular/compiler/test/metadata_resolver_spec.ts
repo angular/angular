@@ -7,7 +7,7 @@
  */
 
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, forwardRef} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, async, inject} from '@angular/core/testing';
 
@@ -16,6 +16,7 @@ import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/resource_loader_mock';
+
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
@@ -135,6 +136,21 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`Expected 'styles' to be an array of strings.`);
+       }));
+
+    it(`should throw when there's a circular dependency between 2 modules`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({imports: [forwardRef(() => ModuleB)]})
+         class ModuleA {
+         }
+
+         @NgModule({imports: [ModuleA]})
+         class ModuleB {
+         }
+
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleA, true))
+             .toThrowError(
+                 `Circular dependency detected while processing 'ModuleA' module. 'ModuleA' imports 'ModuleB' and 'ModuleB' imports 'ModuleA'`);
        }));
 
     it('should throw with descriptive error message when provider token can not be resolved',
