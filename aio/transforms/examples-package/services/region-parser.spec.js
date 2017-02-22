@@ -25,7 +25,7 @@ describe('regionParser service', () => {
 
   it('should return just the contents if there is a region-matcher but no regions', () => {
     const output = regionParser('some contents', 'test-type');
-    expect(output).toEqual({contents: 'some contents', regions: {}});
+    expect(output).toEqual({contents: 'some contents', regions: { '': 'some contents' }});
   });
 
   it('should remove start region annotations from the contents', () => {
