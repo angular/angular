@@ -1,0 +1,12 @@
+{
+  "presets": ["es2015"],
+  "plugins": [["transform-es2015-modules-umd", {
+    "globals": {
+      "@angular/core": "ng.core",
+      "@angular/core/testing": "ng.core.testing",
+      "rxjs/Subject": "Rx"
+    },
+    "exactGlobals": true
+  }]],
+  "moduleId": "@angular/core/testing"
+}
