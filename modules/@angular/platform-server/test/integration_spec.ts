@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation} from '@angular/common';
+import {PlatformLocation, isPlatformServer} from '@angular/common';
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
-import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -137,6 +137,7 @@ function declareTests({viewEngine}: {viewEngine: boolean}) {
              [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
 
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
+           expect(isPlatformServer(moduleRef.injector.get(PLATFORM_ID))).toBe(true);
            const doc = moduleRef.injector.get(DOCUMENT);
            expect(getDOM().getText(doc)).toEqual('Works!');
            platform.destroy();
