@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig-build",
   "compilerOptions": {
-    "outDir": "../../../dist/packages-dist/platform-server",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],

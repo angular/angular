@@ -43,7 +43,7 @@ See the `package.json` of the test(s) you're debugging, to see which dist/ folde
 Then run the right `tsc --watch` command to keep those dist folders up-to-date, for example:
 
 ```
-$ ./node_modules/.bin/tsc -p modules/@angular/core/tsconfig-build.json --outDir dist/packages-dist/core --watch
+$ ./node_modules/.bin/tsc -p modules/@angular/core/tsconfig-build.json --watch
 ```
 
 Now you can run the integration test, it will re-install from the dist/ folder on each run.

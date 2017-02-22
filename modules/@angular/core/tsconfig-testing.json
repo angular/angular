@@ -2,7 +2,6 @@
   "extends": "./tsconfig-build",
 
   "compilerOptions": {
-    "outDir": "../../../dist/packages-dist/core",
     "paths": {
       "rxjs/*": ["../../../node_modules/rxjs/*"],
       "@angular/core": ["../../../dist/packages-dist/core"]

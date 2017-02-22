@@ -10,5 +10,5 @@
     },
     "exactGlobals": true
   }]],
-  "moduleId": "@angular/animation"
+  "moduleId": "@angular/animations"
 }
