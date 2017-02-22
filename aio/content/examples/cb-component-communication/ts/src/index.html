@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Passing information from parent to child</title>
+    <base href="/">
+    <style>
+      .to-top {margin-top: 8px; display: block;}
+    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="demo.css">
+
+    <!-- Polyfills -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+  </head>
+
+  <body>
+    <my-app>loading...</my-app>
+  </body>
+
+</html>

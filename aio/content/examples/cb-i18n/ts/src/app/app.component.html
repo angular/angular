@@ -1,0 +1,34 @@
+<!--#docregion-->
+<!--#docregion i18n-attribute-meaning-->
+<h1 i18n="User welcome|An introduction header for this sample">Hello i18n!</h1>
+<!--#enddocregion i18n-attribute-meaning-->
+
+<!--#docregion i18n-ng-container-->
+<ng-container i18n>I don't output any element</ng-container>
+<!--#enddocregion i18n-ng-container-->
+
+<br />
+
+<!--#docregion i18n-with-comment-->
+<!--i18n: optional meaning|optional description -->
+I don't output any element either
+<!--/i18n-->
+<!--#enddocregion i18n-with-comment-->
+
+<br />
+
+<!--#docregion i18n-title-translate-->
+<img [src]="logo" i18n-title title="Angular logo" />
+<!--#enddocregion i18n-title-translate-->
+<br>
+<button (click)="inc(1)">+</button> <button (click)="inc(-1)">-</button>
+<!--#docregion i18n-plural-->
+<span i18n>{wolves, plural, =0 {no wolves} =1 {one wolf} =2 {two wolves} other {a wolf pack}}</span>
+<!--#enddocregion i18n-plural-->
+({{wolves}})
+<br><br>
+<button (click)="male()">&#9794;</button> <button (click)="female()">&#9792;</button>
+<!--#docregion i18n-select-->
+<span i18n>The hero is {gender, select, m {male} f {female}}</span>
+<!--#enddocregion i18n-select-->
+<br>

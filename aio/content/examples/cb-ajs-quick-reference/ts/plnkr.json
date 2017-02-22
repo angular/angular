@@ -1,0 +1,10 @@
+{
+  "description": "AngularJS to Angular Quick Reference",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "tags":["cookbook", "angularjs"]
+}

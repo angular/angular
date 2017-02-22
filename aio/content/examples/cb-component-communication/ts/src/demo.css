@@ -1,0 +1,9 @@
+/* Component Communication cookbook specific styles */
+.seconds {
+  background-color: black;
+  color: red;
+  font-size: 3em;
+  margin: 0.3em 0;
+  text-align: center;
+  width: 1.5em;
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Tour of Heroes: Part 5",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "tags": ["tutorial", "tour", "heroes", "router"]
+}

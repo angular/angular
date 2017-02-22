@@ -1,0 +1,35 @@
+[class*='col-'] {
+  float: left;
+}
+*, *:after, *:before {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+h3 {
+  text-align: center; margin-bottom: 0;
+}
+[class*='col-'] {
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+[class*='col-']:last-of-type {
+  padding-right: 0;
+}
+.grid {
+  margin: 0;
+}
+.col-1-4 {
+  width: 25%;
+}
+.grid-pad {
+  padding: 10px 0;
+}
+.grid-pad > [class*='col-']:last-of-type {
+  padding-right: 20px;
+}
+@media (max-width: 1024px) {
+	.grid {
+	  margin: 0;
+	}
+}

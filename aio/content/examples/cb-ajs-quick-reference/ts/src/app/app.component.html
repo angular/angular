@@ -1,0 +1,112 @@
+<!-- #docplaster -->
+<h1>{{title}}</h1>
+
+<h3>Routed Movies</h3>
+<nav>
+  <!-- #docregion router-link -->
+  <a [routerLink]="['/movies']">Movies</a>
+  <!-- #enddocregion router-link -->
+</nav>
+<router-outlet></router-outlet>
+
+<hr>
+
+<h1>Example Snippets</h1>
+
+<!-- #docregion ngClass -->
+<div [ngClass]="{active: isActive}">
+<!-- #enddocregion ngClass -->
+  [ngClass] active
+</div>
+<!-- #docregion ngClass -->
+<div [ngClass]="{active: isActive,
+                 shazam: isImportant}">
+<!-- #enddocregion ngClass -->
+  [ngClass] active and boldly important
+</div>
+<!-- #docregion ngClass -->
+<div [class.active]="isActive">
+<!-- #enddocregion ngClass -->
+  [class.active]
+</div>
+
+<p></p>
+<!-- #docregion href -->
+<a [href]="angularDocsUrl">Angular Docs</a>
+<!-- #enddocregion href -->
+
+<p></p>
+<div>
+  <!-- #docregion event-binding -->
+  <button (click)="toggleImage()">
+  <!-- #enddocregion event-binding -->
+  Image Toggle #1</button>
+  <!-- #docregion event-binding -->
+  <button (click)="toggleImage($event)">
+  <!-- #enddocregion event-binding -->
+  Image Toggle #2</button>
+  <p>Image toggle event type was {{eventType}}</p>
+</div>
+
+<p></p>
+<div *ngIf="showImage">
+  <!-- #docregion src -->
+  <img [src]="movie.imageurl">
+  <!-- #enddocregion src -->
+</div>
+
+<p></p>
+<!-- #docregion ngStyle -->
+<div [ngStyle]="{color: colorPreference}">
+<!-- #enddocregion ngStyle -->
+  color preference #1
+</div>
+<!-- #docregion ngStyle -->
+<div [style.color]="colorPreference">
+<!-- #enddocregion ngStyle -->
+  color preference #2
+</div>
+
+<h3>Movie as JSON</h3>
+<!-- #docregion json -->
+<pre>{{movie | json}}</pre>
+<!-- #enddocregion json -->
+
+<h3>Movie Titles via local variable</h3>
+<table>
+<!-- #docregion local -->
+<tr *ngFor="let movie of movies">
+  <td>{{movie.title}}</td>
+</tr>
+<!-- #enddocregion local -->
+</table>
+
+<h3>Sliced Movies with pipes</h3>
+<table>
+<!-- #docregion slice -->
+<tr *ngFor="let movie of movies | slice:0:2">
+<!-- #enddocregion slice -->
+
+  <!-- #docregion uppercase -->
+  <td>{{movie.title | uppercase}}</td>
+  <!-- #enddocregion uppercase -->
+
+  <!-- #docregion lowercase -->
+  <td>{{movie.title | lowercase}}</td>
+  <!-- #enddocregion lowercase -->
+
+  <!-- #docregion date -->
+  <td>{{movie.releaseDate | date}}</td>
+  <!-- #enddocregion date -->
+
+  <!-- #docregion currency -->
+  <td>{{movie.price | currency:'USD':true}}</td>
+  <!-- #enddocregion currency -->
+
+  <!-- #docregion number -->
+  <td>{{movie.starRating | number}}</td>
+  <td>{{movie.starRating | number:'1.1-2'}}</td>
+  <td>{{movie.approvalRating | percent: '1.0-2'}}</td>
+  <!-- #enddocregion number -->
+
+</tr></table>

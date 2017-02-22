@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Angular Upgrade</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+
+    <!-- Polyfills -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.1.js"></script>
+    <script>
+      System.import('app/a-to-ajs-transclusion/app.module')
+            .then(null, console.error.bind(console));
+    </script>
+  </head>
+
+  <body>
+    <hero-app>
+      <my-container></my-container>
+    </hero-app>
+  </body>
+</html>

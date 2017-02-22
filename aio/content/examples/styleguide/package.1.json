@@ -1,0 +1,23 @@
+{
+  "name": "angular2-quickstart",
+  "version": "1.0.0",
+  "scripts": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "lite": "lite-server",
+    "start": "concurrently \"npm run tsc:w\" \"npm run lite\" "
+  },
+  "license": "MIT",
+  "dependencies": {
+    "angular2": "2.0.0-beta.0",
+    "systemjs": "0.19.6",
+    "core-js": "^2.4.0",
+    "rxjs": "5.0.0-beta.0",
+    "zone.js": "0.5.10"
+  },
+  "devDependencies": {
+    "concurrently": "^1.0.0",
+    "lite-server": "^1.3.1",
+    "typescript": "^1.7.3"
+  }
+}

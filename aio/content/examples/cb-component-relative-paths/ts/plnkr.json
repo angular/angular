@@ -1,5 +1,6 @@
 {
 	"description": "Module-relative Paths",
+  "basePath": "src/",
 	"files": [
 		"!**/*.d.ts",
 		"!**/*.js"

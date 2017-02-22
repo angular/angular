@@ -1,0 +1,11 @@
+<!-- #docregion -->
+<h3>Top Heroes</h3>
+<div class="grid grid-pad">
+  <!-- #docregion click -->
+  <a *ngFor="let hero of heroes"  [routerLink]="['/detail', hero.id]"  class="col-1-4">
+  <!-- #enddocregion click -->
+    <div class="module hero">
+      <h4>{{hero.name}}</h4>
+    </div>
+  </a>
+</div>

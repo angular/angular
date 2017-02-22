@@ -1,0 +1,7 @@
+<!-- #docregion -->
+<button (click)="toggleHeading()">Toggle Heading</button>
+<h1 *ngIf="showHeading">Hello Angular</h1>
+
+<h3>List of Heroes</h3>
+<div *ngFor="let hero of heroes">{{hero}}</div>
+

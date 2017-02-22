@@ -1,0 +1,10 @@
+{
+  "description": "Http",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "tags": ["http", "jsonp"]
+}

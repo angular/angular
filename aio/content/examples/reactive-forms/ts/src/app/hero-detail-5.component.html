@@ -1,0 +1,56 @@
+
+<form [formGroup]="heroForm" novalidate>
+    <div class="form-group">
+      <label class="center-block">Name:
+        <input class="form-control" formControlName="name">
+      </label>
+    </div>
+<!-- #docregion add-group-->
+    <div formGroupName="address" class="well well-lg">
+      <h4>Secret Lair</h4>
+      <div class="form-group">
+        <label class="center-block">Street:
+          <input class="form-control" formControlName="street">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">City:
+          <input class="form-control" formControlName="city">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">State:
+          <select class="form-control" formControlName="state">
+            <option *ngFor="let state of states" [value]="state">{{state}}</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="center-block">Zip Code:
+          <input class="form-control" formControlName="zip">
+        </label>
+      </div>
+    </div>
+<!-- #enddocregion add-group-->
+    <div class="form-group radio">
+      <h4>Super power:</h4>
+      <label class="center-block"><input type="radio" formControlName="power" value="flight">Flight</label>
+      <label class="center-block"><input type="radio" formControlName="power" value="x-ray vision">X-ray vision</label>
+      <label class="center-block"><input type="radio" formControlName="power" value="strength">Strength</label>
+    </div>
+    <div class="checkbox">
+      <label class="center-block">
+        <input type="checkbox" formControlName="sidekick">I have a sidekick.
+      </label>
+    </div>
+</form>
+
+<p>heroForm value: {{ heroForm.value | json}}</p>
+<h4>Extra info for the curious:</h4>
+<!-- #docregion inspect-value -->
+<p>Name value: {{ heroForm.get('name').value }}</p>
+<!-- #enddocregion inspect-value -->
+
+<!-- #docregion inspect-child-control -->
+<p>Street value: {{ heroForm.get('address.street').value}}</p>
+<!-- #enddocregion inspect-child-control -->

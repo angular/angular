@@ -1,0 +1,15 @@
+<!-- #docregion -->
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <base href="/">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+    <script src="app/ajs-ng-app/app.module.js"></script>
+  </head>
+
+  <body ng-app="heroApp" ng-strict-di>
+    <div id="message" ng-controller="MainCtrl as mainCtrl">
+      {{ mainCtrl.message }}
+    </div>
+  </body>
+</html>

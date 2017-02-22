@@ -1,0 +1,56 @@
+<!-- Run application specs in a browser -->
+<!-- #docregion -->
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/">
+  <title>Sample App Specs</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+
+</head>
+<body>
+  <!-- Polyfills -->
+  <script src="node_modules/core-js/client/shim.min.js"></script>
+
+  <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+  <script src="node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+  <script src="node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+  <script src="node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+  <script src="node_modules/zone.js/dist/zone.js"></script>
+  <script src="node_modules/zone.js/dist/long-stack-trace-zone.js"></script>
+  <script src="node_modules/zone.js/dist/proxy.js"></script>
+  <script src="node_modules/zone.js/dist/sync-test.js"></script>
+  <script src="node_modules/zone.js/dist/jasmine-patch.js"></script>
+  <script src="node_modules/zone.js/dist/async-test.js"></script>
+  <script src="node_modules/zone.js/dist/fake-async-test.js"></script>
+
+  <script>
+    var __spec_files__ = [
+      'app/about.component.spec',
+      'app/app.component.spec',
+      'app/app.component.router.spec',
+      'app/banner.component.spec',
+      'app/banner.component.detect-changes.spec',
+      'app/banner-inline.component.spec',
+      'app/dashboard/dashboard.component.spec',
+      'app/dashboard/dashboard.component.no-testbed.spec',
+      'app/dashboard/dashboard-hero.component.spec',
+      'app/hero/hero-list.component.spec',
+      'app/hero/hero-detail.component.spec',
+      'app/hero/hero-detail.component.no-testbed.spec',
+      'app/model/hero.spec',
+      'app/model/http-hero.service.spec',
+      'app/shared/title-case.pipe.spec',
+      'app/shared/twain.component.spec',
+      'app/welcome.component.spec'
+    ];
+  </script>
+  <script src="browser-test-shim.js"></script>
+</body>
+
+</html>

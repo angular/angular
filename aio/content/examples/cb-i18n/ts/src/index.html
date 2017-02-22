@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- #docregion -->
+<html>
+  <head>
+    <title>Angular i18n example</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.js"></script>
+
+    <!-- #docregion i18n -->
+    <script>
+      // Get the locale id somehow
+      document.locale = 'es';
+
+      // Map to the text plugin
+      System.config({
+        map: {
+          text: 'systemjs-text-plugin.js'
+        }
+      });
+
+      // Launch the app
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+    <!-- #enddocregion i18n -->
+  </head>
+
+  <body>
+    <my-app>Loading...</my-app>
+  </body>
+</html>

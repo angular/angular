@@ -1,0 +1,277 @@
+<html lang="en"><head></head><body><form id="mainForm" method="post" action="http://plnkr.co/edit/?p=preview" target="_self"><input type="hidden" name="files[app/app.component.ts]" value="import { Component } from '@angular/core';
+
+@Component({
+selector: 'my-app',
+template:
+  `<h1>Absolute &amp; <i>Component-Relative</i> Paths</h1>
+  <absolute-path></absolute-path>
+  <relative-path></relative-path>
+  `
+})
+export class AppComponent {}
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[app/app.module.ts]" value="import { NgModule } from '@angular/core';
+import { BrowserModule }  from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { SomeAbsoluteComponent, SomeRelativeComponent } from './some.component';
+
+@NgModule({
+  imports: [
+    BrowserModule
+  ],
+  declarations: [
+    AppComponent,
+    SomeAbsoluteComponent,
+    SomeRelativeComponent
+  ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule { }
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[app/some.component.ts]" value="import { Component } from '@angular/core';
+
+///////// Using Absolute Paths ///////
+
+@Component({
+  selector: 'absolute-path',
+  templateUrl: 'app/some.component.html',
+  styleUrls:  ['app/some.component.css']
+})
+export class SomeAbsoluteComponent {
+  class = 'absolute';
+  type = 'Absolute template &amp; style URLs';
+  path = 'app/path.component.html';
+}
+
+///////// Using Relative Paths ///////
+
+@Component({
+  moduleId: module.id,
+  selector: 'relative-path',
+  templateUrl: './some.component.html',
+  styleUrls:  ['./some.component.css']
+})
+
+export class SomeRelativeComponent {
+  class = 'relative';
+  type = 'Component-relative template &amp; style URLs';
+  path = 'path.component.html';
+
+}
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[main.ts]" value="import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+import { AppModule } from './app/app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[app/some.component.css]" value="div.absolute {
+  background: beige;
+  border: 1px solid darkred;
+  color: red;
+  margin: 8px;
+  max-width: 20em;
+  padding: 4px;
+  text-align: center;
+}
+
+div.relative {
+  background: powderblue;
+  border: 1px solid darkblue;
+  color: Blue;
+  font-style: italic;
+  margin: 8px;
+  max-width: 20em;
+  padding: 4px;
+  text-align: center;
+}
+
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[styles.css]" value="/* Master Styles */
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+h2, h3 {
+  color: #444;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
+}
+body {
+  margin: 2em;
+}
+body, input[text], button {
+  color: #888;
+  font-family: Cambria, Georgia;
+}
+a {
+  cursor: pointer;
+  cursor: hand;
+}
+button {
+  font-family: Arial;
+  background-color: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  cursor: hand;
+}
+button:hover {
+  background-color: #cfd8dc;
+}
+button:disabled {
+  background-color: #eee;
+  color: #aaa;
+  cursor: auto;
+}
+
+/* Navigation link styles */
+nav a {
+  padding: 5px 10px;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 10px;
+  display: inline-block;
+  background-color: #eee;
+  border-radius: 4px;
+}
+nav a:visited, a:link {
+  color: #607D8B;
+}
+nav a:hover {
+  color: #039be5;
+  background-color: #CFD8DC;
+}
+nav a.active {
+  color: #039be5;
+}
+
+/* items class */
+.items {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+  width: 24em;
+}
+.items li {
+  cursor: pointer;
+  position: relative;
+  left: 0;
+  background-color: #EEE;
+  margin: .5em;
+  padding: .3em 0;
+  height: 1.6em;
+  border-radius: 4px;
+}
+.items li:hover {
+  color: #607D8B;
+  background-color: #DDD;
+  left: .1em;
+}
+.items li.selected {
+  background-color: #CFD8DC;
+  color: white;
+}
+.items li.selected:hover {
+  background-color: #BBD8DC;
+}
+.items .text {
+  position: relative;
+  top: -3px;
+}
+.items .badge {
+  display: inline-block;
+  font-size: small;
+  color: white;
+  padding: 0.8em 0.7em 0 0.7em;
+  background-color: #607D8B;
+  line-height: 1em;
+  position: relative;
+  left: -1px;
+  top: -4px;
+  height: 1.8em;
+  margin-right: .8em;
+  border-radius: 4px 0 0 4px;
+}
+/* everywhere else */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/*
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/"><input type="hidden" name="files[app/some.component.html]" value="<div class={{class}}>
+  {{type}}<br>{{path}}
+</div>
+
+
+<!-- 
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+-->"><input type="hidden" name="files[index.html]" value="<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=&quot;utf-8&quot;>
+  <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;>
+  <script>document.write('<base href=&quot;' + document.location + '&quot; />');</script>
+
+  <title>
+    Component-Relative Paths
+  </title>
+
+  <link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;styles.css&quot;>
+
+    <!-- Polyfills -->
+    <script src=&quot;https://unpkg.com/core-js/client/shim.min.js&quot;></script>
+
+    <script src=&quot;https://unpkg.com/zone.js@0.7.4?main=browser&quot;></script>
+    <script src=&quot;https://unpkg.com/systemjs@0.19.39/dist/system.src.js&quot;></script>
+
+    <script src=&quot;https://cdn.rawgit.com/angular/angular.io/b3c65a9/public/docs/_examples/_boilerplate/systemjs.config.web.js&quot;></script>
+    <script>
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+  </head>
+<body>
+  <my-app>Loading app...</my-app>
+</body>
+</html>
+
+
+<!-- 
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+-->"><input type="hidden" name="tags[0]" value="angular"><input type="hidden" name="tags[1]" value="example"><input type="hidden" name="tags[2]" value="cookbook"><input type="hidden" name="private" value="true"><input type="hidden" name="description" value="Angular Example - Module-relative Paths"></form><script>document.getElementById("mainForm").submit();</script></body></html>

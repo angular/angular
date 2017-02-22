@@ -1,0 +1,12 @@
+<!-- #docregion -->
+<div *ngIf="hero">
+  <h2><span>{{hero.name | titlecase}}</span> Details</h2>
+  <div>
+    <label>id: </label>{{hero.id}}</div>
+  <div>
+    <label for="name">name: </label>
+    <input id="name" [(ngModel)]="hero.name" placeholder="name" />
+  </div>
+  <button (click)="save()">Save</button>
+  <button (click)="cancel()">Cancel</button>
+</div>

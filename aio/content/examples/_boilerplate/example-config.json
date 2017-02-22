@@ -1,0 +1,4 @@
+{
+  "build": "build",
+  "run": "serve"
+}

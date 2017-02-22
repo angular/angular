@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <!-- #docregion head -->
+  <!-- #docregion base-href -->
+  <head>
+    <base href="/">
+    <!-- #enddocregion base-href -->
+    <title>Angular Tour of Heroes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- #enddocregion head -->
+    <!-- #docregion css -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- #enddocregion css -->
+    <!-- #docregion head -->
+    <!-- Polyfills -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+  </head>
+  <!-- #enddocregion head -->
+
+  <body>
+    <my-app>Loading...</my-app>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "description": "Attribute Directive",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!app/*.[1,2,3].*"
+  ],
+  "tags": ["attribute", "directive"]
+}

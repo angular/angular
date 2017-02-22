@@ -1,0 +1,73 @@
+<!-- #docplaster -->
+<!-- #docregion -->
+  <!-- #docregion buttons -->
+<form [formGroup]="heroForm" (ngSubmit)="onSubmit()" novalidate>
+  <div style="margin-bottom: 1em">
+    <button type="submit"
+            [disabled]="heroForm.pristine" class="btn btn-success">Save</button> &nbsp;
+    <button type="reset" (click)="revert()"
+            [disabled]="heroForm.pristine" class="btn btn-danger">Revert</button>
+  </div>
+
+  <!-- Hero Detail Controls -->
+  <!-- #enddocregion buttons -->
+  <div class="form-group">
+      <label class="center-block">Name:
+        <input class="form-control" formControlName="name">
+      </label>
+  </div>
+
+  <div formArrayName="secretLairs" class="well well-lg">
+    <div *ngFor="let address of secretLairs.controls; let i=index" [formGroupName]="i" >
+      <!-- The repeated address template -->
+      <h4>Address #{{i + 1}}</h4>
+      <div style="margin-left: 1em;">
+        <div class="form-group">
+          <label class="center-block">Street:
+            <input class="form-control" formControlName="street">
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="center-block">City:
+            <input class="form-control" formControlName="city">
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="center-block">State:
+            <select class="form-control" formControlName="state">
+              <option *ngFor="let state of states" [value]="state">{{state}}</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="center-block">Zip Code:
+            <input class="form-control" formControlName="zip">
+          </label>
+        </div>
+      </div>
+      <br>
+      <!-- End of the repeated address template -->
+    </div>
+    <button (click)="addLair()" type="button">Add a Secret Lair</button>
+  </div>
+  <!-- #docregion buttons -->
+  <div class="form-group radio">
+    <h4>Super power:</h4>
+    <label class="center-block"><input type="radio" formControlName="power" value="flight">Flight</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="x-ray vision">X-ray vision</label>
+    <label class="center-block"><input type="radio" formControlName="power" value="strength">Strength</label>
+  </div>
+  <div class="checkbox">
+    <label class="center-block">
+      <input type="checkbox" formControlName="sidekick">I have a sidekick.
+    </label>
+  </div>
+</form>
+  <!-- #enddocregion buttons -->
+
+<p>heroForm value: {{ heroForm.value | json}}</p>
+
+<!-- #docregion name-change-log -->
+<h4>Name change log</h4>
+<div *ngFor="let name of nameChangeLog">{{name}}</div>
+<!-- #enddocregion name-change-log -->

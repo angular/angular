@@ -1,0 +1,9 @@
+{
+  "description": "Hello World",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ]
+}
