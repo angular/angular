@@ -28,7 +28,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/platform-webworker"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform-webworker"
   }
 }

@@ -22,6 +22,7 @@ import {privateEntriesToIndex} from './index_writer';
 export {UserError} from './tsc';
 
 const DTS = /\.d\.ts$/;
+const JS_EXT = /(\.js|)$/;
 
 export type CodegenExtension =
     (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>
@@ -59,34 +60,32 @@ export function main(
     // todo(misko): remove once facade symlinks are removed
     host.realpath = (path) => path;
 
-    // If the comilation is a bundle index then produce the bundle index metadata and
-    // the synthetic bundle index.
-    if (ngOptions.bundleIndex && !ngOptions.skipMetadataEmit) {
+    // If the comilation is a flat module index then produce the flat module index
+    // metadata and the synthetic flat module index.
+    if (ngOptions.flatModuleOutFile && !ngOptions.skipMetadataEmit) {
       const files = parsed.fileNames.filter(f => !DTS.test(f));
-      if (files.length != 1 && (!ngOptions.libraryIndex || files.length < 1)) {
+      if (files.length != 1) {
         check([{
           file: null,
           start: null,
           length: null,
           messageText:
-              'Angular compiler option "bundleIndex" requires one and only one .ts file in the "files" field or "libraryIndex" to also be specified in order to select which module to use as the library index',
+              'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
           category: ts.DiagnosticCategory.Error,
           code: 0
         }]);
       }
       const file = files[0];
       const indexModule = file.replace(/\.ts$/, '');
-      const libraryIndexModule = ngOptions.libraryIndex ?
-          MetadataBundler.resolveModule(ngOptions.libraryIndex, indexModule) :
-          indexModule;
       const bundler =
-          new MetadataBundler(indexModule, ngOptions.importAs, new CompilerHostAdapter(host));
-      if (diagnostics) console.time('NG bundle index');
+          new MetadataBundler(indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host));
+      if (diagnostics) console.time('NG flat module index');
       const metadataBundle = bundler.getMetadataBundle();
-      if (diagnostics) console.timeEnd('NG bundle index');
+      if (diagnostics) console.timeEnd('NG flat module index');
       const metadata = JSON.stringify(metadataBundle.metadata);
-      const name = path.join(path.dirname(libraryIndexModule), ngOptions.bundleIndex + '.ts');
-      const libraryIndex = ngOptions.libraryIndex || `./${path.basename(indexModule)}`;
+      const name =
+          path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile.replace(JS_EXT, '.ts'));
+      const libraryIndex = `./${path.basename(indexModule)}`;
       const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
       host = new SyntheticIndexHost(host, {name, content, metadata});
       parsed.fileNames.push(name);

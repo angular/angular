@@ -29,7 +29,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/router"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/router"
   }
 }

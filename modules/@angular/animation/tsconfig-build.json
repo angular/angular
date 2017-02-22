@@ -27,7 +27,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "bundleIndex": "index",
-    "importAs": "@angular/animation"
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/animation"
   }
 }
