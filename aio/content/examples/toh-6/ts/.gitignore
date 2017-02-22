@@ -1,0 +1,8 @@
+aot/**/*.ts
+**/*.ngfactory.ts
+**/*.ngsummary.json
+**/*.metadata.json
+**/*.js
+dist
+!app/tsconfig.json
+!rollup-config.js

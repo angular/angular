@@ -1,0 +1,10 @@
+{
+  "description": "Component Styles",
+  "basePath": "src/",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.native.*"
+  ],
+  "tags": ["CSS"]
+}

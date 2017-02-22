@@ -1,0 +1,9 @@
+{
+  "description": "TypeScript to JavaScript",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["cookbook"]
+}

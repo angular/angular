@@ -1,0 +1,11 @@
+{
+  "description": "Displaying Data",
+  "basePath": "src/",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/app-ctor.component.ts",
+    "!**/*.[1,2,3].*"
+  ],
+  "tags": ["Template"]
+}

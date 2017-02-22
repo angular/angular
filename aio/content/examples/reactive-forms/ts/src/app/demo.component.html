@@ -1,0 +1,40 @@
+<div class="container">
+<h1>Reactive Forms</h1>
+<h4><i>Pick a demo:</i>
+  <select [selectedIndex]="demo - 1" (change)="selectDemo($event.target.selectedIndex)">
+    <option *ngFor="let demo of demos">{{demo}}</option>
+  </select>
+</h4>
+
+<hr>
+
+<div class="demo">
+  <hero-list *ngIf="demo===final"></hero-list>
+  <hero-detail-1 *ngIf="demo===1"></hero-detail-1>
+  <hero-detail-2 *ngIf="demo===2"></hero-detail-2>
+  <hero-detail-3 *ngIf="demo===3"></hero-detail-3>
+  <hero-detail-4 *ngIf="demo===4"></hero-detail-4>
+  <hero-detail-5 *ngIf="demo===5"></hero-detail-5>
+
+  <div *ngIf="demo >= 6 && demo !== final" >
+
+    <h3 *ngIf="isLoading"><i>Loading heroes ... </i></h3>
+    <h3 *ngIf="!isLoading">Select a hero:</h3>
+
+    <nav>
+      <button (click)="getHeroes()" class="btn btn-primary">Refresh</button>
+      <a *ngFor="let hero of heroes | async" (click)="select(hero)">{{hero.name}}</a>
+    </nav>
+
+    <div *ngIf="selectedHero">
+      <hr>
+      <h2>Hero Detail</h2>
+      <h3>Editing: {{selectedHero.name}}</h3>
+      <hero-detail-6 [hero]=selectedHero *ngIf="demo===6"></hero-detail-6>
+      <hero-detail-7 [hero]=selectedHero *ngIf="demo===7"></hero-detail-7>
+      <hero-detail-8 [hero]=selectedHero *ngIf="demo===8"></hero-detail-8>
+
+    </div>
+  </div>
+</div>
+</div>

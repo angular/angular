@@ -1,0 +1,116 @@
+// #docplaster
+// When AppComponent learns to present quote with intervalTimer
+import { async, discardPeriodicTasks, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { By }                        from '@angular/platform-browser';
+import { DebugElement }              from '@angular/core';
+
+import { TwainService }   from './model';
+import { TwainComponent } from './twain.component';
+
+xdescribe('TwainComponent', () => {
+
+  let comp: TwainComponent;
+  let fixture: ComponentFixture<TwainComponent>;
+
+  const quotes = [
+  'Test Quote 1',
+  'Test Quote 2',
+  'Test Quote 3'
+  ];
+
+  let spy: jasmine.Spy;
+  let twainEl: DebugElement;  // the element with the Twain quote
+  let twainService: TwainService; // the actually injected service
+
+  function getQuote() { return twainEl.nativeElement.textContent; }
+
+  // #docregion setup
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+       declarations: [ TwainComponent ],
+       providers:    [ TwainService ],
+    });
+
+    fixture = TestBed.createComponent(TwainComponent);
+    comp    = fixture.componentInstance;
+
+    // TwainService actually injected into the component
+    twainService = fixture.debugElement.injector.get(TwainService);
+
+    // Setup spy on the `getQuote` method
+    spy = spyOn(twainService, 'getQuote')
+          .and.returnValues(...quotes.map(q => Promise.resolve(q)));
+
+    // Get the Twain quote element by CSS selector (e.g., by class name)
+    twainEl = fixture.debugElement.query(By.css('.twain'));
+  });
+
+  afterEach(() => {
+    // destroy component to stop the component timer
+    fixture.destroy();
+  });
+  // #enddocregion setup
+
+  // #docregion tests
+  it('should not show quote before OnInit', () => {
+    expect(getQuote()).toBe('');
+  });
+
+  it('should still not show quote after component initialized', () => {
+    // because the getQuote service is async
+    fixture.detectChanges(); // trigger data binding
+    expect(getQuote()).toContain('not initialized');
+  });
+
+  // WIP
+  // If go this way, add jasmine.clock().uninstall(); to afterEach
+  // it('should show quote after Angular "settles"', async(() => {
+  //   //jasmine.clock().install();
+  //   fixture.detectChanges(); // trigger data binding
+  //  fixture.whenStable().then(() => {
+  //     fixture.detectChanges(); // update view with the quote
+  //     expect(getQuote()).toBe(quotes[0]);
+  //   });
+  //   // jasmine.clock().tick(5000);
+  //   // fixture.whenStable().then(() => {
+  //   //   fixture.detectChanges(); // update view with the quote
+  //   //   expect(getQuote()).toBe(quotes[1]);
+  //   // });
+  // }));
+
+  it('should show quote after getQuote promise returns', fakeAsync(() => {
+    fixture.detectChanges(); // trigger data binding
+    tick();                  // wait for first async getQuote to return
+    fixture.detectChanges(); // update view with the quote
+    expect(getQuote()).toBe(quotes[0]);
+
+    // destroy component to stop the component timer before test ends
+    // else test errors because still have timer in the queue
+    fixture.destroy();
+  }));
+
+  it('should show 2nd quote after 5 seconds pass', fakeAsync(() => {
+    fixture.detectChanges(); // trigger data binding
+    tick(5000);              // wait for second async getQuote to return
+    fixture.detectChanges(); // update view with the quote
+    expect(getQuote()).toBe(quotes[1]);
+
+    // still have intervalTimer queuing requres
+    // discardPeriodicTasks() else test errors
+    discardPeriodicTasks();
+  }));
+
+  fit('should show 3rd quote after 10 seconds pass', fakeAsync(() => {
+    fixture.detectChanges(); // trigger data binding
+    tick(5000);              // wait for second async getQuote to return
+    fixture.detectChanges(); // update view with the 2nd quote
+    tick(5000);              // wait for third async getQuote to return
+    fixture.detectChanges(); // update view with the 3rd quote
+    expect(getQuote()).toBe(quotes[2]);
+
+    // still have intervalTimer queuing requres
+    // discardPeriodicTasks() else test errors
+    discardPeriodicTasks();
+  }));
+  // #enddocregion tests
+});

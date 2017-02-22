@@ -1,0 +1,5 @@
+{
+  "build": "build:upgrade",
+  "run": "serve:upgrade",
+  "unittesting": true
+}
