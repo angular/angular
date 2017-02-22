@@ -1,0 +1,14 @@
+{
+  "description": "Running the bag",
+  "basePath": "src/",
+  "files":[
+    "styles.css",
+
+    "app/bag/bag.ts",
+    "app/bag/bag-external-template.html",
+    "app/bag/bag-main.ts",
+    "bag.html"
+  ],
+  "main": "bag.html",
+  "tags": ["testing"]
+}

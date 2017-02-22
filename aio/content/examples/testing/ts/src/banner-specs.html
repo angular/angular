@@ -1,0 +1,40 @@
+<!-- Run application specs in a browser -->
+<!-- #docregion -->
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/">
+  <title>Banner Component Specs</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+</head>
+<body>
+  <!-- Polyfills -->
+  <script src="node_modules/core-js/client/shim.min.js"></script>
+
+  <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+  <script src="node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+  <script src="node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+  <script src="node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+  <script src="node_modules/zone.js/dist/zone.js"></script>
+  <script src="node_modules/zone.js/dist/long-stack-trace-zone.js"></script>
+  <script src="node_modules/zone.js/dist/proxy.js"></script>
+  <script src="node_modules/zone.js/dist/sync-test.js"></script>
+  <script src="node_modules/zone.js/dist/jasmine-patch.js"></script>
+  <script src="node_modules/zone.js/dist/async-test.js"></script>
+  <script src="node_modules/zone.js/dist/fake-async-test.js"></script>
+
+  <!-- #docregion files -->
+  <script>
+    var __spec_files__ = [
+      'app/banner.component.spec'
+    ];
+  </script>
+  <!-- #enddocregion files-->
+  <script src="browser-test-shim.js"></script>
+</body>
+
+</html>

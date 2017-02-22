@@ -1,0 +1,9 @@
+{
+  "description": "Intro to Angular",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!app/hero-list.component.1.*"
+  ]
+}

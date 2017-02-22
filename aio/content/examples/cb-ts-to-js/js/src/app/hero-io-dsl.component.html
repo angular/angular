@@ -1,0 +1,7 @@
+<app-confirm-dsl [okMsg]="'OK'"
+                 [cancelMsg]="'Cancel'"
+                 (ok)="onOk()"
+                 (cancel)="onCancel()">
+</app-confirm-dsl>
+<span *ngIf="okClicked">OK clicked</span>
+<span *ngIf="cancelClicked">Cancel clicked</span>

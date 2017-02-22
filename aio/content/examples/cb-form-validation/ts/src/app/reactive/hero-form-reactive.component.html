@@ -1,0 +1,47 @@
+ <!-- #docregion -->
+<div class="container">
+  <div [hidden]="submitted">
+    <h1>Hero Form 3 (Reactive)</h1>
+    <!-- #docregion form-tag-->
+    <form [formGroup]="heroForm"  *ngIf="active"  (ngSubmit)="onSubmit()">
+    <!-- #enddocregion form-tag-->
+      <div class="form-group">
+        <!-- #docregion name-with-error-msg -->
+        <label for="name">Name</label>
+
+        <input type="text" id="name" class="form-control"
+               formControlName="name" required >
+
+        <div *ngIf="formErrors.name" class="alert alert-danger">
+          {{ formErrors.name }}
+        </div>
+        <!-- #enddocregion name-with-error-msg -->
+      </div>
+
+      <div class="form-group">
+        <label for="alterEgo">Alter Ego</label>
+        <input type="text" id="alterEgo" class="form-control"
+            formControlName="alterEgo"  >
+      </div>
+
+      <div class="form-group">
+        <label for="power">Hero Power</label>
+        <select id="power" class="form-control"
+            formControlName="power" required >
+          <option *ngFor="let p of powers" [value]="p">{{p}}</option>
+        </select>
+
+        <div *ngIf="formErrors.power" class="alert alert-danger">
+          {{ formErrors.power }}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-default"
+             [disabled]="!heroForm.valid">Submit</button>
+      <button type="button" class="btn btn-default"
+             (click)="addHero()">New Hero</button>
+    </form>
+  </div>
+
+  <hero-submitted [hero]="hero" [(submitted)]="submitted"></hero-submitted>
+</div>

@@ -1,0 +1,5 @@
+{
+  "port": 8000,
+  "files": ["./aot/**/*.{html,htm,css,js}"],
+  "server": { "baseDir": "./aot" }
+}
