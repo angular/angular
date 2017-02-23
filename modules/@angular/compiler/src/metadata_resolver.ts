@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵcreateComponentFactory as createComponentFactory, ɵreflector} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, NgModule, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵcreateComponentFactory as createComponentFactory, ɵreflector} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -501,6 +501,7 @@ export class CompileMetadataResolver {
         }
 
         if (importedModuleType) {
+          if (this._checkCircularDependency(moduleType, importedModuleType)) return;
           const importedModuleSummary = this.getNgModuleSummary(importedModuleType);
           if (!importedModuleSummary) {
             this._reportError(
@@ -641,6 +642,28 @@ export class CompileMetadataResolver {
     transitiveModule.addModule(compileMeta.type);
     this._ngModuleCache.set(moduleType, compileMeta);
     return compileMeta;
+  }
+
+  /**
+   * Checks if there's a circular dependency between 2 modules (e.g. A imports B which imports A).
+   *
+   * @returns {boolean} true if there's a circular dependency otherwise false
+   */
+  private _checkCircularDependency(moduleType: Type<any>, importedModuleType: Type<any>): boolean {
+    const importedModuleMeta: NgModule = this._ngModuleResolver.resolve(importedModuleType, false);
+    if (importedModuleMeta && importedModuleMeta.imports) {
+      const importedModuleImports = flattenAndDedupeArray(importedModuleMeta.imports);
+      if (importedModuleImports.some(module => module === moduleType)) {
+        const moduleName = stringifyType(moduleType);
+        const importedModuleName = stringifyType(importedModuleType);
+        this._reportError(
+            syntaxError(
+                `Circular dependency detected while processing '${moduleName}' module. '${moduleName}' imports '${importedModuleName}' and '${importedModuleName}' imports '${moduleName}'`),
+            moduleType);
+        return true;
+      }
+    }
+    return false;
   }
 
   private _getTypeDescriptor(type: Type<any>): string {
