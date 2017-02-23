@@ -8,15 +8,17 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">= 6.9.5 < 7.0.0",
-    "npm": ">=3.10.7 <4.0.0"
+    "node": ">=6.9.5 <7.0.0",
+    "npm": ">=3.10.7 <4.0.0",
+    "yarn": ">=0.19.1 <0.21.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update"
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update",
+    "check-env": "gulp check-env"
   },
   "dependencies": {
     "core-js": "^2.4.1",

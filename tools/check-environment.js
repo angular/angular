@@ -54,30 +54,46 @@ try {
 }
 
 function checkEnvironment(reqs) {
-  exec('npm --version', function(e, stdout) {
-    var foundNpmVersion = semver.clean(stdout);
-    var foundNodeVersion = process.version;
-    var issues = [];
+  exec('npm --version', function(npmErr, npmStdout) {
+    exec('yarn --version', function(yarnErr, yarnStdout) {
+      var foundNodeVersion = process.version;
+      var foundNpmVersion = semver.clean(npmStdout);
+      var foundYarnVersion = !yarnErr && semver.clean(yarnStdout);
+      var issues = [];
 
 
-    if (!semver.satisfies(foundNodeVersion, reqs.requiredNodeVersion)) {
-      issues.push(
-          'You are running unsupported node version. Found: ' + foundNodeVersion + ' Expected: ' +
-          reqs.requiredNodeVersion + '. Use nvm to update your node version.');
-    }
+      if (!semver.satisfies(foundNodeVersion, reqs.requiredNodeVersion)) {
+        issues.push(
+            'You are running unsupported node version. Found: ' + foundNodeVersion + ' Expected: ' +
+            reqs.requiredNodeVersion + '. Use nvm to update your node version.');
+      }
 
-    if (!semver.satisfies(foundNpmVersion, reqs.requiredNpmVersion)) {
-      issues.push(
-          'You are running unsupported npm version. Found: ' + foundNpmVersion + ' Expected: ' +
-          reqs.requiredNpmVersion + '. Run: npm update -g npm');
-    }
+      if (!semver.satisfies(foundNpmVersion, reqs.requiredNpmVersion)) {
+        issues.push(
+            'You are running unsupported npm version. Found: ' + foundNpmVersion + ' Expected: ' +
+            reqs.requiredNpmVersion + '. Run: npm update -g npm');
+      }
 
-    if (!checkNodeModules()) {
-      issues.push(
-          'Your node_modules directory is stale or out of sync with npm-shrinkwrap.json. Run: npm install');
-    }
+      if (yarnErr) {
+        issues.push(
+            'You don\'t have yarn globally installed. This is required if you want to work on ' +
+            'certain areas, such as `aio/` and `integration/`. Installation instructions: ' +
+            'https://yarnpkg.com/lang/en/docs/install/');
+      } else if (!semver.satisfies(foundYarnVersion, reqs.requiredYarnVersion)) {
+        issues.push(
+            'You are running unsupported yarn version. Found: ' + foundYarnVersion + ' Expected: ' +
+            reqs.requiredYarnVersion + '. This is required if you want to work on ' +
+            'certain areas, such as `aio/` and `integration/`. See: ' +
+            'https://yarnpkg.com/lang/en/docs/install/');
+      }
 
-    printWarning(issues);
+      if (!checkNodeModules()) {
+        issues.push(
+            'Your node_modules directory is stale or out of sync with npm-shrinkwrap.json. Run: npm install');
+      }
+
+      printWarning(issues);
+    })
   });
 }
 
