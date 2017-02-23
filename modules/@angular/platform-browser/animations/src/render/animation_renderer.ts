@@ -87,10 +87,12 @@ export class AnimationRenderer implements RendererV2 {
 
   appendChild(parent: any, newChild: any): void {
     this._engine.onInsert(newChild, () => this.delegate.appendChild(parent, newChild));
+    this._queueFlush();
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     this._engine.onInsert(newChild, () => this.delegate.insertBefore(parent, newChild, refChild));
+    this._queueFlush();
   }
 
   removeChild(parent: any, oldChild: any): void {
