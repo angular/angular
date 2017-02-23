@@ -124,8 +124,7 @@ describe('MdAutocomplete', () => {
 
       fixture.whenStable().then(() => {
         // Filter down the option list to a subset of original options ('Alabama', 'California')
-        input.value = 'al';
-        dispatchEvent('input', input);
+        typeInElement('al', input);
         fixture.detectChanges();
 
         let options =
@@ -134,8 +133,7 @@ describe('MdAutocomplete', () => {
 
         // Changing value from 'Alabama' to 'al' to re-populate the option list,
         // ensuring that 'California' is created new.
-        input.value = 'al';
-        dispatchEvent('input', input);
+        typeInElement('al', input);
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -177,8 +175,7 @@ describe('MdAutocomplete', () => {
             .toContain('mat-autocomplete-visible', `Expected panel to start out visible.`);
 
         // Filter down the option list such that no options match the value
-        input.value = 'af';
-        dispatchEvent('input', input);
+        typeInElement('af', input);
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -209,6 +206,18 @@ describe('MdAutocomplete', () => {
             .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
       });
     }));
+
+    it('should not open the panel when the `input` event is invoked on a non-focused input', () => {
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected panel state to start out closed.`);
+
+      input.value = 'Alabama';
+      dispatchEvent('input', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected panel state to stay closed.`);
+    });
 
   });
 
@@ -241,15 +250,13 @@ describe('MdAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      input.value = 'a';
-      dispatchEvent('input', input);
+      typeInElement('a', input);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
           .toEqual('a', 'Expected control value to be updated as user types.');
 
-      input.value = 'al';
-      dispatchEvent('input', input);
+      typeInElement('al', input);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.value)
@@ -282,8 +289,7 @@ describe('MdAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        input.value = 'Californi';
-        dispatchEvent('input', input);
+        typeInElement('Californi', input);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.stateCtrl.value)
@@ -339,8 +345,7 @@ describe('MdAutocomplete', () => {
     }));
 
     it('should clear the text field if value is reset programmatically', async(() => {
-      input.value = 'Alabama';
-      dispatchEvent('input', input);
+      typeInElement('Alabama', input);
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -376,8 +381,7 @@ describe('MdAutocomplete', () => {
       expect(fixture.componentInstance.stateCtrl.dirty)
           .toBe(false, `Expected control to start out pristine.`);
 
-      input.value = 'a';
-      dispatchEvent('input', input);
+      typeInElement('a', input);
       fixture.detectChanges();
 
       expect(fixture.componentInstance.stateCtrl.dirty)
@@ -531,8 +535,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
-          input.value = 'o';
-          dispatchEvent('input', input);
+          typeInElement('o', input);
           fixture.detectChanges();
 
           fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
@@ -565,8 +568,7 @@ describe('MdAutocomplete', () => {
 
     it('should fill the text field, not select an option, when SPACE is entered', async(() => {
       fixture.whenStable().then(() => {
-        input.value = 'New';
-        dispatchEvent('input', input);
+        typeInElement('New', input);
         fixture.detectChanges();
 
         const SPACE_EVENT = new FakeKeyboardEvent(SPACE) as KeyboardEvent;
@@ -604,8 +606,7 @@ describe('MdAutocomplete', () => {
         expect(overlayContainerElement.textContent)
             .toEqual('', `Expected panel to close after ENTER key.`);
 
-        input.value = 'Alabam';
-        dispatchEvent('input', input);
+        typeInElement('Alabama', input);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.trigger.panelOpen)
@@ -782,8 +783,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        input.value = 'f';
-        dispatchEvent('input', input);
+        typeInElement('f', input);
         fixture.detectChanges();
 
         const inputTop = input.getBoundingClientRect().top;
@@ -808,8 +808,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        input.value = 'd';
-        dispatchEvent('input', input);
+        typeInElement('d', input);
         fixture.detectChanges();
 
         const options =
@@ -826,7 +825,7 @@ describe('MdAutocomplete', () => {
     <md-input-container>
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
     </md-input-container>
-  
+
     <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
       <md-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
@@ -881,10 +880,10 @@ class SimpleAutocomplete implements OnDestroy {
 @Component({
   template: `
     <md-input-container>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto" 
+      <input mdInput placeholder="State" [mdAutocomplete]="auto"
       (input)="onInput($event.target?.value)">
     </md-input-container>
-  
+
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state }}  </span>
@@ -918,6 +917,19 @@ function dispatchEvent(eventName: string, element: HTMLElement): void {
   let event  = document.createEvent('Event');
   event.initEvent(eventName, true, true);
   element.dispatchEvent(event);
+}
+
+
+/**
+ * Focuses an input, sets its value and dispatches
+ * the `input` event, simulating the user typing.
+ * @param value Value to be set on the input.
+ * @param element Element onto which to set the value.
+ */
+function typeInElement(value: string, element: HTMLInputElement) {
+  element.focus();
+  element.value = value;
+  dispatchEvent('input', element);
 }
 
 /** This is a mock keyboard event to test keyboard events in the autocomplete. */
