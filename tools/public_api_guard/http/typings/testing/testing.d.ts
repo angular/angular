@@ -1,3 +1,7 @@
+/** @stable */
+export declare class HttpTestingModule {
+}
+
 /** @experimental */
 export declare class MockBackend implements ConnectionBackend {
     connections: any;
@@ -19,3 +23,6 @@ export declare class MockConnection implements Connection {
     mockError(err?: Error): void;
     mockRespond(res: Response): void;
 }
+
+/** @stable */
+export declare function setupHttpTesting(backend: ConnectionBackend, defaultOptions: RequestOptions): Http;
