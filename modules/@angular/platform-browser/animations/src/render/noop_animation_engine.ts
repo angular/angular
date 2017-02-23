@@ -14,6 +14,7 @@ interface ListenerTuple {
   eventPhase: string;
   triggerName: string;
   callback: (event: any) => any;
+  doRemove?: boolean;
 }
 
 interface ChangeTuple {
@@ -82,12 +83,7 @@ export class NoopAnimationEngine extends AnimationEngine {
     const tuple = <ListenerTuple>{triggerName: eventName, eventPhase, callback};
     listeners.push(tuple);
 
-    return () => {
-      const index = listeners.indexOf(tuple);
-      if (index >= 0) {
-        listeners.splice(index, 1);
-      }
-    };
+    return () => tuple.doRemove = true;
   }
 
   flush(): void {
@@ -131,6 +127,16 @@ export class NoopAnimationEngine extends AnimationEngine {
             newValue: DEFAULT_STATE_VALUE
           });
         });
+      }
+    });
+
+    // remove all the listeners after everything is complete
+    Array.from(this._listeners.keys()).forEach(element => {
+      const listenersToKeep = this._listeners.get(element).filter(l => !l.doRemove);
+      if (listenersToKeep.length) {
+        this._listeners.set(element, listenersToKeep);
+      } else {
+        this._listeners.delete(element);
       }
     });
 
