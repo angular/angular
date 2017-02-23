@@ -8,6 +8,7 @@
 
 import {Observable} from 'rxjs/Observable';
 import {AbstractControl} from '../model';
+import {ValidationErrors} from './validators';
 
 /**
  * Base class for control directives.
@@ -27,7 +28,7 @@ export abstract class AbstractControlDirective {
 
   get pending(): boolean { return this.control ? this.control.pending : null; }
 
-  get errors(): {[key: string]: any} { return this.control ? this.control.errors : null; }
+  get errors(): ValidationErrors|null { return this.control ? this.control.errors : null; }
 
   get pristine(): boolean { return this.control ? this.control.pristine : null; }
 
