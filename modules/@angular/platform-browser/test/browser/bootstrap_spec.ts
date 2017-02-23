@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -221,6 +222,15 @@ export function main() {
       const refPromise = bootstrap(HelloRootCmp, testProviders);
       expect(refPromise).not.toBe(null);
     });
+
+    it('should set platform name to browser',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const refPromise = bootstrap(HelloRootCmp, testProviders);
+         refPromise.then((ref) => {
+           expect(isPlatformBrowser(ref.injector.get(PLATFORM_ID))).toBe(true);
+           async.done();
+         });
+       }));
 
     it('should display hello world', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const refPromise = bootstrap(HelloRootCmp, testProviders);

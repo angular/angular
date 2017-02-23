@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
+import {CommonModule, ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID} from '@angular/common';
+import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLATFORM_ID, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
 import {DOCUMENT, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
@@ -24,7 +24,8 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 /**
  * @experimental
  */
-export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp');
+export const platformWorkerApp = createPlatformFactory(
+    platformCore, 'workerApp', [{provide: PLATFORM_ID, useValue: PLATFORM_WORKER_APP_ID}]);
 
 export function errorHandler(): ErrorHandler {
   return new ErrorHandler();

@@ -744,6 +744,9 @@ export interface PipeTransform {
 }
 
 /** @experimental */
+export declare const PLATFORM_ID: InjectionToken<Object>;
+
+/** @experimental */
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */

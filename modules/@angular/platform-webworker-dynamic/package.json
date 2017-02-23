@@ -9,6 +9,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
+    "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
