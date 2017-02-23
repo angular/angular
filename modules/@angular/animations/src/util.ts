@@ -6,6 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export function scheduleMicroTask(cb: () => any) {
-  // FIXME
-  setTimeout(cb, 0);
+  Promise.resolve(null).then(cb);
 }
