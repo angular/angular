@@ -176,11 +176,10 @@ export function splitMatchedQueriesDsl(matchedQueriesDsl: [string | number, Quer
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {
   let renderParent = def.renderParent;
   if (renderParent) {
-    const parent = def.parent;
-    if (parent &&
-        (parent.type !== NodeType.Element || (parent.flags & NodeFlags.HasComponent) === 0 ||
-         (parent.element.componentRendererType &&
-          parent.element.componentRendererType.encapsulation === ViewEncapsulation.Native))) {
+    if (renderParent.type !== NodeType.Element ||
+        (renderParent.flags & NodeFlags.HasComponent) === 0 ||
+        (renderParent.element.componentRendererType &&
+         renderParent.element.componentRendererType.encapsulation === ViewEncapsulation.Native)) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
       return asElementData(view, def.renderParent.index).renderElement;

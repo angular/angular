@@ -232,8 +232,8 @@ export function createTemplateRef(view: ViewData, def: NodeDef): TemplateRef<any
   return new TemplateRef_(view, def);
 }
 
-class TemplateRef_ implements TemplateRef<any> {
-  constructor(private _parentView: ViewData, private _def: NodeDef) {}
+class TemplateRef_ extends TemplateRef<any> {
+  constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
   createEmbeddedView(context: any): EmbeddedViewRef<any> {
     return new ViewRef_(Services.createEmbeddedView(this._parentView, this._def, context));
