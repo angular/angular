@@ -2,10 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {
-  NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT, SASS_AUTOPREFIXER_OPTIONS,
-  SASS_PREPROCESSOR_OPTIONS
-} from './constants';
+import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT, SASS_AUTOPREFIXER_OPTIONS} from './constants';
 
 
 /** Those imports lack typings. */
@@ -47,7 +44,7 @@ export function sassBuildTask(dest: string, root: string) {
   return () => {
     return gulp.src(_globify(root, '**/*.scss'))
       .pipe(gulpSourcemaps.init())
-      .pipe(gulpSass(SASS_PREPROCESSOR_OPTIONS).on('error', gulpSass.logError))
+      .pipe(gulpSass().on('error', gulpSass.logError))
       .pipe(gulpAutoprefixer(SASS_AUTOPREFIXER_OPTIONS))
       .pipe(gulpSourcemaps.write('.'))
       .pipe(gulp.dest(dest));

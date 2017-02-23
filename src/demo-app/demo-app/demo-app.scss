@@ -31,6 +31,7 @@ body {
 
     .demo-toolbar {
       display: flex;
+      justify-content: space-between;
       width: 100%;
     }
   }
@@ -38,11 +39,6 @@ body {
   h1 {
     font-size: 20px;
   }
-}
-
-// Fills remaining flex space.
-.demo-flex-fill {
-  flex: 1 1 auto;
 }
 
 // stretch to screen size in fullscreen mode

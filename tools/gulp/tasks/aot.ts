@@ -12,7 +12,7 @@ task('aot:copy', [':build:devapp:scss', ':build:devapp:assets']);
  */
 task('aot:prepare', sequenceTask(
   'clean',
-  ['build:components:release', 'aot:copy', ':build:components:ngc'])
+  ['aot:copy', 'build:components:release', ':build:components:ngc'])
 );
 
 /** Builds the demo-app with the Angular compiler to verify that all components work. */

@@ -17,10 +17,6 @@ export const SASS_AUTOPREFIXER_OPTIONS = {
   cascade: false,
 };
 
-export const SASS_PREPROCESSOR_OPTIONS = {
-  includePaths: [DIST_ROOT]
-};
-
 export const HTML_MINIFIER_OPTIONS = {
   collapseWhitespace: true,
   removeComments: true,
