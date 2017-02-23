@@ -8,7 +8,7 @@
 import {AnimationMetadata, AnimationPlayer, AnimationStyleMetadata, sequence, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {AnimationEngine} from '../render/animation_engine';
+import {DomAnimationEngine} from '../render/dom_animation_engine';
 import {normalizeStyles} from '../util';
 
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
@@ -49,7 +49,7 @@ export class Animation {
     // within core then the code below will interact with Renderer.transition(...))
     const driver: AnimationDriver = injector.get(AnimationDriver);
     const normalizer: AnimationStyleNormalizer = injector.get(AnimationStyleNormalizer);
-    const engine = new AnimationEngine(driver, normalizer);
+    const engine = new DomAnimationEngine(driver, normalizer);
     return engine.animateTimeline(element, instructions);
   }
 }
