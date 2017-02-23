@@ -319,6 +319,92 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
     });
 
+    describe('animation state flow', () => {
+      it('should cancel all child animations when a parent animation is removed', () => {
+        @Component({
+          selector: 'parent',
+          template: `
+            <div *ngIf="exp0">
+              <div [@child1]="exp1"></div>
+              <div [@child2]="exp1"></div>
+            </div>
+        `,
+          animations: [
+            trigger('child1', [transition('* => *', [])]),
+            trigger('child2', [transition('* => *', [])])
+          ]
+        })
+        class Cmp {
+          exp0: any = false;
+          exp1: any = false;
+          exp2: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp0 = true;
+        cmp.exp1 = true;
+        cmp.exp2 = true;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(engine.activePlayers.length).toEqual(2);
+
+        cmp.exp0 = false;
+        fixture.detectChanges();
+        expect(engine.activePlayers.length).toEqual(0);
+      });
+
+      it('should cancel all child animations after a parent leave animation has completed', () => {
+        @Component({
+          selector: 'parent',
+          template: `
+            <div @parent *ngIf="exp0">
+              <div [@child1]="exp1"></div>
+              <div [@child2]="exp1"></div>
+            </div>
+        `,
+          animations: [
+            trigger('parent', [transition(':leave', [])]),
+            trigger('child1', [transition('* => *', [])]),
+            trigger('child2', [transition('* => *', [])])
+          ]
+        })
+        class Cmp {
+          exp0: any = false;
+          exp1: any = false;
+          exp2: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp0 = true;
+        cmp.exp1 = true;
+        cmp.exp2 = true;
+        fixture.detectChanges();
+        engine.flush();
+        expect(engine.activePlayers.length).toEqual(3);
+
+        cmp.exp0 = false;
+        fixture.detectChanges();
+        engine.flush();
+        expect(engine.activePlayers.length).toEqual(3);
+
+        const player = engine.activePlayers[0];
+        player.finish();
+
+        expect(engine.activePlayers.length).toEqual(0);
+      });
+    });
+
     describe('animation listeners', () => {
       it('should trigger a `start` state change listener for when the animation changes state from void => state',
          () => {

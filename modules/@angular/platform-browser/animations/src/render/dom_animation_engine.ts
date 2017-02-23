@@ -29,6 +29,7 @@ export interface TriggerListenerTuple {
 }
 
 const MARKED_FOR_ANIMATION = 'ng-animate';
+const MARKED_FOR_ANIMATION_SELECTOR = '.ng-animate';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
 
 export class DomAnimationEngine {
@@ -42,6 +43,8 @@ export class DomAnimationEngine {
 
   private _triggers: {[triggerName: string]: AnimationTrigger} = {};
   private _triggerListeners = new Map<any, TriggerListenerTuple[]>();
+
+  public totalActivePlayers: number = 0;
 
   constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
 
@@ -79,10 +82,14 @@ export class DomAnimationEngine {
       });
       if (hasRemoval) {
         element[MARKED_FOR_REMOVAL] = true;
-        this._queuedRemovals.set(element, domFn);
+        this._queuedRemovals.set(element, () => {
+          this._onElementRemoval(element);
+          domFn();
+        });
         return;
       }
     }
+    this._onElementRemoval(element);
     domFn();
   }
 
@@ -135,11 +142,13 @@ export class DomAnimationEngine {
     };
   }
 
-  private _onRemovalTransition(element: any): AnimationPlayer[] {
+  private _onElementRemoval(element: any): void {
+    if (this.totalActivePlayers == 0 && this.queuedPlayers.length == 0) return;
+
     // when a parent animation is set to trigger a removal we want to
     // find all of the children that are currently animating and clear
     // them out by destroying each of them.
-    const elms = element.querySelectorAll(MARKED_FOR_ANIMATION);
+    const elms = element.querySelectorAll(MARKED_FOR_ANIMATION_SELECTOR);
     for (let i = 0; i < elms.length; i++) {
       const elm = elms[i];
       const activePlayers = this._activeElementAnimations.get(elm);
@@ -157,10 +166,6 @@ export class DomAnimationEngine {
         });
       }
     }
-
-    // we make a copy of the array because the actual source array is modified
-    // each time a player is finished/destroyed (the forEach loop would fail otherwise)
-    return copyArray(this._activeElementAnimations.get(element));
   }
 
   animateTransition(element: any, instruction: AnimationTransitionInstruction): AnimationPlayer {
@@ -168,7 +173,9 @@ export class DomAnimationEngine {
 
     let previousPlayers: AnimationPlayer[];
     if (instruction.isRemovalTransition) {
-      previousPlayers = this._onRemovalTransition(element);
+      // we make a copy of the array because the actual source array is modified
+      // each time a player is finished/destroyed (the forEach loop would fail otherwise)
+      previousPlayers = copyArray(this._activeElementAnimations.get(element));
     } else {
       previousPlayers = [];
       const existingTransitions = this._activeTransitionAnimations.get(element);
@@ -269,6 +276,8 @@ export class DomAnimationEngine {
   private _markPlayerAsActive(element: any, player: AnimationPlayer) {
     const elementAnimations = getOrSetAsInMap(this._activeElementAnimations, element, []);
     elementAnimations.push(player);
+    this.totalActivePlayers++;
+    player.onDone(() => this.totalActivePlayers--);
   }
 
   private _queuePlayer(
