@@ -6,29 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '@angular/core/src/change_detection';
+import {SimpleChange} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator, Validators} from '@angular/forms';
-import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
-
+import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
+import {composeValidators, selectValueAccessor} from '../src/directives/shared';
 import {SpyNgControl, SpyValueAccessor} from './spies';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
 
-  registerOnChange(fn: any /** TODO #9100 */) {}
-  registerOnTouched(fn: any /** TODO #9100 */) {}
+  registerOnChange(fn: any) {}
+  registerOnTouched(fn: any) {}
 
   writeValue(obj: any): void { this.writtenValue = obj; }
 }
 
 class CustomValidatorDirective implements Validator {
-  validate(c: FormControl): {[key: string]: any} { return {'custom': true}; }
+  validate(c: FormControl): ValidationErrors { return {'custom': true}; }
 }
 
-function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
-  return (c: any /** TODO #9100 */) => {
+function asyncValidator(expected: any, timeout = 0) {
+  return (c: AbstractControl): any => {
     let resolve: (result: any) => void;
     const promise = new Promise(res => { resolve = res; });
     const res = c.value != expected ? {'async': true} : null;
@@ -228,7 +227,7 @@ export function main() {
       });
 
       describe('addFormGroup', () => {
-        const matchingPasswordsValidator = (g: any /** TODO #9100 */) => {
+        const matchingPasswordsValidator = (g: FormGroup) => {
           if (g.controls['password'].value != g.controls['passwordConfirm'].value) {
             return {'differentPasswords': true};
           } else {
@@ -283,7 +282,7 @@ export function main() {
         });
 
         it('should set up a sync validator', () => {
-          const formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
+          const formValidator = (c: AbstractControl) => ({'custom': true});
           const f = new FormGroupDirective([formValidator], []);
           f.form = formModel;
           f.ngOnChanges({'form': new SimpleChange(null, null, false)});
@@ -475,7 +474,7 @@ export function main() {
     describe('FormControlDirective', () => {
       let controlDir: any /** TODO #9100 */;
       let control: any /** TODO #9100 */;
-      const checkProperties = function(control: any /** TODO #9100 */) {
+      const checkProperties = function(control: AbstractControl) {
         expect(controlDir.control).toBe(control);
         expect(controlDir.value).toBe(control.value);
         expect(controlDir.valid).toBe(control.valid);
