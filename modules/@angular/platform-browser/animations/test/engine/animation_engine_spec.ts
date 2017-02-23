@@ -12,7 +12,7 @@ import {el} from '@angular/platform-browser/testing/browser_util';
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoOpAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {AnimationEngine} from '../../src/render/animation_engine';
+import {DomAnimationEngine} from '../../src/render/dom_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/mock_animation_driver';
 
 function makeTrigger(name: string, steps: any) {
@@ -27,7 +27,7 @@ export function main() {
   // these tests are only mean't to be run within the DOM
   if (typeof Element == 'undefined') return;
 
-  describe('AnimationEngine', () => {
+  describe('DomAnimationEngine', () => {
     let element: any;
 
     beforeEach(() => {
@@ -36,7 +36,7 @@ export function main() {
     });
 
     function makeEngine(normalizer: AnimationStyleNormalizer = null) {
-      return new AnimationEngine(driver, normalizer || new NoOpAnimationStyleNormalizer());
+      return new DomAnimationEngine(driver, normalizer || new NoOpAnimationStyleNormalizer());
     }
 
     describe('trigger registration', () => {
@@ -290,51 +290,6 @@ export function main() {
           totalTime: 1234
         });
       });
-    });
-
-    describe('flushing animations', () => {
-      let ticks: (() => any)[];
-      let _raf: () => any;
-      beforeEach(() => {
-        ticks = [];
-        _raf = <() => any>AnimationEngine.raf;
-        AnimationEngine.raf = (cb: () => any) => { ticks.push(cb); };
-      });
-
-      afterEach(() => AnimationEngine.raf = _raf);
-
-      function flushTicks() {
-        ticks.forEach(tick => tick());
-        ticks = [];
-      }
-
-      it('should invoke queued transition animations after a requestAnimationFrame flushes', () => {
-        const engine = makeEngine();
-        engine.registerTrigger(trigger('myTrigger', [transition('* => *', animate(1234))]));
-
-        engine.setProperty(element, 'myTrigger', 'on');
-        expect(engine.queuedPlayers.length).toEqual(1);
-        expect(engine.activePlayers.length).toEqual(0);
-
-        flushTicks();
-        expect(engine.queuedPlayers.length).toEqual(0);
-        expect(engine.activePlayers.length).toEqual(1);
-      });
-
-      it('should not flush the animations twice when flushed right away before a frame changes',
-         () => {
-           const engine = makeEngine();
-           engine.registerTrigger(trigger('myTrigger', [transition('* => *', animate(1234))]));
-
-           engine.setProperty(element, 'myTrigger', 'on');
-           expect(engine.activePlayers.length).toEqual(0);
-
-           engine.flush();
-           expect(engine.activePlayers.length).toEqual(1);
-
-           flushTicks();
-           expect(engine.activePlayers.length).toEqual(1);
-         });
     });
 
     describe('instructions', () => {

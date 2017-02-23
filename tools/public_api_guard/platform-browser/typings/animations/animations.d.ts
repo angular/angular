@@ -9,3 +9,7 @@ export declare abstract class AnimationDriver {
 /** @experimental */
 export declare class BrowserAnimationModule {
 }
+
+/** @experimental */
+export declare class NoopBrowserAnimationModule {
+}

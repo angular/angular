@@ -69,3 +69,19 @@ export function copyStyles(
   }
   return destination;
 }
+
+export function setStyles(element: any, styles: ɵStyleData) {
+  if (element['style']) {
+    Object.keys(styles).forEach(prop => element.style[prop] = styles[prop]);
+  }
+}
+
+export function eraseStyles(element: any, styles: ɵStyleData) {
+  if (element['style']) {
+    Object.keys(styles).forEach(prop => {
+      // IE requires '' instead of null
+      // see https://github.com/angular/angular/issues/7916
+      element.style[prop] = '';
+    });
+  }
+}
