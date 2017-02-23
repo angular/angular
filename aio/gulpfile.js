@@ -13,8 +13,9 @@
 // NOTE: we are getting the value from the parent `angular/angular` package.json not the `/aio` one.
 const engines = require('../package.json').engines;
 require('../tools/check-environment')({
+  requiredNodeVersion: engines.node,
   requiredNpmVersion: engines.npm,
-  requiredNodeVersion: engines.node
+  requiredYarnVersion: engines.yarn
 });
 
 const gulp = require('gulp');
@@ -32,3 +33,4 @@ gulp.task('doc-gen-test', loadTask('docs', 'test'));
 gulp.task('docs-app', loadTask('docs-app'));
 gulp.task('docs-app-test', () => {});
 gulp.task('docs-test', ['doc-gen-test', 'docs-app-test']);
+gulp.task('check-env', () => { /* this is a noop because the env test ran already above */ });

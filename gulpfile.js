@@ -12,8 +12,11 @@
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 const engines = require('./package.json').engines;
-require('./tools/check-environment')(
-    {requiredNpmVersion: engines.npm, requiredNodeVersion: engines.node});
+require('./tools/check-environment')({
+  requiredNodeVersion: engines.node,
+  requiredNpmVersion: engines.npm,
+  requiredYarnVersion: engines.yarn
+});
 
 const gulp = require('gulp');
 
@@ -37,3 +40,4 @@ gulp.task('check-cycle', loadTask('check-cycle'));
 gulp.task('serve', loadTask('serve', 'default'));
 gulp.task('serve-examples', loadTask('serve', 'examples'));
 gulp.task('changelog', loadTask('changelog'));
+gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
