@@ -626,56 +626,6 @@ export function main() {
         expect(container.contains(child1)).toBe(true);
         expect(container.contains(child2)).toBe(true);
       });
-
-      it('should queue up all `remove` DOM operations until all animations are complete', () => {
-        let container = <any>el('<div></div>');
-        let targetContainer = <any>el('<div></div>');
-        let otherContainer = <any>el('<div></div>');
-        let child1 = <any>el('<div></div>');
-        let child2 = <any>el('<div></div>');
-        container.appendChild(targetContainer);
-        container.appendChild(otherContainer);
-        targetContainer.appendChild(child1);
-        targetContainer.appendChild(child2);
-
-        /*----------------*
-         container
-         /    \
-         target   other
-         / \
-         c1 c2
-         *----------------*/
-
-        expect(container.contains(otherContainer)).toBe(true);
-
-        const engine = makeEngine();
-        engine.onRemove(child1, () => targetContainer.removeChild(child1));
-        engine.onRemove(child2, () => targetContainer.removeChild(child2));
-        engine.onRemove(otherContainer, () => container.removeChild(otherContainer));
-
-        expect(container.contains(child1)).toBe(true);
-        expect(container.contains(child2)).toBe(true);
-        expect(container.contains(otherContainer)).toBe(true);
-
-        const instructions =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 100}))]);
-
-        const player = engine.animateTimeline(targetContainer, instructions);
-
-        expect(container.contains(child1)).toBe(true);
-        expect(container.contains(child2)).toBe(true);
-        expect(container.contains(otherContainer)).toBe(true);
-
-        engine.flush();
-        expect(container.contains(child1)).toBe(true);
-        expect(container.contains(child2)).toBe(true);
-        expect(container.contains(otherContainer)).toBe(false);
-
-        player.finish();
-        expect(container.contains(child1)).toBe(false);
-        expect(container.contains(child2)).toBe(false);
-        expect(container.contains(otherContainer)).toBe(false);
-      });
     });
   });
 }

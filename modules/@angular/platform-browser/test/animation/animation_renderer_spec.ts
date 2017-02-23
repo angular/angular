@@ -7,7 +7,7 @@
  */
 import {AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
-import {Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
+import {AnimationPlayer, Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -200,6 +200,76 @@ export function main() {
              });
            });
          });
+
+      it('should only queue up dom removals if the element itself contains a valid leave animation',
+         () => {
+           @Component({
+             selector: 'my-cmp',
+             template: `
+               <div #elm1 *ngIf="exp1"></div>
+               <div #elm2 @animation1 *ngIf="exp2"></div>
+               <div #elm3 @animation2 *ngIf="exp3"></div>
+            `,
+             animations: [
+               trigger('animation1', [transition('a => b', [])]),
+               trigger('animation2', [transition(':leave', [])]),
+             ]
+           })
+           class Cmp {
+             exp1: any = true;
+             exp2: any = true;
+             exp3: any = true;
+
+             @ViewChild('elm1') public elm1: any;
+
+             @ViewChild('elm2') public elm2: any;
+
+             @ViewChild('elm3') public elm3: any;
+           }
+
+           TestBed.configureTestingModule({
+             providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+             declarations: [Cmp]
+           });
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           fixture.detectChanges();
+           const elm1 = cmp.elm1;
+           const elm2 = cmp.elm2;
+           const elm3 = cmp.elm3;
+           assertHasParent(elm1);
+           assertHasParent(elm2);
+           assertHasParent(elm3);
+           engine.flush();
+           finishPlayers(engine.activePlayers);
+
+           cmp.exp1 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.activePlayers.length).toEqual(0);
+
+           cmp.exp2 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2, false);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.activePlayers.length).toEqual(0);
+
+           cmp.exp3 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2, false);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.activePlayers.length).toEqual(1);
+         });
     });
   });
 }
@@ -232,4 +302,18 @@ class MockAnimationEngine extends ɵAnimationEngine {
   }
 
   flush() {}
+}
+
+
+function assertHasParent(element: any, yes: boolean = true) {
+  const parent = element.nativeElement.parentNode;
+  if (yes) {
+    expect(parent).toBeTruthy();
+  } else {
+    expect(parent).toBeFalsy();
+  }
+}
+
+function finishPlayers(players: AnimationPlayer[]) {
+  players.forEach(player => player.finish());
 }
