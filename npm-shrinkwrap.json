@@ -9006,9 +9006,9 @@
       "dev": true
     },
     "rxjs": {
-      "version": "5.0.1",
-      "from": "rxjs@5.0.1",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.1.tgz"
+      "version": "5.1.1",
+      "from": "rxjs@5.1.1",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.1.1.tgz"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",

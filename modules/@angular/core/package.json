@@ -9,7 +9,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "rxjs": "^5.0.1",
+    "rxjs": "^5.1.1",
     "zone.js": "^0.7.2"
   },
   "repository": {
