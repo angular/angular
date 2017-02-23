@@ -11,9 +11,8 @@ import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {map} from 'rxjs/operator/map';
-
-import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormControl, FormGroup} from './model';
+import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+import {AbstractControl, FormControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
@@ -66,21 +65,21 @@ export class Validators {
   /**
    * Validator that requires controls to have a non-empty value.
    */
-  static required(control: AbstractControl): {[key: string]: boolean} {
+  static required(control: AbstractControl): ValidationErrors|null {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
   /**
    * Validator that requires control value to be true.
    */
-  static requiredTrue(control: AbstractControl): {[key: string]: boolean} {
+  static requiredTrue(control: AbstractControl): ValidationErrors|null {
     return control.value === true ? null : {'required': true};
   }
 
   /**
    * Validator that performs email validation.
    */
-  static email(control: AbstractControl): {[key: string]: boolean} {
+  static email(control: AbstractControl): ValidationErrors|null {
     return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
@@ -88,7 +87,7 @@ export class Validators {
    * Validator that requires controls to have a value of a minimum length.
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -103,7 +102,7 @@ export class Validators {
    * Validator that requires controls to have a value of a maximum length.
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): ValidationErrors | null => {
       const length: number = control.value ? control.value.length : 0;
       return length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
@@ -125,7 +124,7 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -138,7 +137,7 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: AbstractControl): {[key: string]: boolean} { return null; }
+  static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
 
   /**
    * Compose multiple validators into a single function that returns the union
@@ -186,9 +185,9 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
   return validators.map(v => v(control));
 }
 
-function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
+function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
   const res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
+      arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
         return errors != null ? merge(res, errors) : res;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
