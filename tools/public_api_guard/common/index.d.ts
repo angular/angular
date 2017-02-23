@@ -81,9 +81,6 @@ export declare class Location {
 }
 
 /** @experimental */
-export declare const LOCATION_INITIALIZED: OpaqueToken;
-
-/** @experimental */
 export interface LocationChangeEvent {
     type: string;
 }
