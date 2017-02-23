@@ -8,20 +8,19 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 import {timer} from 'rxjs/observable/timer';
 import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
-
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
-import {AsyncValidator} from '../src/directives/validators';
+import {AsyncValidator, ValidationErrors, ValidatorFn} from '../src/directives/validators';
 
 export function main() {
-  function validator(key: string, error: any) {
-    return function(c: AbstractControl) {
-      const r: {[k: string]: string} = {};
+  function validator(key: string, error: any): ValidatorFn {
+    return (c: AbstractControl) => {
+      const r: ValidationErrors = {};
       r[key] = error;
       return r;
     };
@@ -30,8 +29,7 @@ export function main() {
   class AsyncValidatorDirective implements AsyncValidator {
     constructor(private expected: string, private error: any) {}
 
-    validate(c: any): Observable < { [key: string]: any; }
-    > {
+    validate(c: any): Observable<ValidationErrors> {
       return Observable.create((obs: any) => {
         const error = this.expected !== c.value ? this.error : null;
         obs.next(error);
