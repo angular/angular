@@ -397,9 +397,6 @@ export class MdCheckbox implements ControlValueAccessor {
     return `mat-checkbox-anim-${animSuffix}`;
   }
 
-  _getHostElement() {
-    return this._elementRef.nativeElement;
-  }
 }
 
 

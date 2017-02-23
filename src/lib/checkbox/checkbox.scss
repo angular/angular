@@ -187,12 +187,15 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox {
-  cursor: pointer;
   font-family: $mat-font-family;
 
   // Animation
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
               mat-elevation-transition-property-value();
+}
+
+.mat-checkbox-label {
+  cursor: pointer;
 }
 
 .mat-checkbox-layout {

@@ -1,4 +1,4 @@
-<label class="mat-checkbox-layout">
+<label class="mat-checkbox-layout" #label>
   <div class="mat-checkbox-inner-container">
     <input #input
            class="mat-checkbox-input cdk-visually-hidden" type="checkbox"
@@ -16,7 +16,7 @@
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
     <div md-ripple *ngIf="!_isRippleDisabled()" class="mat-checkbox-ripple"
-         [mdRippleTrigger]="_getHostElement()"
+         [mdRippleTrigger]="label"
          [mdRippleCentered]="true"></div>
     <div class="mat-checkbox-frame"></div>
     <div class="mat-checkbox-background">

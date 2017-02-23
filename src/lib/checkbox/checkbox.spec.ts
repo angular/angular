@@ -190,17 +190,6 @@ describe('MdCheckbox', () => {
       expect(inputElement.disabled).toBe(false);
     });
 
-    it('should not have a ripple when disabled', () => {
-      let rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
-      expect(rippleElement).toBeTruthy('Expected an enabled checkbox to have a ripple');
-
-      testComponent.isDisabled = true;
-      fixture.detectChanges();
-
-      rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
-      expect(rippleElement).toBeFalsy('Expected a disabled checkbox not to have a ripple');
-    });
-
     it('should not toggle `checked` state upon interation while disabled', () => {
       testComponent.isDisabled = true;
       fixture.detectChanges();
@@ -322,6 +311,44 @@ describe('MdCheckbox', () => {
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(inputElement);
+    });
+
+    describe('ripple elements', () => {
+
+      it('should show ripples on label mousedown', () => {
+        expect(checkboxNativeElement.querySelector('.mat-ripple-element')).toBeFalsy();
+
+        dispatchFakeEvent(labelElement, 'mousedown');
+        dispatchFakeEvent(labelElement, 'mouseup');
+
+        expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+      });
+
+      it('should not have a ripple when disabled', () => {
+        let rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
+        expect(rippleElement).toBeTruthy('Expected an enabled checkbox to have a ripple');
+
+        testComponent.isDisabled = true;
+        fixture.detectChanges();
+
+        rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
+        expect(rippleElement).toBeFalsy('Expected a disabled checkbox not to have a ripple');
+      });
+
+      it('should remove ripple if mdRippleDisabled input is set', async(() => {
+        testComponent.disableRipple = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
+          .toBe(0, 'Expect no [md-ripple] in checkbox');
+
+        testComponent.disableRipple = false;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
+          .toBe(1, 'Expect [md-ripple] in checkbox');
+      }));
+
     });
 
     describe('color behaviour', () => {
@@ -544,19 +571,6 @@ describe('MdCheckbox', () => {
       expect(inputElement.tabIndex).toBe(13);
     });
 
-    it('should remove ripple if mdRippleDisabled input is set', async(() => {
-      testComponent.disableRipple = true;
-      fixture.detectChanges();
-
-      expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
-        .toBe(0, 'Expect no [md-ripple] in checkbox');
-
-      testComponent.disableRipple = false;
-      fixture.detectChanges();
-
-      expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
-        .toBe(1, 'Expect [md-ripple] in checkbox');
-    }));
   });
 
   describe('with multiple checkboxes', () => {
@@ -678,6 +692,7 @@ describe('MdCheckbox', () => {
         [(indeterminate)]="isIndeterminate"
         [disabled]="isDisabled"
         [color]="checkboxColor"
+        [disableRipple]="disableRipple"
         (change)="changeCount = changeCount + 1"
         (click)="onCheckboxClick($event)"
         (change)="onCheckboxChange($event)">
@@ -691,6 +706,7 @@ class SingleCheckbox {
   isRequired: boolean = false;
   isIndeterminate: boolean = false;
   isDisabled: boolean = false;
+  disableRipple: boolean = false;
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
   lastKeydownEvent: Event = null;
@@ -728,14 +744,12 @@ class MultipleCheckboxes { }
   template: `
     <md-checkbox
         [tabIndex]="customTabIndex"
-        [disabled]="isDisabled"
-        [disableRipple]="disableRipple">
+        [disabled]="isDisabled">
     </md-checkbox>`,
 })
 class CheckboxWithTabIndex {
   customTabIndex: number = 7;
   isDisabled: boolean = false;
-  disableRipple: boolean = false;
 }
 
 /** Simple test component with an aria-label set. */
@@ -770,4 +784,11 @@ class CheckboxWithChangeEvent {
 })
 class CheckboxWithFormControl {
   formControl = new FormControl();
+}
+
+// TODO(devversion): replace with global utility once pull request #2943 is merged.
+function dispatchFakeEvent(element: HTMLElement, eventName: string): void {
+  let event  = document.createEvent('Event');
+  event.initEvent(eventName, true, true);
+  element.dispatchEvent(event);
 }
