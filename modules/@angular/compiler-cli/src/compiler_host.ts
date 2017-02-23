@@ -76,7 +76,26 @@ export class CompilerHost implements AotCompilerHost {
       // Any containing file gives the same result for absolute imports
       containingFile = this.getCanonicalFileName(path.join(this.basePath, 'index.ts'));
     }
-    m = m.replace(EXT, '');
+
+    let moduleResolution = this.options.moduleResolution;
+
+    if (!moduleResolution) {
+      const emitScriptTarget = this.options.target || ts.ScriptTarget.ES3;
+
+      const emitModuleKind = typeof this.options.module === 'number' ?
+          this.options.module :
+          emitScriptTarget >= ts.ScriptTarget.ES2015 ? ts.ModuleKind.ES2015 :
+                                                       ts.ModuleKind.CommonJS;
+
+      moduleResolution = emitModuleKind === ts.ModuleKind.CommonJS ?
+          ts.ModuleResolutionKind.NodeJs :
+          ts.ModuleResolutionKind.Classic;
+    }
+
+    if (!ts.moduleHasNonRelativeName(m) || moduleResolution === ts.ModuleResolutionKind.Classic) {
+      m = m.replace(EXT, '');
+    }
+
     const resolved =
         ts.resolveModuleName(
               m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)

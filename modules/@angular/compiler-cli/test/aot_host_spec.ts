@@ -20,7 +20,7 @@ describe('CompilerHost', () => {
   let hostSiblingGenDir: CompilerHost;
 
   beforeEach(() => {
-    context = new MockAotContext('/tmp/src', clone(FILES));
+    context = new MockAotContext('/tmp/project/src', clone(FILES));
     const host = new MockCompilerHost(context);
     program = ts.createProgram(
         ['main.ts'], {
@@ -190,6 +190,22 @@ describe('CompilerHost', () => {
       {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
     ]);
   });
+
+  it('should find the path to files ending with ".js"', () => {
+    expect(hostNestedGenDir.moduleNameToFileName('./lib/utils.js', '/tmp/project/src/main.ts'))
+        .toEqual('/tmp/project/src/lib/utils.ts');
+  });
+
+  it('should find the path to files ending with ".js"', () => {
+    expect(hostNestedGenDir.moduleNameToFileName('aspect.js', '/tmp/project/src/main.ts'))
+        .toEqual('/tmp/project/src/node_modules/aspect.js/index.d.ts');
+  });
+
+  it('should find the path to files ending with ".ts"', () => {
+    expect(hostNestedGenDir.moduleNameToFileName('aspect.ts', '/tmp/project/src/main.ts'))
+        .toEqual('/tmp/project/src/node_modules/aspect.ts/index.d.ts');
+  });
+
 });
 
 const dummyModule = 'export let foo: any[];';
@@ -201,47 +217,51 @@ const dummyMetadata: ModuleMetadata = {
 };
 const FILES: Entry = {
   'tmp': {
-    'src': {
-      'main.ts': `
-        import * as c from '@angular/core';
-        import * as r from '@angular/router';
-        import * as u from './lib/utils';
-        import * as cs from './lib/collections';
-        import * as u2 from './lib2/utils2';
-      `,
-      'lib': {
-        'utils.ts': dummyModule,
-        'collections.ts': dummyModule,
-      },
-      'lib2': {'utils2.ts': dummyModule},
-      'node_modules': {
-        '@angular': {
-          'core.d.ts': dummyModule,
-          'core.metadata.json':
-              `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
-          'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
-          'unused.d.ts': dummyModule,
-          'empty.d.ts': 'export declare var a: string;',
-          'empty.metadata.json': '[]',
-        }
-      },
-      'metadata_versions': {
-        'v1.d.ts': `
-          import {ReExport} from './lib/utils2';
-          export {ReExport};
-
-          export {Export} from './lib/utils2';
-
-          export declare class Bar {
-            ngOnInit() {}
-          }
-          export declare class BarChild extends Bar {}
+    'project': {
+      'src': {
+        'main.ts': `
+          import * as c from '@angular/core';
+          import * as r from '@angular/router';
+          import * as u from './lib/utils';
+          import * as cs from './lib/collections';
+          import * as u2 from './lib2/utils2';
         `,
-        'v1.metadata.json':
-            `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
-        'v1_empty.d.ts': `
-          export * from './lib/utils';
-        `
+        'lib': {
+          'utils.ts': dummyModule,
+          'collections.ts': dummyModule,
+        },
+        'lib2': {'utils2.ts': dummyModule},
+        'node_modules': {
+          '@angular': {
+            'core.d.ts': dummyModule,
+            'core.metadata.json':
+                `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
+            'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
+            'unused.d.ts': dummyModule,
+            'empty.d.ts': 'export declare var a: string;',
+            'empty.metadata.json': '[]',
+          },
+          'aspect.js': {'index.d.ts': dummyModule},
+          'aspect.ts': {'index.d.ts': dummyModule}
+        },
+        'metadata_versions': {
+          'v1.d.ts': `
+            import {ReExport} from './lib/utils2';
+            export {ReExport};
+
+            export {Export} from './lib/utils2';
+
+            export declare class Bar {
+              ngOnInit() {}
+            }
+            export declare class BarChild extends Bar {}
+          `,
+          'v1.metadata.json':
+              `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
+          'v1_empty.d.ts': `
+            export * from './lib/utils';
+          `
+        }
       }
     }
   }
