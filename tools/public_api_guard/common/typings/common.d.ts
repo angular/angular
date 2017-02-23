@@ -64,6 +64,18 @@ export declare class I18nSelectPipe implements PipeTransform {
     }): string;
 }
 
+/** @experimental */
+export declare function isPlatformBrowser(platformId: Object): boolean;
+
+/** @experimental */
+export declare function isPlatformServer(platformId: Object): boolean;
+
+/** @experimental */
+export declare function isPlatformWorkerApp(platformId: Object): boolean;
+
+/** @experimental */
+export declare function isPlatformWorkerUi(platformId: Object): boolean;
+
 /** @stable */
 export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;

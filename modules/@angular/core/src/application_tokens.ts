@@ -47,6 +47,12 @@ function _randomChar(): string {
 export const PLATFORM_INITIALIZER = new InjectionToken<Array<() => void>>('Platform Initializer');
 
 /**
+ * A token that indicates an opaque platform id.
+ * @experimental
+ */
+export const PLATFORM_ID = new InjectionToken<Object>('Platform ID');
+
+/**
  * All callbacks provided via this token will be called for every component that is bootstrapped.
  * Signature of the callback:
  *
