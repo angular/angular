@@ -135,6 +135,18 @@ describe('CompilerHost', () => {
         .toEqual('@angular/core');
   });
 
+  it('should be able to produce an import to a shallow import', () => {
+    expect(hostNestedGenDir.fileNameToModuleName('@angular/core', '/tmp/project/src/main.ts'))
+        .toEqual('@angular/core');
+    expect(hostNestedGenDir.fileNameToModuleName(
+               '@angular/upgrade/static', '/tmp/project/src/main.ts'))
+        .toEqual('@angular/upgrade/static');
+    expect(hostNestedGenDir.fileNameToModuleName('myLibrary', '/tmp/project/src/main.ts'))
+        .toEqual('myLibrary');
+    expect(hostNestedGenDir.fileNameToModuleName('lib23-43', '/tmp/project/src/main.ts'))
+        .toEqual('lib23-43');
+  });
+
   it('should be able to produce an import from main to a sub-directory', () => {
     expect(hostNestedGenDir.fileNameToModuleName('lib/utils.ts', 'main.ts')).toEqual('./lib/utils');
   });
