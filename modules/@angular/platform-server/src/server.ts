@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵDebugDomRootRenderer as DebugDomRootRenderer} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS, ɵDebugDomRootRenderer as DebugDomRootRenderer} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {SERVER_HTTP_PROVIDERS} from './http';
@@ -39,10 +39,6 @@ export function _createConditionalRootRenderer(rootRenderer: any) {
   return isDevMode() ? new DebugDomRootRenderer(rootRenderer) : rootRenderer;
 }
 
-export function _addStylesToRootComponentFactory(stylesHost: ServerStylesHost) {
-  const initializer = () => stylesHost.rootComponentIsReady();
-  return initializer;
-}
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
@@ -51,12 +47,6 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
   {provide: RendererFactoryV2, useExisting: ServerRendererFactoryV2},
   ServerStylesHost,
   {provide: SharedStylesHost, useExisting: ServerStylesHost},
-  {
-    provide: APP_BOOTSTRAP_LISTENER,
-    useFactory: _addStylesToRootComponentFactory,
-    deps: [ServerStylesHost],
-    multi: true
-  },
 ];
 
 /**

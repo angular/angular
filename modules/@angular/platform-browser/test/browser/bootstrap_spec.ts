@@ -336,6 +336,44 @@ export function main() {
          });
        }));
 
+    it('should remove styles when transitioning from a server render',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+
+         @Component({
+           selector: 'root',
+           template: 'root',
+         })
+         class RootCmp {
+         }
+
+         @NgModule({
+           bootstrap: [RootCmp],
+           declarations: [RootCmp],
+           imports: [BrowserModule.withServerTransition({appId: 'my-app'})],
+         })
+         class TestModule {
+         }
+
+         // First, set up styles to be removed.
+         const dom = getDOM();
+         const platform = platformBrowserDynamic();
+         const document = platform.injector.get(DOCUMENT);
+         const style = dom.createElement('style', document);
+         dom.setAttribute(style, 'ng-transition', 'my-app');
+         dom.appendChild(document.head, style);
+
+         const root = dom.createElement('root', document);
+         dom.appendChild(document.body, root);
+
+         platform.bootstrapModule(TestModule).then(() => {
+           const styles: HTMLElement[] =
+               Array.prototype.slice.apply(dom.getElementsByTagName(document, 'style') || []);
+           styles.forEach(
+               style => { expect(dom.getAttribute(style, 'ng-transition')).not.toBe('my-app'); });
+           async.done();
+         });
+       }));
+
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
