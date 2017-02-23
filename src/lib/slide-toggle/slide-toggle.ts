@@ -75,6 +75,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   private _slideRenderer: SlideToggleRenderer = null;
   private _disabled: boolean = false;
   private _required: boolean = false;
+  private _disableRipple: boolean = false;
 
   // Needs to be public to support AOT compilation (as host binding).
   _hasFocus: boolean = false;
@@ -106,6 +107,11 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   @Input()
   get required(): boolean { return this._required; }
   set required(value) { this._required = coerceBooleanProperty(value); }
+
+  /** Whether the ripple effect for this slide-toggle is disabled. */
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   private _change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
   /** An event will be dispatched each time the slide-toggle changes its value. */

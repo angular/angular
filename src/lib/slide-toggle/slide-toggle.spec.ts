@@ -367,6 +367,27 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).toContain('mat-slide-toggle-label-before');
     });
 
+    it('should show ripples on label mousedown', () => {
+      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchFakeEvent(labelElement, 'mousedown');
+      dispatchFakeEvent(labelElement, 'mouseup');
+
+      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+    });
+
+    it('should not show ripples when disableRipple is set', () => {
+      testComponent.disableRipple = true;
+      fixture.detectChanges();
+
+      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchFakeEvent(labelElement, 'mousedown');
+      dispatchFakeEvent(labelElement, 'mouseup');
+
+      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    });
+
   });
 
   describe('custom template', () => {
@@ -620,6 +641,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
                      [aria-labelledby]="slideLabelledBy"
                      [tabIndex]="slideTabindex"
                      [labelPosition]="labelPosition"
+                     [disableRipple]="disableRipple"
                      (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
 
@@ -630,6 +652,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
 class SlideToggleTestApp {
   isDisabled: boolean = false;
   isRequired: boolean = false;
+  disableRipple: boolean = false;
   slideModel: boolean = false;
   slideChecked: boolean = false;
   slideColor: string;
@@ -670,4 +693,11 @@ class SlideToggleFormsTestApp {
 })
 class SlideToggleWithFormControl {
   formControl = new FormControl();
+}
+
+// TODO(devversion): replace with global utility once pull request #2943 is merged.
+function dispatchFakeEvent(element: HTMLElement, eventName: string): void {
+  let event  = document.createEvent('Event');
+  event.initEvent(eventName, true, true);
+  element.dispatchEvent(event);
 }
