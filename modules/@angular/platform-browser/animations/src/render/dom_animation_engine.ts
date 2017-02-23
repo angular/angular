@@ -69,8 +69,21 @@ export class DomAnimationEngine {
   }
 
   onRemove(element: any, domFn: () => any): void {
-    element[MARKED_FOR_REMOVAL] = true;
-    this._queuedRemovals.set(element, domFn);
+    let lookupRef = this._elementTriggerStates.get(element);
+    if (lookupRef) {
+      const possibleTriggers = Object.keys(lookupRef);
+      const hasRemoval = possibleTriggers.some(triggerName => {
+        const oldValue = lookupRef[triggerName];
+        const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+        return !!instruction;
+      });
+      if (hasRemoval) {
+        element[MARKED_FOR_REMOVAL] = true;
+        this._queuedRemovals.set(element, domFn);
+        return;
+      }
+    }
+    domFn();
   }
 
   setProperty(element: any, property: string, value: any): void {
