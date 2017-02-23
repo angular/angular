@@ -7,7 +7,7 @@
  */
 import {AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
-import {Component, Injectable, RendererFactoryV2, RendererTypeV2} from '@angular/core';
+import {Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -118,6 +118,9 @@ export function main() {
     });
 
     describe('flushing animations', () => {
+      // these tests are only mean't to be run within the DOM
+      if (typeof Element == 'undefined') return;
+
       beforeEach(() => {
         TestBed.configureCompiler(
             {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
@@ -159,6 +162,44 @@ export function main() {
           async();
         });
       });
+
+      it('should properly insert/remove nodes through the animation renderer that do not contain animations',
+         (async) => {
+           @Component({
+             selector: 'my-cmp',
+             template: '<div #elm *ngIf="exp"></div>',
+             animations: [trigger(
+                 'someAnimation',
+                 [transition(
+                     '* => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+           })
+           class Cmp {
+             exp: any;
+             @ViewChild('elm') public element: any;
+           }
+
+           TestBed.configureTestingModule({
+             providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+             declarations: [Cmp]
+           });
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = true;
+           fixture.detectChanges();
+
+           fixture.whenStable().then(() => {
+             cmp.exp = false;
+             const element = cmp.element;
+             expect(element.nativeElement.parentNode).toBeTruthy();
+
+             fixture.detectChanges();
+             fixture.whenStable().then(() => {
+               expect(element.nativeElement.parentNode).toBeFalsy();
+               async();
+             });
+           });
+         });
     });
   });
 }
