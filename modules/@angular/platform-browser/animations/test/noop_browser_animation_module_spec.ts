@@ -63,5 +63,48 @@ export function main() {
         async();
       });
     });
+
+    it('should handle leave animation callbacks even if the element is destroyed in the process',
+       (async) => {
+         @Component({
+           selector: 'my-cmp',
+           template:
+               '<div *ngIf="exp" @myAnimation (@myAnimation.start)="onStart($event)" (@myAnimation.done)="onDone($event)"></div>',
+           animations: [trigger(
+               'myAnimation',
+               [transition(
+                   ':leave', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+         })
+         class Cmp {
+           exp: any;
+           startEvent: any;
+           doneEvent: any;
+           onStart(event: any) { this.startEvent = event; }
+           onDone(event: any) { this.doneEvent = event; }
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = true;
+         fixture.detectChanges();
+         cmp.startEvent = null;
+         cmp.doneEvent = null;
+
+         cmp.exp = false;
+         fixture.detectChanges();
+
+         fixture.whenStable().then(() => {
+           expect(cmp.startEvent.triggerName).toEqual('myAnimation');
+           expect(cmp.startEvent.phaseName).toEqual('start');
+           expect(cmp.startEvent.toState).toEqual('void');
+           expect(cmp.doneEvent.triggerName).toEqual('myAnimation');
+           expect(cmp.doneEvent.phaseName).toEqual('done');
+           expect(cmp.doneEvent.toState).toEqual('void');
+           async();
+         });
+       });
   });
 }

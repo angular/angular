@@ -121,33 +121,53 @@ export function main() {
       expect(captures).toEqual([]);
     });
 
-    it('should deregister a listener when the return function is called', () => {
+    it('should deregister a listener when the return function is called, but only after flush',
+       () => {
+         const engine = new NoopAnimationEngine();
+         const elm = {};
+
+         const fn1 = engine.listen(elm, 'trig1', 'start', capture('trig1-start'));
+         const fn2 = engine.listen(elm, 'trig2', 'done', capture('trig2-done'));
+
+         engine.setProperty(elm, 'trig1', 'value1');
+         engine.setProperty(elm, 'trig2', 'value2');
+         engine.flush();
+         expect(captures).toEqual(['trig1-start', 'trig2-done']);
+
+         captures = [];
+         engine.setProperty(elm, 'trig1', 'value3');
+         engine.setProperty(elm, 'trig2', 'value4');
+
+         fn1();
+         engine.flush();
+         expect(captures).toEqual(['trig1-start', 'trig2-done']);
+
+         captures = [];
+         engine.setProperty(elm, 'trig1', 'value5');
+         engine.setProperty(elm, 'trig2', 'value6');
+
+         fn2();
+         engine.flush();
+         expect(captures).toEqual(['trig2-done']);
+
+         captures = [];
+         engine.setProperty(elm, 'trig1', 'value7');
+         engine.setProperty(elm, 'trig2', 'value8');
+         engine.flush();
+         expect(captures).toEqual([]);
+       });
+
+    it('should fire a removal listener even if the listener is deregistered prior to flush', () => {
       const engine = new NoopAnimationEngine();
       const elm = {};
 
-      const fn1 = engine.listen(elm, 'trig1', 'start', capture('trig1-start'));
-      const fn2 = engine.listen(elm, 'trig2', 'done', capture('trig2-done'));
+      const fn = engine.listen(elm, 'trig', 'start', capture('removal listener'));
+      fn();
 
-      engine.setProperty(elm, 'trig1', 'value1');
-      engine.setProperty(elm, 'trig2', 'value2');
+      engine.onRemove(elm, capture('dom removal'));
       engine.flush();
-      expect(captures).toEqual(['trig1-start', 'trig2-done']);
 
-      captures = [];
-      engine.setProperty(elm, 'trig1', 'value3');
-      engine.setProperty(elm, 'trig2', 'value4');
-
-      fn1();
-      engine.flush();
-      expect(captures).toEqual(['trig2-done']);
-
-      captures = [];
-      engine.setProperty(elm, 'trig1', 'value5');
-      engine.setProperty(elm, 'trig2', 'value6');
-
-      fn2();
-      engine.flush();
-      expect(captures).toEqual([]);
+      expect(captures).toEqual(['dom removal', 'removal listener']);
     });
 
     describe('styling', () => {

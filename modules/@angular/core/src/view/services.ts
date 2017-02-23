@@ -162,9 +162,6 @@ function debugSetCurrentNode(view: ViewData, nodeIndex: number) {
 }
 
 function debugHandleEvent(view: ViewData, nodeIndex: number, eventName: string, event: any) {
-  if (view.state & ViewState.Destroyed) {
-    throw viewDestroyedError(DebugAction[_currentAction]);
-  }
   debugSetCurrentNode(view, nodeIndex);
   return callWithDebugContext(
       DebugAction.handleEvent, view.def.handleEvent, null, [view, nodeIndex, eventName, event]);
