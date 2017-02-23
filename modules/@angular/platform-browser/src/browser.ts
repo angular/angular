@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
@@ -15,6 +15,7 @@ import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
 import {Meta} from './browser/meta';
+import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
@@ -105,5 +106,23 @@ export class BrowserModule {
       throw new Error(
           `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
     }
+  }
+
+  /**
+   * Configures a browser-based application to transition from a server-rendered app, if
+   * one is present on the page. The specified parameters must include an application id,
+   * which must match between the client and server applications.
+   *
+   * @experimental
+   */
+  static withServerTransition(params: {appId: string}): ModuleWithProviders {
+    return {
+      ngModule: BrowserModule,
+      providers: [
+        {provide: APP_ID, useValue: params.appId},
+        {provide: TRANSITION_ID, useExisting: APP_ID},
+        SERVER_TRANSITION_PROVIDERS,
+      ],
+    };
   }
 }

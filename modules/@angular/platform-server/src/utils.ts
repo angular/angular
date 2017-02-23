@@ -7,6 +7,7 @@
  */
 
 import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, Provider, Type} from '@angular/core';
+import {ɵTRANSITION_ID} from '@angular/platform-browser';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
@@ -36,6 +37,12 @@ function _getPlatform(
 function _render<T>(
     platform: PlatformRef, moduleRefPromise: Promise<NgModuleRef<T>>): Promise<string> {
   return moduleRefPromise.then((moduleRef) => {
+    const transitionId = moduleRef.injector.get(ɵTRANSITION_ID, null);
+    if (!transitionId) {
+      throw new Error(
+          `renderModule[Factory]() requires the use of BrowserModule.withServerTransition() to ensure
+the server-rendered app can be properly bootstrapped into a client app.`);
+    }
     const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
     return toPromise
         .call(first.call(filter.call(applicationRef.isStable, (isStable: boolean) => isStable)))
