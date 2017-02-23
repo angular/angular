@@ -243,7 +243,12 @@ function debugCheckAndUpdateNode(
       } else {
         // a regular element.
         for (let attr in bindingValues) {
-          view.renderer.setAttribute(el, attr, bindingValues[attr]);
+          const value = bindingValues[attr];
+          if (value != null) {
+            view.renderer.setAttribute(el, attr, value);
+          } else {
+            view.renderer.removeAttribute(el, attr);
+          }
         }
       }
     }
@@ -270,7 +275,7 @@ function camelCaseToDashCase(input: string): string {
 function normalizeDebugBindingValue(value: any): string {
   try {
     // Limit the size of the value as otherwise the DOM just gets polluted.
-    return value ? value.toString().slice(0, 20) : value;
+    return value ? value.toString().slice(0, 30) : value;
   } catch (e) {
     return '[ERROR] Exception while trying to serialize the value';
   }
