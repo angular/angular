@@ -11,6 +11,7 @@ import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instructio
 import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
+import {eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 
@@ -20,7 +21,6 @@ export interface QueuedAnimationTransitionTuple {
   triggerName: string;
   event: AnimationEvent;
 }
-;
 
 export interface TriggerListenerTuple {
   triggerName: string;
@@ -31,7 +31,7 @@ export interface TriggerListenerTuple {
 const MARKED_FOR_ANIMATION = 'ng-animate';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
 
-export class AnimationEngine {
+export class DomAnimationEngine {
   private _flaggedInserts = new Set<any>();
   private _queuedRemovals = new Map<any, () => any>();
   private _queuedTransitionAnimations: QueuedAnimationTransitionTuple[] = [];
@@ -42,11 +42,6 @@ export class AnimationEngine {
 
   private _triggers: {[triggerName: string]: AnimationTrigger} = {};
   private _triggerListeners = new Map<any, TriggerListenerTuple[]>();
-
-  private _flushId = 0;
-  private _awaitingFlush = false;
-
-  static raf = (fn: () => any): any => { return requestAnimationFrame(fn); };
 
   constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
 
@@ -60,7 +55,7 @@ export class AnimationEngine {
     return players;
   }
 
-  registerTrigger(trigger: AnimationTriggerMetadata) {
+  registerTrigger(trigger: AnimationTriggerMetadata): void {
     const name = trigger.name;
     if (this._triggers[name]) {
       throw new Error(`The provided animation trigger "${name}" has already been registered!`);
@@ -271,16 +266,6 @@ export class AnimationEngine {
 
     element.classList.add(MARKED_FOR_ANIMATION);
     player.onDone(() => { element.classList.remove(MARKED_FOR_ANIMATION); });
-
-    if (!this._awaitingFlush) {
-      const flushId = this._flushId;
-      AnimationEngine.raf(() => {
-        if (flushId == this._flushId) {
-          this._awaitingFlush = false;
-          this.flush();
-        }
-      });
-    }
   }
 
   private _flushQueuedAnimations() {
@@ -323,7 +308,6 @@ export class AnimationEngine {
   }
 
   flush() {
-    this._flushId++;
     this._flushQueuedAnimations();
 
     let flushAgain = false;
@@ -404,18 +388,6 @@ function deleteFromArrayMap(map: Map<any, any[]>, key: any, value: any) {
       }
     }
   }
-}
-
-function setStyles(element: any, styles: ɵStyleData) {
-  Object.keys(styles).forEach(prop => { element.style[prop] = styles[prop]; });
-}
-
-function eraseStyles(element: any, styles: ɵStyleData) {
-  Object.keys(styles).forEach(prop => {
-    // IE requires '' instead of null
-    // see https://github.com/angular/angular/issues/7916
-    element.style[prop] = '';
-  });
 }
 
 function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {

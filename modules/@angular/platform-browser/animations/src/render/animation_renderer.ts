@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationTriggerMetadata} from '@angular/animations';
-import {Injectable, RendererFactoryV2, RendererTypeV2, RendererV2} from '@angular/core';
+import {Injectable, NgZone, RendererFactoryV2, RendererTypeV2, RendererV2} from '@angular/core';
 
-import {AnimationEngine} from './animation_engine';
+import {AnimationEngine} from '../animation_engine';
 
 @Injectable()
 export class AnimationRendererFactory implements RendererFactoryV2 {
-  constructor(private delegate: RendererFactoryV2, private _engine: AnimationEngine) {}
+  constructor(
+      private delegate: RendererFactoryV2, private _engine: AnimationEngine,
+      private _zone: NgZone) {}
 
   createRenderer(hostElement: any, type: RendererTypeV2): RendererV2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
@@ -24,16 +26,17 @@ export class AnimationRendererFactory implements RendererFactoryV2 {
     }
     const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
     animationRenderer = (type.data as any)['__animationRenderer__'] =
-        new AnimationRenderer(delegate, this._engine, animationTriggers);
+        new AnimationRenderer(delegate, this._engine, this._zone, animationTriggers);
     return animationRenderer;
   }
 }
 
 export class AnimationRenderer implements RendererV2 {
   public destroyNode: (node: any) => (void|any) = null;
+  private _flushPromise: Promise<any> = null;
 
   constructor(
-      public delegate: RendererV2, private _engine: AnimationEngine,
+      public delegate: RendererV2, private _engine: AnimationEngine, private _zone: NgZone,
       _triggers: AnimationTriggerMetadata[] = null) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode(n) : null;
     if (_triggers) {
@@ -92,11 +95,13 @@ export class AnimationRenderer implements RendererV2 {
 
   removeChild(parent: any, oldChild: any): void {
     this._engine.onRemove(oldChild, () => this.delegate.removeChild(parent, oldChild));
+    this._queueFlush();
   }
 
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == '@') {
       this._engine.setProperty(el, name.substr(1), value);
+      this._queueFlush();
     } else {
       this.delegate.setProperty(el, name, value);
     }
@@ -107,9 +112,21 @@ export class AnimationRenderer implements RendererV2 {
     if (eventName.charAt(0) == '@') {
       const element = resolveElementFromTarget(target);
       const [name, phase] = parseTriggerCallbackName(eventName.substr(1));
-      return this._engine.listen(element, name, phase, callback);
+      return this._engine.listen(
+          element, name, phase, (event: any) => this._zone.run(() => callback(event)));
     }
     return this.delegate.listen(target, eventName, callback);
+  }
+
+  private _queueFlush() {
+    if (!this._flushPromise) {
+      this._zone.runOutsideAngular(() => {
+        this._flushPromise = Promise.resolve(null).then(() => {
+          this._flushPromise = null;
+          this._engine.flush();
+        });
+      });
+    }
   }
 }
 

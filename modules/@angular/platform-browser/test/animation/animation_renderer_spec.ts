@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTriggerMetadata, trigger} from '@angular/animations';
-import {Injectable, RendererFactoryV2, RendererTypeV2} from '@angular/core';
+import {AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
+import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
+import {Component, Injectable, RendererFactoryV2, RendererTypeV2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {BrowserModule} from '../../src/browser';
+import {InjectableAnimationEngine} from '../../animations/src/browser_animation_module';
 import {el} from '../../testing/browser_util';
 
 export function main() {
@@ -21,7 +22,7 @@ export function main() {
 
       TestBed.configureTestingModule({
         providers: [{provide: ɵAnimationEngine, useClass: MockAnimationEngine}],
-        imports: [BrowserModule, BrowserAnimationModule]
+        imports: [BrowserAnimationModule]
       });
     });
 
@@ -95,7 +96,7 @@ export function main() {
         expect(engine.captures['listen']).toBeFalsy();
 
         renderer.listen(element, '@event.phase', cb);
-        expect(engine.captures['listen'].pop()).toEqual([element, 'event', 'phase', cb]);
+        expect(engine.captures['listen'].pop()).toEqual([element, 'event', 'phase']);
       });
 
       it('should resolve the body|document|window nodes given their values as strings as input',
@@ -114,6 +115,50 @@ export function main() {
            renderer.listen('window', '@event', cb);
            expect(engine.captures['listen'].pop()[0]).toBe(window);
          });
+    });
+
+    describe('flushing animations', () => {
+      beforeEach(() => {
+        TestBed.configureCompiler(
+            {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
+      });
+
+      it('should flush and fire callbacks when the zone becomes stable', (async) => {
+        @Component({
+          selector: 'my-cmp',
+          template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
+          animations: [trigger(
+              'myAnimation',
+              [transition(
+                  '* => state',
+                  [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+        })
+        class Cmp {
+          exp: any;
+          event: any;
+          onStart(event: any) { this.event = event; }
+        }
+
+        TestBed.configureTestingModule({
+          providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+          declarations: [Cmp]
+        });
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 'state';
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          expect(cmp.event.triggerName).toEqual('myAnimation');
+          expect(cmp.event.phaseName).toEqual('start');
+          cmp.event = null;
+
+          engine.flush();
+          expect(cmp.event).toBeFalsy();
+          async();
+        });
+      });
     });
   });
 }
@@ -140,7 +185,10 @@ class MockAnimationEngine extends ɵAnimationEngine {
 
   listen(element: any, eventName: string, eventPhase: string, callback: (event: any) => any):
       () => void {
-    this._capture('listen', [element, eventName, eventPhase, callback]);
+    // we don't capture the callback here since the renderer wraps it in a zone
+    this._capture('listen', [element, eventName, eventPhase]);
     return () => {};
   }
+
+  flush() {}
 }
