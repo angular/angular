@@ -90,7 +90,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
 
     this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
-    this._finalKeyframe = _copyKeyframeStyles(keyframes[keyframes.length - 1]);
+    this._finalKeyframe =
+        keyframes.length ? _copyKeyframeStyles(keyframes[keyframes.length - 1]) : {};
 
     // this is required so that the player doesn't start to animate right away
     this._resetDomPlayerState();
