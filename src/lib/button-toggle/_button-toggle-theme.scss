@@ -6,7 +6,7 @@
   $background: map-get($theme, background);
 
   .mat-button-toggle-focus-overlay {
-    background-color: mat-color($background, dark-overlay);
+    background-color: mat-color($background, focused-button);
   }
 }
 

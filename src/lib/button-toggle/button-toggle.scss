@@ -39,7 +39,7 @@ $mat-button-toggle-border-radius: 2px !default;
   position: relative;
 }
 
-.mat-button-toggle.cdk-focused .mat-button-toggle-focus-overlay {
+.mat-button-toggle.cdk-keyboard-focused .mat-button-toggle-focus-overlay {
   opacity: 1;
 }
 

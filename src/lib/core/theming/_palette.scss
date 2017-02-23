@@ -10,6 +10,8 @@ $black-87-opacity: rgba(black, 0.87);
 $white-87-opacity: rgba(white, 0.87);
 $black-12-opacity: rgba(black, 0.12);
 $white-12-opacity: rgba(white, 0.12);
+$black-6-opacity: rgba(black, 0.06);
+$white-6-opacity: rgba(white, 0.06);
 
 $mat-red: (
   50: #ffebee,
@@ -653,7 +655,7 @@ $mat-light-theme-background: (
   dialog:     white,
   disabled-button: $black-12-opacity,
   raised-button: white,
-  dark-overlay: $black-12-opacity,
+  focused-button: $black-6-opacity,
 );
 
 // Background palette for dark themes.
@@ -666,7 +668,7 @@ $mat-dark-theme-background: (
   dialog:     map_get($mat-grey, 800),
   disabled-button: $white-12-opacity,
   raised-button: map-get($mat-grey, 800),
-  dark-overlay: $white-12-opacity,
+  focused-button: $white-6-opacity,
 );
 
 // Foreground palette for light themes.
