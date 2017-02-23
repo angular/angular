@@ -261,6 +261,32 @@ describe('ConnectedPositionStrategy', () => {
             'Expected overlay to be re-aligned to the trigger in the previous position.');
       });
 
+      it('should default to the initial position, if no positions fit in the viewport', () => {
+        // Use the fake viewport ruler because we don't know *exactly* how big the viewport is.
+        fakeViewportRuler.fakeRect = {
+          top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+        };
+        positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+
+        // Make the origin element taller than the viewport.
+        originElement.style.height = '1000px';
+        originElement.style.top = '0';
+        originRect = originElement.getBoundingClientRect();
+
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'top'},
+            {overlayX: 'start', overlayY: 'bottom'});
+
+        strategy.apply(overlayElement);
+        strategy.recalculateLastPosition();
+
+        let overlayRect = overlayElement.getBoundingClientRect();
+
+        expect(overlayRect.bottom).toBe(originRect.top,
+            'Expected overlay to be re-aligned to the trigger in the initial position.');
+      });
+
       it('should position a panel properly when rtl', () => {
         // must make the overlay longer than the origin to properly test attachment
         overlayElement.style.width = `500px`;

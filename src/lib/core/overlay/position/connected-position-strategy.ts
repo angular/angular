@@ -151,10 +151,10 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     const originRect = this._origin.getBoundingClientRect();
     const overlayRect = this._pane.getBoundingClientRect();
     const viewportRect = this._viewportRuler.getViewportRect();
+    const lastPosition = this._lastConnectedPosition || this._preferredPositions[0];
 
-    let originPoint = this._getOriginConnectionPoint(originRect, this._lastConnectedPosition);
-    let overlayPoint =
-        this._getOverlayPoint(originPoint, overlayRect, viewportRect, this._lastConnectedPosition);
+    let originPoint = this._getOriginConnectionPoint(originRect, lastPosition);
+    let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportRect, lastPosition);
     this._setElementPosition(this._pane, overlayPoint);
   }
 
