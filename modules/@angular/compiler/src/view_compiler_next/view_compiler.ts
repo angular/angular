@@ -92,8 +92,9 @@ const ALLOW_DEFAULT_VAR = o.variable(`allowDefault`);
 class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverterFactory {
   private compType: o.Type;
   private nodeDefs: (() => o.Expression)[] = [];
-  private purePipeNodeIndices: {[pipeName: string]: number} = {};
-  private refNodeIndices: {[refName: string]: number} = {};
+  private purePipeNodeIndices: {[pipeName: string]: number} = Object.create(null);
+  // Need Object.create so that we don't have builtin values...
+  private refNodeIndices: {[refName: string]: number} = Object.create(null);
   private variables: VariableAst[] = [];
   private children: ViewBuilder[] = [];
   private updateDirectivesExpressions: UpdateExpression[] = [];
@@ -929,7 +930,7 @@ function elementBindingDefs(
 
 
 function fixedAttrsDef(elementAst: ElementAst): o.Expression {
-  const mapResult: {[key: string]: string} = {};
+  const mapResult: {[key: string]: string} = Object.create(null);
   elementAst.attrs.forEach(attrAst => { mapResult[attrAst.name] = attrAst.value; });
   elementAst.directives.forEach(dirAst => {
     Object.keys(dirAst.directive.hostAttributes).forEach(name => {
