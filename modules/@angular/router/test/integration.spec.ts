@@ -16,7 +16,7 @@ import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
-import {forEach} from '../src/utils/collection';
+import {forEach, shallowEqual} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -1527,6 +1527,125 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('simple');
            })));
       });
+
+      describe('runGuardsAndResolvers', () => {
+        let count = 0;
+
+        beforeEach(() => {
+          count = 0;
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'loggingCanActivate',
+              useValue: (a: any, b: any) => {
+                count++;
+                return true;
+              }
+            }]
+          });
+        });
+
+        it('should rerun guards when params change',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmpWithTwoOutlets);
+
+             router.resetConfig([
+               {
+                 path: 'a',
+                 runGuardsAndResolvers: 'paramsChange',
+                 component: SimpleCmp,
+                 canActivate: ['loggingCanActivate']
+               },
+               {path: 'b', component: SimpleCmp, outlet: 'right'}
+             ]);
+
+             router.navigateByUrl('/a');
+             advance(fixture);
+             expect(count).toEqual(1);
+
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(count).toEqual(2);
+
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(count).toEqual(3);
+
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(count).toEqual(3);
+           })));
+
+        it('should rerun guards when query params change',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmpWithTwoOutlets);
+
+             router.resetConfig([
+               {
+                 path: 'a',
+                 runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+                 component: SimpleCmp,
+                 canActivate: ['loggingCanActivate']
+               },
+               {path: 'b', component: SimpleCmp, outlet: 'right'}
+             ]);
+
+             router.navigateByUrl('/a');
+             advance(fixture);
+             expect(count).toEqual(1);
+
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(count).toEqual(2);
+
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(count).toEqual(3);
+
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(count).toEqual(4);
+
+             router.navigateByUrl('/a;p=2(right:b)?q=1');
+             advance(fixture);
+             expect(count).toEqual(4);
+           })));
+
+        it('should always rerun guards',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmpWithTwoOutlets);
+
+             router.resetConfig([
+               {
+                 path: 'a',
+                 runGuardsAndResolvers: 'always',
+                 component: SimpleCmp,
+                 canActivate: ['loggingCanActivate']
+               },
+               {path: 'b', component: SimpleCmp, outlet: 'right'}
+             ]);
+
+             router.navigateByUrl('/a');
+             advance(fixture);
+             expect(count).toEqual(1);
+
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(count).toEqual(2);
+
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(count).toEqual(3);
+
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(count).toEqual(4);
+
+             router.navigateByUrl('/a;p=2(right:b)?q=1');
+             advance(fixture);
+             expect(count).toEqual(5);
+           })));
+      });
+
     });
 
     describe('CanDeactivate', () => {
