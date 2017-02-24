@@ -37,7 +37,7 @@ ng.profiler.timeChangeDetection();
 ### Change detection profiler
 
 If your application is janky (it misses frames) or is slow according to other
-metrics it is important to find the root cause of the issue. Change detection
+metrics, it is important to find the root cause of the issue. Change detection
 is a phase in Angular's lifecycle that detects changes in values that are
 bound to UI, and if it finds a change it performs the corresponding UI update.
 However, sometimes it is hard to tell if the slowness is due to the act of
