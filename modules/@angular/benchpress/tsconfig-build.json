@@ -18,7 +18,6 @@
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": []
   },
-  "exclude": ["integrationtest"],
   "files": [
     "index.ts",
     "../../../node_modules/@types/node/index.d.ts",
