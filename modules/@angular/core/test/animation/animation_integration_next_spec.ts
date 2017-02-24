@@ -365,7 +365,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           template: `
             <div @parent *ngIf="exp0">
               <div [@child1]="exp1"></div>
-              <div [@child2]="exp1"></div>
+              <div [@child2]="exp2"></div>
             </div>
         `,
           animations: [
@@ -403,6 +403,113 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(engine.activePlayers.length).toEqual(0);
       });
+
+      it('should postpone inner removals until a parent "queued" animation has started and finished',
+         () => {
+           @Component({
+             selector: 'parent',
+             template: `
+            <div #parent [@parent]="exp0">
+              <div *ngIf="exp1"></div>
+              <div *ngIf="exp2"></div>
+            </div>
+        `,
+             animations: [trigger('parent', [transition('* => state', [])])]
+           })
+           class Cmp {
+             exp0: any = false;
+             exp1: any = false;
+             exp2: any = false;
+             @ViewChild('parent')
+             element: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp0 = 'something';
+           cmp.exp1 = true;
+           cmp.exp2 = true;
+           fixture.detectChanges();
+           engine.flush();
+           engine.activePlayers[0].finish();
+
+           const child1 = cmp.element.nativeElement.querySelector('div:first-child');
+           const child2 = cmp.element.nativeElement.querySelector('div:last-child');
+           cmp.exp0 = 'state';
+           fixture.detectChanges();
+
+           cmp.exp1 = false;
+           cmp.exp2 = false;
+           fixture.detectChanges();
+
+           assertHasParent(child1, true);
+           assertHasParent(child2, true);
+           engine.flush();
+
+           assertHasParent(child1, true);
+           assertHasParent(child2, true);
+           const player = engine.activePlayers[0];
+           player.finish();
+
+           assertHasParent(child1, false);
+           assertHasParent(child2, false);
+         });
+
+      it('should postpone inner removals until an active running parent animation has finished',
+         () => {
+           @Component({
+             selector: 'parent',
+             template: `
+            <div #parent [@parent]="exp0">
+              <div *ngIf="exp1"></div>
+              <div *ngIf="exp2"></div>
+            </div>
+        `,
+             animations: [trigger('parent', [transition('* => state', [])])]
+           })
+           class Cmp {
+             exp0: any = false;
+             exp1: any = false;
+             exp2: any = false;
+             @ViewChild('parent')
+             element: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp0 = 'something';
+           cmp.exp1 = true;
+           cmp.exp2 = true;
+           fixture.detectChanges();
+           engine.flush();
+           engine.activePlayers[0].finish();
+
+           const child1 = cmp.element.nativeElement.querySelector('div:first-child');
+           const child2 = cmp.element.nativeElement.querySelector('div:last-child');
+           cmp.exp0 = 'state';
+           fixture.detectChanges();
+           engine.flush();
+
+           cmp.exp1 = false;
+           cmp.exp2 = false;
+           fixture.detectChanges();
+
+           assertHasParent(child1, true);
+           assertHasParent(child2, true);
+           const player = engine.activePlayers[0];
+           player.finish();
+
+           assertHasParent(child1, false);
+           assertHasParent(child2, false);
+         });
     });
 
     describe('animation listeners', () => {

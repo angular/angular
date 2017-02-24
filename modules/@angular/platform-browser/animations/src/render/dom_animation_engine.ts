@@ -36,7 +36,8 @@ export class DomAnimationEngine {
   private _flaggedRemovals = new Set<any>();
   private _queuedTransitionAnimations: QueuedAnimationTransitionTuple[] = [];
   private _activeTransitionAnimations = new Map<any, {[triggerName: string]: AnimationPlayer}>();
-  private _activeElementAnimations = new Map<any, AnimationPlayer[]>();
+  private _queuedElementPlayers = new Map<any, AnimationPlayer[]>();
+  private _activeElementPlayers = new Map<any, AnimationPlayer[]>();
 
   private _elementTriggerStates = new Map<any, {[triggerName: string]: string}>();
 
@@ -45,15 +46,17 @@ export class DomAnimationEngine {
 
   public totalActivePlayers: number = 0;
 
+  get totalQueuedPlayers() { return this._queuedTransitionAnimations.length; }
+
   constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
 
   get queuedPlayers(): AnimationPlayer[] {
-    return this._queuedTransitionAnimations.map(q => q.player);
+    return this._queuedTransitionAnimations.map(tuple => tuple.player);
   }
 
   get activePlayers(): AnimationPlayer[] {
     const players: AnimationPlayer[] = [];
-    this._activeElementAnimations.forEach(activePlayers => players.push(...activePlayers));
+    this._activeElementPlayers.forEach(activePlayers => players.push(...activePlayers));
     return players;
   }
 
@@ -87,6 +90,26 @@ export class DomAnimationEngine {
           domFn();
         });
         return;
+      }
+    }
+
+    if (this.totalActivePlayers || this.totalQueuedPlayers) {
+      let parent = element;
+      while (parent = parent.parentNode) {
+        let players: AnimationPlayer[];
+        let match = this._activeTransitionAnimations.get(parent);
+        if (match) {
+          players = Object.keys(match).map(key => match[key]);
+        } else {
+          players = this._queuedElementPlayers.get(parent);
+        }
+        if (players && players.length) {
+          optimizeGroupPlayer(players).onDone(() => {
+            this._onElementRemoval(element);
+            domFn();
+          });
+          return;
+        }
       }
     }
 
@@ -156,7 +179,7 @@ export class DomAnimationEngine {
     const elms = element.querySelectorAll(MARKED_FOR_ANIMATION_SELECTOR);
     for (let i = 0; i < elms.length; i++) {
       const elm = elms[i];
-      const activePlayers = this._activeElementAnimations.get(elm);
+      const activePlayers = this._activeElementPlayers.get(elm);
       if (activePlayers) {
         activePlayers.forEach(player => player.destroy());
       }
@@ -180,7 +203,7 @@ export class DomAnimationEngine {
     if (instruction.isRemovalTransition) {
       // we make a copy of the array because the actual source array is modified
       // each time a player is finished/destroyed (the forEach loop would fail otherwise)
-      previousPlayers = copyArray(this._activeElementAnimations.get(element));
+      previousPlayers = copyArray(this._activeElementPlayers.get(element));
     } else {
       previousPlayers = [];
       const existingTransitions = this._activeTransitionAnimations.get(element);
@@ -213,7 +236,7 @@ export class DomAnimationEngine {
           this._activeTransitionAnimations.delete(element);
         }
       }
-      deleteFromArrayMap(this._activeElementAnimations, element, player);
+      deleteFromArrayMap(this._activeElementPlayers, element, player);
       setStyles(element, instruction.toStyles);
     });
 
@@ -235,8 +258,7 @@ export class DomAnimationEngine {
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
     const players = instructions.map(instruction => {
       const player = this._buildPlayer(element, instruction, previousPlayers);
-      player.onDestroy(
-          () => { deleteFromArrayMap(this._activeElementAnimations, element, player); });
+      player.onDestroy(() => { deleteFromArrayMap(this._activeElementPlayers, element, player); });
       player.init();
 
       this._markPlayerAsActive(element, player);
@@ -279,7 +301,7 @@ export class DomAnimationEngine {
   }
 
   private _markPlayerAsActive(element: any, player: AnimationPlayer) {
-    const elementAnimations = getOrSetAsInMap(this._activeElementAnimations, element, []);
+    const elementAnimations = getOrSetAsInMap(this._activeElementPlayers, element, []);
     elementAnimations.push(player);
     this.totalActivePlayers++;
     player.onDone(() => this.totalActivePlayers--);
@@ -287,25 +309,34 @@ export class DomAnimationEngine {
 
   private _queuePlayer(
       element: any, triggerName: string, player: AnimationPlayer, event: AnimationEvent) {
-    const tuple = <QueuedAnimationTransitionTuple>{element, player, triggerName, event};
+    const tuple = <QueuedAnimationTransitionTuple>{player, triggerName, event, element};
     this._queuedTransitionAnimations.push(tuple);
-    player.init();
+
+    const queuedByElement = getOrSetAsInMap(this._queuedElementPlayers, element, []);
+    queuedByElement.push(player);
 
     element.classList.add(MARKED_FOR_ANIMATION);
-    player.onDone(() => { element.classList.remove(MARKED_FOR_ANIMATION); });
+    player.init();
+    player.onDone(() => element.classList.remove(MARKED_FOR_ANIMATION));
   }
 
   flush() {
-    parentLoop: while (this._queuedTransitionAnimations.length) {
-      const {player, element, triggerName, event} = this._queuedTransitionAnimations.shift();
+    this._queuedTransitionAnimations.forEach(tuple => {
+      const {player, triggerName, event, element} = tuple;
 
+      let parentRemovalFound = false;
       let parent = element;
       while (parent = parent.parentNode) {
         // this means that a parent element will or will not
         // have its own animation operation which in this case
         // there's no point in even trying to do an animation
-        if (parent[MARKED_FOR_REMOVAL]) continue parentLoop;
+        if (parent[MARKED_FOR_REMOVAL]) {
+          parentRemovalFound = true;
+          break;
+        }
       }
+
+      if (parentRemovalFound) return;
 
       const listeners = this._triggerListeners.get(element);
       if (listeners) {
@@ -324,8 +355,11 @@ export class DomAnimationEngine {
       if (!player.hasStarted()) {
         player.play();
       }
-    }
+    });
+
     this._flaggedRemovals.clear();
+    this._queuedElementPlayers.clear();
+    this._queuedTransitionAnimations = [];
   }
 }
 
