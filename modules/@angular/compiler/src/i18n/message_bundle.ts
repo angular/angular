@@ -47,7 +47,7 @@ export class MessageBundle {
   // The public (serialized) format might be different, see the `write` method.
   getMessages(): i18n.Message[] { return this._messages; }
 
-  write(serializer: Serializer): string {
+  write(serializer: Serializer, locale?: string|null): string {
     const messages: {[id: string]: i18n.Message} = {};
     const mapperVisitor = new MapPlaceholderNames();
 
@@ -67,7 +67,7 @@ export class MessageBundle {
       return new i18n.Message(nodes, {}, {}, src.meaning, src.description, id);
     });
 
-    return serializer.write(msgList);
+    return serializer.write(msgList, locale);
   }
 }
 

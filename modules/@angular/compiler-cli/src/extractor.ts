@@ -27,14 +27,14 @@ export class Extractor {
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(formatName: string): Promise<void> {
+  extract(formatName: string, locale?: string): Promise<void> {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
     const promiseBundle = this.extractBundle();
 
     return promiseBundle.then(bundle => {
-      const content = this.serialize(bundle, ext);
+      const content = this.serialize(bundle, ext, locale);
       const dstPath = path.join(this.options.genDir, `messages.${ext}`);
       this.host.writeFile(dstPath, content, false);
     });
@@ -47,7 +47,7 @@ export class Extractor {
     return this.ngExtractor.extract(files);
   }
 
-  serialize(bundle: compiler.MessageBundle, ext: string): string {
+  serialize(bundle: compiler.MessageBundle, ext: string, locale?: string|null): string {
     let serializer: compiler.Serializer;
 
     switch (ext) {
@@ -59,7 +59,7 @@ export class Extractor {
         serializer = new compiler.Xliff();
     }
 
-    return bundle.write(serializer);
+    return bundle.write(serializer, locale);
   }
 
   getExtension(formatName: string): string {

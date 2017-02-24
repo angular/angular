@@ -107,10 +107,10 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 export function main(): void {
   const serializer = new Xliff();
 
-  function toXliff(html: string): string {
+  function toXliff(html: string, locale?: string): string {
     const catalog = new MessageBundle(new HtmlParser, [], {});
     catalog.updateFromTemplate(html, '', DEFAULT_INTERPOLATION_CONFIG);
-    return catalog.write(serializer);
+    return catalog.write(serializer, locale);
   }
 
   function loadAsMap(xliff: string): {[id: string]: string} {
@@ -126,6 +126,8 @@ export function main(): void {
   describe('XLIFF serializer', () => {
     describe('write', () => {
       it('should write a valid xliff file', () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
+      it('should write a valid xliff file with a source language',
+         () => { expect(toXliff(HTML, 'fr')).toContain('file source-language="fr"'); });
     });
 
     describe('load', () => {
