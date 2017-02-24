@@ -314,7 +314,7 @@ function createViewNodes(view: ViewData) {
         nodeData = <ProviderData>{instance};
         if (nodeDef.flags & NodeFlags.IsComponent) {
           const compView = asElementData(view, nodeDef.parent.index).componentView;
-          initView(componentView, instance, instance);
+          initView(compView, instance, instance);
         }
         break;
       }
