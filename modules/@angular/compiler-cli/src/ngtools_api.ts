@@ -59,6 +59,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   host: ts.CompilerHost;
   angularCompilerOptions: AngularCompilerOptions;
   i18nFormat: string;
+  outFile: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
 }
@@ -145,6 +146,6 @@ export class NgTools_InternalApi_NG_2 {
     const extractor = Extractor.create(
         options.angularCompilerOptions, options.program, options.host, hostContext);
 
-    return extractor.extract(options.i18nFormat);
+    return extractor.extract(options.i18nFormat, options.outFile);
   }
 }
