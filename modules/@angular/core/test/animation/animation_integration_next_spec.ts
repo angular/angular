@@ -79,6 +79,22 @@ function declareTests({useJit}: {useJit: boolean}) {
         ]);
       });
 
+      it('should not throw an error if a trigger with the same name exists in separate components',
+         () => {
+           @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
+           class Cmp1 {
+           }
+
+           @Component({selector: 'cmp2', template: '...', animations: [trigger('trig', [])]})
+           class Cmp2 {
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp1, Cmp2]});
+           const cmp1 = TestBed.createComponent(Cmp1);
+           const cmp2 = TestBed.createComponent(Cmp2);
+         });
+
+
       it('should trigger a state change animation from void => state on the component host element',
          () => {
            @Component({
