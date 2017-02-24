@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig-build",
+  "compilerOptions": {
+    "outDir": "../../../dist/esm/compiler",
+    "target": "es5"
+  }
+}
