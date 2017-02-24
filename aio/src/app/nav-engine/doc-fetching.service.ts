@@ -13,13 +13,13 @@ import { Logger } from '../logger.service';
 @Injectable()
 export class DocFetchingService {
 
-  private base = 'content/';
+  private base = 'content/docs/';
 
   constructor(
     private http: Http,
     private logger: Logger) { }
 
-  getPath(docId: string) {
+  getPathFor(docId: string) {
     return this.base + addPathExtension(docId);
   }
 
@@ -29,7 +29,7 @@ export class DocFetchingService {
    * Other errors and non-OK status responses are thrown errors.
    * TODO: add timeout and retry for lost connection
    */
-  getDocFile(docId: string): Observable<Doc> {
+  fetchDoc(docId: string): Observable<Doc> {
 
     if (!docId) {
       const emsg = 'getFile: no document id';
@@ -37,19 +37,18 @@ export class DocFetchingService {
       throw new Error(emsg);
     }
 
-    // TODO: Metadata will be updated from file
-    const metadata: DocMetadata = { docId, title: docId };
-    const url = this.getPath(docId);
+    const url = this.getPathFor(docId);
 
     this.logger.log(`Fetching document file at '${url}'`);
 
     return this.http.get(url)
-      .map(res =>  <Doc> { metadata, content: res.text() }) // TODO: It will come as JSON soon
-      .do(content => this.logger.log(`Fetched document file at '${url}'`) )
+      .map(res => JSON.parse(res.text()))
+      .map(json => <Doc> { metadata: { docId, title: json.title }, content: json.content })
+      .do(content => this.logger.log(`Fetched document '${docId}' at '${url}'`) )
       .catch((error: Response) => {
         if (error.status === 404) {
           this.logger.error(`Document file not found at '${url}'`);
-          return of({metadata, content: ''} as Doc);
+          return of({metadata: {docId: docId, title: ''}, content: ''} as Doc);
         } else {
           throw error;
         }
@@ -58,23 +57,6 @@ export class DocFetchingService {
 }
 
 function addPathExtension(path: string) {
-  if (path) {
-    if (path.endsWith('/')) {
-      return path + 'index.html';
-    } else if (!path.endsWith('.html')) {
-      return path + '.html';
-    }
-  }
-  return path;
+  return path && path.endsWith('.html') ? path : path.endsWith('/') ? (path + 'index.json') : (path + '.json');
 }
 
-// function removePathExtension(path: string) {
-//   if (path) {
-//     if (path.endsWith('/index.html')) {
-//       return path.substring(0, path.length - 10);
-//     } else if (path.endsWith('.html')) {
-//       return path.substring(0, path.length - 5);
-//     }
-//   }
-//   return path;
-// }

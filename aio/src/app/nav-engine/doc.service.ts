@@ -34,7 +34,7 @@ export class DocService {
       return of(cached);
     }
 
-    return this.fileService.getDocFile(docId)
+    return this.fileService.fetchDoc(docId)
       .switchMap(doc => {
         this.logger.log(`Fetched document for '${docId}'`);
         return doc.content ? of(doc) :
@@ -47,7 +47,7 @@ export class DocService {
   getNotFound(): Observable<string> {
     if (this.notFoundContent) { return of(this.notFoundContent); }
     const nfDocId = 'not-found';
-    return this.fileService.getDocFile(nfDocId)
+    return this.fileService.fetchDoc(nfDocId)
       .map(doc => {
         this.logger.log(`Fetched "not found" document for '${nfDocId}'`);
         this.notFoundContent = doc.content;
