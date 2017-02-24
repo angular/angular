@@ -532,7 +532,8 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         it('should assign the TemplateRef to a user-defined variable', () => {
           const fixture =
               TestBed.configureTestingModule({declarations: [MyComp]})
-                  .overrideComponent(MyComp, {set: {template: '<template ref-alice></template>'}})
+                  .overrideComponent(
+                      MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
                   .createComponent(MyComp);
 
           const value = fixture.debugElement.childNodes[0].references['alice'];
