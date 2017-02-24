@@ -385,6 +385,8 @@ export class DomRendererFactoryV2 implements RendererFactoryV2 {
 }
 
 class DefaultDomRendererV2 implements RendererV2 {
+  data: {[key: string]: any} = Object.create(null);
+
   constructor(private eventManager: EventManager) {}
 
   destroy(): void {}
