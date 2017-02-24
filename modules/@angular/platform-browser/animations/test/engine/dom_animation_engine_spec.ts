@@ -526,6 +526,29 @@ export function main() {
 
         expect(parseFloat(element.style.opacity)).toEqual(.8);
       });
+
+      it('should ignore any further property changes when an element is set for removal', () => {
+        const engine = makeEngine();
+        engine.registerTrigger(trigger(
+            'something',
+            [transition(':leave', animate(1000)), transition('* => toState', animate(1000))]));
+
+        const elm = el('<div></div>');
+        engine.setProperty(elm, 'something', 'fromState');
+        engine.flush();
+
+        engine.onRemove(elm, () => {});
+        expect(engine.queuedPlayers.length).toEqual(1);
+        const removalPlayer = engine.queuedPlayers[0];
+
+        engine.setProperty(elm, 'something', 'toState');
+        expect(engine.queuedPlayers.length).toEqual(1);
+
+        engine.flush();
+        expect(engine.activePlayers.length).toEqual(1);
+        const player = engine.activePlayers[0];
+        expect(removalPlayer).toBe(player);
+      });
     });
 
     describe('timeline operations', () => {

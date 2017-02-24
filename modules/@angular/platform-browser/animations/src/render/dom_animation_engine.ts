@@ -33,8 +33,7 @@ const MARKED_FOR_ANIMATION_SELECTOR = '.ng-animate';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
 
 export class DomAnimationEngine {
-  private _flaggedInserts = new Set<any>();
-  private _queuedRemovals = new Map<any, () => any>();
+  private _flaggedRemovals = new Set<any>();
   private _queuedTransitionAnimations: QueuedAnimationTransitionTuple[] = [];
   private _activeTransitionAnimations = new Map<any, {[triggerName: string]: AnimationPlayer}>();
   private _activeElementAnimations = new Map<any, AnimationPlayer[]>();
@@ -66,29 +65,31 @@ export class DomAnimationEngine {
     this._triggers[name] = buildTrigger(name, trigger.definitions);
   }
 
-  onInsert(element: any, domFn: () => any): void {
-    this._flaggedInserts.add(element);
-    domFn();
-  }
+  onInsert(element: any, domFn: () => any): void { domFn(); }
 
   onRemove(element: any, domFn: () => any): void {
+    this._flaggedRemovals.add(element);
+
     let lookupRef = this._elementTriggerStates.get(element);
     if (lookupRef) {
-      const possibleTriggers = Object.keys(lookupRef);
-      const hasRemoval = possibleTriggers.some(triggerName => {
+      const leavePlayers: AnimationPlayer[] = [];
+      Object.keys(lookupRef).forEach(triggerName => {
         const oldValue = lookupRef[triggerName];
         const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
-        return !!instruction;
+        if (instruction) {
+          leavePlayers.push(this.animateTransition(element, instruction));
+        }
       });
-      if (hasRemoval) {
+      if (leavePlayers.length) {
         element[MARKED_FOR_REMOVAL] = true;
-        this._queuedRemovals.set(element, () => {
+        optimizeGroupPlayer(leavePlayers).onDone(() => {
           this._onElementRemoval(element);
           domFn();
         });
         return;
       }
     }
+
     this._onElementRemoval(element);
     domFn();
   }
@@ -98,6 +99,10 @@ export class DomAnimationEngine {
     if (!trigger) {
       throw new Error(`The provided animation trigger "${property}" has not been registered!`);
     }
+
+    // if an element has been set for removal then there is no reason to animate it with a property
+    // change
+    if (this._flaggedRemovals.has(element)) return;
 
     let lookupRef = this._elementTriggerStates.get(element);
     if (!lookupRef) {
@@ -290,7 +295,7 @@ export class DomAnimationEngine {
     player.onDone(() => { element.classList.remove(MARKED_FOR_ANIMATION); });
   }
 
-  private _flushQueuedAnimations() {
+  flush() {
     parentLoop: while (this._queuedTransitionAnimations.length) {
       const {player, element, triggerName, event} = this._queuedTransitionAnimations.shift();
 
@@ -300,13 +305,6 @@ export class DomAnimationEngine {
         // have its own animation operation which in this case
         // there's no point in even trying to do an animation
         if (parent[MARKED_FOR_REMOVAL]) continue parentLoop;
-      }
-
-      // if a removal exists for the given element then we need cancel
-      // all the queued players so that a proper removal animation can go
-      if (this._queuedRemovals.has(element)) {
-        player.destroy();
-        continue;
       }
 
       const listeners = this._triggerListeners.get(element);
@@ -327,67 +325,7 @@ export class DomAnimationEngine {
         player.play();
       }
     }
-  }
-
-  flush() {
-    this._flushQueuedAnimations();
-
-    let flushAgain = false;
-    this._queuedRemovals.forEach((callback, element) => {
-      // an item that was inserted/removed in the same flush means
-      // that an animation should not happen anyway
-      if (this._flaggedInserts.has(element)) return;
-
-      let parent = element;
-      let players: AnimationPlayer[] = [];
-      while (parent = parent.parentNode) {
-        // there is no reason to even try to
-        if (parent[MARKED_FOR_REMOVAL]) {
-          callback();
-          return;
-        }
-
-        const match = this._activeElementAnimations.get(parent);
-        if (match) {
-          players.push(...match);
-          break;
-        }
-      }
-
-      // the loop was unable to find an parent that is animating even
-      // though this element has set to be removed, so the algorithm
-      // should check to see if there are any triggers on the element
-      // that are present to handle a leave animation and then setup
-      // those players to facilitate the callback after done
-      if (players.length == 0) {
-        // this means that the element has valid state triggers
-        const stateDetails = this._elementTriggerStates.get(element);
-        if (stateDetails) {
-          Object.keys(stateDetails).forEach(triggerName => {
-            const oldValue = stateDetails[triggerName];
-            const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
-            if (instruction) {
-              players.push(this.animateTransition(element, instruction));
-              flushAgain = true;
-            }
-          });
-        }
-      }
-
-      if (players.length) {
-        optimizeGroupPlayer(players).onDone(callback);
-      } else {
-        callback();
-      }
-    });
-
-    this._queuedRemovals.clear();
-    this._flaggedInserts.clear();
-
-    // this means that one or more leave animations were detected
-    if (flushAgain) {
-      this._flushQueuedAnimations();
-    }
+    this._flaggedRemovals.clear();
   }
 }
 
