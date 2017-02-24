@@ -20,17 +20,11 @@ export class AnimationRendererFactory implements RendererFactoryV2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
 
-    let animationRenderer = delegate.data['animationRenderer'];
-    if (!animationRenderer) {
-      const namespaceId = type.id;
-      const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
-      animationTriggers.forEach(
-          trigger =>
-              this._engine.registerTrigger(trigger, namespaceify(namespaceId, trigger.name)));
-      animationRenderer = new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
-      delegate.data['animationRenderer'] = animationRenderer;
-    }
-    return animationRenderer;
+    const namespaceId = type.id;
+    const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
+    animationTriggers.forEach(
+        trigger => this._engine.registerTrigger(trigger, namespaceify(namespaceId, trigger.name)));
+    return new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
   }
 }
 
