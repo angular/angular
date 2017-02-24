@@ -253,10 +253,14 @@ do
     (
       cd  ${SRCDIR}
       echo "======         Rollup ${PACKAGE} index"
-      ../../../node_modules/.bin/rollup -i ${DEST_MODULE}/index.js -o ${JS_PATH}
-      cat ${LICENSE_BANNER} > ${JS_PATH}.tmp
-      cat ${JS_PATH} >> ${JS_PATH}.tmp
-      mv ${JS_PATH}.tmp ${JS_PATH}
+      if [[ -e rollup.config.js ]]; then
+        ../../../node_modules/.bin/rollup -c rollup.config.js
+      else
+        ../../../node_modules/.bin/rollup -i ${DEST_MODULE}/index.js -o ${JS_PATH}
+        cat ${LICENSE_BANNER} > ${JS_PATH}.tmp
+        cat ${JS_PATH} >> ${JS_PATH}.tmp
+        mv ${JS_PATH}.tmp ${JS_PATH}
+      fi
 
       if ! [[ ${PACKAGE} == 'benchpress' ]]; then
         rm -f ${DEST_MODULE}/index.*
@@ -277,7 +281,7 @@ do
         echo "======         Minifying UMD/ES5"
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_MIN_PATH}
         ### END Minification ###
-      else
+      elif [[ -e rollup-umd.config.js ]]; then
         # For packages not running through babel, use the UMD/ES5 config
         echo "======         Rollup ${PACKAGE} index to UMD/ES5"
         ../../../node_modules/.bin/rollup -c rollup-umd.config.js
@@ -287,8 +291,10 @@ do
       fi
 
       rm -f ${DISTDIR}/.babelrc
-      echo "======         Downleveling ES2015 to ESM/ES5"
-      downlevelES2015 ${DEST_MODULE} ${JS_PATH} ${JS_PATH_ES5}
+      if [[ -d ${DEST_MODULE} ]]; then
+        echo "======         Downleveling ES2015 to ESM/ES5"
+        downlevelES2015 ${DEST_MODULE} ${JS_PATH} ${JS_PATH_ES5}
+      fi
 
       if [[ -d testing ]]; then
         echo "======         Rollup ${PACKAGE} testing"
