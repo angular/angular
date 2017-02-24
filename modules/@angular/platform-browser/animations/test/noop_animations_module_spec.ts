@@ -10,7 +10,7 @@ import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵAnimationEngine} from '@angular/platform-browser/animations';
-import {NoopAnimationsModule} from '../src/noop_animations_module';
+import {NoopAnimationsModule} from '../src/module';
 import {NoopAnimationEngine} from '../src/render/noop_animation_engine';
 
 export function main() {
