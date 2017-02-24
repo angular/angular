@@ -271,7 +271,8 @@ export class CompilerHost implements AotCompilerHost {
     if (DTS.test(filePath)) {
       // Check for a bundle index.
       if (this.hasBundleIndex(filePath)) {
-        return this.bundleIndexNames.has(filePath);
+        const normalFilePath = path.normalize(filePath);
+        return this.bundleIndexNames.has(normalFilePath);
       }
     }
     return true;
