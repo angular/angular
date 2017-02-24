@@ -1,10 +1,8 @@
-
 {
   "presets": ["es2015"],
   "plugins": [["transform-es2015-modules-umd", {
     "globals": {
       "@angular/core": "ng.core",
-      "@angular/compiler": "ng.compiler",
       "@angular/platform-browser": "ng.platformBrowser",
       "@angular/http": "ng.http",
       "@angular/http/testing": "ng.http.testing",
