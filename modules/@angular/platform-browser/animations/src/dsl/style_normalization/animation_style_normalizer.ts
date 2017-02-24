@@ -19,7 +19,7 @@ export abstract class AnimationStyleNormalizer {
 /**
  * @experimental Animation support is experimental.
  */
-export class NoOpAnimationStyleNormalizer {
+export class NoopAnimationStyleNormalizer {
   normalizePropertyName(propertyName: string, errors: string[]): string { return propertyName; }
 
   normalizeStyleValue(

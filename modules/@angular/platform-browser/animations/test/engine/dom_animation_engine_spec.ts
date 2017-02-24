@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, NoOpAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {AnimationEvent, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
-import {AnimationStyleNormalizer, NoOpAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {DomAnimationEngine} from '../../src/render/dom_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/mock_animation_driver';
 
@@ -36,7 +35,7 @@ export function main() {
     });
 
     function makeEngine(normalizer: AnimationStyleNormalizer = null) {
-      return new DomAnimationEngine(driver, normalizer || new NoOpAnimationStyleNormalizer());
+      return new DomAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
     }
 
     describe('trigger registration', () => {
@@ -82,12 +81,12 @@ export function main() {
 
         engine.setProperty(element, 'myTrigger', 'no');
         expect(engine.queuedPlayers.length).toEqual(1);
-        expect(engine.queuedPlayers.pop() instanceof NoOpAnimationPlayer).toBe(true);
+        expect(engine.queuedPlayers.pop() instanceof NoopAnimationPlayer).toBe(true);
         engine.flush();
 
         engine.setProperty(element, 'myTrigger', 'yes');
         expect(engine.queuedPlayers.length).toEqual(1);
-        expect(engine.queuedPlayers.pop() instanceof NoOpAnimationPlayer).toBe(true);
+        expect(engine.queuedPlayers.pop() instanceof NoopAnimationPlayer).toBe(true);
       });
 
       it('should not queue an animation if the property value has not changed at all', () => {

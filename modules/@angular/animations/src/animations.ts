@@ -13,6 +13,6 @@
  */
 export {AnimationEvent} from './animation_event';
 export {AUTO_STYLE, AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, animate, group, keyframes, sequence, state, style, transition, trigger, ɵStyleData} from './animation_metadata';
-export {AnimationPlayer, NoOpAnimationPlayer} from './players/animation_player';
+export {AnimationPlayer, NoopAnimationPlayer} from './players/animation_player';
 
 export * from './private_export';

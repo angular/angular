@@ -109,7 +109,7 @@ export declare function group(steps: AnimationMetadata[]): AnimationGroupMetadat
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @experimental */
-export declare class NoOpAnimationPlayer implements AnimationPlayer {
+export declare class NoopAnimationPlayer implements AnimationPlayer {
     parentPlayer: AnimationPlayer;
     constructor();
     destroy(): void;

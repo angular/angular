@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationPlayer, NoOpAnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../src/render/animation_driver';
 
@@ -28,7 +28,7 @@ export class MockAnimationDriver implements AnimationDriver {
 /**
  * @experimental Animation support is experimental.
  */
-export class MockAnimationPlayer extends NoOpAnimationPlayer {
+export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;
   public previousStyles: {[key: string]: string | number} = {};
 

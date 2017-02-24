@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, AnimationPlayer, AnimationTriggerMetadata, NoOpAnimationPlayer, ɵAnimationGroupPlayer, ɵStyleData} from '@angular/animations';
+import {AnimationEvent, AnimationPlayer, AnimationTriggerMetadata, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction';
@@ -406,7 +406,7 @@ function deleteFromArrayMap(map: Map<any, any[]>, key: any, value: any) {
 function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
   switch (players.length) {
     case 0:
-      return new NoOpAnimationPlayer();
+      return new NoopAnimationPlayer();
     case 1:
       return players[0];
     default:

@@ -11,7 +11,7 @@ import {BrowserModule, ɵDomRendererFactoryV2} from '@angular/platform-browser';
 import {AnimationEngine} from './animation_engine';
 import {AnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
 import {WebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
-import {AnimationDriver, NoOpAnimationDriver} from './render/animation_driver';
+import {AnimationDriver, NoopAnimationDriver} from './render/animation_driver';
 import {AnimationRendererFactory} from './render/animation_renderer';
 import {DomAnimationEngine} from './render/dom_animation_engine';
 import {WebAnimationsDriver, supportsWebAnimations} from './render/web_animations/web_animations_driver';
@@ -27,7 +27,7 @@ export function instantiateSupportedAnimationDriver() {
   if (supportsWebAnimations()) {
     return new WebAnimationsDriver();
   }
-  return new NoOpAnimationDriver();
+  return new NoopAnimationDriver();
 }
 
 export function instantiateDefaultStyleNormalizer() {
