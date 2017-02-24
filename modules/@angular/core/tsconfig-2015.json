@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig-build",
+  "compilerOptions": {
+      "module": "es2015",
+      "moduleResolution": "node",
+      "outDir": "../../../dist/esm/core"
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
+  ]
+}

@@ -25,7 +25,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015",
+    "target": "es5",
     "skipLibCheck": true,
     "lib": ["es2015", "dom"]
   },
