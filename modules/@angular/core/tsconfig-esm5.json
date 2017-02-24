@@ -1,9 +1,8 @@
 {
   "extends": "./tsconfig-build",
   "compilerOptions": {
-      "module": "es2015",
-      "moduleResolution": "node",
-      "outDir": "../../../dist/esm/core"
+      "outDir": "../../../dist/esm/core",
+      "target": "es5"
   },
   "files": [
     "index.ts",

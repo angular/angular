@@ -235,9 +235,9 @@ do
     $TSC -p ${SRCDIR}/tsconfig-static.json
   fi
 
-  if [[ -e ${SRCDIR}/tsconfig-2015.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (ES2015): ${TSC} -p ${SRCDIR}/tsconfig-2015.json"
-    ${TSC} -p ${SRCDIR}/tsconfig-2015.json
+  if [[ -e ${SRCDIR}/tsconfig-esm5.json ]]; then
+    echo "======      [${PACKAGE}]: COMPILING (ESM/ES5): ${TSC} -p ${SRCDIR}/tsconfig-esm5.json"
+    ${TSC} -p ${SRCDIR}/tsconfig-esm5.json
   fi
 
   if [[ ${PACKAGE} == benchpress ]]; then
