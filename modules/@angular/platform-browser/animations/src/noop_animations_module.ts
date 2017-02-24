@@ -30,5 +30,5 @@ export function instantiateRendererFactory(
     }
   ]
 })
-export class NoopBrowserAnimationModule {
+export class NoopAnimationsModule {
 }

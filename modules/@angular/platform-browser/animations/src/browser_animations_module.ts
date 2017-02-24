@@ -54,5 +54,5 @@ export function instantiateRendererFactory(
     }
   ]
 })
-export class BrowserAnimationModule {
+export class BrowserAnimationsModule {
 }

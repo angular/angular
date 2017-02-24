@@ -10,13 +10,13 @@ import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵAnimationEngine} from '@angular/platform-browser/animations';
-import {NoopBrowserAnimationModule} from '../src/noop_browser_animation_module';
+import {NoopAnimationsModule} from '../src/noop_animations_module';
 import {NoopAnimationEngine} from '../src/render/noop_animation_engine';
 
 export function main() {
-  describe('NoopBrowserAnimationModule', () => {
+  describe('NoopAnimationsModule', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({imports: [NoopBrowserAnimationModule]});
+      TestBed.configureTestingModule({imports: [NoopAnimationsModule]});
       TestBed.configureCompiler({
         useJit: true,
         providers: [{

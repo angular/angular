@@ -8,7 +8,7 @@
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component, HostBinding, HostListener, ViewChild} from '@angular/core';
-import {AnimationDriver, BrowserAnimationModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
+import {AnimationDriver, BrowserAnimationsModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/platform-browser/animations/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {TestBed} from '../../testing';
@@ -44,7 +44,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       resetLog();
       TestBed.configureTestingModule({
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
-        imports: [BrowserAnimationModule]
+        imports: [BrowserAnimationsModule]
       });
     });
 

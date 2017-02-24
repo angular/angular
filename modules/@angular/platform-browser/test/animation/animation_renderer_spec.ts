@@ -9,9 +9,9 @@ import {AnimationTriggerMetadata, animate, state, style, transition, trigger} fr
 import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {AnimationPlayer, Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {InjectableAnimationEngine} from '../../animations/src/browser_animation_module';
+import {InjectableAnimationEngine} from '../../animations/src/browser_animations_module';
 import {el} from '../../testing/browser_util';
 
 export function main() {
@@ -22,7 +22,7 @@ export function main() {
 
       TestBed.configureTestingModule({
         providers: [{provide: ɵAnimationEngine, useClass: MockAnimationEngine}],
-        imports: [BrowserAnimationModule]
+        imports: [BrowserAnimationsModule]
       });
     });
 
