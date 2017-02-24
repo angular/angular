@@ -1,5 +1,5 @@
 <a name="4.0.0-rc.0"></a>
-# [4.0.0-rc.0](https://github.com/angular/angular/compare/4.0.0-beta.8...4.0.0-rc.0) (2017-02-24)
+# [4.0.0-rc.1](https://github.com/angular/angular/compare/4.0.0-beta.8...4.0.0-rc.1) (2017-02-24)
 
 We are excited to share RC0 with the community. This is a feature-complete pre-release of 4.0.0. Upgrade to get to know the new features to be released in 4.0.0, and to help us validate the release.
 
@@ -139,6 +139,8 @@ We have [three more release candidates scheduled](https://github.com/angular/ang
 * `RootRenderer` cannot be used any more, use `RendererFactoryV2` instead. Introduced by ([ccb636c](https://github.com/angular/angular/commit/ccb636c)).
 
   Note: `Renderer` can still be injected/used, but is deprecated.
+
+Note: the 4.0.0-rc.0 release on npm accidentally omitted one bug fix, so we cut rc.1 instead. oops :-)
 
 
 
