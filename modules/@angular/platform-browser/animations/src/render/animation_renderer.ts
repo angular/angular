@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTriggerMetadata} from '@angular/animations';
+import {AnimationEvent, AnimationTriggerMetadata} from '@angular/animations';
 import {Injectable, NgZone, RendererFactoryV2, RendererTypeV2, RendererV2} from '@angular/core';
 
 import {AnimationEngine} from '../animation_engine';
@@ -18,15 +18,18 @@ export class AnimationRendererFactory implements RendererFactoryV2 {
 
   createRenderer(hostElement: any, type: RendererTypeV2): RendererV2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
-    if (!hostElement || !type) return delegate;
+    if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
 
-    let animationRenderer = type.data['__animationRenderer__'] as any as AnimationRenderer;
-    if (animationRenderer && delegate == animationRenderer.delegate) {
-      return animationRenderer;
+    let animationRenderer = delegate.data['animationRenderer'];
+    if (!animationRenderer) {
+      const namespaceId = type.id;
+      const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
+      animationTriggers.forEach(
+          trigger =>
+              this._engine.registerTrigger(trigger, namespaceify(namespaceId, trigger.name)));
+      animationRenderer = new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
+      delegate.data['animationRenderer'] = animationRenderer;
     }
-    const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
-    animationRenderer = (type.data as any)['__animationRenderer__'] =
-        new AnimationRenderer(delegate, this._engine, this._zone, animationTriggers);
     return animationRenderer;
   }
 }
@@ -37,12 +40,11 @@ export class AnimationRenderer implements RendererV2 {
 
   constructor(
       public delegate: RendererV2, private _engine: AnimationEngine, private _zone: NgZone,
-      _triggers: AnimationTriggerMetadata[] = null) {
+      private _namespaceId: string) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode(n) : null;
-    if (_triggers) {
-      _triggers.forEach(trigger => _engine.registerTrigger(trigger));
-    }
   }
+
+  get data() { return this.delegate.data; }
 
   destroy(): void { this.delegate.destroy(); }
 
@@ -102,7 +104,7 @@ export class AnimationRenderer implements RendererV2 {
 
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == '@') {
-      this._engine.setProperty(el, name.substr(1), value);
+      this._engine.setProperty(el, namespaceify(this._namespaceId, name.substr(1)), value);
       this._queueFlush();
     } else {
       this.delegate.setProperty(el, name, value);
@@ -115,7 +117,13 @@ export class AnimationRenderer implements RendererV2 {
       const element = resolveElementFromTarget(target);
       const [name, phase] = parseTriggerCallbackName(eventName.substr(1));
       return this._engine.listen(
-          element, name, phase, (event: any) => this._zone.run(() => callback(event)));
+          element, namespaceify(this._namespaceId, name), phase, (event: any) => {
+            const e = event as any;
+            if (e.triggerName) {
+              e.triggerName = deNamespaceify(this._namespaceId, e.triggerName);
+            }
+            this._zone.run(() => callback(event));
+          });
     }
     return this.delegate.listen(target, eventName, callback);
   }
@@ -150,4 +158,12 @@ function parseTriggerCallbackName(triggerName: string) {
   const trigger = triggerName.substring(0, dotIndex);
   const phase = triggerName.substr(dotIndex + 1);
   return [trigger, phase];
+}
+
+function namespaceify(namespaceId: string, value: string): string {
+  return `${namespaceId}#${value}`;
+}
+
+function deNamespaceify(namespaceId: string, value: string): string {
+  return value.replace(namespaceId + '#', '');
 }

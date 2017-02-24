@@ -82,7 +82,7 @@ export function main() {
       expect(engine.captures['setProperty']).toBeFalsy();
 
       renderer.setProperty(element, '@prop', 'value');
-      expect(engine.captures['setProperty'].pop()).toEqual([element, 'prop', 'value']);
+      expect(engine.captures['setProperty'].pop()).toEqual([element, 'id#prop', 'value']);
     });
 
     describe('listen', () => {
@@ -96,7 +96,7 @@ export function main() {
         expect(engine.captures['listen']).toBeFalsy();
 
         renderer.listen(element, '@event.phase', cb);
-        expect(engine.captures['listen'].pop()).toEqual([element, 'event', 'phase']);
+        expect(engine.captures['listen'].pop()).toEqual([element, 'id#event', 'phase']);
       });
 
       it('should resolve the body|document|window nodes given their values as strings as input',

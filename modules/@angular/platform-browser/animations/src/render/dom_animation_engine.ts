@@ -55,8 +55,8 @@ export class DomAnimationEngine {
     return players;
   }
 
-  registerTrigger(trigger: AnimationTriggerMetadata): void {
-    const name = trigger.name;
+  registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
+    name = name || trigger.name;
     if (this._triggers[name]) {
       throw new Error(`The provided animation trigger "${name}" has already been registered!`);
     }
