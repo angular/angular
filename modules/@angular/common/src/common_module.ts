@@ -29,12 +29,3 @@ import {COMMON_PIPES} from './pipes/index';
 })
 export class CommonModule {
 }
-
-/**
- * A module to contain deprecated directives.
- *
- * @deprecated
- */
-@NgModule({declarations: [COMMON_DEPRECATED_DIRECTIVES], exports: [COMMON_DEPRECATED_DIRECTIVES]})
-export class DeprecatedCommonModule {
-}

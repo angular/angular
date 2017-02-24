@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {CommonModule, NgFor, NgForOf} from '@angular/common';
+import {Component, Directive} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -29,7 +29,7 @@ export function main() {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent],
+        declarations: [TestComponent, TestDirective],
         imports: [CommonModule],
       });
     });
@@ -350,6 +350,14 @@ export function main() {
            getComponent().items = ['e', 'f', 'h'];
            detectChangesAndExpectText('efh');
          }));
+
+      it('should support injecting `NgFor` and get an instance of `NgForOf`', async(() => {
+           const template = `<template ngFor [ngForOf]='items' let-item test></template>`;
+           fixture = createTestComponent(template);
+           const testDirective = fixture.debugElement.childNodes[0].injector.get(TestDirective);
+           const ngForOf = fixture.debugElement.childNodes[0].injector.get(NgForOf);
+           expect(testDirective.ngFor).toBe(ngForOf);
+         }));
     });
   });
 }
@@ -365,6 +373,11 @@ class TestComponent {
   trackById(index: number, item: any): string { return item['id']; }
   trackByIndex(index: number, item: any): number { return index; }
   trackByContext(): void { thisArg = this; }
+}
+
+@Directive({selector: '[test]'})
+class TestDirective {
+  constructor(public ngFor: NgFor) {}
 }
 
 const TEMPLATE = '<div><span *ngFor="let item of items">{{item.toString()}};</span></div>';
