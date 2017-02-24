@@ -11,7 +11,7 @@ import {AnimationPlayer, Component, Injectable, RendererFactoryV2, RendererTypeV
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {InjectableAnimationEngine} from '../../animations/src/browser_animations_module';
+import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/browser_util';
 
 export function main() {
