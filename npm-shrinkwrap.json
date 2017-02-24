@@ -8137,10 +8137,18 @@
       "dev": true
     },
     "parse5": {
-      "version": "2.2.1",
-      "from": "parse5@2.2.1",
-      "resolved": "https://registry.npmjs.org/parse5/-/parse5-2.2.1.tgz",
-      "dev": true
+      "version": "3.0.1",
+      "from": "parse5@3.0.1",
+      "resolved": "https://registry.npmjs.org/parse5/-/parse5-3.0.1.tgz",
+      "dev": true,
+      "dependencies": {
+        "@types/node": {
+          "version": "6.0.63",
+          "from": "@types/node@>=6.0.46 <7.0.0",
+          "resolved": "https://registry.npmjs.org/@types/node/-/node-6.0.63.tgz",
+          "dev": true
+        }
+      }
     },
     "parsejson": {
       "version": "0.0.1",

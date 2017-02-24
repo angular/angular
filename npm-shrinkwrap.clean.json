@@ -5567,8 +5567,14 @@
       "dev": true
     },
     "parse5": {
-      "version": "2.2.1",
-      "dev": true
+      "version": "3.0.1",
+      "dev": true,
+      "dependencies": {
+        "@types/node": {
+          "version": "6.0.63",
+          "dev": true
+        }
+      }
     },
     "parsejson": {
       "version": "0.0.1",

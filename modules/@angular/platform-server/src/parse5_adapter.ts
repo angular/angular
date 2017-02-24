@@ -79,6 +79,7 @@ export class Parse5DomAdapter extends DomAdapter {
   get attrToPropMap() { return _attrToPropMap; }
 
   querySelector(el: any, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
+
   querySelectorAll(el: any, selector: string): any[] {
     const res: any[] = [];
     const _recursive = (result: any, node: any, selector: any, matcher: any) => {
@@ -372,7 +373,8 @@ export class Parse5DomAdapter extends DomAdapter {
   classList(element: any): string[] {
     let classAttrValue: any = null;
     const attributes = element.attribs;
-    if (attributes && attributes.hasOwnProperty('class')) {
+
+    if (attributes && attributes['class'] != null) {
       classAttrValue = attributes['class'];
     }
     return classAttrValue ? classAttrValue.trim().split(/\s+/g) : [];
@@ -404,7 +406,7 @@ export class Parse5DomAdapter extends DomAdapter {
   _readStyleAttribute(element: any) {
     const styleMap = {};
     const attributes = element.attribs;
-    if (attributes && attributes.hasOwnProperty('style')) {
+    if (attributes && attributes['style'] != null) {
       const styleAttrValue = attributes['style'];
       const styleList = styleAttrValue.split(/;+/g);
       for (let i = 0; i < styleList.length; i++) {
@@ -448,13 +450,11 @@ export class Parse5DomAdapter extends DomAdapter {
     return res;
   }
   hasAttribute(element: any, attribute: string): boolean {
-    return element.attribs && element.attribs.hasOwnProperty(attribute);
+    return element.attribs && element.attribs[attribute] != null;
   }
   hasAttributeNS(element: any, ns: string, attribute: string): boolean { throw 'not implemented'; }
   getAttribute(element: any, attribute: string): string {
-    return element.attribs && element.attribs.hasOwnProperty(attribute) ?
-        element.attribs[attribute] :
-        null;
+    return this.hasAttribute(element, attribute) ? element.attribs[attribute] : null;
   }
   getAttributeNS(element: any, ns: string, attribute: string): string { throw 'not implemented'; }
   setAttribute(element: any, attribute: string, value: string) {
