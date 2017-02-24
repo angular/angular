@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {FormErrorExamples as Examples} from './error_examples';
 
 export class ReactiveErrors {
-  static controlParentException(): void {
+  static controlParentException(): never {
     throw new Error(
         `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
        directive and pass it an existing FormGroup instance (you can create one in your class).
@@ -20,7 +19,7 @@ export class ReactiveErrors {
       ${Examples.formControlName}`);
   }
 
-  static ngModelGroupException(): void {
+  static ngModelGroupException(): never {
     throw new Error(
         `formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
        that also have a "form" prefix: formGroupName, formArrayName, or formGroup.
@@ -33,7 +32,8 @@ export class ReactiveErrors {
 
         ${Examples.ngModelGroup}`);
   }
-  static missingFormException(): void {
+
+  static missingFormException(): never {
     throw new Error(`formGroup expects a FormGroup instance. Please pass one in.
 
        Example:
@@ -41,7 +41,11 @@ export class ReactiveErrors {
        ${Examples.formControlName}`);
   }
 
-  static groupParentException(): void {
+  static expectFormGroupException(received: string): never {
+    throw new Error(`formGroup expects a FormGroup instance, but received ${received}.`);
+  }
+
+  static groupParentException(): never {
     throw new Error(
         `formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
@@ -51,7 +55,7 @@ export class ReactiveErrors {
       ${Examples.formGroupName}`);
   }
 
-  static arrayParentException(): void {
+  static arrayParentException(): never {
     throw new Error(
         `formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
        directive and pass it an existing FormGroup instance (you can create one in your class).
