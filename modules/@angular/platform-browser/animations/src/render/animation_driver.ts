@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer, NoOpAnimationPlayer} from '@angular/animations';
+import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
 
 
 
 /**
  * @experimental
  */
-export class NoOpAnimationDriver implements AnimationDriver {
+export class NoopAnimationDriver implements AnimationDriver {
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
       easing: string, previousPlayers: any[] = []): AnimationPlayer {
-    return new NoOpAnimationPlayer();
+    return new NoopAnimationPlayer();
   }
 }
 
@@ -25,7 +25,7 @@ export class NoOpAnimationDriver implements AnimationDriver {
  * @experimental
  */
 export abstract class AnimationDriver {
-  static NOOP: AnimationDriver = new NoOpAnimationDriver();
+  static NOOP: AnimationDriver = new NoopAnimationDriver();
   abstract animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
       easing: string, previousPlayers?: any[]): any;

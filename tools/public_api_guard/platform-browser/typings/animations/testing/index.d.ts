@@ -7,7 +7,7 @@ export declare class MockAnimationDriver implements AnimationDriver {
 }
 
 /** @experimental */
-export declare class MockAnimationPlayer extends NoOpAnimationPlayer {
+export declare class MockAnimationPlayer extends NoopAnimationPlayer {
     delay: number;
     duration: number;
     easing: string;

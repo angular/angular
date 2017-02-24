@@ -31,7 +31,7 @@ export abstract class AnimationPlayer {
 /**
  * @experimental Animation support is experimental.
  */
-export class NoOpAnimationPlayer implements AnimationPlayer {
+export class NoopAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
   private _onDestroyFns: Function[] = [];
