@@ -427,6 +427,8 @@ class DebugRendererFactoryV2 implements RendererFactoryV2 {
 class DebugRendererV2 implements RendererV2 {
   constructor(private delegate: RendererV2) {}
 
+  get data() { return this.delegate.data; }
+
   destroyNode(node: any) {
     removeDebugNodeFromIndex(getDebugNode(node));
     if (this.delegate.destroyNode) {
