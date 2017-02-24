@@ -1,21 +1,21 @@
 /** @stable */
-export declare abstract class AfterContentChecked {
-    abstract ngAfterContentChecked(): void;
+export interface AfterContentChecked {
+    ngAfterContentChecked(): void;
 }
 
 /** @stable */
-export declare abstract class AfterContentInit {
-    abstract ngAfterContentInit(): void;
+export interface AfterContentInit {
+    ngAfterContentInit(): void;
 }
 
 /** @stable */
-export declare abstract class AfterViewChecked {
-    abstract ngAfterViewChecked(): void;
+export interface AfterViewChecked {
+    ngAfterViewChecked(): void;
 }
 
 /** @stable */
-export declare abstract class AfterViewInit {
-    abstract ngAfterViewInit(): void;
+export interface AfterViewInit {
+    ngAfterViewInit(): void;
 }
 
 /** @experimental */
@@ -385,8 +385,8 @@ export interface DirectiveDecorator {
 }
 
 /** @stable */
-export declare abstract class DoCheck {
-    abstract ngDoCheck(): void;
+export interface DoCheck {
+    ngDoCheck(): void;
 }
 
 /** @stable */
@@ -678,18 +678,18 @@ export declare class NgZone {
 export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 /** @stable */
-export declare abstract class OnChanges {
-    abstract ngOnChanges(changes: SimpleChanges): void;
+export interface OnChanges {
+    ngOnChanges(changes: SimpleChanges): void;
 }
 
 /** @stable */
-export declare abstract class OnDestroy {
-    abstract ngOnDestroy(): void;
+export interface OnDestroy {
+    ngOnDestroy(): void;
 }
 
 /** @stable */
-export declare abstract class OnInit {
-    abstract ngOnInit(): void;
+export interface OnInit {
+    ngOnInit(): void;
 }
 
 /** @deprecated */
