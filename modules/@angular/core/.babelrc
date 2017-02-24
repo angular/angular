@@ -8,6 +8,7 @@
     },
     "exactGlobals": true
   }]],
-  "moduleId": "@angular/core"
+  "moduleId": "@angular/core",
+  "compact": false
 }
 
