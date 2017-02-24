@@ -8,7 +8,7 @@
 import {AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
 
 export abstract class AnimationEngine {
-  abstract registerTrigger(trigger: AnimationTriggerMetadata): void;
+  abstract registerTrigger(trigger: AnimationTriggerMetadata, name?: string): void;
   abstract onInsert(element: any, domFn: () => any): void;
   abstract onRemove(element: any, domFn: () => any): void;
   abstract setProperty(element: any, property: string, value: any): void;

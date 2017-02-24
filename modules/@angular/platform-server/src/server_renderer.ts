@@ -306,6 +306,8 @@ export class ServerRendererFactoryV2 implements RendererFactoryV2 {
 }
 
 class DefaultServerRendererV2 implements RendererV2 {
+  data: {[key: string]: any} = Object.create(null);
+
   constructor(
       private document: any, private ngZone: NgZone, private schema: DomElementSchemaRegistry) {}
 

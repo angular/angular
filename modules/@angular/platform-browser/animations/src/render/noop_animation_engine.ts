@@ -34,7 +34,7 @@ export class NoopAnimationEngine extends AnimationEngine {
   private _onDoneFns: (() => any)[] = [];
   private _triggerStyles: {[triggerName: string]: {[stateName: string]: ɵStyleData}} = {};
 
-  registerTrigger(trigger: AnimationTriggerMetadata): void {
+  registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
     const stateMap: {[stateName: string]: ɵStyleData} = {};
     trigger.definitions.forEach(def => {
       if (def.type === AnimationMetadataType.State) {
@@ -42,7 +42,8 @@ export class NoopAnimationEngine extends AnimationEngine {
         stateMap[stateDef.name] = normalizeStyles(stateDef.styles.styles);
       }
     });
-    this._triggerStyles[trigger.name] = stateMap;
+    name = name || trigger.name;
+    this._triggerStyles[name] = stateMap;
   }
 
   onInsert(element: any, domFn: () => any): void { domFn(); }
