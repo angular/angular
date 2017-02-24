@@ -18,15 +18,19 @@ export class AnimationRendererFactory implements RendererFactoryV2 {
 
   createRenderer(hostElement: any, type: RendererTypeV2): RendererV2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
-    if (!hostElement || !type) return delegate;
+    if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
 
-    let animationRenderer = type.data['__animationRenderer__'] as any as AnimationRenderer;
-    if (animationRenderer && delegate == animationRenderer.delegate) {
-      return animationRenderer;
-    }
     const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
-    animationRenderer = (type.data as any)['__animationRenderer__'] =
-        new AnimationRenderer(delegate, this._engine, this._zone, animationTriggers);
+    if (!type.data['__animationsRegistered__']) {
+      type.data['__animationsRegistered__'] = true;
+      animationTriggers.forEach(trigger => this._engine.registerTrigger(trigger));
+    }
+
+    let animationRenderer = delegate.data['animationRenderer'];
+    if (!animationRenderer) {
+      animationRenderer = new AnimationRenderer(delegate, this._engine, this._zone);
+      delegate.data['animationRenderer'] = animationRenderer;
+    }
     return animationRenderer;
   }
 }
@@ -36,13 +40,11 @@ export class AnimationRenderer implements RendererV2 {
   private _flushPromise: Promise<any> = null;
 
   constructor(
-      public delegate: RendererV2, private _engine: AnimationEngine, private _zone: NgZone,
-      _triggers: AnimationTriggerMetadata[] = null) {
+      public delegate: RendererV2, private _engine: AnimationEngine, private _zone: NgZone) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode(n) : null;
-    if (_triggers) {
-      _triggers.forEach(trigger => _engine.registerTrigger(trigger));
-    }
   }
+
+  get data() { return this.delegate.data; }
 
   destroy(): void { this.delegate.destroy(); }
 

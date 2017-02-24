@@ -386,6 +386,8 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
 
 
 export class WebWorkerRendererV2 implements RendererV2 {
+  data: {[key: string]: any} = Object.create(null);
+
   constructor(private _rendererFactory: WebWorkerRendererFactoryV2) {}
 
   private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);

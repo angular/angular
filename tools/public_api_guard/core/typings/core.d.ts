@@ -834,7 +834,7 @@ export declare abstract class RendererFactoryV2 {
 /** @experimental */
 export interface RendererTypeV2 {
     data: {
-        [kind: string]: any[];
+        [kind: string]: any;
     };
     encapsulation: ViewEncapsulation;
     id: string;
@@ -843,6 +843,9 @@ export interface RendererTypeV2 {
 
 /** @experimental */
 export declare abstract class RendererV2 {
+    readonly abstract data: {
+        [key: string]: any;
+    };
     destroyNode: (node: any) => void | null;
     abstract addClass(el: any, name: string): void;
     abstract appendChild(parent: any, newChild: any): void;
