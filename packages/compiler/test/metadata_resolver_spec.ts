@@ -162,7 +162,7 @@ export function main() {
          expect(
              () => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedComponent, true))
              .toThrowError(
-                 `Unexpected directive 'ComponentWithoutModuleId' imported by the module 'ModuleWithImportedComponent'`);
+                 `Unexpected directive 'ComponentWithoutModuleId' imported by the module 'ModuleWithImportedComponent'. Please add a @NgModule annotation.`);
        }));
 
     it('should throw with descriptive error message when a pipe is passed to imports',
@@ -175,7 +175,7 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedPipe, true))
              .toThrowError(
-                 `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'`);
+                 `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'. Please add a @NgModule annotation.`);
        }));
 
     it('should throw with descriptive error message when a module is passed to declarations',
@@ -188,7 +188,29 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithDeclaredModule, true))
              .toThrowError(
-                 `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'`);
+                 `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+       }));
+
+    it('should throw with descriptive error message when a declared pipe is missing annotation',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         class SomePipe {}
+         @NgModule({declarations: [SomePipe]})
+         class ModuleWithDeclaredModule {
+         }
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithDeclaredModule, true))
+             .toThrowError(
+                 `Unexpected value 'SomePipe' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+       }));
+
+    it('should throw with descriptive error message when an imported module is missing annotation',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         class SomeModule {}
+         @NgModule({imports: [SomeModule]})
+         class ModuleWithImportedModule {
+         }
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedModule, true))
+             .toThrowError(
+                 `Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'. Please add a @NgModule annotation.`);
        }));
 
     it('should throw with descriptive error message when null is passed to declarations',
