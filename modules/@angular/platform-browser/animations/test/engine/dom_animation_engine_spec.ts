@@ -39,12 +39,10 @@ export function main() {
     }
 
     describe('trigger registration', () => {
-      it('should throw an error if the same trigger is registered twice', () => {
+      it('should ignore and not throw an error if the same trigger is registered twice', () => {
         const engine = makeEngine();
         engine.registerTrigger(trigger('trig', []));
-        expect(() => {
-          engine.registerTrigger(trigger('trig', []));
-        }).toThrowError(/The provided animation trigger "trig" has already been registered!/);
+        expect(() => { engine.registerTrigger(trigger('trig', [])); }).not.toThrow();
       });
     });
 
