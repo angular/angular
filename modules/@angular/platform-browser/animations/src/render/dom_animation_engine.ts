@@ -40,7 +40,7 @@ export class DomAnimationEngine {
 
   private _elementTriggerStates = new Map<any, {[triggerName: string]: string}>();
 
-  private _triggers: {[triggerName: string]: AnimationTrigger} = {};
+  private _triggers: {[triggerName: string]: AnimationTrigger} = Object.create(null);
   private _triggerListeners = new Map<any, TriggerListenerTuple[]>();
 
   constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
@@ -58,7 +58,7 @@ export class DomAnimationEngine {
   registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
     name = name || trigger.name;
     if (this._triggers[name]) {
-      throw new Error(`The provided animation trigger "${name}" has already been registered!`);
+      return;
     }
     this._triggers[name] = buildTrigger(name, trigger.definitions);
   }
