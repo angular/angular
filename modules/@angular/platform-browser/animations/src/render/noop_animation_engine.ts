@@ -32,9 +32,14 @@ export class NoopAnimationEngine extends AnimationEngine {
   private _changes: ChangeTuple[] = [];
   private _flaggedRemovals = new Set<any>();
   private _onDoneFns: (() => any)[] = [];
-  private _triggerStyles: {[triggerName: string]: {[stateName: string]: ɵStyleData}} = {};
+  private _triggerStyles: {[triggerName: string]: {[stateName: string]: ɵStyleData}} =
+      Object.create(null);
 
   registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
+    name = name || trigger.name;
+    if (this._triggerStyles[name]) {
+      return;
+    }
     const stateMap: {[stateName: string]: ɵStyleData} = {};
     trigger.definitions.forEach(def => {
       if (def.type === AnimationMetadataType.State) {
@@ -42,7 +47,6 @@ export class NoopAnimationEngine extends AnimationEngine {
         stateMap[stateDef.name] = normalizeStyles(stateDef.styles.styles);
       }
     });
-    name = name || trigger.name;
     this._triggerStyles[name] = stateMap;
   }
 
