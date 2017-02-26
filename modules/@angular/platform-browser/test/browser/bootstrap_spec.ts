@@ -7,7 +7,7 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, BOOTSTRAP_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -342,6 +342,29 @@ export function main() {
          log.clear();
          p.bootstrapModule(SomeModule).then(() => {
            expect(log.result()).toEqual('app_init1; app_init2');
+           async.done();
+         });
+       }));
+
+    it('should bootstrap components provided via BOOTSTRAP_COMPONENTS',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const components = [
+           {type: HelloRootCmp, selector: 'hello-app'},
+           {type: HelloRootCmp, selector: 'hello-app-2'}
+         ];
+         const providers = [{provide: BOOTSTRAP_COMPONENTS, useValue: components}];
+
+         @NgModule({
+           imports: [BrowserModule],
+           declarations: [HelloRootCmp],
+           entryComponents: [HelloRootCmp]
+         })
+         class TestModule {
+         }
+
+         platformBrowserDynamic(providers).bootstrapModule(TestModule).then(() => {
+           expect(el).toHaveText('hello world!');
+           expect(el2).toHaveText('hello world!');
            async.done();
          });
        }));

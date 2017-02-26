@@ -206,7 +206,7 @@ export function main() {
                });
          }));
 
-      it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
+      it('should error if neither `ngDoBootstrap`, nor @NgModule.bootstrap, nor BOOTSTRAP_COMPONENTS was specified',
          async(() => {
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {

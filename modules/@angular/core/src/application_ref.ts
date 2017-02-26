@@ -79,6 +79,21 @@ export class NgProbeToken {
 }
 
 /**
+ * A token which can be used to provide components to bootstrap. Useful when there are multiple
+ * applications on the same page.
+ *
+ * @experimental
+ */
+export const BOOTSTRAP_COMPONENTS =
+    new InjectionToken<BootstrapComponent[]>('Bootstrap Components');
+
+/** @experimental */
+export interface BootstrapComponent {
+  selector: string;
+  type: Type<any>;
+}
+
+/**
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
  *
@@ -331,7 +346,15 @@ export class PlatformRef_ extends PlatformRef {
 
   private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
-    if (moduleRef.bootstrapFactories.length > 0) {
+    const bootstrapComponents: BootstrapComponent[] =
+        moduleRef.injector.get(BOOTSTRAP_COMPONENTS, []);
+    if (bootstrapComponents.length) {
+      bootstrapComponents.forEach((cmp: BootstrapComponent) => {
+        const compFactory = moduleRef.resolveComponentFactory(cmp.type);
+        compFactory.selector = cmp.selector;
+        appRef.bootstrap(compFactory);
+      });
+    } else if (moduleRef.bootstrapFactories.length) {
       moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
