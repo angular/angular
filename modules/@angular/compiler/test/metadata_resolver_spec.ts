@@ -367,6 +367,41 @@ export function main() {
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithComponentInBootstrap)).not.toThrow();
        }));
+
+    it('should include bootstrap components in declarations',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Component({template: ''})
+         class MyComp {
+         }
+
+         @NgModule({bootstrap: [MyComp]})
+         class MyModule {
+         }
+
+         const modMeta = resolver.getNgModuleMetadata(MyModule);
+         expect(modMeta.declaredDirectives.length).toBe(1);
+         expect(modMeta.declaredDirectives[0].reference).toBe(MyComp);
+       }));
+
+    it(`should not include bootstrap cmp in declarations if it's already declared by another module`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Component({template: ''})
+         class MyComp {
+         }
+
+         @NgModule({declarations: [MyComp], exports: [MyComp]})
+         class ModuleA {
+         }
+
+         @NgModule({imports: [ModuleA], bootstrap: [MyComp]})
+         class ModuleB {
+         }
+
+         const modMeta = resolver.getNgModuleMetadata(ModuleB);
+         expect(modMeta.declaredDirectives.length).toBe(0);
+       }));
   });
 
   it('should dedupe declarations in NgModule',

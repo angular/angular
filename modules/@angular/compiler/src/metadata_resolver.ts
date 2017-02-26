@@ -480,8 +480,13 @@ export class CompileMetadataResolver {
     // Note: This will be modified later, so we rely on
     // getting a new instance every time!
     const transitiveModule = this._getTransitiveNgModuleMetadata(importedModules, exportedModules);
-    if (meta.declarations) {
-      flattenAndDedupeArray(meta.declarations).forEach((declaredType) => {
+    if (meta.declarations || meta.bootstrap) {
+      const declarations = flattenArray(meta.declarations);
+      const bootstrapTypes = flattenArray(meta.bootstrap);
+      const validTypes = bootstrapTypes.filter(
+          type => type && this.isDirective(type) && !this._ngModuleOfTypes.has(type));
+      declarations.push(...validTypes);
+      dedupeArray(declarations).forEach((declaredType) => {
         if (!isValidType(declaredType)) {
           this._reportError(
               syntaxError(
