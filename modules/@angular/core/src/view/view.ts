@@ -33,6 +33,7 @@ export function viewDef(
   let viewBindingCount = 0;
   let viewDisposableCount = 0;
   let viewNodeFlags = 0;
+  let viewRootNodeFlags = 0;
   let viewMatchedQueries = 0;
   let currentParent: NodeDef = null;
   let currentElementHasPublicProviders = false;
@@ -52,8 +53,6 @@ export function viewDef(
     node.parent = currentParent;
     node.bindingIndex = viewBindingCount;
     node.outputIndex = viewDisposableCount;
-    node.reverseChildIndex =
-        calculateReverseChildIndex(currentParent, i, node.childCount, nodes.length);
 
     // renderParent needs to account for ng-container!
     let currentRenderParent: NodeDef;
@@ -74,7 +73,6 @@ export function viewDef(
       currentElementHasPublicProviders = false;
       currentElementHasPrivateProviders = false;
     }
-    reverseChildNodes[node.reverseChildIndex] = node;
     validateNode(currentParent, node, nodes.length);
 
     viewNodeFlags |= node.flags;
@@ -84,10 +82,13 @@ export function viewDef(
     }
     if (currentParent) {
       currentParent.childFlags |= node.flags;
+      currentParent.directChildFlags |= node.flags;
       currentParent.childMatchedQueries |= node.matchedQueryIds;
       if (node.element && node.element.template) {
         currentParent.childMatchedQueries |= node.element.template.nodeMatchedQueries;
       }
+    } else {
+      viewRootNodeFlags |= node.flags;
     }
 
     viewBindingCount += node.bindings.length;
@@ -136,55 +137,15 @@ export function viewDef(
       nodes[nodeIndex].element.handleEvent(view, eventName, event);
   return {
     nodeFlags: viewNodeFlags,
+    rootNodeFlags: viewRootNodeFlags,
     nodeMatchedQueries: viewMatchedQueries, flags,
-    nodes: nodes, reverseChildNodes,
+    nodes: nodes,
     updateDirectives: updateDirectives || NOOP,
     updateRenderer: updateRenderer || NOOP,
     handleEvent: handleEvent || NOOP,
     bindingCount: viewBindingCount,
     outputCount: viewDisposableCount, lastRenderRootNode
   };
-}
-
-
-
-function calculateReverseChildIndex(
-    currentParent: NodeDef, i: number, childCount: number, nodeCount: number) {
-  // Notes about reverse child order:
-  // - Every node is directly before its children, in dfs and reverse child order.
-  // - node.childCount contains all children, in dfs and reverse child order.
-  // - In dfs order, every node is before its first child
-  // - In reverse child order, every node is before its last child
-
-  // Algorithm, main idea:
-  // - In reverse child order, the ranges for each child + its transitive children are mirrored
-  //   regarding their position inside of their parent
-
-  // Visualization:
-  // Given the following tree:
-  // Nodes: n0
-  //             n1         n2
-  //                n11 n12    n21 n22
-  // dfs:    0   1   2   3  4   5   6
-  // result: 0   4   6   5  1   3   2
-  //
-  // Example:
-  // Current node = 1
-  // 1) lastChildIndex = 3
-  // 2) lastChildOffsetRelativeToParentInDfsOrder = 2
-  // 3) parentEndIndexInReverseChildOrder = 6
-  // 4) result = 4
-  let lastChildOffsetRelativeToParentInDfsOrder: number;
-  let parentEndIndexInReverseChildOrder: number;
-  if (currentParent) {
-    const lastChildIndex = i + childCount;
-    lastChildOffsetRelativeToParentInDfsOrder = lastChildIndex - currentParent.index - 1;
-    parentEndIndexInReverseChildOrder = currentParent.reverseChildIndex + currentParent.childCount;
-  } else {
-    lastChildOffsetRelativeToParentInDfsOrder = i + childCount;
-    parentEndIndexInReverseChildOrder = nodeCount - 1;
-  }
-  return parentEndIndexInReverseChildOrder - lastChildOffsetRelativeToParentInDfsOrder;
 }
 
 function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {

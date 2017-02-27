@@ -33,11 +33,7 @@ export interface ViewDefinition {
   nodes: NodeDef[];
   /** aggregated NodeFlags for all nodes **/
   nodeFlags: NodeFlags;
-  /**
-   * Order: parents before children, but children in reverse order.
-   * Especially providers are after elements / anchors.
-   */
-  reverseChildNodes: NodeDef[];
+  rootNodeFlags: NodeFlags;
   lastRenderRootNode: NodeDef;
   bindingCount: number;
   outputCount: number;
@@ -83,15 +79,16 @@ export const enum ViewFlags {
 export interface NodeDef {
   flags: NodeFlags;
   index: number;
-  reverseChildIndex: number;
   parent: NodeDef;
   renderParent: NodeDef;
   /** this is checked against NgContentDef.index to find matched nodes */
   ngContentIndex: number;
   /** number of transitive children */
   childCount: number;
-  /** aggregated NodeFlags for all children (does not include self) **/
+  /** aggregated NodeFlags for all transitive children (does not include self) **/
   childFlags: NodeFlags;
+  /** aggregated NodeFlags for all direct children (does not include self) **/
+  directChildFlags: NodeFlags;
 
   bindingIndex: number;
   bindings: BindingDef[];

@@ -38,7 +38,6 @@ function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef 
   return {
     // will bet set by the view definition
     index: undefined,
-    reverseChildIndex: undefined,
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
@@ -46,6 +45,7 @@ function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef 
     // regular values
     flags,
     childFlags: 0,
+    directChildFlags: 0,
     childMatchedQueries: 0,
     matchedQueries: {},
     matchedQueryIds: 0,

@@ -31,7 +31,6 @@ export function anchorDef(
   return {
     // will bet set by the view definition
     index: undefined,
-    reverseChildIndex: undefined,
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
@@ -39,6 +38,7 @@ export function anchorDef(
     // regular values
     flags,
     childFlags: 0,
+    directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: [],
     outputs: [],
@@ -131,7 +131,6 @@ export function elementDef(
   return {
     // will bet set by the view definition
     index: undefined,
-    reverseChildIndex: undefined,
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
@@ -139,6 +138,7 @@ export function elementDef(
     // regular values
     flags,
     childFlags: 0,
+    directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: bindingDefs,
     outputs: outputDefs,

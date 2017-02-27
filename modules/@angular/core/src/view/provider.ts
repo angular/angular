@@ -94,7 +94,6 @@ export function _def(
   return {
     // will bet set by the view definition
     index: undefined,
-    reverseChildIndex: undefined,
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
@@ -102,6 +101,7 @@ export function _def(
     // regular values
     flags,
     childFlags: 0,
+    directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
     ngContentIndex: undefined, childCount, bindings, outputs,
     element: undefined,
@@ -432,25 +432,43 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
   if (!(view.def.nodeFlags & lifecycles)) {
     return;
   }
-  const len = view.def.nodes.length;
-  for (let i = 0; i < len; i++) {
-    // We use the reverse child oreder to call providers of children first.
-    const nodeDef = view.def.reverseChildNodes[i];
-    const nodeIndex = nodeDef.index;
-    if (nodeDef.flags & lifecycles) {
-      // a leaf
-      Services.setCurrentNode(view, nodeIndex);
-      callProviderLifecycles(asProviderData(view, nodeIndex).instance, nodeDef.flags & lifecycles);
-    } else if ((nodeDef.childFlags & lifecycles) === 0) {
-      // a parent with leafs
-      // no child matches one of the lifecycles,
-      // then skip the children
+  const nodes = view.def.nodes;
+  for (let i = 0; i < nodes.length; i++) {
+    const nodeDef = nodes[i];
+    let parent = nodeDef.parent;
+    if (!parent && nodeDef.flags & lifecycles) {
+      // matching root node (e.g. a pipe)
+      callProviderLifecycles(view, i, nodeDef.flags & lifecycles);
+    }
+    if ((nodeDef.childFlags & lifecycles) === 0) {
+      // no child matches one of the lifecycles
       i += nodeDef.childCount;
+    }
+    while (parent && (parent.flags & NodeFlags.TypeElement) &&
+           i === parent.index + parent.childCount) {
+      // last child of an element
+      if (parent.directChildFlags & lifecycles) {
+        callElementProvidersLifecycles(view, parent, lifecycles);
+      }
+      parent = parent.parent;
     }
   }
 }
 
-function callProviderLifecycles(provider: any, lifecycles: NodeFlags) {
+function callElementProvidersLifecycles(view: ViewData, elDef: NodeDef, lifecycles: NodeFlags) {
+  for (let i = elDef.index + 1; i <= elDef.index + elDef.childCount; i++) {
+    const nodeDef = view.def.nodes[i];
+    if (nodeDef.flags & lifecycles) {
+      callProviderLifecycles(view, i, nodeDef.flags & lifecycles);
+    }
+    // only visit direct children
+    i += nodeDef.childCount;
+  }
+}
+
+function callProviderLifecycles(view: ViewData, index: number, lifecycles: NodeFlags) {
+  const provider = asProviderData(view, index).instance;
+  Services.setCurrentNode(view, index);
   if (lifecycles & NodeFlags.AfterContentInit) {
     provider.ngAfterContentInit();
   }
