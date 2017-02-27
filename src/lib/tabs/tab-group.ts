@@ -54,6 +54,7 @@ export type MdTabHeaderPosition = 'above' | 'below';
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   host: {
+    '[class.mat-tab-group]': 'true',
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
     '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
   }
