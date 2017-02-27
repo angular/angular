@@ -8,9 +8,10 @@ import {assertNotMissingOrEmpty} from '../common/utils';
 // Classes
 export class BuildCleaner {
   // Constructor
-  constructor(protected buildsDir: string, protected repoSlug: string, protected githubToken?: string) {
+  constructor(protected buildsDir: string, protected repoSlug: string, protected githubToken: string) {
     assertNotMissingOrEmpty('buildsDir', buildsDir);
     assertNotMissingOrEmpty('repoSlug', repoSlug);
+    assertNotMissingOrEmpty('githubToken', githubToken);
   }
 
   // Methods - Public
