@@ -13,8 +13,8 @@ describe('GithubApi', () => {
 
   describe('constructor()', () => {
 
-    it('should throw if \'repoSlug\' is not defined', () => {
-      expect(() => new GithubApi('', '12345')).toThrowError('Missing required parameter \'repoSlug\'!');
+    it('should throw if \'repoSlug\' is missing or empty', () => {
+      expect(() => new GithubApi('', '12345')).toThrowError('Missing or empty required parameter \'repoSlug\'!');
     });
 
 

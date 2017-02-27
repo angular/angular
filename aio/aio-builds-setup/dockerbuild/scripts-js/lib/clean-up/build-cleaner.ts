@@ -3,16 +3,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {GithubPullRequests} from '../common/github-pull-requests';
+import {assertNotMissingOrEmpty} from '../common/utils';
 
 // Classes
 export class BuildCleaner {
   // Constructor
   constructor(protected buildsDir: string, protected repoSlug: string, protected githubToken?: string) {
-    if (!buildsDir) {
-      throw new Error('Missing required parameter \'buildsDir\'!');
-    } else if (!repoSlug) {
-      throw new Error('Missing required parameter \'repoSlug\'!');
-    }
+    assertNotMissingOrEmpty('buildsDir', buildsDir);
+    assertNotMissingOrEmpty('repoSlug', repoSlug);
   }
 
   // Methods - Public
