@@ -27,7 +27,7 @@ export class GithubApi {
 
     this.requestHeaders = {'User-Agent': `Node/${process.versions.node}`};
     if (githubToken) {
-      this.requestHeaders['Authorization'] = `token ${githubToken}`;
+      this.requestHeaders.Authorization = `token ${githubToken}`;
     }
   }
 
