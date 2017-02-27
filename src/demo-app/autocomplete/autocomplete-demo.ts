@@ -1,5 +1,5 @@
-import {Component, ViewEncapsulation} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {FormControl, NgModel} from '@angular/forms';
 import 'rxjs/add/operator/startWith';
 
 @Component({
@@ -18,6 +18,8 @@ export class AutocompleteDemo {
   tdStates: any[];
 
   tdDisabled = false;
+
+  @ViewChild(NgModel) modelDir: NgModel;
 
   states = [
     {code: 'AL', name: 'Alabama'},

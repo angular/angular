@@ -1,5 +1,4 @@
 import {
-    AfterContentInit,
     Directive,
     ElementRef,
     forwardRef,
@@ -17,7 +16,6 @@ import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
 import {Observable} from 'rxjs/Observable';
 import {MdOptionSelectEvent, MdOption} from '../core/option/option';
-import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
 import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
 import {Dir} from '../core/rtl/dir';
 import {Subscription} from 'rxjs/Subscription';
@@ -66,7 +64,7 @@ export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   },
   providers: [MD_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
-export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAccessor, OnDestroy {
+export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef;
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
@@ -74,8 +72,6 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   /** The subscription to positioning changes in the autocomplete panel. */
   private _panelPositionSubscription: Subscription;
 
-  /** Manages active item in option list based on key events. */
-  private _keyManager: ActiveDescendantKeyManager;
   private _positionStrategy: ConnectedPositionStrategy;
 
   /** Stream of blur events that should close the panel. */
@@ -107,10 +103,6 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
               private _viewContainerRef: ViewContainerRef,
               @Optional() private _dir: Dir, private _zone: NgZone,
               @Optional() @Host() private _inputContainer: MdInputContainer) {}
-
-  ngAfterContentInit() {
-    this._keyManager = new ActiveDescendantKeyManager(this.autocomplete.options).withWrap();
-  }
 
   ngOnDestroy() {
     if (this._panelPositionSubscription) {
@@ -158,7 +150,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     return Observable.merge(
         this.optionSelections,
         this._blurStream.asObservable(),
-        this._keyManager.tabOut
+        this.autocomplete._keyManager.tabOut
     );
   }
 
@@ -169,7 +161,9 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
 
   /** The currently active option, coerced to MdOption type. */
   get activeOption(): MdOption {
-    return this._keyManager.activeItem as MdOption;
+    if (this.autocomplete._keyManager) {
+      return this.autocomplete._keyManager.activeItem as MdOption;
+    }
   }
 
   /**
@@ -208,7 +202,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     if (this.activeOption && event.keyCode === ENTER) {
       this.activeOption._selectViaInteraction();
     } else {
-      this._keyManager.onKeydown(event);
+      this.autocomplete._keyManager.onKeydown(event);
       if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {
         this.openPanel();
         this._scrollToOption();
@@ -262,7 +256,8 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
    * height, so the active option will be just visible at the bottom of the panel.
    */
   private _scrollToOption(): void {
-    const optionOffset = this._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT;
+    const optionOffset =
+        this.autocomplete._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT;
     const newScrollTop =
         Math.max(0, optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT);
     this.autocomplete._setScrollTop(newScrollTop);
@@ -356,7 +351,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
 
   /** Reset active item to null so arrow events will activate the correct options.*/
   private _resetActiveItem(): void {
-    this._keyManager.setActiveItem(null);
+    this.autocomplete._keyManager.setActiveItem(null);
   }
 
   /**

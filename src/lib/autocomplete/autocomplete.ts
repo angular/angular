@@ -1,4 +1,5 @@
 import {
+  AfterContentInit,
   Component,
   ContentChildren,
   ElementRef,
@@ -9,6 +10,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {MdOption} from '../core';
+import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
 
 /**
  * Autocomplete IDs need to be unique across components, so this counter exists outside of
@@ -29,7 +31,10 @@ export type AutocompletePositionY = 'above' | 'below';
     '[class.mat-autocomplete]': 'true'
   }
 })
-export class MdAutocomplete {
+export class MdAutocomplete implements AfterContentInit {
+
+  /** Manages active item in option list based on key events. */
+  _keyManager: ActiveDescendantKeyManager;
 
   /** Whether the autocomplete panel displays above or below its trigger. */
   positionY: AutocompletePositionY = 'below';
@@ -46,6 +51,10 @@ export class MdAutocomplete {
 
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `md-autocomplete-${_uniqueAutocompleteIdCounter++}`;
+
+  ngAfterContentInit() {
+    this._keyManager = new ActiveDescendantKeyManager(this.options).withWrap();
+  }
 
   /**
    * Sets the panel scrollTop. This allows us to manually scroll to display

@@ -13,6 +13,8 @@ import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -24,7 +26,7 @@ describe('MdAutocomplete', () => {
       imports: [
           MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), ReactiveFormsModule
       ],
-      declarations: [SimpleAutocomplete, AutocompleteWithoutForms],
+      declarations: [SimpleAutocomplete, AutocompleteWithoutForms, NgIfAutocomplete],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -859,6 +861,22 @@ describe('MdAutocomplete', () => {
       }).not.toThrowError();
     });
 
+    it('should work when input is wrapped in ngIf', () => {
+      const fixture = TestBed.createComponent(NgIfAutocomplete);
+      fixture.detectChanges();
+
+      const input = fixture.debugElement.query(By.css('input')).nativeElement;
+      dispatchEvent('focus', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(true, `Expected panel state to read open when input is focused.`);
+      expect(overlayContainerElement.textContent)
+          .toContain('One', `Expected panel to display when input is focused.`);
+      expect(overlayContainerElement.textContent)
+          .toContain('Two', `Expected panel to display when input is focused.`);
+    });
+
   });
 });
 
@@ -917,6 +935,35 @@ class SimpleAutocomplete implements OnDestroy {
     this.valueSub.unsubscribe();
   }
 
+}
+
+@Component({
+  template: `
+    <md-input-container *ngIf="isVisible">
+      <input mdInput placeholder="Choose" [mdAutocomplete]="auto" [formControl]="optionCtrl">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+         {{option}}
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class NgIfAutocomplete {
+  optionCtrl = new FormControl();
+  filteredOptions: Observable<any>;
+  isVisible = true;
+
+  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  options = ['One', 'Two', 'Three'];
+
+  constructor() {
+    this.filteredOptions = this.optionCtrl.valueChanges.startWith(null).map((val) => {
+      return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
+                 : this.options.slice();
+    });
+  }
 }
 
 
