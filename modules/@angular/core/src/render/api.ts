@@ -43,6 +43,8 @@ export interface DirectRenderer {
   insertBefore(node: any, refNode: any): void;
   nextSibling(node: any): any;
   parentElement(node: any): any;
+  querySelector(selector: string): any;
+  childNodes(node: any): any;
 }
 
 /**
