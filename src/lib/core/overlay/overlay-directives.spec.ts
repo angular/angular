@@ -5,11 +5,13 @@ import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {ConnectedOverlayPositionChange} from './position/connected-position';
+import {Dir} from '../rtl/dir';
 
 
 describe('Overlay directives', () => {
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
+  let dir: {value: string};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -19,6 +21,9 @@ describe('Overlay directives', () => {
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           return {getContainerElement: () => overlayContainerElement};
+        }},
+        {provide: Dir, useFactory: () => {
+          return dir = { value: 'ltr' };
         }}
       ],
     });
@@ -74,6 +79,23 @@ describe('Overlay directives', () => {
 
     let positions = strategy.positions;
     expect(positions.length).toBeGreaterThan(0);
+  });
+
+  it('should set and update the `dir` attribute', () => {
+    dir.value = 'rtl';
+    fixture.componentInstance.isOpen = true;
+    fixture.detectChanges();
+
+    expect(getPaneElement().getAttribute('dir')).toBe('rtl');
+
+    fixture.componentInstance.isOpen = false;
+    fixture.detectChanges();
+
+    dir.value = 'ltr';
+    fixture.componentInstance.isOpen = true;
+    fixture.detectChanges();
+
+    expect(getPaneElement().getAttribute('dir')).toBe('ltr');
   });
 
   describe('inputs', () => {
