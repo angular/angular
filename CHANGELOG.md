@@ -60,7 +60,7 @@ The following is a list of known issues that will be fixed in the next rcs.
 - legacy UMD bundles don't have correct RxJS mappings when running in ES5 mode without a module system
 
 
-## Installing RC.0
+## Installing RC.1
 We have two main ways to update. If you have an existing project, you should be able to run:
 
 `npm install @angular/{common,compiler,compiler-cli,core,forms,http,platform-browser,platform-browser-dynamic,platform-server,router,animations}@next --save`
