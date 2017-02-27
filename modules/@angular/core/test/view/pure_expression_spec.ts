@@ -33,7 +33,7 @@ export function main() {
     describe('pure arrays', () => {
 
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should support ${ArgumentType[inlineDynamic]} bindings`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           let values: any[];
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -70,7 +70,7 @@ export function main() {
 
     describe('pure objects', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should support ${ArgumentType[inlineDynamic]} bindings`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           let values: any[];
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
@@ -106,7 +106,7 @@ export function main() {
 
     describe('pure pipes', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should support ${ArgumentType[inlineDynamic]} bindings`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           class SomePipe implements PipeTransform {
             transform(v1: any, v2: any) { return [v1 + 10, v2 + 20]; }
           }

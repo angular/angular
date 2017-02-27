@@ -12,7 +12,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 
 import {createTemplateRef, createViewContainerRef} from './refs';
-import {NodeDef, NodeFlags, NodeType, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
+import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
 import {declaredViewContainer, filterQueryId, isEmbeddedView, viewParentEl} from './util';
 
 export function queryDef(
@@ -24,7 +24,6 @@ export function queryDef(
   }
 
   return {
-    type: NodeType.Query,
     // will bet set by the view definition
     index: undefined,
     reverseChildIndex: undefined,
@@ -46,7 +45,6 @@ export function queryDef(
     element: undefined,
     provider: undefined,
     text: undefined,
-    pureExpression: undefined,
     query: {id, filterId: filterQueryId(id), bindings: bindingDefs},
     ngContent: undefined
   };
@@ -65,14 +63,14 @@ export function dirtyParentQueries(view: ViewData) {
     const end = tplDef.index + tplDef.childCount;
     for (let i = 0; i <= end; i++) {
       const nodeDef = view.def.nodes[i];
-      if ((nodeDef.flags & NodeFlags.HasContentQuery) &&
-          (nodeDef.flags & NodeFlags.HasDynamicQuery) &&
+      if ((nodeDef.flags & NodeFlags.TypeContentQuery) &&
+          (nodeDef.flags & NodeFlags.DynamicQuery) &&
           (nodeDef.query.filterId & queryIds) === nodeDef.query.filterId) {
         asQueryList(view, i).setDirty();
       }
-      if ((nodeDef.type === NodeType.Element && i + nodeDef.childCount < tplDef.index) ||
-          !(nodeDef.childFlags & NodeFlags.HasContentQuery) ||
-          !(nodeDef.childFlags & NodeFlags.HasDynamicQuery)) {
+      if ((nodeDef.flags & NodeFlags.TypeElement && i + nodeDef.childCount < tplDef.index) ||
+          !(nodeDef.childFlags & NodeFlags.TypeContentQuery) ||
+          !(nodeDef.childFlags & NodeFlags.DynamicQuery)) {
         // skip elements that don't contain the template element or no query.
         i += nodeDef.childCount;
       }
@@ -80,10 +78,10 @@ export function dirtyParentQueries(view: ViewData) {
   }
 
   // view queries
-  if (view.def.nodeFlags & NodeFlags.HasViewQuery) {
+  if (view.def.nodeFlags & NodeFlags.TypeViewQuery) {
     for (let i = 0; i < view.def.nodes.length; i++) {
       const nodeDef = view.def.nodes[i];
-      if ((nodeDef.flags & NodeFlags.HasViewQuery) && (nodeDef.flags & NodeFlags.HasDynamicQuery)) {
+      if ((nodeDef.flags & NodeFlags.TypeViewQuery) && (nodeDef.flags & NodeFlags.DynamicQuery)) {
         asQueryList(view, i).setDirty();
       }
       // only visit the root nodes
@@ -99,12 +97,12 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
   }
   let directiveInstance: any;
   let newValues: any[];
-  if (nodeDef.flags & NodeFlags.HasContentQuery) {
+  if (nodeDef.flags & NodeFlags.TypeContentQuery) {
     const elementDef = nodeDef.parent.parent;
     newValues = calcQueryValues(
         view, elementDef.index, elementDef.index + elementDef.childCount, nodeDef.query, []);
     directiveInstance = asProviderData(view, nodeDef.parent.index).instance;
-  } else if (nodeDef.flags & NodeFlags.HasViewQuery) {
+  } else if (nodeDef.flags & NodeFlags.TypeViewQuery) {
     newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query, []);
     directiveInstance = view.component;
   }
@@ -139,7 +137,7 @@ function calcQueryValues(
     if (valueType != null) {
       values.push(getQueryValue(view, nodeDef, valueType));
     }
-    if (nodeDef.type === NodeType.Element && nodeDef.element.template &&
+    if (nodeDef.flags & NodeFlags.TypeElement && nodeDef.element.template &&
         (nodeDef.element.template.nodeMatchedQueries & queryDef.filterId) === queryDef.filterId) {
       // check embedded views that were attached at the place of their template.
       const elementData = asElementData(view, i);

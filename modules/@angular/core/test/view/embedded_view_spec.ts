@@ -40,7 +40,7 @@ export function main() {
           compViewDef([
             elementDef(NodeFlags.None, null, null, 1, 'div'),
             anchorDef(
-                NodeFlags.HasEmbeddedViews, null, null, 0, null,
+                NodeFlags.EmbeddedViews, null, null, 0, null,
                 embeddedViewDef([elementDef(NodeFlags.None, null, null, 0, 'span')])),
           ]),
           parentContext);
@@ -54,7 +54,7 @@ export function main() {
     it('should attach and detach embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 2, 'div'),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
         anchorDef(NodeFlags.None, null, null, 0, null, embeddedViewDef([
@@ -84,7 +84,7 @@ export function main() {
     it('should move embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 2, 'div'),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
         anchorDef(NodeFlags.None, null, null, 0, null, embeddedViewDef([
@@ -111,7 +111,7 @@ export function main() {
 
     it('should include embedded views in root nodes', () => {
       const {view: parentView} = createAndGetRootNodes(compViewDef([
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
         elementDef(NodeFlags.None, null, null, 0, 'span', [['name', 'after']])
@@ -136,7 +136,7 @@ export function main() {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 1, 'div'),
         anchorDef(
-            NodeFlags.HasEmbeddedViews, null, null, 0, null,
+            NodeFlags.EmbeddedViews, null, null, 0, null,
             embeddedViewDef(
                 [elementDef(
                     NodeFlags.None, null, null, 0, 'span', null,
@@ -172,7 +172,7 @@ export function main() {
 
       const {view: parentView} = createAndGetRootNodes(compViewDef([
         elementDef(NodeFlags.None, null, null, 1, 'div'),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                     elementDef(NodeFlags.None, null, null, 1, 'span'),
                     directiveDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
                   ]))

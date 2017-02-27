@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingType as BindingType, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵProviderType as ProviderType, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingType as BindingType, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
@@ -136,11 +136,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         // Note: queries start with id 1 so we can use the number in a Bloom filter!
         const queryId = queryIndex + 1;
         const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
-        let flags = NodeFlags.HasViewQuery;
+        let flags = NodeFlags.TypeViewQuery;
         if (queryIds.staticQueryIds.has(queryId)) {
-          flags |= NodeFlags.HasStaticQuery;
+          flags |= NodeFlags.StaticQuery;
         } else {
-          flags |= NodeFlags.HasDynamicQuery;
+          flags |= NodeFlags.DynamicQuery;
         }
         this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
           o.literal(flags), o.literal(queryId),
@@ -359,7 +359,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
   } {
     let flags = NodeFlags.None;
     if (ast.hasViewContainer) {
-      flags |= NodeFlags.HasEmbeddedViews;
+      flags |= NodeFlags.EmbeddedViews;
     }
     const usedEvents = new Map<string, [string, string]>();
     ast.outputs.forEach((event) => {
@@ -450,14 +450,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     this.nodeDefs.push(null);
 
     dirAst.directive.queries.forEach((query, queryIndex) => {
-      let flags = NodeFlags.HasContentQuery;
+      let flags = NodeFlags.TypeContentQuery;
       const queryId = dirAst.contentQueryStartId + queryIndex;
       // Note: We only make queries static that query for a single item.
       // This is because of backwards compatibility with the old view compiler...
       if (queryIds.staticQueryIds.has(queryId) && query.first) {
-        flags |= NodeFlags.HasStaticQuery;
+        flags |= NodeFlags.StaticQuery;
       } else {
-        flags |= NodeFlags.HasDynamicQuery;
+        flags |= NodeFlags.DynamicQuery;
       }
       const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodeDefs.push(() => o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
@@ -472,7 +472,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     // I.e. we only allow queries as children of directives nodes.
     const childCount = this.nodeDefs.length - nodeIndex - 1;
 
-    let {flags, queryMatchExprs, providerExpr, providerType, depsExpr} =
+    let {flags, queryMatchExprs, providerExpr, depsExpr} =
         this._visitProviderOrDirective(providerAst, queryMatches);
 
     refs.forEach((ref) => {
@@ -484,7 +484,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     });
 
     if (dirAst.directive.isComponent) {
-      flags |= NodeFlags.IsComponent;
+      flags |= NodeFlags.Component;
     }
 
     const inputDefs = dirAst.inputs.map((inputAst, inputIndex) => {
@@ -543,16 +543,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     // reserve the space in the nodeDefs array so we can add children
     this.nodeDefs.push(null);
 
-    const {flags, queryMatchExprs, providerExpr, providerType, depsExpr} =
+    const {flags, queryMatchExprs, providerExpr, depsExpr} =
         this._visitProviderOrDirective(providerAst, queryMatches);
 
     // providerDef(
-    //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], type: ProviderType, token:
-    //   any,
+    //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], token:any,
     //   value: any, deps: ([DepFlags, any] | any)[]): NodeDef;
     const nodeDef = () => o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
       o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
-      o.literal(providerType), tokenExpr(providerAst.token), providerExpr, depsExpr
+      tokenExpr(providerAst.token), providerExpr, depsExpr
     ]);
     this.nodeDefs[nodeIndex] = nodeDef;
   }
@@ -561,7 +560,6 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     flags: NodeFlags,
     queryMatchExprs: o.Expression[],
     providerExpr: o.Expression,
-    providerType: ProviderType,
     depsExpr: o.Expression
   } {
     let flags = NodeFlags.None;
@@ -587,8 +585,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
             o.literalArr([o.literal(match.queryId), o.literal(QueryValueType.Provider)]));
       }
     });
-    const {providerExpr, providerType, depsExpr} = providerDef(providerAst);
-    return {flags, queryMatchExprs, providerExpr, providerType, depsExpr};
+    const {providerExpr, depsExpr, flags: providerType} = providerDef(providerAst);
+    return {flags: flags | providerType, queryMatchExprs, providerExpr, depsExpr};
   }
 
   getLocal(name: string): o.Expression {
@@ -768,13 +766,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
 }
 
 function providerDef(providerAst: ProviderAst):
-    {providerExpr: o.Expression, providerType: ProviderType, depsExpr: o.Expression} {
-  return providerAst.multiProvider ? multiProviderDef(providerAst.providers) :
-                                     singleProviderDef(providerAst.providers[0]);
+    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
+  return providerAst.multiProvider ?
+      multiProviderDef(providerAst.providers) :
+      singleProviderDef(providerAst.providerType, providerAst.providers[0]);
 }
 
 function multiProviderDef(providers: CompileProviderMetadata[]):
-    {providerExpr: o.Expression, providerType: ProviderType, depsExpr: o.Expression} {
+    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
   const allDepDefs: o.Expression[] = [];
   const allParams: o.FnParam[] = [];
   const exprs = providers.map((provider, providerIndex) => {
@@ -795,7 +794,7 @@ function multiProviderDef(providers: CompileProviderMetadata[]):
   });
   const providerExpr =
       o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
-  return {providerExpr, providerType: ProviderType.Factory, depsExpr: o.literalArr(allDepDefs)};
+  return {providerExpr, flags: NodeFlags.TypeFactoryProvider, depsExpr: o.literalArr(allDepDefs)};
 
   function convertDeps(providerIndex: number, deps: CompileDiDependencyMetadata[]) {
     return deps.map((dep, depIndex) => {
@@ -807,30 +806,36 @@ function multiProviderDef(providers: CompileProviderMetadata[]):
   }
 }
 
-function singleProviderDef(providerMeta: CompileProviderMetadata):
-    {providerExpr: o.Expression, providerType: ProviderType, depsExpr: o.Expression} {
+function singleProviderDef(providerType: ProviderAstType, providerMeta: CompileProviderMetadata):
+    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
   let providerExpr: o.Expression;
-  let providerType: ProviderType;
+  let flags: NodeFlags;
   let deps: CompileDiDependencyMetadata[];
-  if (providerMeta.useClass) {
+  if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
     providerExpr = o.importExpr(providerMeta.useClass);
-    providerType = ProviderType.Class;
+    flags = NodeFlags.TypeDirective;
     deps = providerMeta.deps || providerMeta.useClass.diDeps;
-  } else if (providerMeta.useFactory) {
-    providerExpr = o.importExpr(providerMeta.useFactory);
-    providerType = ProviderType.Factory;
-    deps = providerMeta.deps || providerMeta.useFactory.diDeps;
-  } else if (providerMeta.useExisting) {
-    providerExpr = o.NULL_EXPR;
-    providerType = ProviderType.UseExisting;
-    deps = [{token: providerMeta.useExisting}];
   } else {
-    providerExpr = convertValueToOutputAst(providerMeta.useValue);
-    providerType = ProviderType.Value;
-    deps = [];
+    if (providerMeta.useClass) {
+      providerExpr = o.importExpr(providerMeta.useClass);
+      flags = NodeFlags.TypeClassProvider;
+      deps = providerMeta.deps || providerMeta.useClass.diDeps;
+    } else if (providerMeta.useFactory) {
+      providerExpr = o.importExpr(providerMeta.useFactory);
+      flags = NodeFlags.TypeFactoryProvider;
+      deps = providerMeta.deps || providerMeta.useFactory.diDeps;
+    } else if (providerMeta.useExisting) {
+      providerExpr = o.NULL_EXPR;
+      flags = NodeFlags.TypeUseExistingProvider;
+      deps = [{token: providerMeta.useExisting}];
+    } else {
+      providerExpr = convertValueToOutputAst(providerMeta.useValue);
+      flags = NodeFlags.TypeValueProvider;
+      deps = [];
+    }
   }
   const depsExpr = o.literalArr(deps.map(dep => depDef(dep)));
-  return {providerExpr, providerType, depsExpr};
+  return {providerExpr, flags, depsExpr};
 }
 
 function tokenExpr(tokenMeta: CompileTokenMetadata): o.Expression {

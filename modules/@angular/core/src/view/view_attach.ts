@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementData, NodeData, NodeDef, NodeFlags, NodeType, Services, ViewData, asElementData, asProviderData, asTextData} from './types';
+import {ElementData, NodeData, NodeDef, NodeFlags, Services, ViewData, asElementData, asProviderData, asTextData} from './types';
 import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, rootRenderNodes, visitProjectedRenderNodes, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(

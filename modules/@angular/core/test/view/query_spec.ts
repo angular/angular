@@ -45,7 +45,7 @@ export function main() {
       return [
         directiveDef(NodeFlags.None, null, 1, QueryService, []),
         queryDef(
-            NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+            NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
             {'a': QueryBindingType.All})
       ];
     }
@@ -56,11 +56,11 @@ export function main() {
             NodeFlags.None, null, null, 1 + extraChildCount, 'div', null, null, null, null,
             () => compViewDef([
               queryDef(
-                  NodeFlags.HasViewQuery | NodeFlags.HasDynamicQuery, someQueryId,
+                  NodeFlags.TypeViewQuery | NodeFlags.DynamicQuery, someQueryId,
                   {'a': QueryBindingType.All}),
               ...nodes
             ])),
-        directiveDef(NodeFlags.IsComponent, null, 0, QueryService, [], null, null, ),
+        directiveDef(NodeFlags.Component, null, 0, QueryService, [], null, null, ),
       ];
     }
 
@@ -148,7 +148,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 5, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 2, null, embeddedViewDef([
+          anchorDef(NodeFlags.EmbeddedViews, null, null, 2, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -174,13 +174,13 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+          anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0),
+          anchorDef(NodeFlags.EmbeddedViews, null, null, 0),
         ]));
 
         const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
@@ -203,7 +203,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+          anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -232,7 +232,7 @@ export function main() {
           ...compViewQueryProviders(
               0,
               [
-                anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+                anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                             elementDef(NodeFlags.None, null, null, 1, 'div'),
                             aServiceProvider(),
                           ])),
@@ -268,7 +268,7 @@ export function main() {
           elementDef(NodeFlags.None, null, null, 4, 'div'),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.All}),
           aServiceProvider(),
           aServiceProvider(),
@@ -293,7 +293,7 @@ export function main() {
           elementDef(NodeFlags.None, null, null, 4, 'div'),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.First}),
           aServiceProvider(),
           aServiceProvider(),
@@ -316,7 +316,7 @@ export function main() {
           elementDef(NodeFlags.None, [[someQueryId, QueryValueType.ElementRef]], null, 2, 'div'),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.First}),
         ]));
 
@@ -337,7 +337,7 @@ export function main() {
               embeddedViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.First}),
         ]));
 
@@ -356,7 +356,7 @@ export function main() {
           anchorDef(NodeFlags.None, [[someQueryId, QueryValueType.ViewContainerRef]], null, 2),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.First}),
         ]));
 
@@ -372,7 +372,7 @@ export function main() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           ...contentQueryProviders(),
-          anchorDef(NodeFlags.HasEmbeddedViews, null, null, 0, null, embeddedViewDef([
+          anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, embeddedViewDef([
                       elementDef(NodeFlags.None, null, null, 1, 'div'),
                       aServiceProvider(),
                     ])),
@@ -408,7 +408,7 @@ export function main() {
           elementDef(NodeFlags.None, null, null, 3, 'div'),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
-              NodeFlags.HasContentQuery | NodeFlags.HasDynamicQuery, someQueryId,
+              NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,
               {'a': QueryBindingType.All}),
           aServiceProvider(),
         ]));

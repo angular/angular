@@ -73,7 +73,7 @@ export function main() {
 
     describe('change properties', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
@@ -93,15 +93,13 @@ export function main() {
           const el = rootNodes[0];
           expect(getDOM().getProperty(el, 'title')).toBe('v1');
           expect(getDOM().getProperty(el, 'value')).toBe('v2');
-
-          expect(getDOM().getAttribute(el, 'ng-reflect-title')).toBe('v1');
         });
       });
     });
 
     describe('change attributes', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
@@ -126,7 +124,7 @@ export function main() {
 
     describe('change classes', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
@@ -148,7 +146,7 @@ export function main() {
 
     describe('change styles', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(

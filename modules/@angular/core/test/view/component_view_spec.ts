@@ -40,7 +40,7 @@ export function main() {
                 () => compViewDef([
                   elementDef(NodeFlags.None, null, null, 0, 'span'),
                 ])),
-            directiveDef(NodeFlags.IsComponent, null, 0, AComp, []),
+            directiveDef(NodeFlags.Component, null, 0, AComp, []),
           ]));
 
           const compView = asElementData(view, 0).componentView;
@@ -123,7 +123,7 @@ export function main() {
                 elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
               ], null, update
             )),
-            directiveDef(NodeFlags.IsComponent, null, 0, AComp, []),
+            directiveDef(NodeFlags.Component, null, 0, AComp, []),
           ]));
                    const compView = asElementData(view, 0).componentView;
 
@@ -159,7 +159,7 @@ export function main() {
                                elementDef(NodeFlags.None, null, null, 0, 'span'),
                              ],
                              update)),
-                     directiveDef(NodeFlags.IsComponent, null, 0, AComp, [], null, null),
+                     directiveDef(NodeFlags.Component, null, 0, AComp, [], null, null),
                    ]));
 
                    const compView = asElementData(view, 0).componentView;
@@ -201,7 +201,7 @@ export function main() {
                                   ],
                                   update, null, ViewFlags.OnPush);
                             }),
-                        directiveDef(NodeFlags.IsComponent, null, 0, AComp, [], {a: [0, 'a']}),
+                        directiveDef(NodeFlags.Component, null, 0, AComp, [], {a: [0, 'a']}),
                       ],
                       (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 
@@ -251,7 +251,7 @@ export function main() {
                   ],
                   null, update)),
           directiveDef(
-              NodeFlags.IsComponent, null, 0, AComp, [], null, null,
+              NodeFlags.Component, null, 0, AComp, [], null, null,
               ),
         ]));
 
@@ -286,7 +286,7 @@ export function main() {
                     elementDef(NodeFlags.None, null, null, 1, 'span'),
                     directiveDef(NodeFlags.OnDestroy, null, 0, ChildProvider, [])
                   ])),
-              directiveDef(NodeFlags.IsComponent, null, 0, AComp, [], null, null, ),
+              directiveDef(NodeFlags.Component, null, 0, AComp, [], null, null, ),
             ]));
 
             Services.destroyView(view);

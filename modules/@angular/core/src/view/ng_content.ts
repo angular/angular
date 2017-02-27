@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeDef, NodeType, ViewData, asElementData} from './types';
+import {NodeDef, NodeFlags, ViewData, asElementData} from './types';
 import {RenderNodeAction, getParentRenderElement, visitProjectedRenderNodes} from './util';
 
 export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
   return {
-    type: NodeType.NgContent,
     // will bet set by the view definition
     index: undefined,
     reverseChildIndex: undefined,
@@ -20,7 +19,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     bindingIndex: undefined,
     outputIndex: undefined,
     // regular values
-    flags: 0,
+    flags: NodeFlags.TypeNgContent,
     childFlags: 0,
     childMatchedQueries: 0,
     matchedQueries: {},
@@ -32,7 +31,6 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     element: undefined,
     provider: undefined,
     text: undefined,
-    pureExpression: undefined,
     query: undefined,
     ngContent: {index}
   };
