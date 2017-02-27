@@ -42,6 +42,12 @@ export class ViewCompilerNext extends ViewCompiler {
 
     const statements: o.Statement[] = [];
 
+    const customRenderData: o.LiteralMapEntry[] = [];
+    if (component.template.animations && component.template.animations.length) {
+      customRenderData.push(new o.LiteralMapEntry(
+          'animation', convertValueToOutputAst(component.template.animations), true));
+    }
+
     const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
     statements.push(
         renderComponentVar
@@ -49,9 +55,7 @@ export class ViewCompilerNext extends ViewCompiler {
               new o.LiteralMapExpr([
                 new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
                 new o.LiteralMapEntry('styles', styles),
-                new o.LiteralMapEntry('data', o.literalMap([
-                  ['animation', convertValueToOutputAst(component.template.animations)]
-                ])),
+                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
               ])
             ]))
             .toDeclStmt(
