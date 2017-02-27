@@ -18,6 +18,7 @@ import {
   ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
 } from '@angular/forms';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
@@ -430,7 +431,7 @@ describe('MdSelect', () => {
         .toEqual(false, `Expected the control to start off as untouched.`);
 
       trigger.click();
-      dispatchEvent('blur', trigger);
+      dispatchFakeEvent(trigger, 'blur');
       fixture.detectChanges();
       expect(fixture.componentInstance.control.touched)
         .toEqual(false, `Expected the control to stay untouched when menu opened.`);
@@ -438,7 +439,7 @@ describe('MdSelect', () => {
       const backdrop =
         overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
-      dispatchEvent('blur', trigger);
+      dispatchFakeEvent(trigger, 'blur');
       fixture.detectChanges();
       expect(fixture.componentInstance.control.touched)
         .toEqual(true, `Expected the control to be touched as soon as focus left the select.`);
@@ -1588,20 +1589,6 @@ class FloatPlaceholderSelect {
   @ViewChild(MdSelect) select: MdSelect;
 }
 
-
-/**
- * TODO: Move this to core testing utility until Angular has event faking
- * support.
- *
- * Dispatches an event from an element.
- * @param eventName Name of the event
- * @param element The element from which the event will be dispatched.
- */
-function dispatchEvent(eventName: string, element: HTMLElement): void {
-  let event  = document.createEvent('Event');
-  event.initEvent(eventName, true, true);
-  element.dispatchEvent(event);
-}
 
 class FakeViewportRuler {
   getViewportRect() {

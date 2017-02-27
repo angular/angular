@@ -4,6 +4,10 @@ import {StyleModule} from './index';
 import {By} from '@angular/platform-browser';
 import {TAB} from '../keyboard/keycodes';
 import {FocusOrigin, FocusOriginMonitor, TOUCH_BUFFER_MS} from './focus-origin-monitor';
+import {
+  dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent
+} from '../testing/dispatch-events';
+
 
 describe('FocusOriginMonitor', () => {
   let fixture: ComponentFixture<PlainButton>;
@@ -53,7 +57,7 @@ describe('FocusOriginMonitor', () => {
 
   it('should detect focus via keyboard', async(() => {
     // Simulate focus via keyboard.
-    dispatchKeydownEvent(document, TAB);
+    dispatchKeyboardEvent(document, 'keydown', TAB);
     buttonElement.focus();
     fixture.detectChanges();
 
@@ -72,7 +76,7 @@ describe('FocusOriginMonitor', () => {
 
   it('should detect focus via mouse', async(() => {
     // Simulate focus via mouse.
-    dispatchMousedownEvent(buttonElement);
+    dispatchMouseEvent(buttonElement, 'mousedown');
     buttonElement.focus();
     fixture.detectChanges();
 
@@ -91,7 +95,7 @@ describe('FocusOriginMonitor', () => {
 
   it('should detect focus via touch', async(() => {
     // Simulate focus via touch.
-    dispatchTouchstartEvent(buttonElement);
+    dispatchMouseEvent(buttonElement, 'touchstart');
     buttonElement.focus();
     fixture.detectChanges();
 
@@ -268,7 +272,7 @@ describe('cdkMonitorFocus', () => {
 
     it('should detect focus via keyboard', async(() => {
       // Simulate focus via keyboard.
-      dispatchKeydownEvent(document, TAB);
+      dispatchKeyboardEvent(document, 'keydown', TAB);
       buttonElement.focus();
       fixture.detectChanges();
 
@@ -287,7 +291,7 @@ describe('cdkMonitorFocus', () => {
 
     it('should detect focus via mouse', async(() => {
       // Simulate focus via mouse.
-      dispatchMousedownEvent(buttonElement);
+      dispatchMouseEvent(buttonElement, 'mousedown');
       buttonElement.focus();
       fixture.detectChanges();
 
@@ -306,7 +310,7 @@ describe('cdkMonitorFocus', () => {
 
     it('should detect focus via touch', async(() => {
       // Simulate focus via touch.
-      dispatchTouchstartEvent(buttonElement);
+      dispatchMouseEvent(buttonElement, 'touchstart');
       buttonElement.focus();
       fixture.detectChanges();
 
@@ -476,42 +480,6 @@ class ComplexComponentWithMonitorElementFocus {}
 class ComplexComponentWithMonitorSubtreeFocus {}
 
 
-// TODO(devversion): move helper functions into a global utility file. See #2902
-
-/** Dispatches a mousedown event on the specified element. */
-function dispatchMousedownEvent(element: Node) {
-  let event = document.createEvent('MouseEvent');
-  event.initMouseEvent(
-      'mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-  element.dispatchEvent(event);
-}
-
-/** Dispatches a mousedown event on the specified element. */
-function dispatchTouchstartEvent(element: Node) {
-  let event = document.createEvent('MouseEvent');
-  event.initMouseEvent(
-      'touchstart', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-  element.dispatchEvent(event);
-}
-
-/** Dispatches a keydown event on the specified element. */
-function dispatchKeydownEvent(element: Node, keyCode: number) {
-  let event: any = document.createEvent('KeyboardEvent');
-  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
-      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
-  Object.defineProperty(event, 'keyCode', {
-    get: function() { return keyCode; }
-  });
-  element.dispatchEvent(event);
-}
-
-/** Dispatches a focus event on the specified element. */
-function dispatchFocusEvent(element: Node, type = 'focus') {
-  let event = document.createEvent('Event');
-  event.initEvent(type, true, true);
-  element.dispatchEvent(event);
-}
-
 /**
  * Patches an elements focus and blur methods to properly emit focus events when the browser is
  * blurred.
@@ -524,9 +492,9 @@ function patchElementFocus(element: HTMLElement) {
   let _nativeButtonBlur = element.blur.bind(element);
 
   element.focus = () => {
-    document.hasFocus() ? _nativeButtonFocus() : dispatchFocusEvent(element);
+    document.hasFocus() ? _nativeButtonFocus() : dispatchFakeEvent(element, 'focus');
   };
   element.blur = () => {
-    document.hasFocus() ? _nativeButtonBlur() : dispatchFocusEvent(element, 'blur');
+    document.hasFocus() ? _nativeButtonBlur() : dispatchFakeEvent(element, 'blur');
   };
 }

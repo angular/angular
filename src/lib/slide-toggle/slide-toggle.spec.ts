@@ -4,6 +4,7 @@ import {Component} from '@angular/core';
 import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
 import {FormsModule, NgControl, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {TestGestureConfig} from '../slider/test-gesture-config';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 
 describe('MdSlideToggle', () => {
 
@@ -329,7 +330,7 @@ describe('MdSlideToggle', () => {
     it('should correctly set the slide-toggle to checked on focus', () => {
       expect(slideToggleElement.classList).not.toContain('mat-slide-toggle-focused');
 
-      dispatchFocusChangeEvent('focus', inputElement);
+      dispatchFakeEvent(inputElement, 'focus');
       fixture.detectChanges();
 
       expect(slideToggleElement.classList).toContain('mat-slide-toggle-focused');
@@ -616,17 +617,6 @@ describe('MdSlideToggle', () => {
   });
 });
 
-/**
- * Dispatches a focus change event from an element.
- * @param eventName Name of the event, either 'focus' or 'blur'.
- * @param element The element from which the event will be dispatched.
- */
-function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void {
-  let event  = document.createEvent('Event');
-  event.initEvent(eventName, true, true);
-  element.dispatchEvent(event);
-}
-
 @Component({
   selector: 'slide-toggle-test-app',
   template: `
@@ -693,11 +683,4 @@ class SlideToggleFormsTestApp {
 })
 class SlideToggleWithFormControl {
   formControl = new FormControl();
-}
-
-// TODO(devversion): replace with global utility once pull request #2943 is merged.
-function dispatchFakeEvent(element: HTMLElement, eventName: string): void {
-  let event  = document.createEvent('Event');
-  event.initEvent(eventName, true, true);
-  element.dispatchEvent(event);
 }

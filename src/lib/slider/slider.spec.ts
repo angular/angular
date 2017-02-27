@@ -15,6 +15,7 @@ import {
   HOME,
   LEFT_ARROW
 } from '../core/keyboard/keycodes';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '../core/testing/dispatch-events';
 
 
 describe('MdSlider', () => {
@@ -728,7 +729,7 @@ describe('MdSlider', () => {
     it('should update the model on keydown', () => {
       expect(testComponent.val).toBe(0);
 
-      dispatchKeydownEvent(sliderNativeElement, UP_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', UP_ARROW);
       fixture.detectChanges();
 
       expect(testComponent.val).toBe(1);
@@ -948,14 +949,14 @@ describe('MdSlider', () => {
     });
 
     it('should increment slider by 1 on up arrow pressed', () => {
-      dispatchKeydownEvent(sliderNativeElement, UP_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', UP_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(1);
     });
 
     it('should increment slider by 1 on right arrow pressed', () => {
-      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(1);
@@ -964,7 +965,7 @@ describe('MdSlider', () => {
     it('should decrement slider by 1 on down arrow pressed', () => {
       sliderInstance.value = 100;
 
-      dispatchKeydownEvent(sliderNativeElement, DOWN_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', DOWN_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
@@ -973,14 +974,14 @@ describe('MdSlider', () => {
     it('should decrement slider by 1 on left arrow pressed', () => {
       sliderInstance.value = 100;
 
-      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
     });
 
     it('should increment slider by 10 on page up pressed', () => {
-      dispatchKeydownEvent(sliderNativeElement, PAGE_UP);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', PAGE_UP);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(10);
@@ -989,14 +990,14 @@ describe('MdSlider', () => {
     it('should decrement slider by 10 on page down pressed', () => {
       sliderInstance.value = 100;
 
-      dispatchKeydownEvent(sliderNativeElement, PAGE_DOWN);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', PAGE_DOWN);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(90);
     });
 
     it('should set slider to max on end pressed', () => {
-      dispatchKeydownEvent(sliderNativeElement, END);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', END);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(100);
@@ -1005,7 +1006,7 @@ describe('MdSlider', () => {
     it('should set slider to min on home pressed', () => {
       sliderInstance.value = 100;
 
-      dispatchKeydownEvent(sliderNativeElement, HOME);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', HOME);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(0);
@@ -1066,7 +1067,7 @@ describe('MdSlider', () => {
       testComponent.invert = true;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(1);
@@ -1077,7 +1078,7 @@ describe('MdSlider', () => {
       sliderInstance.value = 100;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
@@ -1088,7 +1089,7 @@ describe('MdSlider', () => {
       sliderInstance.value = 100;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
@@ -1098,7 +1099,7 @@ describe('MdSlider', () => {
       testComponent.dir = 'rtl';
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(1);
@@ -1110,7 +1111,7 @@ describe('MdSlider', () => {
       sliderInstance.value = 100;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
@@ -1121,7 +1122,7 @@ describe('MdSlider', () => {
       testComponent.invert = true;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(1);
@@ -1334,11 +1335,7 @@ function dispatchClickEventSequence(sliderElement: HTMLElement, percentage: numb
   let y = dimensions.top + (dimensions.height * percentage);
 
   dispatchMouseenterEvent(sliderElement);
-
-  let event = document.createEvent('MouseEvent');
-  event.initMouseEvent(
-      'click', true, true, window, 0, x, y, x, y, false, false, false, false, 0, null);
-  sliderElement.dispatchEvent(event);
+  dispatchMouseEvent(sliderElement, 'click', x, y);
 }
 
 /**
@@ -1426,23 +1423,5 @@ function dispatchMouseenterEvent(element: HTMLElement): void {
   let y = dimensions.top;
   let x = dimensions.left;
 
-  let event = document.createEvent('MouseEvent');
-  event.initMouseEvent(
-      'mouseenter', true, true, window, 0, x, y, x, y, false, false, false, false, 0, null);
-  element.dispatchEvent(event);
-}
-
-/**
- * Dispatches a keydown event from an element.
- * @param element The element from which the event will be dispatched.
- * @param keyCode The key code of the key being pressed.
- */
-function dispatchKeydownEvent(element: HTMLElement, keyCode: number): void {
-  let event: any = document.createEvent('KeyboardEvent');
-  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
-      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
-  Object.defineProperty(event, 'keyCode', {
-    get: function() { return keyCode; }
-  });
-  element.dispatchEvent(event);
+  dispatchMouseEvent(element, 'mouseenter', x, y);
 }

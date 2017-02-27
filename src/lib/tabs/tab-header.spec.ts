@@ -10,6 +10,7 @@ import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '../core/keyboard/keycodes';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 
 
 describe('MdTabHeader', () => {
@@ -105,19 +106,21 @@ describe('MdTabHeader', () => {
       fixture.detectChanges();
       expect(appComponent.mdTabHeader.focusIndex).toBe(0);
 
+      let tabListContainer = appComponent.mdTabHeader._tabListContainer.nativeElement;
+
       // Move focus right to 2
-      dispatchKeydownEvent(appComponent.mdTabHeader._tabListContainer.nativeElement, RIGHT_ARROW);
+      dispatchKeyboardEvent(tabListContainer, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
       expect(appComponent.mdTabHeader.focusIndex).toBe(2);
 
       // Select the focused index 2
       expect(appComponent.selectedIndex).toBe(0);
-      dispatchKeydownEvent(appComponent.mdTabHeader._tabListContainer.nativeElement, ENTER);
+      dispatchKeyboardEvent(tabListContainer, 'keydown', ENTER);
       fixture.detectChanges();
       expect(appComponent.selectedIndex).toBe(2);
 
       // Move focus right to 0
-      dispatchKeydownEvent(appComponent.mdTabHeader._tabListContainer.nativeElement, LEFT_ARROW);
+      dispatchKeyboardEvent(tabListContainer, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
       expect(appComponent.mdTabHeader.focusIndex).toBe(0);
     });
@@ -192,18 +195,6 @@ describe('MdTabHeader', () => {
   });
 
 });
-
-
-/** Dispatches a keydown event from an element. */
-function dispatchKeydownEvent(element: HTMLElement, keyCode: number): void {
-  let event: any = document.createEvent('KeyboardEvent');
-  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
-      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
-  Object.defineProperty(event, 'keyCode', {
-    get: function() { return keyCode; }
-  });
-  element.dispatchEvent(event);
-}
 
 interface Tab {
   label: string;

@@ -19,6 +19,9 @@
     ]
   },
   "exclude": [
+    /* Exclude testing utilities in releases. */
+    "core/testing/",
+
     "**/*.spec.*",
     "system-config-spec.ts"
   ],

@@ -22,6 +22,7 @@ import {MdDialogContainer} from './dialog-container';
 import {OverlayContainer, ESCAPE} from '../core';
 import {MdDialogRef} from './dialog-ref';
 import {MD_DIALOG_DATA} from './dialog-injector';
+import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 
 
 describe('MdDialog', () => {
@@ -130,7 +131,7 @@ describe('MdDialog', () => {
       viewContainerRef: testViewContainerRef
     });
 
-    dispatchKeydownEvent(document, ESCAPE);
+    dispatchKeyboardEvent(document, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
 
     viewContainerFixture.whenStable().then(() => {
@@ -366,7 +367,7 @@ describe('MdDialog', () => {
       });
 
       viewContainerFixture.detectChanges();
-      dispatchKeydownEvent(document, ESCAPE);
+      dispatchKeyboardEvent(document, 'keydown', ESCAPE);
 
       expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
     });
@@ -613,15 +614,3 @@ const TEST_DIRECTIVES = [
   ],
 })
 class DialogTestModule { }
-
-
-// TODO(crisbeto): switch to using function from common testing utils once #2943 is merged.
-function dispatchKeydownEvent(element: Node, keyCode: number) {
-  let event: any = document.createEvent('KeyboardEvent');
-  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
-      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
-  Object.defineProperty(event, 'keyCode', {
-    get: function() { return keyCode; }
-  });
-  element.dispatchEvent(event);
-}

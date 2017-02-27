@@ -5,6 +5,7 @@ import {By} from '@angular/platform-browser';
 import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './checkbox';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 
 
 describe('MdCheckbox', () => {
@@ -784,11 +785,4 @@ class CheckboxWithChangeEvent {
 })
 class CheckboxWithFormControl {
   formControl = new FormControl();
-}
-
-// TODO(devversion): replace with global utility once pull request #2943 is merged.
-function dispatchFakeEvent(element: HTMLElement, eventName: string): void {
-  let event  = document.createEvent('Event');
-  event.initEvent(eventName, true, true);
-  element.dispatchEvent(event);
 }

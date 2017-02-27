@@ -3,33 +3,7 @@ import {Component, ViewChild} from '@angular/core';
 import {MdRipple, MdRippleModule} from './ripple';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
-
-
-/** Creates a DOM mouse event. */
-const createMouseEvent = (eventType: string, dict: any = {}) => {
-  // Ideally this would just be "return new MouseEvent(eventType, dict)". But IE11 doesn't support
-  // the MouseEvent constructor, and Edge inexplicably divides clientX and clientY by 100 to get
-  // pageX and pageY. (Really. After "e = new MouseEvent('click', {clientX: 200, clientY: 300})",
-  // e.clientX is 200, e.pageX is 2, e.clientY is 300, and e.pageY is 3.)
-  // So instead we use the deprecated createEvent/initMouseEvent API, which works everywhere.
-  const event = document.createEvent('MouseEvents');
-  event.initMouseEvent(eventType,
-      false, /* canBubble */
-      false, /* cancelable */
-      window, /* view */
-      0, /* detail */
-      dict.screenX || 0,
-      dict.screenY || 0,
-      dict.clientX || 0,
-      dict.clientY || 0,
-      false, /* ctrlKey */
-      false, /* altKey */
-      false, /* shiftKey */
-      false, /* metaKey */
-      0, /* button */
-      null /* relatedTarget */);
-  return event;
-};
+import {dispatchMouseEvent} from '../testing/dispatch-events';
 
 /** Extracts the numeric value of a pixel size string like '123px'.  */
 const pxStringToFloat = (s: string) => {
@@ -65,15 +39,6 @@ describe('MdRipple', () => {
     document.body.style.margin = originalBodyMargin;
   });
 
-  function dispatchMouseEvent(type: string, offsetX = 0, offsetY = 0) {
-    let mouseEvent = createMouseEvent(type, {
-      clientX: rippleTarget.clientLeft + offsetX,
-      clientY: rippleTarget.clientTop + offsetY
-    });
-
-    rippleTarget.dispatchEvent(mouseEvent);
-  }
-
   describe('basic ripple', () => {
     let rippleDirective: MdRipple;
 
@@ -89,20 +54,20 @@ describe('MdRipple', () => {
     });
 
     it('creates ripple on mousedown', () => {
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(2);
     });
 
     it('removes ripple after timeout', fakeAsync(() => {
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
@@ -140,8 +105,8 @@ describe('MdRipple', () => {
       let elementRect = rippleTarget.getBoundingClientRect();
 
       // Dispatch a ripple at the following relative coordinates (X: 50| Y: 75)
-      dispatchMouseEvent('mousedown', 50, 75);
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown', 50, 75);
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       // Calculate distance from the click to farthest edge of the ripple target.
       let maxDistanceX = TARGET_WIDTH - 50;
@@ -174,8 +139,8 @@ describe('MdRipple', () => {
       fixture.componentInstance.isDestroyed = true;
       fixture.detectChanges();
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
@@ -184,8 +149,8 @@ describe('MdRipple', () => {
       const spy = jasmine.createSpy('zone unstable callback');
       const subscription = fixture.ngZone.onUnstable.subscribe(spy);
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(spy).not.toHaveBeenCalled();
       subscription.unsubscribe();
@@ -245,15 +210,10 @@ describe('MdRipple', () => {
         rippleTarget.style.top = `${elementTop}px`;
 
         // Simulate a keyboard-triggered click by setting event coordinates to 0.
-        let clickEvent = createMouseEvent('mousedown', {
-          clientX: left + elementLeft - pageScrollLeft,
-          clientY: top + elementTop - pageScrollTop,
-          screenX: left + elementLeft,
-          screenY: top + elementTop
-        });
-
-        rippleTarget.dispatchEvent(clickEvent);
-        dispatchMouseEvent('mouseup');
+        dispatchMouseEvent(rippleTarget, 'mousedown',
+          left + elementLeft - pageScrollLeft,
+          top + elementTop - pageScrollTop
+        );
 
         let expectedRadius = Math.sqrt(250 * 250 + 125 * 125);
         let expectedLeft = left - expectedRadius;
@@ -298,8 +258,8 @@ describe('MdRipple', () => {
       controller.color = backgroundColor;
       fixture.detectChanges();
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       let ripple = rippleTarget.querySelector('.mat-ripple-element');
       expect(window.getComputedStyle(ripple).backgroundColor).toBe(backgroundColor);
@@ -309,16 +269,16 @@ describe('MdRipple', () => {
       controller.disabled = true;
       fixture.detectChanges();
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
       controller.disabled = false;
       fixture.detectChanges();
 
-      dispatchMouseEvent('mousedown');
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
     });
@@ -327,11 +287,8 @@ describe('MdRipple', () => {
       let alternateTrigger = fixture.debugElement.nativeElement
         .querySelector('.alternateTrigger') as HTMLElement;
 
-      let mousedownEvent = createMouseEvent('mousedown');
-      let mouseupEvent = createMouseEvent('mouseup');
-
-      alternateTrigger.dispatchEvent(mousedownEvent);
-      alternateTrigger.dispatchEvent(mouseupEvent);
+      dispatchMouseEvent(alternateTrigger, 'mousedown');
+      dispatchMouseEvent(alternateTrigger, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
@@ -339,8 +296,8 @@ describe('MdRipple', () => {
       controller.trigger = alternateTrigger;
       fixture.detectChanges();
 
-      alternateTrigger.dispatchEvent(mousedownEvent);
-      alternateTrigger.dispatchEvent(mouseupEvent);
+      dispatchMouseEvent(alternateTrigger, 'mousedown');
+      dispatchMouseEvent(alternateTrigger, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
     });
@@ -352,8 +309,8 @@ describe('MdRipple', () => {
       let elementRect = rippleTarget.getBoundingClientRect();
 
       // Click the ripple element 50 px to the right and 75px down from its upper left.
-      dispatchMouseEvent('mousedown', 50, 75);
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown', 50, 75);
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       // Because the centered input is true, the center of the ripple should be the midpoint of the
       // bounding rect. The ripple should expand to cover the rect corners, which are 150px
@@ -379,8 +336,8 @@ describe('MdRipple', () => {
       let elementRect = rippleTarget.getBoundingClientRect();
 
       // Click the ripple element 50 px to the right and 75px down from its upper left.
-      dispatchMouseEvent('mousedown', 50, 75);
-      dispatchMouseEvent('mouseup');
+      dispatchMouseEvent(rippleTarget, 'mousedown', 50, 75);
+      dispatchMouseEvent(rippleTarget, 'mouseup');
 
       let expectedLeft = elementRect.left + 50 - customRadius;
       let expectedTop = elementRect.top + 75 - customRadius;

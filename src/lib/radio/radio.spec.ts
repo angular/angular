@@ -5,6 +5,7 @@ import {By} from '@angular/platform-browser';
 import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 
 
 describe('MdRadio', () => {
@@ -183,12 +184,12 @@ describe('MdRadio', () => {
 
       expect(nativeRadioInput.classList).not.toContain('mat-radio-focused');
 
-      dispatchEvent('focus', nativeRadioInput);
+      dispatchFakeEvent(nativeRadioInput, 'focus');
       fixture.detectChanges();
 
       expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
 
-      dispatchEvent('blur', nativeRadioInput);
+      dispatchFakeEvent(nativeRadioInput, 'blur');
       fixture.detectChanges();
 
       expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
@@ -202,7 +203,7 @@ describe('MdRadio', () => {
 
       expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
 
-      dispatchEvent('blur', nativeRadioInput);
+      dispatchFakeEvent(nativeRadioInput, 'blur');
       fixture.detectChanges();
 
       expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
@@ -421,7 +422,7 @@ describe('MdRadio', () => {
     }));
 
     it('should update the ngModel value when selecting a radio button', () => {
-      dispatchEvent('change', innerRadios[1].nativeElement);
+      dispatchFakeEvent(innerRadios[1].nativeElement, 'change');
       fixture.detectChanges();
       expect(testComponent.modelValue).toBe('chocolate');
     });
@@ -430,11 +431,11 @@ describe('MdRadio', () => {
       expect(testComponent.modelValue).toBeUndefined();
       expect(testComponent.lastEvent).toBeUndefined();
 
-      dispatchEvent('change', innerRadios[1].nativeElement);
+      dispatchFakeEvent(innerRadios[1].nativeElement, 'change');
       fixture.detectChanges();
       expect(testComponent.lastEvent.value).toBe('chocolate');
 
-      dispatchEvent('change', innerRadios[0].nativeElement);
+      dispatchFakeEvent(innerRadios[0].nativeElement, 'change');
       fixture.detectChanges();
       expect(testComponent.lastEvent.value).toBe('vanilla');
     });
@@ -650,17 +651,4 @@ class RadioGroupWithNgModel {
 })
 class RadioGroupWithFormControl {
   formControl = new FormControl();
-}
-
-// TODO(jelbourn): remove everything below when Angular supports faking events.
-
-/**
- * Dispatches an event from an element.
- * @param eventName Name of the event
- * @param element The element from which the event will be dispatched.
- */
-function dispatchEvent(eventName: string, element: HTMLElement): void {
-  let event  = document.createEvent('Event');
-  event.initEvent(eventName, true, true);
-  element.dispatchEvent(event);
 }

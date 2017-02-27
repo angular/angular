@@ -3,6 +3,7 @@ import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {OverlayModule} from '../overlay-directives';
 import {Scrollable} from './scrollable';
+import {dispatchFakeEvent} from '../../testing/dispatch-events';
 
 describe('Scroll Dispatcher', () => {
 
@@ -53,9 +54,7 @@ describe('Scroll Dispatcher', () => {
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
       // The notification should be picked up by the service.
-      const scrollEvent = document.createEvent('UIEvents');
-      scrollEvent.initUIEvent('scroll', true, true, window, 0);
-      fixture.componentInstance.scrollingElement.nativeElement.dispatchEvent(scrollEvent);
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
 
       // The scrollable directive should have notified the service immediately.
       expect(hasDirectiveScrollNotified).toBe(true);

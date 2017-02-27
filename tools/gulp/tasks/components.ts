@@ -25,7 +25,7 @@ const gulpIf = require('gulp-if');
 // for unit tests (karma).
 
 /** Path to the tsconfig used for ESM output. */
-const tsconfigPath = path.relative(PROJECT_ROOT, path.join(COMPONENTS_DIR, 'tsconfig.json'));
+const tsconfigPath = path.relative(PROJECT_ROOT, path.join(COMPONENTS_DIR, 'tsconfig-srcs.json'));
 
 
 /** [Watch task] Rebuilds (ESM output) whenever ts, scss, or html sources change. */

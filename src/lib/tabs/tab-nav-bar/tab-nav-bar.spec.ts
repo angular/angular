@@ -4,6 +4,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../../core/overlay/position/fake-viewport-ruler';
+import {dispatchMouseEvent} from '../../core/testing/dispatch-events';
 
 
 describe('MdTabNavBar', () => {
@@ -50,15 +51,11 @@ describe('MdTabNavBar', () => {
     fixture.detectChanges();
 
     let link = fixture.debugElement.nativeElement.querySelector('.mat-tab-link');
-    let mouseEvent = document.createEvent('MouseEvents');
 
     fixture.componentInstance.isDestroyed = true;
     fixture.detectChanges();
 
-    mouseEvent.initMouseEvent('mousedown', false, false, window, 0, 0, 0, 0, 0, false, false,
-        false, false, 0, null);
-
-    link.dispatchEvent(mouseEvent);
+    dispatchMouseEvent(link, 'mousedown');
 
     expect(link.querySelector('.mat-ripple-element'))
       .toBeFalsy('Expected no ripple to be created when ripple target is destroyed.');

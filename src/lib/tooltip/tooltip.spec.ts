@@ -20,6 +20,7 @@ import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {OverlayModule} from '../core/overlay/overlay-directives';
 import {Platform} from '../core/platform/platform';
 import {Scrollable} from '../core/overlay/scroll/scrollable';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 
 
 const initialTooltipMessage = 'initial tooltip message';
@@ -444,9 +445,7 @@ class ScrollableTooltipDemo {
      // Emit a scroll event from the scrolling element in our component.
      // This event should be picked up by the scrollable directive and notify.
      // The notification should be picked up by the service.
-     const scrollEvent = document.createEvent('UIEvents');
-     scrollEvent.initUIEvent('scroll', true, true, window, 0);
-     scrollingContainerEl.dispatchEvent(scrollEvent);
+     dispatchFakeEvent(scrollingContainerEl, 'scroll');
    }
 }
 
