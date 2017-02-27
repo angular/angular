@@ -120,13 +120,13 @@ class Helper {
     });
   }
 
-  public verifyResponse(status: number | (number | string)[], regex = /^/): VerifyCmdResultFn {
+  public verifyResponse(status: number | [number, string], regex = /^/): VerifyCmdResultFn {
     let statusCode: number;
     let statusText: string;
 
     if (Array.isArray(status)) {
-      statusCode = status[0] as number;
-      statusText = status[1] as string;
+      statusCode = status[0];
+      statusText = status[1];
     } else {
       statusCode = status;
       statusText = http.STATUS_CODES[statusCode];
