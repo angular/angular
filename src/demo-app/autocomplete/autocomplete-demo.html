@@ -6,7 +6,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
-    <md-input-container>
+    <md-input-container floatPlaceholder="never">
       <input mdInput placeholder="State" [mdAutocomplete]="reactiveAuto" [formControl]="stateCtrl">
     </md-input-container>
 

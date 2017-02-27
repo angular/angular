@@ -219,6 +219,48 @@ describe('MdAutocomplete', () => {
           .toBe(false, `Expected panel state to stay closed.`);
     });
 
+   it('should not mess with placeholder placement if set to never', async(() => {
+      fixture.componentInstance.placeholder = 'never';
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+          .toEqual('never', 'Expected placeholder to stay static.');
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+            .toEqual('never', 'Expected placeholder to stay in static state after close.');
+      });
+    }));
+
+    it('should not mess with placeholder placement if set to always', async(() => {
+      fixture.componentInstance.placeholder = 'always';
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+          .toEqual('always', 'Expected placeholder to stay elevated on open.');
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+
+        const options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+            .toEqual('always', 'Expected placeholder to stay elevated after close.');
+      });
+    }));
+
   });
 
   it('should have the correct text direction in RTL', () => {
@@ -822,7 +864,7 @@ describe('MdAutocomplete', () => {
 
 @Component({
   template: `
-    <md-input-container>
+    <md-input-container [floatPlaceholder]="placeholder">
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
     </md-input-container>
 
@@ -837,6 +879,7 @@ class SimpleAutocomplete implements OnDestroy {
   stateCtrl = new FormControl();
   filteredStates: any[];
   valueSub: Subscription;
+  placeholder = 'auto';
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
   @ViewChild(MdAutocomplete) panel: MdAutocomplete;

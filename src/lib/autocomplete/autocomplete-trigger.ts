@@ -25,7 +25,7 @@ import {Subject} from 'rxjs/Subject';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
-import {MdInputContainer, FloatPlaceholderType} from '../input/input-container';
+import {MdInputContainer} from '../input/input-container';
 
 /**
  * The following style constants are necessary to save here in order
@@ -81,6 +81,9 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
   /** Stream of blur events that should close the panel. */
   private _blurStream = new Subject<any>();
 
+  /** Whether or not the placeholder state is being overridden. */
+  private _manuallyFloatingPlaceholder = false;
+
   /** View -> model callback called when value changes */
   _onChange = (value: any) => {};
 
@@ -134,7 +137,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     }
 
     this._panelOpen = true;
-    this._floatPlaceholder('always');
+    this._floatPlaceholder();
   }
 
   /** Closes the autocomplete suggestion panel. */
@@ -144,7 +147,7 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
     }
 
     this._panelOpen = false;
-    this._floatPlaceholder('auto');
+    this._resetPlaceholder();
   }
 
   /**
@@ -237,9 +240,18 @@ export class MdAutocompleteTrigger implements AfterContentInit, ControlValueAcce
    * This causes the value to jump when selecting an option with the mouse.
    * This method manually floats the placeholder until the panel can be closed.
    */
-  private _floatPlaceholder(state: FloatPlaceholderType): void {
-    if (this._inputContainer) {
-      this._inputContainer.floatPlaceholder = state;
+  private _floatPlaceholder(): void {
+    if (this._inputContainer && this._inputContainer.floatPlaceholder === 'auto') {
+      this._inputContainer.floatPlaceholder = 'always';
+      this._manuallyFloatingPlaceholder = true;
+    }
+  }
+
+  /** If the placeholder has been manually elevated, return it to its normal state. */
+  private _resetPlaceholder(): void  {
+    if (this._manuallyFloatingPlaceholder) {
+      this._inputContainer.floatPlaceholder = 'auto';
+      this._manuallyFloatingPlaceholder = false;
     }
   }
 
