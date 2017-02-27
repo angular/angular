@@ -32,11 +32,15 @@ $mat-menu-side-padding: 16px !default;
 
   font-size: $mat-menu-font-size;
   font-family: $mat-font-family;
-  text-align: start;
+  text-align: left;
   text-decoration: none;   // necessary to reset anchor tags
 
   &[disabled] {
     cursor: default;
+  }
+
+  [dir='rtl'] & {
+    text-align: right;
   }
 
   .mat-icon {
