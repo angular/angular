@@ -15,7 +15,7 @@ We’ve made changes under to hood to what AOT generated code looks like. These 
 
 
 ### Enhanced `*ngIf` syntax
-Our template binding syntax now supports a couple helpful changes. You can now use an if/else style syntax, and assign local variables such as when unrolling an observable.
+Our template binding syntax now supports a couple of helpful changes. You can now use an if/else style syntax, and assign local variables such as when unrolling an observable.
 
 ```
 <div #loading>Loading...</div>
