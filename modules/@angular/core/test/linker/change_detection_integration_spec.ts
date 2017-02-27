@@ -906,12 +906,13 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
              const ctx = createCompFixture(
-                 '<div testDirective="parent"><div testDirective="child"></div></div>');
+                 '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
              ctx.detectChanges(false);
 
              expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
-               'child.ngAfterContentChecked', 'parent.ngAfterContentChecked'
+               'child.ngAfterContentChecked', 'parent.ngAfterContentChecked',
+               'sibling.ngAfterContentChecked'
              ]);
            }));
       });
@@ -1018,12 +1019,12 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
              const ctx = createCompFixture(
-                 '<div testDirective="parent"><div testDirective="child"></div></div>');
+                 '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
              ctx.detectChanges(false);
 
              expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
-               'child.ngAfterViewChecked', 'parent.ngAfterViewChecked'
+               'child.ngAfterViewChecked', 'parent.ngAfterViewChecked', 'sibling.ngAfterViewChecked'
              ]);
            }));
       });
@@ -1061,13 +1062,13 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
              const ctx = createCompFixture(
-                 '<div testDirective="parent"><div testDirective="child"></div></div>');
+                 '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
              ctx.detectChanges(false);
              ctx.destroy();
 
              expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-               'child.ngOnDestroy', 'parent.ngOnDestroy'
+               'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
              ]);
            }));
 
