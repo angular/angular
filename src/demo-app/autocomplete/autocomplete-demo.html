@@ -26,7 +26,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
     <md-input-container>
       <input mdInput placeholder="State" [mdAutocomplete]="tdAuto" [(ngModel)]="currentState" #modelDir="ngModel"
-        (ngModelChange)="this.tdStates = filterStates(currentState)" [disabled]="tdDisabled">
+        (ngModelChange)="tdStates = filterStates(currentState)" [disabled]="tdDisabled">
     </md-input-container>
 
     <md-card-actions>
