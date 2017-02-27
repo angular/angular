@@ -4,6 +4,7 @@ import {EventEmitter} from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
+import {assertNotMissingOrEmpty} from '../common/utils';
 import {CreatedBuildEvent} from './build-events';
 import {UploadError} from './upload-error';
 
@@ -12,10 +13,7 @@ export class BuildCreator extends EventEmitter {
   // Constructor
   constructor(protected buildsDir: string) {
     super();
-
-    if (!buildsDir) {
-      throw new Error('Missing or empty required parameter \'buildsDir\'!');
-    }
+    assertNotMissingOrEmpty('buildsDir', buildsDir);
   }
 
   // Methods - Public

@@ -1,6 +1,7 @@
 // Imports
 import * as express from 'express';
 import * as http from 'http';
+import {assertNotMissingOrEmpty} from '../common/utils';
 import {BuildCreator} from './build-creator';
 import {CreatedBuildEvent} from './build-events';
 import {UploadError} from './upload-error';
@@ -12,9 +13,7 @@ const X_FILE_HEADER = 'X-FILE';
 class UploadServerFactory {
   // Methods - Public
   public create(buildsDir: string): http.Server {
-    if (!buildsDir) {
-      throw new Error('Missing or empty required parameter \'buildsDir\'!');
-    }
+    assertNotMissingOrEmpty('buildsDir', buildsDir);
 
     const buildCreator = new BuildCreator(buildsDir);
     const middleware = this.createMiddleware(buildCreator);
