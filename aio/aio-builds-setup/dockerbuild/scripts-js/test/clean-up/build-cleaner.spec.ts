@@ -14,12 +14,20 @@ describe('BuildCleaner', () => {
   describe('constructor()', () => {
 
     it('should throw if \'buildsDir\' is empty', () => {
-      expect(() => new BuildCleaner('', '/baz/qux')).toThrowError('Missing or empty required parameter \'buildsDir\'!');
+      expect(() => new BuildCleaner('', '/baz/qux', '12345')).
+        toThrowError('Missing or empty required parameter \'buildsDir\'!');
     });
 
 
     it('should throw if \'repoSlug\' is empty', () => {
-      expect(() => new BuildCleaner('/foo/bar', '')).toThrowError('Missing or empty required parameter \'repoSlug\'!');
+      expect(() => new BuildCleaner('/foo/bar', '', '12345')).
+        toThrowError('Missing or empty required parameter \'repoSlug\'!');
+    });
+
+
+    it('should throw if \'githubToken\' is empty', () => {
+      expect(() => new BuildCleaner('/foo/bar', 'baz/qux', '')).
+        toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
   });

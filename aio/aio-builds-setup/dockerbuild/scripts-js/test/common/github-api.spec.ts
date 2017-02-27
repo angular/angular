@@ -18,18 +18,8 @@ describe('GithubApi', () => {
     });
 
 
-    it('should log a warning if \'githubToken\' is not defined or empty', () => {
-      const warningMessage = 'No GitHub access-token specified. Requests will be unauthenticated.';
-      const consoleWarnSpy = spyOn(console, 'warn');
-
-      /* tslint:disable: no-unused-new */
-      new GithubApi('repo/slug');
-      new GithubApi('repo/slug', '');
-      /* tslint:enable: no-unused-new */
-
-      expect(consoleWarnSpy).toHaveBeenCalledTimes(2);
-      expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(warningMessage);
-      expect(consoleWarnSpy.calls.argsFor(1)[0]).toBe(warningMessage);
+    it('should throw if \'githubToken\' is missing or empty', () => {
+      expect(() => new GithubApi('repo/slug', '')).toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
   });
