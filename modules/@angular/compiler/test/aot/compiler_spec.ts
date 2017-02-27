@@ -123,7 +123,7 @@ describe('compiler (bundled Angular)', () => {
          const genCompFile =
              generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl));
          expect(genCompFile).toBeDefined();
-         expect(genCompFile.source).toContain('viewDef');
+         expect(genCompFile.source).toContain('ViewDefinition');
          expect(genCompFile.source).not.toContain('AppView');
          expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
              .toBeDefined();

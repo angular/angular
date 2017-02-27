@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵEMPTY_ARRAY, ɵEMPTY_INLINE_ARRAY, ɵEMPTY_MAP, ɵInlineArray16, ɵInlineArray2, ɵInlineArray4, ɵInlineArray8, ɵInlineArrayDynamic, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵViewUtils, ɵanchorDef, ɵbalanceAnimationKeyframes, ɵcastByValue, ɵcheckBinding, ɵcheckBindingChange, ɵcheckRenderAttribute, ɵcheckRenderClass, ɵcheckRenderProperty, ɵcheckRenderStyle, ɵcheckRenderText, ɵclearStyles, ɵcollectAndResolveStyles, ɵcreateComponentFactory, ɵcreateRenderComponentType, ɵcreateRenderElement, ɵcreateRendererTypeV2, ɵdevModeEqual, ɵdirectiveDef, ɵelementDef, ɵinlineInterpolate, ɵinterpolate, ɵngContentDef, ɵnodeValue, ɵnoop, ɵpipeDef, ɵprepareFinalAnimationStyles, ɵproviderDef, ɵpureArrayDef, ɵpureObjectDef, ɵpurePipeDef, ɵpureProxy1, ɵpureProxy10, ɵpureProxy2, ɵpureProxy3, ɵpureProxy4, ɵpureProxy5, ɵpureProxy6, ɵpureProxy7, ɵpureProxy8, ɵpureProxy9, ɵqueryDef, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵselectOrCreateRenderHostElement, ɵsetBindingDebugInfo, ɵsetBindingDebugInfoForChanges, ɵsubscribeToRenderElement, ɵtextDef, ɵunwrapValue, ɵviewDef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵAnimationGroupPlayer, ɵAnimationKeyframe, ɵAnimationSequencePlayer, ɵAnimationStyles, ɵAnimationTransition, ɵAppView, ɵChangeDetectorStatus, ɵCodegenComponentFactoryResolver, ɵComponentRef_, ɵDebugAppView, ɵDebugContext, ɵEMPTY_ARRAY, ɵEMPTY_INLINE_ARRAY, ɵEMPTY_MAP, ɵInlineArray16, ɵInlineArray2, ɵInlineArray4, ɵInlineArray8, ɵInlineArrayDynamic, ɵNgModuleInjector, ɵNoOpAnimationPlayer, ɵStaticNodeDebugInfo, ɵTemplateRef_, ɵValueUnwrapper, ɵViewContainer, ɵViewType, ɵViewUtils, ɵand, ɵbalanceAnimationKeyframes, ɵcastByValue, ɵccf, ɵcheckBinding, ɵcheckBindingChange, ɵcheckRenderAttribute, ɵcheckRenderClass, ɵcheckRenderProperty, ɵcheckRenderStyle, ɵcheckRenderText, ɵclearStyles, ɵcollectAndResolveStyles, ɵcreateRenderComponentType, ɵcreateRenderElement, ɵcrt, ɵdevModeEqual, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵncd, ɵnoop, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵprepareFinalAnimationStyles, ɵpureProxy1, ɵpureProxy10, ɵpureProxy2, ɵpureProxy3, ɵpureProxy4, ɵpureProxy5, ɵpureProxy6, ɵpureProxy7, ɵpureProxy8, ɵpureProxy9, ɵqud, ɵreflector, ɵregisterModuleFactory, ɵrenderStyles, ɵselectOrCreateRenderHostElement, ɵsetBindingDebugInfo, ɵsetBindingDebugInfoForChanges, ɵsubscribeToRenderElement, ɵted, ɵunv, ɵvid} from '@angular/core';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 
@@ -243,32 +243,21 @@ export class Identifiers {
 
   static noop: IdentifierSpec = {name: 'ɵnoop', moduleUrl: CORE, runtime: ɵnoop};
 
-  static viewDef: IdentifierSpec = {name: 'ɵviewDef', moduleUrl: CORE, runtime: ɵviewDef};
-  static elementDef: IdentifierSpec = {name: 'ɵelementDef', moduleUrl: CORE, runtime: ɵelementDef};
-  static anchorDef: IdentifierSpec = {name: 'ɵanchorDef', moduleUrl: CORE, runtime: ɵanchorDef};
-  static textDef: IdentifierSpec = {name: 'ɵtextDef', moduleUrl: CORE, runtime: ɵtextDef};
-  static directiveDef:
-      IdentifierSpec = {name: 'ɵdirectiveDef', moduleUrl: CORE, runtime: ɵdirectiveDef};
-  static providerDef:
-      IdentifierSpec = {name: 'ɵproviderDef', moduleUrl: CORE, runtime: ɵproviderDef};
-  static queryDef: IdentifierSpec = {name: 'ɵqueryDef', moduleUrl: CORE, runtime: ɵqueryDef};
-  static pureArrayDef:
-      IdentifierSpec = {name: 'ɵpureArrayDef', moduleUrl: CORE, runtime: ɵpureArrayDef};
-  static pureObjectDef:
-      IdentifierSpec = {name: 'ɵpureObjectDef', moduleUrl: CORE, runtime: ɵpureObjectDef};
-  static purePipeDef:
-      IdentifierSpec = {name: 'ɵpurePipeDef', moduleUrl: CORE, runtime: ɵpurePipeDef};
-  static pipeDef: IdentifierSpec = {name: 'ɵpipeDef', moduleUrl: CORE, runtime: ɵpipeDef};
-  static nodeValue: IdentifierSpec = {name: 'ɵnodeValue', moduleUrl: CORE, runtime: ɵnodeValue};
-  static ngContentDef:
-      IdentifierSpec = {name: 'ɵngContentDef', moduleUrl: CORE, runtime: ɵngContentDef};
-  static unwrapValue:
-      IdentifierSpec = {name: 'ɵunwrapValue', moduleUrl: CORE, runtime: ɵunwrapValue};
-  static createRendererTypeV2: IdentifierSpec = {
-    name: 'ɵcreateRendererTypeV2',
-    moduleUrl: CORE,
-    runtime: ɵcreateRendererTypeV2
-  };
+  static viewDef: IdentifierSpec = {name: 'ɵvid', moduleUrl: CORE, runtime: ɵvid};
+  static elementDef: IdentifierSpec = {name: 'ɵeld', moduleUrl: CORE, runtime: ɵeld};
+  static anchorDef: IdentifierSpec = {name: 'ɵand', moduleUrl: CORE, runtime: ɵand};
+  static textDef: IdentifierSpec = {name: 'ɵted', moduleUrl: CORE, runtime: ɵted};
+  static directiveDef: IdentifierSpec = {name: 'ɵdid', moduleUrl: CORE, runtime: ɵdid};
+  static providerDef: IdentifierSpec = {name: 'ɵprd', moduleUrl: CORE, runtime: ɵprd};
+  static queryDef: IdentifierSpec = {name: 'ɵqud', moduleUrl: CORE, runtime: ɵqud};
+  static pureArrayDef: IdentifierSpec = {name: 'ɵpad', moduleUrl: CORE, runtime: ɵpad};
+  static pureObjectDef: IdentifierSpec = {name: 'ɵpod', moduleUrl: CORE, runtime: ɵpod};
+  static purePipeDef: IdentifierSpec = {name: 'ɵppd', moduleUrl: CORE, runtime: ɵppd};
+  static pipeDef: IdentifierSpec = {name: 'ɵpid', moduleUrl: CORE, runtime: ɵpid};
+  static nodeValue: IdentifierSpec = {name: 'ɵnov', moduleUrl: CORE, runtime: ɵnov};
+  static ngContentDef: IdentifierSpec = {name: 'ɵncd', moduleUrl: CORE, runtime: ɵncd};
+  static unwrapValue: IdentifierSpec = {name: 'ɵunv', moduleUrl: CORE, runtime: ɵunv};
+  static createRendererTypeV2: IdentifierSpec = {name: 'ɵcrt', moduleUrl: CORE, runtime: ɵcrt};
   static RendererTypeV2: IdentifierSpec = {
     name: 'RendererTypeV2',
     moduleUrl: CORE,
@@ -281,11 +270,7 @@ export class Identifiers {
     // type only
     runtime: null
   };
-  static createComponentFactory: IdentifierSpec = {
-    name: 'ɵcreateComponentFactory',
-    moduleUrl: CORE,
-    runtime: ɵcreateComponentFactory
-  };
+  static createComponentFactory: IdentifierSpec = {name: 'ɵccf', moduleUrl: CORE, runtime: ɵccf};
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
