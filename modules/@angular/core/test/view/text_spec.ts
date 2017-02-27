@@ -62,7 +62,7 @@ export function main() {
 
     describe('change text', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
-        it(`should update ${ArgumentType[inlineDynamic]}`, () => {
+        it(`should update via strategy ${inlineDynamic}`, () => {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 textDef(null, ['0', '1', '2']),

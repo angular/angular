@@ -33,7 +33,7 @@ export function main() {
         elementDef(
             NodeFlags.None, null, null, 1 + contentNodes.length, 'acomp', null, null, null, null,
             () => aCompViewDef),
-        directiveDef(NodeFlags.IsComponent, null, 0, AComp, []), ...contentNodes
+        directiveDef(NodeFlags.Component, null, 0, AComp, []), ...contentNodes
       ];
     }
 
@@ -86,8 +86,8 @@ export function main() {
 
       const {view, rootNodes} = createAndGetRootNodes(compViewDef(hostElDef(
           [
-            anchorDef(NodeFlags.HasEmbeddedViews, null, 0, 1, null, embeddedViewDef([textDef(
-                                                                        null, ['a'])])),
+            anchorDef(
+                NodeFlags.EmbeddedViews, null, 0, 1, null, embeddedViewDef([textDef(null, ['a'])])),
             directiveDef(
                 NodeFlags.None, null, 0, CreateViewService, [TemplateRef, ViewContainerRef])
           ],
@@ -104,7 +104,7 @@ export function main() {
     it('should include projected nodes when attaching / detaching embedded views', () => {
       const {view, rootNodes} = createAndGetRootNodes(compViewDef(hostElDef([textDef(0, ['a'])], [
         elementDef(NodeFlags.None, null, null, 1, 'div'),
-        anchorDef(NodeFlags.HasEmbeddedViews, null, 0, 0, null, embeddedViewDef([
+        anchorDef(NodeFlags.EmbeddedViews, null, 0, 0, null, embeddedViewDef([
                     ngContentDef(null, 0),
                     // The anchor would be added by the compiler after the ngContent
                     anchorDef(NodeFlags.None, null, null, 0),
