@@ -15,11 +15,9 @@
 .demo-tab-group {
   border: 1px solid #e0e0e0;
   margin-bottom: 40px;
+  flex-grow: 1;
   .mat-tab-header {
     background: #f9f9f9;
-  }
-  .mat-tab-body-content {
-    padding: 12px;
   }
 }
 
@@ -55,4 +53,8 @@ tabs-demo .mat-card {
       width: 100%;
     }
   }
+}
+
+.tab-content {
+  padding: 16px;
 }

@@ -48,6 +48,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
   moduleId: module.id,
   selector: 'md-tab-body, mat-tab-body',
   templateUrl: 'tab-body.html',
+  styleUrls: ['tab-body.css'],
   host: {
     '[class.mat-tab-body]': 'true',
   },
