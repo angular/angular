@@ -39,5 +39,15 @@ for o in ${origins[@]}; do
 done
 
 
+# Check resolution of external URLs
+origins=(
+  https://google.com
+)
+for o in ${origins[@]}; do
+  curl --fail --silent $o > /dev/null
+  reportStatus "External URL '$o'"
+done
+
+
 # Exit
 exit $exitCode
