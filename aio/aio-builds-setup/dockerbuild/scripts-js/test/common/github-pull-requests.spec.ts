@@ -6,19 +6,15 @@ describe('GithubPullRequests', () => {
 
   describe('constructor()', () => {
 
-    it('should log a warning if \'githubToken\' is not defined', () => {
-      const warningMessage = 'No GitHub access-token specified. Requests will be unauthenticated.';
-      const consoleWarnSpy = spyOn(console, 'warn');
-
-      // tslint:disable-next-line: no-unused-new
-      new GithubPullRequests('repo/slug');
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith(warningMessage);
+    it('should throw if \'repoSlug\' is missing or empty', () => {
+      expect(() => new GithubPullRequests('', '12345')).
+        toThrowError('Missing or empty required parameter \'repoSlug\'!');
     });
 
 
-    it('should throw if \'repoSlug\' is not defined', () => {
-      expect(() => new GithubPullRequests('', '12345')).toThrowError('Missing required parameter \'repoSlug\'!');
+    it('should throw if \'githubToken\' is missing or empty', () => {
+      expect(() => new GithubPullRequests('foo/bar', '')).
+        toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
   });

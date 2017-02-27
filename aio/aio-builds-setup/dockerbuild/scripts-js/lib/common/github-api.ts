@@ -18,16 +18,14 @@ export class GithubApi {
   protected requestHeaders: {[key: string]: string};
 
   // Constructor
-  constructor(protected repoSlug: string, githubToken?: string) {
+  constructor(protected repoSlug: string, githubToken: string) {
     assertNotMissingOrEmpty('repoSlug', repoSlug);
-    if (!githubToken) {
-      console.warn('No GitHub access-token specified. Requests will be unauthenticated.');
-    }
+    assertNotMissingOrEmpty('githubToken', githubToken);
 
-    this.requestHeaders = {'User-Agent': `Node/${process.versions.node}`};
-    if (githubToken) {
-      this.requestHeaders.Authorization = `token ${githubToken}`;
-    }
+    this.requestHeaders = {
+      'Authorization': `token ${githubToken}`,
+      'User-Agent': `Node/${process.versions.node}`,
+    };
   }
 
   // Methods - Public
