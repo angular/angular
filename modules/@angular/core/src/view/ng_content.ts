@@ -13,7 +13,6 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
   return {
     // will bet set by the view definition
     index: undefined,
-    reverseChildIndex: undefined,
     parent: undefined,
     renderParent: undefined,
     bindingIndex: undefined,
@@ -21,6 +20,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     // regular values
     flags: NodeFlags.TypeNgContent,
     childFlags: 0,
+    directChildFlags: 0,
     childMatchedQueries: 0,
     matchedQueries: {},
     matchedQueryIds: 0,
