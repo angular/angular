@@ -17,7 +17,7 @@ describe('GithubPullRequests', () => {
     });
 
 
-    it('should throw if \'repoSlag\' is not defined', () => {
+    it('should throw if \'repoSlug\' is not defined', () => {
       expect(() => new GithubPullRequests('', '12345')).toThrowError('Missing required parameter \'repoSlug\'!');
     });
 
