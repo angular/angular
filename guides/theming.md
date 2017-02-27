@@ -44,6 +44,24 @@ Finally, if your app's content **is not** placed inside of a `md-sidenav-contain
 need to add the `mat-app-background` class to your wrapper element (for example the `body`). This
 ensures that the proper theme background is applied to your page.
 
+#### Theming overlay-based components
+Since certain components (e.g. `dialog`) are inside of a global overlay container, your theme may
+not be applied to them. In order to define the theme that will be used for overlay components, you
+have to specify it on the global `OverlayContainer` instance:
+
+```ts
+import {OverlayContainer} from '@angular/material';
+
+@NgModule({
+  // misc config goes here
+})
+export class YourAppModule {
+  constructor(overlayContainer: OverlayContainer) {
+    overlayContainer.themeClass = 'your-theme';
+  }
+}
+```
+
 ### Defining a custom theme
 When you want more customization than a pre-built theme offers, you can create your own theme file.
 

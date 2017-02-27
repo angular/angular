@@ -272,6 +272,34 @@ describe('Overlay', () => {
   });
 });
 
+describe('OverlayContainer theming', () => {
+  let overlayContainer: OverlayContainer;
+  let overlayContainerElement: HTMLElement;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({ imports: [OverlayContainerThemingTestModule] });
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([OverlayContainer], (o: OverlayContainer) => {
+    overlayContainer = o;
+    overlayContainerElement = overlayContainer.getContainerElement();
+  }));
+
+  it('should be able to set a theme on the overlay container', () => {
+    overlayContainer.themeClass = 'my-theme';
+    expect(overlayContainerElement.classList).toContain('my-theme');
+  });
+
+  it('should clear any previously-set themes when a new theme is set', () => {
+    overlayContainer.themeClass = 'initial-theme';
+    expect(overlayContainerElement.classList).toContain('initial-theme');
+
+    overlayContainer.themeClass = 'new-theme';
+    expect(overlayContainerElement.classList).not.toContain('initial-theme');
+    expect(overlayContainerElement.classList).toContain('new-theme');
+  });
+});
 
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Pizza</p>'})
@@ -296,6 +324,12 @@ const TEST_COMPONENTS = [PizzaMsg, TestComponentWithTemplatePortals];
   entryComponents: TEST_COMPONENTS,
 })
 class OverlayTestModule { }
+
+/** Component for testing the overlay container theming. */
+@NgModule({
+  imports: [OverlayModule, PortalModule],
+})
+class OverlayContainerThemingTestModule { }
 
 class FakePositionStrategy implements PositionStrategy {
   apply(element: Element): Promise<void> {

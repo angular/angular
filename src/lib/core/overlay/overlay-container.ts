@@ -9,6 +9,24 @@ import {Injectable, Optional, SkipSelf} from '@angular/core';
 export class OverlayContainer {
   protected _containerElement: HTMLElement;
 
+  private _themeClass: string;
+
+  /**
+   * Base theme to be applied to all overlay-based components.
+   */
+  get themeClass(): string { return this._themeClass; }
+  set themeClass(value: string) {
+    if (this._containerElement) {
+      this._containerElement.classList.remove(this._themeClass);
+
+      if (value) {
+        this._containerElement.classList.add(value);
+      }
+    }
+
+    this._themeClass = value;
+  }
+
   /**
    * This method returns the overlay container element.  It will lazily
    * create the element the first time  it is called to facilitate using
@@ -27,6 +45,11 @@ export class OverlayContainer {
   protected _createContainer(): void {
     let container = document.createElement('div');
     container.classList.add('cdk-overlay-container');
+
+    if (this._themeClass) {
+      container.classList.add(this._themeClass);
+    }
+
     document.body.appendChild(container);
     this._containerElement = container;
   }
