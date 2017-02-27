@@ -18,7 +18,7 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should throw if \'repoSlag\' is empty', () => {
+    it('should throw if \'repoSlug\' is empty', () => {
       expect(() => new BuildCleaner('/foo/bar', '')).toThrowError('Missing required parameter \'repoSlug\'!');
     });
 
