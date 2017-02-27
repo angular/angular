@@ -17,11 +17,12 @@ const TEST_AIO_UPLOAD_MAX_SIZE = +getEnvVar('TEST_AIO_UPLOAD_MAX_SIZE');
 const TEST_AIO_UPLOAD_PORT = +getEnvVar('TEST_AIO_UPLOAD_PORT');
 
 // Interfaces - Types
-export interface CleanUpFn extends Function {}
 export interface CmdResult { success: boolean; err: Error; stdout: string; stderr: string; }
 export interface FileSpecs { content?: string; size?: number; }
-export interface TestSuiteFactory { (scheme: string, port: number): void }
-export interface VerifyCmdResultFn { (result: CmdResult): void; }
+
+export type CleanUpFn = () => void;
+export type TestSuiteFactory = (scheme: string, port: number) => void;
+export type VerifyCmdResultFn = (result: CmdResult) => void;
 
 // Classes
 class Helper {
