@@ -18,7 +18,7 @@ import {ViewEncapsulation} from '../metadata/view';
 import {Renderer, RendererTypeV2} from '../render/api';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -128,10 +128,10 @@ export function viewParentEl(view: ViewData): NodeDef {
 }
 
 export function renderNode(view: ViewData, def: NodeDef): any {
-  switch (def.type) {
-    case NodeType.Element:
+  switch (def.flags & NodeFlags.Types) {
+    case NodeFlags.TypeElement:
       return asElementData(view, def.index).renderElement;
-    case NodeType.Text:
+    case NodeFlags.TypeText:
       return asTextData(view, def.index).renderText;
   }
 }
@@ -176,8 +176,8 @@ export function splitMatchedQueriesDsl(matchedQueriesDsl: [string | number, Quer
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {
   let renderParent = def.renderParent;
   if (renderParent) {
-    if (renderParent.type !== NodeType.Element ||
-        (renderParent.flags & NodeFlags.HasComponent) === 0 ||
+    if ((renderParent.flags & NodeFlags.TypeElement) === 0 ||
+        (renderParent.flags & NodeFlags.ComponentView) === 0 ||
         (renderParent.element.componentRendererType &&
          renderParent.element.componentRendererType.encapsulation === ViewEncapsulation.Native)) {
       // only children of non components, or children of components with native encapsulation should
@@ -245,8 +245,7 @@ export function visitSiblingRenderNodes(
     nextSibling: any, target: any[]) {
   for (let i = startIndex; i <= endIndex; i++) {
     const nodeDef = view.def.nodes[i];
-    if (nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text ||
-        nodeDef.type === NodeType.NgContent) {
+    if (nodeDef.flags & (NodeFlags.TypeElement | NodeFlags.TypeText | NodeFlags.TypeNgContent)) {
       visitRenderNode(view, nodeDef, action, parentNode, nextSibling, target);
     }
     // jump to next sibling
@@ -287,13 +286,13 @@ export function visitProjectedRenderNodes(
 function visitRenderNode(
     view: ViewData, nodeDef: NodeDef, action: RenderNodeAction, parentNode: any, nextSibling: any,
     target: any[]) {
-  if (nodeDef.type === NodeType.NgContent) {
+  if (nodeDef.flags & NodeFlags.TypeNgContent) {
     visitProjectedRenderNodes(
         view, nodeDef.ngContent.index, action, parentNode, nextSibling, target);
   } else {
     const rn = renderNode(view, nodeDef);
     execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
-    if (nodeDef.flags & NodeFlags.HasEmbeddedViews) {
+    if (nodeDef.flags & NodeFlags.EmbeddedViews) {
       const embeddedViews = asElementData(view, nodeDef.index).embeddedViews;
       if (embeddedViews) {
         for (let k = 0; k < embeddedViews.length; k++) {
@@ -301,7 +300,7 @@ function visitRenderNode(
         }
       }
     }
-    if (nodeDef.type === NodeType.Element && !nodeDef.element.name) {
+    if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element.name) {
       visitSiblingRenderNodes(
           view, action, nodeDef.index + 1, nodeDef.index + nodeDef.childCount, parentNode,
           nextSibling, target);

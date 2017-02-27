@@ -128,7 +128,9 @@ export function main() {
           directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
         ]);
 
-        expect(childFlags(vd)).toEqual([NodeFlags.AfterContentChecked, NodeFlags.None]);
+        expect(childFlags(vd)).toEqual([
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None
+        ]);
       });
 
       it('should calculate childFlags for two levels', () => {
@@ -139,7 +141,8 @@ export function main() {
         ]);
 
         expect(childFlags(vd)).toEqual([
-          NodeFlags.AfterContentChecked, NodeFlags.AfterContentChecked, NodeFlags.None
+          NodeFlags.TypeElement | NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None
         ]);
       });
 
@@ -153,8 +156,9 @@ export function main() {
         ]);
 
         expect(childFlags(vd)).toEqual([
-          NodeFlags.AfterContentChecked, NodeFlags.None,
-          NodeFlags.AfterContentInit | NodeFlags.AfterViewChecked, NodeFlags.None, NodeFlags.None
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewChecked,
+          NodeFlags.None, NodeFlags.None
         ]);
       });
 
@@ -169,8 +173,10 @@ export function main() {
         ]);
 
         expect(childFlags(vd)).toEqual([
-          NodeFlags.AfterContentChecked, NodeFlags.AfterContentChecked, NodeFlags.None,
-          NodeFlags.AfterContentInit | NodeFlags.AfterViewInit, NodeFlags.None, NodeFlags.None
+          NodeFlags.TypeElement | NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewInit,
+          NodeFlags.None, NodeFlags.None
         ]);
       });
     });

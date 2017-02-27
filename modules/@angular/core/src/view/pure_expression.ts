@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeType, ProviderData, PureExpressionData, PureExpressionType, Services, ViewData, asPureExpressionData} from './types';
+import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeFlags, ProviderData, PureExpressionData, Services, ViewData, asPureExpressionData} from './types';
 import {checkAndUpdateBinding, tokenKey} from './util';
 
 export function purePipeDef(argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
-  return _pureExpressionDef(PureExpressionType.Pipe, new Array(argCount + 1));
+  return _pureExpressionDef(NodeFlags.TypePurePipe, new Array(argCount + 1));
 }
 
 export function pureArrayDef(argCount: number): NodeDef {
-  return _pureExpressionDef(PureExpressionType.Array, new Array(argCount));
+  return _pureExpressionDef(NodeFlags.TypePureArray, new Array(argCount));
 }
 
 export function pureObjectDef(propertyNames: string[]): NodeDef {
-  return _pureExpressionDef(PureExpressionType.Object, propertyNames);
+  return _pureExpressionDef(NodeFlags.TypePureObject, propertyNames);
 }
 
-function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): NodeDef {
+function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef {
   const bindings: BindingDef[] = new Array(propertyNames.length);
   for (let i = 0; i < propertyNames.length; i++) {
     const prop = propertyNames[i];
@@ -36,7 +36,6 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     };
   }
   return {
-    type: NodeType.PureExpression,
     // will bet set by the view definition
     index: undefined,
     reverseChildIndex: undefined,
@@ -45,7 +44,7 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     bindingIndex: undefined,
     outputIndex: undefined,
     // regular values
-    flags: 0,
+    flags,
     childFlags: 0,
     childMatchedQueries: 0,
     matchedQueries: {},
@@ -57,7 +56,6 @@ function _pureExpressionDef(type: PureExpressionType, propertyNames: string[]): 
     element: undefined,
     provider: undefined,
     text: undefined,
-    pureExpression: {type},
     query: undefined,
     ngContent: undefined
   };
@@ -87,8 +85,8 @@ export function checkAndUpdatePureExpressionInline(
   if (changed) {
     const data = asPureExpressionData(view, def.index);
     let value: any;
-    switch (def.pureExpression.type) {
-      case PureExpressionType.Array:
+    switch (def.flags & NodeFlags.Types) {
+      case NodeFlags.TypePureArray:
         value = new Array(bindings.length);
         if (bindLen > 0) value[0] = v0;
         if (bindLen > 1) value[1] = v1;
@@ -101,7 +99,7 @@ export function checkAndUpdatePureExpressionInline(
         if (bindLen > 8) value[8] = v8;
         if (bindLen > 9) value[9] = v9;
         break;
-      case PureExpressionType.Object:
+      case NodeFlags.TypePureObject:
         value = {};
         if (bindLen > 0) value[bindings[0].name] = v0;
         if (bindLen > 1) value[bindings[1].name] = v1;
@@ -114,7 +112,7 @@ export function checkAndUpdatePureExpressionInline(
         if (bindLen > 8) value[bindings[8].name] = v8;
         if (bindLen > 9) value[bindings[9].name] = v9;
         break;
-      case PureExpressionType.Pipe:
+      case NodeFlags.TypePurePipe:
         const pipe = v0;
         switch (bindLen) {
           case 1:
@@ -169,17 +167,17 @@ export function checkAndUpdatePureExpressionDynamic(
   if (changed) {
     const data = asPureExpressionData(view, def.index);
     let value: any;
-    switch (def.pureExpression.type) {
-      case PureExpressionType.Array:
+    switch (def.flags & NodeFlags.Types) {
+      case NodeFlags.TypePureArray:
         value = values;
         break;
-      case PureExpressionType.Object:
+      case NodeFlags.TypePureObject:
         value = {};
         for (let i = 0; i < values.length; i++) {
           value[bindings[i].name] = values[i];
         }
         break;
-      case PureExpressionType.Pipe:
+      case NodeFlags.TypePurePipe:
         const pipe = values[0];
         const params = values.slice(1);
         value = (<any>pipe.transform)(...params);

@@ -41,7 +41,7 @@ export function main() {
                 elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null, 2, 'span'),
                 directiveDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
               ])),
-          directiveDef(NodeFlags.IsComponent, null, 0, AComp, []),
+          directiveDef(NodeFlags.Component, null, 0, AComp, []),
         ]));
         return view;
       }
