@@ -51,12 +51,10 @@ $mat-toolbar-padding: 16px !default;
 // Set the default height for the toolbar.
 @include mat-toolbar-height($mat-toolbar-height-desktop);
 
-// Specific height for mobile devices in portrait mode.
-@media ($mat-xsmall) and (orientation: portrait) {
+// As per specs, mobile devices will use a different height for toolbars than for desktop.
+// The height for mobile landscape devices has been ignored since relying on `@media orientation`
+// is causing issues on devices with a soft-keyboard.
+// See: https://material.io/guidelines/layout/structure.html#structure-app-bar
+@media ($mat-xsmall) {
   @include mat-toolbar-height($mat-toolbar-height-mobile-portrait);
-}
-
-// Specific height for mobile devices in landscape mode.
-@media ($mat-small) and (orientation: landscape) {
-  @include mat-toolbar-height($mat-toolbar-height-mobile-landscape);
 }
