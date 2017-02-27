@@ -16,7 +16,7 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector} from './refs';
-import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeType, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
+import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
 import {checkBinding, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 
@@ -114,8 +114,9 @@ function prodCheckAndUpdateNode(
     v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
   const nodeDef = view.def.nodes[nodeIndex];
   checkAndUpdateNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-  return (nodeDef.type === NodeType.PureExpression) ? asPureExpressionData(view, nodeIndex).value :
-                                                      undefined;
+  return (nodeDef.flags & NodeFlags.CatPureExpression) ?
+      asPureExpressionData(view, nodeIndex).value :
+      undefined;
 }
 
 function prodCheckNoChangesNode(
@@ -123,8 +124,9 @@ function prodCheckNoChangesNode(
     v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
   const nodeDef = view.def.nodes[nodeIndex];
   checkNoChangesNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-  return (nodeDef.type === NodeType.PureExpression) ? asPureExpressionData(view, nodeIndex).value :
-                                                      undefined;
+  return (nodeDef.flags & NodeFlags.CatPureExpression) ?
+      asPureExpressionData(view, nodeIndex).value :
+      undefined;
 }
 
 function debugCreateEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
@@ -182,10 +184,10 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
     } else {
       debugCheckNoChangesNode(view, nodeDef, argStyle, values);
     }
-    if (nodeDef.type === NodeType.Directive) {
+    if (nodeDef.flags & NodeFlags.TypeDirective) {
       debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
     }
-    return (nodeDef.type === NodeType.PureExpression) ?
+    return (nodeDef.flags & NodeFlags.CatPureExpression) ?
         asPureExpressionData(view, nodeDef.index).value :
         undefined;
   };
@@ -206,10 +208,10 @@ function debugUpdateRenderer(view: ViewData, checkType: CheckType) {
     } else {
       debugCheckNoChangesNode(view, nodeDef, argStyle, values);
     }
-    if (nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text) {
+    if (nodeDef.flags & NodeFlags.CatRenderNode) {
       debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
     }
-    return (nodeDef.type === NodeType.PureExpression) ?
+    return (nodeDef.flags & NodeFlags.CatPureExpression) ?
         asPureExpressionData(view, nodeDef.index).value :
         undefined;
   }
@@ -220,19 +222,18 @@ function debugCheckAndUpdateNode(
   const changed = (<any>checkAndUpdateNode)(view, nodeDef, argStyle, ...givenValues);
   if (changed) {
     const values = argStyle === ArgumentType.Dynamic ? givenValues[0] : givenValues;
-    if (nodeDef.type === NodeType.Directive || nodeDef.type === NodeType.Element) {
+    if (nodeDef.flags & (NodeFlags.TypeDirective | NodeFlags.TypeElement)) {
       const bindingValues: {[key: string]: string} = {};
       for (let i = 0; i < nodeDef.bindings.length; i++) {
         const binding = nodeDef.bindings[i];
         const value = values[i];
-        if ((binding.type === BindingType.ElementProperty ||
-             binding.type === BindingType.ComponentHostProperty ||
+        if ((binding.type === BindingType.ComponentHostProperty ||
              binding.type === BindingType.DirectiveProperty)) {
           bindingValues[normalizeDebugBindingName(binding.nonMinifiedName)] =
               normalizeDebugBindingValue(value);
         }
       }
-      const elDef = nodeDef.type === NodeType.Directive ? nodeDef.parent : nodeDef;
+      const elDef = nodeDef.flags & NodeFlags.TypeDirective ? nodeDef.parent : nodeDef;
       const el = asElementData(view, elDef.index).renderElement;
       if (!elDef.element.name) {
         // a comment.
@@ -281,7 +282,7 @@ function normalizeDebugBindingValue(value: any): string {
 function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
-    if (nodeDef.type === NodeType.Directive && nodeDef.bindings && nodeDef.bindings.length) {
+    if (nodeDef.flags & NodeFlags.TypeDirective && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
@@ -291,8 +292,7 @@ function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number {
 function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
-    if ((nodeDef.type === NodeType.Element || nodeDef.type === NodeType.Text) && nodeDef.bindings &&
-        nodeDef.bindings.length) {
+    if ((nodeDef.flags & NodeFlags.CatRenderNode) && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
@@ -310,7 +310,7 @@ class DebugContext_ implements DebugContext {
     this.nodeDef = view.def.nodes[nodeIndex];
     let elDef = this.nodeDef;
     let elView = view;
-    while (elDef && elDef.type !== NodeType.Element) {
+    while (elDef && (elDef.flags & NodeFlags.TypeElement) === 0) {
       elDef = elDef.parent;
     }
     if (!elDef) {
@@ -334,7 +334,7 @@ class DebugContext_ implements DebugContext {
     if (this.elDef) {
       for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
         const childDef = this.elView.def.nodes[i];
-        if (childDef.type === NodeType.Provider || childDef.type === NodeType.Directive) {
+        if (childDef.flags & NodeFlags.CatProvider) {
           tokens.push(childDef.provider.token);
         }
         i += childDef.childCount;
@@ -349,7 +349,7 @@ class DebugContext_ implements DebugContext {
 
       for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
         const childDef = this.elView.def.nodes[i];
-        if (childDef.type === NodeType.Provider || childDef.type === NodeType.Directive) {
+        if (childDef.flags & NodeFlags.CatProvider) {
           collectReferences(this.elView, childDef, references);
         }
         i += childDef.childCount;
@@ -358,7 +358,7 @@ class DebugContext_ implements DebugContext {
     return references;
   }
   get source(): string {
-    if (this.nodeDef.type === NodeType.Text) {
+    if (this.nodeDef.flags & NodeFlags.TypeText) {
       return this.nodeDef.text.source;
     } else {
       return this.elDef.element.source;
@@ -369,8 +369,8 @@ class DebugContext_ implements DebugContext {
     return elData ? elData.renderElement : undefined;
   }
   get renderNode(): any {
-    return this.nodeDef.type === NodeType.Text ? renderNode(this.view, this.nodeDef) :
-                                                 renderNode(this.elView, this.elDef);
+    return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
+                                                     renderNode(this.elView, this.elDef);
   }
 }
 
