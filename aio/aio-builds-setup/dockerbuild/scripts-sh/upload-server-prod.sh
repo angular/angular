@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 
+# Start the upload-server instance
 # TODO(gkalpak): Ideally, the upload server should be run as a non-privileged user.
 #                (Currently, there doesn't seem to be a straight forward way.)
 action=$([ "$1" == "stop" ] && echo "stop" || echo "start")
