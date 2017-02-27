@@ -110,14 +110,7 @@ class Helper {
   }
 
   public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory) {
-    Object.keys(this.portPerScheme).forEach(scheme => {
-      // TODO (gkalpak): Enable HTTPS tests
-      if (scheme === 'https') {
-        return it('should have tests');
-      }
-
-      suiteFactory(scheme, this.portPerScheme[scheme]);
-    });
+    Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
   }
 
   public verifyResponse(status: number | [number, string], regex = /^/): VerifyCmdResultFn {
