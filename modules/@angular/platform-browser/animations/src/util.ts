@@ -49,9 +49,13 @@ export function parseTimeExpression(exp: string | number, errors: string[]): Ani
   return {duration, delay, easing};
 }
 
-export function normalizeStyles(styles: ɵStyleData[]): ɵStyleData {
+export function normalizeStyles(styles: ɵStyleData | ɵStyleData[]): ɵStyleData {
   const normalizedStyles: ɵStyleData = {};
-  styles.forEach(data => copyStyles(data, false, normalizedStyles));
+  if (Array.isArray(styles)) {
+    styles.forEach(data => copyStyles(data, false, normalizedStyles));
+  } else {
+    copyStyles(styles, false, normalizedStyles);
+  }
   return normalizedStyles;
 }
 

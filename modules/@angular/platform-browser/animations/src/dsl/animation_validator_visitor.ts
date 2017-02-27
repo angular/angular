@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata} from '@angular/animations';
+import {AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, sequence} from '@angular/animations';
 
 import {normalizeStyles, parseTimeExpression} from '../util';
 
@@ -52,7 +52,9 @@ export type StyleTimeTuple = {
  * Otherwise an error will be thrown.
  */
 export function validateAnimationSequence(ast: AnimationMetadata) {
-  return new AnimationValidatorVisitor().validate(ast);
+  const normalizedAst =
+      Array.isArray(ast) ? sequence(<AnimationMetadata[]>ast) : <AnimationMetadata>ast;
+  return new AnimationValidatorVisitor().validate(normalizedAst);
 }
 
 export class AnimationValidatorVisitor implements AnimationDslVisitor {
@@ -62,9 +64,13 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
     return context.errors;
   }
 
-  visitState(ast: AnimationStateMetadata, context: any): any {}
+  visitState(ast: AnimationStateMetadata, context: any): any {
+    // these values are not visited in this AST
+  }
 
-  visitTransition(ast: AnimationTransitionMetadata, context: any): any {}
+  visitTransition(ast: AnimationTransitionMetadata, context: any): any {
+    // these values are not visited in this AST
+  }
 
   visitSequence(ast: AnimationSequenceMetadata, context: AnimationValidatorContext): any {
     ast.steps.forEach(step => visitAnimationNode(this, step, context));
