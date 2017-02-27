@@ -28,6 +28,7 @@ describe('Collector', () => {
       '/promise.ts',
       '/unsupported-1.ts',
       '/unsupported-2.ts',
+      '/unsupported-3.ts',
       'class-arity.ts',
       'import-star.ts',
       'exported-classes.ts',
@@ -621,9 +622,15 @@ describe('Collector', () => {
     });
 
     it('should throw for references to unexpected types', () => {
-      const unsupported1 = program.getSourceFile('/unsupported-2.ts');
-      expect(() => collector.getMetadata(unsupported1, true))
+      const unsupported2 = program.getSourceFile('/unsupported-2.ts');
+      expect(() => collector.getMetadata(unsupported2, true))
           .toThrowError(/Reference to non-exported class/);
+    });
+
+    it('should throw for errors in a static method', () => {
+      const unsupported3 = program.getSourceFile('/unsupported-3.ts');
+      expect(() => collector.getMetadata(unsupported3, true))
+          .toThrowError(/Reference to a non-exported class/);
     });
   });
 
@@ -909,6 +916,15 @@ const FILES: Directory = {
     @Injectable()
     export class Bar {
       constructor(private f: Foo) {}
+    }
+  `,
+  'unsupported-3.ts': `
+    class Foo {}
+
+    export class SomeClass {
+      static someStatic() {
+        return Foo;
+      }
     }
   `,
   'import-star.ts': `
