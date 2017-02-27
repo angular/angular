@@ -1,6 +1,7 @@
 // Imports
 import {IncomingMessage} from 'http';
 import * as https from 'https';
+import {assertNotMissingOrEmpty} from './utils';
 
 // Constants
 const GITHUB_HOSTNAME = 'api.github.com';
@@ -18,9 +19,7 @@ export class GithubApi {
 
   // Constructor
   constructor(protected repoSlug: string, githubToken?: string) {
-    if (!repoSlug) {
-      throw new Error('Missing required parameter \'repoSlug\'!');
-    }
+    assertNotMissingOrEmpty('repoSlug', repoSlug);
     if (!githubToken) {
       console.warn('No GitHub access-token specified. Requests will be unauthenticated.');
     }

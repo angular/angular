@@ -1,8 +1,27 @@
 // Imports
-import {getEnvVar} from '../../lib/common/utils';
+import {assertNotMissingOrEmpty, getEnvVar} from '../../lib/common/utils';
 
 // Tests
 describe('utils', () => {
+
+  describe('assertNotMissingOrEmpty()', () => {
+
+    it('should throw if passed an empty value', () => {
+      expect(() => assertNotMissingOrEmpty('foo', undefined)).
+        toThrowError('Missing or empty required parameter \'foo\'!');
+      expect(() => assertNotMissingOrEmpty('bar', null)).toThrowError('Missing or empty required parameter \'bar\'!');
+      expect(() => assertNotMissingOrEmpty('baz', '')).toThrowError('Missing or empty required parameter \'baz\'!');
+    });
+
+
+    it('should not throw if passed a non-empty value', () => {
+      expect(() => assertNotMissingOrEmpty('foo', ' ')).not.toThrow();
+      expect(() => assertNotMissingOrEmpty('bar', 'bar')).not.toThrow();
+      expect(() => assertNotMissingOrEmpty('baz', 'b a z')).not.toThrow();
+    });
+
+  });
+
 
   describe('getEnvVar()', () => {
     const emptyVar = '$$test_utils_getEnvVar_empty$$';
