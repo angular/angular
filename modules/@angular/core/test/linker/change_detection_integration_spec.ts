@@ -6,37 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactoryV2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
-import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 import {EventEmitter} from '../../src/facade/async';
 
 export function main() {
-  describe('Current compiler', () => { createTests({viewEngine: false}); });
-
-  describe('View Engine compiler', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        useJit: true,
-        providers: [
-          {provide: USE_VIEW_ENGINE, useValue: true},
-        ]
-      });
-    });
-
-    createTests({viewEngine: true});
-  });
-}
-
-function createTests({viewEngine}: {viewEngine: boolean}) {
   let elSchema: MockSchemaRegistry;
   let renderLog: RenderLog;
   let directiveLog: DirectiveLog;
@@ -123,7 +103,6 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
         providers: [
           RenderLog,
           DirectiveLog,
-          {provide: RootRenderer, useClass: LoggingRootRenderer},
         ],
       });
     });
@@ -1284,26 +1263,6 @@ class RenderLog {
     this.log = [];
     this.loggedValues = [];
   }
-}
-
-@Injectable()
-class LoggingRootRenderer implements RootRenderer {
-  constructor(private _delegate: DomRootRenderer, private _log: RenderLog) {}
-
-  renderComponent(componentProto: RenderComponentType): Renderer {
-    return new LoggingRenderer(this._delegate.renderComponent(componentProto), this._log);
-  }
-}
-
-class LoggingRenderer extends DebugDomRenderer {
-  constructor(delegate: Renderer, private _log: RenderLog) { super(delegate); }
-
-  setElementProperty(renderElement: any, propertyName: string, propertyValue: any) {
-    this._log.setElementProperty(renderElement, propertyName, propertyValue);
-    super.setElementProperty(renderElement, propertyName, propertyValue);
-  }
-
-  setText(renderNode: any, value: string) { this._log.setText(renderNode, value); }
 }
 
 class DirectiveLogEntry {

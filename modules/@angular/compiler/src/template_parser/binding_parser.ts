@@ -242,8 +242,8 @@ export class BindingParser {
       BoundElementPropertyAst {
     if (boundProp.isAnimation) {
       return new BoundElementPropertyAst(
-          boundProp.name, PropertyBindingType.Animation, SecurityContext.NONE, false,
-          boundProp.expression, null, boundProp.sourceSpan);
+          boundProp.name, PropertyBindingType.Animation, SecurityContext.NONE, boundProp.expression,
+          null, boundProp.sourceSpan);
     }
 
     let unit: string = null;
@@ -290,8 +290,8 @@ export class BindingParser {
     }
 
     return new BoundElementPropertyAst(
-        boundPropertyName, bindingType, securityContexts.length === 1 ? securityContexts[0] : null,
-        securityContexts.length > 1, boundProp.expression, unit, boundProp.sourceSpan);
+        boundPropertyName, bindingType, securityContexts[0], boundProp.expression, unit,
+        boundProp.sourceSpan);
   }
 
   parseEvent(

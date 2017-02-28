@@ -38,12 +38,8 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
     steps: AnimationMetadata[];
 }
 
-/** @experimental */
-export declare class AnimationKeyframe {
-    offset: number;
-    styles: AnimationStyles;
-    constructor(offset: number, styles: AnimationStyles);
-}
+/** @deprecated */
+export declare type AnimationKeyframe = any;
 
 /** @deprecated */
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
@@ -55,23 +51,8 @@ export interface AnimationMetadata {
     type: AnimationMetadataType;
 }
 
-/** @experimental */
-export declare abstract class AnimationPlayer {
-    parentPlayer: AnimationPlayer;
-    abstract destroy(): void;
-    abstract finish(): void;
-    abstract getPosition(): number;
-    abstract hasStarted(): boolean;
-    abstract init(): void;
-    abstract onDestroy(fn: () => void): void;
-    abstract onDone(fn: () => void): void;
-    abstract onStart(fn: () => void): void;
-    abstract pause(): void;
-    abstract play(): void;
-    abstract reset(): void;
-    abstract restart(): void;
-    abstract setPosition(p: any): void;
-}
+/** @deprecated */
+export declare type AnimationPlayer = any;
 
 /** @deprecated */
 export interface AnimationSequenceMetadata extends AnimationMetadata {
@@ -95,15 +76,8 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
     }[];
 }
 
-/** @experimental */
-export declare class AnimationStyles {
-    styles: {
-        [key: string]: string | number;
-    }[];
-    constructor(styles: {
-        [key: string]: string | number;
-    }[]);
-}
+/** @deprecated */
+export declare type AnimationStyles = any;
 
 /** @deprecated */
 export interface AnimationTransitionEvent {
@@ -247,11 +221,10 @@ export interface ComponentDecorator {
 }
 
 /** @stable */
-export declare class ComponentFactory<C> {
-    componentType: Type<any>;
-    selector: string;
-    constructor(selector: string, _viewClass: Type<AppView<any>>, componentType: Type<any>);
-    create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
+export declare abstract class ComponentFactory<C> {
+    readonly abstract componentType: Type<any>;
+    readonly abstract selector: string;
+    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 
 /** @stable */
@@ -805,7 +778,7 @@ export declare class RenderComponentType {
 
 /** @deprecated */
 export declare abstract class Renderer {
-    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string, previousPlayers?: AnimationPlayer[]): AnimationPlayer;
+    abstract animate(element: any, startingStyles: any, keyframes: any[], duration: number, delay: number, easing: string, previousPlayers?: any[]): any;
     abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
     abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
     abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;

@@ -24,7 +24,7 @@
 export {VERSION} from './version';
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
-export {CompilerConfig, RenderTypes} from './config';
+export {CompilerConfig} from './config';
 export * from './compile_metadata';
 export * from './aot/compiler_factory';
 export * from './aot/compiler';
@@ -57,7 +57,6 @@ export * from './ml_parser/html_tags';
 export * from './ml_parser/interpolation_config';
 export * from './ml_parser/tags';
 export {NgModuleCompiler} from './ng_module_compiler';
-export {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
 export * from './output/path_util';
 export * from './output/ts_emitter';
 export * from './parse_util';
@@ -66,6 +65,5 @@ export * from './selector';
 export * from './style_compiler';
 export * from './template_parser/template_parser';
 export {ViewCompiler} from './view_compiler/view_compiler';
-export {AnimationParser} from './animation/animation_parser';
 export {isSyntaxError, syntaxError} from './util';
 // This file only reexports content of the `src` folder. Keep it that way.

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component, HostBinding, HostListener, ViewChild} from '@angular/core';
 import {AnimationDriver, BrowserAnimationsModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/platform-browser/animations/testing';
@@ -14,22 +13,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {TestBed} from '../../testing';
 
 export function main() {
-  describe('view engine', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        useJit: true,
-        providers: [{
-          provide: USE_VIEW_ENGINE,
-          useValue: true,
-        }],
-      });
-    });
-
-    declareTests({useJit: true});
-  });
-}
-
-function declareTests({useJit}: {useJit: boolean}) {
   // these tests are only mean't to be run within the DOM (for now)
   if (typeof Element == 'undefined') return;
 

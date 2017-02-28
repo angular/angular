@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT} from '@angular/core/src/errors';
-import {DebugContext} from '@angular/core/src/linker/debug_context';
-import {viewWrappedError} from '@angular/core/src/linker/errors';
+import {ERROR_DEBUG_CONTEXT, ERROR_TYPE} from '@angular/core/src/errors';
 
 import {ErrorHandler, wrappedError} from '../src/error_handler';
 
@@ -98,4 +96,11 @@ Context`);
       });
     });
   });
+}
+
+function viewWrappedError(originalError: any, context: any): Error {
+  const error = wrappedError(`Error in ${context.source}`, originalError);
+  (error as any)[ERROR_DEBUG_CONTEXT] = context;
+  (error as any)[ERROR_TYPE] = viewWrappedError;
+  return error;
 }

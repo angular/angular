@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {MockAnimationPlayer as ɵMockAnimationPlayer} from './mock_animation_player';
 export {TestingCompiler as ɵTestingCompiler, TestingCompilerFactory as ɵTestingCompilerFactory} from './test_compiler';

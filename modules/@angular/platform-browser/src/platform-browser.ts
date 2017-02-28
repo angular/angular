@@ -10,7 +10,6 @@ export {BrowserModule, platformBrowser} from './browser';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
-export {AnimationDriver} from './dom/animation_driver';
 export {By} from './dom/debug/by';
 export {NgProbeToken} from './dom/debug/ng_probe';
 export {DOCUMENT} from './dom/dom_tokens';
