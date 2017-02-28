@@ -18,8 +18,7 @@ export class GithubApi {
   protected requestHeaders: {[key: string]: string};
 
   // Constructor
-  constructor(protected repoSlug: string, githubToken: string) {
-    assertNotMissingOrEmpty('repoSlug', repoSlug);
+  constructor(githubToken: string) {
     assertNotMissingOrEmpty('githubToken', githubToken);
 
     this.requestHeaders = {
