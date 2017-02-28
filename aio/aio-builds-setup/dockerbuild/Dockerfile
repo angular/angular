@@ -13,6 +13,8 @@ EXPOSE 80 443
 
 ENV AIO_BUILDS_DIR=/var/www/aio-builds             TEST_AIO_BUILDS_DIR=/tmp/aio-builds         \
     AIO_DOMAIN_NAME=ngbuilds.io                    TEST_AIO_DOMAIN_NAME=test-ngbuilds.io       \
+    AIO_GITHUB_ORGANIZATION=angular                TEST_AIO_GITHUB_ORGANIZATION=angular        \
+    AIO_GITHUB_TEAM_SLUGS=angular-core             TEST_AIO_GITHUB_TEAM_SLUGS=angular-core     \
     AIO_NGINX_HOSTNAME=nginx.localhost             TEST_AIO_NGINX_HOSTNAME=nginx.localhost     \
     AIO_NGINX_PORT_HTTP=80                         TEST_AIO_NGINX_PORT_HTTP=8080               \
     AIO_NGINX_PORT_HTTPS=443                       TEST_AIO_NGINX_PORT_HTTPS=4433              \

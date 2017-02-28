@@ -1,25 +1,43 @@
 // Imports
 import * as express from 'express';
 import * as http from 'http';
-import {assertNotMissingOrEmpty} from '../common/utils';
+import {GithubPullRequests} from '../common/github-pull-requests';
 import {BuildCreator} from './build-creator';
 import {CreatedBuildEvent} from './build-events';
+import {BuildVerifier} from './build-verifier';
 import {UploadError} from './upload-error';
 
 // Constants
+const AUTHORIZATION_HEADER = 'AUTHORIZATION';
 const X_FILE_HEADER = 'X-FILE';
+
+// Interfaces - Types
+interface UploadServerConfig {
+  buildsDir: string;
+  githubOrganization: string;
+  githubTeamSlugs: string[];
+  githubToken: string;
+  repoSlug: string;
+  secret: string;
+}
 
 // Classes
 class UploadServerFactory {
   // Methods - Public
-  public create(buildsDir: string): http.Server {
-    assertNotMissingOrEmpty('buildsDir', buildsDir);
+  public create({
+    buildsDir,
+    githubOrganization,
+    githubTeamSlugs,
+    githubToken,
+    repoSlug,
+    secret,
+  }: UploadServerConfig): http.Server {
+    const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, githubOrganization, githubTeamSlugs);
+    const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug);
 
-    const buildCreator = new BuildCreator(buildsDir);
-    const middleware = this.createMiddleware(buildCreator);
+    const middleware = this.createMiddleware(buildVerifier, buildCreator);
     const httpServer = http.createServer(middleware);
 
-    buildCreator.on(CreatedBuildEvent.type, (data: CreatedBuildEvent) => httpServer.emit(CreatedBuildEvent.type, data));
     httpServer.on('listening', () => {
       const info = httpServer.address();
       console.info(`Up and running (and listening on ${info.address}:${info.port})...`);
@@ -29,20 +47,38 @@ class UploadServerFactory {
   }
 
   // Methods - Protected
-  protected createMiddleware(buildCreator: BuildCreator): express.Express {
+  protected createBuildCreator(buildsDir: string, githubToken: string, repoSlug: string): BuildCreator {
+    const buildCreator = new BuildCreator(buildsDir);
+    const githubPullRequests = new GithubPullRequests(githubToken, repoSlug);
+
+    buildCreator.on(CreatedBuildEvent.type, ({pr, sha}: CreatedBuildEvent) => {
+      const body = `The angular.io preview for ${sha.slice(0, 7)} is available [here][1].\n\n` +
+                   `[1]: https://pr${pr}-${sha}.ngbuilds.io/`;
+
+      githubPullRequests.addComment(pr, body);
+    });
+
+    return buildCreator;
+  }
+
+  protected createMiddleware(buildVerifier: BuildVerifier, buildCreator: BuildCreator): express.Express {
     const middleware = express();
 
     middleware.get(/^\/create-build\/([1-9][0-9]*)\/([0-9a-f]{40})\/?$/, (req, res) => {
       const pr = req.params[0];
       const sha = req.params[1];
       const archive = req.header(X_FILE_HEADER);
+      const authHeader = req.header(AUTHORIZATION_HEADER);
 
-      if (!archive) {
+      if (!authHeader) {
+        this.throwRequestError(401, `Missing or empty '${AUTHORIZATION_HEADER}' header`, req);
+      } else if (!archive) {
         this.throwRequestError(400, `Missing or empty '${X_FILE_HEADER}' header`, req);
       }
 
-      buildCreator.
-        create(pr, sha, archive).
+      buildVerifier.
+        verify(+pr, authHeader).
+        then(() => buildCreator.create(pr, sha, archive)).
         then(() => res.sendStatus(201)).
         catch(err => this.respondWithError(res, err));
     });
