@@ -8,18 +8,13 @@ import {GithubApi} from '../../lib/common/github-api';
 describe('GithubApi', () => {
   let api: GithubApi;
 
-  beforeEach(() => api = new GithubApi('repo/slug', '12345'));
+  beforeEach(() => api = new GithubApi('12345'));
 
 
   describe('constructor()', () => {
 
-    it('should throw if \'repoSlug\' is missing or empty', () => {
-      expect(() => new GithubApi('', '12345')).toThrowError('Missing or empty required parameter \'repoSlug\'!');
-    });
-
-
     it('should throw if \'githubToken\' is missing or empty', () => {
-      expect(() => new GithubApi('repo/slug', '')).toThrowError('Missing or empty required parameter \'githubToken\'!');
+      expect(() => new GithubApi('')).toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
   });
@@ -172,7 +167,7 @@ describe('GithubApi', () => {
 
 
     it('should reject if the request fails', done => {
-      (api as any).getPaginated('/foo/bar').catch(err => {
+      (api as any).getPaginated('/foo/bar').catch((err: any) => {
         expect(err).toBe('Test');
         done();
       });
