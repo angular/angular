@@ -10,7 +10,6 @@ import * as core from '@angular/core';
 
 import {StringMapWrapper} from '../../facade/collection';
 import {getDOM} from '../dom_adapter';
-import {DomRendererFactoryV2, DomRootRenderer} from '../dom_renderer';
 
 const CORE_TOKENS = {
   'ApplicationRef': core.ApplicationRef,
@@ -37,20 +36,13 @@ export class NgProbeToken {
   constructor(public name: string, public token: any) {}
 }
 
-
-export function _createConditionalRootRenderer(
-    rootRenderer: any, extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]) {
-  return core.isDevMode() ?
-      _createRootRenderer(rootRenderer, (extraTokens || []).concat(coreTokens || [])) :
-      rootRenderer;
-}
-
-function _createRootRenderer(rootRenderer: any, extraTokens: NgProbeToken[]) {
+export function _createNgProbe(extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]): any {
+  const tokens = (extraTokens || []).concat(coreTokens || []);
   getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   getDOM().setGlobalVar(
       CORE_TOKENS_GLOBAL_NAME,
-      StringMapWrapper.merge(CORE_TOKENS, _ngProbeTokensToMap(extraTokens || [])));
-  return new core.ɵDebugDomRootRenderer(rootRenderer);
+      StringMapWrapper.merge(CORE_TOKENS, _ngProbeTokensToMap(tokens || [])));
+  return () => inspectNativeElement;
 }
 
 function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
@@ -62,12 +54,12 @@ function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
  */
 export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [
   {
-    provide: core.RootRenderer,
-    useFactory: _createConditionalRootRenderer,
+    provide: core.APP_INITIALIZER,
+    useFactory: _createNgProbe,
     deps: [
-      DomRootRenderer,
       [NgProbeToken, new core.Optional()],
       [core.NgProbeToken, new core.Optional()],
     ],
+    multi: true,
   },
 ];

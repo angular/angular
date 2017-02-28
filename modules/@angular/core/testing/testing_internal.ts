@@ -14,7 +14,6 @@ import {global} from './facade/lang';
 import {getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';
-export {MockAnimationPlayer} from './mock_animation_player';
 export {inject} from './test_bed';
 
 export * from './logger';
