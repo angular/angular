@@ -3,8 +3,9 @@ import {assertNotMissingOrEmpty} from '../common/utils';
 import {GithubApi} from './github-api';
 
 // Interfaces - Types
-interface PullRequest  {
+export interface PullRequest  {
   number: number;
+  user: {login: string};
 }
 
 export type PullRequestState = 'all' | 'closed' | 'open';
@@ -26,6 +27,10 @@ export class GithubPullRequests extends GithubApi {
     }
 
     return this.post<void>(`/repos/${this.repoSlug}/issues/${pr}/comments`, null, {body});
+  }
+
+  public fetch(pr: number): Promise<PullRequest> {
+    return this.get<PullRequest>(`/repos/${this.repoSlug}/pulls/${pr}`);
   }
 
   public fetchAll(state: PullRequestState = 'all'): Promise<PullRequest[]> {
