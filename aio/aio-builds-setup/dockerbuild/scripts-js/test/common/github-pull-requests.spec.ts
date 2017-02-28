@@ -78,89 +78,38 @@ describe('GithubPullRequests', () => {
 
   describe('fetchAll()', () => {
     let prs: GithubPullRequests;
-    let deferreds: {resolve: Function, reject: Function}[];
+    let prsGetPaginatedSpy: jasmine.Spy;
 
     beforeEach(() => {
       prs = new GithubPullRequests('foo/bar', '12345');
-      deferreds = [];
-
-      spyOn(process.stdout, 'write');
-      spyOn(prs, 'get').and.callFake(() => new Promise((resolve, reject) => deferreds.push({resolve, reject})));
+      prsGetPaginatedSpy = spyOn(prs as any, 'getPaginated');
+      spyOn(console, 'log');
     });
 
 
-    it('should return a promise', () => {
-      expect(prs.fetchAll()).toEqual(jasmine.any(Promise));
-    });
+    it('should call \'getPaginated()\' with the correct pathname and params', () => {
+      const expectedPathname = '/repos/foo/bar/pulls';
 
-
-    it('should call \'get()\' with the correct pathname and params', () => {
+      prs.fetchAll('all');
+      prs.fetchAll('closed');
       prs.fetchAll('open');
 
-      expect(prs.get).toHaveBeenCalledWith('/repos/foo/bar/pulls', {
-        page: 0,
-        per_page: 100,
-        state: 'open',
-      });
+      expect(prsGetPaginatedSpy).toHaveBeenCalledTimes(3);
+      expect(prsGetPaginatedSpy.calls.argsFor(0)).toEqual([expectedPathname, {state: 'all'}]);
+      expect(prsGetPaginatedSpy.calls.argsFor(1)).toEqual([expectedPathname, {state: 'closed'}]);
+      expect(prsGetPaginatedSpy.calls.argsFor(2)).toEqual([expectedPathname, {state: 'open'}]);
     });
 
 
     it('should default to \'all\' if no state is specified', () => {
       prs.fetchAll();
-
-      expect(prs.get).toHaveBeenCalledWith('/repos/foo/bar/pulls', {
-        page: 0,
-        per_page: 100,
-        state: 'all',
-      });
+      expect(prsGetPaginatedSpy).toHaveBeenCalledWith('/repos/foo/bar/pulls', {state: 'all'});
     });
 
 
-    it('should reject if the request fails', done => {
-      prs.fetchAll().catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
-
-      deferreds[0].reject('Test');
-    });
-
-
-    it('should resolve with the returned pull requests', done => {
-      const pullRequests = [{id: 1}, {id: 2}];
-
-      prs.fetchAll().then(data => {
-        expect(data).toEqual(pullRequests);
-        done();
-      });
-
-      deferreds[0].resolve(pullRequests);
-    });
-
-
-    it('should iteratively call \'get()\' to fetch all pull requests', done => {
-      // Create an array or 250 objects.
-      const allPullRequests = '.'.repeat(250).split('').map((_, i) => ({id: i}));
-      const prsGetApy = prs.get as jasmine.Spy;
-
-      prs.fetchAll().then(data => {
-        const paramsForPage = (page: number) => ({page, per_page: 100, state: 'all'});
-
-        expect(prsGetApy).toHaveBeenCalledTimes(3);
-        expect(prsGetApy.calls.argsFor(0)).toEqual(['/repos/foo/bar/pulls', paramsForPage(0)]);
-        expect(prsGetApy.calls.argsFor(1)).toEqual(['/repos/foo/bar/pulls', paramsForPage(1)]);
-        expect(prsGetApy.calls.argsFor(2)).toEqual(['/repos/foo/bar/pulls', paramsForPage(2)]);
-
-        expect(data).toEqual(allPullRequests);
-
-        done();
-      });
-
-      deferreds[0].resolve(allPullRequests.slice(0, 100));
-      setTimeout(() => {
-        deferreds[1].resolve(allPullRequests.slice(100, 200));
-        setTimeout(() => deferreds[2].resolve(allPullRequests.slice(200)), 0);
-      }, 0);
+    it('should forward the value returned by \'getPaginated()\'', () => {
+      prsGetPaginatedSpy.and.returnValue('Test');
+      expect(prs.fetchAll()).toBe('Test');
     });
 
   });

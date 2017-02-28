@@ -22,30 +22,11 @@ export class GithubPullRequests extends GithubApi {
   }
 
   public fetchAll(state: PullRequestState = 'all'): Promise<PullRequest[]> {
-    process.stdout.write(`Fetching ${state} pull requests...`);
-    return this.fetchUntilDone(state, 0);
-  }
+    console.log(`Fetching ${state} pull requests...`);
 
-  // Methods - Protected
-  protected fetchUntilDone(state: PullRequestState, currentPage: number): Promise<PullRequest[]> {
-    process.stdout.write('.');
-
-    const perPage = 100;
     const pathname = `/repos/${this.repoSlug}/pulls`;
-    const params = {
-      page: currentPage,
-      per_page: perPage,
-      state,
-    };
+    const params = {state};
 
-    return this.get<PullRequest[]>(pathname, params).then(pullRequests => {
-      if (pullRequests.length < perPage) {
-        console.log('done');
-        return pullRequests;
-      }
-
-      return this.fetchUntilDone(state, currentPage + 1).
-        then(morePullRequests => [...pullRequests, ...morePullRequests]);
-    });
+    return this.getPaginated<PullRequest>(pathname, params);
   }
 }

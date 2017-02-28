@@ -51,6 +51,23 @@ export class GithubApi {
     return `${pathname}${joiner}${search}`;
   }
 
+  protected getPaginated<T>(pathname: string, baseParams: RequestParams = {}, currentPage: number = 0): Promise<T[]> {
+    const perPage = 100;
+    const params = {
+      ...baseParams,
+      page: currentPage,
+      per_page: perPage,
+    };
+
+    return this.get<T[]>(pathname, params).then(items => {
+      if (items.length < perPage) {
+        return items;
+      }
+
+      return this.getPaginated(pathname, baseParams, currentPage + 1).then(moreItems => [...items, ...moreItems]);
+    });
+  }
+
   protected request<T>(method: string, path: string, data: any = null): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const options = {
