@@ -6,7 +6,7 @@ echo 'travis_fold:start:ENV'
 
 NODE_VERSION=6.9.5
 NPM_VERSION=3.10.7 # do not upgrade to >3.10.8 unless https://github.com/npm/npm/issues/14042 is resolved
-YARN_VERSION=0.19.1
+YARN_VERSION=0.21.3
 CHROMIUM_VERSION=433059 # Chrome 56 linux stable, see https://www.chromium.org/developers/calendar
 SAUCE_CONNECT_VERSION=4.3.11
 
