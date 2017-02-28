@@ -1,5 +1,6 @@
 # VM Setup Instructions
 
+- Set up secrets (access tokens, passwords, etc)
 - Set up docker
 - Attach persistent disk
 - Build docker image (+ checkout repo)
@@ -18,6 +19,7 @@
      -p 80:80 \
      -p 443:443 \
     [-v <host-cert-dir>:/etc/ssl/localcerts:ro] \
+     -v <host-secrets-dir>:/aio-secrets:ro \
      -v <host-builds-dir>:/var/www/aio-builds \
      <name>[:<tag>]
   `
