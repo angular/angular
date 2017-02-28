@@ -1,7 +1,8 @@
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MaterialModule} from '@angular/material';
+import {AutocompleteOverviewExample} from './autocomplete-overview/autocomplete-overview-example';
 import {ButtonOverviewExample} from './button-overview/button-overview-example';
 import {ButtonTypesExample} from './button-types/button-types-example';
 import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
@@ -84,6 +85,7 @@ export interface LiveExample {
  * Value is the component.
  */
 export const EXAMPLE_COMPONENTS = {
+  'autocomplete-overview': {title: 'Basic autocomplete', component: AutocompleteOverviewExample},
   'button-overview': {title: 'Basic buttons', component: ButtonOverviewExample},
   'button-types': {title: 'Button varieties', component: ButtonTypesExample},
   'button-toggle-exclusive': {
@@ -169,6 +171,7 @@ export const EXAMPLE_COMPONENTS = {
  * We need to put them in both `declarations` and `entryComponents` to make them work.
  */
 export const EXAMPLE_LIST = [
+  AutocompleteOverviewExample,
   ButtonOverviewExample,
   ButtonToggleExclusiveExample,
   ButtonToggleOverviewExample,
@@ -226,6 +229,7 @@ export const EXAMPLE_LIST = [
   imports: [
     MaterialModule,
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
   ]
 })
