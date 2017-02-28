@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer} from '../../src/animation/animation_player';
-import {AnimationStyles} from '../../src/animation/animation_styles';
 import {InjectionToken, Injector} from '../di';
 import {ViewEncapsulation} from '../metadata/view';
 
@@ -91,9 +88,8 @@ export abstract class Renderer {
   abstract setText(renderNode: any, text: string): void;
 
   abstract animate(
-      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string,
-      previousPlayers?: AnimationPlayer[]): AnimationPlayer;
+      element: any, startingStyles: any, keyframes: any[], duration: number, delay: number,
+      easing: string, previousPlayers?: any[]): any;
 }
 
 export const RendererV2Interceptor = new InjectionToken<RendererV2[]>('RendererV2Interceptor');

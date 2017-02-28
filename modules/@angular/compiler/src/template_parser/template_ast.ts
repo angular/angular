@@ -62,8 +62,8 @@ export class AttrAst implements TemplateAst {
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(
       public name: string, public type: PropertyBindingType,
-      public securityContext: SecurityContext, public needsRuntimeSecurityContext: boolean,
-      public value: AST, public unit: string, public sourceSpan: ParseSourceSpan) {}
+      public securityContext: SecurityContext, public value: AST, public unit: string,
+      public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
@@ -15,19 +14,6 @@ import {Console} from '../../src/console';
 
 
 export function main() {
-  describe('Current compiler', () => { createTests({viewEngine: false}); });
-
-  describe('View Engine compiler', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler(
-          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
-    });
-
-    createTests({viewEngine: true});
-  });
-}
-
-function createTests({viewEngine}: {viewEngine: boolean}) {
   describe('jit', () => { declareTests({useJit: true}); });
   describe('no jit', () => { declareTests({useJit: false}); });
 }

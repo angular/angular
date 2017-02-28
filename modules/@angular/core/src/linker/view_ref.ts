@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationQueue} from '../animation/animation_queue';
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {ChangeDetectorStatus} from '../change_detection/constants';
-
-import {AppView} from './view';
 
 
 /**
@@ -91,47 +87,4 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 export interface InternalViewRef extends ViewRef {
   detachFromAppRef(): void;
   attachToAppRef(appRef: ApplicationRef): void;
-}
-
-export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef, InternalViewRef {
-  /** @internal */
-  _originalMode: ChangeDetectorStatus;
-
-  constructor(private _view: AppView<C>, public animationQueue: AnimationQueue) {
-    this._view = _view;
-    this._originalMode = this._view.cdMode;
-  }
-
-  get internalView(): AppView<C> { return this._view; }
-
-  get rootNodes(): any[] { return this._view.flatRootNodes; }
-
-  get context() { return this._view.context; }
-
-  get destroyed(): boolean { return this._view.destroyed; }
-
-  markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
-  detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
-  detectChanges(): void {
-    this._view.detectChanges(false);
-    this.animationQueue.flush();
-  }
-  checkNoChanges(): void { this._view.detectChanges(true); }
-  reattach(): void {
-    this._view.cdMode = this._originalMode;
-    this.markForCheck();
-  }
-
-  onDestroy(callback: Function) {
-    if (!this._view.disposables) {
-      this._view.disposables = [];
-    }
-    this._view.disposables.push(callback);
-  }
-
-  destroy() { this._view.detachAndDestroy(); }
-
-  detachFromAppRef() { this._view.detach(); }
-
-  attachToAppRef(appRef: ApplicationRef) { this._view.attachToAppRef(appRef); }
 }

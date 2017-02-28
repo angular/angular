@@ -7,7 +7,6 @@
  */
 
 import {ElementRef} from './element_ref';
-import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
 
 
@@ -40,23 +39,4 @@ export abstract class TemplateRef<C> {
   abstract get elementRef(): ElementRef;
 
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
-}
-
-/**
- * workaround https://github.com/angular/tsickle/issues/350
- * @suppress {checkTypes}
- */
-export class TemplateRef_<C> extends TemplateRef<C> {
-  constructor(
-      private _parentView: AppView<any>, private _nodeIndex: number, private _nativeElement: any) {
-    super();
-  }
-
-  createEmbeddedView(context: C): EmbeddedViewRef<C> {
-    const view = this._parentView.createEmbeddedViewInternal(this._nodeIndex);
-    view.create(context || <any>{});
-    return view.ref;
-  }
-
-  get elementRef(): ElementRef { return new ElementRef(this._nativeElement); }
 }

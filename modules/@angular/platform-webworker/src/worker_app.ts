@@ -16,7 +16,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_wo
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
-import {WebWorkerRendererFactoryV2, WebWorkerRootRenderer} from './web_workers/worker/renderer';
+import {WebWorkerRendererFactoryV2} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 
@@ -63,8 +63,6 @@ export function setupWebWorker(): void {
     {provide: DOCUMENT, useValue: null},
     {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
-    WebWorkerRootRenderer,
-    {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
     WebWorkerRendererFactoryV2,
     {provide: RendererFactoryV2, useExisting: WebWorkerRendererFactoryV2},
     {provide: ON_WEB_WORKER, useValue: true},

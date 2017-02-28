@@ -143,5 +143,3 @@ export class Serializer {
     };
   }
 }
-
-export const ANIMATION_WORKER_PLAYER_PREFIX = 'AnimationPlayer.';

@@ -49,29 +49,9 @@ describe('tree benchmark spec', () => {
     expect($('#numberOfChecks').getText()).toContain('10');
   });
 
-  // TODO: delete ftl benchmarks
-  xit('should work for ng2 ftl', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_ftl/index.html',
-      // Can't use bundles as we use AoT generated code
-      // which relies on deep imports
-      extraParams: [{name: 'bundles', value: false}]
-    });
-  });
-
   it('should work for ng2 static', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/ng2_static/index.html',
-    });
-  });
-
-  // TODO: delete ftl benchmarks
-  xit('should work for ng2 static ftl', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_static_ftl/index.html',
-      // Can't use bundles as we use AoT generated code
-      // which relies on deep imports
-      extraParams: [{name: 'bundles', value: false}]
     });
   });
 

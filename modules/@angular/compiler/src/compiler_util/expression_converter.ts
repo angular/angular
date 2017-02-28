@@ -10,12 +10,7 @@
 import * as cdAst from '../expression_parser/ast';
 import {isBlank} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
-import {ClassBuilder} from '../output/class_builder';
 import * as o from '../output/output_ast';
-
-import {createPureProxy} from './identifier_util';
-
-const VAL_UNWRAPPER_VAR = o.variable(`valUnwrapper`);
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
@@ -114,73 +109,6 @@ export function convertPropertyBinding(
 
   stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
-}
-
-
-export class LegacyConvertPropertyBindingResult implements ConvertPropertyBindingResult {
-  constructor(
-      public stmts: o.Statement[], public currValExpr: o.Expression,
-      public forceUpdate: o.Expression) {}
-}
-
-export interface LegacyNameResolver {
-  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
-  getLocal(name: string): o.Expression;
-}
-
-/**
- * Converts the given expression AST into an executable output AST, assuming the expression is
- * used in a property binding.
- */
-export function legacyConvertPropertyBinding(
-    builder: ClassBuilder, nameResolver: LegacyNameResolver, implicitReceiver: o.Expression,
-    expression: cdAst.AST, bindingId: string): LegacyConvertPropertyBindingResult {
-  if (!nameResolver) {
-    nameResolver = new LegacyDefaultNameResolver();
-  }
-  let needsValueUnwrapper = false;
-  const expressionWithoutBuiltins = convertBuiltins(
-      {
-        createLiteralArrayConverter: (argCount: number) => {
-          return (args: o.Expression[]) => legacyCreateCachedLiteralArray(builder, args);
-        },
-        createLiteralMapConverter: (keys: string[]) => {
-          return (args: o.Expression[]) => legacyCreateCachedLiteralMap(
-                     builder, <[string, o.Expression][]>keys.map((key, i) => [key, args[i]]));
-        },
-        createPipeConverter: (name: string) => {
-          needsValueUnwrapper = true;
-          return (args: o.Expression[]) => VAL_UNWRAPPER_VAR.callMethod(
-                     'unwrap', [nameResolver.callPipe(name, args[0], args.slice(1))]);
-        }
-      },
-      expression);
-
-  const {stmts, currValExpr} =
-      convertPropertyBinding(nameResolver, implicitReceiver, expressionWithoutBuiltins, bindingId);
-  let forceUpdate: o.Expression = null;
-  if (needsValueUnwrapper) {
-    const initValueUnwrapperStmt = VAL_UNWRAPPER_VAR.callMethod('reset', []).toStmt();
-    stmts.unshift(initValueUnwrapperStmt);
-    forceUpdate = VAL_UNWRAPPER_VAR.prop('hasWrappedValue');
-  }
-  return new LegacyConvertPropertyBindingResult(stmts, currValExpr, forceUpdate);
-}
-
-/**
- * Creates variables that are shared by multiple calls to `convertActionBinding` /
- * `convertPropertyBinding`
- */
-export function legacyCreateSharedBindingVariablesIfNeeded(stmts: o.Statement[]): o.Statement[] {
-  const unwrapperStmts: o.Statement[] = [];
-  const readVars = o.findReadVarNames(stmts);
-  if (readVars.has(VAL_UNWRAPPER_VAR.name)) {
-    unwrapperStmts.push(
-        VAL_UNWRAPPER_VAR
-            .set(o.importExpr(createIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
-            .toDeclStmt(null, [o.StmtModifier.Final]));
-  }
-  return unwrapperStmts;
 }
 
 function convertBuiltins(converterFactory: BuiltinConverterFactory, ast: cdAst.AST): cdAst.AST {
@@ -649,61 +577,7 @@ function flattenStatements(arg: any, output: o.Statement[]) {
   }
 }
 
-function legacyCreateCachedLiteralArray(
-    builder: ClassBuilder, values: o.Expression[]): o.Expression {
-  if (values.length === 0) {
-    return o.importExpr(createIdentifier(Identifiers.EMPTY_ARRAY));
-  }
-  const proxyExpr = o.THIS_EXPR.prop(`_arr_${builder.fields.length}`);
-  const proxyParams: o.FnParam[] = [];
-  const proxyReturnEntries: o.Expression[] = [];
-  for (let i = 0; i < values.length; i++) {
-    const paramName = `p${i}`;
-    proxyParams.push(new o.FnParam(paramName));
-    proxyReturnEntries.push(o.variable(paramName));
-  }
-  createPureProxy(
-      o.fn(
-          proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))],
-          new o.ArrayType(o.DYNAMIC_TYPE)),
-      values.length, proxyExpr, builder);
-  return proxyExpr.callFn(values);
-}
-
-function legacyCreateCachedLiteralMap(
-    builder: ClassBuilder, entries: [string, o.Expression][]): o.Expression {
-  if (entries.length === 0) {
-    return o.importExpr(createIdentifier(Identifiers.EMPTY_MAP));
-  }
-  const proxyExpr = o.THIS_EXPR.prop(`_map_${builder.fields.length}`);
-  const proxyParams: o.FnParam[] = [];
-  const proxyReturnEntries: [string, o.Expression][] = [];
-  const values: o.Expression[] = [];
-  for (let i = 0; i < entries.length; i++) {
-    const paramName = `p${i}`;
-    proxyParams.push(new o.FnParam(paramName));
-    proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
-    values.push(<o.Expression>entries[i][1]);
-  }
-  createPureProxy(
-      o.fn(
-          proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))],
-          new o.MapType(o.DYNAMIC_TYPE)),
-      entries.length, proxyExpr, builder);
-  return proxyExpr.callFn(values);
-}
-
 class DefaultLocalResolver implements LocalResolver {
-  getLocal(name: string): o.Expression {
-    if (name === EventHandlerVars.event.name) {
-      return EventHandlerVars.event;
-    }
-    return null;
-  }
-}
-
-class LegacyDefaultNameResolver implements LegacyNameResolver {
-  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression { return null; }
   getLocal(name: string): o.Expression {
     if (name === EventHandlerVars.event.name) {
       return EventHandlerVars.event;

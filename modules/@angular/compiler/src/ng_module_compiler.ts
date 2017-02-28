@@ -9,7 +9,6 @@
 import {ɵLifecycleHooks} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, tokenName, tokenReference} from './compile_metadata';
-import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
 import {Identifiers, createIdentifier, resolveIdentifier} from './identifiers';
 import {CompilerInjectable} from './injectable';
@@ -236,6 +235,14 @@ class _InjectorBuilder implements ClassBuilder {
       result = InjectorProps.parent.callMethod('get', args);
     }
     return result;
+  }
+}
+
+function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
+  if (isPresent(token.value)) {
+    return o.literal(token.value);
+  } else {
+    return o.importExpr(token.identifier);
   }
 }
 

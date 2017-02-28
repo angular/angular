@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata} from '../animation/metadata';
-
 /**
  * Defines template and style encapsulation options available for Component's {@link Component}.
  *
@@ -74,7 +72,7 @@ export class ViewMetadata {
   /** {@link Component.encapsulation} */
   encapsulation: ViewEncapsulation;
   /** {@link Component.animation} */
-  animations: AnimationEntryMetadata[];
+  animations: any[];
   /** {@link Component.interpolation} */
   interpolation: [string, string];
 
@@ -85,7 +83,7 @@ export class ViewMetadata {
         encapsulation?: ViewEncapsulation,
         styles?: string[],
         styleUrls?: string[],
-        animations?: AnimationEntryMetadata[],
+        animations?: any[],
         interpolation?: [string, string]
       } = {}) {
     this.templateUrl = templateUrl;

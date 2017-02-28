@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -184,19 +183,6 @@ class TestComp {
 }
 
 export function main() {
-  describe('Current compiler', () => { createTests({viewEngine: false}); });
-
-  describe('View Engine compiler', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler(
-          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
-    });
-
-    createTests({viewEngine: true});
-  });
-}
-
-function createTests({viewEngine}: {viewEngine: boolean}) {
   function createComponentFixture<T>(
       template: string, providers: Provider[] = null, comp: Type<T> = null): ComponentFixture<T> {
     if (!comp) {

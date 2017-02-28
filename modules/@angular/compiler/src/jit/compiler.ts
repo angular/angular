@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentFactoryViewClass as getComponentFactoryViewClass} from '@angular/core';
+import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory} from '@angular/core';
 
-import {AnimationCompiler, AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {AnimationParser} from '../animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {stringify} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -42,14 +39,12 @@ export class JitCompiler implements Compiler {
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledDirectiveWrapperCache = new Map<Type<any>, Type<any>>();
   private _compiledNgModuleCache = new Map<Type<any>, NgModuleFactory<any>>();
-  private _animationCompiler = new AnimationCompiler();
 
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
       private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
       private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
-      private _directiveWrapperCompiler: DirectiveWrapperCompiler,
-      private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser) {}
+      private _compilerConfig: CompilerConfig) {}
 
   get injector(): Injector { return this._injector; }
 
@@ -156,7 +151,6 @@ export class JitCompiler implements Compiler {
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         moduleByDirective.set(dirIdentifier.reference, localModuleMeta);
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
-        this._compileDirectiveWrapper(dirMeta, localModuleMeta);
         if (dirMeta.isComponent) {
           templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
           if (allComponentFactories) {
@@ -221,7 +215,7 @@ export class JitCompiler implements Compiler {
       const componentFactory = <ComponentFactory<any>>compMeta.componentFactory;
       const hostClass = this._metadataResolver.getHostComponentType(compType);
       const hostMeta = createHostComponentMeta(
-          hostClass, compMeta, <any>getComponentFactoryViewClass(componentFactory));
+          hostClass, compMeta, <any>getComponentViewDefinitionFactory(componentFactory));
       compiledTemplate =
           new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
@@ -241,26 +235,6 @@ export class JitCompiler implements Compiler {
     return compiledTemplate;
   }
 
-  private _compileDirectiveWrapper(
-      dirMeta: CompileDirectiveMetadata, moduleMeta: CompileNgModuleMetadata): void {
-    if (this._compilerConfig.useViewEngine) {
-      return;
-    }
-    const compileResult = this._directiveWrapperCompiler.compile(dirMeta);
-    const statements = compileResult.statements;
-    let directiveWrapperClass: any;
-    if (!this._compilerConfig.useJit) {
-      directiveWrapperClass =
-          interpretStatements(statements, [compileResult.dirWrapperClassVar])[0];
-    } else {
-      directiveWrapperClass = jitStatements(
-          `/${identifierName(moduleMeta.type)}/${identifierName(dirMeta.type)}/wrapper.ngfactory.js`,
-          statements, [compileResult.dirWrapperClassVar])[0];
-    }
-    (<ProxyClass>dirMeta.wrapperType).setDelegate(directiveWrapperClass);
-    this._compiledDirectiveWrapperCache.set(dirMeta.type.reference, directiveWrapperClass);
-  }
-
   private _compileTemplate(template: CompiledTemplate) {
     if (template.isCompiled) {
       return;
@@ -272,8 +246,6 @@ export class JitCompiler implements Compiler {
         (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r); });
     this._resolveStylesCompileResult(
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
-    const parsedAnimations =
-        this._compilerConfig.useViewEngine ? [] : this._animationParser.parseComponent(compMeta);
     const directives =
         template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
@@ -281,15 +253,11 @@ export class JitCompiler implements Compiler {
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
         identifierName(compMeta.type));
-    const compiledAnimations = this._compilerConfig.useViewEngine ?
-        [] :
-        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
-        usedPipes, compiledAnimations);
-    const statements = stylesCompileResult.componentStylesheet.statements
-                           .concat(...compiledAnimations.map(ca => ca.statements))
-                           .concat(compileResult.statements);
+        usedPipes);
+    const statements =
+        stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
     let viewClass: any;
     let rendererType: any;
     if (!this._compilerConfig.useJit) {

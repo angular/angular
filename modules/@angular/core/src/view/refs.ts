@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NoOpAnimationPlayer} from '../animation/animation_player';
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di';
@@ -31,9 +30,22 @@ export function createComponentFactory(
   return new ComponentFactory_(selector, componentType, viewDefFactory);
 }
 
+export function getComponentViewDefinitionFactory(componentFactory: ComponentFactory<any>):
+    ViewDefinitionFactory {
+  return (componentFactory as ComponentFactory_).viewDefFactory;
+}
+
 class ComponentFactory_ extends ComponentFactory<any> {
-  constructor(selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory) {
-    super(selector, <any>viewDefFactory, componentType);
+  /**
+   * @internal
+   */
+  viewDefFactory: ViewDefinitionFactory;
+
+  constructor(
+      public selector: string, public componentType: Type<any>,
+      viewDefFactory: ViewDefinitionFactory) {
+    super();
+    this.viewDefFactory = viewDefFactory;
   }
 
   /**
@@ -42,7 +54,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
   create(
       injector: Injector, projectableNodes: any[][] = null,
       rootSelectorOrNode: string|any = null): ComponentRef<any> {
-    const viewDef = resolveViewDefinition(this._viewClass);
+    const viewDef = resolveViewDefinition(this.viewDefFactory);
     const componentNodeIndex = viewDef.nodes[0].element.componentProvider.index;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
@@ -386,5 +398,5 @@ class RendererAdapter implements RendererV1 {
 
   setText(renderNode: Text, text: string): void { this.delegate.setValue(renderNode, text); }
 
-  animate(): NoOpAnimationPlayer { return new NoOpAnimationPlayer(); }
+  animate(): any { throw new Error('Renderer.animate is no longer supported!'); }
 }

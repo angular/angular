@@ -372,16 +372,6 @@ class TemplateParseVisitor implements html.Visitor {
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
           providerContext.transformedHasViewContainer, providerContext.queryMatches, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan, element.endSourceSpan);
-
-      this._findComponentDirectives(directiveAsts)
-          .forEach(
-              componentDirectiveAst => this._validateElementAnimationInputOutputs(
-                  componentDirectiveAst.hostProperties, componentDirectiveAst.hostEvents,
-                  componentDirectiveAst.directive.template));
-
-      const componentTemplate = providerContext.viewContext.component.template;
-      this._validateElementAnimationInputOutputs(
-          elementProps, events, componentTemplate.toSummary());
     }
 
     if (hasInlineTemplates) {
@@ -410,34 +400,6 @@ class TemplateParseVisitor implements html.Visitor {
     }
 
     return parsedElement;
-  }
-
-  private _validateElementAnimationInputOutputs(
-      inputs: BoundElementPropertyAst[], outputs: BoundEventAst[],
-      template: CompileTemplateSummary) {
-    if (this.config.useViewEngine) return;
-
-    const triggerLookup = new Set<string>();
-    template.animations.forEach(entry => { triggerLookup.add(entry); });
-
-    const animationInputs = inputs.filter(input => input.isAnimation);
-    animationInputs.forEach(input => {
-      const name = input.name;
-      if (!triggerLookup.has(name)) {
-        this._reportError(`Couldn't find an animation entry for "${name}"`, input.sourceSpan);
-      }
-    });
-
-    outputs.forEach(output => {
-      if (output.isAnimation) {
-        const found = animationInputs.find(input => input.name == output.name);
-        if (!found) {
-          this._reportError(
-              `Unable to listen on (@${output.name}.${output.phase}) because the animation trigger [@${output.name}] isn't being used on the same element`,
-              output.sourceSpan);
-        }
-      }
-    });
   }
 
   private _parseAttr(
@@ -578,8 +540,8 @@ class TemplateParseVisitor implements html.Visitor {
         component = directive;
       }
       const directiveProperties: BoundDirectivePropertyAst[] = [];
-      let hostProperties = this._bindingParser.createDirectiveHostPropertyAsts(
-          directive, this.config.useViewEngine ? elementName : directive.selector, sourceSpan);
+      let hostProperties =
+          this._bindingParser.createDirectiveHostPropertyAsts(directive, elementName, sourceSpan);
       // Note: We need to check the host properties here as well,
       // as we don't know the element name in the DirectiveWrapperCompiler yet.
       hostProperties = this._checkPropertiesInSchema(elementName, hostProperties);

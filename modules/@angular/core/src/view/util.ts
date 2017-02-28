@@ -337,3 +337,56 @@ export function splitNamespace(name: string): string[] {
   }
   return ['', name];
 }
+
+export function interpolate(valueCount: number, constAndInterp: string[]): string {
+  let result = '';
+  for (let i = 0; i < valueCount * 2; i = i + 2) {
+    result = result + constAndInterp[i] + _toStringWithNull(constAndInterp[i + 1]);
+  }
+  return result + constAndInterp[valueCount * 2];
+}
+
+export function inlineInterpolate(
+    valueCount: number, c0: string, a1: any, c1: string, a2?: any, c2?: string, a3?: any,
+    c3?: string, a4?: any, c4?: string, a5?: any, c5?: string, a6?: any, c6?: string, a7?: any,
+    c7?: string, a8?: any, c8?: string, a9?: any, c9?: string): string {
+  switch (valueCount) {
+    case 1:
+      return c0 + _toStringWithNull(a1) + c1;
+    case 2:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2;
+    case 3:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3;
+    case 4:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4;
+    case 5:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5;
+    case 6:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) + c6;
+    case 7:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
+          c6 + _toStringWithNull(a7) + c7;
+    case 8:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
+          c6 + _toStringWithNull(a7) + c7 + _toStringWithNull(a8) + c8;
+    case 9:
+      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
+          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
+          c6 + _toStringWithNull(a7) + c7 + _toStringWithNull(a8) + c8 + _toStringWithNull(a9) + c9;
+    default:
+      throw new Error(`Does not support more than 9 expressions`);
+  }
+}
+
+function _toStringWithNull(v: any): string {
+  return v != null ? v.toString() : '';
+}
+
+export const EMPTY_ARRAY: any[] = [];
+export const EMPTY_MAP: {[key: string]: any} = {};

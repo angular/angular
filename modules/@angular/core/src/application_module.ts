@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationQueue} from './animation/animation_queue';
 import {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
@@ -14,7 +13,6 @@ import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValu
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
-import {ViewUtils} from './linker/view_utils';
 import {NgModule} from './metadata';
 import {initServicesIfNeeded} from './view/index';
 
@@ -47,8 +45,6 @@ export function _initViewEngine() {
     ApplicationInitStatus,
     Compiler,
     APP_ID_RANDOM_PROVIDER,
-    ViewUtils,
-    AnimationQueue,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
     {

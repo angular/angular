@@ -7,14 +7,13 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ComponentFactory, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {QueryList} from '@angular/core/src/linker/query_list';
-import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
+import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
@@ -30,27 +29,13 @@ import {stringify} from '../../src/facade/lang';
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true, viewEngine: false}); });
+  describe('jit', () => { declareTests({useJit: true}); });
 
-  describe('no jit', () => { declareTests({useJit: false, viewEngine: false}); });
-
-  describe('view engine', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        useJit: true,
-        providers: [{
-          provide: USE_VIEW_ENGINE,
-          useValue: true,
-        }],
-      });
-    });
-
-    declareTests({useJit: true, viewEngine: true});
-  });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 
-function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolean}) {
+function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
     beforeEach(() => { TestBed.configureCompiler({useJit}); });
@@ -1290,7 +1275,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
       });
     });
 
-    viewEngine || describe('error handling', () => {
+    describe('error handling', () => {
       it('should report a meaningful error when a directive is missing annotation', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
 

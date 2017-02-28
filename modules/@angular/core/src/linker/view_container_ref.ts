@@ -7,14 +7,10 @@
  */
 
 import {Injector} from '../di/injector';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
-
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
-import {ViewContainer} from './view_container';
-import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
-
+import {EmbeddedViewRef, ViewRef} from './view_ref';
 
 
 /**
@@ -124,98 +120,4 @@ export abstract class ViewContainerRef {
    * If the `index` param is omitted, the last {@link ViewRef} is detached.
    */
   abstract detach(index?: number): ViewRef;
-}
-
-export class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _element: ViewContainer) {}
-
-  get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
-  get length(): number {
-    const views = this._element.nestedViews;
-    return views ? views.length : 0;
-  }
-
-  get element(): ElementRef { return this._element.elementRef; }
-
-  get injector(): Injector { return this._element.injector; }
-
-  get parentInjector(): Injector { return this._element.parentInjector; }
-
-  // TODO(rado): profile and decide whether bounds checks should be added
-  // to the methods below.
-  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null, index: number = -1):
-      EmbeddedViewRef<C> {
-    const viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
-    this.insert(viewRef, index);
-    return viewRef;
-  }
-
-  /** @internal */
-  _createComponentInContainerScope: WtfScopeFn =
-      wtfCreateScope('ViewContainerRef#createComponent()');
-
-  createComponent<C>(
-      componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
-      projectableNodes: any[][] = null): ComponentRef<C> {
-    const s = this._createComponentInContainerScope();
-    const contextInjector = injector || this._element.parentInjector;
-    const componentRef = componentFactory.create(contextInjector, projectableNodes);
-    this.insert(componentRef.hostView, index);
-    return wtfLeave(s, componentRef);
-  }
-
-  /** @internal */
-  _insertScope = wtfCreateScope('ViewContainerRef#insert()');
-
-  // TODO(i): refactor insert+remove into move
-  insert(viewRef: ViewRef, index: number = -1): ViewRef {
-    const s = this._insertScope();
-    if (index == -1) index = this.length;
-    const viewRef_ = <ViewRef_<any>>viewRef;
-    this._element.attachView(viewRef_.internalView, index);
-    return wtfLeave(s, viewRef_);
-  }
-
-  move(viewRef: ViewRef, currentIndex: number): ViewRef {
-    const s = this._insertScope();
-    if (currentIndex == -1) return;
-    const viewRef_ = <ViewRef_<any>>viewRef;
-    this._element.moveView(viewRef_.internalView, currentIndex);
-    return wtfLeave(s, viewRef_);
-  }
-
-  indexOf(viewRef: ViewRef): number {
-    return this.length ? this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView) :
-                         -1;
-  }
-
-  /** @internal */
-  _removeScope = wtfCreateScope('ViewContainerRef#remove()');
-
-  // TODO(i): rename to destroy
-  remove(index: number = -1): void {
-    const s = this._removeScope();
-    if (index == -1) index = this.length - 1;
-    const view = this._element.detachView(index);
-    view.destroy();
-    // view is intentionally not returned to the client.
-    wtfLeave(s);
-  }
-
-  /** @internal */
-  _detachScope = wtfCreateScope('ViewContainerRef#detach()');
-
-  // TODO(i): refactor insert+remove into move
-  detach(index: number = -1): ViewRef {
-    const s = this._detachScope();
-    if (index == -1) index = this.length - 1;
-    const view = this._element.detachView(index);
-    return wtfLeave(s, view.ref);
-  }
-
-  clear(): void {
-    for (let i = this.length - 1; i >= 0; i--) {
-      this.remove(i);
-    }
-  }
 }

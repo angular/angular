@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
-import {AnimationDriver, BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter, ɵELEMENT_PROBE_PROVIDERS as ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser';
+import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter, ɵELEMENT_PROBE_PROVIDERS as ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser';
 import {BrowserDetection, createNgZone} from './browser_util';
 
 function initBrowserTests() {
@@ -33,9 +33,9 @@ export const platformBrowserTesting =
 @NgModule({
   exports: [BrowserModule],
   providers: [
-    {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
+    {provide: APP_ID, useValue: 'a'},
+    ELEMENT_PROBE_PROVIDERS,
     {provide: NgZone, useFactory: createNgZone},
-    {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
   ]
 })
 export class BrowserTestingModule {

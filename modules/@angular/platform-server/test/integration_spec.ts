@@ -7,7 +7,6 @@
  */
 
 import {PlatformLocation, isPlatformServer} from '@angular/common';
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
@@ -106,25 +105,6 @@ class ImageExampleModule {
 }
 
 export function main() {
-  describe('regular', () => { declareTests({viewEngine: false}); });
-
-  describe('view engine', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        useJit: true,
-        providers: [{
-          provide: USE_VIEW_ENGINE,
-          useValue: true,
-        }],
-      });
-    });
-
-    declareTests({viewEngine: true});
-  });
-}
-
-
-function declareTests({viewEngine}: {viewEngine: boolean}) {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {

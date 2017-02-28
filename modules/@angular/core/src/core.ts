@@ -32,20 +32,31 @@ export {Type} from './type';
 export {EventEmitter} from './facade/async';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
-export {AnimationPlayer} from './animation/animation_player';
-export {AnimationStyles} from './animation/animation_styles';
-export {AnimationKeyframe} from './animation/animation_keyframe';
 export {Sanitizer, SecurityContext} from './security';
 export * from './codegen_private_exports';
 
-export * from './animation_next/animation_metadata_wrapped';
+export * from './animation/animation_metadata_wrapped';
+import {AnimationTriggerMetadata} from './animation/animation_metadata_wrapped';
+
 
 // For backwards compatibility.
 /**
- * @deprecated
+ * @deprecated from v4
  */
 export type AnimationEntryMetadata = any;
 /**
- * @deprecated
+ * @deprecated from v4
  */
 export type AnimationStateTransitionMetadata = any;
+/**
+ * @deprecated from v4
+ */
+export type AnimationPlayer = any;
+/**
+ * @deprecated from v4
+ */
+export type AnimationStyles = any;
+/**
+ * @deprecated from v4
+ */
+export type AnimationKeyframe = any;
