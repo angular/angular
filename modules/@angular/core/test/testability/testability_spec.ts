@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core/src/di';
-import {Testability} from '@angular/core/src/testability/testability';
+import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
@@ -279,6 +279,22 @@ export function main() {
              });
            });
          }));
+    });
+  });
+
+  describe('TestabilityRegistry', () => {
+    let registry = new TestabilityRegistry();
+
+    it('should clean up itself on destroy', () => {
+      expect(registry.getAllTestabilities().length).toBe(0);
+
+      registry.registerApplication('token1', <any>{});
+      registry.registerApplication('token2', <any>{});
+      expect(registry.getAllTestabilities().length).toBe(2);
+
+      registry.ngOnDestroy();
+
+      expect(registry.getAllTestabilities().length).toBe(0);
     });
   });
 }
