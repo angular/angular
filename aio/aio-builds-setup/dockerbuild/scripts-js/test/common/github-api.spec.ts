@@ -148,6 +148,81 @@ describe('GithubApi', () => {
   });
 
 
+  describe('getPaginated()', () => {
+    let deferreds: {resolve: Function, reject: Function}[];
+
+    beforeEach(() => {
+      deferreds = [];
+      spyOn(api, 'get').and.callFake(() => new Promise((resolve, reject) => deferreds.push({resolve, reject})));
+    });
+
+
+    it('should return a promise', () => {
+      expect((api as any).getPaginated()).toEqual(jasmine.any(Promise));
+    });
+
+
+    it('should call \'get()\' with the correct pathname and params', () => {
+      (api as any).getPaginated('/foo/bar');
+      (api as any).getPaginated('/foo/bar', {baz: 'qux'});
+
+      expect(api.get).toHaveBeenCalledWith('/foo/bar', {page: 0, per_page: 100});
+      expect(api.get).toHaveBeenCalledWith('/foo/bar', {baz: 'qux', page: 0, per_page: 100});
+    });
+
+
+    it('should reject if the request fails', done => {
+      (api as any).getPaginated('/foo/bar').catch(err => {
+        expect(err).toBe('Test');
+        done();
+      });
+
+      deferreds[0].reject('Test');
+    });
+
+
+    it('should resolve with the returned items', done => {
+      const items = [{id: 1}, {id: 2}];
+
+      (api as any).getPaginated('/foo/bar').then((data: any) => {
+        expect(data).toEqual(items);
+        done();
+      });
+
+      deferreds[0].resolve(items);
+    });
+
+
+    it('should iteratively call \'get()\' to fetch all items', done => {
+      // Create an array or 250 objects.
+      const allItems = '.'.repeat(250).split('').map((_, i) => ({id: i}));
+      const apiGetSpy = api.get as jasmine.Spy;
+
+      (api as any).getPaginated('/foo/bar', {baz: 'qux'}).then((data: any) => {
+        const paramsForPage = (page: number) => ({baz: 'qux', page, per_page: 100});
+
+        expect(apiGetSpy).toHaveBeenCalledTimes(3);
+        expect(apiGetSpy.calls.argsFor(0)).toEqual(['/foo/bar', paramsForPage(0)]);
+        expect(apiGetSpy.calls.argsFor(1)).toEqual(['/foo/bar', paramsForPage(1)]);
+        expect(apiGetSpy.calls.argsFor(2)).toEqual(['/foo/bar', paramsForPage(2)]);
+
+        expect(data).toEqual(allItems);
+
+        done();
+      });
+
+      deferreds[0].resolve(allItems.slice(0, 100));
+      setTimeout(() => {
+        deferreds[1].resolve(allItems.slice(100, 200));
+        setTimeout(() => {
+          deferreds[2].resolve(allItems.slice(200));
+        }, 0);
+      }, 0);
+    });
+
+  });
+
+
   describe('request()', () => {
     let httpsRequestSpy: jasmine.Spy;
     let latestRequest: ClientRequest;
