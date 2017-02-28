@@ -246,3 +246,12 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 function attrBoolValue(s: any): boolean {
   return s === '' || !!s;
 }
+
+/** @experimental */
+@Directive({selector: 'a[href]:not([routerLink])'})
+export class LinkWithHref {
+  @HostBinding('attr.href') @Input() href: string;
+
+  @HostListener('click')
+  onClick(): boolean { return this.href !== '#'; }
+}

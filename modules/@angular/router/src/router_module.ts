@@ -11,7 +11,7 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Co
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {Route, Routes} from './config';
-import {RouterLink, RouterLinkWithHref} from './directives/router_link';
+import {LinkWithHref, RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RouteReuseStrategy} from './route_reuse_strategy';
@@ -30,7 +30,8 @@ import {flatten} from './utils/collection';
  * @whatItDoes Contains a list of directives
  * @stable
  */
-const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
+const ROUTER_DIRECTIVES =
+    [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive, LinkWithHref];
 
 /**
  * @whatItDoes Is used in DI to configure the router.
