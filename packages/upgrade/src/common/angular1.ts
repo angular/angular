@@ -205,7 +205,7 @@ let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
                  void,
   module: (prefix: string, dependencies?: string[]) => IModule,
-  element: (e: Element) => IAugmentedJQuery,
+  element: (e: Element | string) => IAugmentedJQuery,
   version: {major: number}, resumeBootstrap?: () => void,
   getTestability: (e: Element) => ITestabilityService
 } = <any>{

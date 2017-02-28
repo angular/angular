@@ -13,12 +13,12 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '../common/angular1';
 import {ComponentInfo} from '../common/component_info';
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
-import {ContentProjectionHelper} from '../common/content_projection_helper';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
+import {NgContentSelectorHelper} from '../common/ng_content_selector_helper';
 import {Deferred, controllerKey, onError} from '../common/util';
 
-import {DynamicContentProjectionHelper} from './content_projection_helper';
+import {DynamicNgContentSelectorHelper} from './ng_content_selector_helper';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
 let upgradeCount: number = 0;
@@ -561,7 +561,7 @@ export class UpgradeAdapter {
                     providers: [
                       {provide: $INJECTOR, useFactory: () => ng1Injector},
                       {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                      {provide: ContentProjectionHelper, useClass: DynamicContentProjectionHelper},
+                      {provide: NgContentSelectorHelper, useClass: DynamicNgContentSelectorHelper},
                       this.upgradedProviders
                     ],
                     imports: [this.ng2AppModule],
