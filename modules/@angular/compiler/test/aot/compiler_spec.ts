@@ -23,7 +23,6 @@ const minCoreIndex = `
   export * from './src/di/metadata';
   export * from './src/di/injector';
   export * from './src/di/injection_token';
-  export * from './src/animation/metadata';
   export * from './src/linker';
   export * from './src/render';
   export * from './src/codegen_private_exports';
@@ -112,19 +111,6 @@ describe('compiler (bundled Angular)', () => {
        async(() => compile(host, aotHost, expectNoDiagnostics).then(generatedFiles => {
          expect(generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
              .toBeDefined();
-         expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
-             .toBeDefined();
-       })));
-
-    it('should compile with view engine',
-       async(() => compile(host, aotHost, expectNoDiagnostics, undefined, {
-                     useViewEngine: true
-                   }).then(generatedFiles => {
-         const genCompFile =
-             generatedFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl));
-         expect(genCompFile).toBeDefined();
-         expect(genCompFile.source).toContain('ViewDefinition');
-         expect(genCompFile.source).not.toContain('AppView');
          expect(generatedFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl)))
              .toBeDefined();
        })));

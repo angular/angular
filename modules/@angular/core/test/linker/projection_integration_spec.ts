@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -14,19 +13,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('Current compiler', () => { createTests({viewEngine: false}); });
-
-  describe('View Engine compiler', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler(
-          {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
-    });
-
-    createTests({viewEngine: true});
-  });
-}
-
-function createTests({viewEngine}: {viewEngine: boolean}) {
   describe('projection', () => {
     beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
 

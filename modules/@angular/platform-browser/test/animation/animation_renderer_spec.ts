@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
-import {AnimationPlayer, Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
+import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
+import {Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -120,11 +119,6 @@ export function main() {
     describe('flushing animations', () => {
       // these tests are only mean't to be run within the DOM
       if (typeof Element == 'undefined') return;
-
-      beforeEach(() => {
-        TestBed.configureCompiler(
-            {useJit: true, providers: [{provide: USE_VIEW_ENGINE, useValue: true}]});
-      });
 
       it('should flush and fire callbacks when the zone becomes stable', (async) => {
         @Component({

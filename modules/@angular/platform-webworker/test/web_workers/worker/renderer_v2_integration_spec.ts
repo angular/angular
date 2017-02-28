@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {USE_VIEW_ENGINE} from '@angular/compiler/src/config';
 import {Component, ComponentRef, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DomRendererFactoryV2, DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
+import {DomRendererFactoryV2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -42,11 +41,10 @@ export function main() {
       uiInjector.ngModule = BrowserTestingModule;
       uiInjector.configureTestingModule({
         providers: [
-          {provide: USE_VIEW_ENGINE, useValue: true}, Serializer,
-          {provide: RenderStore, useValue: uiRenderStore}, DomRendererFactoryV2,
+          Serializer,
+          {provide: RenderStore, useValue: uiRenderStore},
+          DomRendererFactoryV2,
           {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
-          {provide: DomRootRenderer, useClass: DomRootRenderer_},
-          {provide: RootRenderer, useExisting: DomRootRenderer}
         ]
       });
       const uiSerializer = uiInjector.get(Serializer);
@@ -57,27 +55,20 @@ export function main() {
 
       wwRenderStore = new RenderStore();
 
-      TestBed
-          .configureCompiler({
-            useJit: true,
-            providers: [
-              {provide: USE_VIEW_ENGINE, useValue: true},
-            ],
-          })
-          .configureTestingModule({
-            declarations: [MyComp2],
-            providers: [
-              Serializer,
-              {provide: RenderStore, useValue: wwRenderStore},
-              {
-                provide: RendererFactoryV2,
-                useFactory: (wwSerializer: Serializer) => createWebWorkerRendererFactoryV2(
-                                wwSerializer, uiSerializer, domRendererFactory, uiRenderStore,
-                                wwRenderStore),
-                deps: [Serializer],
-              },
-            ],
-          });
+      TestBed.configureTestingModule({
+        declarations: [MyComp2],
+        providers: [
+          Serializer,
+          {provide: RenderStore, useValue: wwRenderStore},
+          {
+            provide: RendererFactoryV2,
+            useFactory:
+                (wwSerializer: Serializer) => createWebWorkerRendererFactoryV2(
+                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            deps: [Serializer],
+          },
+        ],
+      });
     });
 
     function getRenderElement(workerEl: any): any {

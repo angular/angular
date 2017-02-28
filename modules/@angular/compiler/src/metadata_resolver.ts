@@ -106,13 +106,6 @@ export class CompileMetadataResolver {
     }
   }
 
-  private getDirectiveWrapperClass(dirType: any): StaticSymbol|cpl.ProxyClass {
-    if (!this._config.useViewEngine) {
-      return this.getGeneratedClass(dirType, cpl.dirWrapperClassName(dirType));
-    }
-    return null;
-  }
-
   private getComponentViewClass(dirType: any): StaticSymbol|cpl.ProxyClass {
     return this.getGeneratedClass(dirType, cpl.viewClassName(dirType, 0));
   }
@@ -150,11 +143,7 @@ export class CompileMetadataResolver {
           ngfactoryFilePath(dirType.filePath), cpl.componentFactoryName(dirType));
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
-      if (this._config.useViewEngine) {
-        return createComponentFactory(selector, dirType, <any>hostView);
-      } else {
-        return new ComponentFactory(selector, <any>hostView, dirType);
-      }
+      return createComponentFactory(selector, dirType, <any>hostView);
     }
   }
 
@@ -192,7 +181,6 @@ export class CompileMetadataResolver {
         queries: metadata.queries,
         viewQueries: metadata.viewQueries,
         entryComponents: metadata.entryComponents,
-        wrapperType: metadata.wrapperType,
         componentViewType: metadata.componentViewType,
         rendererType: metadata.rendererType,
         componentFactory: metadata.componentFactory,
@@ -327,7 +315,6 @@ export class CompileMetadataResolver {
       queries: queries,
       viewQueries: viewQueries,
       entryComponents: entryComponentMetadata,
-      wrapperType: this.getDirectiveWrapperClass(directiveType),
       componentViewType: nonNormalizedTemplateMetadata ? this.getComponentViewClass(directiveType) :
                                                          undefined,
       rendererType: nonNormalizedTemplateMetadata ? this.getRendererType(directiveType) : undefined,

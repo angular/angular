@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationCompiler} from '../animation/animation_compiler';
-import {AnimationParser} from '../animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {ListWrapper} from '../facade/collection';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -31,17 +28,13 @@ import {serializeSummaries} from './summary_serializer';
 import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName} from './util';
 
 export class AotCompiler {
-  private _animationCompiler = new AnimationCompiler();
-
   constructor(
       private _config: CompilerConfig, private _host: AotCompilerHost,
       private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _dirWrapperCompiler: DirectiveWrapperCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
-      private _translationFormat: string, private _animationParser: AnimationParser,
-      private _symbolResolver: StaticSymbolResolver) {}
+      private _translationFormat: string, private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
 
@@ -77,12 +70,6 @@ export class AotCompiler {
     // compile all ng modules
     exportedVars.push(
         ...ngModules.map((ngModuleType) => this._compileModule(ngModuleType, statements)));
-
-    // compile directive wrappers
-    if (!this._config.useViewEngine) {
-      exportedVars.push(...directives.map(
-          (directiveType) => this._compileDirectiveWrapper(directiveType, statements)));
-    }
 
     // compile components
     directives.forEach((dirType) => {
@@ -165,15 +152,6 @@ export class AotCompiler {
     return appCompileResult.ngModuleFactoryVar;
   }
 
-  private _compileDirectiveWrapper(directiveType: StaticSymbol, targetStatements: o.Statement[]):
-      string {
-    const dirMeta = this._metadataResolver.getDirectiveMetadata(directiveType);
-    const dirCompileResult = this._dirWrapperCompiler.compile(dirMeta);
-
-    targetStatements.push(...dirCompileResult.statements);
-    return dirCompileResult.dirWrapperClassVar;
-  }
-
   private _compileComponentFactory(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata, fileSuffix: string,
       targetStatements: o.Statement[]): string {
@@ -185,35 +163,18 @@ export class AotCompiler {
                 hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements)
             .viewClassVar;
     const compFactoryVar = componentFactoryName(compMeta.type.reference);
-    if (this._config.useViewEngine) {
-      targetStatements.push(
-          o.variable(compFactoryVar)
-              .set(o.importExpr(createIdentifier(Identifiers.createComponentFactory)).callFn([
-                o.literal(compMeta.selector),
-                o.importExpr(compMeta.type),
-                o.variable(hostViewFactoryVar),
-              ]))
-              .toDeclStmt(
-                  o.importType(
-                      createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type)],
-                      [o.TypeModifier.Const]),
-                  [o.StmtModifier.Final]));
-    } else {
-      targetStatements.push(
-          o.variable(compFactoryVar)
-              .set(o.importExpr(createIdentifier(Identifiers.ComponentFactory), [o.importType(
-                                                                                    compMeta.type)])
-                       .instantiate(
-                           [
-                             o.literal(compMeta.selector),
-                             o.variable(hostViewFactoryVar),
-                             o.importExpr(compMeta.type),
-                           ],
-                           o.importType(
-                               createIdentifier(Identifiers.ComponentFactory),
-                               [o.importType(compMeta.type)], [o.TypeModifier.Const])))
-              .toDeclStmt(null, [o.StmtModifier.Final]));
-    }
+    targetStatements.push(
+        o.variable(compFactoryVar)
+            .set(o.importExpr(createIdentifier(Identifiers.createComponentFactory)).callFn([
+              o.literal(compMeta.selector),
+              o.importExpr(compMeta.type),
+              o.variable(hostViewFactoryVar),
+            ]))
+            .toDeclStmt(
+                o.importType(
+                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type)],
+                    [o.TypeModifier.Const]),
+                [o.StmtModifier.Final]));
     return compFactoryVar;
   }
 
@@ -232,7 +193,7 @@ export class AotCompiler {
         identifierName(compMeta.type));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult =
-        this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes, null);
+        this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes);
     if (componentStyles) {
       targetStatements.push(
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));

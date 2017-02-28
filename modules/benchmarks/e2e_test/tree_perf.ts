@@ -62,38 +62,12 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      // TODO(tbosch): delete ftl benchmarks as they use the old renderer / view engine.
-      xit('should run for ng2 ftl', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.ng2.ftl.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2_ftl/index.html',
-          work: worker.work,
-          prepare: worker.prepare,
-          // Can't use bundles as we use AoT generated code
-          // which relies on deep imports
-          extraParams: [{name: 'bundles', value: false}]
-        }).then(done, done.fail);
-      });
-
       it('should run for ng2 static', (done) => {
         runTreeBenchmark({
           id: `deepTree.ng2.static.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2_static/index.html',
           work: worker.work,
           prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
-
-      // TODO(tbosch): delete ftl benchmarks as they use the old renderer / view engine.
-      xit('should run for ng2 static ftl', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.ng2.ftl.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2_static_ftl/index.html',
-          work: worker.work,
-          prepare: worker.prepare,
-          // Can't use bundles as we use AoT generated code
-          // which relies on deep imports
-          extraParams: [{name: 'bundles', value: false}]
         }).then(done, done.fail);
       });
 
