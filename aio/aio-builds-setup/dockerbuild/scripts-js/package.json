@@ -19,11 +19,13 @@
   "dependencies": {
     "express": "^4.14.1",
     "jasmine": "^2.5.3",
+    "jsonwebtoken": "^7.3.0",
     "shelljs": "^0.7.6"
   },
   "devDependencies": {
     "@types/express": "^4.0.35",
     "@types/jasmine": "^2.5.43",
+    "@types/jsonwebtoken": "^7.2.0",
     "@types/node": "^7.0.5",
     "@types/shelljs": "^0.7.0",
     "@types/supertest": "^2.0.0",

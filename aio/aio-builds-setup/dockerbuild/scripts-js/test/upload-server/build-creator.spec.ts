@@ -6,6 +6,7 @@ import * as shell from 'shelljs';
 import {BuildCreator} from '../../lib/upload-server/build-creator';
 import {CreatedBuildEvent} from '../../lib/upload-server/build-events';
 import {UploadError} from '../../lib/upload-server/upload-error';
+import {expectToBeUploadError} from './helpers';
 
 // Tests
 describe('BuildCreator', () => {
@@ -16,17 +17,6 @@ describe('BuildCreator', () => {
   const prDir = `${buildsDir}/${pr}`;
   const shaDir = `${prDir}/${sha}`;
   let bc: BuildCreator;
-
-  // Helpers
-  const expectToBeUploadError = (actual: UploadError, expStatus?: number, expMessage?: string) => {
-    expect(actual).toEqual(jasmine.any(UploadError));
-    if (expStatus != null) {
-      expect(actual.status).toBe(expStatus);
-    }
-    if (expMessage != null) {
-      expect(actual.message).toBe(expMessage);
-    }
-  };
 
   beforeEach(() => bc = new BuildCreator(buildsDir));
 
