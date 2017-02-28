@@ -70,8 +70,8 @@ Then run whatever `ng serve` or `npm start` command you normally use, and everyt
 
 *Please ensure that you are using Typescript v2.1.6 or higher.*
 
-*If you rely on Animations* you’ll also need to install the animations package and import the new `AnimationsModule` from `@angular/animations` in your root NgModule. Without this, your code will compile and run, but animations won’t activate.
-
+*If you rely on Animations* you’ll also need to install the animations package `@angular/animations` and import the new `BrowserAnimationsModule` from `@angular/platform-browser/animations` in your root NgModule. Without this, your code will compile and run, but animations won’t activate.
+Imports from `@angular/core` were deprecated, use imports from the new package `import { trigger, state, style, transition, animate } from '@angular/animations';`.
 
 ## What's next?
 We have [three more release candidates scheduled](https://github.com/angular/angular/blob/master/docs/RELEASE_SCHEDULE.md) before our planned GA the week of March 22. In the meantime we'll be looking for your feedback, fixing bugs and working on docs.
