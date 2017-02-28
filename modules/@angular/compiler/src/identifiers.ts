@@ -79,9 +79,8 @@ export class Identifiers {
   static interpolate:
       IdentifierSpec = {name: 'ɵinterpolate', moduleUrl: CORE, runtime: ɵinterpolate};
   static EMPTY_ARRAY:
-      IdentifierSpec = {name: 'ÉµEMPTY_ARRAY', moduleUrl: CORE, runtime: ɵEMPTY_ARRAY};
-  static EMPTY_MAP: IdentifierSpec = {name: 'ÉµEMPTY_MAP', moduleUrl: CORE, runtime: ɵEMPTY_MAP};
-
+      IdentifierSpec = {name: 'ɵEMPTY_ARRAY', moduleUrl: CORE, runtime: ɵEMPTY_ARRAY};
+  static EMPTY_MAP: IdentifierSpec = {name: 'ɵEMPTY_MAP', moduleUrl: CORE, runtime: ɵEMPTY_MAP};
   static Renderer: IdentifierSpec = {name: 'Renderer', moduleUrl: CORE, runtime: Renderer};
   static viewDef: IdentifierSpec = {name: 'ɵvid', moduleUrl: CORE, runtime: ɵvid};
   static elementDef: IdentifierSpec = {name: 'ɵeld', moduleUrl: CORE, runtime: ɵeld};
