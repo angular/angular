@@ -3,10 +3,12 @@ set -e -o pipefail
 
 # Set up env variables for testing
 export AIO_BUILDS_DIR=$TEST_AIO_BUILDS_DIR
-export AIO_GITHUB_TOKEN=$TEST_AIO_GITHUB_TOKEN
 export AIO_REPO_SLUG=$TEST_AIO_REPO_SLUG
 export AIO_UPLOAD_HOSTNAME=$TEST_AIO_UPLOAD_HOSTNAME
 export AIO_UPLOAD_PORT=$TEST_AIO_UPLOAD_PORT
+
+export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/TEST_GITHUB_TOKEN 2>/dev/null)
+export AIO_PREVIEW_DEPLOYMENT_TOKEN=$(head -c -1 /aio-secrets/TEST_PREVIEW_DEPLOYMENT_TOKEN 2>/dev/null)
 
 # Start the upload-server instance
 # TODO(gkalpak): Ideally, the upload server should be run as a non-privileged user.
