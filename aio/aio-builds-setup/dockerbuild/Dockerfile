@@ -6,22 +6,22 @@ LABEL name="angular.io PR preview" \
       vendor="Angular" \
       version="1.0"
 
+VOLUME /aio-secrets
 VOLUME /var/www/aio-builds
 
 EXPOSE 80 443
 
-ENV AIO_BUILDS_DIR=/var/www/aio-builds             TEST_AIO_BUILDS_DIR=/tmp/aio-builds              \
+ENV AIO_BUILDS_DIR=/var/www/aio-builds             TEST_AIO_BUILDS_DIR=/tmp/aio-builds         \
     AIO_DOMAIN_NAME=ngbuilds.io                    TEST_AIO_DOMAIN_NAME=test-ngbuilds.io       \
-    AIO_GITHUB_TOKEN=                              TEST_AIO_GITHUB_TOKEN=                           \
-    AIO_NGINX_HOSTNAME=nginx.localhost             TEST_AIO_NGINX_HOSTNAME=nginx.localhost          \
-    AIO_NGINX_PORT_HTTP=80                         TEST_AIO_NGINX_PORT_HTTP=8080                    \
-    AIO_NGINX_PORT_HTTPS=443                       TEST_AIO_NGINX_PORT_HTTPS=4433                   \
-    AIO_REPO_SLUG=angular/angular                  TEST_AIO_REPO_SLUG=                              \
-    AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                                    \
-    AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                                    \
-    AIO_UPLOAD_HOSTNAME=upload.localhost           TEST_AIO_UPLOAD_HOSTNAME=upload.localhost        \
-    AIO_UPLOAD_MAX_SIZE=20971520                   TEST_AIO_UPLOAD_MAX_SIZE=20971520                \
-    AIO_UPLOAD_PORT=3000                           TEST_AIO_UPLOAD_PORT=3001                        \
+    AIO_NGINX_HOSTNAME=nginx.localhost             TEST_AIO_NGINX_HOSTNAME=nginx.localhost     \
+    AIO_NGINX_PORT_HTTP=80                         TEST_AIO_NGINX_PORT_HTTP=8080               \
+    AIO_NGINX_PORT_HTTPS=443                       TEST_AIO_NGINX_PORT_HTTPS=4433              \
+    AIO_REPO_SLUG=angular/angular                  TEST_AIO_REPO_SLUG=                         \
+    AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                               \
+    AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                               \
+    AIO_UPLOAD_HOSTNAME=upload.localhost           TEST_AIO_UPLOAD_HOSTNAME=upload.localhost   \
+    AIO_UPLOAD_MAX_SIZE=20971520                   TEST_AIO_UPLOAD_MAX_SIZE=20971520           \
+    AIO_UPLOAD_PORT=3000                           TEST_AIO_UPLOAD_PORT=3001                   \
     NODE_ENV=production
 
 
