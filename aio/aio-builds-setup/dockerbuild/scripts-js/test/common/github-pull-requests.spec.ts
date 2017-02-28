@@ -6,15 +6,15 @@ describe('GithubPullRequests', () => {
 
   describe('constructor()', () => {
 
-    it('should throw if \'repoSlug\' is missing or empty', () => {
-      expect(() => new GithubPullRequests('', '12345')).
-        toThrowError('Missing or empty required parameter \'repoSlug\'!');
+    it('should throw if \'githubToken\' is missing or empty', () => {
+      expect(() => new GithubPullRequests('', 'foo/bar')).
+        toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
 
-    it('should throw if \'githubToken\' is missing or empty', () => {
-      expect(() => new GithubPullRequests('foo/bar', '')).
-        toThrowError('Missing or empty required parameter \'githubToken\'!');
+    it('should throw if \'repoSlug\' is missing or empty', () => {
+      expect(() => new GithubPullRequests('12345', '')).
+        toThrowError('Missing or empty required parameter \'repoSlug\'!');
     });
 
   });
@@ -25,7 +25,7 @@ describe('GithubPullRequests', () => {
     let deferred: {resolve: Function, reject: Function};
 
     beforeEach(() => {
-      prs = new GithubPullRequests('foo/bar', '12345');
+      prs = new GithubPullRequests('12345', 'foo/bar');
 
       spyOn(prs, 'post').and.callFake(() => new Promise((resolve, reject) => deferred = {resolve, reject}));
     });
@@ -81,7 +81,7 @@ describe('GithubPullRequests', () => {
     let prsGetPaginatedSpy: jasmine.Spy;
 
     beforeEach(() => {
-      prs = new GithubPullRequests('foo/bar', '12345');
+      prs = new GithubPullRequests('12345', 'foo/bar');
       prsGetPaginatedSpy = spyOn(prs as any, 'getPaginated');
       spyOn(console, 'log');
     });

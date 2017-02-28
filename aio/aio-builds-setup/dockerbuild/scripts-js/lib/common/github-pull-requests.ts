@@ -1,4 +1,5 @@
 // Imports
+import {assertNotMissingOrEmpty} from '../common/utils';
 import {GithubApi} from './github-api';
 
 // Interfaces - Types
@@ -10,6 +11,12 @@ export type PullRequestState = 'all' | 'closed' | 'open';
 
 // Classes
 export class GithubPullRequests extends GithubApi {
+  // Constructor
+  constructor(githubToken: string, protected repoSlug: string) {
+    super(githubToken);
+    assertNotMissingOrEmpty('repoSlug', repoSlug);
+  }
+
   // Methods - Public
   public addComment(pr: number, body: string): Promise<void> {
     if (!(pr > 0)) {

@@ -40,7 +40,7 @@ export class BuildCleaner {
   }
 
   protected getOpenPrNumbers(): Promise<number[]> {
-    const githubPullRequests = new GithubPullRequests(this.repoSlug, this.githubToken);
+    const githubPullRequests = new GithubPullRequests(this.githubToken, this.repoSlug);
 
     return githubPullRequests.
       fetchAll('open').
