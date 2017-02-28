@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone, isDevMode} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-
 export {Observable} from 'rxjs/Observable';
-export {Subject} from 'rxjs/Subject';
 
 /**
  * Use by directives and components to emit custom Events.
@@ -75,7 +74,12 @@ export class EventEmitter<T> extends Subject<T> {
     this.__isAsync = isAsync;
   }
 
-  emit(value?: T) { super.next(value); }
+  emit(value?: T): void {
+    if (isDevMode()) {
+      NgZone.assertInAngularZone();
+    }
+    super.next(value);
+  }
 
   subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
     let schedulerFn: (t: any) => any;
