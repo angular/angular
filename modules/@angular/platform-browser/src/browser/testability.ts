@@ -65,4 +65,11 @@ export class BrowserGetTestability implements GetTestability {
     }
     return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
   }
+
+  onDestroy(): void {
+    delete global.getAngularTestability;
+    delete global.getAllAngularTestabilities;
+    delete global.getAllAngularRootElements;
+    delete global.frameworkStabilizers;
+  }
 }

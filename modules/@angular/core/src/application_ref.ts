@@ -276,6 +276,7 @@ export class PlatformRef_ extends PlatformRef {
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
+    this._injector.get(TestabilityRegistry).destroy();
     this._destroyed = true;
   }
 
