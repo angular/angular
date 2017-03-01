@@ -3,14 +3,15 @@
 @import '../core/style/elevation';
 @import '../core/a11y/a11y';
 
-
-$mat-slide-toggle-width: 36px !default;
-$mat-slide-toggle-height: 24px !default;
-$mat-slide-toggle-bar-height: 14px !default;
 $mat-slide-toggle-thumb-size: 20px !default;
+$mat-slide-toggle-bar-border-radius: 8px !default;
+$mat-slide-toggle-height: 24px !default;
 $mat-slide-toggle-margin: 16px !default;
 $mat-slide-toggle-spacing: 8px !default;
 $mat-slide-toggle-ripple-radius: 23px !default;
+$mat-slide-toggle-bar-width: 36px !default;
+$mat-slide-toggle-bar-height: 14px !default;
+$mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-toggle-thumb-size;
 
 
 .mat-slide-toggle {
@@ -30,13 +31,12 @@ $mat-slide-toggle-ripple-radius: 23px !default;
 
   &.mat-checked {
     .mat-slide-toggle-thumb-container {
-      transform: translate3d(100%, 0, 0);
+      transform: translate3d($mat-slide-toggle-bar-track-width, 0, 0);
     }
   }
 
   &.mat-disabled {
-
-    .mat-slide-toggle-label, .mat-slide-toggle-container {
+    .mat-slide-toggle-label, .mat-slide-toggle-thumb-container {
       cursor: default;
     }
   }
@@ -55,6 +55,8 @@ $mat-slide-toggle-ripple-radius: 23px !default;
 .mat-slide-toggle-label {
   display: flex;
   flex: 1;
+  flex-direction: row;
+  align-items: center;
 
   cursor: pointer;
 }
@@ -62,46 +64,43 @@ $mat-slide-toggle-ripple-radius: 23px !default;
 /* If the label should be placed before the thumb then we just change the orders. */
 .mat-slide-toggle-label-before {
   .mat-slide-toggle-label { order: 1; }
-  .mat-slide-toggle-container { order: 2; }
+  .mat-slide-toggle-bar { order: 2; }
 }
 
-// Container for the composition of the slide-toggle / switch indicator.
-.mat-slide-toggle-container {
-  cursor: grab;
-  width: $mat-slide-toggle-width;
-  height: $mat-slide-toggle-height;
-
-  position: relative;
-}
-
-/* Apply the margin for slide-toggles and revert it for RTL toggles with labelPosition before. */
-[dir='rtl'] .mat-slide-toggle-label-before .mat-slide-toggle-container, .mat-slide-toggle-container {
+// Apply the margin for slide-toggles and revert it for RTL toggles with labelPosition before.
+[dir='rtl'] .mat-slide-toggle-label-before .mat-slide-toggle-bar,
+.mat-slide-toggle-bar {
   margin-right: $mat-slide-toggle-spacing;
   margin-left: 0;
 }
 
-/* Switch the margins in RTL mode and also switch it if the labelPosition is set to before. */
-[dir='rtl'], .mat-slide-toggle-label-before {
-  .mat-slide-toggle-container {
+// Switch the margins in RTL mode and also switch it if the labelPosition is set to before.
+[dir='rtl'],
+.mat-slide-toggle-label-before {
+  .mat-slide-toggle-bar {
     margin-left: $mat-slide-toggle-spacing;
     margin-right: 0;
   }
 }
 
 // The thumb container is responsible for the dragging functionality.
-// It moves around and holds the actual circle as a thumb.
+// The container includes the visual thumb and the ripple container element.
 .mat-slide-toggle-thumb-container {
+  $thumb-bar-vertical-padding: ($mat-slide-toggle-thumb-size - $mat-slide-toggle-bar-height) / 2;
+
   position: absolute;
-  top: $mat-slide-toggle-height / 2 - $mat-slide-toggle-thumb-size / 2;
-  left: 0;
   z-index: 1;
 
-  width: $mat-slide-toggle-width - $mat-slide-toggle-thumb-size;
+  width: $mat-slide-toggle-thumb-size;
+  height: $mat-slide-toggle-thumb-size;
+  top: -$thumb-bar-vertical-padding;
+  left: 0;
 
   transform: translate3d(0, 0, 0);
-
   transition: $swift-linear;
   transition-property: transform;
+
+  cursor: grab;
 
   // Once the thumb container is being dragged around, we remove the transition duration to
   // make the drag feeling fast and not delayed.
@@ -110,14 +109,9 @@ $mat-slide-toggle-ripple-radius: 23px !default;
   }
 }
 
-// The thumb will be elevated from the slide-toggle bar.
-// Also the thumb is bound to its parent thumb-container, which manages the movement of the thumb.
+// The visual thumb element that moves inside of the thumb bar.
+// The parent thumb-container container is responsible for the movement of the visual thumb.
 .mat-slide-toggle-thumb {
-  position: absolute;
-  margin: 0;
-  left: 0;
-  top: 0;
-
   height: $mat-slide-toggle-thumb-size;
   width: $mat-slide-toggle-thumb-size;
   border-radius: 50%;
@@ -131,16 +125,14 @@ $mat-slide-toggle-ripple-radius: 23px !default;
 }
 
 // Horizontal bar for the slide-toggle.
-// The slide-toggle bar is shown behind the thumb container.
+// The slide-toggle bar is shown behind the movable thumb element.
 .mat-slide-toggle-bar {
-  position: absolute;
-  left: 1px;
-  top: $mat-slide-toggle-height / 2 - $mat-slide-toggle-bar-height / 2;
+  position: relative;
 
-  width: $mat-slide-toggle-width - 2px;
+  width: $mat-slide-toggle-bar-width;
   height: $mat-slide-toggle-bar-height;
 
-  border-radius: 8px;
+  border-radius: $mat-slide-toggle-bar-border-radius;
 
   @include cdk-high-contrast {
     background: #fff;
