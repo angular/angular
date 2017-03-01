@@ -8,8 +8,6 @@
 
 import {Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
-import {ListWrapper} from '../../facade/collection';
-import {isPresent} from '../../facade/lang';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_V2_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';

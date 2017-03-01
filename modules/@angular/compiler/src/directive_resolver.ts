@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵreflector} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵmerge as merge, ɵreflector} from '@angular/core';
 
-import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 import {splitAtColon} from './util';
+
 
 /*
  * Resolve a `Type` for {@link Directive}.
@@ -35,7 +35,7 @@ export class DirectiveResolver {
   resolve(type: Type<any>, throwIfNotFound = true): Directive {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
     if (typeMetadata) {
-      const metadata = ListWrapper.findLast(typeMetadata, isDirectiveMetadata);
+      const metadata = findLast(typeMetadata, isDirectiveMetadata);
       if (metadata) {
         const propertyMetadata = this._reflector.propMetadata(type);
         return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
@@ -58,7 +58,7 @@ export class DirectiveResolver {
     const queries: {[key: string]: any} = {};
 
     Object.keys(propertyMetadata).forEach((propName: string) => {
-      const input = ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof Input);
+      const input = findLast(propertyMetadata[propName], (a) => a instanceof Input);
       if (input) {
         if (input.bindingPropertyName) {
           inputs.push(`${propName}: ${input.bindingPropertyName}`);
@@ -66,7 +66,7 @@ export class DirectiveResolver {
           inputs.push(propName);
         }
       }
-      const output = ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof Output);
+      const output = findLast(propertyMetadata[propName], (a) => a instanceof Output);
       if (output) {
         if (output.bindingPropertyName) {
           outputs.push(`${propName}: ${output.bindingPropertyName}`);
@@ -94,7 +94,7 @@ export class DirectiveResolver {
         const args = hostListener.args || [];
         host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
       });
-      const query = ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof Query);
+      const query = findLast(propertyMetadata[propName], (a) => a instanceof Query);
       if (query) {
         queries[propName] = query;
       }
@@ -126,9 +126,8 @@ export class DirectiveResolver {
         this._dedupeBindings(directive.inputs ? directive.inputs.concat(inputs) : inputs);
     const mergedOutputs =
         this._dedupeBindings(directive.outputs ? directive.outputs.concat(outputs) : outputs);
-    const mergedHost = directive.host ? StringMapWrapper.merge(directive.host, host) : host;
-    const mergedQueries =
-        directive.queries ? StringMapWrapper.merge(directive.queries, queries) : queries;
+    const mergedHost = directive.host ? merge(directive.host, host) : host;
+    const mergedQueries = directive.queries ? merge(directive.queries, queries) : queries;
 
     if (directive instanceof Component) {
       return new Component({
@@ -167,4 +166,13 @@ export class DirectiveResolver {
 
 function isDirectiveMetadata(type: any): type is Directive {
   return type instanceof Directive;
+}
+
+export function findLast<T>(arr: T[], condition: (value: T) => boolean): T {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (condition(arr[i])) {
+      return arr[i];
+    }
+  }
+  return null;
 }

@@ -7,8 +7,6 @@
  */
 
 import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
-
-import {ListWrapper} from '../../facade/collection';
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
@@ -107,7 +105,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
 
-  removeControl(dir: FormControlName): void { ListWrapper.remove(this.directives, dir); }
+  removeControl(dir: FormControlName): void { remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
@@ -179,5 +177,12 @@ export class FormGroupDirective extends ControlContainer implements Form,
     if (!this.form) {
       ReactiveErrors.missingFormException();
     }
+  }
+}
+
+function remove<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) {
+    list.splice(index, 1);
   }
 }

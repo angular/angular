@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di';
-import {Predicate} from '../facade/collection';
 import {RenderDebugInfo} from '../render/api';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
@@ -192,3 +191,11 @@ export function indexDebugNode(node: DebugNode) {
 export function removeDebugNodeFromIndex(node: DebugNode) {
   _nativeNodeToDebugNode.delete(node.nativeNode);
 }
+
+/**
+ * A boolean-valued function over a value, possibly including context information
+ * regarding that value's position in an array.
+ *
+ * @experimental All debugging apis are currently experimental.
+ */
+export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
