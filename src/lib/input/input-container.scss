@@ -203,13 +203,10 @@ $mat-input-underline-disabled-background-image:
     width: 100%;
     transform-origin: top;
     opacity: 0;
-    transform: scaleY(0);
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-                opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+    transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 
     .mat-focused & {
       opacity: 1;
-      transform: scaleY(1);
     }
   }
 }
