@@ -3,12 +3,12 @@
 /* eslint-env worker */
 /* global importScripts, lunr */
 
+var SEARCH_TERMS_URL = '/content/docs/app/search-data.json';
+
 importScripts('https://unpkg.com/lunr@0.7.2');
 
 var index = createIndex();
 var pages = {};
-
-makeRequest('search-data.json', loadIndex);
 
 self.onmessage = handleMessage;
 
@@ -23,9 +23,38 @@ function createIndex() {
   });
 }
 
+// The worker receives a message to load the index and to query the index
+function handleMessage(message) {
+  var type = message.data.type;
+  var id = message.data.id;
+  var payload = message.data.payload;
+  switch(type) {
+    case 'load-index':
+      makeRequest(SEARCH_TERMS_URL, function(searchInfo) {
+        loadIndex(searchInfo);
+        self.postMessage({type: type, id: id, payload: true});
+      });
+      break;
+    case 'query-index':
+      self.postMessage({type: type, id: id, payload: {query: payload, results: queryIndex(payload)}});
+      break;
+    default:
+      self.postMessage({type: type, id: id, payload: {error: 'invalid message type'}})
+  }
+}
 
 // Use XHR to make a request to the server
 function makeRequest(url, callback) {
+
+  // The JSON file that is loaded should be an array of SearchTerms:
+  //
+  // export interface SearchTerms {
+  //   path: string;
+  //   type: string,
+  //   titleWords: string;
+  //   keyWords: string;
+  // }
+
   var searchDataRequest = new XMLHttpRequest();
   searchDataRequest.onload = function() {
     callback(JSON.parse(this.responseText));
@@ -43,18 +72,7 @@ function loadIndex(searchInfo) {
     index.add(page);
     pages[page.path] = page;
   });
-  self.postMessage({type: 'index-ready'});
 }
-
-
-// The worker receives a message everytime the web app wants to query the index
-function handleMessage(message) {
-  var id = message.data.id;
-  var query = message.data.query;
-  var results = queryIndex(query);
-  self.postMessage({type: 'query-results', id: id, query: query, results: results});
-}
-
 
 // Query the index and return the processed results
 function queryIndex(query) {
