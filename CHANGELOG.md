@@ -18,7 +18,7 @@ We’ve made changes under to hood to what AOT generated code looks like. These 
 Our template binding syntax now supports a couple helpful changes. You can now use an if/else style syntax, and assign local variables such as when unrolling an observable.
 
 ```
-<div #loading>Loading...</div>
+<ng-template #loading>Loading...</ng-template>
 <div *ngIf="userObservable | async; else loading; let user">
   {{ user.name }}
 </div>
