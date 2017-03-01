@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
-import {AnimationDriver, BrowserAnimationsModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
-import {MockAnimationDriver, MockAnimationPlayer} from '@angular/platform-browser/animations/testing';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {TestBed} from '../../testing';

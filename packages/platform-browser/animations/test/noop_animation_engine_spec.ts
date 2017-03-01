@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {state, style, trigger} from '@angular/animations';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
-
-import {NoopAnimationEngine} from '../src/render/noop_animation_engine';
+import {ɵNoopAnimationEngine as NoopAnimationEngine} from '@angular/animations/browser';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('NoopAnimationEngine', () => {
