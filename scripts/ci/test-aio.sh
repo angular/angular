@@ -25,13 +25,21 @@ source ${thisDir}/_travis-fold.sh
     travisFoldEnd "test.aio.xvfb-start"
   fi
 
+
   # Run unit tests
   travisFoldStart "test.aio.unit"
     yarn test -- --single-run
   travisFoldEnd "test.aio.unit"
 
+
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
     yarn run e2e
   travisFoldEnd "test.aio.e2e"
+
+
+  # Run unit tests for aio/aio-builds-setup
+  travisFoldStart "test.aio.aio-builds-setup"
+    ./aio-builds-setup/test.sh
+  travisFoldEnd "test.aio.aio-builds-setup"
 )
