@@ -63,7 +63,8 @@ The following is a list of known issues that will be fixed in the next rcs.
 ## Installing RC.1
 We have two main ways to update. If you have an existing project, you should be able to run:
 
-`npm install @angular/{common,compiler,compiler-cli,core,forms,http,platform-browser,platform-browser-dynamic,platform-server,router,animations}@next --save`
+On Linux/Mac: `npm install @angular/{common,compiler,compiler-cli,core,forms,http,platform-browser,platform-browser-dynamic,platform-server,router,animations}@next --save`
+On Windows: `npm install @angular/common@next @angular/compiler@next @angular/compiler-cli@next @angular/core@next @angular/forms@next @angular/http@next @angular/platform-browser@next @angular/platform-browser-dynamic@next @angular/platform-server@next @angular/router@next @angular/animations@next --save`
 
 
 Then run whatever `ng serve` or `npm start` command you normally use, and everything should work.
