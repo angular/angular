@@ -82,7 +82,9 @@ function transformMarkdownFiles(buffer: Buffer, file: any): string {
 
 /** Fixes paths in the markdown files to work in the material-docs-io. */
 function fixMarkdownDocLinks(link: string, filePath: string): string {
-  if (link.startsWith('http') && filePath.indexOf('guides/') === -1) {
+  // As for now, only markdown links that are relative and inside of the guides/ directory
+  // will be rewritten.
+  if (!filePath.includes(path.normalize('guides/')) || link.startsWith('http')) {
     return link;
   }
 
