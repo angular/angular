@@ -8,7 +8,7 @@
 
 import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
@@ -52,7 +52,11 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 @NgModule({
   exports: [BrowserModule],
   imports: [HttpModule],
-  providers: [SERVER_RENDER_PROVIDERS, SERVER_HTTP_PROVIDERS],
+  providers: [
+    SERVER_RENDER_PROVIDERS,
+    SERVER_HTTP_PROVIDERS,
+    {provide: Testability, useValue: null},
+  ],
 })
 export class ServerModule {
 }
