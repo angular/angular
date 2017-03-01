@@ -21,7 +21,7 @@ export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 export * from './zone';
 export * from './render';
 export * from './linker';
-export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './debug/debug_node';
+export {DebugElement, DebugNode, asNativeElements, getDebugNode, Predicate} from './debug/debug_node';
 export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
 export * from './platform_core_providers';
@@ -34,7 +34,6 @@ export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
 export {Sanitizer, SecurityContext} from './security';
 export * from './codegen_private_exports';
-
 export * from './animation/animation_metadata_wrapped';
 import {AnimationTriggerMetadata} from './animation/animation_metadata_wrapped';
 
