@@ -37,6 +37,11 @@ export class CollectorOptions {
    * the source.
    */
   quotedNames?: boolean;
+
+  /**
+   * Do not simplify invalid expressions.
+   */
+  verboseInvalidExpression?: boolean;
 }
 
 /**
