@@ -10,6 +10,7 @@
       "assets": [
         "assets",
         "content",
+        "app/search/search-worker.js",
         "favicon.ico"
       ],
       "index": "index.html",
