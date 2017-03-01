@@ -4,11 +4,15 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 
-import { DocumentContents } from './document';
-import { LocationService } from '../shared/location.service';
-import { Logger } from '../shared/logger.service';
+import { LocationService } from 'app/shared/location.service';
+import { Logger } from 'app/shared/logger.service';
 
 const FILE_NOT_FOUND_DOC = 'file-not-found';
+
+export interface DocumentContents {
+  title: string;
+  contents: string;
+}
 
 @Injectable()
 export class DocumentService {
