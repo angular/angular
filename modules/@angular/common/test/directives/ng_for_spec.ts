@@ -352,7 +352,7 @@ export function main() {
          }));
 
       it('should support injecting `NgFor` and get an instance of `NgForOf`', async(() => {
-           const template = `<template ngFor [ngForOf]='items' let-item test></template>`;
+           const template = `<ng-template ngFor [ngForOf]='items' let-item test></ng-template>`;
            fixture = createTestComponent(template);
            const testDirective = fixture.debugElement.childNodes[0].injector.get(TestDirective);
            const ngForOf = fixture.debugElement.childNodes[0].injector.get(NgForOf);
