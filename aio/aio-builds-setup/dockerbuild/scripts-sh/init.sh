@@ -10,6 +10,6 @@ service rsyslog start
 service cron start
 service dnsmasq start
 service nginx start
-service pm2 start
+service pm2-root start
 aio-upload-server-prod start
 echo [`date`] - Services started successfully.
