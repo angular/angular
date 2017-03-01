@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 
+import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+
 import { MdToolbarModule } from '@angular/material/toolbar';
 import { MdButtonModule} from '@angular/material/button';
 import { MdIconModule} from '@angular/material/icon';
@@ -13,14 +15,17 @@ import { Platform } from '@angular/material/core';
 // crashes with "missing first" operator when SideNav.mode is "over"
 import 'rxjs/add/operator/first';
 
-import { AppComponent } from './app.component';
-import { DocViewerComponent } from './doc-viewer/doc-viewer.component';
-import { embeddedComponents, EmbeddedComponents } from './embedded';
-import { Logger } from './logger.service';
-import { navDirectives, navProviders } from './nav-engine';
-import { SidenavComponent } from './sidenav/sidenav.component';
-import { NavItemComponent } from './sidenav/nav-item.component';
-import { MenuComponent } from './sidenav/menu.component';
+import { AppComponent } from 'app/app.component';
+import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { Logger } from 'app/shared/logger.service';
+import { LocationService } from 'app/shared/location.service';
+import { NavigationService } from 'app/navigation/navigation.service';
+import { DocumentService } from 'app/documents/document.service';
+import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
+import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
+import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
+import { LinkDirective } from 'app/shared/link.directive';
 
 @NgModule({
   imports: [
@@ -36,15 +41,19 @@ import { MenuComponent } from './sidenav/menu.component';
     AppComponent,
     embeddedComponents,
     DocViewerComponent,
-    MenuComponent,
-    navDirectives,
+    TopMenuComponent,
+    NavMenuComponent,
     NavItemComponent,
-    SidenavComponent,
+    LinkDirective,
   ],
   providers: [
     EmbeddedComponents,
     Logger,
-    navProviders,
+    Location,
+    { provide: LocationStrategy, useClass: PathLocationStrategy },
+    LocationService,
+    NavigationService,
+    DocumentService,
     Platform
   ],
   entryComponents: [ embeddedComponents ],

@@ -1,0 +1,114 @@
+
+/************************************
+
+            Media queries
+
+To use these, put this snippet in the approriate selector:
+
+    @include bp(tiny) {
+        background-color: purple;
+    }
+
+    Replace "tiny" with "medium" or "big" as necessary.
+
+*************************************/
+
+@mixin bp($point) {
+
+  $bp-xsmall: "(min-width: 320px)";
+  $bp-teeny: "(min-width: 480px)";
+  $bp-tiny: "(min-width: 600px)";
+  $bp-small: "(min-width: 650px)";
+  $bp-medium: "(min-width: 800px)";
+  $bp-big: "(min-width: 1000px)";
+
+  @if $point == big {
+    @media #{$bp-big} { @content; }
+  }
+  @else if $point == medium {
+    @media #{$bp-medium} { @content; }
+  }
+  @else if $point == small {
+    @media #{$bp-small}  { @content; }
+  }
+  @else if $point == tiny {
+    @media #{$bp-tiny}  { @content; }
+  }
+  @else if $point == teeny {
+    @media #{$bp-teeny}  { @content; }
+  }
+  @else if $point == xsmall {
+    @media #{$bp-xsmall}  { @content; }
+  }
+}
+
+/************************************/
+
+.vertical-menu {
+  padding-left: 0;
+}
+
+a.vertical-menu {
+  color: #545454;
+  cursor: pointer;
+  display: block;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  text-decoration: none;
+  text-align: left;
+  &:hover {
+    background-color: #ddd;
+  }
+}
+
+.vertical-menu.selected {
+  color:#018494;
+}
+
+.heading {
+  color: #444;
+  cursor: pointer;
+  font-size: .85rem;
+  min-width: 200px;
+  padding-left: 10px;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.material-icons {
+  display: none;
+}
+
+.material-icons.active {
+  display: inline-block;
+  position: absolute;
+  top: 6px;
+  // left: 4px;
+}
+
+.heading-children {
+  display: none;
+}
+
+.heading-children.active {
+  display: block;
+}
+
+
+.heading.selected.level-1,
+.heading-children.selected.level-1 {
+  border-left: 3px #00bcd4 solid;
+}
+
+.level-1 {
+  padding-left: 10px;
+}
+
+.level-2 {
+  padding-left: 20px;
+}
+
+.level-3 {
+  padding-left: 30px;
+}
