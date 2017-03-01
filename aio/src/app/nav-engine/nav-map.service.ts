@@ -24,7 +24,7 @@ export class NavMapService {
     docFetchingService: DocFetchingService,
     private http: Http,
     private logger: Logger) {
-      this.getDocPath = docFetchingService.getPath.bind(docFetchingService);
+      this.getDocPath = docFetchingService.getPathFor.bind(docFetchingService);
     }
 
   get navMap(): Observable<NavMap> {
