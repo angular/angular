@@ -135,7 +135,8 @@ export function cleanTask(glob: string) {
 /** Build an task that depends on all application build tasks. */
 export function buildAppTask(appName: string) {
   const buildTasks = ['vendor', 'ts', 'scss', 'assets']
-    .map(taskName => `:build:${appName}:${taskName}`);
+    .map(taskName => `:build:${appName}:${taskName}`)
+    .filter(taskName => gulp.hasTask(taskName));
 
   return (done: () => void) => {
     gulpRunSequence(

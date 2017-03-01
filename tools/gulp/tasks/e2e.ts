@@ -25,9 +25,6 @@ task(':build:e2eapp:vendor', vendorTask());
 /** Builds e2e app ts to js. */
 task(':build:e2eapp:ts', tsBuildTask(appDir));
 
-/** No-op (needed by buildAppTask). */
-task(':build:e2eapp:scss', sassBuildTask(outDir, appDir));
-
 /** Copies e2e app assets (html, css) to build output. */
 task(':build:e2eapp:assets', copyTask(appDir, outDir));
 
