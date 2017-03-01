@@ -167,6 +167,10 @@ do
   JS_ANIMATIONS_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations.es5.js
   JS_ANIMATIONS_TESTING_PATH=${DEST_MODULE}/${PACKAGE}/animations/testing.js
   JS_ANIMATIONS_TESTING_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations/testing.es5.js
+  JS_BROWSER_PATH=${DEST_MODULE}/${PACKAGE}/browser.js
+  JS_BROWSER_PATH_ES5=${DEST_MODULE}/${PACKAGE}/browser.es5.js
+  JS_BROWSER_TESTING_PATH=${DEST_MODULE}/${PACKAGE}/browser/testing.js
+  JS_BROWSER_TESTING_PATH_ES5=${DEST_MODULE}/${PACKAGE}/browser/testing.es5.js
 
   # UMD/ES5
   UMD_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}.umd.js
@@ -178,7 +182,9 @@ do
   UMD_UPGRADE_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-upgrade.umd.min.js
   UMD_ANIMATIONS_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.js
   UMD_ANIMATIONS_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.min.js
-  UMD_ANIMATIONS_TESTING_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations-testing.umd.js
+  UMD_BROWSER_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-browser.umd.js
+  UMD_BROWSER_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-browser.umd.min.js
+  UMD_BROWSER_TESTING_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-browser-testing.umd.js
 
   if [[ ${PACKAGE} != router ]]; then
     LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
@@ -234,10 +240,15 @@ do
   if [[ -e ${SRCDIR}/tsconfig-animations.json ]]; then
     echo "======      [${PACKAGE}]: COMPILING (ANIMATIONS): ${TSC} -p ${SRCDIR}/tsconfig-animations.json"
     $TSC -p ${SRCDIR}/tsconfig-animations.json
+  fi
 
-    if [[ -e ${SRCDIR}/tsconfig-animations-testing.json ]]; then
-      echo "======      [${PACKAGE}]: COMPILING (ANIMATION TESTING): ${TSC} -p ${SRCDIR}/tsconfig-animations-testing.json"
-      $TSC -p ${SRCDIR}/tsconfig-animations-testing.json
+  if [[ -e ${SRCDIR}/tsconfig-browser.json ]]; then
+    echo "======      [${PACKAGE}]: COMPILING (BROWSER): ${TSC} -p ${SRCDIR}/tsconfig-browser.json"
+    $TSC -p ${SRCDIR}/tsconfig-browser.json
+
+    if [[ -e ${SRCDIR}/tsconfig-browser-testing.json ]]; then
+      echo "======      [${PACKAGE}]: COMPILING (BROWSER TESTING): ${TSC} -p ${SRCDIR}/tsconfig-browser-testing.json"
+      $TSC -p ${SRCDIR}/tsconfig-browser-testing.json
     fi
   fi
 
@@ -400,25 +411,12 @@ do
         mv ${DESTDIR}/typings/animations/index.d.ts ${DESTDIR}/typings/animations/animations.d.ts
         mv ${DESTDIR}/typings/animations/index.metadata.json ${DESTDIR}/typings/animations/animations.metadata.json
 
-        echo "======         Rollup ${PACKAGE} animations/testing"
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/animations/testing/index.js -o ${DESTDIR}/animations-testing.tmp.js
-
-        echo "======         Downleveling ${PACKAGE} ANIMATIONS TESTING to ES5/UMD"
-        [[ -e ${SRCDIR}/.babelrc-animations-testing ]] && cp ${SRCDIR}/.babelrc-animations-testing ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/animations-testing.tmp.js -o ${UMD_ANIMATIONS_TESTING_ES5_PATH}
         rm -f ${DESTDIR}/.babelrc
-
-        echo "======         Move ${PACKAGE} animations testing typings"
-        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/animations/testing/ ${DESTDIR}/typings/animations/testing
-
         rm -rf ${DESTDIR}/animations
-
         mkdir ${DESTDIR}/animations && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
-        mkdir ${DESTDIR}/animations/testing
 
         getPackageContents "${PACKAGE}" "animations" > ${DESTDIR}/animations/package.json
 
-        echo '{"typings": "../../typings/animations/testing/index.d.ts", "main": "../../bundles/platform-browser-animations-testing.umd.js", "module": "../../@angular/platform-browser/animations/testing.es5.js", "es2015": "../../@angular/platform-browser/animations/testing.js"}' > ${DESTDIR}/animations/testing/package.json
         # This is needed for Compiler to be able to find the bundle index.
         echo '{"typings": "animations.d.ts"}' > ${DESTDIR}/typings/animations/package.json
 
@@ -430,12 +428,59 @@ do
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ANIMATIONS_ES5_MIN_PATH} ${UMD_ANIMATIONS_ES5_PATH}
 
         mkdir ${DEST_MODULE}/${PACKAGE}/animations
+      fi
 
-        mv ${DESTDIR}/animations-testing.tmp.js ${JS_ANIMATIONS_TESTING_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_ANIMATIONS_TESTING_PATH} ${JS_ANIMATIONS_TESTING_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
-        cat ${UMD_ANIMATIONS_TESTING_ES5_PATH} >> ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
-        mv ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp ${UMD_ANIMATIONS_TESTING_ES5_PATH}
+      if [[ -d browser ]]; then
+        echo "======         Rollup ${PACKAGE} browser"
+        ../../../node_modules/.bin/rollup -i ${DESTDIR}/browser/index.js -o ${DESTDIR}/browser.tmp.js
+
+        echo "======         Downleveling ${PACKAGE} BROWSER to ES5/UMD"
+        [[ -e ${SRCDIR}/.babelrc-browser ]] && cp ${SRCDIR}/.babelrc-browser ${DESTDIR}/.babelrc
+        $BABELJS ${DESTDIR}/browser.tmp.js -o ${UMD_BROWSER_ES5_PATH}
+        rm -f ${DESTDIR}/.babelrc
+
+        echo "======         Move ${PACKAGE} browser typings"
+        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/browser/ ${DESTDIR}/typings/browser
+        mv ${DESTDIR}/typings/browser/index.d.ts ${DESTDIR}/typings/browser/browser.d.ts
+        mv ${DESTDIR}/typings/browser/index.metadata.json ${DESTDIR}/typings/browser/browser.metadata.json
+
+        echo "======         Rollup ${PACKAGE} browser/testing"
+        ../../../node_modules/.bin/rollup -i ${DESTDIR}/browser/testing/index.js -o ${DESTDIR}/browser-testing.tmp.js
+
+        echo "======         Downleveling ${PACKAGE} BROWSER TESTING to ES5/UMD"
+        [[ -e ${SRCDIR}/.babelrc-browser-testing ]] && cp ${SRCDIR}/.babelrc-browser-testing ${DESTDIR}/.babelrc
+        $BABELJS ${DESTDIR}/browser-testing.tmp.js -o ${UMD_BROWSER_TESTING_ES5_PATH}
+        rm -f ${DESTDIR}/.babelrc
+
+        echo "======         Move ${PACKAGE} browser testing typings"
+        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/browser/testing/ ${DESTDIR}/typings/browser/testing
+
+        rm -rf ${DESTDIR}/browser
+
+        mkdir ${DESTDIR}/browser && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
+        mkdir ${DESTDIR}/browser/testing
+
+        getPackageContents "${PACKAGE}" "browser" > ${DESTDIR}/browser/package.json
+
+        echo '{"typings": "../../typings/browser/testing/index.d.ts", "main": "../../bundles/platform-browser-browser-testing.umd.js", "module": "../../@angular/platform-browser/browser/testing.es5.js", "es2015": "../../@angular/platform-browser/browser/testing.js"}' > ${DESTDIR}/browser/testing/package.json
+        # This is needed for Compiler to be able to find the bundle index.
+        echo '{"typings": "browser.d.ts"}' > ${DESTDIR}/typings/browser/package.json
+
+        echo "mv ${DESTDIR}/browser.tmp.js ${JS_BROWSER_PATH}"
+        mv ${DESTDIR}/browser.tmp.js ${JS_BROWSER_PATH}
+        downlevelES2015 ${DESTDIR} ${JS_BROWSER_PATH} ${JS_BROWSER_PATH_ES5}
+        cat ${LICENSE_BANNER} > ${UMD_BROWSER_ES5_PATH}.tmp
+        cat ${UMD_BROWSER_ES5_PATH} >> ${UMD_BROWSER_ES5_PATH}.tmp
+        mv ${UMD_BROWSER_ES5_PATH}.tmp ${UMD_BROWSER_ES5_PATH}
+        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_BROWSER_ES5_MIN_PATH} ${UMD_BROWSER_ES5_PATH}
+
+        mkdir ${DEST_MODULE}/${PACKAGE}/browser
+
+        mv ${DESTDIR}/browser-testing.tmp.js ${JS_BROWSER_TESTING_PATH}
+        downlevelES2015 ${DESTDIR} ${JS_BROWSER_TESTING_PATH} ${JS_BROWSER_TESTING_PATH_ES5}
+        cat ${LICENSE_BANNER} > ${UMD_BROWSER_TESTING_ES5_PATH}.tmp
+        cat ${UMD_BROWSER_TESTING_ES5_PATH} >> ${UMD_BROWSER_TESTING_ES5_PATH}.tmp
+        mv ${UMD_BROWSER_TESTING_ES5_PATH}.tmp ${UMD_BROWSER_TESTING_ES5_PATH}
       fi
 
       for FILE in ${DEST_MODULE}/public_api*; do
