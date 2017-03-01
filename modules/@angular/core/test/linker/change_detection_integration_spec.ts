@@ -8,11 +8,13 @@
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactoryV2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactoryV2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
+import {DomElementSchemaRegistry} from '../../../compiler/index';
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 import {EventEmitter} from '../../src/facade/async';
 
@@ -1241,6 +1243,36 @@ export function main() {
            expect(renderLog.loggedValues).toEqual(['Tom']);
          });
     });
+
+    describe('class binding', () => {
+      it('should coordinate class attribute and class host binding', () => {
+        @Component({template: `<div class="{{initClasses}}" someDir></div>`})
+        class Comp {
+          initClasses = 'init';
+        }
+
+        @Directive({selector: '[someDir]'})
+        class SomeDir {
+          @HostBinding('class.foo')
+          fooClass = true;
+        }
+
+        const ctx =
+            TestBed
+                .configureCompiler({
+                  providers:
+                      [{provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry}]
+                })
+                .configureTestingModule({declarations: [Comp, SomeDir]})
+                .createComponent(Comp);
+
+        ctx.detectChanges();
+
+        const divEl = ctx.debugElement.children[0];
+        expect(divEl.nativeElement).toHaveCssClass('init');
+        expect(divEl.nativeElement).toHaveCssClass('foo');
+      });
+    });
   });
 }
 
@@ -1285,13 +1317,13 @@ function patchLoggingRendererV2(rendererFactory: RendererFactoryV2, log: RenderL
     const origSetValue = renderer.setValue;
     renderer.setProperty = function(el: any, name: string, value: any): void {
       log.setElementProperty(el, name, value);
-      origSetProperty.call(this, el, name, value);
+      origSetProperty.call(renderer, el, name, value);
     };
     renderer.setValue = function(node: any, value: string): void {
       if (getDOM().isTextNode(node)) {
         log.setText(node, value);
       }
-      origSetValue.call(this, node, value);
+      origSetValue.call(renderer, node, value);
     };
     return renderer;
   };
