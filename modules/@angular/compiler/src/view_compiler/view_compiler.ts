@@ -33,7 +33,7 @@ export class ViewCompileResult {
 @CompilerInjectable()
 export class ViewCompiler {
   constructor(
-      private _genConfigNext: CompilerConfig, private _schemaRegistryNext: ElementSchemaRegistry) {}
+      private _genConfigNext: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
 
   compileComponent(
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
@@ -288,24 +288,23 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       elName = null;
     }
 
-    const {flags, usedEvents, queryMatchesExpr, hostBindings, hostEvents} =
+    const {flags, usedEvents, queryMatchesExpr, hostBindings: dirHostBindings, hostEvents} =
         this._visitElementOrTemplate(nodeIndex, ast);
 
     let inputDefs: o.Expression[] = [];
     let outputDefs: o.Expression[] = [];
     if (elName) {
-      ast.inputs.forEach(
-          (inputAst) => hostBindings.push({context: COMP_VAR, value: inputAst.value}));
+      const hostBindings = ast.inputs
+                               .map((inputAst) => ({
+                                      context: COMP_VAR as o.Expression,
+                                      value: inputAst.value,
+                                      bindingDef: elementBindingDef(inputAst, null),
+                                    }))
+                               .concat(dirHostBindings);
       if (hostBindings.length) {
         this._addUpdateExpressions(nodeIndex, hostBindings, this.updateRendererExpressions);
+        inputDefs = hostBindings.map(entry => entry.bindingDef);
       }
-      // Note: inputDefs have to be in the same order as hostBindings:
-      // - first the entries from the directives, then the ones from the element.
-      ast.directives.forEach(
-          (dirAst, dirIndex) =>
-              inputDefs.push(...elementBindingDefs(dirAst.hostProperties, dirAst)));
-      inputDefs.push(...elementBindingDefs(ast.inputs, null));
-
       outputDefs = usedEvents.map(
           ([target, eventName]) => o.literalArr([o.literal(target), o.literal(eventName)]));
     }
@@ -355,7 +354,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     flags: NodeFlags,
     usedEvents: [string, string][],
     queryMatchesExpr: o.Expression,
-    hostBindings: {value: AST, context: o.Expression}[],
+    hostBindings: {value: AST, context: o.Expression, bindingDef: o.Expression}[],
     hostEvents: {context: o.Expression, eventAst: BoundEventAst, dirAst: DirectiveAst}[],
   } {
     let flags = NodeFlags.None;
@@ -373,7 +372,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
         usedEvents.set(elementEventFullName(target, name), [target, name]);
       });
     });
-    const hostBindings: {value: AST, context: o.Expression}[] = [];
+    const hostBindings: {value: AST, context: o.Expression, bindingDef: o.Expression}[] = [];
     const hostEvents: {context: o.Expression, eventAst: BoundEventAst, dirAst: DirectiveAst}[] = [];
     const componentFactoryResolverProvider = createComponentFactoryResolver(ast.directives);
     if (componentFactoryResolverProvider) {
@@ -443,7 +442,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
       providerAst: ProviderAst, dirAst: DirectiveAst, directiveIndex: number,
       elementNodeIndex: number, refs: ReferenceAst[], queryMatches: QueryMatch[],
       usedEvents: Map<string, any>, queryIds: StaticAndDynamicQueryIds): {
-    hostBindings: {value: AST, context: o.Expression}[],
+    hostBindings: {value: AST, context: o.Expression, bindingDef: o.Expression}[],
     hostEvents: {context: o.Expression, eventAst: BoundEventAst, dirAst: DirectiveAst}[]
   } {
     const nodeIndex = this.nodeDefs.length;
@@ -513,14 +512,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     const dirContextExpr = o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
       VIEW_VAR, o.literal(nodeIndex)
     ]);
-    const hostBindings = dirAst.hostProperties.map((hostBindingAst) => {
-      return {
-        value: (<ASTWithSource>hostBindingAst.value).ast,
-        context: dirContextExpr,
-      };
-    });
-    const hostEvents = dirAst.hostEvents.map(
-        (hostEventAst) => { return {context: dirContextExpr, eventAst: hostEventAst, dirAst}; });
+    const hostBindings =
+        dirAst.hostProperties.map((hostBindingAst) => ({
+                                    value: (<ASTWithSource>hostBindingAst.value).ast,
+                                    context: dirContextExpr,
+                                    bindingDef: elementBindingDef(hostBindingAst, dirAst),
+                                  }));
+    const hostEvents = dirAst.hostEvents.map((hostEventAst) => ({
+                                               context: dirContextExpr,
+                                               eventAst: hostEventAst, dirAst,
+                                             }));
 
 
     // directiveDef(
@@ -906,36 +907,32 @@ function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlags {
   return nodeFlag;
 }
 
-function elementBindingDefs(
-    inputAsts: BoundElementPropertyAst[], dirAst: DirectiveAst): o.Expression[] {
-  return inputAsts.map((inputAst) => {
-    switch (inputAst.type) {
-      case PropertyBindingType.Attribute:
-        return o.literalArr([
-          o.literal(BindingType.ElementAttribute), o.literal(inputAst.name),
-          o.literal(inputAst.securityContext)
-        ]);
-      case PropertyBindingType.Property:
-        return o.literalArr([
-          o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
-          o.literal(inputAst.securityContext)
-        ]);
-      case PropertyBindingType.Animation:
-        const bindingType = dirAst && dirAst.directive.isComponent ?
-            BindingType.ComponentHostProperty :
-            BindingType.ElementProperty;
-        return o.literalArr([
-          o.literal(bindingType), o.literal('@' + inputAst.name),
-          o.literal(inputAst.securityContext)
-        ]);
-      case PropertyBindingType.Class:
-        return o.literalArr([o.literal(BindingType.ElementClass), o.literal(inputAst.name)]);
-      case PropertyBindingType.Style:
-        return o.literalArr([
-          o.literal(BindingType.ElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
-        ]);
-    }
-  });
+function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveAst): o.Expression {
+  switch (inputAst.type) {
+    case PropertyBindingType.Attribute:
+      return o.literalArr([
+        o.literal(BindingType.ElementAttribute), o.literal(inputAst.name),
+        o.literal(inputAst.securityContext)
+      ]);
+    case PropertyBindingType.Property:
+      return o.literalArr([
+        o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
+        o.literal(inputAst.securityContext)
+      ]);
+    case PropertyBindingType.Animation:
+      const bindingType = dirAst && dirAst.directive.isComponent ?
+          BindingType.ComponentHostProperty :
+          BindingType.ElementProperty;
+      return o.literalArr([
+        o.literal(bindingType), o.literal('@' + inputAst.name), o.literal(inputAst.securityContext)
+      ]);
+    case PropertyBindingType.Class:
+      return o.literalArr([o.literal(BindingType.ElementClass), o.literal(inputAst.name)]);
+    case PropertyBindingType.Style:
+      return o.literalArr([
+        o.literal(BindingType.ElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
+      ]);
+  }
 }
 
 
