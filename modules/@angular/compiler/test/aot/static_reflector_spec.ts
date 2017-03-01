@@ -8,6 +8,7 @@
 
 import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {CollectorOptions} from '@angular/tsc-wrapped';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 
@@ -19,11 +20,13 @@ describe('StaticReflector', () => {
 
   function init(
       testData: {[key: string]: any} = DEFAULT_TEST_DATA,
-      decorators: {name: string, filePath: string, ctor: any}[] = []) {
+      decorators: {name: string, filePath: string, ctor: any}[] = [],
+      errorRecorder?: (error: any, fileName: string) => void, collectorOptions?: CollectorOptions) {
     const symbolCache = new StaticSymbolCache();
-    host = new MockStaticSymbolResolverHost(testData);
-    symbolResolver = new StaticSymbolResolver(host, symbolCache, new MockSummaryResolver([]));
-    reflector = new StaticReflector(symbolResolver, decorators);
+    host = new MockStaticSymbolResolverHost(testData, collectorOptions);
+    symbolResolver =
+        new StaticSymbolResolver(host, symbolCache, new MockSummaryResolver([]), errorRecorder);
+    reflector = new StaticReflector(symbolResolver, decorators, [], errorRecorder);
     noContext = reflector.getStaticSymbol('', '');
   }
 
@@ -490,6 +493,31 @@ describe('StaticReflector', () => {
     init(data);
     const appComponent = reflector.getStaticSymbol(file, 'AppComponent');
     expect(() => reflector.propMetadata(appComponent)).not.toThrow();
+  });
+
+  it('should produce a annotation even if it contains errors', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'tmp',
+          template: () => {},
+          providers: [1, 2, (() => {}), 3, !(() => {}), 4, 5, (() => {}) + (() => {}), 6, 7]
+        })
+        export class BadComponent {
+
+        }
+      `;
+    init(data, [], () => {}, {verboseInvalidExpression: true});
+
+    const badComponent = reflector.getStaticSymbol(file, 'BadComponent');
+    const annotations = reflector.annotations(badComponent);
+    const annotation = annotations[0];
+    expect(annotation.selector).toEqual('tmp');
+    expect(annotation.template).toBeUndefined();
+    expect(annotation.providers).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
   describe('inheritance', () => {
@@ -1264,5 +1292,5 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         export class Dep {
           @Input f: Forward;
         }
-      `,
+      `
     };
