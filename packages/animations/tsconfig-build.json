@@ -8,8 +8,6 @@
     "moduleResolution": "node",
     "outDir": "../../dist/packages/animations",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/core/testing": ["../../dist/packages/core/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,

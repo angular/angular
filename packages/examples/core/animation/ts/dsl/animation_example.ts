@@ -7,7 +7,8 @@
  */
 
 // #docregion Component
-import {Component, NgModule, animate, state, style, transition, trigger} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {Component, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @Component({
