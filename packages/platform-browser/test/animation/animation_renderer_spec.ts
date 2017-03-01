@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
+import {ɵAnimationEngine} from '@angular/animations/browser';
 import {Component, Injectable, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
