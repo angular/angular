@@ -9,7 +9,7 @@
 import {Observable} from 'rxjs/Observable';
 
 import {EventEmitter} from '../event_emitter';
-import {getSymbolIterator} from '../facade/lang';
+import {getSymbolIterator} from '../util';
 
 
 /**

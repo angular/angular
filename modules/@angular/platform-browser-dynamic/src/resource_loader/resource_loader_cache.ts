@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {global} from '../facade/lang';
+import {ɵglobal as global} from '@angular/core';
 
 /**
  * An implementation of ResourceLoader that uses a template cache to avoid doing an actual

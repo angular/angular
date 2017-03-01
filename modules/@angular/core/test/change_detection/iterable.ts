@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator} from '../../src/facade/lang';
+import {getSymbolIterator} from '@angular/core/src/util';
 
 export class TestIterable {
   list: number[];

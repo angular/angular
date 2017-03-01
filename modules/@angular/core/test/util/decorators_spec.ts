@@ -8,15 +8,14 @@
 
 import {Inject} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
+import {global} from '@angular/core/src/util';
 import {Class, makeDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
-
-import {global} from '../../src/facade/lang';
 
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
 export function main() {
-  const Reflect = global.Reflect;
+  const Reflect = global['Reflect'];
 
   const TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
   const TestDecorator = makeDecorator(
