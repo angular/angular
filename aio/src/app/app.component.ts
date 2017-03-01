@@ -2,6 +2,7 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { NavigationService, NavigationViews } from 'app/navigation/navigation.service';
+import { SearchService, QueryResults } from 'app/search/search.service';
 
 @Component({
   selector: 'aio-shell',
@@ -91,10 +92,12 @@ export class AppComponent implements OnInit {
 
   currentDocument: Observable<DocumentContents>;
   navigationViews: Observable<NavigationViews>;
+  searchResults: Observable<QueryResults>;
 
-  constructor(documentService: DocumentService, navigationService: NavigationService) {
+  constructor(documentService: DocumentService, navigationService: NavigationService, private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     this.navigationViews = navigationService.navigationViews;
+    this.searchResults = searchService.searchResults;
   }
 
   ngOnInit() {
@@ -103,5 +106,11 @@ export class AppComponent implements OnInit {
 
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
+  }
+
+  onSearch(event: KeyboardEvent) {
+    const query = (event.target as HTMLInputElement).value;
+    console.log(query);
+    this.searchService.search(query);
   }
 }
