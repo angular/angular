@@ -7,8 +7,7 @@
  */
 
 import {NgModule, Type, ɵReflectorReader, ɵreflector} from '@angular/core';
-
-import {ListWrapper} from './facade/collection';
+import {findLast} from './directive_resolver';
 import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 
@@ -26,8 +25,7 @@ export class NgModuleResolver {
   isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
 
   resolve(type: Type<any>, throwIfNotFound = true): NgModule {
-    const ngModuleMeta: NgModule =
-        ListWrapper.findLast(this._reflector.annotations(type), _isNgModuleMetadata);
+    const ngModuleMeta: NgModule = findLast(this._reflector.annotations(type), _isNgModuleMetadata);
 
     if (ngModuleMeta) {
       return ngModuleMeta;

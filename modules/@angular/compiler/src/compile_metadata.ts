@@ -7,9 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
-
 import {StaticSymbol} from './aot/static_symbol';
-import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
@@ -272,7 +270,7 @@ export class CompileTemplateMetadata {
     this.styles = _normalizeArray(styles);
     this.styleUrls = _normalizeArray(styleUrls);
     this.externalStylesheets = _normalizeArray(externalStylesheets);
-    this.animations = animations ? ListWrapper.flatten(animations) : [];
+    this.animations = animations ? flatten(animations) : [];
     this.ngContentSelectors = ngContentSelectors || [];
     if (interpolation && interpolation.length != 2) {
       throw new Error(`'interpolation' should have a start and an end symbol.`);
@@ -734,4 +732,11 @@ export class ProviderMeta {
     this.dependencies = deps;
     this.multi = !!multi;
   }
+}
+
+export function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T | T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
 }

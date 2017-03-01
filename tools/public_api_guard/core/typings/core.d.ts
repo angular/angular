@@ -717,6 +717,11 @@ export declare abstract class PlatformRef {
     abstract onDestroy(callback: () => void): void;
 }
 
+/** @experimental */
+export interface Predicate<T> {
+    (value: T, index?: number, array?: T[]): boolean;
+}
+
 /** @stable */
 export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
 

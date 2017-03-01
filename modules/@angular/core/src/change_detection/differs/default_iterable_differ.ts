@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 import {isBlank, looseIdentical, stringify} from '../../facade/lang';
+import {isListLikeIterable, iterateListLike} from '../change_detection_util';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
