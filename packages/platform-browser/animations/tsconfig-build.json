@@ -2,12 +2,12 @@
   "extends": "../tsconfig-build",
 
   "compilerOptions": {
-    "outDir": "../../../dist/packages/platform-browser",
     "paths": {
       "rxjs/*": ["../../node_modules/rxjs/*"],
       "@angular/core": ["../../dist/packages/core"],
       "@angular/core/testing": ["../../dist/packages/core/testing"],
       "@angular/animations": ["../../dist/packages/animations"],
+      "@angular/animations/browser": ["../../dist/packages/animations/browser"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"]
     }
   },
