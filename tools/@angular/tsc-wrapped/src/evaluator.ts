@@ -227,6 +227,10 @@ export class Evaluator {
       return entry;
     }
 
+    function isFoldableError(value: any): value is MetadataError {
+      return !t.options.verboseInvalidExpression && isMetadataError(value);
+    }
+
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
@@ -241,14 +245,14 @@ export class Evaluator {
                 quoted.push(name);
               }
               const propertyName = this.nameOf(assignment.name);
-              if (isMetadataError(propertyName)) {
+              if (isFoldableError(propertyName)) {
                 error = propertyName;
                 return true;
               }
               const propertyValue = isPropertyAssignment(assignment) ?
                   this.evaluateNode(assignment.initializer) :
                   {__symbolic: 'reference', name: propertyName};
-              if (isMetadataError(propertyValue)) {
+              if (isFoldableError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
               } else {
@@ -267,7 +271,7 @@ export class Evaluator {
           const value = this.evaluateNode(child);
 
           // Check for error
-          if (isMetadataError(value)) {
+          if (isFoldableError(value)) {
             error = value;
             return true;  // Stop the forEachChild.
           }
@@ -299,14 +303,14 @@ export class Evaluator {
           }
         }
         const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
-        if (args.some(isMetadataError)) {
+        if (!this.options.verboseInvalidExpression && args.some(isMetadataError)) {
           return args.find(isMetadataError);
         }
         if (this.isFoldable(callExpression)) {
           if (isMethodCallOf(callExpression, 'concat')) {
             const arrayValue = <MetadataValue[]>this.evaluateNode(
                 (<ts.PropertyAccessExpression>callExpression.expression).expression);
-            if (isMetadataError(arrayValue)) return arrayValue;
+            if (isFoldableError(arrayValue)) return arrayValue;
             return arrayValue.concat(args[0]);
           }
         }
@@ -315,7 +319,7 @@ export class Evaluator {
           return recordEntry(args[0], node);
         }
         const expression = this.evaluateNode(callExpression.expression);
-        if (isMetadataError(expression)) {
+        if (isFoldableError(expression)) {
           return recordEntry(expression, node);
         }
         let result: MetadataSymbolicCallExpression = {__symbolic: 'call', expression: expression};
@@ -326,7 +330,7 @@ export class Evaluator {
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
         const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
-        if (newArgs.some(isMetadataError)) {
+        if (!this.options.verboseInvalidExpression && newArgs.some(isMetadataError)) {
           return recordEntry(newArgs.find(isMetadataError), node);
         }
         const newTarget = this.evaluateNode(newExpression.expression);
@@ -341,11 +345,11 @@ export class Evaluator {
       case ts.SyntaxKind.PropertyAccessExpression: {
         const propertyAccessExpression = <ts.PropertyAccessExpression>node;
         const expression = this.evaluateNode(propertyAccessExpression.expression);
-        if (isMetadataError(expression)) {
+        if (isFoldableError(expression)) {
           return recordEntry(expression, node);
         }
         const member = this.nameOf(propertyAccessExpression.name);
-        if (isMetadataError(member)) {
+        if (isFoldableError(member)) {
           return recordEntry(member, node);
         }
         if (expression && this.isFoldable(propertyAccessExpression.expression))
@@ -361,11 +365,11 @@ export class Evaluator {
       case ts.SyntaxKind.ElementAccessExpression: {
         const elementAccessExpression = <ts.ElementAccessExpression>node;
         const expression = this.evaluateNode(elementAccessExpression.expression);
-        if (isMetadataError(expression)) {
+        if (isFoldableError(expression)) {
           return recordEntry(expression, node);
         }
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
-        if (isMetadataError(expression)) {
+        if (isFoldableError(expression)) {
           return recordEntry(expression, node);
         }
         if (this.isFoldable(elementAccessExpression.expression) &&
@@ -404,7 +408,7 @@ export class Evaluator {
               } else {
                 const identifier = <ts.Identifier>typeNameNode;
                 const symbol = this.symbols.resolve(identifier.text);
-                if (isMetadataError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
+                if (isFoldableError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
                   return recordEntry(symbol, node);
                 }
                 return recordEntry(
@@ -412,7 +416,7 @@ export class Evaluator {
               }
             };
         const typeReference = getReference(typeNameNode);
-        if (isMetadataError(typeReference)) {
+        if (isFoldableError(typeReference)) {
           return recordEntry(typeReference, node);
         }
         if (!isMetadataModuleReferenceExpression(typeReference) &&

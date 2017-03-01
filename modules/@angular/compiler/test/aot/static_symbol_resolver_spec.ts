@@ -7,9 +7,8 @@
  */
 
 import {StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, Summary, SummaryResolver} from '@angular/compiler';
-import {MetadataCollector} from '@angular/tsc-wrapped';
+import {CollectorOptions, MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
-
 
 
 // This matches .ts files but not .d.ts files.
@@ -366,9 +365,11 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
 }
 
 export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
-  private collector = new MetadataCollector();
+  private collector: MetadataCollector;
 
-  constructor(private data: {[key: string]: any}) {}
+  constructor(private data: {[key: string]: any}, collectorOptions?: CollectorOptions) {
+    this.collector = new MetadataCollector(collectorOptions);
+  }
 
   // In tests, assume that symbols are not re-exported
   moduleNameToFileName(modulePath: string, containingFile?: string): string {

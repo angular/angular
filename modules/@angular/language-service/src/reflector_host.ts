@@ -33,7 +33,8 @@ export class ReflectorHost extends CompilerHost {
       options: AngularCompilerOptions) {
     super(
         null, options,
-        new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)));
+        new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)),
+        {verboseInvalidExpression: true});
   }
 
   protected get program() { return this.getProgram(); }
