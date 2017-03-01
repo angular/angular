@@ -433,9 +433,7 @@ export class ApplicationRef_ extends ApplicationRef {
       private _zone: NgZone, private _console: Console, private _injector: Injector,
       private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
-      private _initStatus: ApplicationInitStatus,
-      @Optional() private _testabilityRegistry: TestabilityRegistry,
-      @Optional() private _testability: Testability) {
+      private _initStatus: ApplicationInitStatus) {
     super();
     this._enforceNoNewChanges = isDevMode();
 
