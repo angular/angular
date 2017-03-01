@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
-import {EventEmitter} from '../../src/facade/async';
 import {scheduleMicroTask} from '../../src/facade/lang';
+
 
 
 // Schedules a microtasks (using a resolved promise .then())

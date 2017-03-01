@@ -29,7 +29,7 @@ export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy
 export {ApplicationModule} from './application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './profile/profile';
 export {Type} from './type';
-export {EventEmitter} from './facade/async';
+export {EventEmitter} from './event_emitter';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
 export {Sanitizer, SecurityContext} from './security';

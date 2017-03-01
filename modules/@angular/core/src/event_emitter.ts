@@ -8,9 +8,6 @@
 
 import {Subject} from 'rxjs/Subject';
 
-export {Observable} from 'rxjs/Observable';
-export {Subject} from 'rxjs/Subject';
-
 /**
  * Use by directives and components to emit custom Events.
  *

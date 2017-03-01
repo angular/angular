@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, Inject, Optional, Self, forwardRef} from '@angular/core';
 
-import {EventEmitter} from '../facade/async';
 import {AbstractControl, FormControl, FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
