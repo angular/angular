@@ -6,10 +6,8 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages/animations",
+    "outDir": "../../../dist/packages-dist/animations",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/core/testing": ["../../dist/packages/core/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -22,8 +20,8 @@
   },
   "files": [
     "public_api.ts",
-    "../../node_modules/zone.js/dist/zone.js.d.ts",
-    "../system.d.ts"
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
