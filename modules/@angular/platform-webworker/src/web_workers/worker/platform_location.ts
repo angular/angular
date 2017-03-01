@@ -7,9 +7,7 @@
  */
 
 import {LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Injectable} from '@angular/core';
-
-import {EventEmitter} from '../../facade/async';
+import {EventEmitter, Injectable} from '@angular/core';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';

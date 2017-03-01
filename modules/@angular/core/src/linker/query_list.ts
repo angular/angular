@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Observable} from '../facade/async';
+import {Observable} from 'rxjs/Observable';
+
+import {EventEmitter} from '../event_emitter';
 import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
+
 
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state

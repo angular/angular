@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone} from '@angular/core';
-
-import {EventEmitter} from '../../facade/async';
+import {EventEmitter, Injectable, NgZone} from '@angular/core';
 
 import {MessageBus, MessageBusSink, MessageBusSource} from './message_bus';
 
