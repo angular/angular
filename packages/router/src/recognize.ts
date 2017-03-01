@@ -181,7 +181,9 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 
   const posParams: {[n: string]: string} = {};
   forEach(res.posParams !, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
-  const parameters = {...posParams, ...res.consumed[res.consumed.length - 1].parameters};
+  const parameters = res.consumed.length > 0 ?
+      {...posParams, ...res.consumed[res.consumed.length - 1].parameters} :
+      posParams;
 
   return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};
 }
