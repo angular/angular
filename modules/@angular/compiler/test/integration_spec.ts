@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input} from '@angular/core';
+import {Component, Directive, InjectionToken, Input, Provider} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -36,6 +36,47 @@ export function main() {
            const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
            expect(myDir.value).toEqual('foo');
          }));
+
+      describe('should call ngOnDestroy on the service provided using token: ', () => {
+        let log: string[];
+        class Destroyable {
+          ngOnDestroy(): void { log.push('destroyed'); }
+        }
+
+        beforeEach(() => log = []);
+
+        it('random class', async(() => {
+             class Service {}
+
+             shouldCallOnDestroy({provide: Service, useClass: Destroyable});
+           }));
+
+        it('string', async(() => shouldCallOnDestroy({provide: 'token', useClass: Destroyable})));
+
+        it('the same class',
+           async(() => shouldCallOnDestroy({provide: Destroyable, useClass: Destroyable})));
+
+        it('InjectionToken', async(() => {
+             const TOKEN = new InjectionToken<any>('token');
+             shouldCallOnDestroy({provide: TOKEN, useClass: Destroyable});
+           }));
+
+        function shouldCallOnDestroy(provider: Provider): void {
+          @Component({selector: 'cmp', template: '', providers: [provider]})
+          class SomeCmp {
+          }
+
+          TestBed.configureTestingModule({declarations: [SomeCmp]});
+
+          const component = TestBed.createComponent(SomeCmp);
+          expect(log.length).toBe(0);
+
+          component.destroy();
+
+          expect(log.length).toBe(1);
+          expect(log[0]).toBe('destroyed');
+        }
+      });
     });
 
   });
