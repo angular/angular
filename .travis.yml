@@ -11,6 +11,10 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+  # https://docs.travis-ci.com/user/jwt
+  jwt:
+    # NGBUILDS_IO_KEY=<secret in valentine>
+    secure: Z+BZX6qzO4QIk1mOt8hNobltUmrO3Fh8CxKY6eiyBZRqlqVjkhwnvcXylt70luAw7uNU1G8eSUUN/n/o0SnuZ/Okayejj/5gsjzNPwUS5Wzdod+UfsLxZNG9vNVxYyH1pRdANQtnNHV0uj+aR0oSUp3ZsFIlbo9gizcM4Qj01Yc=
 
 branches:
   except:
