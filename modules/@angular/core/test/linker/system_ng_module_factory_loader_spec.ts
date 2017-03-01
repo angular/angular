@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '@angular/common/src/facade/lang';
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
+import {global} from '@angular/core/src/util';
 import {async} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
@@ -24,14 +24,14 @@ export function main() {
   describe('SystemJsNgModuleLoader', () => {
     let oldSystem: any = null;
     beforeEach(() => {
-      oldSystem = (global as any).System;
-      (global as any).System = mockSystem({
+      oldSystem = global['System'];
+      global['System'] = mockSystem({
         'test.ngfactory':
             {'default': 'test module factory', 'NamedNgFactory': 'test NamedNgFactory'},
         'prefixed/test/suffixed': {'NamedNgFactory': 'test module factory'}
       });
     });
-    afterEach(() => { (global as any).System = oldSystem; });
+    afterEach(() => { global['System'] = oldSystem; });
 
     it('loads a default factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());

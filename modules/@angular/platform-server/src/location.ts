@@ -11,7 +11,6 @@ import {Inject, Injectable, Optional} from '@angular/core';
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
 import * as url from 'url';
-import {scheduleMicroTask} from './facade/lang';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 
@@ -87,4 +86,8 @@ export class ServerPlatformLocation implements PlatformLocation {
   forward(): void { throw new Error('Not implemented'); }
 
   back(): void { throw new Error('Not implemented'); }
+}
+
+export function scheduleMicroTask(fn: Function) {
+  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }

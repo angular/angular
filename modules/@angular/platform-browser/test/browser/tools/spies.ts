@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {ReflectiveInjector, ɵglobal as global} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/testing_internal';
-
-import {global} from '../../../src/facade/lang';
 
 export class SpyApplicationRef extends SpyObject {
   constructor() { super(ApplicationRef_); }

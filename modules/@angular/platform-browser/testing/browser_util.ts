@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone} from '@angular/core';
+import {NgZone, ɵglobal as global} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-
-import {global} from './facade/lang';
 
 export let browserDetection: BrowserDetection;
 

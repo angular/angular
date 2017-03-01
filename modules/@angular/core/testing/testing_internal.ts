@@ -7,9 +7,9 @@
  */
 
 import {ɵisPromise as isPromise, ɵmerge as merge} from '@angular/core';
+import {global} from '@angular/core/src/util';
 
 import {AsyncTestCompleter} from './async_test_completer';
-import {global} from './facade/lang';
 import {getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';

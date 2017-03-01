@@ -14,7 +14,8 @@ import {merge} from 'rxjs/observable/merge';
 import {share} from 'rxjs/operator/share';
 
 import {ErrorHandler} from '../src/error_handler';
-import {scheduleMicroTask, stringify} from '../src/facade/lang';
+import {stringify} from '../src/facade/lang';
+import {scheduleMicroTask} from '../src/util';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';

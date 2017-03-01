@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵglobal as global} from '@angular/core';
 import {setRootDomAdapter} from '../dom/dom_adapter';
-import {global, isBlank, isPresent, setValueOnPath} from '../facade/lang';
+import {isBlank, isPresent, setValueOnPath} from '../facade/lang';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 

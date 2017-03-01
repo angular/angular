@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '@angular/core';
-import {scheduleMicroTask} from './facade/lang';
 
 
 /**
@@ -185,4 +184,8 @@ export class ComponentFixture<T> {
       this._isDestroyed = true;
     }
   }
+}
+
+function scheduleMicroTask(fn: Function) {
+  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }
