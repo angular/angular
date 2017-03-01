@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Type} from '@angular/core';
-
-import {EventEmitter} from '../../facade/async';
+import {EventEmitter, Injectable, Type} from '@angular/core';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer, SerializerTypes} from '../shared/serializer';
+
 
 /**
  * @experimental WebWorker support in Angular is currently experimental.

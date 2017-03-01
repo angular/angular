@@ -7,8 +7,7 @@
  */
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-
-import {Observable} from '../../src/facade/async';
+import {Observable} from 'rxjs/Observable';
 
 export function main() {
   describe('Observable', () => {

@@ -7,12 +7,11 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {WrappedValue} from '@angular/core';
+import {EventEmitter, WrappedValue} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {EventEmitter} from '../../src/facade/async';
 import {SpyChangeDetectorRef} from '../spies';
 
 export function main() {

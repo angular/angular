@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '../../../src/facade/async';
+import {EventEmitter} from '@angular/core';
 
 export class MockEventEmitter<T> extends EventEmitter<T> {
   private _nextFns: Function[] = [];

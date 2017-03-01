@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {EventEmitter} from '../src/facade/async';
 import {isPresent} from '../src/facade/lang';
 import {FormArray} from '../src/model';
 
