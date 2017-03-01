@@ -409,6 +409,12 @@ returned value being an array.
 * **tsc-wrapped:** Support of vinyl like config file was added ([#13987](https://github.com/angular/angular/issues/13987)) ([0c7726d](https://github.com/angular/angular/commit/0c7726d))
 * **upgrade:** Support ng-model in downgraded components ([#10578](https://github.com/angular/angular/issues/10578)) ([e21e9c5](https://github.com/angular/angular/commit/e21e9c5))
 
+### DEPRECATIONS
+
+* `OpaqueToken` is now deprecated, use `InjectionToken<T>` instead.
+* `Injector.get(token: any, notFoundValue?: any): any` is now deprecated
+  use the same method which is now overloaded as
+  `Injector.get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;`
 
 ### BREAKING CHANGES
 
