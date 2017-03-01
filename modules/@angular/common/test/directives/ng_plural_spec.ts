@@ -50,8 +50,8 @@ export function main() {
     it('should display the template according to the exact numeric value', async(() => {
          const template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="0"><li>you have no messages.</li></template>' +
-             '<template ngPluralCase="1"><li>you have one message.</li></template>' +
+             '<ng-template ngPluralCase="0"><li>you have no messages.</li></ng-template>' +
+             '<ng-template ngPluralCase="1"><li>you have one message.</li></ng-template>' +
              '</ul></div>';
 
          fixture = createTestComponent(template);
