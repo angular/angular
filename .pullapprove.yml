@@ -10,6 +10,7 @@
 # chuckjaz - Chuck Jazdzewski
 # gkalpak - George Kalpakas
 # IgorMinar - Igor Minar
+# jasonaden - Jason Aden
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -67,7 +68,9 @@ groups:
           - "aio/*"
     users:
       - IgorMinar #primary
-      - mhevery
+      - alexeagle
+      - jasonaden
+      - mhevery #fallback
 
   integration:
     conditions:
