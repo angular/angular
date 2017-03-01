@@ -7,9 +7,8 @@
  */
 
 
+import {ɵglobal as global} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-
-import {global} from './facade/lang';
 
 
 

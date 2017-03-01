@@ -8,8 +8,9 @@
 
 const parse5 = require('parse5');
 
+import {ɵglobal as global} from '@angular/core';
 import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
-import {isPresent, isBlank, global, setValueOnPath} from '../src/facade/lang';
+import {isPresent, isBlank, setValueOnPath} from '../src/facade/lang';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
 
 let treeAdapter: any;

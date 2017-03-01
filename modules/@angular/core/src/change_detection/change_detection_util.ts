@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, isJsObject, isPrimitive, looseIdentical} from '../facade/lang';
+import {isJsObject, isPrimitive, looseIdentical} from '../facade/lang';
+import {getSymbolIterator} from '../util';
 
 export {looseIdentical} from '../facade/lang';
 

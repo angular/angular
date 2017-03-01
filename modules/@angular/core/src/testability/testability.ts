@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '../di';
-import {scheduleMicroTask} from '../facade/lang';
+import {scheduleMicroTask} from '../util';
 import {NgZone} from '../zone/ng_zone';
 
 /**
