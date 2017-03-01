@@ -13,9 +13,11 @@ const _SELECTOR_REGEXP = new RegExp(
         '([-\\w]+)|' +         // "tag"
         '(?:\\.([-\\w]+))|' +  // ".class"
         // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
-        '(?:\\[([-.\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]"
-        '(\\))|' +                                 // ")"
-        '(\\s*,\\s*)',                             // ","
+        '(?:\\[([-.\\w*]+)(?:=([\"\']?)([^\\]\"\']*)\\5)?\\])|' +  // "[name]", "[name=value]",
+                                                                   // "[name="value"]",
+                                                                   // "[name='value']"
+        '(\\))|' +                                                 // ")"
+        '(\\s*,\\s*)',                                             // ","
     'g');
 
 /**
@@ -59,13 +61,13 @@ export class CssSelector {
         current.addClassName(match[3]);
       }
       if (match[4]) {
-        current.addAttribute(match[4], match[5]);
+        current.addAttribute(match[4], match[6]);
       }
-      if (match[6]) {
+      if (match[7]) {
         inNot = false;
         current = cssSelector;
       }
-      if (match[7]) {
+      if (match[8]) {
         if (inNot) {
           throw new Error('Multiple selectors in :not are not supported');
         }

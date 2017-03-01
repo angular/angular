@@ -324,6 +324,18 @@ export function main() {
       expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
     });
 
+    it('should detect attr values with double quotes', () => {
+      const cssSelector = CssSelector.parse('[attrname="attrvalue"]')[0];
+      expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
+      expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
+    });
+
+    it('should detect attr values with single quotes', () => {
+      const cssSelector = CssSelector.parse('[attrname=\'attrvalue\']')[0];
+      expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
+      expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
+    });
+
     it('should detect multiple parts', () => {
       const cssSelector = CssSelector.parse('sometag[attrname=attrvalue].someclass')[0];
       expect(cssSelector.element).toEqual('sometag');
