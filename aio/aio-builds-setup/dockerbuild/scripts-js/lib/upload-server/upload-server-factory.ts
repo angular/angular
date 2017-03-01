@@ -2,6 +2,7 @@
 import * as express from 'express';
 import * as http from 'http';
 import {GithubPullRequests} from '../common/github-pull-requests';
+import {assertNotMissingOrEmpty} from '../common/utils';
 import {BuildCreator} from './build-creator';
 import {CreatedBuildEvent} from './build-events';
 import {BuildVerifier} from './build-verifier';
@@ -14,6 +15,7 @@ const X_FILE_HEADER = 'X-FILE';
 // Interfaces - Types
 interface UploadServerConfig {
   buildsDir: string;
+  domainName: string;
   githubOrganization: string;
   githubTeamSlugs: string[];
   githubToken: string;
@@ -26,14 +28,17 @@ class UploadServerFactory {
   // Methods - Public
   public create({
     buildsDir,
+    domainName,
     githubOrganization,
     githubTeamSlugs,
     githubToken,
     repoSlug,
     secret,
   }: UploadServerConfig): http.Server {
+    assertNotMissingOrEmpty('domainName', domainName);
+
     const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, githubOrganization, githubTeamSlugs);
-    const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug);
+    const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug, domainName);
 
     const middleware = this.createMiddleware(buildVerifier, buildCreator);
     const httpServer = http.createServer(middleware);
@@ -47,13 +52,14 @@ class UploadServerFactory {
   }
 
   // Methods - Protected
-  protected createBuildCreator(buildsDir: string, githubToken: string, repoSlug: string): BuildCreator {
+  protected createBuildCreator(buildsDir: string, githubToken: string, repoSlug: string,
+                               domainName: string): BuildCreator {
     const buildCreator = new BuildCreator(buildsDir);
     const githubPullRequests = new GithubPullRequests(githubToken, repoSlug);
 
     buildCreator.on(CreatedBuildEvent.type, ({pr, sha}: CreatedBuildEvent) => {
       const body = `The angular.io preview for ${sha.slice(0, 7)} is available [here][1].\n\n` +
-                   `[1]: https://pr${pr}-${sha}.ngbuilds.io/`;
+                   `[1]: https://pr${pr}-${sha}.${domainName}/`;
 
       githubPullRequests.addComment(pr, body);
     });

@@ -12,6 +12,7 @@ import {uploadServerFactory as usf} from '../../lib/upload-server/upload-server-
 describe('uploadServerFactory', () => {
   const defaultConfig = {
     buildsDir: 'builds/dir',
+    domainName: 'domain.name',
     githubOrganization: 'organization',
     githubTeamSlugs: ['team1', 'team2'],
     githubToken: '12345',
@@ -32,9 +33,15 @@ describe('uploadServerFactory', () => {
     });
 
 
-    it('should throw if \'secret\' is missing or empty', () => {
-      expect(() => createUploadServer({secret: ''})).
-        toThrowError('Missing or empty required parameter \'secret\'!');
+    it('should throw if \'buildsDir\' is missing or empty', () => {
+      expect(() => createUploadServer({buildsDir: ''})).
+        toThrowError('Missing or empty required parameter \'buildsDir\'!');
+    });
+
+
+    it('should throw if \'domainName\' is missing or empty', () => {
+      expect(() => createUploadServer({domainName: ''})).
+        toThrowError('Missing or empty required parameter \'domainName\'!');
     });
 
 
@@ -83,7 +90,7 @@ describe('uploadServerFactory', () => {
       const buildCreator: BuildCreator = usfCreateBuildCreatorSpy.calls.mostRecent().returnValue;
 
       expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(jasmine.any(BuildVerifier), buildCreator);
-      expect(usfCreateBuildCreatorSpy).toHaveBeenCalledWith('builds/dir', '12345', 'repo/slug');
+      expect(usfCreateBuildCreatorSpy).toHaveBeenCalledWith('builds/dir', '12345', 'repo/slug', 'domain.name');
     });
 
 
@@ -124,6 +131,7 @@ describe('uploadServerFactory', () => {
         defaultConfig.buildsDir,
         defaultConfig.githubToken,
         defaultConfig.repoSlug,
+        defaultConfig.domainName,
       );
     });
 
@@ -136,7 +144,7 @@ describe('uploadServerFactory', () => {
     it('should post a comment on GitHub on \'build.created\'', () => {
       const prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment');
       const commentBody = 'The angular.io preview for 1234567 is available [here][1].\n\n' +
-                          '[1]: https://pr42-1234567890.ngbuilds.io/';
+                          '[1]: https://pr42-1234567890.domain.name/';
 
       buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890'});
 

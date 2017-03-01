@@ -7,6 +7,7 @@ import {uploadServerFactory} from './upload-server-factory';
 
 // Constants
 const AIO_BUILDS_DIR = getEnvVar('AIO_BUILDS_DIR');
+const AIO_DOMAIN_NAME = getEnvVar('AIO_DOMAIN_NAME');
 const AIO_GITHUB_ORGANIZATION = getEnvVar('AIO_GITHUB_ORGANIZATION');
 const AIO_GITHUB_TEAM_SLUGS = getEnvVar('AIO_GITHUB_TEAM_SLUGS');
 const AIO_GITHUB_TOKEN = getEnvVar('AIO_GITHUB_TOKEN');
@@ -23,6 +24,7 @@ function _main() {
   uploadServerFactory.
     create({
       buildsDir: AIO_BUILDS_DIR,
+      domainName: AIO_DOMAIN_NAME,
       githubOrganization: AIO_GITHUB_ORGANIZATION,
       githubTeamSlugs: AIO_GITHUB_TEAM_SLUGS.split(','),
       githubToken: AIO_GITHUB_TOKEN,
