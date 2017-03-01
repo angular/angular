@@ -78,7 +78,9 @@ export class Parse5DomAdapter extends DomAdapter {
 
   get attrToPropMap() { return _attrToPropMap; }
 
-  querySelector(el: any, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
+  querySelector(el: any, selector: string): any {
+    return this.querySelectorAll(el, selector)[0] || null;
+  }
 
   querySelectorAll(el: any, selector: string): any[] {
     const res: any[] = [];

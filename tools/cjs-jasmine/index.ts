@@ -68,8 +68,11 @@ var specFiles: any =
                      ]
                    });
                  })
-        // The security spec however works (and must work!) on the server side.
+        // Run relevant subset of browser tests for features reused on the server side.
+        // Make sure the security spec works on the server side!
         .concat(glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}))
+        .concat(['/@angular/platform-browser/test/browser/meta_spec.js'])
+        .concat(['/@angular/platform-browser/test/browser/title_spec.js'])
         .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), <string[]>[]);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
