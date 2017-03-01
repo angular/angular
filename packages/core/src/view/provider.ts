@@ -162,43 +162,43 @@ export function checkAndUpdateDirectiveInline(
   if (bindLen > 0 && checkBinding(view, def, 0, v0)) {
     changed = true;
     changes = updateProp(view, providerData, def, 0, v0, changes);
-  };
+  }
   if (bindLen > 1 && checkBinding(view, def, 1, v1)) {
     changed = true;
     changes = updateProp(view, providerData, def, 1, v1, changes);
-  };
+  }
   if (bindLen > 2 && checkBinding(view, def, 2, v2)) {
     changed = true;
     changes = updateProp(view, providerData, def, 2, v2, changes);
-  };
+  }
   if (bindLen > 3 && checkBinding(view, def, 3, v3)) {
     changed = true;
     changes = updateProp(view, providerData, def, 3, v3, changes);
-  };
+  }
   if (bindLen > 4 && checkBinding(view, def, 4, v4)) {
     changed = true;
     changes = updateProp(view, providerData, def, 4, v4, changes);
-  };
+  }
   if (bindLen > 5 && checkBinding(view, def, 5, v5)) {
     changed = true;
     changes = updateProp(view, providerData, def, 5, v5, changes);
-  };
+  }
   if (bindLen > 6 && checkBinding(view, def, 6, v6)) {
     changed = true;
     changes = updateProp(view, providerData, def, 6, v6, changes);
-  };
+  }
   if (bindLen > 7 && checkBinding(view, def, 7, v7)) {
     changed = true;
     changes = updateProp(view, providerData, def, 7, v7, changes);
-  };
+  }
   if (bindLen > 8 && checkBinding(view, def, 8, v8)) {
     changed = true;
     changes = updateProp(view, providerData, def, 8, v8, changes);
-  };
+  }
   if (bindLen > 9 && checkBinding(view, def, 9, v9)) {
     changed = true;
     changes = updateProp(view, providerData, def, 9, v9, changes);
-  };
+  }
   if (changes) {
     directive.ngOnChanges(changes);
   }
