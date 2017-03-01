@@ -67,7 +67,7 @@ getPackageContents() {
 #   None
 #######################################
 downlevelES2015() {
-  echo '{"presets": [ ["es2015", { "modules": false }] ], "compact": true }' > ${1}/.babelrc
+  echo '{"presets": [ ["es2015", { "modules": false }] ], "compact": false }' > ${1}/.babelrc
   $BABELJS ${2} -o ${3}
   rm -f ${1}/.babelrc
 }
@@ -293,7 +293,7 @@ do
       rm -f ${DISTDIR}/.babelrc
       if [[ -d ${DEST_MODULE} ]]; then
         echo "======         Downleveling ES2015 to ESM/ES5"
-        downlevelES2015 ${DEST_MODULE} ${JS_PATH} ${JS_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_PATH} ${JS_PATH_ES5}
       fi
 
       if [[ -d testing ]]; then
@@ -315,7 +315,7 @@ do
         getPackageContents "${PACKAGE}" "testing" "index" > ${DESTDIR}/testing/package.json
 
         mv ${DESTDIR}/testing.tmp.js ${JS_TESTING_PATH}
-        $BABELJS ${JS_TESTING_PATH} -o ${JS_TESTING_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_TESTING_PATH} ${JS_TESTING_PATH_ES5}
         cat ${LICENSE_BANNER} > ${UMD_TESTING_ES5_PATH}.tmp
         cat ${UMD_TESTING_ES5_PATH} >> ${UMD_TESTING_ES5_PATH}.tmp
         mv ${UMD_TESTING_ES5_PATH}.tmp ${UMD_TESTING_ES5_PATH}
@@ -341,7 +341,7 @@ do
         getPackageContents "${PACKAGE}" "static"> ${DESTDIR}/static/package.json
 
         mv ${DESTDIR}/static.tmp.js ${JS_STATIC_PATH}
-        $BABELJS ${JS_STATIC_PATH} -o ${JS_STATIC_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_STATIC_PATH} ${JS_STATIC_PATH_ES5}
         cat ${LICENSE_BANNER} > ${UMD_STATIC_ES5_PATH}.tmp
         cat ${UMD_STATIC_ES5_PATH} >> ${UMD_STATIC_ES5_PATH}.tmp
         mv ${UMD_STATIC_ES5_PATH}.tmp ${UMD_STATIC_ES5_PATH}
@@ -368,7 +368,7 @@ do
         getPackageContents "${PACKAGE}" "upgrade" > ${DESTDIR}/upgrade/package.json
 
         mv ${DESTDIR}/upgrade.tmp.js ${JS_UPGRADE_PATH}
-        $BABELJS ${JS_UPGRADE_PATH} -o ${JS_UPGRADE_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_UPGRADE_PATH} ${JS_UPGRADE_PATH_ES5}
         cat ${LICENSE_BANNER} > ${UMD_UPGRADE_ES5_PATH}.tmp
         cat ${UMD_UPGRADE_ES5_PATH} >> ${UMD_UPGRADE_ES5_PATH}.tmp
         mv ${UMD_UPGRADE_ES5_PATH}.tmp ${UMD_UPGRADE_ES5_PATH}
@@ -408,9 +408,11 @@ do
         getPackageContents "${PACKAGE}" "animations" > ${DESTDIR}/animations/package.json
 
         echo '{"typings": "../../typings/animations/testing/index.d.ts", "main": "../../bundles/platform-browser-animations-testing.umd.js", "module": "../../@angular/platform-browser/animations/testing.es5.js", "es2015": "../../@angular/platform-browser/animations/testing.js"}' > ${DESTDIR}/animations/testing/package.json
+        # This is needed for Compiler to be able to find the bundle index.
+        echo '{"typings": "animations.d.ts"}' > ${DESTDIR}/typings/animations/package.json
 
         mv ${DESTDIR}/animations.tmp.js ${JS_ANIMATIONS_PATH}
-        $BABELJS ${JS_ANIMATIONS_PATH} -o ${JS_ANIMATIONS_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_ANIMATIONS_PATH} ${JS_ANIMATIONS_PATH_ES5}
         cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_ES5_PATH}.tmp
         cat ${UMD_ANIMATIONS_ES5_PATH} >> ${UMD_ANIMATIONS_ES5_PATH}.tmp
         mv ${UMD_ANIMATIONS_ES5_PATH}.tmp ${UMD_ANIMATIONS_ES5_PATH}
@@ -419,7 +421,7 @@ do
         mkdir ${DEST_MODULE}/${PACKAGE}/animations
 
         mv ${DESTDIR}/animations-testing.tmp.js ${JS_ANIMATIONS_TESTING_PATH}
-        $BABELJS ${JS_ANIMATIONS_TESTING_PATH} -o ${JS_ANIMATIONS_TESTING_PATH_ES5}
+        downlevelES2015 ${DESTDIR} ${JS_ANIMATIONS_TESTING_PATH} ${JS_ANIMATIONS_TESTING_PATH_ES5}
         cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
         cat ${UMD_ANIMATIONS_TESTING_ES5_PATH} >> ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
         mv ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp ${UMD_ANIMATIONS_TESTING_ES5_PATH}

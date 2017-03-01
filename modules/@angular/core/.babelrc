@@ -4,7 +4,16 @@
   "plugins": [["transform-es2015-modules-umd", {
     "globals": {
       "@angular/core": "ng.core",
-      "rxjs/Subject": "Rx"
+      "rxjs/Subject": "Rx",
+      "rxjs/Observable": "Rx",
+      "rxjs/Observer": "Rx",
+      "rxjs/Subscription": "Rx",
+
+      "rxjs/symbol/observable": "Rx.Symbol.observable",
+
+      "rxjs/observable/merge": "Rx.Observable",
+
+      "rxjs/operator/share": "Rx.Observable.prototype"
     },
     "exactGlobals": true
   }]],
