@@ -8,7 +8,6 @@
 
 const parse5 = require('parse5');
 
-import {ListWrapper} from '../src/facade/collection';
 import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
 import {isPresent, isBlank, global, setValueOnPath} from '../src/facade/lang';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
@@ -141,7 +140,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   onAndCancel(el: any, evt: any, listener: any): Function {
     this.on(el, evt, listener);
-    return () => { ListWrapper.remove(<any[]>(el._eventListenersMap[evt]), listener); };
+    return () => { remove(<any[]>(el._eventListenersMap[evt]), listener); };
   }
   dispatchEvent(el: any, evt: any) {
     if (!evt.target) {
@@ -779,3 +778,10 @@ const _HTMLElementPropertyList = [
   'closure_lm_714617',
   '__jsaction',
 ];
+
+function remove<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) {
+    list.splice(index, 1);
+  }
+}

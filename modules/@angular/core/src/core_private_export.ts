@@ -9,6 +9,7 @@
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './application_ref';
 export {APP_ID_RANDOM_PROVIDER as ɵAPP_ID_RANDOM_PROVIDER} from './application_tokens';
 export {ValueUnwrapper as ɵValueUnwrapper, devModeEqual as ɵdevModeEqual} from './change_detection/change_detection_util';
+export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
 export {ERROR_COMPONENT_TYPE as ɵERROR_COMPONENT_TYPE} from './errors';
@@ -23,4 +24,4 @@ export {ReflectorReader as ɵReflectorReader} from './reflection/reflector_reade
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
-export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
+export {isObservable as ɵisObservable, isPromise as ɵisPromise, merge as ɵmerge} from './util/lang';

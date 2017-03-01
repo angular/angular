@@ -7,7 +7,6 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ListWrapper} from './facade/collection';
 import {isBlank} from './facade/lang';
 
 /**
@@ -82,7 +81,7 @@ export class MockResourceLoader extends ResourceLoader {
     if (this._expectations.length > 0) {
       const expectation = this._expectations[0];
       if (expectation.url == url) {
-        ListWrapper.remove(this._expectations, expectation);
+        remove(this._expectations, expectation);
         request.complete(expectation.response);
         return;
       }
@@ -127,5 +126,12 @@ class _Expectation {
   constructor(url: string, response: string) {
     this.url = url;
     this.response = response;
+  }
+}
+
+function remove<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) {
+    list.splice(index, 1);
   }
 }

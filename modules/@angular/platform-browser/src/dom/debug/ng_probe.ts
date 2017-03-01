@@ -7,8 +7,6 @@
  */
 
 import * as core from '@angular/core';
-
-import {StringMapWrapper} from '../../facade/collection';
 import {getDOM} from '../dom_adapter';
 
 const CORE_TOKENS = {
@@ -40,8 +38,7 @@ export function _createNgProbe(extraTokens: NgProbeToken[], coreTokens: core.NgP
   const tokens = (extraTokens || []).concat(coreTokens || []);
   getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   getDOM().setGlobalVar(
-      CORE_TOKENS_GLOBAL_NAME,
-      StringMapWrapper.merge(CORE_TOKENS, _ngProbeTokensToMap(tokens || [])));
+      CORE_TOKENS_GLOBAL_NAME, core.ɵmerge(CORE_TOKENS, _ngProbeTokensToMap(tokens || [])));
   return () => inspectNativeElement;
 }
 

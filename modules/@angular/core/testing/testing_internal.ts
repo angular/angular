@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵisPromise as isPromise} from '@angular/core';
+import {ɵisPromise as isPromise, ɵmerge as merge} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
-import {StringMapWrapper} from './facade/collection';
 import {global} from './facade/lang';
 import {getTestBed, inject} from './test_bed';
 
@@ -197,7 +196,7 @@ export class SpyObject {
       object = new SpyObject();
     }
 
-    const m = StringMapWrapper.merge(config, overrides);
+    const m = merge(config, overrides);
     Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
     return object;
   }

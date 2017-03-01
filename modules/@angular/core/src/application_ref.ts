@@ -14,7 +14,6 @@ import {merge} from 'rxjs/observable/merge';
 import {share} from 'rxjs/operator/share';
 
 import {ErrorHandler} from '../src/error_handler';
-import {ListWrapper} from '../src/facade/collection';
 import {scheduleMicroTask, stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
@@ -300,7 +299,7 @@ export class PlatformRef_ extends PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
+      moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
       return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
@@ -489,7 +488,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   detachView(viewRef: ViewRef): void {
     const view = (viewRef as InternalViewRef);
-    ListWrapper.remove(this._views, view);
+    remove(this._views, view);
     view.detachFromAppRef();
   }
 
@@ -533,7 +532,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   private _unloadComponent(componentRef: ComponentRef<any>): void {
     this.detachView(componentRef.hostView);
-    ListWrapper.remove(this._rootComponents, componentRef);
+    remove(this._rootComponents, componentRef);
   }
 
   tick(): void {
@@ -566,4 +565,11 @@ export class ApplicationRef_ extends ApplicationRef {
   get components(): ComponentRef<any>[] { return this._rootComponents; }
 
   get isStable(): Observable<boolean> { return this._isStable; }
+}
+
+function remove<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) {
+    list.splice(index, 1);
+  }
 }

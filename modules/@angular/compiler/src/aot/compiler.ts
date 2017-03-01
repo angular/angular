@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, identifierName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {ListWrapper} from '../facade/collection';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {NgModuleCompiler} from '../ng_module_compiler';
@@ -51,7 +50,7 @@ export class AotCompiler {
               file => this._compileSrcFile(
                   file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.pipes,
                   file.ngModules, file.injectables));
-          return ListWrapper.flatten(sourceModules);
+          return flatten(sourceModules);
         });
   }
 

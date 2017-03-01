@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
-
-import {isListLikeIterable} from '../facade/collection';
+import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer, ɵisListLikeIterable as isListLikeIterable} from '@angular/core';
 import {stringify} from '../facade/lang';
 
 /**

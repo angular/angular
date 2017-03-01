@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {iterateListLike} from '@angular/core/src/change_detection/change_detection_util';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {iterateListLike} from '../../src/facade/collection';
 
 export function main() {
   describe('QueryList', () => {

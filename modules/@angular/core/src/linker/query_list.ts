@@ -9,7 +9,6 @@
 import {Observable} from 'rxjs/Observable';
 
 import {EventEmitter} from '../event_emitter';
-import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
 
 
@@ -95,7 +94,7 @@ export class QueryList<T>/* implements Iterable<T> */ {
   toString(): string { return this._results.toString(); }
 
   reset(res: Array<T|any[]>): void {
-    this._results = ListWrapper.flatten(res);
+    this._results = flatten(res);
     this._dirty = false;
   }
 
@@ -106,4 +105,11 @@ export class QueryList<T>/* implements Iterable<T> */ {
 
   /** internal */
   get dirty() { return this._dirty; }
+}
+
+function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T | T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
 }
