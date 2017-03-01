@@ -581,6 +581,16 @@ function validateMetadata(
       Object.getOwnPropertyNames(classData.members)
           .forEach(name => classData.members[name].forEach((m) => validateMember(classData, m)));
     }
+    if (classData.statics) {
+      Object.getOwnPropertyNames(classData.statics).forEach(name => {
+        const staticMember = classData.statics[name];
+        if (isFunctionMetadata(staticMember)) {
+          validateExpression(staticMember.value);
+        } else {
+          validateExpression(staticMember);
+        }
+      });
+    }
   }
 
   function validateFunction(functionDeclaration: FunctionMetadata) {
