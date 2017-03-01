@@ -12,9 +12,12 @@
     "clean": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
     "dev": "concurrently --kill-others --raw --success first \"yarn run build-watch\" \"yarn run test-watch\"",
     "lint": "tslint --project tsconfig.json",
-    "pretest": "yarn run lint",
-    "test": "node dist/test",
-    "test-watch": "nodemon --exec \"yarn test\" --watch dist"
+    "pre~~test-only": "yarn run lint",
+    "~~test-only": "node dist/test",
+    "pretest": "yarn run build",
+    "test": "yarn run ~~test-only",
+    "pretest-watch": "yarn run build",
+    "test-watch": "nodemon --exec \"yarn run ~~test-only\" --watch dist"
   },
   "dependencies": {
     "express": "^4.14.1",
