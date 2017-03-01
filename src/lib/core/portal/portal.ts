@@ -74,7 +74,7 @@ export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
   /**
    * [Optional] Where the attached component should live in Angular's *logical* component tree.
    * This is different from where the component *renders*, which is determined by the PortalHost.
-   * The origin necessary when the host is outside of the Angular application context.
+   * The origin is necessary when the host is outside of the Angular application context.
    */
   viewContainerRef: ViewContainerRef;
 

@@ -46,3 +46,34 @@ You can control which elements are tab stops with the `tabindex` attribute
 ```html
 <button md-button tabindex="-1">Not Tabbable</button>
 ```
+
+### AOT Compilation
+
+Due to the dynamic nature of the `MdDialog`, and its usage of `ViewContainerRef#createComponent()`
+to create the component on the fly, the AOT compiler will not know to create the proper
+`ComponentFactory` for your dialog component by default.
+
+You must include your dialog class in the list of `entryComponents` in your module definition so
+that the AOT compiler knows to create the `ComponentFactory` for it.
+
+```ts
+@NgModule({
+  imports: [
+    // ...
+    MaterialModule
+  ],
+
+  declarations: [
+    AppComponent,
+    ExampleDialogComponent
+  ],
+
+  entryComponents: [
+    ExampleDialogComponent
+  ]
+
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule() {}
+```
