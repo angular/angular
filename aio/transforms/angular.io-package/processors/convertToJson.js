@@ -10,7 +10,7 @@ module.exports = function convertToJsonProcessor() {
         if (docTypes.indexOf(doc.docType) !== -1) {
           const output = {
             title: doc.title || doc.name,
-            content: doc.renderedContent
+            contents: doc.renderedContent
           };
           doc.renderedContent = JSON.stringify(output, null, 2);
         }
