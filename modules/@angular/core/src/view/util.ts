@@ -141,11 +141,11 @@ export function elementEventFullName(target: string, name: string): string {
 }
 
 export function isComponentView(view: ViewData): boolean {
-  return view.component === view.context && !!view.parent;
+  return !!view.parent && !!(view.parentNodeDef.flags & NodeFlags.Component);
 }
 
 export function isEmbeddedView(view: ViewData): boolean {
-  return view.component !== view.context && !!view.parent;
+  return !!view.parent && !(view.parentNodeDef.flags & NodeFlags.Component);
 }
 
 export function filterQueryId(queryId: number): number {
