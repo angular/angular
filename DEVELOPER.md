@@ -186,5 +186,4 @@ For subsequent snapshots, just run
 $ ./scripts/publish/publish-build-artifacts.sh [github username]
 ```
 
-Above script will publish the build snapshot to a branch with the same name as your current branch,
-or create it if it doesn't exist.
+The command above will publish the build snapshot to a branch with the same name as your current branch. If this branch doesn't exist, the script will create it.
