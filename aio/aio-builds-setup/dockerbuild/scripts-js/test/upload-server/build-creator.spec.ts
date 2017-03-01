@@ -13,7 +13,7 @@ describe('BuildCreator', () => {
   const pr = '9';
   const sha = '9'.repeat(40);
   const archive = 'snapshot.tar.gz';
-  const buildsDir = 'build/dir';
+  const buildsDir = 'builds/dir';
   const prDir = `${buildsDir}/${pr}`;
   const shaDir = `${prDir}/${sha}`;
   let bc: BuildCreator;
