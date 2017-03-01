@@ -332,12 +332,18 @@ export class MdCheckbox implements ControlValueAccessor {
   /**
    * Event handler for checkbox input element.
    * Toggles checked state if element is not disabled.
+   * Do not toggle on (change) event since IE doesn't fire change event when
+   *   indeterminate checkbox is clicked.
    * @param event
    */
-  _onInteractionEvent(event: Event) {
-    // We always have to stop propagation on the change event.
-    // Otherwise the change event, from the input element, will bubble up and
-    // emit its event object to the `change` output.
+  _onInputClick(event: Event) {
+    // We have to stop propagation for click events on the visual hidden input element.
+    // By default, when a user clicks on a label element, a generated click event will be
+    // dispatched on the associated input element. Since we are using a label element as our
+    // root container, the click event on the `checkbox` will be executed twice.
+    // The real click event will bubble up, and the generated click event also tries to bubble up.
+    // This will lead to multiple click events.
+    // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
 
     if (!this.disabled) {
@@ -356,14 +362,10 @@ export class MdCheckbox implements ControlValueAccessor {
     this._onInputFocus();
   }
 
-  _onInputClick(event: Event) {
-    // We have to stop propagation for click events on the visual hidden input element.
-    // By default, when a user clicks on a label element, a generated click event will be
-    // dispatched on the associated input element. Since we are using a label element as our
-    // root container, the click event on the `checkbox` will be executed twice.
-    // The real click event will bubble up, and the generated click event also tries to bubble up.
-    // This will lead to multiple click events.
-    // Preventing bubbling for the second event will solve that issue.
+  _onInteractionEvent(event: Event) {
+    // We always have to stop propagation on the change event.
+    // Otherwise the change event, from the input element, will bubble up and
+    // emit its event object to the `change` output.
     event.stopPropagation();
   }
 

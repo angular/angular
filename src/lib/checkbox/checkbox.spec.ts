@@ -157,12 +157,12 @@ describe('MdCheckbox', () => {
       expect(checkboxInstance.checked).toBe(false);
       expect(checkboxInstance.indeterminate).toBe(true);
 
-      checkboxInstance._onInteractionEvent(<Event>{stopPropagation: () => {}});
+      checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
 
       expect(checkboxInstance.checked).toBe(true);
       expect(checkboxInstance.indeterminate).toBe(false);
 
-      checkboxInstance._onInteractionEvent(<Event>{stopPropagation: () => {}});
+      checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
       fixture.detectChanges();
 
       expect(checkboxInstance.checked).toBe(false);
@@ -416,7 +416,7 @@ describe('MdCheckbox', () => {
         testComponent.isIndeterminate = true;
         fixture.detectChanges();
 
-        testComponent.isChecked = true;
+        inputElement.click();
         fixture.detectChanges();
 
         expect(checkboxNativeElement.classList).not.toContain(
