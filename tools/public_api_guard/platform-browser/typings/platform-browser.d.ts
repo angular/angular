@@ -116,6 +116,8 @@ export interface SafeUrl extends SafeValue {
 export declare class Title {
     constructor(_doc: any);
     getTitle(): string;
+    setPrefix(newPrefix: string): void;
+    setSuffix(newSuffix: string): void;
     setTitle(newTitle: string): void;
 }
 
