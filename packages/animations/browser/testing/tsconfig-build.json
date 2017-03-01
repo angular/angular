@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig-build",
+  "compilerOptions": {
+    "paths": {
+      "@angular/animations": ["../../dist/packages/animations"]
+    }
+  },
+  "files": [
+    "index.ts",
+    "../../../../node_modules/@types/hammerjs/index.d.ts",
+    "../../../../node_modules/@types/jasmine/index.d.ts",
+    "../../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}
