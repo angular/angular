@@ -49,7 +49,7 @@ RUN apt-get update -y && apt-get install -y \
     openssl \
     rsyslog \
     yarn
-RUN yarn global add pm2
+RUN yarn global add pm2@2
 
 
 # Set up cronjobs
@@ -104,11 +104,8 @@ RUN ln -s /etc/nginx/sites-available/aio-builds-test.conf /etc/nginx/sites-enabl
 
 
 # Set up pm2
-RUN pm2 startup systemv -u root > /dev/null \
-    # Ugly!
-    || echo " ---> Working around https://github.com/Unitech/pm2/commit/a788e523e#commitcomment-20851443" \
-       && chkconfig --add pm2 > /dev/null
-RUN chkconfig pm2 on
+RUN pm2 startup systemv -u root > /dev/null
+RUN chkconfig pm2-root on
 
 
 # Set up the shell scripts

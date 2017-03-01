@@ -19,7 +19,7 @@ services=(
   rsyslog
   cron
   nginx
-  pm2
+  pm2-root
 )
 for s in ${services[@]}; do
   service $s status > /dev/null
