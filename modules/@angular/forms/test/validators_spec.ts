@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
@@ -13,7 +14,6 @@ import {Observable} from 'rxjs/Observable';
 
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
 import {AsyncValidator} from '../src/directives/validators';
-import {EventEmitter} from '../src/facade/async';
 
 export function main() {
   function validator(key: string, error: any) {
