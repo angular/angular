@@ -24,6 +24,9 @@ import {DOCUMENT} from '../dom/dom_tokens';
  */
 @Injectable()
 export class Title {
+  private prefix: string = '';
+  private suffix: string = '';
+
   constructor(@Inject(DOCUMENT) private _doc: any) {}
   /**
    * Get the title of the current HTML document.
@@ -35,5 +38,19 @@ export class Title {
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { getDOM().setTitle(this._doc, newTitle); }
+  setTitle(newTitle: string) {
+    getDOM().setTitle(this._doc, `${this.prefix} ${newTitle || ''} ${this.suffix}`.trim());
+  }
+
+  /**
+   * Set the title's prefix.
+   * @param newPrefix
+   */
+  setPrefix(newPrefix: string) { this.prefix = newPrefix; }
+
+  /**
+   * Set the title's suffix.
+   * @param newSuffix
+   */
+  setSuffix(newSuffix: string) { this.suffix = newSuffix; }
 }
