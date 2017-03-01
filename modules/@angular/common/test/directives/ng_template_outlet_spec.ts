@@ -34,6 +34,15 @@ export function main() {
       });
     });
 
+    // https://github.com/angular/angular/issues/14778
+    it('should accept the component as the context', async(() => {
+         const template = `<ng-container *ngTemplateOutlet="tpl; context: this"></ng-container>` +
+             `<ng-template #tpl>{{context.foo}}</ng-template>`;
+
+         fixture = createTestComponent(template);
+         detectChangesAndExpectText('bar');
+       }));
+
     it('should do nothing if templateRef is `null`', async(() => {
          const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
          fixture = createTestComponent(template);
