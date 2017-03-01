@@ -18,7 +18,7 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {Route, Routes} from './config';
+import {InternalRoute, Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
@@ -236,12 +236,12 @@ class ApplyRedirects {
   }
 
   private matchSegmentAgainstRoute(
-      injector: Injector, rawSegmentGroup: UrlSegmentGroup, route: Route,
+      injector: Injector, rawSegmentGroup: UrlSegmentGroup, route: InternalRoute,
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
         return map.call(this.configLoader.load(injector, route), (cfg: LoadedRouterConfig) => {
-          (<any>route)._loadedConfig = cfg;
+          route._loadedConfig = cfg;
           return new UrlSegmentGroup(segments, {});
         });
       }
@@ -278,7 +278,7 @@ class ApplyRedirects {
     });
   }
 
-  private getChildConfig(injector: Injector, route: Route): Observable<LoadedRouterConfig> {
+  private getChildConfig(injector: Injector, route: InternalRoute): Observable<LoadedRouterConfig> {
     if (route.children) {
       return of (new LoadedRouterConfig(route.children, injector, null, null));
     }
@@ -287,10 +287,10 @@ class ApplyRedirects {
       return mergeMap.call(runGuards(injector, route), (shouldLoad: any) => {
 
         if (shouldLoad) {
-          return (<any>route)._loadedConfig ?
-              of ((<any>route)._loadedConfig) :
+          return route._loadedConfig ?
+              of (route._loadedConfig) :
               map.call(this.configLoader.load(injector, route), (cfg: LoadedRouterConfig) => {
-                (<any>route)._loadedConfig = cfg;
+                route._loadedConfig = cfg;
                 return cfg;
               });
         }
