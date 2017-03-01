@@ -22,6 +22,7 @@ import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { NavigationService } from 'app/navigation/navigation.service';
 import { DocumentService } from 'app/documents/document.service';
+import { SearchService } from 'app/search/search.service';
 import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
@@ -54,6 +55,7 @@ import { LinkDirective } from 'app/shared/link.directive';
     LocationService,
     NavigationService,
     DocumentService,
+    SearchService,
     Platform
   ],
   entryComponents: [ embeddedComponents ],
