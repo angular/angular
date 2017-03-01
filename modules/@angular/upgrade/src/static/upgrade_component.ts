@@ -355,7 +355,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       controllerType: angular.IController, $scope: angular.IScope,
       $element: angular.IAugmentedJQuery, controllerAs: string) {
     // TODO: Document that we do not pre-assign bindings on the controller instance
-    const locals = {$scope, $element};
+    // Quoted properties below so that this code can be optimized with Closure Compiler.
+    const locals = {'$scope': $scope, '$element': $element};
     const controller = this.$controller(controllerType, locals, null, controllerAs);
     $element.data(controllerKey(this.directive.name), controller);
     return controller;
