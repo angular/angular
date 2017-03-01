@@ -8,7 +8,7 @@ import {
   NgZone,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
-import {MdRipple} from '../../core/ripple/ripple';
+import {MdRipple} from '../../core/ripple/index';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 
 /**

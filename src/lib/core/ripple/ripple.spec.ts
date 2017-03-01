@@ -1,6 +1,6 @@
 import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {MdRipple, MdRippleModule} from './ripple';
+import {MdRipple, MdRippleModule} from './index';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 import {dispatchMouseEvent} from '../testing/dispatch-events';
@@ -236,6 +236,39 @@ describe('MdRipple', () => {
         expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * expectedRadius, 1);
       });
     });
+
+  });
+
+  describe('manual ripples', () => {
+    let rippleDirective: MdRipple;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicRippleContainer);
+      fixture.detectChanges();
+
+      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleDirective = fixture.componentInstance.ripple;
+    });
+
+    it('should allow persistent ripple elements', fakeAsync(() => {
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      let rippleRef = rippleDirective.launch(0, 0, { persistent: true });
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      // Calculates the duration for fading-in and fading-out the ripple. Also adds some
+      // extra time to demonstrate that the ripples are persistent.
+      tick(RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION + 5000);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      rippleRef.fadeOut();
+
+      tick(RIPPLE_FADE_OUT_DURATION);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
 
   });
 

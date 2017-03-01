@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {LayoutDirection, Dir} from '../core/rtl/dir';
 import {MdTabHeader} from './tab-header';
-import {MdRippleModule} from '../core/ripple/ripple';
+import {MdRippleModule} from '../core/ripple/index';
 import {CommonModule} from '@angular/common';
 import {PortalModule} from '../core';
 import {MdInkBar} from './ink-bar';

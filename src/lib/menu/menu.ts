@@ -4,7 +4,7 @@ import {OverlayModule, CompatibilityModule} from '../core';
 import {MdMenu} from './menu-directive';
 import {MdMenuItem} from './menu-item';
 import {MdMenuTrigger} from './menu-trigger';
-import {MdRippleModule} from '../core/ripple/ripple';
+import {MdRippleModule} from '../core/ripple/index';
 export {MdMenu} from './menu-directive';
 export {MdMenuItem} from './menu-item';
 export {MdMenuTrigger} from './menu-trigger';

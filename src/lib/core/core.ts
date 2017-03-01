@@ -3,11 +3,11 @@ import {MdLineModule} from './line/line';
 import {RtlModule} from './rtl/dir';
 import {ObserveContentModule} from './observe-content/observe-content';
 import {MdOptionModule} from './option/option';
-import {MdRippleModule} from './ripple/ripple';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
 import {A11yModule} from './a11y/index';
 import {MdSelectionModule} from './selection/index';
+import {MdRippleModule} from './ripple/index';
 
 
 // RTL
@@ -64,7 +64,7 @@ export {GestureConfig} from './gestures/gesture-config';
 export {HammerInput, HammerManager} from './gestures/gesture-annotations';
 
 // Ripple
-export {MdRipple, MdRippleModule} from './ripple/ripple';
+export * from './ripple/index';
 
 // a11y
 export {

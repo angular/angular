@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Directive,
   ElementRef,
   Input,
@@ -10,9 +8,8 @@ import {
   OnDestroy,
 } from '@angular/core';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
-import {CompatibilityModule} from '../compatibility/compatibility';
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '../overlay/position/viewport-ruler';
-import {SCROLL_DISPATCHER_PROVIDER} from '../overlay/scroll/scroll-dispatcher';
+import {ViewportRuler} from '../overlay/position/viewport-ruler';
+import {RippleRef} from './ripple-ref';
 
 
 @Directive({
@@ -87,8 +84,13 @@ export class MdRipple implements OnChanges, OnDestroy {
   }
 
   /** Launches a manual ripple at the specified position. */
-  launch(pageX: number, pageY: number, config = this.rippleConfig) {
-    this._rippleRenderer.fadeInRipple(pageX, pageY, config);
+  launch(pageX: number, pageY: number, config = this.rippleConfig): RippleRef {
+    return this._rippleRenderer.fadeInRipple(pageX, pageY, config);
+  }
+
+  /** Fades out all currently showing ripple elements. */
+  fadeOutAll() {
+    this._rippleRenderer.fadeOutAll();
   }
 
   /** Ripple configuration from the directive's input values. */
@@ -98,24 +100,6 @@ export class MdRipple implements OnChanges, OnDestroy {
       speedFactor: this.speedFactor,
       radius: this.radius,
       color: this.color
-    };
-  }
-
-}
-
-
-@NgModule({
-  imports: [CompatibilityModule],
-  exports: [MdRipple, CompatibilityModule],
-  declarations: [MdRipple],
-  providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER],
-})
-export class MdRippleModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdRippleModule,
-      providers: []
     };
   }
 }

@@ -21,9 +21,15 @@ export class RippleDemo {
 
   disableButtonRipples = false;
 
-  doManualRipple() {
+  launchRipple(persistent = false) {
     if (this.ripple) {
-      this.ripple.launch(0, 0, { centered: true });
+      this.ripple.launch(0, 0, { centered: true, persistent });
+    }
+  }
+
+  fadeOutAll() {
+    if (this.ripple) {
+      this.ripple.fadeOutAll();
     }
   }
 

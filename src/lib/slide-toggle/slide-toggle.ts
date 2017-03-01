@@ -23,7 +23,7 @@ import {
   CompatibilityModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
-import {MdRippleModule} from '../core/ripple/ripple';
+import {MdRippleModule} from '../core/ripple/index';
 
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {

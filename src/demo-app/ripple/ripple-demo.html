@@ -35,7 +35,9 @@
     </md-input-container>
   </section>
   <section>
-    <button md-raised-button (click)="doManualRipple()">Manual ripple</button>
+    <button md-raised-button (click)="launchRipple()">Launch Ripple</button>
+    <button md-raised-button (click)="launchRipple(true)">Launch Ripple (Persistent)</button>
+    <button md-raised-button (click)="fadeOutAll()">Fade Out All</button>
   </section>
   <section>
     <div class="demo-ripple-container"

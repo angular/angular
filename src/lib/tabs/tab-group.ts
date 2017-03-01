@@ -22,7 +22,7 @@ import {MdTabNavBar, MdTabLink, MdTabLinkRipple} from './tab-nav-bar/tab-nav-bar
 import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import {MdRippleModule} from '../core/ripple/ripple';
+import {MdRippleModule} from '../core/ripple/index';
 import {ObserveContentModule} from '../core/observe-content/observe-content';
 import {MdTab} from './tab';
 import {MdTabBody} from './tab-body';
