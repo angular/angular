@@ -11,6 +11,7 @@ class ComponentGroup {
   constructor(name) {
     this.name = name;
     this.id = `component-group-${name}`;
+    this.aliases = [];
     this.docType = 'componentGroup';
     this.directives = [];
     this.services = [];
