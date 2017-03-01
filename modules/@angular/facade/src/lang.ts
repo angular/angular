@@ -6,67 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export interface BrowserNodeGlobal {
-  Object: typeof Object;
-  Array: typeof Array;
-  Map: typeof Map;
-  Set: typeof Set;
-  Date: DateConstructor;
-  RegExp: RegExpConstructor;
-  JSON: typeof JSON;
-  Math: any;  // typeof Math;
-  assert(condition: any): void;
-  Reflect: any;
-  getAngularTestability: Function;
-  getAllAngularTestabilities: Function;
-  getAllAngularRootElements: Function;
-  frameworkStabilizers: Array<Function>;
-  setTimeout: Function;
-  clearTimeout: Function;
-  setInterval: Function;
-  clearInterval: Function;
-  encodeURI: Function;
-}
-
-// TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
-declare var WorkerGlobalScope: any /** TODO #9100 */;
-// CommonJS / Node have global context exposed as "global" variable.
-// We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
-// the global "global" var for now.
-declare var global: any /** TODO #9100 */;
-
-let globalScope: BrowserNodeGlobal;
-if (typeof window === 'undefined') {
-  if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
-    // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
-    globalScope = <any>self;
-  } else {
-    globalScope = <any>global;
-  }
-} else {
-  globalScope = <any>window;
-}
-
-export function scheduleMicroTask(fn: Function) {
-  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
-}
-
-// Need to declare a new variable for global here since TypeScript
-// exports the original value of the symbol.
-const _global: BrowserNodeGlobal = globalScope;
-
-export {_global as global};
 
 export function getTypeNameForDebugging(type: any): string {
   return type['name'] || typeof type;
 }
-
-// TODO: remove calls to assert in production environment
-// Note: Can't just export this and import in in other files
-// as `assert` is a reserved keyword in Dart
-_global.assert = function assert(condition) {
-  // TODO: to be fixed properly via #2830, noop for now
-};
 
 export function isPresent(obj: any): boolean {
   return obj != null;
@@ -148,28 +91,6 @@ export function setValueOnPath(global: any, path: string, value: any) {
     obj = {};
   }
   obj[parts.shift()] = value;
-}
-
-// When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
-declare const Symbol: any;
-let _symbolIterator: any = null;
-export function getSymbolIterator(): string|symbol {
-  if (!_symbolIterator) {
-    if ((<any>globalScope).Symbol && Symbol.iterator) {
-      _symbolIterator = Symbol.iterator;
-    } else {
-      // es6-shim specific logic
-      const keys = Object.getOwnPropertyNames(Map.prototype);
-      for (let i = 0; i < keys.length; ++i) {
-        const key = keys[i];
-        if (key !== 'entries' && key !== 'size' &&
-            (Map as any).prototype[key] === Map.prototype['entries']) {
-          _symbolIterator = key;
-        }
-      }
-    }
-  }
-  return _symbolIterator;
 }
 
 export function isPrimitive(obj: any): boolean {

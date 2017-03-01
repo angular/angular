@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../facade/lang';
+import {global} from '../util';
 
 /**
  * A scope function for the Web Tracing Framework (WTF).

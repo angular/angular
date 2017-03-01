@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global, isPresent, stringify} from '../facade/lang';
+import {isPresent, stringify} from '../facade/lang';
 import {Type, isType} from '../type';
-
+import {global} from '../util';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
@@ -21,7 +21,7 @@ export const DELEGATE_CTOR =
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
-  constructor(reflect?: any) { this._reflect = reflect || global.Reflect; }
+  constructor(reflect?: any) { this._reflect = reflect || global['Reflect']; }
 
   isReflectionEnabled(): boolean { return true; }
 
