@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, animate, group, keyframes, sequence, style, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, group, keyframes, sequence, style, ɵStyleData} from '@angular/animations';
 
 import {Animation} from '../../src/dsl/animation';
 import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction';
@@ -374,6 +374,38 @@ export function main() {
              expect(finalAnimatePlayerKeyframes[0]['height']).toEqual('300px');
              expect(finalAnimatePlayerKeyframes[1]['height']).toEqual('500px');
            });
+
+        it('should respect offsets if provided directly within the style data', () => {
+          const steps = animate(1000, keyframes([
+                                  style({opacity: 0, offset: 0}), style({opacity: .6, offset: .6}),
+                                  style({opacity: 1, offset: 1})
+                                ]));
+
+          const players = invokeAnimationSequence(steps);
+          expect(players.length).toEqual(1);
+          const player = players[0];
+
+          expect(player.keyframes).toEqual([
+            {opacity: 0, offset: 0}, {opacity: .6, offset: .6}, {opacity: 1, offset: 1}
+          ]);
+        });
+
+        it('should respect offsets if provided directly within the style metadata type', () => {
+          const steps =
+              animate(1000, keyframes([
+                        {type: AnimationMetadataType.Style, offset: 0, styles: {opacity: 0}},
+                        {type: AnimationMetadataType.Style, offset: .4, styles: {opacity: .4}},
+                        {type: AnimationMetadataType.Style, offset: 1, styles: {opacity: 1}},
+                      ]));
+
+          const players = invokeAnimationSequence(steps);
+          expect(players.length).toEqual(1);
+          const player = players[0];
+
+          expect(player.keyframes).toEqual([
+            {opacity: 0, offset: 0}, {opacity: .4, offset: .4}, {opacity: 1, offset: 1}
+          ]);
+        });
       });
 
       describe('group()', () => {

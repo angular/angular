@@ -70,8 +70,10 @@ export declare type AnimationStateTransitionMetadata = any;
 
 /** @deprecated */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-    offset: number;
+    offset?: number;
     styles: {
+        [key: string]: string | number;
+    } | {
         [key: string]: string | number;
     }[];
 }
@@ -91,7 +93,7 @@ export interface AnimationTransitionEvent {
 
 /** @deprecated */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
-    animation: AnimationMetadata;
+    animation: AnimationMetadata | AnimationMetadata[];
     expr: string | ((fromState: string, toState: string) => boolean);
 }
 
