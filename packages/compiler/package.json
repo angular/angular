@@ -5,7 +5,7 @@
   "main": "./bundles/compiler.umd.js",
   "module": "./@angular/compiler.es5.js",
   "es2015": "./@angular/compiler.js",
-  "typings": "./typings/index.d.ts",
+  "typings": "./typings/compiler.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
