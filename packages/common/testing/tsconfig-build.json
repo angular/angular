@@ -1,14 +1,14 @@
 {
-  "extends": "./tsconfig-build",
+  "extends": "../tsconfig-build",
 
   "compilerOptions": {
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/"],
-      "@angular/common": ["../../../dist/packages-dist/common"]
+      "@angular/core": ["../../dist/packages/core/"],
+      "@angular/common": ["../../dist/packages/common"]
     }
   },
   "files": [
-    "testing/index.ts",
+    "index.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

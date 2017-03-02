@@ -9,7 +9,7 @@
 import {CommonModule, NgLocalization} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('ngPlural', () => {

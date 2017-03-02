@@ -8,8 +8,8 @@
 
 import {Component, Injectable, Input} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
 @Injectable()

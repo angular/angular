@@ -8,7 +8,7 @@
 
 import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el} from '@angular/platform-browser/testing/browser_util';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('SelectorMatcher', () => {

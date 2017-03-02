@@ -1,14 +1,13 @@
 {
-  "extends": "./tsconfig-build",
-
+  "extends": "../tsconfig-build",
   "compilerOptions": {
     "paths": {
-      "rxjs/*": ["../../../node_modules/rxjs/*"],
-      "@angular/core": ["../../../dist/packages-dist/core"]
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/core": ["../../dist/packages/core"]
     }
   },
   "files": [
-    "testing/index.ts",
+    "index.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],

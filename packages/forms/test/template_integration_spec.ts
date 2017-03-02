@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/t
 import {AbstractControl, AsyncValidator, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('template-driven forms integration tests', () => {

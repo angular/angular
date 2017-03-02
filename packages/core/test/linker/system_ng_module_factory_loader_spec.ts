@@ -9,7 +9,7 @@
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
 import {global} from '@angular/core/src/util';
 import {async} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 function mockSystem(modules: {[module: string]: any}) {
   return {

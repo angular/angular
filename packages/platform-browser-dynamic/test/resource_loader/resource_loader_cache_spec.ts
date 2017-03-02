@@ -9,7 +9,7 @@
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {CachedResourceLoader} from '../../src/resource_loader/resource_loader_cache';
 

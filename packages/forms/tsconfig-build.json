@@ -6,14 +6,14 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/forms",
+    "outDir": "../../dist/packages/forms",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/core/testing": ["../../dist/packages/core/testing"],
+      "@angular/common": ["../../dist/packages/common"],
+      "@angular/common/testing": ["../../dist/packages/common/testing"],
+      "@angular/compiler": ["../../dist/packages/compiler"],
+      "@angular/compiler/testing": ["../../dist/packages/compiler/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -26,7 +26,7 @@
   },
   "files": [
     "public_api.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

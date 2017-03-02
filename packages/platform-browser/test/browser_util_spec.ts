@@ -7,7 +7,7 @@
  */
 
 
-import {BrowserDetection} from '../testing/browser_util';
+import {BrowserDetection} from '../testing/src/browser_util';
 
 export function main() {
   describe('BrowserDetection', () => {

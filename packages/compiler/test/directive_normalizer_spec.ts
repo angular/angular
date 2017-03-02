@@ -9,11 +9,11 @@ import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMeta
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
-import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
+import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {SpyResourceLoader} from './spies';
 

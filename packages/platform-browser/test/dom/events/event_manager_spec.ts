@@ -7,11 +7,11 @@
  */
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-import {el} from '../../../testing/browser_util';
+import {el} from '../../../testing/src/browser_util';
 
 export function main() {
   let domEventPlugin: DomEventsPlugin;

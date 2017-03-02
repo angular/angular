@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {HammerGestureConfig, HammerGesturesPlugin} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
 export function main() {

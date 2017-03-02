@@ -6,14 +6,14 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-server",
+    "outDir": "../../dist/packages/platform-server",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/http": ["../../../dist/packages-dist/http"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/common": ["../../dist/packages/common"],
+      "@angular/compiler": ["../../dist/packages/compiler"],
+      "@angular/http": ["../../dist/packages/http"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "@angular/platform-browser-dynamic": ["../../dist/packages/platform-browser-dynamic"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -26,8 +26,8 @@
   },
   "files": [
     "public_api.ts",
-    "../../../node_modules/@types/node/index.d.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/@types/node/index.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
