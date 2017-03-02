@@ -24,7 +24,7 @@ Methods and functions:
   - Should be camel case with first lower case
 
 
-Constants
+Constants:
   - Example: `CORE_DIRECTIVES`
   - Should be all uppercase with SNAKE_CASE
 
