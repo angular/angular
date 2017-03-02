@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, RendererTypeV2, Type} from '@angular/core';
-
-import {stringify} from '../../facade/lang';
-
+import {Injectable, RenderComponentType, RendererTypeV2, Type, ɵstringify as stringify} from '@angular/core';
 import {RenderStore} from './render_store';
 
 

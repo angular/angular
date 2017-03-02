@@ -7,7 +7,6 @@
  */
 
 import {DomAdapter} from '../dom/dom_adapter';
-import {isPresent} from '../facade/lang';
 
 
 
@@ -24,13 +23,13 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     super();
     try {
       const element = this.createElement('div', document);
-      if (isPresent(this.getStyle(element, 'animationName'))) {
+      if (this.getStyle(element, 'animationName') != null) {
         this._animationPrefix = '';
       } else {
         const domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
 
         for (let i = 0; i < domPrefixes.length; i++) {
-          if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
+          if (this.getStyle(element, domPrefixes[i] + 'AnimationName') != null) {
             this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
             break;
           }
@@ -45,7 +44,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
       };
 
       Object.keys(transEndEventNames).forEach((key: string) => {
-        if (isPresent(this.getStyle(element, key))) {
+        if (this.getStyle(element, key) != null) {
           this._transitionEnd = transEndEventNames[key];
         }
       });
@@ -66,6 +65,6 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   getAnimationPrefix(): string { return this._animationPrefix ? this._animationPrefix : ''; }
   getTransitionEnd(): string { return this._transitionEnd ? this._transitionEnd : ''; }
   supportsAnimation(): boolean {
-    return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
+    return this._animationPrefix != null && this._transitionEnd != null;
   }
 }

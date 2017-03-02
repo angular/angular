@@ -24,7 +24,7 @@ declare const Symbol: any;
 let _symbolIterator: any = null;
 export function getSymbolIterator(): string|symbol {
   if (!_symbolIterator) {
-    var Symbol = _global['Symbol'];
+    const Symbol = _global['Symbol'];
     if (Symbol && Symbol.iterator) {
       _symbolIterator = Symbol.iterator;
     } else {
@@ -44,4 +44,31 @@ export function getSymbolIterator(): string|symbol {
 
 export function scheduleMicroTask(fn: Function) {
   Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+}
+
+// JS has NaN !== NaN
+export function looseIdentical(a: any, b: any): boolean {
+  return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
+}
+
+export function stringify(token: any): string {
+  if (typeof token === 'string') {
+    return token;
+  }
+
+  if (token == null) {
+    return '' + token;
+  }
+
+  if (token.overriddenName) {
+    return `${token.overriddenName}`;
+  }
+
+  if (token.name) {
+    return `${token.name}`;
+  }
+
+  const res = token.toString();
+  const newLineIndex = res.indexOf('\n');
+  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }

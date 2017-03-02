@@ -7,9 +7,6 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
-
-import {NumberWrapper} from '../facade/lang';
-
 import {NumberFormatStyle, NumberFormatter} from './intl';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -21,7 +18,7 @@ function formatNumber(
   if (value == null) return null;
 
   // Convert strings to numbers
-  value = typeof value === 'string' && NumberWrapper.isNumeric(value) ? +value : value;
+  value = typeof value === 'string' && isNumeric(value) ? +value : value;
   if (typeof value !== 'number') {
     throw invalidPipeArgumentError(pipe, value);
   }
@@ -42,13 +39,13 @@ function formatNumber(
       throw new Error(`${digits} is not a valid digit info for number pipes`);
     }
     if (parts[1] != null) {  // min integer digits
-      minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
+      minInt = parseIntAutoRadix(parts[1]);
     }
     if (parts[3] != null) {  // min fraction digits
-      minFraction = NumberWrapper.parseIntAutoRadix(parts[3]);
+      minFraction = parseIntAutoRadix(parts[3]);
     }
     if (parts[5] != null) {  // max fraction digits
-      maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
+      maxFraction = parseIntAutoRadix(parts[5]);
     }
   }
 
@@ -161,4 +158,16 @@ export class CurrencyPipe implements PipeTransform {
         CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
         symbolDisplay);
   }
+}
+
+function parseIntAutoRadix(text: string): number {
+  const result: number = parseInt(text);
+  if (isNaN(result)) {
+    throw new Error('Invalid integer literal when parsing ' + text);
+  }
+  return result;
+}
+
+export function isNumeric(value: any): boolean {
+  return !isNaN(value - parseFloat(value));
 }

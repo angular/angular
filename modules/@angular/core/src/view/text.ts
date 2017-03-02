@@ -7,7 +7,7 @@
  */
 
 import {isDevMode} from '../application_ref';
-import {looseIdentical} from '../facade/lang';
+import {looseIdentical} from '../util';
 
 import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
 import {checkAndUpdateBinding, getParentRenderElement, sliceErrorStack} from './util';

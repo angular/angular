@@ -8,7 +8,6 @@
 
 
 import * as chars from '../chars';
-import {isPresent} from '../facade/lang';
 
 export enum CssTokenType {
   EOF,
@@ -200,9 +199,9 @@ export class CssScanner {
 
     let next: CssToken;
     const output = this.scan();
-    if (isPresent(output)) {
+    if (output != null) {
       // just incase the inner scan method returned an error
-      if (isPresent(output.error)) {
+      if (output.error != null) {
         this.setMode(mode);
         return output;
       }
@@ -210,7 +209,7 @@ export class CssScanner {
       next = output.token;
     }
 
-    if (!isPresent(next)) {
+    if (next == null) {
       next = new CssToken(this.index, this.column, this.line, CssTokenType.EOF, 'end of file');
     }
 
@@ -227,11 +226,11 @@ export class CssScanner {
     this.setMode(mode);
 
     let error: Error = null;
-    if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
+    if (!isMatchingType || (value != null && value != next.strValue)) {
       let errorMessage =
           CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
 
-      if (isPresent(value)) {
+      if (value != null) {
         errorMessage += ' ("' + next.strValue + '" should match "' + value + '")';
       }
 

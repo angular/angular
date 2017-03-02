@@ -8,7 +8,6 @@
 
 import {DebugElement, Predicate, Type} from '@angular/core';
 import {getDOM} from '../../dom/dom_adapter';
-import {isPresent} from '../../facade/lang';
 
 
 
@@ -36,7 +35,7 @@ export class By {
    */
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
-      return isPresent(debugElement.nativeElement) ?
+      return debugElement.nativeElement != null ?
           getDOM().elementMatches(debugElement.nativeElement, selector) :
           false;
     };

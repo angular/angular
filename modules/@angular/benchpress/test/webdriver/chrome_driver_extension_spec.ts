@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {isBlank} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -38,7 +37,7 @@ export function main() {
       if (!perfRecords) {
         perfRecords = [];
       }
-      if (isBlank(userAgent)) {
+      if (userAgent == null) {
         userAgent = CHROME45_USER_AGENT;
       }
       log = [];

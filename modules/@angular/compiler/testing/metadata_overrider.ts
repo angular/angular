@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵstringify as stringify} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
-import {stringify} from './facade/lang';
 
 type StringMap = {
   [key: string]: any

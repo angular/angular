@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef} from '@angular/core';
-
-import {isPrimitive, looseIdentical} from '../facade/lang';
-
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: Provider = {
@@ -20,7 +17,7 @@ export const SELECT_VALUE_ACCESSOR: Provider = {
 
 function _buildValueString(id: string, value: any): string {
   if (id == null) return `${value}`;
-  if (!isPrimitive(value)) value = 'Object';
+  if (value && typeof value === 'object') value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
 }
 

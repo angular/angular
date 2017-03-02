@@ -7,7 +7,6 @@
  */
 
 import * as chars from '../chars';
-import {isPresent} from '../facade/lang';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
 import {BlockType, CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst, mergeTokens} from './css_ast';
@@ -127,7 +126,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _getSourceContent(): string { return isPresent(this._scanner) ? this._scanner.input : ''; }
+  _getSourceContent(): string { return this._scanner != null ? this._scanner.input : ''; }
 
   /** @internal */
   _extractSourceContent(start: number, end: number): string {
@@ -141,7 +140,7 @@ export class CssParser {
       startLoc = start.location.start;
     } else {
       let token = start;
-      if (!isPresent(token)) {
+      if (token == null) {
         // the data here is invalid, however, if and when this does
         // occur, any other errors associated with this will be collected
         token = this._lastToken;
@@ -149,7 +148,7 @@ export class CssParser {
       startLoc = new ParseLocation(this._file, token.index, token.line, token.column);
     }
 
-    if (!isPresent(end)) {
+    if (end == null) {
       end = this._lastToken;
     }
 
@@ -329,7 +328,7 @@ export class CssParser {
     let ruleAst: CssRuleAst;
     let span: ParseSourceSpan;
     const startSelector = selectors[0];
-    if (isPresent(block)) {
+    if (block != null) {
       span = this._generateSourceSpan(startSelector, block);
       ruleAst = new CssSelectorRuleAst(span, selectors, block);
     } else {
@@ -377,7 +376,7 @@ export class CssParser {
     const output = this._scanner.scan();
     const token = output.token;
     const error = output.error;
-    if (isPresent(error)) {
+    if (error != null) {
       this._error(getRawMessage(error), token);
     }
     this._lastToken = token;
@@ -392,7 +391,7 @@ export class CssParser {
     const output = this._scanner.consume(type, value);
     const token = output.token;
     const error = output.error;
-    if (isPresent(error)) {
+    if (error != null) {
       this._error(getRawMessage(error), token);
     }
     this._lastToken = token;
@@ -601,7 +600,7 @@ export class CssParser {
               let index = lastOperatorToken.index;
               let line = lastOperatorToken.line;
               let column = lastOperatorToken.column;
-              if (isPresent(deepToken) && deepToken.strValue.toLowerCase() == 'deep' &&
+              if (deepToken != null && deepToken.strValue.toLowerCase() == 'deep' &&
                   deepSlash.strValue == SLASH_CHARACTER) {
                 token = new CssToken(
                     lastOperatorToken.index, lastOperatorToken.column, lastOperatorToken.line,
@@ -636,7 +635,7 @@ export class CssParser {
       // so long as there is an operator then we can have an
       // ending value that is beyond the selector value ...
       // otherwise it's just a bunch of trailing whitespace
-      if (isPresent(operator)) {
+      if (operator != null) {
         end = operator.index;
       }
     }
@@ -664,7 +663,7 @@ export class CssParser {
       startTokenOrAst = startTokenOrAst || pseudoSelectors[0];
       endTokenOrAst = pseudoSelectors[pseudoSelectors.length - 1];
     }
-    if (isPresent(operator)) {
+    if (operator != null) {
       startTokenOrAst = startTokenOrAst || operator;
       endTokenOrAst = operator;
     }
@@ -702,7 +701,7 @@ export class CssParser {
     let previous: CssToken;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       let token: CssToken;
-      if (isPresent(previous) && previous.type == CssTokenType.Identifier &&
+      if (previous != null && previous.type == CssTokenType.Identifier &&
           this._scanner.peek == chars.$LPAREN) {
         token = this._consume(CssTokenType.Character, '(');
         tokens.push(token);
@@ -753,7 +752,7 @@ export class CssParser {
   _collectUntilDelim(delimiters: number, assertType: CssTokenType = null): CssToken[] {
     const tokens: CssToken[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
-      const val = isPresent(assertType) ? this._consume(assertType) : this._scan();
+      const val = assertType != null ? this._consume(assertType) : this._scan();
       tokens.push(val);
     }
     return tokens;
