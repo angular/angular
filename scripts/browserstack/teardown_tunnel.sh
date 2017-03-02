@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -e -o pipefail
+set -u -e -o pipefail
 
 
 echo "Shutting down Browserstack tunnel"
-echo "TODO: implement me"
-exit 1
+echo "TODO: implement me, see start_tunnel.js for info on how to stop the tunnel"

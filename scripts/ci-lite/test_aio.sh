@@ -1,57 +1,38 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
-
-if [[ ${TRAVIS} && ${CI_MODE} != "aio" ]]; then
-  exit 0;
-fi
-
-
-echo 'travis_fold:start:test.aio'
+set -u -e -o pipefail
 
 # Setup environment
-cd `dirname $0`
-source ./env.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
+cd ${PROJECT_ROOT}/aio
 
 
-echo 'travis_fold:start:test.aio.lint'
 # Lint the code
-cd ../../aio
-yarn run lint
-cd -
-echo 'travis_fold:end:test.aio.lint'
+travisFoldStart "test.aio.lint"
+  yarn run lint
+travisFoldEnd "test.aio.lint"
+
+# Generate docs files
+# TODO(i): why is this in 'test' phase and not in the 'build' phase?
+travisFoldStart "test.aio.doc-gen"
+  $(npm bin)/gulp docs
+travisFoldEnd "test.aio.doc-gen"
 
 
-echo 'travis_fold:start:test.aio.doc-gen'
-# Lint the code
-cd ../../aio
-$(npm bin)/gulp docs
-cd -
-echo 'travis_fold:end:test.aio.doc-gen'
-
-
-echo 'travis_fold:start:test.aio.localChromeSetup'
-
-# Start local Chrome
+# Start xvfb for local Chrome used for testing
 if [[ ${TRAVIS} ]]; then
-  sh -e /etc/init.d/xvfb start
+  travisFoldStart "test.aio.xvfb-start"
+    sh -e /etc/init.d/xvfb start
+  travisFoldEnd "test.aio.xvfb-start"
 fi
 
-echo 'travis_fold:end:test.aio.localChromeSetup'
-
-
-echo 'travis_fold:start:test.aio.unit'
 # Run unit tests
-cd ../../aio
-yarn test -- --single-run
-cd -
-echo 'travis_fold:end:test.aio.unit'
+travisFoldStart "test.aio.unit"
+  yarn test -- --single-run
+travisFoldEnd "test.aio.unit"
 
-echo 'travis_fold:start:test.aio.e2e'
 # Run e2e tests
-cd ../../aio
-yarn run e2e
-cd -
-echo 'travis_fold:end:test.aio.e2e'
-
-echo 'travis_fold:end:test.aio'
+travisFoldStart "test.aio.e2e"
+  yarn run e2e
+travisFoldEnd "test.aio.e2e"

@@ -53,14 +53,18 @@ matrix:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
 
+before_install:
+  - ./scripts/ci-lite/env.sh print
+
 install:
   - ./scripts/ci-lite/install.sh
 
 script:
-  - ./scripts/ci-lite/build.sh && ./scripts/ci-lite/test.sh
-
-after_success:
-  - ./scripts/ci-lite/deploy_aio_staging.sh
-
-after_script:
+  - ./scripts/ci-lite/build.sh
+  - ./scripts/ci-lite/test.sh
+  # deploy is part of 'script' and not 'after_success' so that we fail the build if the deployment fails
+  - ./scripts/ci-lite/deploy.sh
+  - ./scripts/ci-lite/angular.sh
+  # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
   - ./scripts/ci-lite/cleanup.sh
+  - ./scripts/ci-lite/print-logs.sh
