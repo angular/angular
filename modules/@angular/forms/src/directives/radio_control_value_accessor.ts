@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, RendererV2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -105,7 +105,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   @Input() value: any;
 
   constructor(
-      private _renderer: RendererV2, private _elementRef: ElementRef,
+      private _renderer: Renderer2, private _elementRef: ElementRef,
       private _registry: RadioControlRegistry, private _injector: Injector) {}
 
   ngOnInit(): void {

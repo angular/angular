@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, RendererV2} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -36,8 +36,7 @@ export class NgStyle implements DoCheck {
   private _differ: KeyValueDiffer<string, string|number>;
 
   constructor(
-      private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: RendererV2) {
-  }
+      private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer2) {}
 
   @Input()
   set ngStyle(v: {[key: string]: string}) {

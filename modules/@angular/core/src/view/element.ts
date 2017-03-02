@@ -7,7 +7,7 @@
  */
 
 import {isDevMode} from '../application_ref';
-import {RendererTypeV2, RendererV2} from '../render/api';
+import {Renderer2, RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
@@ -71,7 +71,7 @@ export function elementDef(
            string, SecurityContext
          ])[],
     outputs?: ([string, string])[], handleEvent?: ElementHandleEventFn,
-    componentView?: () => ViewDefinition, componentRendererType?: RendererTypeV2): NodeDef {
+    componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
   }
@@ -119,7 +119,7 @@ export function elementDef(
     const [ns, name] = splitNamespace(namespaceAndName);
     return [ns, name, value];
   });
-  // This is needed as the jit compiler always uses an empty hash as default RendererTypeV2,
+  // This is needed as the jit compiler always uses an empty hash as default RendererType2,
   // which is not filled for host views.
   if (componentRendererType && componentRendererType.encapsulation == null) {
     componentRendererType = null;

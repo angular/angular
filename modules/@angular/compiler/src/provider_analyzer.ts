@@ -223,7 +223,7 @@ export class ProviderElementContext {
       if ((requestingProviderType === ProviderAstType.Directive ||
            requestingProviderType === ProviderAstType.Component)) {
         if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Renderer) ||
-            tokenReference(dep.token) === resolveIdentifier(Identifiers.RendererV2) ||
+            tokenReference(dep.token) === resolveIdentifier(Identifiers.Renderer2) ||
             tokenReference(dep.token) === resolveIdentifier(Identifiers.ElementRef) ||
             tokenReference(dep.token) === resolveIdentifier(Identifiers.ChangeDetectorRef) ||
             tokenReference(dep.token) === resolveIdentifier(Identifiers.TemplateRef)) {
