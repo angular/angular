@@ -840,11 +840,11 @@ export declare abstract class RendererV2 {
     abstract removeAttribute(el: any, name: string, namespace?: string): void;
     abstract removeChild(parent: any, oldChild: any): void;
     abstract removeClass(el: any, name: string): void;
-    abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+    abstract removeStyle(el: any, style: string, hasVendorPrefix?: boolean): void;
     abstract selectRootElement(selectorOrNode: string | any): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
     abstract setProperty(el: any, name: string, value: any): void;
-    abstract setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
+    abstract setStyle(el: any, style: string, value: any, hasVendorPrefix?: boolean, hasImportant?: boolean): void;
     abstract setValue(node: any, value: string): void;
 }
 

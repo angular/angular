@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
