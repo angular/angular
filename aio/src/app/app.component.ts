@@ -11,7 +11,7 @@ import { SearchService, QueryResults } from 'app/search/search.service';
       <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
       <aio-top-menu [nodes]="(navigationViews | async)?.TopBar"></aio-top-menu>
       <md-input-container >
-        <input mdInput placeholder="Search" (keyup)="onSearch($event)">
+        <input mdInput placeholder="Search" (keyup)="onSearch($event.target.value)">
       </md-input-container>
       <span class="fill-remaining-space"></span>
     </md-toolbar>
@@ -86,9 +86,10 @@ import { SearchService, QueryResults } from 'app/search/search.service';
   ]
 })
 export class AppComponent implements OnInit {
+  readonly sideBySideWidth = 600;
+
   isHamburgerVisible = true; // always ... for now
   isSideBySide = false;
-  sideBySideWidth = 600;
 
   currentDocument: Observable<DocumentContents>;
   navigationViews: Observable<NavigationViews>;
@@ -111,9 +112,7 @@ export class AppComponent implements OnInit {
     this.isSideBySide = width > this.sideBySideWidth;
   }
 
-  onSearch(event: KeyboardEvent) {
-    const query = (event.target as HTMLInputElement).value;
-    console.log(query);
+  onSearch(query: string) {
     this.searchService.search(query);
   }
 }

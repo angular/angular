@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { NavMenuComponent } from './nav-menu.component';
 
 describe('NavMenuComponent', () => {
@@ -8,7 +8,8 @@ describe('NavMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NavMenuComponent ]
+      declarations: [ NavMenuComponent ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
   }));
