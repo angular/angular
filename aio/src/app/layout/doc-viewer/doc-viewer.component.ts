@@ -53,7 +53,6 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
 
   @Input()
   set doc(newDoc: DocumentContents) {
-    console.log(newDoc);
     this.ngOnDestroy();
     if (newDoc) {
       window.scrollTo(0, 0);
