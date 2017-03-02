@@ -1,3 +1,19 @@
+<a name="2.4.9"></a>
+## [2.4.9](https://github.com/angular/angular/compare/2.4.8...2.4.9) (2017-03-02)
+
+
+### Bug Fixes
+
+* **http:** Make ResponseOptionsArgs an interface ([b658fa9](https://github.com/angular/angular/commit/b658fa9)), closes [#13708](https://github.com/angular/angular/issues/13708)
+* **router:** improve robustness ([#14602](https://github.com/angular/angular/issues/14602)) ([2a12346](https://github.com/angular/angular/commit/2a12346))
+
+
+### Reverts
+
+* fix(router): do not finish bootstrap until all the routes are resolved ([#14327](https://github.com/angular/angular/issues/14327)) ([de36f8a](https://github.com/angular/angular/commit/de36f8a)), closes [#14681](https://github.com/angular/angular/issues/14681) [#14588](https://github.com/angular/angular/issues/14588)
+
+
+
 <a name="4.0.0-rc.2"></a>
 ## [4.0.0-rc.2](https://github.com/angular/angular/compare/4.0.0-rc.1...4.0.0-rc.2) (2017-03-02)
 
