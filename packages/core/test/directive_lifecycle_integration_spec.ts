@@ -9,7 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {TestBed, inject} from '@angular/core/testing';
-import {Log} from '@angular/core/testing/testing_internal';
+import {Log} from '@angular/core/testing/src/testing_internal';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {

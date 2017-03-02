@@ -8,7 +8,7 @@
 
 import {ReflectiveInjector} from '@angular/core';
 import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {SpyIterableDifferFactory} from '../../spies';
 

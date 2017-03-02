@@ -6,9 +6,9 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "../../../dist/packages-dist/benchpress",
+    "outDir": "../../../dist/packages/benchpress",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"]
+      "@angular/core": ["../../../dist/packages/core"]
     },
     "experimentalDecorators": true,
     "rootDir": ".",
@@ -20,8 +20,8 @@
   },
   "files": [
     "index.ts",
-    "../../../node_modules/@types/node/index.d.ts",
-    "../../../node_modules/@types/jasmine/index.d.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/@types/node/index.d.ts",
+    "../../node_modules/@types/jasmine/index.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

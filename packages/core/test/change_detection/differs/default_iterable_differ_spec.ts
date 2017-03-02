@@ -7,7 +7,7 @@
  */
 
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';

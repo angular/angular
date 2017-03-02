@@ -12,8 +12,8 @@ import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/t
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '../../../src/web_workers/shared/client_message_broker';
 import {RenderStore} from '../../../src/web_workers/shared/render_store';

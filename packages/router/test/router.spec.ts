@@ -15,7 +15,7 @@ import {RouterOutletMap} from '../src/router_outlet_map';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
-import {RouterTestingModule} from '../testing/router_testing_module';
+import {RouterTestingModule} from '../testing/src/router_testing_module';
 
 describe('Router', () => {
   describe('resetRootComponentType', () => {

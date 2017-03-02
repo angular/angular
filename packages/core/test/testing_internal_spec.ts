@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SpyObject} from '@angular/core/testing/testing_internal';
+import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 class TestObj {
   prop: any;

@@ -1,14 +1,14 @@
 {
-  "extends": "./tsconfig-build",
+  "extends": "../tsconfig-build",
   "compilerOptions": {
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/http": ["../../../dist/packages-dist/http"],
-      "rxjs/*": ["../../../node_modules/rxjs/*"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/http": ["../../dist/packages/http"],
+      "rxjs/*": ["../../node_modules/rxjs/*"]
     }
   },
   "files": [
-    "testing/index.ts"
+    "index.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true

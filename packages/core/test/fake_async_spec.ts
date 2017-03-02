@@ -7,8 +7,8 @@
  */
 
 import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {Parser} from '../../compiler/src/expression_parser/parser';
 

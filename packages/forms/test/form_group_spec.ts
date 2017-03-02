@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 

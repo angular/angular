@@ -8,14 +8,14 @@
 
 import {Injector, ReflectiveInjector} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
 import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
 import {stringToArrayBuffer} from '../src/http_utils';
-import {MockBackend, MockConnection} from '../testing/mock_backend';
+import {MockBackend, MockConnection} from '../testing/src/mock_backend';
 
 export function main() {
   describe('injectables', () => {

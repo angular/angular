@@ -8,7 +8,7 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider, Renderer2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

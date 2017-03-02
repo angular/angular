@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '@angular/core';
-import * as t from '@angular/core/testing/testing_internal';
+import * as t from '@angular/core/testing/src/testing_internal';
 
 import {DomSanitizerImpl} from '../../src/security/dom_sanitization_service';
 

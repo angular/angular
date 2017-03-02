@@ -5,7 +5,7 @@
   "main": "./bundles/forms.umd.js",
   "module": "./@angular/forms.es5.js",
   "es2015": "./@angular/forms.js",
-  "typings": "./typings/forms.d.ts",
+  "typings": "./typings/index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

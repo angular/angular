@@ -5,7 +5,7 @@
   "main": "./bundles/platform-browser-dynamic.umd.js",
   "module": "./@angular/platform-browser-dynamic.es5.js",
   "es2015": "./@angular/platform-browser-dynamic.js",
-  "typings": "./typings/platform-browser-dynamic.d.ts",
+  "typings": "./typings/index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

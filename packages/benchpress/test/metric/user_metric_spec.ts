@@ -7,7 +7,7 @@
  */
 
 import {Provider, ReflectiveInjector} from '@angular/core';
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
 

@@ -9,7 +9,7 @@
 import {iterateListLike} from '@angular/core/src/change_detection/change_detection_util';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 export function main() {

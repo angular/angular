@@ -1,0 +1,6 @@
+{
+  "typings": "../typings/testing/index.d.ts",
+  "main": "../bundles/router-testing.umd.js",
+  "module": "../@angular/router/testing.es5.js",
+  "es2015": "../@angular/router/testing.js"
+}

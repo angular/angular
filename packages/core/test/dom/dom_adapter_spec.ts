@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el, stringifyElement} from '@angular/platform-browser/testing/browser_util';
+import {el, stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('dom adapter', () => {

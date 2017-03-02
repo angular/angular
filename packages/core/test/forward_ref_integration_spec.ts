@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('forwardRef integration', function() {

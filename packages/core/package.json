@@ -5,7 +5,7 @@
   "main": "./bundles/core.umd.js",
   "module": "./@angular/core.es5.js",
   "es2015": "./@angular/core.js",
-  "typings": "./typings/core.d.ts",
+  "typings": "./typings/index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

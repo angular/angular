@@ -5,7 +5,7 @@
   "main": "./bundles/animations.umd.js",
   "module": "./@angular/animations.es5.js",
   "es2015": "./@angular/animations.js",
-  "typings": "./typings/animations.d.ts",
+  "typings": "./typings/animations/index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

@@ -7,20 +7,20 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/language-service",
+    "outDir": "../../dist/packages/language-service",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/animation": ["../../../dist/packages-dist/animation"],
-      "@angular/animation/browser": ["../../../dist/packages-dist/animation/browser"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/compiler-cli": ["../../../dist/esm/compiler-cli"],
-      "@angular/http": ["../../../dist/packages-dist/http"],
-      "@angular/platform-server": ["../../../dist/packages-dist/platform-server"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-      "@angular/tsc-wrapped": ["../../../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../../../dist/tools/@angular/tsc-wrapped/*"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/animation": ["../../dist/packages/animation"],
+      "@angular/animation/browser": ["../../dist/packages/animation/browser"],
+      "@angular/core/testing": ["../../dist/packages/core/testing"],
+      "@angular/common": ["../../dist/packages/common"],
+      "@angular/compiler": ["../../dist/packages/compiler"],
+      "@angular/compiler-cli": ["../../dist/packages/compiler-cli"],
+      "@angular/http": ["../../dist/packages/http"],
+      "@angular/platform-server": ["../../dist/packages/platform-server"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "@angular/tsc-wrapped": ["../../dist/tools/@angular/tsc-wrapped"],
+      "@angular/tsc-wrapped/*": ["../../dist/tools/@angular/tsc-wrapped/*"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -31,8 +31,8 @@
   },
   "files": [
     "index.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts",
-    "../../../node_modules/@types/node/index.d.ts",
-    "../../../node_modules/@types/jasmine/index.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../node_modules/@types/node/index.d.ts",
+    "../../node_modules/@types/jasmine/index.d.ts"
   ]
 }

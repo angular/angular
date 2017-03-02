@@ -6,11 +6,11 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-browser",
+    "outDir": "../../dist/packages/platform-browser",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/platform-browser/animations": ["../../../dist/packages-dist/platform-browser/animations"],
-      "@angular/common": ["../../../dist/packages-dist/common"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/platform-browser/animations": ["../../dist/packages/platform-browser/animations"],
+      "@angular/common": ["../../dist/packages/common"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -23,8 +23,8 @@
   },
   "files": [
     "public_api.ts",
-    "../../../node_modules/@types/hammerjs/index.d.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/@types/hammerjs/index.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

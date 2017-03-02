@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as t from '@angular/core/testing/testing_internal';
+import * as t from '@angular/core/testing/src/testing_internal';
 
 import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeSrcset, sanitizeUrl} from '../../src/security/url_sanitizer';

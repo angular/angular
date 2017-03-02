@@ -9,8 +9,8 @@
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵViewMetadata as ViewMetadata, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {MockDirectiveResolver} from '../testing/index';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {MockDirectiveResolver} from '../testing';
 import {SpyResourceLoader} from './spies';
 
 @Component({selector: 'child-cmp'})

@@ -8,7 +8,7 @@
 
 import {DatePipe} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('DatePipe', () => {

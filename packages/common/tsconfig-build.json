@@ -6,9 +6,9 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/common",
+    "outDir": "../../dist/packages/common",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"]
+      "@angular/core": ["../../dist/packages/core"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -21,7 +21,7 @@
   },
   "files": [
     "public_api.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

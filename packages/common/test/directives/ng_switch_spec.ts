@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Attribute, Component, Directive} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('NgSwitch', () => {
