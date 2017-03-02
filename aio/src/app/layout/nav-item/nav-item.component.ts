@@ -12,10 +12,10 @@ import { NavigationService, NavigationNode } from 'app/navigation/navigation.ser
           title={{node.title}}
           class="vertical-menu">
         {{node.title}}
-        <template [ngIf]="node.children">
+        <ng-template [ngIf]="node.children">
           <md-icon [class.active]="!isActive">keyboard_arrow_right</md-icon>
           <md-icon [class.active]="isActive">keyboard_arrow_down</md-icon>
-        </template>
+        </ng-template>
       </a>
       <div *ngIf="!(node.path || node.url)" [ngClass]="classes">{{node.title}}</div>
       <div class="TODO:heading-children" [ngClass]="classes" *ngIf="node.children">
