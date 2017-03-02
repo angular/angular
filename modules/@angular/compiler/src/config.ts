@@ -20,31 +20,17 @@ export class CompilerConfig {
   public useJit: boolean;
   public missingTranslation: MissingTranslationStrategy;
 
-  private _genDebugInfo: boolean;
-  private _logBindingUpdate: boolean;
-
   constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, genDebugInfo, logBindingUpdate,
-       useJit = true, missingTranslation, enableLegacyTemplate}: {
+      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation,
+       enableLegacyTemplate}: {
         defaultEncapsulation?: ViewEncapsulation,
-        genDebugInfo?: boolean,
-        logBindingUpdate?: boolean,
         useJit?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
-    this._genDebugInfo = genDebugInfo;
-    this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
     this.missingTranslation = missingTranslation;
     this.enableLegacyTemplate = enableLegacyTemplate !== false;
-  }
-
-  get genDebugInfo(): boolean {
-    return this._genDebugInfo === void 0 ? isDevMode() : this._genDebugInfo;
-  }
-  get logBindingUpdate(): boolean {
-    return this._logBindingUpdate === void 0 ? isDevMode() : this._logBindingUpdate;
   }
 }
