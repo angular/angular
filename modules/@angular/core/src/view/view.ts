@@ -18,6 +18,7 @@ import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
 import {checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
+import {NgModuleRef} from "../linker/ng_module_factory";
 
 const NOOP = (): any => undefined;
 
@@ -188,14 +189,14 @@ export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
   const view =
-      createView(parent.root, parent.renderer, parent, anchorDef, anchorDef.element.template);
+      createView(parent.root, parent.renderer, parent, anchorDef, anchorDef.element.template, parent.ngModule);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
 }
 
-export function createRootView(root: RootData, def: ViewDefinition, context?: any): ViewData {
-  const view = createView(root, root.renderer, null, null, def);
+export function createRootView(root: RootData, def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData {
+  const view = createView(root, root.renderer, null, null, def, ngModule);
   initView(view, context, context);
   createViewNodes(view);
   return view;
@@ -203,10 +204,11 @@ export function createRootView(root: RootData, def: ViewDefinition, context?: an
 
 function createView(
     root: RootData, renderer: RendererV2, parent: ViewData, parentNodeDef: NodeDef,
-    def: ViewDefinition): ViewData {
+    def: ViewDefinition, ngModule: NgModuleRef<any>): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   const disposables = def.outputCount ? new Array(def.outputCount) : undefined;
   const view: ViewData = {
+    ngModule,
     def,
     parent,
     viewContainerParent: undefined, parentNodeDef,
@@ -249,7 +251,7 @@ function createViewNodes(view: ViewData) {
             compRenderer = view.root.rendererFactory.createRenderer(el, rendererType);
           }
           componentView = createView(
-              view.root, compRenderer, view, nodeDef.element.componentProvider, compViewDef);
+              view.root, compRenderer, view, nodeDef.element.componentProvider, compViewDef, view.ngModule);
         }
         listenToElementOutputs(view, componentView, nodeDef, el);
         nodeData = <ElementData>{

@@ -13,7 +13,8 @@ import {TestBed, async, fakeAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('insert/remove', () => {
+  fdescribe('insert/remove', () => {
+
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
 
@@ -91,18 +92,23 @@ export function main() {
          expect(fixture.nativeElement).toHaveText('bar');
        }));
 
-    it('should use the injector, if one supplied', async(() => {
+    fit('should use the injector, if one supplied', async(() => {
          let fixture = TestBed.createComponent(TestComponent);
-
+         const testCmp = fixture.componentInstance;
          const uniqueValue = {};
-         fixture.componentInstance.currentComponent = InjectedComponent;
-         fixture.componentInstance.injector = ReflectiveInjector.resolveAndCreate(
+
+         testCmp.currentComponent = InjectedComponent;
+         testCmp.injector = ReflectiveInjector.resolveAndCreate(
              [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
          fixture.detectChanges();
-         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef;
+         let cmpRef: ComponentRef<InjectedComponent> = testCmp.cmpRef;
+
          expect(cmpRef).toBeAnInstanceOf(ComponentRef);
          expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+
+         console.log(`cmpRef.instance.testToken ${cmpRef.instance.testToken}`);
+
          expect(cmpRef.instance.testToken).toBe(uniqueValue);
 
        }));

@@ -16,6 +16,7 @@ import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
+import {NgModuleRef} from '../linker/ng_module_factory';
 
 // -------------------------------------
 // Defs
@@ -288,6 +289,7 @@ export interface NgContentDef {
  * Attention: Adding fields to this is performance sensitive!
  */
 export interface ViewData {
+  ngModule: NgModuleRef<any>,
   def: ViewDefinition;
   root: RootData;
   renderer: RendererV2;
@@ -437,7 +439,7 @@ export interface Services {
   setCurrentNode(view: ViewData, nodeIndex: number): void;
   createRootView(
       injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string|any,
-      def: ViewDefinition, context?: any): ViewData;
+      def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData;
   createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;

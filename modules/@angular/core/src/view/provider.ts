@@ -385,7 +385,8 @@ export function resolveDep(
     elDef = viewParentEl(view);
     view = view.parent;
   }
-  return startView.root.injector.get(depDef.token, notFoundValue);
+
+  return startView.ngModule.injector.get(depDef.token, notFoundValue);
 }
 
 function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {

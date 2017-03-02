@@ -7,7 +7,7 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ComponentFactory, ComponentRef, Injector, RendererFactoryV2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ɵComponentFactoryForNgModule, ComponentRef, Injector, RendererFactoryV2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ArgumentType, BindingType, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomRendererFactoryV2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
@@ -86,7 +86,7 @@ function TreeComponent_0(): ViewDefinition {
 
 export class AppModule implements Injector {
   private sanitizer: DomSanitizerImpl;
-  private componentFactory: ComponentFactory<TreeComponent>;
+  private componentFactory: ɵComponentFactoryForNgModule<TreeComponent>;
   private rendererV2: RendererFactoryV2;
 
   componentRef: ComponentRef<TreeComponent>;
@@ -113,7 +113,8 @@ export class AppModule implements Injector {
   }
 
   bootstrap() {
-    this.componentRef = this.componentFactory.create(this, [], this.componentFactory.selector);
+    this.componentRef = this.componentFactory.create(this as any, this, [], this.componentFactory.selector);
   }
+
   tick() { this.componentRef.changeDetectorRef.detectChanges(); }
 }

@@ -98,9 +98,11 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
           this._moduleRef = null;
         }
       }
-      if (this._moduleRef) {
-        injector = this._moduleRef.injector;
-      }
+      // if (this._moduleRef) {
+      //   injector = this._moduleRef.injector;
+      // }
+
+
 
       let componentFactory =
           injector.get(ComponentFactoryResolver).resolveComponentFactory(this.ngComponentOutlet);

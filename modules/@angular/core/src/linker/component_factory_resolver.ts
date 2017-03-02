@@ -9,9 +9,9 @@
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
-import {ComponentFactory} from './component_factory';
-
-
+import {ComponentFactory, ComponentFactoryFromNgModule, ComponentRef} from './component_factory';
+import {NgModuleRef} from './ng_module_factory';
+import {Injector} from "../di/injector";
 
 export function noComponentFactoryError(component: Function) {
   const error = Error(
@@ -25,7 +25,6 @@ const ERROR_COMPONENT = 'ngComponent';
 export function getComponent(error: Error): Type<any> {
   return (error as any)[ERROR_COMPONENT];
 }
-
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
@@ -42,9 +41,11 @@ export abstract class ComponentFactoryResolver {
 }
 
 export class CodegenComponentFactoryResolver implements ComponentFactoryResolver {
-  private _factories = new Map<any, ComponentFactory<any>>();
+  ngModule: NgModuleRef<any>;
 
-  constructor(factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver) {
+  private _factories = new Map<any, ComponentFactoryFromNgModule<any>>();
+
+  constructor(factories: ComponentFactoryFromNgModule<any>[], private _parent: CodegenComponentFactoryResolver) {
     for (let i = 0; i < factories.length; i++) {
       const factory = factories[i];
       this._factories.set(factory.componentType, factory);
@@ -52,10 +53,24 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
   }
 
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
-    let result = this._factories.get(component);
-    if (!result) {
-      result = this._parent.resolveComponentFactory(component);
+    const factory = this._factories.get(component);
+    if (factory) {
+      return new NgModuleComponentFactory(this.ngModule, factory);
     }
-    return result;
+
+    return this._parent.resolveComponentFactory(component);
   }
 }
+
+export class NgModuleComponentFactory<C> implements ComponentFactory<C> {
+  constructor(private ngModule: NgModuleRef<any>, private cmpFactory: ComponentFactoryFromNgModule<C>) {}
+
+  get selector() {return this.cmpFactory.selector; }
+  get componentType() {return this.cmpFactory.componentType; }
+
+  create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any):
+  ComponentRef<C> {
+    return this.cmpFactory.create(this.ngModule, injector, projectableNodes, rootSelectorOrNode);
+  }
+}
+

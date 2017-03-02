@@ -287,10 +287,8 @@ export class TestBed implements Injector {
     const imports = [this.ngModule, this._imports];
     const schemas = this._schemas;
 
-    @NgModule(
-        {providers: providers, declarations: declarations, imports: imports, schemas: schemas})
-    class DynamicTestModule {
-    }
+    @NgModule({providers, declarations, imports, schemas})
+    class DynamicTestModule {}
 
     const compilerFactory: TestingCompilerFactory =
         this.platform.injector.get(TestingCompilerFactory);
@@ -302,6 +300,7 @@ export class TestBed implements Injector {
     this._directiveOverrides.forEach(
         (entry) => this._compiler.overrideDirective(entry[0], entry[1]));
     this._pipeOverrides.forEach((entry) => this._compiler.overridePipe(entry[0], entry[1]));
+
     return DynamicTestModule;
   }
 
@@ -366,7 +365,7 @@ export class TestBed implements Injector {
     testComponentRenderer.insertRootElement(rootElId);
 
     const initComponent = () => {
-      const componentRef = componentFactory.create(this, [], `#${rootElId}`);
+      const componentRef = componentFactory.create(this._moduleRef, this, [], `#${rootElId}`);
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 

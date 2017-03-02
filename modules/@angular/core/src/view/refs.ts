@@ -9,7 +9,7 @@
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di';
-import {ComponentFactory, ComponentRef} from '../linker/component_factory';
+import {ComponentFactoryFromNgModule, ComponentRef, ComponentFactory} from '../linker/component_factory';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -17,6 +17,7 @@ import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, RendererV2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
+import {NgModuleRef} from '../linker/ng_module_factory';
 
 import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
 import {isComponentView, markParentViewsForCheck, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
@@ -26,16 +27,16 @@ const EMPTY_CONTEXT = new Object();
 
 export function createComponentFactory(
     selector: string, componentType: Type<any>,
-    viewDefFactory: ViewDefinitionFactory): ComponentFactory<any> {
+    viewDefFactory: ViewDefinitionFactory): ComponentFactoryFromNgModule<any> {
   return new ComponentFactory_(selector, componentType, viewDefFactory);
 }
 
-export function getComponentViewDefinitionFactory(componentFactory: ComponentFactory<any>):
+export function getComponentViewDefinitionFactory(componentFactory: ComponentFactoryFromNgModule<any>):
     ViewDefinitionFactory {
   return (componentFactory as ComponentFactory_).viewDefFactory;
 }
 
-class ComponentFactory_ extends ComponentFactory<any> {
+class ComponentFactory_ extends ComponentFactoryFromNgModule<any> {
   /**
    * @internal
    */
@@ -51,13 +52,14 @@ class ComponentFactory_ extends ComponentFactory<any> {
   /**
    * Creates a new component.
    */
-  create(
+  create(ngModule: NgModuleRef<any>,
       injector: Injector, projectableNodes: any[][] = null,
       rootSelectorOrNode: string|any = null): ComponentRef<any> {
+
     const viewDef = resolveViewDefinition(this.viewDefFactory);
     const componentNodeIndex = viewDef.nodes[0].element.componentProvider.index;
     const view = Services.createRootView(
-        injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
+        injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
     view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
 
@@ -105,7 +107,7 @@ class ViewContainerRef_ implements ViewContainerRef {
       elDef = viewParentEl(view);
       view = view.parent;
     }
-    return view ? new Injector_(view, elDef) : this._view.root.injector;
+    return view ? new Injector_(view, elDef) : this._view.ngModule.injector;
   }
 
   clear(): void {

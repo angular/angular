@@ -19,6 +19,7 @@ import {createInjector} from './refs';
 import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
 import {checkBinding, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
+import {NgModuleRef} from '../linker/ng_module_factory';
 
 let initialized = false;
 
@@ -81,20 +82,20 @@ function createDebugServices() {
 
 function createProdRootView(
     injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
-    def: ViewDefinition, context?: any): ViewData {
+    def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData {
   const rendererFactory: RendererFactoryV2 = injector.get(RendererFactoryV2);
   return createRootView(
-      createRootData(injector, rendererFactory, projectableNodes, rootSelectorOrNode), def,
+      createRootData(injector, rendererFactory, projectableNodes, rootSelectorOrNode), def, ngModule,
       context);
 }
 
 function debugCreateRootView(
     injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
-    def: ViewDefinition, context?: any): ViewData {
+    def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData {
   const rendererFactory: RendererFactoryV2 = injector.get(RendererFactoryV2);
   const root = createRootData(
       injector, new DebugRendererFactoryV2(rendererFactory), projectableNodes, rootSelectorOrNode);
-  return callWithDebugContext(DebugAction.create, createRootView, null, [root, def, context]);
+  return callWithDebugContext(DebugAction.create, createRootView, null, [root, def, ngModule, context]);
 }
 
 function createRootData(
