@@ -16,6 +16,6 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/platform-browser/animations"
+    "flatModuleId": "@angular/animations/browser"
   }
 }
