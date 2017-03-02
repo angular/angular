@@ -1,19 +1,35 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
-
-echo 'travis_fold:start:TEST'
+set -u -e -o pipefail
 
 # Setup environment
-cd `dirname $0`
-source ./env.sh
-cd ../..
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
 
-./scripts/ci-lite/test_js.sh
-./scripts/ci-lite/test_e2e.sh
-./scripts/ci-lite/test_saucelabs.sh
-./scripts/ci-lite/test_browserstack.sh
-./scripts/ci-lite/test_docs.sh
-./scripts/ci-lite/test_aio.sh
 
-echo 'travis_fold:end:TEST'
+case ${CI_MODE} in
+  js)
+    ./scripts/ci-lite/test_js.sh
+    ;;
+  e2e)
+    ./scripts/ci-lite/test_e2e.sh
+    ;;
+  saucelabs_required)
+    ./scripts/ci-lite/test_saucelabs.sh
+    ;;
+  browserstack_required)
+    ./scripts/ci-lite/test_browserstack.sh
+    ;;
+  saucelabs_optional)
+    ./scripts/ci-lite/test_saucelabs.sh
+    ;;
+  browserstack_optional)
+    ./scripts/ci-lite/test_browserstack.sh
+    ;;
+  docs_test)
+    ./scripts/ci-lite/test_docs.sh
+    ;;
+  aio)
+    ./scripts/ci-lite/test_aio.sh
+    ;;
+esac
