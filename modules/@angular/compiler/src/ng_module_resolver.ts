@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Type, ɵReflectorReader, ɵreflector} from '@angular/core';
+import {NgModule, Type, ɵReflectorReader, ɵreflector, ɵstringify as stringify} from '@angular/core';
 import {findLast} from './directive_resolver';
-import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 
 function _isNgModuleMetadata(obj: any): obj is NgModule {

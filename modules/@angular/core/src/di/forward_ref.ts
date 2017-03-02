@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../facade/lang';
 import {Type} from '../type';
+import {stringify} from '../util';
+
 
 
 /**

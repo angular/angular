@@ -10,7 +10,6 @@ import {Provider} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
-import {isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {
@@ -38,7 +37,7 @@ export function main() {
         },
         {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)}
       ];
-      if (isPresent(columnWidth)) {
+      if (columnWidth != null) {
         providers.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
       reporter = ReflectiveInjector.resolveAndCreate(providers).get(ConsoleReporter);

@@ -9,7 +9,6 @@
 import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobal as global} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
-import {isPresent} from '../facade/lang';
 
 export class BrowserGetTestability implements GetTestability {
   static init() { setTestabilityGetter(new BrowserGetTestability()); }
@@ -55,7 +54,7 @@ export class BrowserGetTestability implements GetTestability {
       return null;
     }
     const t = registry.getTestability(elem);
-    if (isPresent(t)) {
+    if (t != null) {
       return t;
     } else if (!findInAncestors) {
       return null;

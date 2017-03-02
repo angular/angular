@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵstringify as stringify} from '@angular/core';
 import {StaticSymbol} from './aot/static_symbol';
-import {isPresent, stringify} from './facade/lang';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
 
@@ -179,12 +178,11 @@ export interface CompileFactoryMetadata extends CompileIdentifierMetadata {
 }
 
 export function tokenName(token: CompileTokenMetadata) {
-  return isPresent(token.value) ? _sanitizeIdentifier(token.value) :
-                                  identifierName(token.identifier);
+  return token.value != null ? _sanitizeIdentifier(token.value) : identifierName(token.identifier);
 }
 
 export function tokenReference(token: CompileTokenMetadata) {
-  if (isPresent(token.identifier)) {
+  if (token.identifier != null) {
     return token.identifier.reference;
   } else {
     return token.value;
@@ -346,21 +344,21 @@ export class CompileDirectiveMetadata {
     const hostListeners: {[key: string]: string} = {};
     const hostProperties: {[key: string]: string} = {};
     const hostAttributes: {[key: string]: string} = {};
-    if (isPresent(host)) {
+    if (host != null) {
       Object.keys(host).forEach(key => {
         const value = host[key];
         const matches = key.match(HOST_REG_EXP);
         if (matches === null) {
           hostAttributes[key] = value;
-        } else if (isPresent(matches[1])) {
+        } else if (matches[1] != null) {
           hostProperties[matches[1]] = value;
-        } else if (isPresent(matches[2])) {
+        } else if (matches[2] != null) {
           hostListeners[matches[2]] = value;
         }
       });
     }
     const inputsMap: {[key: string]: string} = {};
-    if (isPresent(inputs)) {
+    if (inputs != null) {
       inputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp
@@ -369,7 +367,7 @@ export class CompileDirectiveMetadata {
       });
     }
     const outputsMap: {[key: string]: string} = {};
-    if (isPresent(outputs)) {
+    if (outputs != null) {
       outputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp

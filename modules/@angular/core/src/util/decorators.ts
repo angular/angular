@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../facade/lang';
 import {Type} from '../type';
-import {global} from '../util';
+import {global, stringify} from '../util';
 
 let _nextClassId = 0;
 const Reflect = global['Reflect'];

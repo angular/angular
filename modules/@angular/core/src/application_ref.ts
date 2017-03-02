@@ -12,12 +12,9 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {share} from 'rxjs/operator/share';
-
 import {ErrorHandler} from '../src/error_handler';
-import {stringify} from '../src/facade/lang';
-import {scheduleMicroTask} from '../src/util';
+import {scheduleMicroTask, stringify} from '../src/util';
 import {isPromise} from '../src/util/lang';
-
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';

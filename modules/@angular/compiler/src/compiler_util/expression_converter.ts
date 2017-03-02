@@ -8,7 +8,6 @@
 
 
 import * as cdAst from '../expression_parser/ast';
-import {isBlank} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
@@ -338,7 +337,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           result = varExpr.callFn(args);
         }
       }
-      if (isBlank(result)) {
+      if (result == null) {
         result = receiver.callMethod(ast.name, args);
       }
       return convertToStatementIfNeeded(mode, result);
@@ -359,7 +358,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       if (receiver === this._implicitReceiver) {
         result = this._getLocal(ast.name);
       }
-      if (isBlank(result)) {
+      if (result == null) {
         result = receiver.prop(ast.name);
       }
       return convertToStatementIfNeeded(mode, result);

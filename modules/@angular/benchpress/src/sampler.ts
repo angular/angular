@@ -9,7 +9,6 @@
 import {Inject, Injectable} from '@angular/core';
 
 import {Options} from './common_options';
-import {isPresent} from './facade/lang';
 import {MeasureValues} from './measure_values';
 import {Metric} from './metric';
 import {Reporter} from './reporter';
@@ -38,7 +37,7 @@ export class Sampler {
   sample(): Promise<SampleState> {
     const loop = (lastState: SampleState): Promise<SampleState> => {
       return this._iterate(lastState).then((newState) => {
-        if (isPresent(newState.validSample)) {
+        if (newState.validSample != null) {
           return newState;
         } else {
           return loop(newState);
@@ -68,7 +67,7 @@ export class Sampler {
     const completeSample = state.completeSample.concat([measureValues]);
     const validSample = this._validator.validate(completeSample);
     let resultPromise = this._reporter.reportMeasureValues(measureValues);
-    if (isPresent(validSample)) {
+    if (validSample != null) {
       resultPromise =
           resultPromise.then((_) => this._reporter.reportSample(completeSample, validSample));
     }

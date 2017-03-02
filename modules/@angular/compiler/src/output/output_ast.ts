@@ -8,7 +8,6 @@
 
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isPresent} from '../facade/lang';
 import {ParseSourceSpan} from '../parse_util';
 
 //// Types
@@ -954,12 +953,12 @@ export function importExpr(
 export function importType(
     id: CompileIdentifierMetadata, typeParams: Type[] = null,
     typeModifiers: TypeModifier[] = null): ExpressionType {
-  return isPresent(id) ? expressionType(importExpr(id, typeParams), typeModifiers) : null;
+  return id != null ? expressionType(importExpr(id, typeParams), typeModifiers) : null;
 }
 
 export function expressionType(
     expr: Expression, typeModifiers: TypeModifier[] = null): ExpressionType {
-  return isPresent(expr) ? new ExpressionType(expr, typeModifiers) : null;
+  return expr != null ? new ExpressionType(expr, typeModifiers) : null;
 }
 
 export function literalArr(

@@ -9,8 +9,7 @@
 const parse5 = require('parse5');
 
 import {ɵglobal as global} from '@angular/core';
-import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
-import {isPresent, isBlank, setValueOnPath} from '../src/facade/lang';
+import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter, ɵsetValueOnPath as setValueOnPath} from '@angular/platform-browser';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
 
 let treeAdapter: any;
@@ -172,7 +171,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return event;
   }
   preventDefault(event: any) { event.returnValue = false; }
-  isPrevented(event: any): boolean { return isPresent(event.returnValue) && !event.returnValue; }
+  isPrevented(event: any): boolean { return event.returnValue != null && !event.returnValue; }
   getInnerHTML(el: any): string {
     return parse5.serialize(this.templateAwareRoot(el), {treeAdapter});
   }
@@ -340,7 +339,7 @@ export class Parse5DomAdapter extends DomAdapter {
       nodeClone.children = null;
 
       mapProps.forEach(mapName => {
-        if (isPresent(node[mapName])) {
+        if (node[mapName] != null) {
           nodeClone[mapName] = {};
           for (const prop in node[mapName]) {
             nodeClone[mapName][prop] = node[mapName][prop];
@@ -500,7 +499,7 @@ export class Parse5DomAdapter extends DomAdapter {
   isTextNode(node: any): boolean { return treeAdapter.isTextNode(node); }
   isCommentNode(node: any): boolean { return treeAdapter.isCommentNode(node); }
   isElementNode(node: any): boolean { return node ? treeAdapter.isElementNode(node) : false; }
-  hasShadowRoot(node: any): boolean { return isPresent(node.shadowRoot); }
+  hasShadowRoot(node: any): boolean { return node.shadowRoot != null; }
   isShadowRoot(node: any): boolean { return this.getShadowRoot(node) == node; }
   importIntoDoc(node: any): any { return this.clone(node); }
   adoptNode(node: any): any { return node; }
@@ -529,7 +528,7 @@ export class Parse5DomAdapter extends DomAdapter {
                                           .replace(/\s*\+\s*/g, ' + ')
                                           .replace(/\s*>\s*/g, ' > ')
                                           .replace(/\[(\w+)=(\w+)\]/g, '[$1="$2"]'));
-        if (isBlank(parsedRule.declarations)) {
+        if (parsedRule.declarations == null) {
           continue;
         }
         for (let j = 0; j < parsedRule.declarations.length; j++) {
@@ -566,7 +565,7 @@ export class Parse5DomAdapter extends DomAdapter {
       href = this.getHref(base);
     }
     // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
-    return isBlank(href) ? null : href;
+    return href == null ? null : href;
   }
   resetBaseElement(): void { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }

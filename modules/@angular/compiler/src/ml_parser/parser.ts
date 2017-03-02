@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, isPresent} from '../facade/lang';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
@@ -109,7 +108,7 @@ class _TreeBuilder {
   private _consumeComment(token: lex.Token) {
     const text = this._advanceIf(lex.TokenType.RAW_TEXT);
     this._advanceIf(lex.TokenType.COMMENT_END);
-    const value = isPresent(text) ? text.parts[0].trim() : null;
+    const value = text != null ? text.parts[0].trim() : null;
     this._addToParent(new html.Comment(value, token.sourceSpan));
   }
 
@@ -217,7 +216,7 @@ class _TreeBuilder {
     let text = token.parts[0];
     if (text.length > 0 && text[0] == '\n') {
       const parent = this._getParentElement();
-      if (isPresent(parent) && parent.children.length == 0 &&
+      if (parent != null && parent.children.length == 0 &&
           this.getTagDefinition(parent.name).ignoreFirstLf) {
         text = text.substring(1);
       }
@@ -365,7 +364,7 @@ class _TreeBuilder {
 
   private _addToParent(node: html.Node) {
     const parent = this._getParentElement();
-    if (isPresent(parent)) {
+    if (parent != null) {
       parent.children.push(node);
     } else {
       this._rootNodes.push(node);
@@ -399,9 +398,9 @@ class _TreeBuilder {
 
   private _getElementFullName(prefix: string, localName: string, parentElement: html.Element):
       string {
-    if (isBlank(prefix)) {
+    if (prefix == null) {
       prefix = this.getTagDefinition(localName).implicitNamespacePrefix;
-      if (isBlank(prefix) && isPresent(parentElement)) {
+      if (prefix == null && parentElement != null) {
         prefix = getNsPrefix(parentElement.name);
       }
     }

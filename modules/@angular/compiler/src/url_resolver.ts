@@ -8,7 +8,6 @@
 
 import {Inject, InjectionToken, PACKAGE_ROOT_URL} from '@angular/core';
 
-import {isBlank, isPresent} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 
 
@@ -62,12 +61,12 @@ export class UrlResolver {
    */
   resolve(baseUrl: string, url: string): string {
     let resolvedUrl = url;
-    if (isPresent(baseUrl) && baseUrl.length > 0) {
+    if (baseUrl != null && baseUrl.length > 0) {
       resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
     }
     const resolvedParts = _split(resolvedUrl);
     let prefix = this._packagePrefix;
-    if (isPresent(prefix) && isPresent(resolvedParts) &&
+    if (prefix != null && resolvedParts != null &&
         resolvedParts[_ComponentIndex.Scheme] == 'package') {
       let path = resolvedParts[_ComponentIndex.Path];
       prefix = prefix.replace(/\/+$/, '');
@@ -111,33 +110,33 @@ function _buildFromEncodedParts(
     opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
   const out: string[] = [];
 
-  if (isPresent(opt_scheme)) {
+  if (opt_scheme != null) {
     out.push(opt_scheme + ':');
   }
 
-  if (isPresent(opt_domain)) {
+  if (opt_domain != null) {
     out.push('//');
 
-    if (isPresent(opt_userInfo)) {
+    if (opt_userInfo != null) {
       out.push(opt_userInfo + '@');
     }
 
     out.push(opt_domain);
 
-    if (isPresent(opt_port)) {
+    if (opt_port != null) {
       out.push(':' + opt_port);
     }
   }
 
-  if (isPresent(opt_path)) {
+  if (opt_path != null) {
     out.push(opt_path);
   }
 
-  if (isPresent(opt_queryData)) {
+  if (opt_queryData != null) {
     out.push('?' + opt_queryData);
   }
 
-  if (isPresent(opt_fragment)) {
+  if (opt_fragment != null) {
     out.push('#' + opt_fragment);
   }
 
@@ -309,7 +308,7 @@ function _removeDotSegments(path: string): string {
  */
 function _joinAndCanonicalizePath(parts: any[]): string {
   let path = parts[_ComponentIndex.Path];
-  path = isBlank(path) ? '' : _removeDotSegments(path);
+  path = path == null ? '' : _removeDotSegments(path);
   parts[_ComponentIndex.Path] = path;
 
   return _buildFromEncodedParts(
@@ -327,14 +326,14 @@ function _resolveUrl(base: string, url: string): string {
   const parts = _split(encodeURI(url));
   const baseParts = _split(base);
 
-  if (isPresent(parts[_ComponentIndex.Scheme])) {
+  if (parts[_ComponentIndex.Scheme] != null) {
     return _joinAndCanonicalizePath(parts);
   } else {
     parts[_ComponentIndex.Scheme] = baseParts[_ComponentIndex.Scheme];
   }
 
   for (let i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
-    if (isBlank(parts[i])) {
+    if (parts[i] == null) {
       parts[i] = baseParts[i];
     }
   }
@@ -344,7 +343,7 @@ function _resolveUrl(base: string, url: string): string {
   }
 
   let path = baseParts[_ComponentIndex.Path];
-  if (isBlank(path)) path = '/';
+  if (path == null) path = '/';
   const index = path.lastIndexOf('/');
   path = path.substring(0, index + 1) + parts[_ComponentIndex.Path];
   parts[_ComponentIndex.Path] = path;

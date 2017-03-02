@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, ɵERROR_COMPONENT_TYPE} from '@angular/core';
+import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, ɵERROR_COMPONENT_TYPE, ɵstringify as stringify} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
-import {stringify} from './facade/lang';
 import {MetadataOverride} from './metadata_override';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 

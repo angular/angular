@@ -7,11 +7,9 @@
  */
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵViewMetadata as ViewMetadata} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵViewMetadata as ViewMetadata, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
-import {stringify} from '../src/facade/lang';
 import {MockDirectiveResolver} from '../testing/index';
 import {SpyResourceLoader} from './spies';
 

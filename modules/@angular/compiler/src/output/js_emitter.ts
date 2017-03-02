@@ -9,7 +9,6 @@
 
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isBlank} from '../facade/lang';
 
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
@@ -61,7 +60,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
     const {name, filePath} = this._resolveStaticSymbol(ast.value);
     if (filePath != this._genFilePath) {
       let prefix = this.importsWithPrefixes.get(filePath);
-      if (isBlank(prefix)) {
+      if (prefix == null) {
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(filePath, prefix);
       }

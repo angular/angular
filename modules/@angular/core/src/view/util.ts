@@ -10,12 +10,12 @@ import {isDevMode} from '../application_ref';
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SimpleChange} from '../change_detection/change_detection_util';
 import {Injector} from '../di';
-import {looseIdentical, stringify} from '../facade/lang';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
 import {Renderer, RendererTypeV2} from '../render/api';
+import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';

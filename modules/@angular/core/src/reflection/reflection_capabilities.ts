@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, stringify} from '../facade/lang';
 import {Type, isType} from '../type';
-import {global} from '../util';
+import {global, stringify} from '../util';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
@@ -48,7 +47,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       } else {
         result[i] = [];
       }
-      if (paramAnnotations && isPresent(paramAnnotations[i])) {
+      if (paramAnnotations && paramAnnotations[i] != null) {
         result[i] = result[i].concat(paramAnnotations[i]);
       }
     }
@@ -87,7 +86,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (isPresent(this._reflect) && isPresent(this._reflect.getOwnMetadata)) {
+    if (this._reflect != null && this._reflect.getOwnMetadata != null) {
       const paramAnnotations = this._reflect.getOwnMetadata('parameters', type);
       const paramTypes = this._reflect.getOwnMetadata('design:paramtypes', type);
       if (paramTypes || paramAnnotations) {

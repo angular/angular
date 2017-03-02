@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵmerge as merge, ɵreflector} from '@angular/core';
-
-import {stringify} from './facade/lang';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵmerge as merge, ɵreflector, ɵstringify as stringify} from '@angular/core';
 import {CompilerInjectable} from './injectable';
 import {splitAtColon} from './util';
 

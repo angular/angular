@@ -7,7 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -158,7 +157,7 @@ export class IterableDiffers {
   constructor(factories: IterableDifferFactory[]) { this.factories = factories; }
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
-    if (isPresent(parent)) {
+    if (parent != null) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new IterableDiffers(factories);
@@ -205,11 +204,15 @@ export class IterableDiffers {
 
   find(iterable: any): IterableDifferFactory {
     const factory = this.factories.find(f => f.supports(iterable));
-    if (isPresent(factory)) {
+    if (factory != null) {
       return factory;
     } else {
       throw new Error(
           `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }
+}
+
+export function getTypeNameForDebugging(type: any): string {
+  return type['name'] || typeof type;
 }

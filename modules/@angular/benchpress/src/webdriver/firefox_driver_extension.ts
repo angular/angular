@@ -8,7 +8,6 @@
 
 import {Injectable} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -35,7 +34,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
     let script = 'window.markEnd("' + name + '");';
-    if (isPresent(restartName)) {
+    if (restartName != null) {
       script += 'window.markStart("' + restartName + '");';
     }
     return this._driver.executeScript(script);

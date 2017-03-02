@@ -7,10 +7,8 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
-
-import {isBlank, isPresent, stringify} from './facade/lang';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -151,7 +149,7 @@ class DefaultServerRendererV2 implements RendererV2 {
     getDOM().setProperty(el, name, value);
     // Mirror property values for known HTML element properties in the attributes.
     const tagName = (el.tagName as string).toLowerCase();
-    if (isPresent(value) && (typeof value === 'number' || typeof value == 'string') &&
+    if (value != null && (typeof value === 'number' || typeof value == 'string') &&
         this.schema.hasElement(tagName, EMPTY_ARRAY) &&
         this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
         this._isSafeToReflectProperty(tagName, name)) {

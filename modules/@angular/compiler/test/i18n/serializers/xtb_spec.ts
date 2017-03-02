@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {escapeRegExp} from '@angular/core/src/facade/lang';
-
+import {escapeRegExp} from '@angular/compiler/src/util';
 import {serializeNodes} from '../../../src/i18n/digest';
 import * as i18n from '../../../src/i18n/i18n_ast';
 import {Xtb} from '../../../src/i18n/serializers/xtb';

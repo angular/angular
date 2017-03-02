@@ -7,9 +7,9 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-import {NumberWrapper} from '../facade/lang';
 import {DateFormatter} from './intl';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {isNumeric} from './number_pipe';
 
 const ISO8601_DATE_REGEX =
     /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -111,7 +111,7 @@ export class DatePipe implements PipeTransform {
 
     if (isDate(value)) {
       date = value;
-    } else if (NumberWrapper.isNumeric(value)) {
+    } else if (isNumeric(value)) {
       date = new Date(parseFloat(value));
     } else if (typeof value === 'string' && /^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
       /**

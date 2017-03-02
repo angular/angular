@@ -9,7 +9,6 @@
 
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import * as o from './output_ast';
@@ -91,7 +90,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   reexports = new Map<string, {name: string, as: string}[]>();
 
   visitType(t: o.Type, ctx: EmitterVisitorContext, defaultType: string = 'any') {
-    if (isPresent(t)) {
+    if (t != null) {
       this.typeExpression++;
       t.visitType(this, ctx);
       this.typeExpression--;
@@ -102,7 +101,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
-    if (isBlank(value) && ast.type != o.INFERRED_TYPE) {
+    if (value == null && ast.type != o.INFERRED_TYPE) {
       ctx.print(ast, `(${value} as any)`);
       return null;
     }
@@ -186,7 +185,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print(stmt, `export `);
     }
     ctx.print(stmt, `class ${stmt.name}`);
-    if (isPresent(stmt.parent)) {
+    if (stmt.parent != null) {
       ctx.print(stmt, ` extends `);
       this.typeExpression++;
       stmt.parent.visitExpression(this, ctx);
@@ -195,7 +194,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(stmt, ` {`);
     ctx.incIndent();
     stmt.fields.forEach((field) => this._visitClassField(field, ctx));
-    if (isPresent(stmt.constructorMethod)) {
+    if (stmt.constructorMethod != null) {
       this._visitClassConstructor(stmt, ctx);
     }
     stmt.getters.forEach((getter) => this._visitClassGetter(getter, ctx));
@@ -391,7 +390,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     const {name, filePath, members, arity} = this._resolveStaticSymbol(value);
     if (filePath != this._genFilePath) {
       let prefix = this.importsWithPrefixes.get(filePath);
-      if (isBlank(prefix)) {
+      if (prefix == null) {
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(filePath, prefix);
       }

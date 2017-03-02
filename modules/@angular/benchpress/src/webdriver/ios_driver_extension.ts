@@ -8,7 +8,6 @@
 
 import {Injectable} from '@angular/core';
 
-import {isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -26,7 +25,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
     let script = `console.timeEnd('${name}');`;
-    if (isPresent(restartName)) {
+    if (restartName != null) {
       script += `console.time('${restartName}');`;
     }
     return this._driver.executeScript(script);
@@ -76,10 +75,10 @@ export class IOsDriverExtension extends WebDriverExtension {
         endEvent = createEndEvent('render', endTime);
       }
       // Note: ios used to support GCEvent up until iOS 6 :-(
-      if (isPresent(record['children'])) {
+      if (record['children'] != null) {
         this._convertPerfRecordsToEvents(record['children'], events);
       }
-      if (isPresent(endEvent)) {
+      if (endEvent != null) {
         events.push(endEvent);
       }
     });
@@ -104,7 +103,7 @@ function createEvent(
     // the perflog...
     'pid': 'pid0'
   };
-  if (isPresent(args)) {
+  if (args != null) {
     result['args'] = args;
   }
   return result;

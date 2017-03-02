@@ -10,7 +10,6 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {isPresent} from '../../src/facade/lang';
 import {scheduleMicroTask} from '../../src/util';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
@@ -159,7 +158,7 @@ export function main() {
 
              promise.then((_) => {
                expect(_traces.length).toBe(1);
-               if (isPresent(_traces[0])) {
+               if (_traces[0] != null) {
                  // some browsers don't have stack traces.
                  expect(_traces[0].indexOf('---')).toEqual(-1);
                }

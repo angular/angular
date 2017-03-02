@@ -49,7 +49,7 @@ export class App {
     bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
       const existingMarker = this._locateFinishedMarker();
-      if (isPresent(existingMarker)) {
+      if (existingMarker != null) {
         DOM.removeChild(document.body, existingMarker);
       }
     });
@@ -76,7 +76,7 @@ export class App {
   // Puts a marker indicating that the test is finished.
   private _scheduleFinishedMarker() {
     const existingMarker = this._locateFinishedMarker();
-    if (isPresent(existingMarker)) {
+    if (existingMarker != null) {
       // Nothing to do, the marker is already there
       return;
     }

@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
-import {isBlank, isPresent} from '../src/facade/lang';
 
 export function main() {
   const EMPTY_EXECUTE = () => {};
@@ -32,7 +31,7 @@ export function main() {
       if (!reporter) {
         reporter = new MockReporter([]);
       }
-      if (isBlank(driver)) {
+      if (driver == null) {
         driver = new MockDriverAdapter([]);
       }
       const providers = [
@@ -41,7 +40,7 @@ export function main() {
         {provide: Options.EXECUTE, useValue: execute}, {provide: Validator, useValue: validator},
         {provide: Options.NOW, useValue: () => new Date(time++)}
       ];
-      if (isPresent(prepare)) {
+      if (prepare != null) {
         providers.push({provide: Options.PREPARE, useValue: prepare});
       }
 
@@ -227,7 +226,7 @@ function createCountingMetric(log: any[] = []) {
 class MockDriverAdapter extends WebDriverAdapter {
   constructor(private _log: any[] = [], private _waitFor: Function = null) { super(); }
   waitFor(callback: Function): Promise<any> {
-    if (isPresent(this._waitFor)) {
+    if (this._waitFor != null) {
       return this._waitFor(callback);
     } else {
       return Promise.resolve(callback());
@@ -239,8 +238,7 @@ class MockDriverAdapter extends WebDriverAdapter {
 class MockValidator extends Validator {
   constructor(private _log: any[] = [], private _validate: Function = null) { super(); }
   validate(completeSample: MeasureValues[]): MeasureValues[] {
-    const stableSample =
-        isPresent(this._validate) ? this._validate(completeSample) : completeSample;
+    const stableSample = this._validate != null ? this._validate(completeSample) : completeSample;
     this._log.push(['validate', completeSample, stableSample]);
     return stableSample;
   }
@@ -253,7 +251,7 @@ class MockMetric extends Metric {
     return Promise.resolve(null);
   }
   endMeasure(restart: boolean) {
-    const measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
+    const measureValues = this._endMeasure != null ? this._endMeasure() : {};
     this._log.push(['endMeasure', restart, measureValues]);
     return Promise.resolve(measureValues);
   }

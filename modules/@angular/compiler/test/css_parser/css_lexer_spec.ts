@@ -8,7 +8,6 @@
 
 import {describe, expect, it} from '../../../core/testing/testing_internal';
 import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
-import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   function tokenize(
@@ -21,7 +20,7 @@ export function main() {
     let output = scanner.scan();
     while (output != null) {
       const error = output.error;
-      if (isPresent(error)) {
+      if (error != null) {
         throw cssScannerError(getToken(error), getRawMessage(error));
       }
       tokens.push(output.token);

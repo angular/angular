@@ -7,7 +7,6 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {isBlank} from './facade/lang';
 
 /**
  * A mock implementation of {@link ResourceLoader} that allows outgoing requests to be mocked
@@ -110,7 +109,7 @@ class _PendingRequest {
   }
 
   complete(response: string) {
-    if (isBlank(response)) {
+    if (response == null) {
       this.reject(`Failed to load ${this.url}`);
     } else {
       this.resolve(response);

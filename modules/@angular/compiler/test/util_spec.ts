@@ -9,7 +9,7 @@
 import {fakeAsync} from '@angular/core/testing/fake_async';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {SyncAsyncResult, splitAtColon} from '../src/util';
+import {SyncAsyncResult, escapeRegExp, splitAtColon} from '../src/util';
 
 export function main() {
   describe('util', () => {
@@ -34,6 +34,15 @@ export function main() {
 
       it('should use the default value when no ":" is present', () => {
         expect(splitAtColon('ab', ['c', 'd'])).toEqual(['c', 'd']);
+      });
+    });
+
+    describe('RegExp', () => {
+      it('should escape regexp', () => {
+        expect(new RegExp(escapeRegExp('b')).exec('abc')).toBeTruthy();
+        expect(new RegExp(escapeRegExp('b')).exec('adc')).toBeFalsy();
+        expect(new RegExp(escapeRegExp('a.b')).exec('a.b')).toBeTruthy();
+        expect(new RegExp(escapeRegExp('a.b')).exec('axb')).toBeFalsy();
       });
     });
   });

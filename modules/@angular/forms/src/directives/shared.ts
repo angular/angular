@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, isPresent, looseIdentical} from '../facade/lang';
+import {ɵlooseIdentical as looseIdentical} from '@angular/core';
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
-
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
@@ -95,7 +94,7 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
 
 export function setUpFormContainer(
     control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
-  if (isBlank(control)) _throwError(dir, 'Cannot find control with');
+  if (control == null) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
 }
@@ -117,12 +116,12 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
 }
 
 export function composeValidators(validators: Array<Validator|Function>): ValidatorFn {
-  return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) : null;
+  return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
 export function composeAsyncValidators(validators: Array<Validator|Function>): AsyncValidatorFn {
-  return isPresent(validators) ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
-                                 null;
+  return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
+                              null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {

@@ -9,7 +9,6 @@
 import {ɵLifecycleHooks} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, tokenName, tokenReference} from './compile_metadata';
-import {isPresent} from './facade/lang';
 import {Identifiers, createIdentifier, resolveIdentifier} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
@@ -39,7 +38,7 @@ export class NgModuleCompiler {
   compile(ngModuleMeta: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[]):
       NgModuleCompileResult {
     const moduleUrl = identifierModuleUrl(ngModuleMeta.type);
-    const sourceFileName = isPresent(moduleUrl) ?
+    const sourceFileName = moduleUrl != null ?
         `in NgModule ${identifierName(ngModuleMeta.type)} in ${moduleUrl}` :
         `in NgModule ${identifierName(ngModuleMeta.type)}`;
     const sourceFile = new ParseSourceFile('', sourceFileName);
@@ -161,13 +160,13 @@ class _InjectorBuilder implements ClassBuilder {
 
   private _getProviderValue(provider: CompileProviderMetadata): o.Expression {
     let result: o.Expression;
-    if (isPresent(provider.useExisting)) {
+    if (provider.useExisting != null) {
       result = this._getDependency({token: provider.useExisting});
-    } else if (isPresent(provider.useFactory)) {
+    } else if (provider.useFactory != null) {
       const deps = provider.deps || provider.useFactory.diDeps;
       const depsExpr = deps.map((dep) => this._getDependency(dep));
       result = o.importExpr(provider.useFactory).callFn(depsExpr);
-    } else if (isPresent(provider.useClass)) {
+    } else if (provider.useClass != null) {
       const deps = provider.deps || provider.useClass.diDeps;
       const depsExpr = deps.map((dep) => this._getDependency(dep));
       result =
@@ -239,7 +238,7 @@ class _InjectorBuilder implements ClassBuilder {
 }
 
 function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
-  if (isPresent(token.value)) {
+  if (token.value != null) {
     return o.literal(token.value);
   } else {
     return o.importExpr(token.identifier);

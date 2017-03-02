@@ -7,8 +7,8 @@
  */
 
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {ɵstringify as stringify} from '@angular/core';
 import {Pipe} from '@angular/core/src/metadata';
-import {stringify} from '../src/facade/lang';
 
 @Pipe({name: 'somePipe', pure: true})
 class SomePipe {

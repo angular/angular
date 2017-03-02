@@ -9,7 +9,6 @@
 import {Provider, ReflectiveInjector} from '@angular/core';
 
 import {Options} from './common_options';
-import {isPresent} from './facade/lang';
 import {Metric} from './metric';
 import {MultiMetric} from './metric/multi_metric';
 import {PerflogMetric} from './metric/perflog_metric';
@@ -49,16 +48,16 @@ export class Runner {
       _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
       {provide: Options.EXECUTE, useValue: execute}
     ];
-    if (isPresent(prepare)) {
+    if (prepare != null) {
       sampleProviders.push({provide: Options.PREPARE, useValue: prepare});
     }
-    if (isPresent(microMetrics)) {
+    if (microMetrics != null) {
       sampleProviders.push({provide: Options.MICRO_METRICS, useValue: microMetrics});
     }
-    if (isPresent(userMetrics)) {
+    if (userMetrics != null) {
       sampleProviders.push({provide: Options.USER_METRICS, useValue: userMetrics});
     }
-    if (isPresent(providers)) {
+    if (providers != null) {
       sampleProviders.push(providers);
     }
 

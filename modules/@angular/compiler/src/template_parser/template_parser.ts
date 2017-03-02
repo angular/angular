@@ -11,7 +11,6 @@ import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, C
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {isPresent} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createIdentifierToken, identifierToken} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
@@ -295,7 +294,7 @@ class TemplateParseVisitor implements html.Visitor {
         prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length) + ':';
       }
 
-      const hasTemplateBinding = isPresent(templateBindingsSource);
+      const hasTemplateBinding = templateBindingsSource != null;
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
           this._reportError(
@@ -338,7 +337,7 @@ class TemplateParseVisitor implements html.Visitor {
             isTemplateElement ? parent.providerContext : providerContext));
     providerContext.afterElement();
     // Override the actual selector when the `ngProjectAs` attribute is provided
-    const projectionSelector = isPresent(preparsedElement.projectAs) ?
+    const projectionSelector = preparsedElement.projectAs != null ?
         CssSelector.parse(preparsedElement.projectAs)[0] :
         elementCssSelector;
     const ngContentIndex = parent.findNgContentIndex(projectionSelector);
@@ -415,7 +414,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (bindParts !== null) {
       hasBinding = true;
-      if (isPresent(bindParts[KW_BIND_IDX])) {
+      if (bindParts[KW_BIND_IDX] != null) {
         this._bindingParser.parsePropertyBinding(
             bindParts[IDENT_KW_IDX], value, false, srcSpan, targetMatchableAttrs, targetProps);
 
@@ -698,7 +697,7 @@ class TemplateParseVisitor implements html.Visitor {
     });
 
     events.forEach(event => {
-      if (isPresent(event.target) || !allDirectiveEvents.has(event.name)) {
+      if (event.target != null || !allDirectiveEvents.has(event.name)) {
         this._reportError(
             `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
             event.sourceSpan);
@@ -811,7 +810,7 @@ class ElementContext {
     this._ngContentIndexMatcher.match(
         selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
     ngContentIndices.sort();
-    if (isPresent(this._wildcardNgContentIndex)) {
+    if (this._wildcardNgContentIndex != null) {
       ngContentIndices.push(this._wildcardNgContentIndex);
     }
     return ngContentIndices.length > 0 ? ngContentIndices[0] : null;

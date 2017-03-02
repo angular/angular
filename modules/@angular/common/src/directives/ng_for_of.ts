@@ -8,8 +8,6 @@
 
 import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
-import {getTypeNameForDebugging} from '../facade/lang';
-
 export class NgForOfRow<T> {
   constructor(public $implicit: T, public index: number, public count: number) {}
 
@@ -195,3 +193,7 @@ export type NgFor = NgForOf<any>;
  * @deprecated from v4.0.0 - Use NgForOf instead.
  */
 export const NgFor = NgForOf;
+
+export function getTypeNameForDebugging(type: any): string {
+  return type['name'] || typeof type;
+}

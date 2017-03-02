@@ -7,7 +7,6 @@
  */
 
 import {PerfLogEvent} from '../index';
-import {isPresent} from '../src/facade/lang';
 
 export class TraceEventFactory {
   constructor(private _cat: string, private _pid: string) {}
@@ -15,7 +14,7 @@ export class TraceEventFactory {
   create(ph: any, name: string, time: number, args: any = null) {
     const res:
         PerfLogEvent = {'name': name, 'cat': this._cat, 'ph': ph, 'ts': time, 'pid': this._pid};
-    if (isPresent(args)) {
+    if (args != null) {
       res['args'] = args;
     }
     return res;

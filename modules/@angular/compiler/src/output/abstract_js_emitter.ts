@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext} from './abstract_emitter';
 import * as o from './output_ast';
@@ -17,7 +16,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.pushClass(stmt);
     this._visitClassConstructor(stmt, ctx);
 
-    if (isPresent(stmt.parent)) {
+    if (stmt.parent != null) {
       ctx.print(stmt, `${stmt.name}.prototype = Object.create(`);
       stmt.parent.visitExpression(this, ctx);
       ctx.println(stmt, `.prototype);`);
@@ -30,12 +29,12 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
 
   private _visitClassConstructor(stmt: o.ClassStmt, ctx: EmitterVisitorContext) {
     ctx.print(stmt, `function ${stmt.name}(`);
-    if (isPresent(stmt.constructorMethod)) {
+    if (stmt.constructorMethod != null) {
       this._visitParams(stmt.constructorMethod.params, ctx);
     }
     ctx.println(stmt, `) {`);
     ctx.incIndent();
-    if (isPresent(stmt.constructorMethod)) {
+    if (stmt.constructorMethod != null) {
       if (stmt.constructorMethod.body.length > 0) {
         ctx.println(stmt, `var self = this;`);
         this.visitAllStatements(stmt.constructorMethod.body, ctx);

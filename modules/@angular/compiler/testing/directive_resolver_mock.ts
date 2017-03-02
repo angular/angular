@@ -7,7 +7,6 @@
  */
 import {DirectiveResolver} from '@angular/compiler';
 import {Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef, ɵViewMetadata as ViewMetadata} from '@angular/core';
-import {isPresent} from './facade/lang';
 
 
 
@@ -42,14 +41,14 @@ export class MockDirectiveResolver extends DirectiveResolver {
     const viewProviderOverrides = this._viewProviderOverrides.get(type);
 
     let providers = metadata.providers;
-    if (isPresent(providerOverrides)) {
+    if (providerOverrides != null) {
       const originalViewProviders: Provider[] = metadata.providers || [];
       providers = originalViewProviders.concat(providerOverrides);
     }
 
     if (metadata instanceof Component) {
       let viewProviders = metadata.viewProviders;
-      if (isPresent(viewProviderOverrides)) {
+      if (viewProviderOverrides != null) {
         const originalViewProviders: Provider[] = metadata.viewProviders || [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
@@ -63,7 +62,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       let templateUrl = view.templateUrl;
 
       let inlineTemplate = this._inlineTemplates.get(type);
-      if (isPresent(inlineTemplate)) {
+      if (inlineTemplate != null) {
         templateUrl = null;
       } else {
         inlineTemplate = view.template;
@@ -137,7 +136,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
 }
 
 function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
-  if (!isPresent(tree)) return;
+  if (tree == null) return;
   for (let i = 0; i < tree.length; i++) {
     const item = resolveForwardRef(tree[i]);
     if (Array.isArray(item)) {

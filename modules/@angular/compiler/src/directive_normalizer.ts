@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '@angular/core';
-
+import {ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';

@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {JsonFileReporter, MeasureValues, Options, ReflectiveInjector, SampleDescription} from '../../index';
-import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('file reporter', () => {
@@ -50,7 +49,7 @@ export function main() {
                  [mv(0, 0, {'a': 3, 'b': 6})],
                  [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
          const regExp = /somePath\/someId_\d+\.json/;
-         expect(isPresent(loggedFile['filename'].match(regExp))).toBe(true);
+         expect(loggedFile['filename'].match(regExp) != null).toBe(true);
          const parsedContent = JSON.parse(loggedFile['content']);
          expect(parsedContent).toEqual({
            'description': {

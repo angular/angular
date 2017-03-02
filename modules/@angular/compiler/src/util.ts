@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPrimitive, isStrictStringMap} from './facade/lang';
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -43,7 +42,8 @@ export function visitValue(value: any, visitor: ValueVisitor, context: any): any
     return visitor.visitStringMap(<{[key: string]: any}>value, context);
   }
 
-  if (value == null || isPrimitive(value)) {
+  if (value == null || typeof value == 'string' || typeof value == 'number' ||
+      typeof value == 'boolean') {
     return visitor.visitPrimitive(value, context);
   }
 
@@ -88,4 +88,13 @@ const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
 
 export function isSyntaxError(error: Error): boolean {
   return (error as any)[ERROR_SYNTAX_ERROR];
+}
+
+export function escapeRegExp(s: string): string {
+  return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+}
+
+const STRING_MAP_PROTO = Object.getPrototypeOf({});
+function isStrictStringMap(obj: any): boolean {
+  return typeof obj === 'object' && obj !== null && Object.getPrototypeOf(obj) === STRING_MAP_PROTO;
 }

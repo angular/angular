@@ -6,6 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion Observable
-import 'rxjs';
-// #enddocregion
+const win = typeof window !== 'undefined' && window || <any>{};
+export {win as window};

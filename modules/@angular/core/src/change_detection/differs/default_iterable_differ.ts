@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, looseIdentical, stringify} from '../../facade/lang';
+import {looseIdentical, stringify} from '../../util';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -155,7 +155,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   diff(collection: NgIterable<V>): DefaultIterableDiffer<V> {
-    if (isBlank(collection)) collection = [];
+    if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
       throw new Error(`Error trying to diff '${collection}'`);
     }
