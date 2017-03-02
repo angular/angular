@@ -55,11 +55,6 @@ export function main(
 
     let host = ts.createCompilerHost(parsed.options, true);
 
-    // HACK: patch the realpath to solve symlink issue here:
-    // https://github.com/Microsoft/TypeScript/issues/9552
-    // todo(misko): remove once facade symlinks are removed
-    host.realpath = (path) => path;
-
     // If the comilation is a flat module index then produce the flat module index
     // metadata and the synthetic flat module index.
     if (ngOptions.flatModuleOutFile && !ngOptions.skipMetadataEmit) {
