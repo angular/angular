@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 

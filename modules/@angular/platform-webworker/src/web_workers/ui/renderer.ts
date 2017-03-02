@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer} from '@angular/core';
+import {Injectable, RenderComponentType, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer} from '@angular/core';
 
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_V2_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';

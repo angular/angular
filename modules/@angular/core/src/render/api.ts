@@ -170,8 +170,8 @@ export abstract class RendererV2 {
   abstract addClass(el: any, name: string): void;
   abstract removeClass(el: any, name: string): void;
   abstract setStyle(
-      el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
-  abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+      el: any, style: string, value: any, hasVendorPrefix?: boolean, hasImportant?: boolean): void;
+  abstract removeStyle(el: any, style: string, hasVendorPrefix?: boolean): void;
   abstract setProperty(el: any, name: string, value: any): void;
   abstract setValue(node: any, value: string): void;
   abstract listen(
