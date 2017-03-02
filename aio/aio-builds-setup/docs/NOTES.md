@@ -28,3 +28,5 @@
 - Do we care to keep logs (e.g. cron, nginx, aio-upload-server, aio-clean-up, pm2) outside of the container?
 - Instead of creating new comments for each commit, update the original comment?
 - Do we want to drop HTTP support (and/or redirect to HTTPS)?
+- When re-running a Travis job build that has previous succeeded for AIO, it will not be able to
+  deploy and fail.
