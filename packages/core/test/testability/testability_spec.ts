@@ -10,7 +10,7 @@ import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {scheduleMicroTask} from '../../src/util';
 

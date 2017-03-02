@@ -8,8 +8,8 @@
 
 import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {isNumeric} from '@angular/common/src/pipes/number_pipe';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('Number pipes', () => {

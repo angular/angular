@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 export function main() {
   describe('forwardRef', function() {

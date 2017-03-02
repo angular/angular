@@ -10,7 +10,7 @@ import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 

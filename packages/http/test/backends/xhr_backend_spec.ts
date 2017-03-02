@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';

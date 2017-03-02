@@ -10,8 +10,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('DomRenderer', () => {

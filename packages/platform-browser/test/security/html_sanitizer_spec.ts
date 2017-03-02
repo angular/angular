@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as t from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import * as t from '@angular/core/testing/src/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeHtml} from '../../src/security/html_sanitizer';

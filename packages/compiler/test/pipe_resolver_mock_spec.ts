@@ -7,8 +7,8 @@
  */
 
 import {Injector, Pipe} from '@angular/core';
-import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {MockPipeResolver} from '../testing/index';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {MockPipeResolver} from '../testing';
 
 export function main() {
   describe('MockPipeResolver', () => {

@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
 import {InjectableAnimationEngine} from '../../animations/src/providers';
-import {el} from '../../testing/browser_util';
+import {el} from '../../testing/src/browser_util';
 
 export function main() {
   describe('ɵAnimationRenderer', () => {

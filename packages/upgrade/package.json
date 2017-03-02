@@ -5,7 +5,7 @@
   "main": "./bundles/upgrade.umd.js",
   "module": "./@angular/upgrade.es5.js",
   "es2015": "./@angular/upgrade.js",
-  "typings": "./typings/upgrade.d.ts",
+  "typings": "./typings/upgrade/index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

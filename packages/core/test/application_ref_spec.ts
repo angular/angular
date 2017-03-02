@@ -14,8 +14,8 @@ import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ServerModule} from '@angular/platform-server';
 
 import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';

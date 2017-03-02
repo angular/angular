@@ -1,18 +1,18 @@
 {
-  "extends": "./tsconfig-build",
+  "extends": "../tsconfig-build",
 
   "compilerOptions": {
-    "outDir": "../../../dist/packages-dist/platform-browser",
+    "outDir": "../../../dist/packages/platform-browser",
     "paths": {
-      "rxjs/*": ["../../../node_modules/rxjs/*"],
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
-      "@angular/animations": ["../../../dist/packages-dist/animations"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/core/testing": ["../../dist/packages/core/testing"],
+      "@angular/animations": ["../../dist/packages/animations"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"]
     }
   },
   "files": [
-    "animations/public_api.ts",
+    "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],

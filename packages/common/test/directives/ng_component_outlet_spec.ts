@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
 import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async, fakeAsync} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('insert/remove', () => {

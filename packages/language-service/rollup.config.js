@@ -16,9 +16,7 @@ var esm = 'esm/';
 
 var locations = {
   'tsc-wrapped': normalize('../../../dist/tools/@angular') + '/',
-  'compiler-cli': normalize('../../../dist/esm') + '/',
-  'compiler': normalize('../../../dist/esm') + '/',
-  'core': normalize('../../../dist/esm') + '/'
+  'compiler-cli': normalize('../../../dist/esm') + '/'
 };
 
 var esm_suffixes = {};

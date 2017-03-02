@@ -10,7 +10,7 @@ import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('non-bindable', () => {

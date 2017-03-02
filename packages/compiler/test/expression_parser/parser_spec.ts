@@ -9,7 +9,7 @@
 import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
 import {unparse} from './unparser';

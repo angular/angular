@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing'
 import {AbstractControl, AsyncValidator, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('reactive forms integration tests', () => {

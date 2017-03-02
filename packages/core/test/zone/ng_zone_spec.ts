@@ -8,8 +8,8 @@
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
-import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {scheduleMicroTask} from '../../src/util';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;

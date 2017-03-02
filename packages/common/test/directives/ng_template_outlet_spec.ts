@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('NgTemplateOutlet', () => {

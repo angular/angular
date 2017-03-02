@@ -20,8 +20,8 @@ import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListe
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_util';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {stringify} from '../../src/util';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');

@@ -8,7 +8,7 @@
 
 import {Component, Directive} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 export function main() {
   describe('es5 decorators', () => {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference path="../../../../node_modules/@types/node/index.d.ts" />
-/// <reference path="../../../../node_modules/@types/jasmine/index.d.ts" />
+/// <reference path="../../../node_modules/@types/node/index.d.ts" />
+/// <reference path="../../../node_modules/@types/jasmine/index.d.ts" />
 
 import * as fs from 'fs';
 import * as path from 'path';

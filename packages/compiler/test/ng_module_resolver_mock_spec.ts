@@ -7,8 +7,8 @@
  */
 
 import {Injector, NgModule} from '@angular/core';
-import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {MockNgModuleResolver} from '../testing/index';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {MockNgModuleResolver} from '../testing';
 
 export function main() {
   describe('MockNgModuleResolver', () => {

@@ -7,7 +7,7 @@
  */
 
 import {Provider} from '@angular/core';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
 

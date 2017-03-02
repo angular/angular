@@ -8,7 +8,7 @@
 
 import {Component, Directive, Injector, ɵViewMetadata as ViewMetadata} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-import {MockDirectiveResolver} from '../testing/index';
+import {MockDirectiveResolver} from '../testing';
 
 export function main() {
   describe('MockDirectiveResolver', () => {

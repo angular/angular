@@ -1,7 +1,11 @@
 {
-  "extends": "./tsconfig-build",
+  "extends": "../tsconfig-build",
+
   "compilerOptions": {
-    "outDir": "../../../dist/esm/compiler",
     "target": "es5"
-  }
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
 }
