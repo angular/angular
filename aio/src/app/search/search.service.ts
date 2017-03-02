@@ -4,7 +4,7 @@ Use of this source code is governed by an MIT-style license that
 can be found in the LICENSE file at http://angular.io/license
 */
 
-import { NgZone, Injectable } from '@angular/core';
+import { NgZone, Injectable, Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/publishLast';
@@ -16,7 +16,6 @@ export interface QueryResults {
   results: Object[];
 }
 
-const SEARCH_WORKER_URL = 'app/search/search-worker.js';
 
 @Injectable()
 export class SearchService {
@@ -25,8 +24,13 @@ export class SearchService {
   private resultsSubject = new Subject<QueryResults>();
   get searchResults() { return this.resultsSubject.asObservable(); }
 
-  constructor(private zone: NgZone) {
-    this.worker = new WebWorkerClient(SEARCH_WORKER_URL, zone);
+  constructor(private zone: NgZone) {}
+
+  initWorker(workerUrl) {
+    this.worker = new WebWorkerClient(new Worker(workerUrl), this.zone);
+  }
+
+  loadIndex() {
     const ready = this.ready = this.worker.sendMessage<boolean>('load-index').publishLast();
     // trigger the index to be loaded immediately
     ready.connect();
