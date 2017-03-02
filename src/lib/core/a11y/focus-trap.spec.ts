@@ -1,7 +1,6 @@
-import {inject, ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {Component} from '@angular/core';
-import {FocusTrap} from './focus-trap';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {Component, ViewChild} from '@angular/core';
+import {FocusTrapFactory, FocusTrapDirective, FocusTrap} from './focus-trap';
 import {InteractivityChecker} from './interactivity-checker';
 import {Platform} from '../platform/platform';
 
@@ -16,16 +15,15 @@ describe('FocusTrap', () => {
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        declarations: [FocusTrap, FocusTrapTestApp],
-        providers: [InteractivityChecker, Platform]
+        declarations: [FocusTrapDirective, FocusTrapTestApp],
+        providers: [InteractivityChecker, Platform, FocusTrapFactory]
       });
 
       TestBed.compileComponents();
-    }));
 
-    beforeEach(inject([InteractivityChecker], (c: InteractivityChecker) => {
       fixture = TestBed.createComponent(FocusTrapTestApp);
-      focusTrapInstance = fixture.debugElement.query(By.directive(FocusTrap)).componentInstance;
+      fixture.detectChanges();
+      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
     }));
 
     it('wrap focus from end to start', () => {
@@ -48,6 +46,30 @@ describe('FocusTrap', () => {
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe(lastElement, `Expected ${lastElement} element to be focused`);
     });
+
+    it('should clean up its anchor sibling elements on destroy', () => {
+      const rootElement = fixture.debugElement.nativeElement as HTMLElement;
+
+      expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(2);
+
+      fixture.componentInstance.renderFocusTrap = false;
+      fixture.detectChanges();
+
+      expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(0);
+    });
+
+    it('should set the appropriate tabindex on the anchors, based on the disabled state', () => {
+      const anchors = Array.from(
+        fixture.debugElement.nativeElement.querySelectorAll('div.cdk-visually-hidden')
+      ) as HTMLElement[];
+
+      expect(anchors.every(current => current.getAttribute('tabindex') === '0')).toBe(true);
+
+      fixture.componentInstance.isFocusTrapEnabled = false;
+      fixture.detectChanges();
+
+      expect(anchors.every(current => current.getAttribute('tabindex') === '-1')).toBe(true);
+    });
   });
 
   describe('with focus targets', () => {
@@ -56,16 +78,15 @@ describe('FocusTrap', () => {
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        declarations: [FocusTrap, FocusTrapTargetTestApp],
-        providers: [InteractivityChecker, Platform]
+        declarations: [FocusTrapDirective, FocusTrapTargetTestApp],
+        providers: [InteractivityChecker, Platform, FocusTrapFactory]
       });
 
       TestBed.compileComponents();
-    }));
 
-    beforeEach(inject([InteractivityChecker], (c: InteractivityChecker) => {
       fixture = TestBed.createComponent(FocusTrapTargetTestApp);
-      focusTrapInstance = fixture.debugElement.query(By.directive(FocusTrap)).componentInstance;
+      fixture.detectChanges();
+      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
     }));
 
     it('should be able to prioritize the first focus target', () => {
@@ -87,23 +108,29 @@ describe('FocusTrap', () => {
 
 @Component({
   template: `
-    <cdk-focus-trap>
+    <div *ngIf="renderFocusTrap" [cdkTrapFocus]="isFocusTrapEnabled">
       <input>
       <button>SAVE</button>
-    </cdk-focus-trap>
+    </div>
     `
 })
-class FocusTrapTestApp { }
+class FocusTrapTestApp {
+  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  renderFocusTrap = true;
+  isFocusTrapEnabled = true;
+}
 
 
 @Component({
   template: `
-    <cdk-focus-trap>
+    <div cdkTrapFocus>
       <input>
       <button id="last" cdk-focus-end></button>
       <button id="first" cdk-focus-start>SAVE</button>
       <input>
-    </cdk-focus-trap>
+    </div>
     `
 })
-class FocusTrapTargetTestApp { }
+class FocusTrapTargetTestApp {
+  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+}

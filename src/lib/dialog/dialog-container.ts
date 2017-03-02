@@ -5,6 +5,8 @@ import {
   ViewEncapsulation,
   NgZone,
   OnDestroy,
+  Renderer,
+  ElementRef,
   animate,
   state,
   style,
@@ -16,7 +18,7 @@ import {
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
-import {FocusTrap} from '../core/a11y/focus-trap';
+import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import 'rxjs/add/operator/first';
 
 
@@ -54,8 +56,8 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   /** The portal host inside of this container into which the dialog content will be loaded. */
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
-  /** The directive that traps and manages focus within the dialog. */
-  @ViewChild(FocusTrap) _focusTrap: FocusTrap;
+  /** The class that traps and manages focus within the dialog. */
+  private _focusTrap: FocusTrap;
 
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
   private _elementFocusedBeforeDialogWasOpened: HTMLElement = null;
@@ -69,7 +71,12 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   /** Emits the current animation state whenever it changes. */
   _onAnimationStateChange = new EventEmitter<MdDialogContainerAnimationState>();
 
-  constructor(private _ngZone: NgZone) {
+  constructor(
+    private _ngZone: NgZone,
+    private _renderer: Renderer,
+    private _elementRef: ElementRef,
+    private _focusTrapFactory: FocusTrapFactory) {
+
     super();
   }
 
@@ -106,6 +113,10 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
    * @private
    */
   private _trapFocus() {
+    if (!this._focusTrap) {
+      this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
+    }
+
     // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
@@ -148,5 +159,7 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
 
       this._onAnimationStateChange.complete();
     });
+
+    this._focusTrap.destroy();
   }
 }

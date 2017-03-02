@@ -13,13 +13,13 @@ import {
   EventEmitter,
   Renderer,
   ViewEncapsulation,
-  ViewChild,
-  NgZone
+  NgZone,
+  OnDestroy,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Dir, MdError, coerceBooleanProperty, CompatibilityModule} from '../core';
 import {A11yModule} from '../core/a11y/index';
-import {FocusTrap} from '../core/a11y/focus-trap';
+import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {OverlayModule} from '../core/overlay/overlay-directives';
 import 'rxjs/add/operator/first';
@@ -71,8 +71,8 @@ export class MdSidenavToggleResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSidenav implements AfterContentInit {
-  @ViewChild(FocusTrap) _focusTrap: FocusTrap;
+export class MdSidenav implements AfterContentInit, OnDestroy {
+  private _focusTrap: FocusTrap;
 
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
   private _align: 'start' | 'end' = 'start';
@@ -138,20 +138,24 @@ export class MdSidenav implements AfterContentInit {
    */
   private _resolveToggleAnimationPromise: (animationFinished: boolean) => void = null;
 
-  get isFocusTrapDisabled() {
+  get isFocusTrapEnabled() {
     // The focus trap is only enabled when the sidenav is open in any mode other than side.
-    return !this.opened || this.mode == 'side';
+    return this.opened && this.mode !== 'side';
   }
 
   /**
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
    *     If not available we do not hook on transitions.
    */
-  constructor(private _elementRef: ElementRef, private _renderer: Renderer) {
+  constructor(
+    private _elementRef: ElementRef,
+    private _renderer: Renderer,
+    private _focusTrapFactory: FocusTrapFactory) {
+
     this.onOpen.subscribe(() => {
       this._elementFocusedBeforeSidenavWasOpened = document.activeElement as HTMLElement;
 
-      if (!this.isFocusTrapDisabled) {
+      if (this.isFocusTrapEnabled && this._focusTrap) {
         this._focusTrap.focusFirstTabbableElementWhenReady();
       }
     });
@@ -168,11 +172,20 @@ export class MdSidenav implements AfterContentInit {
   }
 
   ngAfterContentInit() {
-    // This can happen when the sidenav is set to opened in the template and the transition
-    // isn't ended.
+    this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
+    this._focusTrap.enabled = this.isFocusTrapEnabled;
+
+    // This can happen when the sidenav is set to opened in
+    // the template and the transition hasn't ended.
     if (this._toggleAnimationPromise) {
       this._resolveToggleAnimationPromise(true);
       this._toggleAnimationPromise = this._resolveToggleAnimationPromise = null;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._focusTrap) {
+      this._focusTrap.destroy();
     }
   }
 
@@ -219,6 +232,10 @@ export class MdSidenav implements AfterContentInit {
     }
 
     this._opened = isOpen;
+
+    if (this._focusTrap) {
+      this._focusTrap.enabled = this.isFocusTrapEnabled;
+    }
 
     if (isOpen) {
       this.onOpenStart.emit();

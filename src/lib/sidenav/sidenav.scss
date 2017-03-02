@@ -100,6 +100,9 @@
   z-index: 3;
   min-width: 5vw;
   outline: 0;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: auto; // TODO(kara): revisit scrolling behavior for sidenavs
 
   @include mat-sidenav-transition(0, -100%);
 
@@ -130,19 +133,6 @@
       // See https://material.io/guidelines/patterns/navigation-drawer.html#
       @include mat-elevation(16);
     }
-  }
-}
-
-.mat-sidenav-focus-trap {
-  height: 100%;
-
-  > .cdk-focus-trap-content {
-    box-sizing: border-box;
-    height: 100%;
-    overflow-y: auto; // TODO(kara): revisit scrolling behavior for sidenavs
-
-    // Prevents unnecessary repaints while scrolling.
-    transform: translateZ(0);
   }
 }
 

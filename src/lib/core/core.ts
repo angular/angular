@@ -80,7 +80,7 @@ export * from './selection/selection';
 /** @deprecated */
 export {LiveAnnouncer as MdLiveAnnouncer} from './a11y/live-announcer';
 
-export {FocusTrap} from './a11y/focus-trap';
+export * from './a11y/focus-trap';
 export {InteractivityChecker} from './a11y/interactivity-checker';
 export {isFakeMousedownFromScreenReader} from './a11y/fake-mousedown';
 
