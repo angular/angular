@@ -15,4 +15,4 @@ cd -
 
 # Create docker image
 nameAndOptionalTag=$([ $# -eq 0 ] && echo $DEFAULT_IMAGE_NAME_AND_TAG || echo $1)
-sudo docker build --tag $nameAndOptionalTag $DOCKERBUILD_DIR
+sudo docker build --tag $nameAndOptionalTag ${@:2} $DOCKERBUILD_DIR
