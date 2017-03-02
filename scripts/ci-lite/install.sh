@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
+set -u -e -o pipefail
 
-echo 'travis_fold:start:INSTALL'
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
 
 # Setup environment
 cd `dirname $0`
@@ -21,63 +21,70 @@ mkdir -p ${LOGS_DIR}
 
 
 # Install version of npm that we are locked against
-echo 'travis_fold:start:install.npm'
-npm install -g npm@${NPM_VERSION}
-echo 'travis_fold:end:install.npm'
+travisFoldStart "install-npm"
+  npm install -g npm@${NPM_VERSION}
+travisFoldEnd "install-npm"
 
 
 # Install all npm dependencies according to shrinkwrap.json
-echo 'travis_fold:start:install.node_modules'
-node tools/npm/check-node-modules --purge || npm install
-echo 'travis_fold:end:install.node_modules'
+travisFoldStart "npm-install"
+  node tools/npm/check-node-modules --purge || npm install
+travisFoldEnd "npm-install"
 
 
 if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # Install version of yarn that we are locked against
-  echo 'travis_fold:start:install.yarn'
-  curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
-  echo 'travis_fold:end:install.yarn'
+  travisFoldStart "install-yarn"
+    curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
+  travisFoldEnd "install-yarn"
 fi
 
 
 if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
-  echo 'travis_fold:start:install.aio.node_modules'
-  cd "`dirname $0`/../../aio"
-  yarn install
-  cd -
-  echo 'travis_fold:end:install.aio.node_modules'
+  travisFoldStart "yarn-install.aio"
+    cd "`dirname $0`/../../aio"
+    yarn install
+    cd -
+  travisFoldEnd "yarn-install.aio"
 fi
 
 
 # Install Chromium
-echo 'travis_fold:start:install.chromium'
 if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "aio" ]]; then
-  ./scripts/ci/install_chromium.sh
+  travisFoldStart "install-chromium"
+    ./scripts/ci/install_chromium.sh
+  travisFoldEnd "install-chromium"
 fi
-echo 'travis_fold:end:install.chromium'
 
 
 # Install Sauce Connect
-echo 'travis_fold:start:install.sauceConnect'
 if [[ ${TRAVIS}] && (${CI_MODE} == "saucelabs_required" || ${CI_MODE} == "saucelabs_optional") ]]; then
-  ./scripts/sauce/sauce_connect_setup.sh
+  travisFoldStart "install-sauceConnect"
+    ./scripts/sauce/sauce_connect_setup.sh
+  travisFoldEnd "install-sauceConnect"
 fi
-echo 'travis_fold:end:install.sauceConnect'
 
 
 # Install BrowserStack Tunnel
-echo 'travis_fold:start:install.browserstack'
 if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "browserstack_optional") ]]; then
-  ./scripts/browserstack/start_tunnel.sh
+  travisFoldStart "install-browserstack"
+    ./scripts/browserstack/start_tunnel.sh
+  travisFoldEnd "install-browserstack"
 fi
-echo 'travis_fold:end:install.browserstack'
 
 
-# node tools/chromedriverpatch.js
-$(npm bin)/webdriver-manager update
+# Install Selenium WebDriver
+travisFoldStart "webdriver-manager-update"
+  $(npm bin)/webdriver-manager update
+travisFoldEnd "webdriver-manager-update"
 
-# install bower packages
-$(npm bin)/bower install
 
-echo 'travis_fold:end:INSTALL'
+# Install bower packages
+travisFoldStart "bower-install"
+  $(npm bin)/bower install
+travisFoldEnd "bower-install"
+
+
+# Print return arrows as a log separator
+travisFoldReturnArrows

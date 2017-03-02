@@ -1,20 +1,13 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
-
-if [[ ${TRAVIS} && ${CI_MODE} != "docs_test" ]]; then
-  exit 0;
-fi
-
-
-echo 'travis_fold:start:test_docs'
+set -u -e -o pipefail
 
 # Setup environment
-cd `dirname $0`
-source ./env.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
 
-cd ../../aio
-$(npm bin)/gulp docs-test
-cd -
 
-echo 'travis_fold:end:test_docs'
+travisFoldStart "test.docs"
+  cd ${PROJECT_ROOT}/aio
+  $(npm bin)/gulp docs-test
+travisFoldEnd "test.docs"

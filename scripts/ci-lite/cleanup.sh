@@ -1,39 +1,39 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
+set -u -e -o pipefail
 
-echo 'travis_fold:start:CLEANUP'
+# override test failure so that we perform this file regardless and not abort in env.sh
+TRAVIS_TEST_RESULT=0
 
 # Setup environment
-cd `dirname $0`
-source ./env.sh
-cd ../..
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
 
 
-if [[ ${TRAVIS} ]]; then
-
-  case ${CI_MODE} in
-    js)
-      ;;
-    saucelabs_required)
+case ${CI_MODE} in
+  js)
+    ;;
+  saucelabs_required)
+    travisFoldStart "teardown.sauceConnect"
       ./scripts/sauce/sauce_connect_teardown.sh
-      ;;
-    browserstack_required)
+    travisFoldEnd "teardown.sauceConnect"
+    ;;
+  browserstack_required)
+    travisFoldStart "teardown.browserStack"
       ./scripts/browserstack/teardown_tunnel.sh
-      ;;
-    saucelabs_optional)
+    travisFoldEnd "teardown.browserStack"
+    ;;
+  saucelabs_optional)
+    travisFoldStart "teardown.sauceConnect"
       ./scripts/sauce/sauce_connect_teardown.sh
-      ;;
-    browserstack_optional)
+    travisFoldEnd "teardown.sauceConnect"
+    ;;
+  browserstack_optional)
+    travisFoldStart "teardown.browserStack"
       ./scripts/browserstack/teardown_tunnel.sh
-      ;;
-  esac
-fi
+    travisFoldEnd "teardown.browserStack"
+    ;;
+esac
 
-
-echo 'travis_fold:start:cleanup.printLogs'
-./scripts/ci/print-logs.sh
-echo 'travis_fold:end:cleanup.printLogs'
-
-
-echo 'travis_fold:end:CLEANUP'
+# Print return arrows as a log separator
+travisFoldReturnArrows

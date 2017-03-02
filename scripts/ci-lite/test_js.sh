@@ -1,56 +1,51 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
-
-if [[ ${TRAVIS} && ${CI_MODE} != "js" ]]; then
-  exit 0;
-fi
-
-
-echo 'travis_fold:start:test.js'
+set -u -e -o pipefail
 
 # Setup environment
-cd `dirname $0`
-source ./env.sh
-cd ../..
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
 
 
-echo 'travis_fold:start:test.unit.tools'
+# Run unit tests for our tools/ directory
+travisFoldStart "test.unit.tools"
+  node ./dist/tools/tsc-watch/ tools runCmdsOnly
 
-# Run unit tests in tools
-node ./dist/tools/tsc-watch/ tools runCmdsOnly
+  # TODO(i) could this be rolled into the tools tests above? why is it separate?
+  travisFoldStart "test.unit.validate-commit-message"
+    (
+      cd tools/validate-commit-message
+      $(npm bin)/jasmine
+    )
+  travisFoldEnd "test.unit.validate-commit-message"
+travisFoldEnd "test.unit.tools"
 
-cd tools/validate-commit-message
-$(npm bin)/jasmine
-cd -
-
-echo 'travis_fold:end:test.unit.tools'
-
-
-echo 'travis_fold:start:test.unit.node'
 
 # Run unit tests in node
-node ./dist/tools/tsc-watch/ node runCmdsOnly
+travisFoldStart "test.unit.node"
+  node ./dist/tools/tsc-watch/ node runCmdsOnly
+travisFoldEnd "test.unit.node"
 
-echo 'travis_fold:end:test.unit.node'
-
-
-echo 'travis_fold:start:test.unit.localChrome'
 
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
-node dist/tools/@angular/tsc-wrapped/src/main -p modules/tsconfig.json
+travisFoldStart "test.unit.rebuildHack"
+  node dist/tools/@angular/tsc-wrapped/src/main -p modules/tsconfig.json
+travisFoldStart "test.unit.rebuildHack"
 
-# Run unit tests in local chrome
+
 if [[ ${TRAVIS} ]]; then
-  sh -e /etc/init.d/xvfb start
+  travisFoldStart "test.unit.xvfb-start"
+    sh -e /etc/init.d/xvfb start
+  travisFoldEnd "test.unit.xvfb-start"
 fi
 
-$(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
 
-$(npm bin)/karma start ./modules/@angular/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+travisFoldStart "test.unit.localChrome"
+  $(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+travisFoldEnd "test.unit.localChrome"
 
-echo 'travis_fold:end:test.unit.localChrome'
 
-
-echo 'travis_fold:end:test.js'
+travisFoldStart "test.unit.localChrome.router"
+  $(npm bin)/karma start ./modules/@angular/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+travisFoldEnd "test.unit.localChrome.router"

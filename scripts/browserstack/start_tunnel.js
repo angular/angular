@@ -56,3 +56,13 @@ tunnel.start(function(error) {
 tunnel.on('error', function(error) {
   console.error(error);
 });
+
+
+// TODO(i): we should properly stop the tunnel when tests are done.
+// tunnel.stop(function(error) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('browserStack tunnel has stopped');
+//   }
+//});
