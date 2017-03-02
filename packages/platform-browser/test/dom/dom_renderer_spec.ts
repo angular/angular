@@ -5,30 +5,90 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CommonModule} from '@angular/common';
-import {Component, NgModule, ViewEncapsulation} from '@angular/core';
+import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 export function main() {
-  describe('DomRenderer', () => {
+  describe('DefaultDomRendererV2', () => {
+    let renderer: Renderer2;
 
-    beforeEach(() => TestBed.configureTestingModule({imports: [BrowserModule, TestModule]}));
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [
+          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone
+        ]
+      });
+      renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
+    });
+
+    describe('setAttribute', () => {
+      describe('with namespace', () => {
+        it('xmlns', () => shouldSetAttributeWithNs('xmlns'));
+        it('xml', () => shouldSetAttributeWithNs('xml'));
+        it('svg', () => shouldSetAttributeWithNs('svg'));
+        it('xhtml', () => shouldSetAttributeWithNs('xhtml'));
+        it('xlink', () => shouldSetAttributeWithNs('xlink'));
+
+        it('unknown', () => {
+          const div = document.createElement('div');
+          expect(div.hasAttribute('unknown:name')).toBe(false);
+
+          renderer.setAttribute(div, 'name', 'value', 'unknown');
+
+          expect(div.getAttribute('unknown:name')).toBe('value');
+        });
+
+        function shouldSetAttributeWithNs(namespace: string): void {
+          const namespaceUri = NAMESPACE_URIS[namespace];
+          const div = document.createElement('div');
+          expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(false);
+
+          renderer.setAttribute(div, 'name', 'value', namespace);
+
+          expect(div.getAttributeNS(namespaceUri, 'name')).toBe('value');
+        }
+      });
+    });
+
+    describe('removeAttribute', () => {
+      describe('with namespace', () => {
+        it('xmlns', () => shouldRemoveAttributeWithNs('xmlns'));
+        it('xml', () => shouldRemoveAttributeWithNs('xml'));
+        it('svg', () => shouldRemoveAttributeWithNs('svg'));
+        it('xhtml', () => shouldRemoveAttributeWithNs('xhtml'));
+        it('xlink', () => shouldRemoveAttributeWithNs('xlink'));
+
+        it('unknown', () => {
+          const div = document.createElement('div');
+          div.setAttribute('unknown:name', 'value');
+          expect(div.hasAttribute('unknown:name')).toBe(true);
+
+          renderer.removeAttribute(div, 'name', 'unknown');
+
+          expect(div.hasAttribute('unknown:name')).toBe(false);
+        });
+
+        function shouldRemoveAttributeWithNs(namespace: string): void {
+          const namespaceUri = NAMESPACE_URIS[namespace];
+          const div = document.createElement('div');
+          div.setAttributeNS(namespaceUri, `${namespace}:name`, 'value');
+          expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(true);
+
+          renderer.removeAttribute(div, 'name', namespace);
+
+          expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(false);
+        }
+      });
+    });
 
     // other browsers don't support shadow dom
     if (browserDetection.isChromeDesktop) {
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
          () => {
-           TestBed.overrideComponent(CmpEncapsulationNative, {
-             set: {
-               template:
-                   '<div class="native"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>'
-             }
-           });
-
            const fixture = TestBed.createComponent(SomeApp);
 
            const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
@@ -49,7 +109,7 @@ export function main() {
 
 @Component({
   selector: 'cmp-native',
-  template: `<div class="native"></div>`,
+  template: `<div class="native"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
   styles: [`.native { color: red; }`],
   encapsulation: ViewEncapsulation.Native
 })
@@ -85,14 +145,7 @@ class CmpEncapsulationNone {
 export class SomeApp {
 }
 
-@NgModule({
-  declarations: [
-    SomeApp,
-    CmpEncapsulationNative,
-    CmpEncapsulationEmulated,
-    CmpEncapsulationNone,
-  ],
-  imports: [CommonModule]
-})
-class TestModule {
+@Component({selector: 'test-cmp', template: ''})
+class TestCmp {
+  constructor(public renderer: Renderer2) {}
 }
