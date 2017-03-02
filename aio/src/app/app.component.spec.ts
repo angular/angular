@@ -3,6 +3,7 @@ import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 
 import { NavEngine } from './nav-engine/nav-engine.service';
+import { AioNavEngineModule } from './nav-engine/nav-engine.module'
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -11,9 +12,7 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ AppModule ],
-      providers: [
-        { provide: NavEngine, useValue: { currentDoc: undefined } }
-      ]
+      providers: [ ]
     });
     TestBed.compileComponents();
   }));

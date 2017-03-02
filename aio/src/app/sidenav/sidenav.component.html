@@ -5,7 +5,7 @@
       <span class="fill-remaining-space"></span>
     </md-toolbar>
 
-    <aio-navitem *ngFor="let node of nodes | async" [node]="node" [selectedNode]="selectedNode"></aio-navitem>
+    <aio-navitem *ngFor="let node of nodes | async" [node]="node" (select)="onSelect($event)" [selectedNode]="currentNode"></aio-navitem>
   </md-sidenav>
   <section class="sidenav-content">
     <aio-doc-viewer [doc]="currentDoc | async"></aio-doc-viewer>
