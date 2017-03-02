@@ -8,7 +8,7 @@
 
 
 ## Build image
-- `<aio-builds-setup-dir>/build.sh [<name>[:<tag>]]`
+- `<aio-builds-setup-dir>/build.sh [<name>[:<tag>] [--build-arg <NAME>=<value> ...]]`
 
 
 ## Run image

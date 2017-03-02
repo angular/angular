@@ -11,19 +11,44 @@ VOLUME /var/www/aio-builds
 
 EXPOSE 80 443
 
-ENV AIO_BUILDS_DIR=/var/www/aio-builds             TEST_AIO_BUILDS_DIR=/tmp/aio-builds         \
-    AIO_DOMAIN_NAME=ngbuilds.io                    TEST_AIO_DOMAIN_NAME=test-ngbuilds.io       \
-    AIO_GITHUB_ORGANIZATION=angular                TEST_AIO_GITHUB_ORGANIZATION=angular        \
-    AIO_GITHUB_TEAM_SLUGS=angular-core             TEST_AIO_GITHUB_TEAM_SLUGS=angular-core     \
-    AIO_NGINX_HOSTNAME=nginx.localhost             TEST_AIO_NGINX_HOSTNAME=nginx.localhost     \
-    AIO_NGINX_PORT_HTTP=80                         TEST_AIO_NGINX_PORT_HTTP=8080               \
-    AIO_NGINX_PORT_HTTPS=443                       TEST_AIO_NGINX_PORT_HTTPS=4433              \
-    AIO_REPO_SLUG=angular/angular                  TEST_AIO_REPO_SLUG=                         \
-    AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                               \
-    AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                               \
-    AIO_UPLOAD_HOSTNAME=upload.localhost           TEST_AIO_UPLOAD_HOSTNAME=upload.localhost   \
-    AIO_UPLOAD_MAX_SIZE=20971520                   TEST_AIO_UPLOAD_MAX_SIZE=20971520           \
-    AIO_UPLOAD_PORT=3000                           TEST_AIO_UPLOAD_PORT=3001                   \
+
+# Build-time args and env vars
+ARG      AIO_BUILDS_DIR=/var/www/aio-builds
+ARG TEST_AIO_BUILDS_DIR=/tmp/aio-builds
+ARG      AIO_DOMAIN_NAME=ngbuilds.io
+ARG TEST_AIO_DOMAIN_NAME=test-ngbuilds.io
+ARG      AIO_GITHUB_ORGANIZATION=angular
+ARG TEST_AIO_GITHUB_ORGANIZATION=angular
+ARG      AIO_GITHUB_TEAM_SLUGS=angular-core
+ARG TEST_AIO_GITHUB_TEAM_SLUGS=angular-core
+ARG      AIO_NGINX_HOSTNAME=nginx.localhost
+ARG TEST_AIO_NGINX_HOSTNAME=nginx.localhost
+ARG      AIO_NGINX_PORT_HTTP=80
+ARG TEST_AIO_NGINX_PORT_HTTP=8080
+ARG      AIO_NGINX_PORT_HTTPS=443
+ARG TEST_AIO_NGINX_PORT_HTTPS=4433
+ARG      AIO_REPO_SLUG=angular/angular
+ARG TEST_AIO_REPO_SLUG=
+ARG      AIO_UPLOAD_HOSTNAME=upload.localhost
+ARG TEST_AIO_UPLOAD_HOSTNAME=upload.localhost
+ARG      AIO_UPLOAD_MAX_SIZE=20971520
+ARG TEST_AIO_UPLOAD_MAX_SIZE=20971520
+ARG      AIO_UPLOAD_PORT=3000
+ARG TEST_AIO_UPLOAD_PORT=3001
+
+ENV AIO_BUILDS_DIR=$AIO_BUILDS_DIR                     TEST_AIO_BUILDS_DIR=$TEST_AIO_BUILDS_DIR                     \
+    AIO_DOMAIN_NAME=$AIO_DOMAIN_NAME                   TEST_AIO_DOMAIN_NAME=$TEST_AIO_DOMAIN_NAME                   \
+    AIO_GITHUB_ORGANIZATION=$AIO_GITHUB_ORGANIZATION   TEST_AIO_GITHUB_ORGANIZATION=$TEST_AIO_GITHUB_ORGANIZATION   \
+    AIO_GITHUB_TEAM_SLUGS=$AIO_GITHUB_TEAM_SLUGS       TEST_AIO_GITHUB_TEAM_SLUGS=$TEST_AIO_GITHUB_TEAM_SLUGS       \
+    AIO_NGINX_HOSTNAME=$AIO_NGINX_HOSTNAME             TEST_AIO_NGINX_HOSTNAME=$TEST_AIO_NGINX_HOSTNAME             \
+    AIO_NGINX_PORT_HTTP=$AIO_NGINX_PORT_HTTP           TEST_AIO_NGINX_PORT_HTTP=$TEST_AIO_NGINX_PORT_HTTP           \
+    AIO_NGINX_PORT_HTTPS=$AIO_NGINX_PORT_HTTPS         TEST_AIO_NGINX_PORT_HTTPS=$TEST_AIO_NGINX_PORT_HTTPS         \
+    AIO_REPO_SLUG=$AIO_REPO_SLUG                       TEST_AIO_REPO_SLUG=$TEST_AIO_REPO_SLUG                       \
+    AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                                                    \
+    AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                                                    \
+    AIO_UPLOAD_HOSTNAME=$AIO_UPLOAD_HOSTNAME           TEST_AIO_UPLOAD_HOSTNAME=$TEST_AIO_UPLOAD_HOSTNAME           \
+    AIO_UPLOAD_MAX_SIZE=$AIO_UPLOAD_MAX_SIZE           TEST_AIO_UPLOAD_MAX_SIZE=$TEST_AIO_UPLOAD_MAX_SIZE           \
+    AIO_UPLOAD_PORT=$AIO_UPLOAD_PORT                   TEST_AIO_UPLOAD_PORT=$TEST_AIO_UPLOAD_PORT                   \
     NODE_ENV=production
 
 
