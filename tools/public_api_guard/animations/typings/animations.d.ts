@@ -81,15 +81,17 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 
 /** @experimental */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-    offset: number;
+    offset?: number;
     styles: {
+        [key: string]: string | number;
+    } | {
         [key: string]: string | number;
     }[];
 }
 
 /** @experimental */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
-    animation: AnimationMetadata;
+    animation: AnimationMetadata | AnimationMetadata[];
     expr: string | ((fromState: string, toState: string) => boolean);
 }
 

@@ -278,7 +278,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
     const firstKeyframe = ast.steps[0];
 
     let offsetGap = 0;
-    const containsOffsets = firstKeyframe.styles.find(styles => styles['offset'] >= 0);
+    const containsOffsets = getOffset(firstKeyframe) != null;
     if (!containsOffsets) {
       offsetGap = MAX_KEYFRAME_OFFSET / limit;
     }
@@ -291,8 +291,9 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
     ast.steps.forEach((step: AnimationStyleMetadata, i: number) => {
       const normalizedStyles = normalizeStyles(step.styles);
-      const offset = containsOffsets ? <number>normalizedStyles['offset'] :
-                                       (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
+      const offset = containsOffsets ?
+          (step.offset != null ? step.offset : parseFloat(normalizedStyles['offset'] as string)) :
+          (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
       innerTimeline.forwardTime(offset * duration);
       innerTimeline.setStyles(normalizedStyles);
     });
@@ -423,4 +424,23 @@ export class TimelineBuilder {
 
     return createTimelineInstruction(finalKeyframes, this.duration, this.startTime, this.easing);
   }
+}
+
+function getOffset(ast: AnimationStyleMetadata): number {
+  let offset = ast.offset;
+  if (offset == null) {
+    const styles = ast.styles;
+    if (Array.isArray(styles)) {
+      for (let i = 0; i < styles.length; i++) {
+        const o = styles[i]['offset'] as number;
+        if (o != null) {
+          offset = o;
+          break;
+        }
+      }
+    } else {
+      offset = styles['offset'] as number;
+    }
+  }
+  return offset;
 }

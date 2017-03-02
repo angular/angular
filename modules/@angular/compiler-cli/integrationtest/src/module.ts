@@ -8,9 +8,9 @@
 
 import {ApplicationRef, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
-
 // Note: don't refer to third_party_src as we want to test that
 // we can compile components from node_modules!
 import {ThirdpartyModule} from 'third_party/module';
@@ -50,6 +50,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     ComponentUsingThirdParty,
   ],
   imports: [
+    NoopAnimationsModule,
     ServerModule,
     FormsModule,
     MdButtonModule,

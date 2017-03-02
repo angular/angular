@@ -5,12 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from '@angular/core';
-
-export function anyToAny(stateA: string, stateB: string): boolean {
-  return Math.random() != Math.random();
-}
+import {AUTO_STYLE, animate, state, style, transition, trigger} from '@angular/animations';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'animate-cmp',
@@ -20,7 +16,7 @@ export function anyToAny(stateA: string, stateB: string): boolean {
         state('*', style({height: AUTO_STYLE, color: 'black', borderColor: 'black'})),
         state('closed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
         state('open', style({height: AUTO_STYLE, borderColor: 'green', color: 'green'})),
-        transition(anyToAny, animate('1s')), transition('* => *', animate(500))
+        transition('* => *', animate('1s'))
       ])],
   template: `
     <button (click)="setAsOpen()">Open</button>

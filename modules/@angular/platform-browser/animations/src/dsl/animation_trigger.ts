@@ -93,9 +93,23 @@ class AnimationTriggerVisitor implements AnimationDslVisitor {
     context.transitions.push(ast);
   }
 
-  visitSequence(ast: AnimationSequenceMetadata, context: any) {}
-  visitGroup(ast: AnimationGroupMetadata, context: any) {}
-  visitAnimate(ast: AnimationAnimateMetadata, context: any) {}
-  visitStyle(ast: AnimationStyleMetadata, context: any) {}
-  visitKeyframeSequence(ast: AnimationKeyframesSequenceMetadata, context: any) {}
+  visitSequence(ast: AnimationSequenceMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitGroup(ast: AnimationGroupMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitAnimate(ast: AnimationAnimateMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitStyle(ast: AnimationStyleMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitKeyframeSequence(ast: AnimationKeyframesSequenceMetadata, context: any) {
+    // these values are not visited in this AST
+  }
 }
