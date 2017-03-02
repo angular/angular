@@ -14,18 +14,16 @@ export interface WebWorkerMessage {
 }
 
 export class WebWorkerClient {
-  worker: Worker;
-  private messageId = 0;
+  private nextId = 0;
 
-  constructor(url: string, private zone: NgZone) {
-    this.worker = new Worker(url);
+  constructor(private worker: Worker, private zone: NgZone) {
   }
 
   sendMessage<T>(type: string, payload?: any): Observable<T> {
 
     return new Observable<T>(subscriber => {
 
-      const id = this.messageId++;
+      const id = this.nextId++;
 
       const handleMessage = (response: MessageEvent) => {
         const {type: responseType, id: responseId, payload: responsePayload} = response.data as WebWorkerMessage;
