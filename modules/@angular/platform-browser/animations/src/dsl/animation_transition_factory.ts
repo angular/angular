@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationTransitionMetadata, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationTransitionMetadata, sequence, ɵStyleData} from '@angular/animations';
+
 import {buildAnimationKeyframes} from './animation_timeline_visitor';
 import {TransitionMatcherFn} from './animation_transition_expr';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
@@ -17,7 +18,10 @@ export class AnimationTransitionFactory {
       private _triggerName: string, ast: AnimationTransitionMetadata,
       private matchFns: TransitionMatcherFn[],
       private _stateStyles: {[stateName: string]: ɵStyleData}) {
-    this._animationAst = ast.animation;
+    const normalizedAst = Array.isArray(ast.animation) ?
+        sequence(<AnimationMetadata[]>ast.animation) :
+        <AnimationMetadata>ast.animation;
+    this._animationAst = normalizedAst;
   }
 
   match(currentState: any, nextState: any): AnimationTransitionInstruction {
