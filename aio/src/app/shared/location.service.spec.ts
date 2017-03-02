@@ -3,7 +3,7 @@ import { Location, LocationStrategy } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
 import { LocationService } from './location.service';
 
-fdescribe('LocationService', () => {
+describe('LocationService', () => {
 
   let injector: ReflectiveInjector;
 
