@@ -11,6 +11,8 @@ import {FormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
+// Used to test declared modules.
+import {Worker} from 'cluster';
 // Note: don't refer to third_party_src as we want to test that
 // we can compile components from node_modules!
 import {ThirdpartyModule} from 'third_party/module';
@@ -24,6 +26,10 @@ import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferenc
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
+
+export function getWorker(): Worker|null {
+  return null;
+}
 
 @NgModule({
   declarations: [
@@ -58,7 +64,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     SomeLibModule.withProviders(),
     ThirdpartyModule,
   ],
-  providers: [SomeService],
+  providers: [SomeService, {provide: Worker, useFactory: getWorker}],
   entryComponents: [
     AnimateCmp,
     BasicComp,

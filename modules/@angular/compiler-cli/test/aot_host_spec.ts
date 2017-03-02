@@ -23,7 +23,7 @@ describe('CompilerHost', () => {
     context = new MockAotContext('/tmp/src', clone(FILES));
     const host = new MockCompilerHost(context);
     program = ts.createProgram(
-        ['main.ts'], {
+        ['main.ts', 'declared-module.ts'], {
           module: ts.ModuleKind.CommonJS,
         },
         host);
@@ -202,6 +202,12 @@ describe('CompilerHost', () => {
       {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
     ]);
   });
+
+  it('should be able to detect a declared module', () => {
+    const fileName = hostNestedGenDir.moduleNameToFileName('some/module', '/tmp/src/main.ts');
+    const moduleName = hostNestedGenDir.fileNameToModuleName(fileName, '/tmp/src/main.ts');
+    expect(moduleName).toEqual('some/module');
+  });
 });
 
 const dummyModule = 'export let foo: any[];';
@@ -220,6 +226,11 @@ const FILES: Entry = {
         import * as u from './lib/utils';
         import * as cs from './lib/collections';
         import * as u2 from './lib2/utils2';
+      `,
+      'declared-module.ts': `
+        declare module 'some/module' {
+          export class AmbientClass {}
+        }
       `,
       'lib': {
         'utils.ts': dummyModule,

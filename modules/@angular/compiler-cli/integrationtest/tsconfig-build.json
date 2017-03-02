@@ -1,7 +1,5 @@
 {
   "angularCompilerOptions": {
-    // For TypeScript 1.8, we have to lay out generated files
-    // in the same source directory with your code.
     "genDir": ".",
     "debug": true
   },
