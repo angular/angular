@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Benchpress - a framework for e2e performance tests",
   "main": "index.js",
-  "typings": "./typings/index.d.ts",
+  "typings": "./index.d.ts",
   "dependencies": {
     "@angular/core": "^2.0.0-rc.7",
     "reflect-metadata": "^0.1.2",

@@ -1,7 +1,0 @@
-{
-  "extends": "../tsconfig-build",
-  "compilerOptions": {
-    "module": "es2015",
-    "moduleResolution": "node"
-  }
-}
