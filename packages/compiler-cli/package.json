@@ -3,7 +3,7 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the compiler CLI for Node.js",
   "main": "index.js",
-  "typings": "./typings/index.d.ts",
+  "typings": "index.d.ts",
   "bin": {
     "ngc": "./src/main.js",
     "ng-xi18n": "./src/extract_i18n.js"

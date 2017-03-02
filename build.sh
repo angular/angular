@@ -25,6 +25,9 @@ PACKAGES=(core
   language-service
   benchpress)
 
+NODE_PACKAGES=(compiler-cli
+  benchpress)
+
 BUILD_ALL=true
 BUNDLE=true
 VERSION_PREFIX=$(node -p "require('./package.json').version")
@@ -32,6 +35,8 @@ VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
 ROUTER_VERSION_PREFIX=$(node -p "require('./package.json').version.replace(/^2/, '3')")
 REMOVE_BENCHPRESS=false
 BUILD_EXAMPLES=true
+COMPILE_SOURCE=true
+TYPECHECK_ALL=true
 
 for ARG in "$@"; do
   case "$ARG" in
@@ -50,6 +55,12 @@ for ARG in "$@"; do
     --examples=*)
       BUILD_EXAMPLES=${ARG#--examples=}
       ;;
+    --compile=*)
+      COMPILE_SOURCE=${ARG#--compile=}
+      ;;
+    --typecheck=*)
+      TYPECHECK_ALL=${ARG#--typecheck=}
+      ;;
     *)
       echo "Unknown option $ARG."
       exit 1
@@ -57,34 +68,237 @@ for ARG in "$@"; do
   esac
 done
 
-getPackageContents() {
-  echo "{\"typings\": \"../typings/${2}/${3:-$2}.d.ts\", \"main\": \"../bundles/${1}-${2}.umd.js\", \"module\": \"../@angular/${1}/${2}.es5.js\", \"es2015\": \"../@angular/${1}/${2}.js\"}"
+#######################################
+# Verifies a directory isn't in the ignored list
+# Arguments:
+#   param1 - Path to check
+# Returns:
+#   Boolean
+#######################################
+isIgnoredDirectory() {
+  name=$(basename ${1})
+  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+#######################################
+# Check if array contains an element
+# Arguments:
+#   param1 - Element to check
+#   param2 - Array to look for element in
+# Returns:
+#   None
+#######################################
+containsElement () {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
 }
 
 #######################################
 # Downlevel ES2015 to ESM/ES5
 # Arguments:
-#   param1 - Destination folder
-#   param2 - Input path
-#   param3 - Output path
+#   param1 - Source folder
+#   param2 - Naming suffix to apply. Must end in ".ts" (defaults to .es5.ts)
 # Returns:
 #   None
 #######################################
 downlevelES2015() {
-  echo '{"presets": [ ["es2015", { "modules": false }] ], "compact": false }' > ${1}/.babelrc
-  $BABELJS ${2} -o ${3}
-  rm -f ${1}/.babelrc
+  # Iterate over the files in this directory, converting to .es5.ts
+  regex="(.+).js"
+  for file in ${1}/*.js ; do
+    if [[ ${file} =~ $regex ]]; then
+      ts_file="${BASH_REMATCH[1]}${2:-".es5.ts"}"
+      cp ${file} ${ts_file}
+
+      echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib"
+      ($TSC ${ts_file} --target es5 --module es2015 --noLib) > /dev/null 2>&1 || true
+      rm -f ${ts_file}
+    fi
+  done
+
+  # Recurse for sub directories
+  for DIR in ${1}/* ; do
+    isIgnoredDirectory ${DIR} && continue
+    downlevelES2015 ${DIR}
+  done
+}
+
+#######################################
+# Rollup index files recursively, ignoring blacklisted directories
+# Arguments:
+#   param1 - Base source folder
+#   param2 - Source folder being rolled up (
+#   param2 - Naming suffix to apply. Must end in ".ts" (defaults to .es5.ts)
+# Returns:
+#   None
+#######################################
+rollupIndex() {
+  # Iterate over the files in this directory, rolling up each into ${2} directory
+  regex=".+/(.+)/index.js"
+  if [[ "${1}/index.js" =~ $regex ]]; then
+    in_file="${1}/index.js"
+    out_file="${2}/${BASH_REMATCH[1]}.js"
+
+    echo "======           $ROLLUP -i ${in_file} -o ${out_file}"
+    $ROLLUP -i ${in_file} -o ${out_file}
+    cat ${LICENSE_BANNER} > ${out_file}.tmp
+    cat ${out_file} >> ${out_file}.tmp
+    mv ${out_file}.tmp ${out_file}
+
+    # Recurse for sub directories
+    for DIR in ${1}/* ; do
+      isIgnoredDirectory ${DIR} && continue
+      # NOTE: We need to re-run this regex and use the new match as Bash doesn't have closures
+      if [[ "${1}/index.js" =~ $regex ]]; then
+        rollupIndex ${DIR} ${2}/${BASH_REMATCH[1]}
+      fi
+    done
+  fi
+}
+
+
+#######################################
+# Recursively runs rollup on any entry point that has a "rollup.config.js" file
+# Arguments:
+#   param1 - Base source folder containing rollup.config.js
+#   param2 - Package name
+# Returns:
+#   None
+#######################################
+runRollup() {
+  if [[ "${1}/rollup.config.js" =~ $regex ]]; then
+    cd ${1}
+
+    echo "======           $ROLLUP -c ${1}/rollup.config.js"
+    $ROLLUP -c rollup.config.js
+
+    # Recurse for sub directories
+    for DIR in ${1}/* ; do
+      isIgnoredDirectory ${DIR} && continue
+      runRollup ${DIR}
+    done
+  fi
+}
+
+#######################################
+# Adds banners to all files in a directory
+# Arguments:
+#   param1 - Directory to add license banners to
+# Returns:
+#   None
+#######################################
+addBanners() {
+  for file in ${1}/*; do
+    if [[ -f ${file} ]]; then
+      cat ${LICENSE_BANNER} > ${file}.tmp
+      cat ${file} >> ${file}.tmp
+      mv ${file}.tmp ${file}
+    fi
+  done
+}
+
+#######################################
+# Minifies files in a directory
+# Arguments:
+#   param1 - Directory to minify
+# Returns:
+#   None
+#######################################
+minify() {
+  # Iterate over the files in this directory, rolling up each into ${2} directory
+  regex="(.+).js"
+  files=(${1}/*)
+  echo "${files[@]}"
+  for file in "${files[@]}"; do
+    echo "${file}"
+    base_file=$( basename "${file}" )
+    if [[ "${base_file}" =~ $regex ]]; then
+      $UGLIFYJS -c --screw-ie8 --comments -o ${1}/${BASH_REMATCH[1]}.min.js ${file}
+    fi
+  done
+}
+
+#######################################
+# Recursively compile package
+# Arguments:
+#   param1 - Source directory
+#   param2 - Out dir
+#   param3 - Package Name
+#   param4 - Is child (are we recursing?)
+# Returns:
+#   None
+#######################################
+compilePackage() {
+  echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
+  # For NODE_PACKAGES items (not getting rolled up)
+  if containsElement "${PACKAGE}" "${NODE_PACKAGES[@]}"; then
+    $TSC -p ${1}/tsconfig-build.json
+  else
+    local package_name=$(basename "${2}")
+    $NGC -p ${1}/tsconfig-build.json
+    echo "======           Create ${1}/../${package_name}.d.ts re-export file for Closure"
+    echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
+  fi
+
+  for DIR in ${1}/* ; do
+    [ -d "${DIR}" ] || continue
+    BASE_DIR=$(basename "${DIR}")
+    # Skip over directories that are not nested entry points
+    [[ -e ${DIR}/tsconfig-build.json && "${BASE_DIR}" != "integrationtest" ]] || continue
+    compilePackage ${DIR} ${2}/${BASE_DIR} ${3} true
+  done
+}
+
+#######################################
+# Renames typings index to package name
+# Arguments:
+#   param1 - Source directory of typings files
+#   param2 - Package name
+# Returns:
+#   None
+#######################################
+moveTypings() {
+  if [[ -f ${1}/index.d.ts ]]; then
+    mv ${1}/index.d.ts ${1}/${2}.d.ts
+    mv ${1}/index.metadata.json ${1}/${2}.metadata.json
+  fi
+}
+
+#######################################
+# Adds a package.json in directories where needed (secondary entry point typings).
+# This is read by NGC to be able to find the flat module index.
+# Arguments:
+#   param1 - Source directory of typings files
+# Returns:
+#   None
+#######################################
+addNgcPackageJson() {
+  for DIR in ${1}/* ; do
+    [ -d "${DIR}" ] || continue
+    # Confirm there is an index.d.ts and index.metadata.json file. If so, create
+    # the package.json and recurse.
+    if [[ -f ${DIR}/index.d.ts && -f ${DIR}/index.metadata.json ]]; then
+      echo '{"typings": "index.d.ts"}' > ${DIR}/package.json
+      addNgcPackageJson ${DIR}
+    fi
+  done
 }
 
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
 ROUTER_VERSION="${ROUTER_VERSION_PREFIX}${VERSION_SUFFIX}"
 echo "====== BUILDING: Version ${VERSION} (Router ${ROUTER_VERSION})"
 
-TSC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
+N="
+"
+TSC=`pwd`/node_modules/.bin/tsc
+NGC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
 UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
-BABELJS=`pwd`/node_modules/.bin/babel
-BABILI=`pwd`/node_modules/.bin/babili
 TSCONFIG=./tools/tsconfig.json
+ROLLUP=`pwd`/node_modules/.bin/rollup
 
 
 travisFoldStart "build tools"
@@ -97,10 +311,10 @@ travisFoldStart "build tools"
 travisFoldEnd "build tools"
 
 
-if [[ ${BUILD_ALL} == true ]]; then
+if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
   travisFoldStart "clean dist"
     rm -rf ./dist/all/
-    rm -rf ./dist/packages-dist
+    rm -rf ./dist/packages
   travisFoldEnd "clean dist"
 
   travisFoldStart "copy e2e files"
@@ -140,330 +354,104 @@ if [[ ${BUILD_ALL} == true ]]; then
     cd -
   travisFoldEnd "copy e2e files"
 
-  TSCONFIG=modules/tsconfig.json
+  TSCONFIG="packages/tsconfig.json"
   travisFoldStart "tsc -p ${TSCONFIG}"
-    $TSC -p ${TSCONFIG}
+    $NGC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
+  TSCONFIG="modules/tsconfig.json"
+  travisFoldStart "tsc -p ${TSCONFIG}"
+    $NGC -p ${TSCONFIG}
+  travisFoldEnd "tsc -p ${TSCONFIG}"
+
+fi
+
+if [[ ${BUILD_ALL} == true ]]; then
+  rm -rf ./dist/packages
+  if [[ ${BUNDLE} == true ]]; then
+    rm -rf ./dist/packages-dist
+  fi
 fi
 
 for PACKAGE in ${PACKAGES[@]}
 do
   travisFoldStart "build package: ${PACKAGE}"
   PWD=`pwd`
-  ROOTDIR=${PWD}/modules/@angular
-  SRCDIR=${PWD}/modules/@angular/${PACKAGE}
-  DESTDIR=${PWD}/dist/packages-dist/${PACKAGE}
-  DEST_MODULE=${DESTDIR}/@angular
-  DEST_BUNDLES=${DESTDIR}/bundles
-
-  # ESM/2015
-  JS_PATH=${DEST_MODULE}/${PACKAGE}.js
-  JS_PATH_ES5=${DEST_MODULE}/${PACKAGE}.es5.js
-  JS_TESTING_PATH=${DEST_MODULE}/${PACKAGE}/testing.js
-  JS_TESTING_PATH_ES5=${DEST_MODULE}/${PACKAGE}/testing.es5.js
-  JS_STATIC_PATH=${DEST_MODULE}/${PACKAGE}/static.js
-  JS_STATIC_PATH_ES5=${DEST_MODULE}/${PACKAGE}/static.es5.js
-  JS_UPGRADE_PATH=${DEST_MODULE}/${PACKAGE}/upgrade.js
-  JS_UPGRADE_PATH_ES5=${DEST_MODULE}/${PACKAGE}/upgrade.es5.js
-  JS_ANIMATIONS_PATH=${DEST_MODULE}/${PACKAGE}/animations.js
-  JS_ANIMATIONS_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations.es5.js
-  JS_ANIMATIONS_TESTING_PATH=${DEST_MODULE}/${PACKAGE}/animations/testing.js
-  JS_ANIMATIONS_TESTING_PATH_ES5=${DEST_MODULE}/${PACKAGE}/animations/testing.es5.js
-
-  # UMD/ES5
-  UMD_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}.umd.js
-  UMD_TESTING_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-testing.umd.js
-  UMD_STATIC_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-static.umd.js
-  UMD_UPGRADE_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-upgrade.umd.js
-  UMD_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}.umd.min.js
-  UMD_STATIC_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-static.umd.min.js
-  UMD_UPGRADE_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-upgrade.umd.min.js
-  UMD_ANIMATIONS_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.js
-  UMD_ANIMATIONS_ES5_MIN_PATH=${DEST_BUNDLES}/${PACKAGE}-animations.umd.min.js
-  UMD_ANIMATIONS_TESTING_ES5_PATH=${DEST_BUNDLES}/${PACKAGE}-animations-testing.umd.js
+  ROOT_DIR=${PWD}/packages
+  SRC_DIR=${ROOT_DIR}/${PACKAGE}
+  ROOT_OUT_DIR=${PWD}/dist/packages
+  OUT_DIR=${ROOT_OUT_DIR}/${PACKAGE}
+  NPM_DIR=${PWD}/dist/packages-dist/${PACKAGE}
+  MODULES_DIR=${NPM_DIR}/@angular
+  BUNDLES_DIR=${NPM_DIR}/bundles
 
   if [[ ${PACKAGE} != router ]]; then
-    LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
+    LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
   fi
   if [[ ${PACKAGE} == router ]]; then
-    LICENSE_BANNER=${PWD}/modules/@angular/router-license-banner.txt
+    LICENSE_BANNER=${ROOT_DIR}/router-license-banner.txt
   fi
 
-  rm -rf ${DESTDIR}
-
-  # When .babelrc file exists, the dist package will have ES2015 sources, ESM/ES5, and UMD bundles. Because of a bug
-  # preventing the @angular/compiler package from running through this pipeline, we have to manually check for the Compiler
-  # package as well. The tsconfig-build.json defaults to building to the root of the package dist dir, but when
-  # outputting ES2015 then bundling from there, built files should go to the DEST_MODULE folder.
-  echo "======      [${PACKAGE}]: COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-build.json"
-  if [[ -e ${SRCDIR}/.babelrc || ${PACKAGE} == "compiler" ]]; then
-    $TSC -p ${SRCDIR}/tsconfig-build.json -outDir ${DEST_MODULE}
-  else
-    $TSC -p ${SRCDIR}/tsconfig-build.json
+  if [[ ${COMPILE_SOURCE} == true ]]; then
+    rm -rf ${OUT_DIR}
+    rm -f ${ROOT_OUT_DIR}/${PACKAGE}.js
+    compilePackage ${SRC_DIR} ${OUT_DIR} ${PACKAGE}
   fi
 
-  echo "======        Move ${PACKAGE} typings"
-  if [[ -e ${SRCDIR}/.babelrc || -d ${DEST_MODULE} ]]; then
-    rsync -a --exclude=*.js --exclude=*.js.map ${DEST_MODULE}/ ${DESTDIR}/typings
-    mv ${DESTDIR}/typings/index.d.ts ${DESTDIR}/typings/${PACKAGE}.d.ts
-    mv ${DESTDIR}/typings/index.metadata.json ${DESTDIR}/typings/${PACKAGE}.metadata.json
-  else
-    rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/ ${DESTDIR}/typings
-    find ${DESTDIR} -name "*.d.ts" -not -path "${DESTDIR}/typings/*" -exec rm -f {} \;
-  fi
+  if [[ ${BUNDLE} == true ]]; then
+    echo "======      BUNDLING ${PACKAGE}: ${SRC_DIR} ====="
+    rm -rf ${NPM_DIR} && mkdir -p ${NPM_DIR}
 
-  if [[ -e ${SRCDIR}/tsconfig-es5.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (ES5): ${TSC} -p ${SRCDIR}/tsconfig-es5.json"
-    $TSC -p ${SRCDIR}/tsconfig-es5.json
-  fi
+    if ! containsElement "${PACKAGE}" "${NODE_PACKAGES[@]}"; then
 
-  cp ${SRCDIR}/package.json ${DESTDIR}/
-  if [[ -e ${SRCDIR}/.babelrc ]]; then
-    cp ${SRCDIR}/.babelrc ${DESTDIR}/
-  fi
-  cp ${PWD}/modules/@angular/README.md ${DESTDIR}/
+      echo "======        Copy ${PACKAGE} typings"
+      rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}/typings
+      moveTypings ${NPM_DIR}/typings ${PACKAGE}
+      addNgcPackageJson ${NPM_DIR}/typings
 
-  if [[ -e ${SRCDIR}/tsconfig-upgrade.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (UPGRADE): ${TSC} -p ${SRCDIR}/tsconfig-upgrade.json"
-    $TSC -p ${SRCDIR}/tsconfig-upgrade.json
-  fi
+      (
+        cd  ${SRC_DIR}
+        echo "======         Rollup ${PACKAGE}"
+        rollupIndex ${OUT_DIR} ${MODULES_DIR}
 
-  if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (TESTING): ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
-    $TSC -p ${SRCDIR}/tsconfig-testing.json
-  fi
-
-  if [[ -e ${SRCDIR}/tsconfig-animations.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (ANIMATIONS): ${TSC} -p ${SRCDIR}/tsconfig-animations.json"
-    $TSC -p ${SRCDIR}/tsconfig-animations.json
-
-    if [[ -e ${SRCDIR}/tsconfig-animations-testing.json ]]; then
-      echo "======      [${PACKAGE}]: COMPILING (ANIMATION TESTING): ${TSC} -p ${SRCDIR}/tsconfig-animations-testing.json"
-      $TSC -p ${SRCDIR}/tsconfig-animations-testing.json
-    fi
-  fi
-
-  if [[ -e ${SRCDIR}/tsconfig-static.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (STATIC): ${TSC} -p ${SRCDIR}/tsconfig-static.json"
-    $TSC -p ${SRCDIR}/tsconfig-static.json
-  fi
-
-  if [[ -e ${SRCDIR}/tsconfig-esm5.json ]]; then
-    echo "======      [${PACKAGE}]: COMPILING (ESM/ES5): ${TSC} -p ${SRCDIR}/tsconfig-esm5.json"
-    ${TSC} -p ${SRCDIR}/tsconfig-esm5.json
-  fi
-
-  if [[ ${PACKAGE} == benchpress ]]; then
-    cp ${SRCDIR}/*.md ${DESTDIR}
-    cp -r ${SRCDIR}/docs ${DESTDIR}
-  fi
-
-  if [[ ${BUNDLE} == true && ${PACKAGE} != compiler-cli && ${PACKAGE} != benchpress ]]; then
-
-    echo "======      BUNDLING: ${SRCDIR} ====="
-    mkdir ${DEST_BUNDLES}
-
-    (
-      cd  ${SRCDIR}
-      echo "======         Rollup ${PACKAGE} index"
-      if [[ -e rollup.config.js ]]; then
-        ../../../node_modules/.bin/rollup -c rollup.config.js
-      else
-        ../../../node_modules/.bin/rollup -i ${DEST_MODULE}/index.js -o ${JS_PATH}
-        cat ${LICENSE_BANNER} > ${JS_PATH}.tmp
-        cat ${JS_PATH} >> ${JS_PATH}.tmp
-        mv ${JS_PATH}.tmp ${JS_PATH}
-      fi
-
-      if ! [[ ${PACKAGE} == 'benchpress' ]]; then
-        rm -f ${DEST_MODULE}/index.*
-        rm -rf ${DEST_MODULE}/src
-      fi
-
-      if [[ -e ${DESTDIR}/.babelrc ]]; then
-
-        echo "======         Downleveling ES2015 to UMD/ES5"
-        $BABELJS ${JS_PATH} -o ${UMD_ES5_PATH}
-
-        ### Minification ###
-        echo "======         Minifying ES2015"
-        $BABILI ${JS_PATH} -o ${UMD_ES5_MIN_PATH}
-        echo "======         Downleveling minified ES2015 to UMD/ES5"
-        $BABELJS ${UMD_ES5_MIN_PATH} -o ${UMD_ES5_MIN_PATH}
-
-        echo "======         Minifying UMD/ES5"
-        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_MIN_PATH}
-        ### END Minification ###
-      elif [[ -e rollup-umd.config.js ]]; then
-        # For packages not running through babel, use the UMD/ES5 config
-        echo "======         Rollup ${PACKAGE} index to UMD/ES5"
-        ../../../node_modules/.bin/rollup -c rollup-umd.config.js
-        [[ -d ${DESTDIR}/es5 ]] && rm -rf ${DESTDIR}/es5
-        echo "======         Minifying UMD/ES5"
-        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
-      fi
-
-      rm -f ${DESTDIR}/.babelrc
-      if [[ -d ${DEST_MODULE} ]]; then
         echo "======         Downleveling ES2015 to ESM/ES5"
-        downlevelES2015 ${DESTDIR} ${JS_PATH} ${JS_PATH_ES5}
-      fi
+        downlevelES2015 ${MODULES_DIR}
 
-      if [[ -d testing ]]; then
-        echo "======         Rollup ${PACKAGE} testing"
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/testing/index.js -o ${DESTDIR}/testing.tmp.js
+        echo "======         Run rollup conversions on ${PACKAGE}"
+        runRollup ${SRC_DIR}
+        addBanners ${BUNDLES_DIR}
+        minify ${BUNDLES_DIR}
 
-        echo "======         Downleveling ${PACKAGE} TESTING to UMD/ES5"
-        [[ -e ${SRCDIR}/.babelrc-testing ]] && cp ${SRCDIR}/.babelrc-testing ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/testing.tmp.js -o ${UMD_TESTING_ES5_PATH}
-        rm -f ${DESTDIR}/.babelrc
+      ) 2>&1 | grep -v "as external dependency"
+    else
+      echo "======        Copy ${PACKAGE} node tool"
+      rsync -a ${OUT_DIR}/ ${NPM_DIR}
+    fi
 
-        echo "======         Move ${PACKAGE} testing typings"
-        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/testing/ ${DESTDIR}/typings/testing
+    echo "======        Copy ${PACKAGE} package.json files"
+    rsync -am --include="package.json" --include="*/" --exclude=* ${SRC_DIR}/ ${NPM_DIR}/
 
-        rm -rf ${DESTDIR}/testing
-
-        mkdir ${DESTDIR}/testing && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
-
-        getPackageContents "${PACKAGE}" "testing" "index" > ${DESTDIR}/testing/package.json
-
-        mv ${DESTDIR}/testing.tmp.js ${JS_TESTING_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_TESTING_PATH} ${JS_TESTING_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_TESTING_ES5_PATH}.tmp
-        cat ${UMD_TESTING_ES5_PATH} >> ${UMD_TESTING_ES5_PATH}.tmp
-        mv ${UMD_TESTING_ES5_PATH}.tmp ${UMD_TESTING_ES5_PATH}
-      fi
-
-      if [[ -e static.ts ]]; then
-        echo "======         Rollup ${PACKAGE} static"
-        rm -f ${DEST_MODULE}/static.*
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/static/static.js -o ${DESTDIR}/static.tmp.js
-
-        echo "======         Downleveling ${PACKAGE} STATIC to UMD/ES5"
-        [[ -e ${SRCDIR}/.babelrc-static ]] && cp ${SRCDIR}/.babelrc-static ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/static.tmp.js -o ${UMD_STATIC_ES5_PATH}
-        rm -f ${DESTDIR}/.babelrc
-
-        echo "======         Move ${PACKAGE} static typings"
-        rsync -a --exclude=*.js ${DESTDIR}/static/ ${DESTDIR}/typings/static
-        rm -f ${DESTDIR}/typings/static/index.d.ts
-        rm -rf ${DESTDIR}/static
-
-        mkdir ${DESTDIR}/static && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
-
-        getPackageContents "${PACKAGE}" "static"> ${DESTDIR}/static/package.json
-
-        mv ${DESTDIR}/static.tmp.js ${JS_STATIC_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_STATIC_PATH} ${JS_STATIC_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_STATIC_ES5_PATH}.tmp
-        cat ${UMD_STATIC_ES5_PATH} >> ${UMD_STATIC_ES5_PATH}.tmp
-        mv ${UMD_STATIC_ES5_PATH}.tmp ${UMD_STATIC_ES5_PATH}
-        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_STATIC_ES5_MIN_PATH} ${UMD_STATIC_ES5_PATH}
-      fi
-
-      if [[ -e upgrade.ts ]]; then
-        echo "======         Rollup ${PACKAGE} upgrade"
-        rm -f ${DEST_MODULE}/upgrade.*
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/upgrade/upgrade.js -o ${DESTDIR}/upgrade.tmp.js
-
-        echo "======         Downleveling ${PACKAGE} UPGRADE to UMD/ES5"
-        [[ -e ${SRCDIR}/.babelrc-upgrade ]] && cp ${SRCDIR}/.babelrc-upgrade ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/upgrade.tmp.js -o ${UMD_UPGRADE_ES5_PATH}
-        rm -f ${DESTDIR}/.babelrc
-
-        echo "======         Move ${PACKAGE} upgrade typings"
-        rsync -a --exclude=*.js ${DESTDIR}/upgrade/ ${DESTDIR}/typings/upgrade
-        rm -f ${DESTDIR}/typings/upgrade/index.d.ts
-        rm -rf ${DESTDIR}/upgrade
-
-        mkdir ${DESTDIR}/upgrade && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
-
-        getPackageContents "${PACKAGE}" "upgrade" > ${DESTDIR}/upgrade/package.json
-
-        mv ${DESTDIR}/upgrade.tmp.js ${JS_UPGRADE_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_UPGRADE_PATH} ${JS_UPGRADE_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_UPGRADE_ES5_PATH}.tmp
-        cat ${UMD_UPGRADE_ES5_PATH} >> ${UMD_UPGRADE_ES5_PATH}.tmp
-        mv ${UMD_UPGRADE_ES5_PATH}.tmp ${UMD_UPGRADE_ES5_PATH}
-        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_UPGRADE_ES5_MIN_PATH} ${UMD_UPGRADE_ES5_PATH}
-      fi
-
-      if [[ -d animations ]]; then
-        echo "======         Rollup ${PACKAGE} animations"
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/animations/index.js -o ${DESTDIR}/animations.tmp.js
-
-        echo "======         Downleveling ${PACKAGE} ANIMATIONS to ES5/UMD"
-        [[ -e ${SRCDIR}/.babelrc-animations ]] && cp ${SRCDIR}/.babelrc-animations ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/animations.tmp.js -o ${UMD_ANIMATIONS_ES5_PATH}
-        rm -f ${DESTDIR}/.babelrc
-
-        echo "======         Move ${PACKAGE} animations typings"
-        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/animations/ ${DESTDIR}/typings/animations
-        mv ${DESTDIR}/typings/animations/index.d.ts ${DESTDIR}/typings/animations/animations.d.ts
-        mv ${DESTDIR}/typings/animations/index.metadata.json ${DESTDIR}/typings/animations/animations.metadata.json
-
-        echo "======         Rollup ${PACKAGE} animations/testing"
-        ../../../node_modules/.bin/rollup -i ${DESTDIR}/animations/testing/index.js -o ${DESTDIR}/animations-testing.tmp.js
-
-        echo "======         Downleveling ${PACKAGE} ANIMATIONS TESTING to ES5/UMD"
-        [[ -e ${SRCDIR}/.babelrc-animations-testing ]] && cp ${SRCDIR}/.babelrc-animations-testing ${DESTDIR}/.babelrc
-        $BABELJS ${DESTDIR}/animations-testing.tmp.js -o ${UMD_ANIMATIONS_TESTING_ES5_PATH}
-        rm -f ${DESTDIR}/.babelrc
-
-        echo "======         Move ${PACKAGE} animations testing typings"
-        rsync -a --exclude=*.js --exclude=*.js.map ${DESTDIR}/animations/testing/ ${DESTDIR}/typings/animations/testing
-
-        rm -rf ${DESTDIR}/animations
-
-        mkdir ${DESTDIR}/animations && [[ -d ${DEST_MODULE}/${PACKAGE} ]] || mkdir ${DEST_MODULE}/${PACKAGE}
-        mkdir ${DESTDIR}/animations/testing
-
-        getPackageContents "${PACKAGE}" "animations" > ${DESTDIR}/animations/package.json
-
-        echo '{"typings": "../../typings/animations/testing/index.d.ts", "main": "../../bundles/platform-browser-animations-testing.umd.js", "module": "../../@angular/platform-browser/animations/testing.es5.js", "es2015": "../../@angular/platform-browser/animations/testing.js"}' > ${DESTDIR}/animations/testing/package.json
-        # This is needed for Compiler to be able to find the bundle index.
-        echo '{"typings": "animations.d.ts"}' > ${DESTDIR}/typings/animations/package.json
-
-        mv ${DESTDIR}/animations.tmp.js ${JS_ANIMATIONS_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_ANIMATIONS_PATH} ${JS_ANIMATIONS_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_ES5_PATH}.tmp
-        cat ${UMD_ANIMATIONS_ES5_PATH} >> ${UMD_ANIMATIONS_ES5_PATH}.tmp
-        mv ${UMD_ANIMATIONS_ES5_PATH}.tmp ${UMD_ANIMATIONS_ES5_PATH}
-        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ANIMATIONS_ES5_MIN_PATH} ${UMD_ANIMATIONS_ES5_PATH}
-
-        mkdir ${DEST_MODULE}/${PACKAGE}/animations
-
-        mv ${DESTDIR}/animations-testing.tmp.js ${JS_ANIMATIONS_TESTING_PATH}
-        downlevelES2015 ${DESTDIR} ${JS_ANIMATIONS_TESTING_PATH} ${JS_ANIMATIONS_TESTING_PATH_ES5}
-        cat ${LICENSE_BANNER} > ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
-        cat ${UMD_ANIMATIONS_TESTING_ES5_PATH} >> ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp
-        mv ${UMD_ANIMATIONS_TESTING_ES5_PATH}.tmp ${UMD_ANIMATIONS_TESTING_ES5_PATH}
-      fi
-
-      for FILE in ${DEST_MODULE}/public_api*; do
-        rm -f ${FILE}
-      done
-
-    ) 2>&1 | grep -v "as external dependency"
-
+    cp ${ROOT_DIR}/README.md ${NPM_DIR}/
   fi
 
-  (
-    echo "======      VERSION: Updating version references"
-    cd ${DESTDIR}
-    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
-    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
-    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g\" $""(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .)"
-    perl -p -i -e "s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g" $(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .) < /dev/null 2> /dev/null
-  )
+
+  if [[ -d ${NPM_DIR} ]]; then
+    (
+      echo "======      VERSION: Updating version references"
+      cd ${NPM_DIR}
+      echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
+      perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
+      echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g\" $""(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .)"
+      perl -p -i -e "s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g" $(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .) < /dev/null 2> /dev/null
+    )
+  fi
 
   travisFoldEnd "build package: ${PACKAGE}"
 done
 
 if [[ ${BUILD_EXAMPLES} == true ]]; then
   travisFoldStart "build examples"
-    echo "====== Building examples: ./modules/@angular/examples/build.sh ====="
-    ./modules/@angular/examples/build.sh
+    echo "====== Building examples: ./packages/examples/build.sh ====="
+    ./packages/examples/build.sh
   travisFoldEnd "build examples"
 fi
 
