@@ -3,8 +3,8 @@
 set -ex -o pipefail
 
 # Only deploy if this Travis job is for the upstream master branch
-if [[ ! ${TRAVIS} || ${CI_MODE} != "aio" || ${TRAVIS_PULL_REQUEST} || ${TRAVIS_BRANCH} != "master" ]]; then
-  echo 0;
+if [[ $TRAVIS != "true" || $CI_MODE != "aio" || $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_BRANCH != "master" ]]; then
+  exit 0;
 fi
 
 
