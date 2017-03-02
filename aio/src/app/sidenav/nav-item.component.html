@@ -1,16 +1,15 @@
 <div *ngIf="isItem">
   <a href={{href}} [ngClass]="classes" target={{target}} title={{tooltip}}
-    (click)="itemClicked()" class="vertical-menu">
+    (click)="itemClicked()" class="vertical-menu-item">
     {{label}}
   </a>
 </div>
 
 <div *ngIf="!isItem">
   <a href={{href}} [ngClass]="classes" target={{target}} title={{tooltip}}
-    (click)="headerClicked()" class="vertical-menu heading">
+    (click)="headerClicked()" class="vertical-menu-item heading">
     {{label}}
-    <md-icon [class.active]="!isActive">keyboard_arrow_right</md-icon>
-    <md-icon [class.active]="isActive">keyboard_arrow_down</md-icon>
+    <md-icon class="rotating-icon">keyboard_arrow_right</md-icon>
   </a>
   <div class="heading-children" [ngClass]="classes">
     <aio-navitem *ngFor="let node of node.children" [level]="level + 1"
