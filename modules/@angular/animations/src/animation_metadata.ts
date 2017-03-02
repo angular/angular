@@ -66,7 +66,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   expr: string|((fromState: string, toState: string) => boolean);
-  animation: AnimationMetadata;
+  animation: AnimationMetadata|AnimationMetadata[];
 }
 
 /**
@@ -86,8 +86,8 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
  * @experimental Animation support is experimental.
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-  styles: {[key: string]: string | number}[];
-  offset: number;
+  styles: {[key: string]: string | number}|{[key: string]: string | number}[];
+  offset?: number;
 }
 
 /**
@@ -341,26 +341,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
 export function style(
     tokens: {[key: string]: string | number} |
     Array<{[key: string]: string | number}>): AnimationStyleMetadata {
-  let input: ɵStyleData[];
-  let offset: number = null;
-  if (Array.isArray(tokens)) {
-    input = <ɵStyleData[]>tokens;
-  } else {
-    input = [<ɵStyleData>tokens];
-  }
-  input.forEach(entry => {
-    const entryOffset = (entry as ɵStyleData)['offset'];
-    if (entryOffset != null) {
-      offset = offset == null ? parseFloat(<string>entryOffset) : offset;
-    }
-  });
-  return _style(offset, input);
+  return {type: AnimationMetadataType.Style, styles: tokens};
 }
-
-function _style(offset: number, styles: ɵStyleData[]): AnimationStyleMetadata {
-  return {type: AnimationMetadataType.Style, styles: styles, offset: offset};
-}
-
 
 /**
  * `state` is an animation-specific function that is designed to be used inside of Angular2's
@@ -573,9 +555,5 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 export function transition(
     stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
     steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata {
-  return {
-    type: AnimationMetadataType.Transition,
-    expr: stateChangeExpr,
-    animation: Array.isArray(steps) ? sequence(steps) : <AnimationMetadata>steps
-  };
+  return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps};
 }
