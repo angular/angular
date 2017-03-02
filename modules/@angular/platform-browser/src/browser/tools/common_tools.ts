@@ -7,11 +7,8 @@
  */
 
 import {ApplicationRef, ComponentRef} from '@angular/core';
-
 import {getDOM} from '../../dom/dom_adapter';
-import {isPresent} from '../../facade/lang';
-
-const win = typeof window !== 'undefined' && window || <any>{};
+import {window} from './browser';
 
 export class ChangeDetectionPerfRecord {
   constructor(public msPerTick: number, public numTicks: number) {}
@@ -47,9 +44,9 @@ export class AngularProfiler {
     const record = config && config['record'];
     const profileName = 'Change Detection';
     // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
-    const isProfilerAvailable = isPresent(win.console.profile);
+    const isProfilerAvailable = window.console.profile != null;
     if (record && isProfilerAvailable) {
-      win.console.profile(profileName);
+      window.console.profile(profileName);
     }
     const start = getDOM().performanceNow();
     let numTicks = 0;
@@ -63,11 +60,11 @@ export class AngularProfiler {
       // while in fact there is:
       //
       // https://developer.mozilla.org/en-US/docs/Web/API/Console/profileEnd
-      (<any>win.console.profileEnd)(profileName);
+      (<any>window.console.profileEnd)(profileName);
     }
     const msPerTick = (end - start) / numTicks;
-    win.console.log(`ran ${numTicks} change detection cycles`);
-    win.console.log(`${msPerTick.toFixed(2)} ms per check`);
+    window.console.log(`ran ${numTicks} change detection cycles`);
+    window.console.log(`${msPerTick.toFixed(2)} ms per check`);
 
     return new ChangeDetectionPerfRecord(msPerTick, numTicks);
   }

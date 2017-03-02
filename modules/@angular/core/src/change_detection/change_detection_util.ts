@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isJsObject, isPrimitive, looseIdentical} from '../facade/lang';
-import {getSymbolIterator} from '../util';
-
-export {looseIdentical} from '../facade/lang';
+import {getSymbolIterator, looseIdentical} from '../util';
 
 export function devModeEqual(a: any, b: any): boolean {
-  if (isListLikeIterable(a) && isListLikeIterable(b)) {
+  const isListLikeIterableA = isListLikeIterable(a);
+  const isListLikeIterableB = isListLikeIterable(b);
+  if (isListLikeIterableA && isListLikeIterableB) {
     return areIterablesEqual(a, b, devModeEqual);
-
-  } else if (
-      !isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) && !isPrimitive(b)) {
-    return true;
-
   } else {
-    return looseIdentical(a, b);
+    const isAObject = a && (typeof a === 'object' || typeof a === 'function');
+    const isBObject = b && (typeof b === 'object' || typeof b === 'function');
+    if (!isListLikeIterableA && isAObject && !isListLikeIterableB && isBObject) {
+      return true;
+    } else {
+      return looseIdentical(a, b);
+    }
   }
 }
 
@@ -112,4 +112,8 @@ export function iterateListLike(obj: any, fn: (p: any) => any) {
       fn(item.value);
     }
   }
+}
+
+export function isJsObject(o: any): boolean {
+  return o !== null && (typeof o === 'function' || typeof o === 'object');
 }

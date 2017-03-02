@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Injectable, Type} from '@angular/core';
-
-import {stringify} from '../../facade/lang';
-
+import {EventEmitter, Injectable, Type, ɵstringify as stringify} from '@angular/core';
 import {MessageBus} from './message_bus';
 import {Serializer, SerializerTypes} from './serializer';
 

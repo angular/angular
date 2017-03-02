@@ -11,7 +11,6 @@ import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isBlank, isPresent} from '../../src/facade/lang';
 
 import {unparse} from './unparser';
 import {validate} from './validator';
@@ -50,21 +49,21 @@ export function main() {
 
   function checkInterpolation(exp: string, expected?: string) {
     const ast = parseInterpolation(exp);
-    if (isBlank(expected)) expected = exp;
+    if (expected == null) expected = exp;
     expect(unparse(ast)).toEqual(expected);
     validate(ast);
   }
 
   function checkBinding(exp: string, expected?: string) {
     const ast = parseBinding(exp);
-    if (isBlank(expected)) expected = exp;
+    if (expected == null) expected = exp;
     expect(unparse(ast)).toEqual(expected);
     validate(ast);
   }
 
   function checkAction(exp: string, expected?: string) {
     const ast = parseAction(exp);
-    if (isBlank(expected)) expected = exp;
+    if (expected == null) expected = exp;
     expect(unparse(ast)).toEqual(expected);
     validate(ast);
   }
@@ -321,9 +320,9 @@ export function main() {
       function keyValues(templateBindings: any[]) {
         return templateBindings.map(binding => {
           if (binding.keyIsVar) {
-            return 'let ' + binding.key + (isBlank(binding.name) ? '=null' : '=' + binding.name);
+            return 'let ' + binding.key + (binding.name == null ? '=null' : '=' + binding.name);
           } else {
-            return binding.key + (isBlank(binding.expression) ? '' : `=${binding.expression}`);
+            return binding.key + (binding.expression == null ? '' : `=${binding.expression}`);
           }
         });
       }
@@ -335,7 +334,7 @@ export function main() {
 
       function exprSources(templateBindings: any[]) {
         return templateBindings.map(
-            binding => isPresent(binding.expression) ? binding.expression.source : null);
+            binding => binding.expression != null ? binding.expression.source : null);
       }
 
       it('should parse an empty string', () => { expect(parseTemplateBindings('')).toEqual([]); });

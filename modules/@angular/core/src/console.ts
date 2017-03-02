@@ -7,11 +7,16 @@
  */
 
 import {Injectable} from './di';
-import {print, warn} from './facade/lang';
 
 @Injectable()
 export class Console {
-  log(message: string): void { print(message); }
+  log(message: string): void {
+    // tslint:disable-next-line:no-console
+    console.log(message);
+  }
   // Note: for reporting errors use `DOM.logError()` as it is platform specific
-  warn(message: string): void { warn(message); }
+  warn(message: string): void {
+    // tslint:disable-next-line:no-console
+    console.warn(message);
+  }
 }

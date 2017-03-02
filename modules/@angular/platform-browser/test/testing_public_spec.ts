@@ -7,11 +7,9 @@
  */
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
-import {stringify} from '../src/facade/lang';
 
 // Services, and components for the tests.
 

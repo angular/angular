@@ -8,7 +8,6 @@
 
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenName, tokenReference} from './compile_metadata';
-import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst} from './template_parser/template_ast';
@@ -37,7 +36,7 @@ export class ProviderViewContext {
     this.viewQueries = _getViewQueries(component);
     this.viewProviders = new Map<any, boolean>();
     component.viewProviders.forEach((provider) => {
-      if (isBlank(this.viewProviders.get(tokenReference(provider.token)))) {
+      if (this.viewProviders.get(tokenReference(provider.token)) == null) {
         this.viewProviders.set(tokenReference(provider.token), true);
       }
     });
@@ -171,7 +170,7 @@ export class ProviderElementContext {
     if (transformedProviderAst) {
       return transformedProviderAst;
     }
-    if (isPresent(this._seenProviders.get(tokenReference(token)))) {
+    if (this._seenProviders.get(tokenReference(token)) != null) {
       this.viewContext.errors.push(new ProviderError(
           `Cannot instantiate cyclic dependency! ${tokenName(token)}`, this._sourceSpan));
       return null;
@@ -181,10 +180,10 @@ export class ProviderElementContext {
       let transformedUseValue = provider.useValue;
       let transformedUseExisting = provider.useExisting;
       let transformedDeps: CompileDiDependencyMetadata[];
-      if (isPresent(provider.useExisting)) {
+      if (provider.useExisting != null) {
         const existingDiDep = this._getDependency(
             resolvedProvider.providerType, {token: provider.useExisting}, eager);
-        if (isPresent(existingDiDep.token)) {
+        if (existingDiDep.token != null) {
           transformedUseExisting = existingDiDep.token;
         } else {
           transformedUseExisting = null;
@@ -219,7 +218,7 @@ export class ProviderElementContext {
       return {isValue: true, value: attrValue == null ? null : attrValue};
     }
 
-    if (isPresent(dep.token)) {
+    if (dep.token != null) {
       // access builtints
       if ((requestingProviderType === ProviderAstType.Directive ||
            requestingProviderType === ProviderAstType.Component)) {
@@ -238,7 +237,7 @@ export class ProviderElementContext {
         return dep;
       }
       // access providers
-      if (isPresent(this._getOrCreateLocalProvider(requestingProviderType, dep.token, eager))) {
+      if (this._getOrCreateLocalProvider(requestingProviderType, dep.token, eager) != null) {
         return dep;
       }
     }
@@ -272,7 +271,7 @@ export class ProviderElementContext {
       if (!result) {
         if (!dep.isHost || this.viewContext.component.isHost ||
             this.viewContext.component.type.reference === tokenReference(dep.token) ||
-            isPresent(this.viewContext.viewProviders.get(tokenReference(dep.token)))) {
+            this.viewContext.viewProviders.get(tokenReference(dep.token)) != null) {
           result = dep;
         } else {
           result = dep.isOptional ? result = {isValue: true, value: null} : null;
@@ -329,7 +328,7 @@ export class NgModuleProviderAnalyzer {
     if (transformedProviderAst) {
       return transformedProviderAst;
     }
-    if (isPresent(this._seenProviders.get(tokenReference(token)))) {
+    if (this._seenProviders.get(tokenReference(token)) != null) {
       this._errors.push(new ProviderError(
           `Cannot instantiate cyclic dependency! ${tokenName(token)}`,
           resolvedProvider.sourceSpan));
@@ -340,10 +339,10 @@ export class NgModuleProviderAnalyzer {
       let transformedUseValue = provider.useValue;
       let transformedUseExisting = provider.useExisting;
       let transformedDeps: CompileDiDependencyMetadata[];
-      if (isPresent(provider.useExisting)) {
+      if (provider.useExisting != null) {
         const existingDiDep =
             this._getDependency({token: provider.useExisting}, eager, resolvedProvider.sourceSpan);
-        if (isPresent(existingDiDep.token)) {
+        if (existingDiDep.token != null) {
           transformedUseExisting = existingDiDep.token;
         } else {
           transformedUseExisting = null;
@@ -374,13 +373,13 @@ export class NgModuleProviderAnalyzer {
       dep: CompileDiDependencyMetadata, eager: boolean = null,
       requestorSourceSpan: ParseSourceSpan): CompileDiDependencyMetadata {
     let foundLocal = false;
-    if (!dep.isSkipSelf && isPresent(dep.token)) {
+    if (!dep.isSkipSelf && dep.token != null) {
       // access the injector
       if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Injector) ||
           tokenReference(dep.token) === resolveIdentifier(Identifiers.ComponentFactoryResolver)) {
         foundLocal = true;
         // access providers
-      } else if (isPresent(this._getOrCreateLocalProvider(dep.token, eager))) {
+      } else if (this._getOrCreateLocalProvider(dep.token, eager) != null) {
         foundLocal = true;
       }
     }
@@ -453,7 +452,7 @@ function _resolveProviders(
     targetProvidersByToken: Map<any, ProviderAst>) {
   providers.forEach((provider) => {
     let resolvedProvider = targetProvidersByToken.get(tokenReference(provider.token));
-    if (isPresent(resolvedProvider) && !!resolvedProvider.multiProvider !== !!provider.multi) {
+    if (resolvedProvider != null && !!resolvedProvider.multiProvider !== !!provider.multi) {
       targetErrors.push(new ProviderError(
           `Mixing multi and non multi provider is not possible for token ${tokenName(resolvedProvider.token)}`,
           sourceSpan));

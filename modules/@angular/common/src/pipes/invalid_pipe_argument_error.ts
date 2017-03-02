@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
-
-import {stringify} from '../facade/lang';
+import {Type, ɵstringify as stringify} from '@angular/core';
 
 export function invalidPipeArgumentError(type: Type<any>, value: Object) {
   return Error(`InvalidPipeArgument: '${value}' for pipe '${stringify(type)}'`);

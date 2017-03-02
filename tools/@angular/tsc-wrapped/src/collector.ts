@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
+import {Evaluator, errorSymbol} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
@@ -431,7 +431,8 @@ export class MetadataCollector {
                 metadata[exportedIdentifierName(nameNode)] = recordEntry(varValue, node);
                 exported = true;
               }
-              if (isPrimitive(varValue)) {
+              if (typeof varValue == 'string' || typeof varValue == 'number' ||
+                  typeof varValue == 'boolean') {
                 locals.define(nameNode.text, varValue);
               } else if (!exported) {
                 if (varValue && !isMetadataError(varValue)) {

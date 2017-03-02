@@ -7,7 +7,6 @@
  */
 
 import * as chars from '../chars';
-import {NumberWrapper} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
@@ -276,7 +275,7 @@ class _Scanner {
       this.advance();
     }
     const str: string = this.input.substring(start, this.index);
-    const value: number = simple ? NumberWrapper.parseIntAutoRadix(str) : parseFloat(str);
+    const value: number = simple ? parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, value);
   }
 
@@ -382,4 +381,12 @@ function unescape(code: number): number {
     default:
       return code;
   }
+}
+
+function parseIntAutoRadix(text: string): number {
+  const result: number = parseInt(text);
+  if (isNaN(result)) {
+    throw new Error('Invalid integer literal when parsing ' + text);
+  }
+  return result;
 }
