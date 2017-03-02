@@ -17,7 +17,7 @@
 
 export const VERSION = 3;
 
-export type MetadataEntry = ClassMetadata | FunctionMetadata | MetadataValue;
+export type MetadataEntry = ClassMetadata | InterfaceMetadata | FunctionMetadata | MetadataValue;
 
 export interface ModuleMetadata {
   __symbolic: 'module';
@@ -45,6 +45,11 @@ export interface ClassMetadata {
 }
 export function isClassMetadata(value: any): value is ClassMetadata {
   return value && value.__symbolic === 'class';
+}
+
+export interface InterfaceMetadata { __symbolic: 'interface'; }
+export function isInterfaceMetadata(value: any): value is InterfaceMetadata {
+  return value && value.__symbolic === 'interface';
 }
 
 export interface MetadataMap { [name: string]: MemberMetadata[]; }

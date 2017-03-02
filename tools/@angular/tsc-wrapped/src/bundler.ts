@@ -9,8 +9,8 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from './collector';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataArray, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMethodMetadata} from './schema';
 
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataArray, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMethodMetadata} from './schema';
 
 // The character set used to produce private names.
 const PRIVATE_NAME_CHARS = [
@@ -267,6 +267,9 @@ export class MetadataBundler {
     }
     if (isFunctionMetadata(value)) {
       return this.convertFunction(moduleName, value);
+    }
+    if (isInterfaceMetadata(value)) {
+      return value;
     }
     return this.convertValue(moduleName, value);
   }

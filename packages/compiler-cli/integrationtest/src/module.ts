@@ -20,6 +20,7 @@ import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {ComponentUsingThirdParty} from './comp_using_3rdp';
+import {CUSTOM, Named} from './custom_token';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
@@ -75,6 +76,7 @@ export const SERVER_ANIMATIONS_PROVIDERS: Provider[] = [{
   providers: [
     SomeService,
     SERVER_ANIMATIONS_PROVIDERS,
+    {provide: CUSTOM, useValue: {name: 'some name'}},
   ],
   entryComponents: [
     AnimateCmp,
