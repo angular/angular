@@ -10,7 +10,6 @@ import {Provider} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
-import {isPresent} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -48,16 +47,16 @@ export function main() {
         useValue: new MockDriverExtension(perfLogs, commandLog, perfLogFeatures)
       }
     ];
-    if (isPresent(forceGc)) {
+    if (forceGc != null) {
       providers.push({provide: Options.FORCE_GC, useValue: forceGc});
     }
-    if (isPresent(captureFrames)) {
+    if (captureFrames != null) {
       providers.push({provide: Options.CAPTURE_FRAMES, useValue: captureFrames});
     }
-    if (isPresent(receivedData)) {
+    if (receivedData != null) {
       providers.push({provide: Options.RECEIVED_DATA, useValue: receivedData});
     }
-    if (isPresent(requestCount)) {
+    if (requestCount != null) {
       providers.push({provide: Options.REQUEST_COUNT, useValue: requestCount});
     }
     return ReflectiveInjector.resolveAndCreate(providers).get(PerflogMetric);

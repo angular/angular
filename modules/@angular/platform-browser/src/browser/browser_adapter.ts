@@ -8,7 +8,6 @@
 
 import {ɵglobal as global} from '@angular/core';
 import {setRootDomAdapter} from '../dom/dom_adapter';
-import {isBlank, isPresent, setValueOnPath} from '../facade/lang';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -133,7 +132,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     evt.returnValue = false;
   }
   isPrevented(evt: Event): boolean {
-    return evt.defaultPrevented || isPresent(evt.returnValue) && !evt.returnValue;
+    return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
   }
   getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
   getTemplateContent(el: Node): Node {
@@ -297,7 +296,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
   hasShadowRoot(node: any): boolean {
-    return isPresent(node.shadowRoot) && node instanceof HTMLElement;
+    return node.shadowRoot != null && node instanceof HTMLElement;
   }
   isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
   importIntoDoc(node: Node): any { return document.importNode(this.templateAwareRoot(node), true); }
@@ -306,12 +305,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   getEventKey(event: any): string {
     let key = event.key;
-    if (isBlank(key)) {
+    if (key == null) {
       key = event.keyIdentifier;
       // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
       // Safari cf
       // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-      if (isBlank(key)) {
+      if (key == null) {
         return 'Unidentified';
       }
       if (key.startsWith('U+')) {
@@ -342,7 +341,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getLocation(): Location { return window.location; }
   getBaseHref(doc: Document): string {
     const href = getBaseElementHref();
-    return isBlank(href) ? null : relativePath(href);
+    return href == null ? null : relativePath(href);
   }
   resetBaseElement(): void { baseElement = null; }
   getUserAgent(): string { return window.navigator.userAgent; }
@@ -409,4 +408,21 @@ export function parseCookieValue(cookieStr: string, name: string): string {
     }
   }
   return null;
+}
+
+export function setValueOnPath(global: any, path: string, value: any) {
+  const parts = path.split('.');
+  let obj: any = global;
+  while (parts.length > 1) {
+    const name = parts.shift();
+    if (obj.hasOwnProperty(name) && obj[name] != null) {
+      obj = obj[name];
+    } else {
+      obj = obj[name] = {};
+    }
+  }
+  if (obj === undefined || obj === null) {
+    obj = {};
+  }
+  obj[parts.shift()] = value;
 }

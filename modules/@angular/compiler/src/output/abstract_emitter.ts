@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, isPresent} from '../facade/lang';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as o from './output_ast';
@@ -164,7 +163,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(stmt, `if (`);
     stmt.condition.visitExpression(this, ctx);
     ctx.print(stmt, `) {`);
-    const hasElseCase = isPresent(stmt.falseCase) && stmt.falseCase.length > 0;
+    const hasElseCase = stmt.falseCase != null && stmt.falseCase.length > 0;
     if (stmt.trueCase.length <= 1 && !hasElseCase) {
       ctx.print(stmt, ` `);
       this.visitAllStatements(stmt.trueCase, ctx);
@@ -244,9 +243,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: EmitterVisitorContext): any {
     expr.receiver.visitExpression(this, ctx);
     let name = expr.name;
-    if (isPresent(expr.builtin)) {
+    if (expr.builtin != null) {
       name = this.getBuiltinMethodName(expr.builtin);
-      if (isBlank(name)) {
+      if (name == null) {
         // some builtins just mean to skip the call.
         return null;
       }
@@ -268,7 +267,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
     let varName = ast.name;
-    if (isPresent(ast.builtin)) {
+    if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
           varName = 'super';
@@ -450,7 +449,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
 export function escapeIdentifier(
     input: string, escapeDollar: boolean, alwaysQuote: boolean = true): any {
-  if (isBlank(input)) {
+  if (input == null) {
     return null;
   }
   const body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {

@@ -7,8 +7,8 @@
  */
 
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
+import {ɵstringify as stringify} from '@angular/core';
 import {NgModule} from '@angular/core/src/metadata';
-import {stringify} from '../src/facade/lang';
 
 class SomeClass1 {}
 class SomeClass2 {}

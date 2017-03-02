@@ -10,7 +10,7 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {stringify} from '../../src/facade/lang';
+import {stringify} from '../../src/util';
 
 export function main() {
   describe('Query API', () => {

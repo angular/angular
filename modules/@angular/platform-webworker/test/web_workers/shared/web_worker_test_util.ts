@@ -10,7 +10,6 @@ import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 
 import {MockEventEmitter} from './mock_event_emitter';
@@ -44,12 +43,12 @@ export function expectBrokerCall(
     handler?: (..._: any[]) => Promise<any>| void): void {
   broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
-    if (isPresent(vals)) {
+    if (vals != null) {
       expect(args.args.length).toEqual(vals.length);
       vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
     }
     let promise: Promise<any>|void = null;
-    if (isPresent(handler)) {
+    if (handler != null) {
       const givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);

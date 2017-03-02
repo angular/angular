@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Options, ReflectiveInjector, WebDriverExtension} from '../index';
-import {isPresent} from '../src/facade/lang';
 
 export function main() {
   function createExtension(ids: any[], caps: any) {
@@ -41,7 +40,7 @@ export function main() {
     it('should throw if there is no match',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension(['m1'], {'browser': 'm2'}).catch((err) => {
-           expect(isPresent(err)).toBe(true);
+           expect(err != null).toBe(true);
            async.done();
          });
        }));

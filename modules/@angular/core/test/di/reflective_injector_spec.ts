@@ -11,8 +11,7 @@ import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
-import {isPresent, stringify} from '../../src/facade/lang';
+import {stringify} from '../../src/util';
 
 class Engine {}
 
@@ -82,7 +81,7 @@ export function main() {
   function createInjector(
       providers: Provider[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
     const resolvedProviders = ReflectiveInjector.resolve(providers.concat(dynamicProviders));
-    if (isPresent(parent)) {
+    if (parent != null) {
       return <ReflectiveInjector_>parent.createChildFromResolved(resolvedProviders);
     } else {
       return <ReflectiveInjector_>ReflectiveInjector.fromResolvedProviders(resolvedProviders);

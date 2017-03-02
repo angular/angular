@@ -7,8 +7,9 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {stringify} from '../facade/lang';
 import {Type} from '../type';
+import {stringify} from '../util';
+
 import {ComponentFactory} from './component_factory';
 import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
 

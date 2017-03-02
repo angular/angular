@@ -7,7 +7,6 @@
  */
 
 
-import {isPresent} from '../facade/lang';
 
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
@@ -18,7 +17,7 @@ export function interpretStatements(statements: o.Statement[], resultVars: strin
   const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
   const visitor = new StatementInterpreter();
   const result = visitor.visitAllStatements(stmtsWithReturn, ctx);
-  return isPresent(result) ? result.value : null;
+  return result != null ? result.value : null;
 }
 
 function _executeFunctionStatements(
@@ -107,7 +106,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: _ExecutionContext): any {
     let varName = ast.name;
-    if (isPresent(ast.builtin)) {
+    if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
           return ctx.instance.__proto__;
@@ -150,7 +149,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     const receiver = expr.receiver.visitExpression(this, ctx);
     const args = this.visitAllExpressions(expr.args, ctx);
     let result: any;
-    if (isPresent(expr.builtin)) {
+    if (expr.builtin != null) {
       switch (expr.builtin) {
         case o.BuiltinMethod.ConcatArray:
           result = receiver.concat(...args);
@@ -195,7 +194,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     const condition = stmt.condition.visitExpression(this, ctx);
     if (condition) {
       return this.visitAllStatements(stmt.trueCase, ctx);
-    } else if (isPresent(stmt.falseCase)) {
+    } else if (stmt.falseCase != null) {
       return this.visitAllStatements(stmt.falseCase, ctx);
     }
     return null;
@@ -226,7 +225,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);
-    } else if (isPresent(ast.falseCase)) {
+    } else if (ast.falseCase != null) {
       return ast.falseCase.visitExpression(this, ctx);
     }
     return null;

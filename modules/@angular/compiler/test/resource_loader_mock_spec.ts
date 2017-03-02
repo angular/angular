@@ -8,7 +8,6 @@
 
 import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {isPresent} from '../src/facade/lang';
 
 export function main() {
   describe('MockResourceLoader', () => {
@@ -23,7 +22,7 @@ export function main() {
           throw `Unexpected response ${url} -> ${text}`;
         } else {
           expect(text).toEqual(response);
-          if (isPresent(done)) done();
+          if (done != null) done();
         }
         return text;
       }
@@ -33,7 +32,7 @@ export function main() {
           throw `Unexpected error ${url}`;
         } else {
           expect(error).toEqual(`Failed to load ${url}`);
-          if (isPresent(done)) done();
+          if (done != null) done();
         }
         return error;
       }

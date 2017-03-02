@@ -7,6 +7,7 @@
  */
 
 import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import {isNumeric} from '@angular/common/src/pipes/number_pipe';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
@@ -79,6 +80,26 @@ export function main() {
         it('should not support other objects',
            () => { expect(() => pipe.transform(new Object())).toThrowError(); });
       });
+    });
+
+    describe('isNumeric', () => {
+      it('should return true when passing correct numeric string',
+         () => { expect(isNumeric('2')).toBe(true); });
+
+      it('should return true when passing correct double string',
+         () => { expect(isNumeric('1.123')).toBe(true); });
+
+      it('should return true when passing correct negative string',
+         () => { expect(isNumeric('-2')).toBe(true); });
+
+      it('should return true when passing correct scientific notation string',
+         () => { expect(isNumeric('1e5')).toBe(true); });
+
+      it('should return false when passing incorrect numeric',
+         () => { expect(isNumeric('a')).toBe(false); });
+
+      it('should return false when passing parseable but non numeric',
+         () => { expect(isNumeric('2a')).toBe(false); });
     });
   });
 }

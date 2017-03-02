@@ -8,10 +8,9 @@
 
 import {isDevMode} from '@angular/core';
 
-import {isBlank, isPresent} from '../src/facade/lang';
 
 export function assertArrayOfStrings(identifier: string, value: any) {
-  if (!isDevMode() || isBlank(value)) {
+  if (!isDevMode() || value == null) {
     return;
   }
   if (!Array.isArray(value)) {
@@ -33,9 +32,9 @@ const INTERPOLATION_BLACKLIST_REGEXPS = [
 ];
 
 export function assertInterpolationSymbols(identifier: string, value: any): void {
-  if (isPresent(value) && !(Array.isArray(value) && value.length == 2)) {
+  if (value != null && !(Array.isArray(value) && value.length == 2)) {
     throw new Error(`Expected '${identifier}' to be an array, [start, end].`);
-  } else if (isDevMode() && !isBlank(value)) {
+  } else if (isDevMode() && value != null) {
     const start = value[0] as string;
     const end = value[1] as string;
     // black list checking

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as chars from './chars';
-import {isPresent} from './facade/lang';
 
 export class ParseLocation {
   constructor(
@@ -14,7 +13,7 @@ export class ParseLocation {
       public col: number) {}
 
   toString(): string {
-    return isPresent(this.offset) ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
+    return this.offset != null ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
   }
 
   moveBy(delta: number): ParseLocation {
@@ -55,7 +54,7 @@ export class ParseLocation {
     const content = this.file.content;
     let startOffset = this.offset;
 
-    if (isPresent(startOffset)) {
+    if (startOffset != null) {
       if (startOffset > content.length - 1) {
         startOffset = content.length - 1;
       }

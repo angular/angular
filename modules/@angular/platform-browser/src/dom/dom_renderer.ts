@@ -7,10 +7,6 @@
  */
 
 import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
-
-import {isPresent, stringify} from '../facade/lang';
-
-import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 

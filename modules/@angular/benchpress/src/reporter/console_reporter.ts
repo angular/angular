@@ -7,7 +7,6 @@
  */
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
-import {print} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -23,8 +22,13 @@ export class ConsoleReporter extends Reporter {
   static PRINT = new InjectionToken('ConsoleReporter.print');
   static COLUMN_WIDTH = new InjectionToken('ConsoleReporter.columnWidth');
   static PROVIDERS = [
-    ConsoleReporter, {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18},
-    {provide: ConsoleReporter.PRINT, useValue: print}
+    ConsoleReporter, {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18}, {
+      provide: ConsoleReporter.PRINT,
+      useValue: function(v: any) {
+        // tslint:disable-next-line:no-console
+        console.log(v);
+      }
+    }
   ];
 
   private static _lpad(value: string, columnWidth: number, fill = ' ') {
