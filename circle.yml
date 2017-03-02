@@ -5,6 +5,7 @@ machine:
 dependencies:
   pre:
     - npm install -g npm@3.10.7
+    - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.21.3
 
 test:
   override:
