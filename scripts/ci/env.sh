@@ -72,21 +72,28 @@ if [[ ${TRAVIS:-} ]]; then
   # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
   setEnvVar CXX g++-4.8
 
+  # If NGBUILDS_IO_KEY not set yet, export the NGBUILDS_IO_KEY using the JWT token that Travis generated and exported for SAUCE_ACCESS_KEY.
+  # This is a workaround for travis-ci/travis-ci#7223
+  export NGBUILDS_IO_KEY=${NGBUILDS_IO_KEY:-$SAUCE_ACCESS_KEY}
+
   # Used by karma and karma-chrome-launcher
   # In order to have a meaningful SauceLabs badge on the repo page,
   # the angular2-ci account is used only when pushing commits to master;
   # in all other cases, the regular angular-ci account is used.
   if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
     setEnvVar SAUCE_USERNAME angular2-ci
-    # don't print the key
+    # - not using use setEnvVar so that we don't print the key
+    # - we overwrite the value set by Travis JWT addon here to work around travis-ci/travis-ci#7223 for NGBUILDS_IO_KEY
     export SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
   else
     setEnvVar SAUCE_USERNAME angular-ci
-    # don't print the key
+    # - not using use setEnvVar so that we don't print the key
+    # - we overwrite the value set by Travis JWT addon here to work around travis-ci/travis-ci#7223 for NGBUILDS_IO_KEY
     export SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   fi
 
   setEnvVar BROWSER_STACK_USERNAME angularteam1
+  # not using use setEnvVar so that we don't print the key
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   setEnvVar CHROME_BIN ${HOME}/.chrome/chromium/chrome-linux/chrome
   setEnvVar BROWSER_PROVIDER_READY_FILE /tmp/angular-build/browser-provider-tunnel-init.lock
