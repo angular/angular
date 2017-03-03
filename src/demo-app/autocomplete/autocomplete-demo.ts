@@ -88,7 +88,8 @@ export class AutocompleteDemo {
   }
 
   filterStates(val: string) {
-    return val ? this.states.filter((s) => s.name.match(new RegExp(val, 'gi'))) : this.states;
+    return val ? this.states.filter(s => new RegExp(`^${val}`, 'gi').test(s.name))
+               : this.states;
   }
 
 }

@@ -75,7 +75,7 @@ class MyComp {
    }
    
    filter(val: string): string[] {
-      return this.options.filter(option => new RegExp(val, 'gi').test(option)); 
+      return this.options.filter(option => new RegExp(`^${val}`, 'gi').test(option)); 
    }
 }
 ```
@@ -134,7 +134,7 @@ class MyComp {
    }
    
    filter(name: string): User[] {
-      return this.options.filter(option => new RegExp(name, 'gi').test(option)); 
+      return this.options.filter(option => new RegExp(`^${name}`, 'gi').test(option)); 
    }
    
    displayFn(user: User): string {

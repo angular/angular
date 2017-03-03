@@ -71,7 +71,8 @@ export class AutocompleteOverviewExample {
   }
 
   filterStates(val: string) {
-    return val ? this.states.filter((s) => new RegExp(val, 'gi').test(s)) : this.states;
+    return val ? this.states.filter(s => new RegExp(`^${val}`, 'gi').test(s))
+               : this.states;
   }
 
 }
