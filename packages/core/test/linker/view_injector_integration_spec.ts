@@ -470,7 +470,7 @@ export function main() {
         TestBed.configureTestingModule({declarations: [CycleDirective]});
         expect(() => createComponent('<div cycleDirective></div>'))
             .toThrowError(
-                'Template parse errors:\nCannot instantiate cyclic dependency! CycleDirective ("[ERROR ->]<div cycleDirective></div>"): TestComp@0:0');
+                /Template parse errors:\nCannot instantiate cyclic dependency! CycleDirective \("\[ERROR ->\]<div cycleDirective><\/div>"\): .*TestComp.html@0:0/);
       });
 
       it('should not instantiate a directive in a view that has a host dependency on providers' +
@@ -485,7 +485,7 @@ export function main() {
 
            expect(() => createComponent('<div simpleComponent></div>'))
                .toThrowError(
-                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
+                   /Template parse errors:\nNo provider for service \("\[ERROR ->\]<div needsServiceFromHost><div>"\): .*SimpleComponent.html@0:0/);
          });
 
       it('should not instantiate a directive in a view that has a host dependency on providers' +
@@ -501,7 +501,7 @@ export function main() {
 
            expect(() => createComponent('<div simpleComponent someOtherDirective></div>'))
                .toThrowError(
-                   `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
+                   /Template parse errors:\nNo provider for service \("\[ERROR ->\]<div needsServiceFromHost><div>"\): .*SimpleComponent.html@0:0/);
          });
 
       it('should not instantiate a directive in a view that has a self dependency on a parent directive',
@@ -512,7 +512,7 @@ export function main() {
                () =>
                    createComponent('<div simpleDirective><div needsDirectiveFromSelf></div></div>'))
                .toThrowError(
-                   `Template parse errors:\nNo provider for SimpleDirective ("<div simpleDirective>[ERROR ->]<div needsDirectiveFromSelf></div></div>"): TestComp@0:21`);
+                   /Template parse errors:\nNo provider for SimpleDirective \("<div simpleDirective>\[ERROR ->\]<div needsDirectiveFromSelf><\/div><\/div>"\): .*TestComp.html@0:21/);
          });
 
       it('should instantiate directives that depend on other directives', fakeAsync(() => {
@@ -560,7 +560,7 @@ export function main() {
             SimpleComponent, {set: {template: '<div needsDirectiveFromHost></div>'}});
         expect(() => createComponent('<div simpleComponent simpleDirective></div>'))
             .toThrowError(
-                `Template parse errors:\nNo provider for SimpleDirective ("[ERROR ->]<div needsDirectiveFromHost></div>"): SimpleComponent@0:0`);
+                /Template parse errors:\nNo provider for SimpleDirective \("\[ERROR ->\]<div needsDirectiveFromHost><\/div>"\): .*SimpleComponent.html@0:0/);
       });
     });
 

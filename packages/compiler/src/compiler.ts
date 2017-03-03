@@ -28,6 +28,7 @@ export {CompilerConfig} from './config';
 export * from './compile_metadata';
 export * from './aot/compiler_factory';
 export * from './aot/compiler';
+export * from './aot/generated_file';
 export * from './aot/compiler_options';
 export * from './aot/compiler_host';
 export * from './aot/static_reflector';

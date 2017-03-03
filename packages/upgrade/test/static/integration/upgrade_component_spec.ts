@@ -1537,24 +1537,21 @@ export function main() {
              const elementC = html(`<ng2-c></ng2-c>`);
 
              bootstrap(platformBrowserDynamic(), Ng2Module, elementA, ng1Module).then(() => {
-               expect(mockExceptionHandler).toHaveBeenCalledWith(jasmine.objectContaining({
-                 ngOriginalError: new Error(
-                     'Unable to find required \'iDoNotExist\' in upgraded directive \'ng1A\'.')
-               }));
+               expect(mockExceptionHandler)
+                   .toHaveBeenCalledWith(new Error(
+                       'Unable to find required \'iDoNotExist\' in upgraded directive \'ng1A\'.'));
              });
 
              bootstrap(platformBrowserDynamic(), Ng2Module, elementB, ng1Module).then(() => {
-               expect(mockExceptionHandler).toHaveBeenCalledWith(jasmine.objectContaining({
-                 ngOriginalError: new Error(
-                     'Unable to find required \'^iDoNotExist\' in upgraded directive \'ng1B\'.')
-               }));
+               expect(mockExceptionHandler)
+                   .toHaveBeenCalledWith(new Error(
+                       'Unable to find required \'^iDoNotExist\' in upgraded directive \'ng1B\'.'));
              });
 
              bootstrap(platformBrowserDynamic(), Ng2Module, elementC, ng1Module).then(() => {
-               expect(mockExceptionHandler).toHaveBeenCalledWith(jasmine.objectContaining({
-                 ngOriginalError: new Error(
-                     'Unable to find required \'^^iDoNotExist\' in upgraded directive \'ng1C\'.')
-               }));
+               expect(mockExceptionHandler)
+                   .toHaveBeenCalledWith(new Error(
+                       'Unable to find required \'^^iDoNotExist\' in upgraded directive \'ng1C\'.'));
              });
            }));
 

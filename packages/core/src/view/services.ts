@@ -16,8 +16,8 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector} from './refs';
-import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
-import {checkBinding, isComponentView, renderNode, viewParentEl} from './util';
+import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
+import {NOOP, checkBinding, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 
 let initialized = false;
@@ -357,13 +357,6 @@ class DebugContext_ implements DebugContext {
     }
     return references;
   }
-  get source(): string {
-    if (this.nodeDef.flags & NodeFlags.TypeText) {
-      return this.nodeDef.text.source;
-    } else {
-      return this.elDef.element.source;
-    }
-  }
   get componentRenderElement() {
     const elData = findHostElement(this.elOrCompView);
     return elData ? elData.renderElement : undefined;
@@ -371,6 +364,31 @@ class DebugContext_ implements DebugContext {
   get renderNode(): any {
     return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
                                                      renderNode(this.elView, this.elDef);
+  }
+  logError(console: Console, ...values: any[]) {
+    let logViewFactory: ViewDefinitionFactory;
+    let logNodeIndex: number;
+    if (this.nodeDef.flags & NodeFlags.TypeText) {
+      logViewFactory = this.view.def.factory;
+      logNodeIndex = this.nodeDef.index;
+    } else {
+      logViewFactory = this.elView.def.factory;
+      logNodeIndex = this.elDef.index;
+    }
+    let currNodeIndex = -1;
+    let nodeLogger: NodeLogger = () => {
+      currNodeIndex++;
+      if (currNodeIndex === logNodeIndex) {
+        return console.error.bind(console, ...values);
+      } else {
+        return NOOP;
+      }
+    };
+    logViewFactory(nodeLogger);
+    if (currNodeIndex < logNodeIndex) {
+      console.error('Illegal state: the ViewDefinitionFactory did not call the logger!');
+      (<any>console.error)(...values);
+    }
   }
 }
 
