@@ -10,6 +10,6 @@ source ${thisDir}/_travis-fold.sh
 travisFoldStart "test.docs"
   (
     cd ${PROJECT_ROOT}/aio
-    $(npm bin)/gulp docs-test
+    yarn docs-test
   )
 travisFoldEnd "test.docs"
