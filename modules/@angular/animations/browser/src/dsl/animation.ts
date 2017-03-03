@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationPlayer, AnimationStyleMetadata, sequence, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {DomAnimationEngine} from '../render/dom_animation_engine';
-import {normalizeStyles} from '../util';
+import {normalizeAnimationEntry, normalizeStyles} from '../util';
 
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {buildAnimationKeyframes} from './animation_timeline_visitor';
@@ -19,8 +19,7 @@ import {AnimationStyleNormalizer} from './style_normalization/animation_style_no
 export class Animation {
   private _animationAst: AnimationMetadata;
   constructor(input: AnimationMetadata|AnimationMetadata[]) {
-    const ast =
-        Array.isArray(input) ? sequence(<AnimationMetadata[]>input) : <AnimationMetadata>input;
+    const ast = normalizeAnimationEntry(input);
     const errors = validateAnimationSequence(ast);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
@@ -36,7 +35,13 @@ export class Animation {
                                                   <ɵStyleData>startingStyles;
     const dest = Array.isArray(destinationStyles) ? normalizeStyles(destinationStyles) :
                                                     <ɵStyleData>destinationStyles;
-    return buildAnimationKeyframes(this._animationAst, start, dest);
+    const errors: any = [];
+    const result = buildAnimationKeyframes(this._animationAst, start, dest, null, errors);
+    if (errors.length) {
+      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      throw new Error(errorMessage);
+    }
+    return result;
   }
 
   // this is only used for development demo purposes for now

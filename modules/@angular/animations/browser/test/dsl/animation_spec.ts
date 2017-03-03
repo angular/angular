@@ -5,11 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, group, keyframes, sequence, style, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animateChild, animation, group, keyframes, sequence, style, ɵStyleData} from '@angular/animations';
 
 import {Animation} from '../../src/dsl/animation';
 import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction';
 import {validateAnimationSequence} from '../../src/dsl/animation_validator_visitor';
+import {normalizeAnimationEntry} from '../../src/util';
 
 export function main() {
   describe('Animation', () => {
@@ -516,6 +517,170 @@ export function main() {
         });
       });
 
+      describe('animation definitions', () => {
+        it('should incorporate a reusable animation into a sequence', () => {
+          const myAnimation = animation([style({opacity: 0}), animate(1000, style({opacity: 1}))]);
+
+          const steps = [
+            style({opacity: 0}), animate(2000, style({opacity: .5})), animateChild(myAnimation),
+            animateChild(myAnimation)
+          ];
+
+          const [p1, p2, p3] = invokeAnimationSequence(steps);
+          expect(p1.delay).toEqual(0);
+          expect(p1.duration).toEqual(2000);
+          expect(p1.keyframes).toEqual([{opacity: 0, offset: 0}, {opacity: .5, offset: 1}]);
+
+          expect(p2.delay).toEqual(2000);
+          expect(p2.duration).toEqual(1000);
+          expect(p2.keyframes).toEqual([{opacity: 0, offset: 0}, {opacity: 1, offset: 1}]);
+
+          expect(p3.delay).toEqual(3000);
+          expect(p3.duration).toEqual(1000);
+          expect(p3.keyframes).toEqual([{opacity: 0, offset: 0}, {opacity: 1, offset: 1}]);
+        });
+
+        it('should push in and pull out previously used styles as starting data into the animation',
+           () => {
+             const myAnimation = animation([animate(1000, style({background: 'red'}))]);
+
+             const steps = [
+               style({background: 'white'}), animateChild(myAnimation),
+               animate(1000, style({background: 'blue'})), animateChild(myAnimation)
+             ];
+
+             const [p1, p2, p3] = invokeAnimationSequence(steps);
+             expect(p1.keyframes).toEqual([
+               {background: 'white', offset: 0}, {background: 'red', offset: 1}
+             ]);
+
+             expect(p2.keyframes).toEqual([
+               {background: 'red', offset: 0}, {background: 'blue', offset: 1}
+             ]);
+
+             expect(p3.keyframes).toEqual([
+               {background: 'blue', offset: 0}, {background: 'red', offset: 1}
+             ]);
+           });
+
+        it('should subtitute default locals into an animation if defined', () => {
+          const myAnimation = animation(
+              [
+                style({height: '0px'}), animate(1000, style({height: '$a'})), group([
+                  animate(1000, style({height: 'calc($b - 200px)'})),
+                  animate(1000, keyframes([style({height: '$c'}), style({height: '$d'})]))
+                ])
+              ],
+              {'a': '100px', 'b': '200px', 'c': '300px', 'd': '400px'});
+
+          const steps = [animateChild(myAnimation)];
+
+          const [p1, p2, p3] = invokeAnimationSequence(steps);
+          expect(p1.keyframes).toEqual([
+            {height: '0px', offset: 0},
+            {height: '100px', offset: 1},
+          ]);
+
+          expect(p2.keyframes).toEqual([
+            {height: '100px', offset: 0}, {height: 'calc(200px - 200px)', offset: 1}
+          ]);
+
+          expect(p3.keyframes).toEqual([
+            {height: '300px', offset: 0}, {height: '400px', offset: 1}
+          ]);
+        });
+
+        it('should subtitute locals passed in by animateChild into an animation if defined', () => {
+          const myAnimation = animation(
+              [style({height: '$start'}), animate(1000, style({height: '$end'}))],
+              {'start': '123px', 'end': '456px'});
+
+          const steps = [
+            animateChild(myAnimation, {'end': '789px'}),
+            animateChild(myAnimation, {'start': '0px'})
+          ];
+
+          const [p1, p2] = invokeAnimationSequence(steps);
+          expect(p1.keyframes).toEqual([
+            {height: '123px', offset: 0}, {height: '789px', offset: 1}
+          ]);
+
+          expect(p2.keyframes).toEqual([{height: '0px', offset: 0}, {height: '456px', offset: 1}]);
+        });
+
+        it('should require the user to pass in variables when the variable value is `true`', () => {
+          const myAnimation = animation(
+              [style({background: '$startColor'}), animate(1000, style({height: '$finalColor'}))],
+              {'startColor': 'white', 'finalColor': true});
+
+          const matchError = /Please provide a value for the animation variable \$finalColor/;
+
+          let steps = [animateChild(myAnimation)];
+          expect(() => invokeAnimationSequence(steps)).toThrowError(matchError);
+
+          steps = [animateChild(myAnimation, {})];
+          expect(() => invokeAnimationSequence(steps)).toThrowError(matchError);
+
+          steps = [animateChild(myAnimation, {startColor: 'red'})];
+          expect(() => invokeAnimationSequence(steps)).toThrowError(matchError);
+        });
+
+        it('should seed in styles obtained from locals down the timeline in follow-up steps',
+           () => {
+             const myAnimation = animation(
+                 [animate(1000, style({background: '$finalColor'}))], {'finalColor': 'grey'});
+
+             let steps = [
+               style({background: 'red'}), animateChild(myAnimation),
+               animate(1000, style({background: 'orange'})),
+               animateChild(myAnimation, {finalColor: 'purple'}),
+               animate(1000, style({background: 'pink'}))
+             ];
+
+             const [p1, p2, p3, p4] = invokeAnimationSequence(steps);
+             expect(p1.keyframes).toEqual([
+               {background: 'red', offset: 0}, {background: 'grey', offset: 1}
+             ]);
+
+             expect(p2.keyframes).toEqual([
+               {background: 'grey', offset: 0}, {background: 'orange', offset: 1}
+             ]);
+
+             expect(p3.keyframes).toEqual([
+               {background: 'orange', offset: 0}, {background: 'purple', offset: 1}
+             ]);
+
+             expect(p4.keyframes).toEqual([
+               {background: 'purple', offset: 0}, {background: 'pink', offset: 1}
+             ]);
+           });
+
+        it('should seed in styles obtained from locals down into child animations', () => {
+          const childAnim = animation(
+              [style({height: '0px'}), animate(1000, style({height: '$value'}))], {value: true});
+
+          const parentAnim = animation(
+              [group([
+                sequence([style({width: '0px'}), animate(1000, style({width: '$value'}))]),
+                animateChild(childAnim)
+              ])],
+              {value: true});
+
+          let steps = [animateChild(parentAnim, {value: '100px'})];
+
+          const [p1, p2] = invokeAnimationSequence(steps);
+          expect(p1.keyframes).toEqual([
+            {width: '0px', offset: 0},
+            {width: '100px', offset: 1},
+          ]);
+
+          expect(p2.keyframes).toEqual([
+            {height: '0px', offset: 0},
+            {height: '100px', offset: 1},
+          ]);
+        });
+      });
+
       describe('timing values', () => {
         it('should properly combine an easing value with a delay into a set of three keyframes',
            () => {
@@ -634,9 +799,7 @@ function invokeAnimationSequence(
 }
 
 function validateAndThrowAnimationSequence(steps: AnimationMetadata | AnimationMetadata[]) {
-  const ast =
-      Array.isArray(steps) ? sequence(<AnimationMetadata[]>steps) : <AnimationMetadata>steps;
-  const errors = validateAnimationSequence(ast);
+  const errors = validateAnimationSequence(normalizeAnimationEntry(steps));
   if (errors.length) {
     throw new Error(errors.join('\n'));
   }

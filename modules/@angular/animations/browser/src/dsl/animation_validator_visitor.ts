@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, sequence} from '@angular/animations';
+import {AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationDefinitionMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata} from '@angular/animations';
 
-import {normalizeStyles, parseTimeExpression} from '../util';
+import {normalizeAnimationEntry, normalizeStyles, resolveTimingValue, validateStyleLocals} from '../util';
 
 import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
 
@@ -52,9 +52,7 @@ export type StyleTimeTuple = {
  * Otherwise an error will be thrown.
  */
 export function validateAnimationSequence(ast: AnimationMetadata) {
-  const normalizedAst =
-      Array.isArray(ast) ? sequence(<AnimationMetadata[]>ast) : <AnimationMetadata>ast;
-  return new AnimationValidatorVisitor().validate(normalizedAst);
+  return new AnimationValidatorVisitor().validate(normalizeAnimationEntry(ast));
 }
 
 export class AnimationValidatorVisitor implements AnimationDslVisitor {
@@ -64,16 +62,23 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
     return context.errors;
   }
 
-  visitState(ast: AnimationStateMetadata, context: any): any {
+  visitState(ast: AnimationStateMetadata, context: AnimationValidatorContext): any {
     // these values are not visited in this AST
   }
 
-  visitTransition(ast: AnimationTransitionMetadata, context: any): any {
+  visitTransition(ast: AnimationTransitionMetadata, context: AnimationValidatorContext): any {
     // these values are not visited in this AST
   }
 
   visitSequence(ast: AnimationSequenceMetadata, context: AnimationValidatorContext): any {
     ast.steps.forEach(step => visitAnimationNode(this, step, context));
+  }
+
+  visitDefinition(ast: AnimationDefinitionMetadata, context: AnimationValidatorContext): any {
+    const parentLocals = context.locals;
+    context.locals = ast.locals;
+    visitAnimationNode(this, normalizeAnimationEntry(ast.animation), context);
+    context.locals = parentLocals;
   }
 
   visitGroup(ast: AnimationGroupMetadata, context: AnimationValidatorContext): any {
@@ -90,8 +95,7 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
   visitAnimate(ast: AnimationAnimateMetadata, context: AnimationValidatorContext): any {
     // we reassign the timings here so that they are not reparsed each
     // time an animation occurs
-    context.currentAnimateTimings = ast.timings =
-        parseTimeExpression(<string|number>ast.timings, context.errors);
+    context.currentAnimateTimings = ast.timings = resolveTimingValue(ast.timings, context.errors);
 
     const astType = ast.styles && ast.styles.type;
     if (astType == AnimationMetadataType.KeyframeSequence) {
@@ -106,6 +110,13 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
 
     context.currentAnimateTimings = null;
   }
+
+  visitAnimateChild(ast: AnimationAnimateChildMetadata, context: AnimationValidatorContext): any {
+    // we reassign the timings here so that they are not reparsed each
+    // time an animation occurs
+    visitAnimationNode(this, ast.animation, context);
+  }
+
 
   visitStyle(ast: AnimationStyleMetadata, context: AnimationValidatorContext): any {
     const styleData = normalizeStyles(ast.styles);
@@ -131,9 +142,12 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
         // the style property is being animated in between
         startTime = collectedEntry.startTime;
       }
+
       if (updateCollectedStyle) {
         context.collectedStyles[prop] = {startTime, endTime};
       }
+
+      validateStyleLocals(styleData[prop], context.locals, context.errors);
     });
   }
 
@@ -189,6 +203,7 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
 
 export class AnimationValidatorContext {
   public errors: string[] = [];
+  public locals: {[varName: string]: string | number | boolean} = null;
   public currentTime: number = 0;
   public currentAnimateTimings: AnimateTimings;
   public collectedStyles: {[propName: string]: StyleTimeTuple} = {};

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, ɵStyleData} from '@angular/animations';
+import {AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationDefinitionMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, normalizeStyles} from '../util';
 
@@ -14,6 +14,7 @@ import {parseTransitionExpr} from './animation_transition_expr';
 import {AnimationTransitionFactory} from './animation_transition_factory';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
 import {validateAnimationSequence} from './animation_validator_visitor';
+
 
 
 /**
@@ -64,9 +65,11 @@ export class AnimationTrigger {
         nextStateStyles, []);
   }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionInstruction {
+  matchTransition(currentState: any, nextState: any, locals: {[varName: string]:
+                                                                  string | number} = null):
+      AnimationTransitionInstruction {
     for (let i = 0; i < this.transitionFactories.length; i++) {
-      let result = this.transitionFactories[i].match(currentState, nextState);
+      let result = this.transitionFactories[i].match(currentState, nextState, locals);
       if (result) return result;
     }
   }
@@ -94,6 +97,14 @@ class AnimationTriggerVisitor implements AnimationDslVisitor {
   }
 
   visitSequence(ast: AnimationSequenceMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitDefinition(ast: AnimationDefinitionMetadata, context: any) {
+    // these values are not visited in this AST
+  }
+
+  visitAnimateChild(ast: AnimationAnimateChildMetadata, context: any) {
     // these values are not visited in this AST
   }
 
