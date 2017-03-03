@@ -17,12 +17,6 @@ source ${thisDir}/_travis-fold.sh
     yarn run lint
   travisFoldEnd "test.aio.lint"
 
-  # Generate docs files
-  # TODO(i): why is this in 'test' phase and not in the 'build' phase?
-  travisFoldStart "test.aio.doc-gen"
-    $(npm bin)/gulp docs
-  travisFoldEnd "test.aio.doc-gen"
-
 
   # Start xvfb for local Chrome used for testing
   if [[ ${TRAVIS} ]]; then
