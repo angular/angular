@@ -373,23 +373,25 @@ describe('MdSidenav', () => {
           .toBe(false, 'Expected sidenav not to have a native align attribute.');
     });
 
-    it('should mark sidenavs invalid when multiple have same align', () => {
+    it('should throw when multiple sidenavs have the same align', () => {
       const fixture = TestBed.createComponent(SidenavDynamicAlign);
       fixture.detectChanges();
 
       const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
-      const sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      expect(sidenavEl.classList).not.toContain('mat-sidenav-invalid');
-
       testComponent.sidenav1Align = 'end';
+
+      expect(() => fixture.detectChanges()).toThrow();
+    });
+
+    it('should not throw when sidenavs swap sides', () => {
+      const fixture = TestBed.createComponent(SidenavDynamicAlign);
       fixture.detectChanges();
 
-      expect(sidenavEl.classList).toContain('mat-sidenav-invalid');
-
+      const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
+      testComponent.sidenav1Align = 'end';
       testComponent.sidenav2Align = 'start';
-      fixture.detectChanges();
 
-      expect(sidenavEl.classList).not.toContain('mat-sidenav-invalid');
+      expect(() => fixture.detectChanges()).not.toThrow();
     });
   });
 

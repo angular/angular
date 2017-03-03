@@ -51,10 +51,13 @@
 <h2>Dynamic Alignment Sidenav</h2>
 
 <md-sidenav-container class="demo-sidenav-container">
-  <md-sidenav #dynamicAlignSidenav mode="push" [align]="side">Drawer</md-sidenav>
+  <md-sidenav #dynamicAlignSidenav1 mode="side" [align]="invert ? 'end' : 'start'">Start</md-sidenav>
+  <md-sidenav #dynamicAlignSidenav2 mode="side" [align]="invert ? 'start' : 'end'">End</md-sidenav>
 
   <div class="demo-sidenav-content">
-    <button (click)="dynamicAlignSidenav.toggle()">Toggle sidenav</button>
-    <button (click)="side = (side == 'start') ? 'end' : 'start'">Change sides</button>
+    <button (click)="dynamicAlignSidenav1.toggle(); dynamicAlignSidenav2.toggle()">
+      Toggle sidenavs
+    </button>
+    <button (click)="invert = !invert">Change sides</button>
   </div>
 </md-sidenav-container>

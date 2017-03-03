@@ -65,7 +65,6 @@ export class MdSidenavToggleResult {
     '[class.mat-sidenav-over]': '_modeOver',
     '[class.mat-sidenav-push]': '_modePush',
     '[class.mat-sidenav-side]': '_modeSide',
-    '[class.mat-sidenav-invalid]': '!valid',
     'tabIndex': '-1'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,19 +75,6 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
 
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
   private _align: 'start' | 'end' = 'start';
-
-  /** Whether this md-sidenav is part of a valid md-sidenav-container configuration. */
-  get valid() { return this._valid; }
-  set valid(value) {
-    value = coerceBooleanProperty(value);
-    // When the drawers are not in a valid configuration we close them all until they are in a valid
-    // configuration again.
-    if (!value) {
-      this.close();
-    }
-    this._valid = value;
-  }
-  private _valid = true;
 
   /** Direction which the sidenav is aligned in. */
   @Input()
@@ -221,10 +207,6 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
    * @returns Resolves with the result of whether the sidenav was opened or closed.
    */
   toggle(isOpen: boolean = !this.opened): Promise<MdSidenavToggleResult> {
-    if (!this.valid) {
-      return Promise.resolve(new MdSidenavToggleResult(isOpen ? 'open' : 'close', true));
-    }
-
     // Shortcut it if we're already opened.
     if (isOpen === this.opened) {
       return this._toggleAnimationPromise ||
@@ -410,23 +392,18 @@ export class MdSidenavContainer implements AfterContentInit {
    * changes.
    */
   private _watchSidenavAlign(sidenav: MdSidenav): void {
-    if (!sidenav) { return; }
-    sidenav.onAlignChanged.subscribe(() => this._validateDrawers());
+    if (!sidenav) {
+      return;
+    }
+    // NOTE: We need to wait for the microtask queue to be empty before validating,
+    // since both drawers may be swapping sides at the same time.
+    sidenav.onAlignChanged.subscribe(() =>
+        this._ngZone.onMicrotaskEmpty.first().subscribe(() => this._validateDrawers()));
   }
 
   /** Toggles the 'mat-sidenav-opened' class on the main 'md-sidenav-container' element. */
   private _setContainerClass(sidenav: MdSidenav, bool: boolean): void {
     this._renderer.setElementClass(this._element.nativeElement, 'mat-sidenav-opened', bool);
-  }
-
-  /** Sets the valid state of the drawers. */
-  private _setDrawersValid(valid: boolean) {
-    this._sidenavs.forEach((sidenav) => {
-      sidenav.valid = valid;
-    });
-    if (!valid) {
-      this._start = this._end = this._left = this._right = null;
-    }
   }
 
   /** Validate the state of the sidenav children components. */
@@ -439,14 +416,12 @@ export class MdSidenavContainer implements AfterContentInit {
     for (let sidenav of this._sidenavs.toArray()) {
       if (sidenav.align == 'end') {
         if (this._end != null) {
-          this._setDrawersValid(false);
-          return;
+          throw new MdDuplicatedSidenavError('end');
         }
         this._end = sidenav;
       } else {
         if (this._start != null) {
-          this._setDrawersValid(false);
-          return;
+          throw new MdDuplicatedSidenavError('start');
         }
         this._start = sidenav;
       }
@@ -462,8 +437,6 @@ export class MdSidenavContainer implements AfterContentInit {
       this._left = this._end;
       this._right = this._start;
     }
-
-    this._setDrawersValid(true);
   }
 
   _onBackdropClicked() {
