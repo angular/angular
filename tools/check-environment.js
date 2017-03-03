@@ -53,6 +53,17 @@ try {
   printWarning(issues);
 }
 
+if (require.main === module) {
+  // we are running this script directly so just run checkEnvironment against the main angular
+  // package.json
+  var engines = require(__dirname + '/../package.json').engines;
+  checkEnvironment({
+    requiredNodeVersion: engines.node,
+    requiredNpmVersion: engines.npm,
+    requiredYarnVersion: engines.yarn
+  });
+}
+
 function checkEnvironment(reqs) {
   exec('npm --version', function(npmErr, npmStdout) {
     exec('yarn --version', function(yarnErr, yarnStdout) {
