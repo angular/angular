@@ -1,5 +1,6 @@
-<button id="fullscreen" (click)="toggleFullScreen()">FULLSCREEN</button>
-<div id="fullscreenpane" style="width: 100%; height: 100%">
-    <button id="dialog" (click)="openDialog()">DIALOG</button>    
-    <button id="exitfullscreen" (click)="exitFullscreen()">EXIT FULLSCREEN</button>
+<button id="fullscreen-open" (click)="openFullscreen()">Open Fullscreen</button>
+
+<div id="fullscreen-pane">
+  <button id="dialog-open" (click)="openDialog()">Open Dialog</button>
+  <button id="fullscreen-exit" (click)="exitFullscreen()">Exit Fullscreen</button>
 </div>
