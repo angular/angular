@@ -170,7 +170,7 @@ export class Location {
   /**
    * If url has a trailing slash, remove it, otherwise return url as is.
    */
-  public static stripTrailingSlash(url: string): string { return url.replace(/\/$/, ''); }
+  public static stripTrailingSlash(url: string): string { return url.replace(/\/(?=$|\?|;)/, ''); }
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
