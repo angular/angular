@@ -7,24 +7,24 @@ import {Platform} from '../platform/platform';
 
 describe('FocusTrap', () => {
 
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [FocusTrapDirective, FocusTrapWithBindings, SimpleFocusTrap, FocusTrapTargets],
+      providers: [InteractivityChecker, Platform, FocusTrapFactory]
+    });
+
+    TestBed.compileComponents();
+  }));
+
   describe('with default element', () => {
-
-    let fixture: ComponentFixture<FocusTrapTestApp>;
+    let fixture: ComponentFixture<SimpleFocusTrap>;
     let focusTrapInstance: FocusTrap;
-    let platform: Platform = new Platform();
 
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        declarations: [FocusTrapDirective, FocusTrapTestApp],
-        providers: [InteractivityChecker, Platform, FocusTrapFactory]
-      });
-
-      TestBed.compileComponents();
-
-      fixture = TestBed.createComponent(FocusTrapTestApp);
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleFocusTrap);
       fixture.detectChanges();
       focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
-    }));
+    });
 
     it('wrap focus from end to start', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
@@ -41,10 +41,26 @@ describe('FocusTrap', () => {
       focusTrapInstance.focusLastTabbableElement();
 
       // In iOS button elements are never tabbable, so the last element will be the input.
-      let lastElement = platform.IOS ? 'input' : 'button';
+      let lastElement = new Platform().IOS ? 'input' : 'button';
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe(lastElement, `Expected ${lastElement} element to be focused`);
+    });
+
+    it('should be enabled by default', () => {
+      expect(focusTrapInstance.enabled).toBe(true);
+    });
+
+  });
+
+  describe('with bindings', () => {
+    let fixture: ComponentFixture<FocusTrapWithBindings>;
+    let focusTrapInstance: FocusTrap;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FocusTrapWithBindings);
+      fixture.detectChanges();
+      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
     });
 
     it('should clean up its anchor sibling elements on destroy', () => {
@@ -73,21 +89,14 @@ describe('FocusTrap', () => {
   });
 
   describe('with focus targets', () => {
-    let fixture: ComponentFixture<FocusTrapTargetTestApp>;
+    let fixture: ComponentFixture<FocusTrapTargets>;
     let focusTrapInstance: FocusTrap;
 
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        declarations: [FocusTrapDirective, FocusTrapTargetTestApp],
-        providers: [InteractivityChecker, Platform, FocusTrapFactory]
-      });
-
-      TestBed.compileComponents();
-
-      fixture = TestBed.createComponent(FocusTrapTargetTestApp);
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FocusTrapTargets);
       fixture.detectChanges();
       focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
-    }));
+    });
 
     it('should be able to prioritize the first focus target', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
@@ -108,13 +117,26 @@ describe('FocusTrap', () => {
 
 @Component({
   template: `
+    <div cdkTrapFocus>
+      <input>
+      <button>SAVE</button>
+    </div>
+    `
+})
+class SimpleFocusTrap {
+  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+}
+
+
+@Component({
+  template: `
     <div *ngIf="renderFocusTrap" [cdkTrapFocus]="isFocusTrapEnabled">
       <input>
       <button>SAVE</button>
     </div>
     `
 })
-class FocusTrapTestApp {
+class FocusTrapWithBindings {
   @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
   renderFocusTrap = true;
   isFocusTrapEnabled = true;
@@ -131,6 +153,6 @@ class FocusTrapTestApp {
     </div>
     `
 })
-class FocusTrapTargetTestApp {
+class FocusTrapTargets {
   @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
 }

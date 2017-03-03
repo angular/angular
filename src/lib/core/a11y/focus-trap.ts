@@ -222,7 +222,7 @@ export class FocusTrapDirective implements OnDestroy, AfterContentInit {
   /** Whether the focus trap is active. */
   @Input('cdkTrapFocus')
   get enabled(): boolean { return this.focusTrap.enabled; }
-  set enabled(val: boolean) { this.focusTrap.enabled = val; }
+  set enabled(value: boolean) { this.focusTrap.enabled = coerceBooleanProperty(value); }
 
   constructor(private _elementRef: ElementRef, private _focusTrapFactory: FocusTrapFactory) {
     this.focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, true);
