@@ -235,7 +235,7 @@ describe('StaticSymbolResolver', () => {
     });
   });
 
-  it('should ignore module references without a name', () => {
+  it('should report an error for references to default exports', () => {
     init({
       '/test.ts': `
         import Default from './test2';
@@ -243,8 +243,12 @@ describe('StaticSymbolResolver', () => {
       `
     });
 
-    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'Default')).metadata)
-        .toBeFalsy();
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'Default')).metadata).toEqual({
+      __symbolic: 'error',
+      message:
+          `References to default exports are not supported. Reference to default export of module './test2' found.`
+    });
+
   });
 
   it('should fill references to ambient symbols with undefined', () => {

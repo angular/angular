@@ -362,6 +362,20 @@ export class StaticSymbolResolver {
           const module = map['module'];
           const name = map['name'] ? unescapeIdentifier(map['name']) : map['name'];
           if (!name) {
+            if (map['default'] === true) {
+              return {
+                __symbolic: 'error',
+                message:
+                    `References to default exports are not supported. Reference to default export of module '${module}' found.`
+              };
+            }
+            if (module) {
+              return {
+                __symbolic: 'error',
+                message:
+                    `References to module instances are not supported. Reference to an instance of module '${module}' found.`
+              };
+            }
             return null;
           }
           let filePath: string;

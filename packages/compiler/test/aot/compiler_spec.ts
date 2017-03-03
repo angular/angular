@@ -241,6 +241,75 @@ describe('compiler (unbundled Angular)', () => {
          };
          compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
        }));
+
+    it('should report references to default exports', async(() => {
+         const FILES: MockDirectory = {
+           'quickstart': {
+             'app': {
+               'app.ts': `
+                import { NgModule }      from '@angular/core';
+
+                import { AppComponent }  from './app.component';
+
+                import SomeClass         from './default_export';
+
+                @NgModule({
+                  declarations: [ AppComponent ],
+                  bootstrap:    [ AppComponent ],
+                  providers:    [ SomeClass ]
+                })
+                export class AppModule { }
+              `,
+               'default_export.ts': `
+                import { Injectable } from '@angular/core';
+
+                @Injectable()
+                class SomeClass {}
+
+                export default SomeClass;
+              `
+             }
+           }
+         };
+
+         compile([
+           QUICKSTART, FILES, angularFiles
+         ]).then(result => fail(new Error('expected a throw')), err => {
+           expect(err.message).toContain('References to default exports are not supported');
+         });
+       }));
+
+    it('should be report references to modules', async(() => {
+         const FILES = {
+           'quickstart': {
+             'app': {
+               'app.module.ts': `
+              import { NgModule }      from '@angular/core';
+
+              import { AppComponent }  from './app.component';
+
+              import * as module       from './module';
+
+              @NgModule({
+                declarations: [ AppComponent ],
+                bootstrap:    [ AppComponent ],
+                providers:    [ { provide: 'test', useValue: module} ]
+              })
+              export class AppModule { }
+            `,
+               'module.ts': `
+              export class SomeClass {}
+            `
+             }
+           }
+         };
+
+         compile([
+           QUICKSTART, FILES, angularFiles
+         ]).then(result => fail(new Error('expected a throw')), err => {
+           expect(err.message).toContain('References to module instances are not supported');
+         });
+       }));
   });
 
   it('should add the preamble to generated files', async(() => {
