@@ -121,12 +121,15 @@ describe('DocumentService', () => {
       expect(latestDocument).toEqual(doc1);
       subscription.unsubscribe();
     });
+  });
 
-
+  describe('computeMap', () => {
     it('should map the "empty" location to the correct document request', () => {
       let latestDocument: DocumentContents;
       const { service, backend } = getServices();
       service.currentDocument.subscribe(doc => latestDocument = doc);
+
+      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'index.json');
     });
   });
 });
