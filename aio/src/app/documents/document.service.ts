@@ -29,14 +29,14 @@ export class DocumentService {
 
   private getDocument(url: string) {
     this.logger.log('getting document', url);
-    if ( !this.cache.has(url)) {
-      this.cache.set(url, this.fetchDocument(url));
+    const path = this.computePath(url);
+    if ( !this.cache.has(path)) {
+      this.cache.set(path, this.fetchDocument(path));
     }
-    return this.cache.get(url);
+    return this.cache.get(path);
   }
 
-  private fetchDocument(url: string) {
-    const path = this.computePath(url);
+  private fetchDocument(path: string) {
     this.logger.log('fetching document from', path);
     const subject = new AsyncSubject();
     this.http
