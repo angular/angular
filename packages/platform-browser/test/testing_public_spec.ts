@@ -48,12 +48,8 @@ class ChildChildComp {
   selector: 'child-comp',
   template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
 })
-@Injectable()
-class ChildWithChildComp {
-  childBinding: string;
-  constructor() { this.childBinding = 'Child'; }
-}
 
+@Injectable()
 class FancyService {
   value: string = 'real value';
   getAsyncValue() { return Promise.resolve('async value'); }
@@ -62,6 +58,7 @@ class FancyService {
   }
 }
 
+@Injectable()
 class MockFancyService extends FancyService {
   value: string = 'mocked out value';
 }

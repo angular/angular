@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Injectable, Type} from '@angular/core';
 import * as angular from './angular1';
 
-
+@Injectable()
 export class ContentProjectionHelper {
   groupProjectableNodes($injector: angular.IInjectorService, component: Type<any>, nodes: Node[]):
       Node[][] {

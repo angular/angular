@@ -41,6 +41,7 @@ export abstract class PreloadingStrategy {
  *
  * @experimental
  */
+@Injectable()
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return _catch.call(fn(), () => of (null));
@@ -56,6 +57,7 @@ export class PreloadAllModules implements PreloadingStrategy {
  *
  * @experimental
  */
+@Injectable()
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
 }

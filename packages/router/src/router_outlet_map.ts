@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '@angular/core';
 import {RouterOutlet} from './directives/router_outlet';
 
 /**
@@ -13,6 +14,7 @@ import {RouterOutlet} from './directives/router_outlet';
  *
  * @stable
  */
+@Injectable()
 export class RouterOutletMap {
   /** @internal */
   _outlets: {[name: string]: RouterOutlet} = {};

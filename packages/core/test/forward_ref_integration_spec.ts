@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
+import {Component, ContentChildren, Directive, Inject, Injectable, NO_ERRORS_SCHEMA, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -52,10 +52,12 @@ class Door {
   constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }
 }
 
+@Injectable()
 class Frame {
   name: string = 'frame';
 }
 
+@Injectable()
 class ModuleFrame {
   name: string = 'moduleFram';
 }

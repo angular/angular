@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '@angular/core';
 import {PRIMARY_OUTLET} from './shared';
 import {forEach, shallowEqual} from './utils/collection';
 
@@ -257,6 +258,7 @@ export abstract class UrlSerializer {
  *
  * @stable
  */
+@Injectable()
 export class DefaultUrlSerializer implements UrlSerializer {
   /** Parses a url into a {@link UrlTree} */
   parse(url: string): UrlTree {

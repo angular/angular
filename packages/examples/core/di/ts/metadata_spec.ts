@@ -135,8 +135,12 @@ export function main() {
     describe('Host', () => {
       it('works', () => {
         // #docregion Host
-        class OtherService {}
-        class HostService {}
+        @Injectable()
+        class OtherService {
+        }
+        @Injectable()
+        class HostService {
+        }
 
         @Directive({selector: 'child-directive'})
         class ChildDirective {

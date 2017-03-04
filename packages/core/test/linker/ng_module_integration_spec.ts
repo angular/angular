@@ -10,25 +10,17 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Componen
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-
 import {NgModuleInjector} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 import {stringify} from '../../src/util';
 
-class Engine {}
-
-class BrokenEngine {
-  constructor() { throw new Error('Broken Engine'); }
+@Injectable()
+class Engine {
 }
-
-class DashboardSoftware {}
 
 @Injectable()
-class Dashboard {
-  constructor(software: DashboardSoftware) {}
+class TurboEngine extends Engine {
 }
-
-class TurboEngine extends Engine {}
 
 const CARS = new InjectionToken<Car[]>('Cars');
 @Injectable()
@@ -41,16 +33,6 @@ class Car {
 class CarWithOptionalEngine {
   engine: Engine;
   constructor(@Optional() engine: Engine) { this.engine = engine; }
-}
-
-@Injectable()
-class CarWithDashboard {
-  engine: Engine;
-  dashboard: Dashboard;
-  constructor(engine: Engine, dashboard: Dashboard) {
-    this.engine = engine;
-    this.dashboard = dashboard;
-  }
 }
 
 @Injectable()
@@ -638,7 +620,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should throw when no type and not @Inject (class case)', () => {
         expect(() => createInjector([NoAnnotations]))
-            .toThrowError('Can\'t resolve all parameters for NoAnnotations: (?).');
+            .toThrowError('NoAnnotations must be annotated with @Injectable');
       });
 
       it('should throw when no type and not @Inject (factory case)', () => {
@@ -901,6 +883,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         it('should support ngOnDestroy on any provider', () => {
           let destroyed = false;
 
+          @Injectable()
           class SomeInjectable {
             ngOnDestroy() { destroyed = true; }
           }
@@ -918,6 +901,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         it('should instantiate providers with lifecycle eagerly', () => {
           let created = false;
 
+          @Injectable()
           class SomeInjectable {
             constructor() { created = true; }
             ngOnDestroy() {}

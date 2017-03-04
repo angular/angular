@@ -7,14 +7,14 @@
  */
 
 import {CssSelector, SelectorMatcher, createElementCssSelector} from '@angular/compiler';
-import {Compiler, Type} from '@angular/core';
+import {Compiler, Injectable, Type} from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {COMPILER_KEY} from '../common/constants';
 import {ContentProjectionHelper} from '../common/content_projection_helper';
 import {getAttributesAsArray, getComponentName} from '../common/util';
 
-
+@Injectable()
 export class DynamicContentProjectionHelper extends ContentProjectionHelper {
   groupProjectableNodes($injector: angular.IInjectorService, component: Type<any>, nodes: Node[]):
       Node[][] {

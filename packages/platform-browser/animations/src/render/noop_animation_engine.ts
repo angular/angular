@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent, AnimationMetadataType, AnimationPlayer, AnimationStateMetadata, AnimationTriggerMetadata, ɵStyleData} from '@angular/animations';
-
+import {Injectable} from '@angular/core';
 import {AnimationEngine} from '../animation_engine';
-import {copyStyles, eraseStyles, normalizeStyles, setStyles} from '../util';
+import {eraseStyles, normalizeStyles, setStyles} from '../util';
 
 interface ListenerTuple {
   eventPhase: string;
@@ -27,6 +27,7 @@ interface ChangeTuple {
 const DEFAULT_STATE_VALUE = 'void';
 const DEFAULT_STATE_STYLES = '*';
 
+@Injectable()
 export class NoopAnimationEngine extends AnimationEngine {
   private _listeners = new Map<any, ListenerTuple[]>();
   private _changes: ChangeTuple[] = [];

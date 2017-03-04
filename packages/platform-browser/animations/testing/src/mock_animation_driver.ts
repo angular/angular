@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
-
+import {Injectable} from '@angular/core';
 import {AnimationDriver} from '../../src/render/animation_driver';
 
 /**
  * @experimental Animation support is experimental.
  */
+@Injectable()
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
 

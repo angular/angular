@@ -219,7 +219,7 @@ export function main() {
          }
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
-             .toThrowError(`Can't resolve all parameters for NonAnnotatedService: (?).`);
+             .toThrowError(`NonAnnotatedService must be annotated with @Injectable`);
        }));
 
     it('should throw with descriptive error message when encounter invalid provider',
