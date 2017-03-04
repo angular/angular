@@ -5,7 +5,7 @@ import {VIEWPORT_RULER_PROVIDER} from '../overlay/position/viewport-ruler';
 import {SCROLL_DISPATCHER_PROVIDER} from '../overlay/scroll/scroll-dispatcher';
 
 export {MdRipple} from './ripple';
-export {RippleRef} from './ripple-ref';
+export {RippleRef, RippleState} from './ripple-ref';
 export {RippleConfig} from './ripple-renderer';
 
 @NgModule({
