@@ -234,8 +234,16 @@ $mat-input-underline-disabled-background-image:
   }
 }
 
-// Prevents the prefix and suffix from stretching together with the container.
 .mat-input-prefix, .mat-input-suffix {
+  // Prevents the prefix and suffix from stretching together with the container.
   width: 0.1px;
   white-space: nowrap;
+
+  // Allow icons in a prefix/suffix to adapt to the correct size.
+  & .mat-icon {
+    width: auto;
+    height: auto;
+    font-size: 100%;
+    vertical-align: top;
+  }
 }

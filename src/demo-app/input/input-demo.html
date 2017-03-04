@@ -206,13 +206,8 @@
       Both:
       <md-input-container align="end">
         <input mdInput #email placeholder="Email Address" value="angular-core">
-        <span mdPrefix>
-          <md-icon [class.primary]="email.focused" class="demo-icons demo-transform">email</md-icon>
-          &nbsp;
-        </span>
-        <span mdSuffix class="demo-transform" [class.primary]="email.focused">
-          &nbsp;@gmail.com
-        </span>
+        <span mdPrefix><md-icon [class.primary]="email.focused">email</md-icon>&nbsp;</span>
+        <span mdSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
       </md-input-container>
     </p>
 
