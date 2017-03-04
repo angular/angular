@@ -15,7 +15,8 @@ $mat-autocomplete-panel-above-offset: -24px !default;
 .mat-autocomplete-panel {
   @include mat-menu-base();
   visibility: hidden;
-
+  
+  max-width: none;
   max-height: $mat-autocomplete-panel-max-height;
   position: relative;
 
