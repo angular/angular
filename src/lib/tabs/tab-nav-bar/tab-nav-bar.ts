@@ -5,11 +5,9 @@ import {
   ElementRef,
   ViewEncapsulation,
   Directive,
-  NgZone,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/index';
-import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -81,9 +79,4 @@ export class MdTabLink {
     '[class.mat-tab-link]': 'true',
   },
 })
-export class MdTabLinkRipple extends MdRipple {
-  constructor(elementRef: ElementRef, ngZone: NgZone, ruler: ViewportRuler) {
-    super(elementRef, ngZone, ruler);
-  }
-
-}
+export class MdTabLinkRipple extends MdRipple {}

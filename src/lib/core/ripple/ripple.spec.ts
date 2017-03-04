@@ -1,6 +1,6 @@
 import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {MdRipple, MdRippleModule, RippleState} from './index';
+import {MdRipple, MdRippleModule, MD_DISABLE_RIPPLES, RippleState} from './index';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 import {dispatchMouseEvent} from '../testing/dispatch-events';
@@ -18,7 +18,7 @@ describe('MdRipple', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MdRippleModule.forRoot()],
+      imports: [MdRippleModule],
       declarations: [
         BasicRippleContainer,
         RippleContainerWithInputBindings,
@@ -343,6 +343,50 @@ describe('MdRipple', () => {
      expect(rippleRef.state).toBe(RippleState.HIDDEN);
      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
    }));
+
+  });
+
+  describe('with ripples disabled', () => {
+    let rippleDirective: MdRipple;
+
+    beforeEach(() => {
+      // Reset the previously configured testing module to be able to disable ripples globally.
+      // The testing module has been initialized in the root describe group for the ripples.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MdRippleModule],
+        declarations: [BasicRippleContainer],
+        providers: [{ provide: MD_DISABLE_RIPPLES, useValue: true }]
+      });
+    });
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicRippleContainer);
+      fixture.detectChanges();
+
+      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleDirective = fixture.componentInstance.ripple;
+    });
+
+    it('should not show any ripples on mousedown', () => {
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    });
+
+    it('should still allow manual ripples', () => {
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      rippleDirective.launch(0, 0);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+    });
 
   });
 
