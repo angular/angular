@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext, Component, ViewEncapsulation} from '@angular/core';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
@@ -26,6 +26,7 @@ export function main() {
       expect(registry.hasElement('b', [])).toBeTruthy();
       expect(registry.hasElement('ng-container', [])).toBeTruthy();
       expect(registry.hasElement('ng-content', [])).toBeTruthy();
+      expect(registry.hasElement('slot', [])).toBeTruthy();
 
       expect(registry.hasElement('my-cmp', [])).toBeFalsy();
       expect(registry.hasElement('abc', [])).toBeFalsy();
@@ -40,6 +41,7 @@ export function main() {
     });
 
     it('should detect properties on regular elements', () => {
+      expect(registry.hasProperty('slot', 'name', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
       expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
