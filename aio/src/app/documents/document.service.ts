@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
+import { AsyncSubject } from 'rxjs/AsyncSubject';
 import 'rxjs/add/operator/switchMap';
 
 import { LocationService } from 'app/shared/location.service';
@@ -37,7 +38,8 @@ export class DocumentService {
   private fetchDocument(url: string) {
     const path = this.computePath(url);
     this.logger.log('fetching document from', path);
-    return this.http
+    const subject = new AsyncSubject();
+    this.http
       .get(path)
       .map(res => res.json())
       .catch((error: Response) => {
@@ -48,7 +50,9 @@ export class DocumentService {
         } else {
           throw error;
         }
-      });
+      })
+      .subscribe(subject);
+    return subject.asObservable();
   }
 
   private computePath(url) {
