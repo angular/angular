@@ -384,11 +384,11 @@ describe('MdCheckbox', () => {
 
     describe('state transition css classes', () => {
       it('should transition unchecked -> checked -> unchecked', () => {
-        testComponent.isChecked = true;
+        inputElement.click();
         fixture.detectChanges();
         expect(checkboxNativeElement.classList).toContain('mat-checkbox-anim-unchecked-checked');
 
-        testComponent.isChecked = false;
+        inputElement.click();
         fixture.detectChanges();
         expect(checkboxNativeElement.classList)
             .not.toContain('mat-checkbox-anim-unchecked-checked');
