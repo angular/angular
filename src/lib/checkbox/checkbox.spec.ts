@@ -314,6 +314,13 @@ describe('MdCheckbox', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
+    it('should forward the value to input element', () => {
+      testComponent.checkboxValue = 'basic_checkbox';
+      fixture.detectChanges();
+
+      expect(inputElement.value).toBe('basic_checkbox');
+    });
+
     describe('ripple elements', () => {
 
       it('should show ripples on label mousedown', () => {
@@ -349,7 +356,6 @@ describe('MdCheckbox', () => {
         expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
           .toBe(1, 'Expect [md-ripple] in checkbox');
       }));
-
     });
 
     describe('color behaviour', () => {
@@ -694,6 +700,7 @@ describe('MdCheckbox', () => {
         [disabled]="isDisabled"
         [color]="checkboxColor"
         [disableRipple]="disableRipple"
+        [value]="checkboxValue"
         (change)="changeCount = changeCount + 1"
         (click)="onCheckboxClick($event)"
         (change)="onCheckboxChange($event)">
@@ -713,6 +720,7 @@ class SingleCheckbox {
   lastKeydownEvent: Event = null;
   changeCount: number = 0;
   checkboxColor: string = 'primary';
+  checkboxValue: string = 'single_checkbox';
 
   onCheckboxClick(event: Event) {}
   onCheckboxChange(event: MdCheckboxChange) {}
