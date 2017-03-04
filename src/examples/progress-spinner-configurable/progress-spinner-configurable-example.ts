@@ -7,7 +7,7 @@ import {Component} from '@angular/core';
   styleUrls: ['./progress-spinner-configurable-example.css'],
 })
 export class ProgressSpinnerConfigurableExample {
-  color = 'praimry';
+  color = 'primary';
   mode = 'determinate';
   value = 50;
 }
