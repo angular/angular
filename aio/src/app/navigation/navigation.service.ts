@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import 'rxjs/add/operator/publish';
 
@@ -52,8 +53,12 @@ export class NavigationService {
   }
 
   private fetchNavigation(): Observable<NavigationViews> {
+    const subject = new AsyncSubject<NavigationViews>();
     // TODO: logging and error handling
-    return this.http.get(NAVIGATION_PATH).map(res => res.json() as NavigationViews);
+    this.http.get(NAVIGATION_PATH)
+             .map(res => res.json() as NavigationViews)
+             .subscribe(subject);
+    return subject.asObservable();
   }
 
   private computeNavMap(navigation: NavigationViews): NavigationMap {
