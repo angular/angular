@@ -9,5 +9,5 @@ source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
 
 travisFoldStart "test.docs"
   cd ${PROJECT_ROOT}/aio
-  $(npm bin)/gulp docs-test
+  yarn docs-test
 travisFoldEnd "test.docs"
