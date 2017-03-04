@@ -23,16 +23,16 @@
   }
 
   .mat-button-toggle-checked {
-    background-color: mat-color($mat-grey, 300);
+    background-color: mat-color($background, selected-button);
     color: mat-color($foreground, base);
   }
 
   .mat-button-toggle-disabled {
-    background-color: map_get($mat-grey, 200);
+    background-color: mat-color($background, disabled-button-toggle);
     color: mat-color($foreground, disabled-button);
 
     &.mat-button-toggle-checked {
-      background-color: mat-color($mat-grey, 400);
+      background-color: mat-color($background, selected-disabled-button);
     }
   }
 }
