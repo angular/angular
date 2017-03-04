@@ -78,7 +78,31 @@ describe('DocumentService', () => {
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {
+      const { service, backend } = getServices('missing/url');
+      const connections = backend.connectionsArray;
+      service.currentDocument.subscribe();
 
+      connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
+      expect(connections.length).toEqual(2);
+      expect(connections[1].request.url).toEqual(CONTENT_URL_PREFIX + 'file-not-found.json');
+    });
+
+    it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
+      let currentDocument: DocumentContents;
+      const notFoundDoc = { title: 'Not Found', contents: 'Document not found' };
+      const nextDoc = { title: 'Next Doc' };
+      const { service, backend, location } = getServices('file-not-found');
+      const connections = backend.connectionsArray;
+      service.currentDocument.subscribe(doc => currentDocument = doc);
+
+      connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
+      expect(connections.length).toEqual(1);
+      expect(currentDocument).toEqual(notFoundDoc);
+
+      // now check that we haven't killed the currentDocument observable sequence
+      location.urlSubject.next('new/url');
+      connections[1].mockRespond(createResponse(nextDoc));
+      expect(currentDocument).toEqual(nextDoc);
     });
 
     it('should not make a request to the server if the doc is in the cache already', () => {
