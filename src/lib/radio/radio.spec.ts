@@ -6,9 +6,21 @@ import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {FocusOriginMonitor, FocusOrigin} from '../core';
+import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '../core/ripple/ripple-renderer';
+import {Subject} from 'rxjs/Subject';
 
 
 describe('MdRadio', () => {
+  let fakeFocusOriginMonitorStream = new Subject<FocusOrigin>();
+  let fakeFocusOriginMonitor = {
+    monitor: () => fakeFocusOriginMonitorStream.asObservable(),
+    unmonitor: () => {},
+    focusVia: (element: HTMLElement, renderer: any, origin: FocusOrigin) => {
+      element.focus();
+      fakeFocusOriginMonitorStream.next(origin);
+    }
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -21,6 +33,7 @@ describe('MdRadio', () => {
       ],
       providers: [
         {provide: ViewportRuler, useClass: FakeViewportRuler},
+        {provide: FocusOriginMonitor, useValue: fakeFocusOriginMonitor}
       ]
     });
 
@@ -177,37 +190,22 @@ describe('MdRadio', () => {
       expect(changeSpy).toHaveBeenCalledTimes(1);
     });
 
-    // TODO(jelbourn): test this in an e2e test with *real* focus, rather than faking
-    // a focus / blur event.
-    it('should focus individual radio buttons', () => {
-      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
+    it('should show a ripple when focusing via the keyboard', fakeAsync(() => {
+      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripples on init.');
 
-      expect(nativeRadioInput.classList).not.toContain('mat-radio-focused');
+      fakeFocusOriginMonitorStream.next('keyboard');
+      tick(RIPPLE_FADE_IN_DURATION);
 
-      dispatchFakeEvent(nativeRadioInput, 'focus');
-      fixture.detectChanges();
+      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+          .toBe(1, 'Expected one ripple after keyboard focus.');
 
-      expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
+      dispatchFakeEvent(radioNativeElements[0].querySelector('input'), 'blur');
+      tick(RIPPLE_FADE_OUT_DURATION);
 
-      dispatchFakeEvent(nativeRadioInput, 'blur');
-      fixture.detectChanges();
-
-      expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
-    });
-
-    it('should focus individual radio buttons', () => {
-      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
-
-      radioInstances[0].focus();
-      fixture.detectChanges();
-
-      expect(radioNativeElements[0].classList).toContain('mat-radio-focused');
-
-      dispatchFakeEvent(nativeRadioInput, 'blur');
-      fixture.detectChanges();
-
-      expect(radioNativeElements[0].classList).not.toContain('mat-radio-focused');
-    });
+      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripples on blur.');
+    }));
 
     it('should update the group and radios when updating the group value', () => {
       expect(groupInstance.value).toBeFalsy();

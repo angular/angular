@@ -6,7 +6,6 @@ import {
   ElementRef,
   Renderer,
   EventEmitter,
-  HostBinding,
   Input,
   OnInit,
   Optional,
@@ -17,17 +16,23 @@ import {
   NgModule,
   ModuleWithProviders,
   ViewChild,
+  OnDestroy,
+  AfterViewInit,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {
   MdRippleModule,
+  RippleRef,
   UniqueSelectionDispatcher,
   CompatibilityModule,
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
+  MdRipple,
+  FocusOriginMonitor,
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /**
@@ -265,24 +270,21 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.mat-radio-button]': 'true',
+    '[class.mat-radio-checked]': 'checked',
+    '[class.mat-radio-disabled]': 'disabled',
+    '[attr.id]': 'id',
   }
 })
-export class MdRadioButton implements OnInit {
-
-  @HostBinding('class.mat-radio-focused')
-  _isFocused: boolean;
+export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
   /** Whether this radio is checked. */
   private _checked: boolean = false;
 
   /** The unique ID for the radio button. */
-  @HostBinding('id')
-  @Input()
-  id: string = `md-radio-${_uniqueIdCounter++}`;
+  @Input() id: string = `md-radio-${_uniqueIdCounter++}`;
 
   /** Analog to HTML 'name' attribute used to group radios for unique selection. */
-  @Input()
-  name: string;
+  @Input() name: string;
 
   /** Used to set the 'aria-label' attribute on the underlying input element. */
   @Input('aria-label') ariaLabel: string;
@@ -298,6 +300,15 @@ export class MdRadioButton implements OnInit {
 
   /** Whether the ripple effect on click should be disabled. */
   private _disableRipple: boolean;
+
+  /** The child ripple instance. */
+  @ViewChild(MdRipple) _ripple: MdRipple;
+
+  /** Stream of focus event from the focus origin monitor. */
+  private _focusOriginMonitorSubscription: Subscription;
+
+  /** Reference to the current focus ripple. */
+  private _focusedRippleRef: RippleRef;
 
   /** The parent radio group. May or may not be present. */
   radioGroup: MdRadioGroup;
@@ -321,6 +332,7 @@ export class MdRadioButton implements OnInit {
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
               private _renderer: Renderer,
+              private _focusOriginMonitor: FocusOriginMonitor,
               public radioDispatcher: UniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
@@ -340,7 +352,6 @@ export class MdRadioButton implements OnInit {
   }
 
   /** Whether this radio button is checked. */
-  @HostBinding('class.mat-radio-checked')
   @Input()
   get checked(): boolean {
     return this._checked;
@@ -415,7 +426,6 @@ export class MdRadioButton implements OnInit {
   }
 
   /** Whether the radio button is disabled. */
-  @HostBinding('class.mat-radio-disabled')
   @Input()
   get disabled(): boolean {
     return this._disabled || (this.radioGroup != null && this.radioGroup.disabled);
@@ -435,6 +445,25 @@ export class MdRadioButton implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    this._focusOriginMonitorSubscription = this._focusOriginMonitor
+      .monitor(this._inputElement.nativeElement, this._renderer, false)
+      .subscribe(focusOrigin => {
+        if (focusOrigin === 'keyboard' && !this._focusedRippleRef) {
+          this._focusedRippleRef = this._ripple.launch(0, 0, { persistent: true, centered: true });
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this._focusOriginMonitor.unmonitor(this._inputElement.nativeElement);
+
+    if (this._focusOriginMonitorSubscription) {
+      this._focusOriginMonitorSubscription.unsubscribe();
+      this._focusOriginMonitorSubscription = null;
+    }
+  }
+
   /** Dispatch change event with current value. */
   private _emitChangeEvent(): void {
     let event = new MdRadioChange();
@@ -447,23 +476,16 @@ export class MdRadioButton implements OnInit {
     return this.disableRipple || this.disabled;
   }
 
-  /**
-   * We use a hidden native input field to handle changes to focus state via keyboard navigation,
-   * with visual rendering done separately. The native element is kept in sync with the overall
-   * state of the component.
-   */
-  _onInputFocus() {
-    this._isFocused = true;
-  }
-
   /** Focuses the radio button. */
   focus(): void {
-    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
-    this._onInputFocus();
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
   }
 
   _onInputBlur() {
-    this._isFocused = false;
+    if (this._focusedRippleRef) {
+      this._focusedRippleRef.fadeOut();
+      this._focusedRippleRef = null;
+    }
 
     if (this.radioGroup) {
       this.radioGroup._touch();
@@ -503,13 +525,14 @@ export class MdRadioButton implements OnInit {
       }
     }
   }
+
 }
 
 
 @NgModule({
   imports: [CommonModule, MdRippleModule, CompatibilityModule],
   exports: [MdRadioGroup, MdRadioButton, CompatibilityModule],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER],
+  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER, FocusOriginMonitor],
   declarations: [MdRadioGroup, MdRadioButton],
 })
 export class MdRadioModule {
