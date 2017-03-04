@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   HostBinding,
   ChangeDetectionStrategy,
@@ -10,7 +8,6 @@ import {
   NgZone,
   Renderer, Directive
 } from '@angular/core';
-import {CompatibilityModule} from '../core';
 
 
 // TODO(josephperrott): Benchpress tests.
@@ -381,31 +378,4 @@ function getSvgArc(currentValue: number, rotation: number) {
   }
 
   return `M${start}A${pathRadius},${pathRadius} 0 ${largeArcFlag},${arcSweep} ${end}`;
-}
-
-
-@NgModule({
-  imports: [CompatibilityModule],
-  exports: [
-    MdProgressSpinner,
-    MdSpinner,
-    CompatibilityModule,
-    MdProgressSpinnerCssMatStyler,
-    MdProgressCircleCssMatStyler
-  ],
-  declarations: [
-    MdProgressSpinner,
-    MdSpinner,
-    MdProgressSpinnerCssMatStyler,
-    MdProgressCircleCssMatStyler
-  ],
-})
-export class MdProgressSpinnerModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdProgressSpinnerModule,
-      providers: []
-    };
-  }
 }

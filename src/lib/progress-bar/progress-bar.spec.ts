@@ -1,7 +1,7 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdProgressBarModule} from './progress-bar';
+import {MdProgressBarModule} from './index';
 
 
 describe('MdProgressBar', () => {

@@ -1,32 +1,24 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    Component,
-    ContentChildren,
-    Directive,
-    ElementRef,
-    Renderer,
-    EventEmitter,
-    HostBinding,
-    Input,
-    OnInit,
-    Optional,
-    Output,
-    QueryList,
-    ViewChild,
-    ViewEncapsulation,
-    forwardRef,
-    AfterViewInit
+  Component,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  Renderer,
+  EventEmitter,
+  HostBinding,
+  Input,
+  OnInit,
+  Optional,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewEncapsulation,
+  forwardRef,
+  AfterViewInit,
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-import {
-  FocusOriginMonitor,
-  UniqueSelectionDispatcher,
-  coerceBooleanProperty,
-  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
-  CompatibilityModule,
-} from '../core';
+import {UniqueSelectionDispatcher, coerceBooleanProperty, FocusOriginMonitor} from '../core';
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
@@ -467,27 +459,5 @@ export class MdButtonToggle implements OnInit {
   /** Focuses the button. */
   focus() {
     this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
-  }
-}
-
-
-@NgModule({
-  imports: [FormsModule, CompatibilityModule],
-  exports: [
-    MdButtonToggleGroup,
-    MdButtonToggleGroupMultiple,
-    MdButtonToggle,
-    CompatibilityModule,
-  ],
-  declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, FocusOriginMonitor]
-})
-export class MdButtonToggleModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdButtonToggleModule,
-      providers: []
-    };
   }
 }

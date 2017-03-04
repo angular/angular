@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   AfterContentInit,
   Component,
   ContentChildren,
@@ -16,12 +14,9 @@ import {
   NgZone,
   OnDestroy,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Dir, MdError, coerceBooleanProperty, CompatibilityModule} from '../core';
-import {A11yModule} from '../core/a11y/index';
+import {Dir, MdError, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
-import {OverlayModule} from '../core/overlay/overlay-directives';
 import 'rxjs/add/operator/first';
 
 
@@ -504,22 +499,6 @@ export class MdSidenavContainer implements AfterContentInit {
       marginLeft: `${this._getMarginLeft()}px`,
       marginRight: `${this._getMarginRight()}px`,
       transform: `translate3d(${this._getPositionOffset()}px, 0, 0)`
-    };
-  }
-}
-
-
-@NgModule({
-  imports: [CommonModule, CompatibilityModule, A11yModule, OverlayModule],
-  exports: [MdSidenavContainer, MdSidenav, CompatibilityModule],
-  declarations: [MdSidenavContainer, MdSidenav],
-})
-export class MdSidenavModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdSidenavModule,
-      providers: []
     };
   }
 }

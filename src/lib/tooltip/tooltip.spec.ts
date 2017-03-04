@@ -14,7 +14,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {TooltipPosition, MdTooltip, MdTooltipModule, SCROLL_THROTTLE_MS} from './tooltip';
+import {TooltipPosition, MdTooltip, MdTooltipModule, SCROLL_THROTTLE_MS} from './index';
 import {OverlayContainer} from '../core';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {OverlayModule} from '../core/overlay/overlay-directives';

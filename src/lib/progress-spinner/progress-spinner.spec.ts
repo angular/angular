@@ -1,7 +1,7 @@
 import {TestBed, async} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdProgressSpinnerModule} from './progress-spinner';
+import {MdProgressSpinnerModule} from './index';
 
 
 describe('MdProgressSpinner', () => {

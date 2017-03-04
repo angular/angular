@@ -1,7 +1,7 @@
 import {async, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdListItem, MdListModule} from './list';
+import {MdListItem, MdListModule} from './index';
 
 
 describe('MdList', () => {

@@ -6,8 +6,6 @@ import {
   CompatibilityModule,
   OverlayModule,
 } from '../core';
-export * from './select';
-export {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';
 
 
 @NgModule({
@@ -24,3 +22,7 @@ export class MdSelectModule {
     };
   }
 }
+
+
+export * from './select';
+export {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';

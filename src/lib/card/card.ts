@@ -1,12 +1,9 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   ViewEncapsulation,
   ChangeDetectionStrategy,
   Directive
 } from '@angular/core';
-import {CompatibilityModule} from '../core';
 
 
 /**
@@ -188,39 +185,3 @@ export class MdCardHeader {}
   }
 })
 export class MdCardTitleGroup {}
-
-
-@NgModule({
-  imports: [CompatibilityModule],
-  exports: [
-    MdCard,
-    MdCardHeader,
-    MdCardTitleGroup,
-    MdCardContent,
-    MdCardTitle,
-    MdCardSubtitle,
-    MdCardActions,
-    MdCardFooter,
-    MdCardSmImage,
-    MdCardMdImage,
-    MdCardLgImage,
-    MdCardImage,
-    MdCardXlImage,
-    MdCardAvatar,
-    CompatibilityModule,
-  ],
-  declarations: [
-    MdCard, MdCardHeader, MdCardTitleGroup, MdCardContent, MdCardTitle, MdCardSubtitle,
-    MdCardActions, MdCardFooter, MdCardSmImage, MdCardMdImage, MdCardLgImage, MdCardImage,
-    MdCardXlImage, MdCardAvatar,
-  ],
-})
-export class MdCardModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdCardModule,
-      providers: []
-    };
-  }
-}

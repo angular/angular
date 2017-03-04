@@ -1,27 +1,22 @@
 import {
-    ChangeDetectorRef,
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    Output,
-    Renderer,
-    ViewEncapsulation,
-    forwardRef,
-    NgModule,
-    ModuleWithProviders,
-    ViewChild,
-    AfterViewInit,
-    OnDestroy,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  Renderer,
+  ViewEncapsulation,
+  forwardRef,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {Subscription} from 'rxjs/Subscription';
 import {
-  CompatibilityModule,
-  MdRippleModule,
   MdRipple,
   RippleRef,
   FocusOriginMonitor,
@@ -441,22 +436,5 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
       this._focusedRipple.fadeOut();
       this._focusedRipple = null;
     }
-  }
-}
-
-
-@NgModule({
-  imports: [CommonModule, MdRippleModule, CompatibilityModule],
-  exports: [MdCheckbox, CompatibilityModule],
-  declarations: [MdCheckbox],
-  providers: [FocusOriginMonitor]
-})
-export class MdCheckboxModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdCheckboxModule,
-      providers: []
-    };
   }
 }

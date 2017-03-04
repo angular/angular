@@ -1,13 +1,9 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    Component,
-    ChangeDetectionStrategy,
-    HostBinding,
-    Input,
+  Component,
+  ChangeDetectionStrategy,
+  HostBinding,
+  Input,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {CompatibilityModule} from '../core/compatibility/compatibility';
 
 // TODO(josephperrott): Benchpress tests.
 // TODO(josephperrott): Add ARIA attributes for progressbar "for".
@@ -83,20 +79,4 @@ export class MdProgressBar {
 /** Clamps a value to be between two numbers, by default 0 and 100. */
 function clamp(v: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, v));
-}
-
-
-@NgModule({
-  imports: [CommonModule, CompatibilityModule],
-  exports: [MdProgressBar, CompatibilityModule],
-  declarations: [MdProgressBar],
-})
-export class MdProgressBarModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdProgressBarModule,
-      providers: []
-    };
-  }
 }

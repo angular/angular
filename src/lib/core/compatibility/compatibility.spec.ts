@@ -1,6 +1,6 @@
 import {Component, NgModule} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
-import {MdCheckboxModule} from '../../checkbox/checkbox';
+import {MdCheckboxModule} from '../../checkbox/index';
 import {
   NoConflictStyleCompatibilityMode,
   MAT_ELEMENTS_SELECTOR,

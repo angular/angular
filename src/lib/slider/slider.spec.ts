@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, FormControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {MdSlider, MdSliderModule} from './slider';
+import {MdSlider, MdSliderModule} from './index';
 import {TestGestureConfig} from './test-gesture-config';
 import {RtlModule} from '../core/rtl/dir';
 import {

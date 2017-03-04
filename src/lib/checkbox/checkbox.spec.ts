@@ -9,7 +9,7 @@ import {
 import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './checkbox';
+import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './index';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';

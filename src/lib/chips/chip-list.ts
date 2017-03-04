@@ -5,8 +5,6 @@ import {
   ContentChildren,
   ElementRef,
   Input,
-  ModuleWithProviders,
-  NgModule,
   QueryList,
   ViewEncapsulation
 } from '@angular/core';
@@ -207,19 +205,4 @@ export class MdChipList implements AfterContentInit {
     return index >= 0 && index < this.chips.length;
   }
 
-}
-
-@NgModule({
-  imports: [],
-  exports: [MdChipList, MdChip],
-  declarations: [MdChipList, MdChip]
-})
-export class MdChipsModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdChipsModule,
-      providers: []
-    };
-  }
 }

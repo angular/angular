@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   ViewChild,
   Component,
   Input,
@@ -11,24 +9,10 @@ import {
   ElementRef,
   Renderer
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {
-  PortalModule,
-  coerceBooleanProperty
-} from '../core';
-import {MdTabLabel} from './tab-label';
-import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {MdTabNavBar, MdTabLink, MdTabLinkRipple} from './tab-nav-bar/tab-nav-bar';
-import {MdInkBar} from './ink-bar';
+import {coerceBooleanProperty} from '../core';
 import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import {MdRippleModule} from '../core/ripple/index';
-import {ObserveContentModule} from '../core/observe-content/observe-content';
 import {MdTab} from './tab';
-import {MdTabBody} from './tab-body';
-import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
-import {MdTabHeader} from './tab-header';
-import {SCROLL_DISPATCHER_PROVIDER} from '../core/overlay/scroll/scroll-dispatcher';
+import 'rxjs/add/operator/map';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -207,23 +191,5 @@ export class MdTabGroup {
   _removeTabBodyWrapperHeight(): void {
     this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
     this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height', '');
-  }
-}
-
-@NgModule({
-  imports: [CommonModule, PortalModule, MdRippleModule, ObserveContentModule],
-  // Don't export all components because some are only to be used internally.
-  exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink, MdTabLinkRipple],
-  declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
-    MdTabNavBar, MdTabLink, MdTabBody, MdTabLinkRipple, MdTabHeader],
-  providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER],
-})
-export class MdTabsModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdTabsModule,
-      providers: []
-    };
   }
 }

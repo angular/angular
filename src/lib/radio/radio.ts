@@ -13,25 +13,18 @@ import {
   QueryList,
   ViewEncapsulation,
   forwardRef,
-  NgModule,
-  ModuleWithProviders,
   ViewChild,
   OnDestroy,
   AfterViewInit,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {
-  MdRippleModule,
   RippleRef,
   UniqueSelectionDispatcher,
-  CompatibilityModule,
-  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
   MdRipple,
   FocusOriginMonitor,
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
-import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
 import {Subscription} from 'rxjs/Subscription';
 
 
@@ -526,21 +519,4 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-}
-
-
-@NgModule({
-  imports: [CommonModule, MdRippleModule, CompatibilityModule],
-  exports: [MdRadioGroup, MdRadioButton, CompatibilityModule],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER, FocusOriginMonitor],
-  declarations: [MdRadioGroup, MdRadioButton],
-})
-export class MdRadioModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdRadioModule,
-      providers: [],
-    };
-  }
 }

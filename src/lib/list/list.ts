@@ -1,17 +1,15 @@
 import {
-    Component,
-    ViewEncapsulation,
-    ContentChildren,
-    ContentChild,
-    QueryList,
-    Directive,
-    ElementRef,
-    Renderer,
-    AfterContentInit,
-    NgModule,
-    ModuleWithProviders,
+  Component,
+  ViewEncapsulation,
+  ContentChildren,
+  ContentChild,
+  QueryList,
+  Directive,
+  ElementRef,
+  Renderer,
+  AfterContentInit,
 } from '@angular/core';
-import {MdLine, MdLineSetter, MdLineModule, CompatibilityModule} from '../core';
+import {MdLine, MdLineSetter} from '../core';
 
 @Directive({
   selector: 'md-divider, mat-divider'
@@ -128,43 +126,5 @@ export class MdListItem implements AfterContentInit {
 
   _handleBlur() {
     this._hasFocus = false;
-  }
-}
-
-
-@NgModule({
-  imports: [MdLineModule, CompatibilityModule],
-  exports: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdLineModule,
-    CompatibilityModule,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler
-  ],
-  declarations: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler
-  ],
-})
-export class MdListModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdListModule,
-      providers: []
-    };
   }
 }

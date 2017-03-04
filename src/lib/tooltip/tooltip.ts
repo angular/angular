@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   Directive,
   Input,
@@ -22,18 +20,16 @@ import {
 import {
   Overlay,
   OverlayState,
-  OverlayModule,
   OverlayRef,
   ComponentPortal,
   OverlayConnectionPosition,
   OriginConnectionPosition,
-  CompatibilityModule
 } from '../core';
 import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
-import {PlatformModule, Platform} from '../core/platform/index';
+import {Platform} from '../core/platform/index';
 import 'rxjs/add/operator/first';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {Subscription} from 'rxjs/Subscription';
@@ -443,22 +439,5 @@ export class TooltipComponent {
     if (this._closeOnInteraction) {
       this.hide(0);
     }
-  }
-}
-
-
-@NgModule({
-  imports: [OverlayModule, CompatibilityModule, PlatformModule],
-  exports: [MdTooltip, TooltipComponent, CompatibilityModule],
-  declarations: [MdTooltip, TooltipComponent],
-  entryComponents: [TooltipComponent],
-})
-export class MdTooltipModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdTooltipModule,
-      providers: []
-    };
   }
 }

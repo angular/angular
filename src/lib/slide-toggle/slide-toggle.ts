@@ -8,22 +8,12 @@ import {
   Output,
   EventEmitter,
   AfterContentInit,
-  NgModule,
-  ModuleWithProviders,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {
-  applyCssTransform,
-  coerceBooleanProperty,
-  GestureConfig,
-  HammerInput,
-  CompatibilityModule,
-} from '../core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {applyCssTransform, coerceBooleanProperty, HammerInput} from '../core';
 import {Observable} from 'rxjs/Observable';
-import {MdRippleModule} from '../core/ripple/index';
 
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -351,21 +341,4 @@ class SlideToggleRenderer {
     return Math.max(0, Math.min(percentage, 100));
   }
 
-}
-
-
-@NgModule({
-  imports: [FormsModule, MdRippleModule, CompatibilityModule],
-  exports: [MdSlideToggle, CompatibilityModule],
-  declarations: [MdSlideToggle],
-  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}],
-})
-export class MdSlideToggleModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdSlideToggleModule,
-      providers: []
-    };
-  }
 }

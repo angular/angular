@@ -6,11 +6,9 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   Renderer,
-  NgModule,
-  ModuleWithProviders, Directive,
+  Directive,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {MdRippleModule, coerceBooleanProperty, CompatibilityModule} from '../core';
+import {coerceBooleanProperty} from '../core';
 
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
@@ -217,37 +215,5 @@ export class MdAnchor extends MdButton {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
-  }
-}
-
-
-@NgModule({
-  imports: [CommonModule, MdRippleModule, CompatibilityModule],
-  exports: [
-    MdButton, MdAnchor,
-    CompatibilityModule,
-    MdButtonCssMatStyler,
-    MdRaisedButtonCssMatStyler,
-    MdIconButtonCssMatStyler,
-    MdFabCssMatStyler,
-    MdMiniFabCssMatStyler
-  ],
-  declarations: [
-    MdButton,
-    MdAnchor,
-    MdButtonCssMatStyler,
-    MdRaisedButtonCssMatStyler,
-    MdIconButtonCssMatStyler,
-    MdFabCssMatStyler,
-    MdMiniFabCssMatStyler
-  ],
-})
-export class MdButtonModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdButtonModule,
-      providers: []
-    };
   }
 }

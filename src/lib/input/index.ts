@@ -6,11 +6,6 @@ import {FormsModule} from '@angular/forms';
 import {PlatformModule} from '../core/platform/index';
 
 
-export * from './autosize'
-export * from './input-container';
-export * from './input-container-errors';
-
-
 @NgModule({
   declarations: [
     MdPlaceholder,
@@ -41,3 +36,9 @@ export class MdInputModule {
     };
   }
 }
+
+
+export * from './autosize'
+export * from './input-container';
+export * from './input-container-errors';
+

@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   ViewEncapsulation,
   AfterContentChecked,
@@ -12,14 +10,11 @@ import {
   ElementRef,
   Optional,
 } from '@angular/core';
-import {
-  MdGridTile, MdGridTileText, MdGridTileFooterCssMatStyler,
-  MdGridTileHeaderCssMatStyler, MdGridAvatarCssMatStyler
-} from './grid-tile';
+import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
-import {Dir, MdLineModule, CompatibilityModule} from '../core';
+import {Dir} from '../core';
 import {
   coerceToString,
   coerceToNumber,
@@ -143,36 +138,5 @@ export class MdGridList implements OnInit, AfterContentChecked {
     if (style) {
       this._renderer.setElementStyle(this._element.nativeElement, style[0], style[1]);
     }
-  }
-}
-
-
-@NgModule({
-  imports: [MdLineModule, CompatibilityModule],
-  exports: [
-    MdGridList,
-    MdGridTile,
-    MdGridTileText,
-    MdLineModule,
-    CompatibilityModule,
-    MdGridTileHeaderCssMatStyler,
-    MdGridTileFooterCssMatStyler,
-    MdGridAvatarCssMatStyler
-  ],
-  declarations: [
-    MdGridList,
-    MdGridTile,
-    MdGridTileText,
-    MdGridTileHeaderCssMatStyler,
-    MdGridTileFooterCssMatStyler,
-    MdGridAvatarCssMatStyler],
-})
-export class MdGridListModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdGridListModule,
-      providers: []
-    };
   }
 }

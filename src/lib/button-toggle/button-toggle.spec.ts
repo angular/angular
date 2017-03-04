@@ -9,11 +9,12 @@ import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
-    MdButtonToggleGroup,
-    MdButtonToggle,
-    MdButtonToggleGroupMultiple,
-    MdButtonToggleChange, MdButtonToggleModule,
-} from './button-toggle';
+  MdButtonToggleGroup,
+  MdButtonToggle,
+  MdButtonToggleGroupMultiple,
+  MdButtonToggleChange,
+  MdButtonToggleModule,
+} from './index';
 
 
 describe('MdButtonToggle', () => {

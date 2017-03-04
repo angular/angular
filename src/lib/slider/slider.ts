@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   ElementRef,
   Input,
@@ -10,17 +8,9 @@ import {
   EventEmitter,
   Optional
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {
-  GestureConfig,
-  HammerInput,
-  coerceBooleanProperty,
-  coerceNumberProperty,
-  CompatibilityModule,
-} from '../core';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
+import {HammerInput, coerceBooleanProperty, coerceNumberProperty} from '../core';
 import {Dir} from '../core/rtl/dir';
-import {CommonModule} from '@angular/common';
 import {
   PAGE_UP,
   PAGE_DOWN,
@@ -650,22 +640,5 @@ export class SliderRenderer {
    */
   addFocus() {
     this._sliderElement.focus();
-  }
-}
-
-
-@NgModule({
-  imports: [CommonModule, FormsModule, CompatibilityModule],
-  exports: [MdSlider, CompatibilityModule],
-  declarations: [MdSlider],
-  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
-})
-export class MdSliderModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdSliderModule,
-      providers: []
-    };
   }
 }

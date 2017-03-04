@@ -1,7 +1,7 @@
 import {async, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdGridList, MdGridListModule} from './grid-list';
+import {MdGridList, MdGridListModule} from './index';
 import {MdGridTile, MdGridTileText} from './grid-tile';
 
 

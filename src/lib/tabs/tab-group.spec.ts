@@ -1,7 +1,7 @@
 import {
     async, fakeAsync, tick, ComponentFixture, TestBed
 } from '@angular/core/testing';
-import {MdTabGroup, MdTabsModule, MdTabHeaderPosition} from './tab-group';
+import {MdTabGroup, MdTabsModule, MdTabHeaderPosition} from './index';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';

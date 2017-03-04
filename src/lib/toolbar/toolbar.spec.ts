@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MdToolbarModule} from './toolbar';
+import {MdToolbarModule} from './index';
 
 
 describe('MdToolbar', () => {

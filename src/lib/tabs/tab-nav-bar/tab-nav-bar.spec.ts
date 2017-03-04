@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MdTabsModule} from '../tab-group';
+import {MdTabsModule} from '../index';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';

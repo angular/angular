@@ -1,6 +1,4 @@
 import {
-  NgModule,
-  ModuleWithProviders,
   Component,
   ChangeDetectionStrategy,
   Input,
@@ -9,7 +7,6 @@ import {
   ElementRef,
   Renderer
 } from '@angular/core';
-import {CompatibilityModule} from '../core';
 
 
 @Directive({
@@ -60,20 +57,4 @@ export class MdToolbar {
     }
   }
 
-}
-
-
-@NgModule({
-  imports: [CompatibilityModule],
-  exports: [MdToolbar, MdToolbarRow, CompatibilityModule],
-  declarations: [MdToolbar, MdToolbarRow],
-})
-export class MdToolbarModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdToolbarModule,
-      providers: []
-    };
-  }
 }

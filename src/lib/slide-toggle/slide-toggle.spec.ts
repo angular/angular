@@ -1,8 +1,8 @@
-import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {Component} from '@angular/core';
-import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
+import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {FormsModule, NgControl, ReactiveFormsModule, FormControl} from '@angular/forms';
+import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './index';
 import {TestGestureConfig} from '../slider/test-gesture-config';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 

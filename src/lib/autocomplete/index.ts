@@ -4,8 +4,6 @@ import {MdOptionModule, OverlayModule, OVERLAY_PROVIDERS, CompatibilityModule} f
 import {CommonModule} from '@angular/common';
 import {MdAutocomplete} from './autocomplete';
 import {MdAutocompleteTrigger} from './autocomplete-trigger';
-export * from './autocomplete';
-export * from './autocomplete-trigger';
 
 @NgModule({
   imports: [MdOptionModule, OverlayModule, CompatibilityModule, CommonModule],
@@ -21,3 +19,7 @@ export class MdAutocompleteModule {
     };
   }
 }
+
+
+export * from './autocomplete';
+export * from './autocomplete-trigger';
