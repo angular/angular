@@ -102,12 +102,15 @@ export class FocusOriginMonitor {
    * @param element The element to stop monitoring.
    */
   unmonitor(element: Element): void {
-    if (!this._elementInfo.has(element)) {
-      return;
+    let elementInfo = this._elementInfo.get(element);
+
+    if (elementInfo) {
+      elementInfo.unlisten();
+      elementInfo.subject.complete();
+
+      this._setClasses(element, null);
+      this._elementInfo.delete(element);
     }
-    this._elementInfo.get(element).unlisten();
-    this._setClasses(element, null);
-    this._elementInfo.delete(element);
   }
 
   /**
