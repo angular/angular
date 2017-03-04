@@ -43,8 +43,8 @@ export class DocumentService {
       .get(path)
       .map(res => res.json())
       .catch((error: Response) => {
-        if (error.status === 404 && url !== FILE_NOT_FOUND_DOC) {
-          this.logger.error(`Document file not found at '${url}'`);
+        if (error.status === 404 && path !== FILE_NOT_FOUND_DOC) {
+          this.logger.error(`Document file not found at '${path}'`);
           // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
           return this.getDocument(FILE_NOT_FOUND_DOC);
         } else {
@@ -57,6 +57,7 @@ export class DocumentService {
 
   private computePath(url) {
     url = url.startsWith('/') ? url : '/' + url;
+    url = url.endsWith('/') ? url + 'index' : url;
     return 'content/docs' + url + '.json';
   }
 }
