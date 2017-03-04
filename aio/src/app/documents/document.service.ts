@@ -8,7 +8,7 @@ import 'rxjs/add/operator/switchMap';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 
-const FILE_NOT_FOUND_DOC = 'file-not-found';
+const FILE_NOT_FOUND_URL = 'file-not-found';
 
 export interface DocumentContents {
   title: string;
@@ -19,6 +19,7 @@ export interface DocumentContents {
 export class DocumentService {
 
   private cache = new Map<string, Observable<DocumentContents>>();
+  private fileNotFoundPath = this.computePath(FILE_NOT_FOUND_URL);
 
   currentDocument: Observable<DocumentContents>;
 
@@ -43,10 +44,14 @@ export class DocumentService {
       .get(path)
       .map(res => res.json())
       .catch((error: Response) => {
-        if (error.status === 404 && path !== FILE_NOT_FOUND_DOC) {
-          this.logger.error(`Document file not found at '${path}'`);
-          // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
-          return this.getDocument(FILE_NOT_FOUND_DOC);
+        if (error.status === 404) {
+          if (path !== this.fileNotFoundPath) {
+            this.logger.error(`Document file not found at '${path}'`);
+            // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
+            return this.getDocument(FILE_NOT_FOUND_URL);
+          } else {
+            return Observable.of({ title: 'Not Found', contents: 'Document not found' });
+          }
         } else {
           throw error;
         }
