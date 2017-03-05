@@ -1,0 +1,27 @@
+<div *ngIf="!node.children">
+  <a href="{{node.url}}" [ngClass]="classes" title="{{node.tooltip}}"
+    (click)="itemClicked()" class="vertical-menu">
+    {{node.title}}
+  </a>
+</div>
+
+<div *ngIf="node.children">
+  <a *ngIf="node.url != null" href="{{node.url}}" [ngClass]="classes" title="{{node.tooltip}}"
+    (click)="headerClicked()" class="vertical-menu heading">
+    {{node.title}}
+    <md-icon [class.expanded]="!isExpanded">keyboard_arrow_right</md-icon>
+    <md-icon [class.expanded]="isExpanded">keyboard_arrow_down</md-icon>
+  </a>
+
+  <a *ngIf="node.url == null" [ngClass]="classes" title="{{node.tooltip}}"
+    (click)="headerClicked()" class="vertical-menu heading">
+    {{node.title}}
+    <md-icon [class.expanded]="!isExpanded">keyboard_arrow_right</md-icon>
+    <md-icon [class.expanded]="isExpanded">keyboard_arrow_down</md-icon>
+  </a>
+
+  <div class="heading-children" [ngClass]="classes">
+    <aio-nav-item *ngFor="let node of node.children" [level]="level + 1"
+    [node]="node" [selectedNodes]="selectedNodes"></aio-nav-item>
+  </div>
+</div>
