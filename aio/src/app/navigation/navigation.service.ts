@@ -7,13 +7,8 @@ import 'rxjs/add/operator/publish';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 
-export interface NavigationNode {
-  url?: string;
-  title?: string;
-  tooltip?: string;
-  target?: string;
-  children?: NavigationNode[];
-}
+import { NavigationNode } from './navigation-node';
+export { NavigationNode } from './navigation-node';
 
 export interface NavigationViews {
   [name: string]: NavigationNode[];

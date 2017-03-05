@@ -7,13 +7,10 @@ import 'rxjs/add/operator/switchMap';
 
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { DocumentContents } from './document-contents';
+export { DocumentContents } from './document-contents';
 
 const FILE_NOT_FOUND_URL = 'file-not-found';
-
-export interface DocumentContents {
-  title: string;
-  contents: string;
-}
 
 @Injectable()
 export class DocumentService {
