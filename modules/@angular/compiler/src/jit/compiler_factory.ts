@@ -119,7 +119,6 @@ export class JitCompilerFactory implements CompilerFactory {
             useJit: opts.useJit,
             // let explicit values from the compiler options overwrite options
             // from the app providers
-            defaultEncapsulation: opts.defaultEncapsulation,
             logBindingUpdate: opts.useDebug,
             missingTranslation: opts.missingTranslation,
             enableLegacyTemplate: opts.enableLegacyTemplate,

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵccf as createComponentFactory, ɵreflector} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererTypeV2, SchemaMetadata, Self, SkipSelf, Type, ViewEncapsulation, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵccf as createComponentFactory, ɵreflector} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
-import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
 import {stringify} from './facade/lang';
@@ -47,9 +46,8 @@ export class CompileMetadataResolver {
   private _ngModuleOfTypes = new Map<Type<any>, Type<any>>();
 
   constructor(
-      private _config: CompilerConfig, private _ngModuleResolver: NgModuleResolver,
-      private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
-      private _summaryResolver: SummaryResolver<any>,
+      private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
+      private _pipeResolver: PipeResolver, private _summaryResolver: SummaryResolver<any>,
       private _schemaRegistry: ElementSchemaRegistry,
       private _directiveNormalizer: DirectiveNormalizer,
       @Optional() private _staticSymbolCache: StaticSymbolCache,
@@ -157,7 +155,8 @@ export class CompileMetadataResolver {
     return typeSummary && typeSummary.summaryKind === kind ? typeSummary : null;
   }
 
-  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): Promise<any> {
+  private _loadDirectiveMetadata(
+      directiveType: any, isSync: boolean, defaultEncapsulation?: ViewEncapsulation): Promise<any> {
     if (this._directiveCache.has(directiveType)) {
       return;
     }
@@ -192,10 +191,12 @@ export class CompileMetadataResolver {
     };
 
     if (metadata.isComponent) {
+      const encapsulation = metadata.template.encapsulation != null ?
+          metadata.template.encapsulation :
+          defaultEncapsulation;
       const templateMeta = this._directiveNormalizer.normalizeTemplate({
         componentType: directiveType,
-        moduleUrl: componentModuleUrl(this._reflector, directiveType, annotation),
-        encapsulation: metadata.template.encapsulation,
+        moduleUrl: componentModuleUrl(this._reflector, directiveType, annotation), encapsulation,
         template: metadata.template.template,
         templateUrl: metadata.template.templateUrl,
         styles: metadata.template.styles,
@@ -380,7 +381,8 @@ export class CompileMetadataResolver {
     const loading: Promise<any>[] = [];
     if (ngModule) {
       ngModule.declaredDirectives.forEach((id) => {
-        const promise = this._loadDirectiveMetadata(id.reference, isSync);
+        const promise =
+            this._loadDirectiveMetadata(id.reference, isSync, ngModule.defaultEncapsulation);
         if (promise) {
           loading.push(promise);
         }
@@ -560,6 +562,7 @@ export class CompileMetadataResolver {
       exportedModules,
       transitiveModule,
       id: meta.id,
+      defaultEncapsulation: meta.defaultEncapsulation,
     });
 
     entryComponents.forEach((id) => transitiveModule.addEntryComponent(id));

@@ -10,8 +10,6 @@
 /**
  * Extract i18n messages from source code
  */
-import {ViewEncapsulation} from '@angular/core';
-
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
 import {StaticReflector} from '../aot/static_reflector';
@@ -19,7 +17,6 @@ import {StaticSymbolCache} from '../aot/static_symbol';
 import {StaticSymbolResolver, StaticSymbolResolverHost} from '../aot/static_symbol_resolver';
 import {AotSummaryResolver, AotSummaryResolverHost} from '../aot/summary_resolver';
 import {CompileDirectiveMetadata} from '../compile_metadata';
-import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -30,7 +27,6 @@ import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
-
 import {I18NHtmlParser} from './i18n_html_parser';
 import {MessageBundle} from './message_bundle';
 
@@ -97,18 +93,11 @@ export class Extractor {
     const staticReflector = new StaticReflector(staticSymbolResolver);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
-    const config = new CompilerConfig({
-      genDebugInfo: false,
-      defaultEncapsulation: ViewEncapsulation.Emulated,
-      logBindingUpdate: false,
-      useJit: false
-    });
-
     const normalizer = new DirectiveNormalizer(
-        {get: (url: string) => host.loadResource(url)}, urlResolver, htmlParser, config);
+        {get: (url: string) => host.loadResource(url)}, urlResolver, htmlParser);
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resolver = new CompileMetadataResolver(
-        config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
+        new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
         new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
         symbolCache, staticReflector);
 

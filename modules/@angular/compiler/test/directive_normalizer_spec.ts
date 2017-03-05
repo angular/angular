@@ -93,37 +93,6 @@ export function main() {
            });
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
-
-      it('should use ViewEncapsulation.Emulated by default',
-         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeTemplateSync({
-             componentType: SomeComp,
-             moduleUrl: SOME_MODULE_URL,
-             encapsulation: null,
-             template: '',
-             templateUrl: null,
-             styles: [],
-             styleUrls: ['test.css']
-           });
-           expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
-         }));
-
-      it('should use default encapsulation provided by CompilerConfig',
-         inject(
-             [CompilerConfig, DirectiveNormalizer],
-             (config: CompilerConfig, normalizer: DirectiveNormalizer) => {
-               config.defaultEncapsulation = ViewEncapsulation.None;
-               const template = normalizer.normalizeTemplateSync({
-                 componentType: SomeComp,
-                 moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
-                 template: '',
-                 templateUrl: null,
-                 styles: [],
-                 styleUrls: ['test.css']
-               });
-               expect(template.encapsulation).toEqual(ViewEncapsulation.None);
-             }));
     });
 
     describe('templateUrl', () => {

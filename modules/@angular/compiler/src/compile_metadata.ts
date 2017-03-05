@@ -598,13 +598,14 @@ export class CompileNgModuleMetadata {
   exportedModules: CompileNgModuleSummary[];
   schemas: SchemaMetadata[];
   id: string;
+  defaultEncapsulation: ViewEncapsulation;
 
   transitiveModule: TransitiveCompileNgModuleMetadata;
 
   constructor(
       {type, providers, declaredDirectives, exportedDirectives, declaredPipes, exportedPipes,
        entryComponents, bootstrapComponents, importedModules, exportedModules, schemas,
-       transitiveModule, id}: {
+       transitiveModule, id, defaultEncapsulation}: {
         type?: CompileTypeMetadata,
         providers?: CompileProviderMetadata[],
         declaredDirectives?: CompileIdentifierMetadata[],
@@ -617,7 +618,8 @@ export class CompileNgModuleMetadata {
         exportedModules?: CompileNgModuleSummary[],
         transitiveModule?: TransitiveCompileNgModuleMetadata,
         schemas?: SchemaMetadata[],
-        id?: string
+        id?: string,
+        defaultEncapsulation?: ViewEncapsulation,
       } = {}) {
     this.type = type;
     this.declaredDirectives = _normalizeArray(declaredDirectives);
@@ -632,6 +634,7 @@ export class CompileNgModuleMetadata {
     this.schemas = _normalizeArray(schemas);
     this.id = id;
     this.transitiveModule = transitiveModule;
+    this.defaultEncapsulation = defaultEncapsulation;
   }
 
   toSummary(): CompileNgModuleSummary {

@@ -662,8 +662,7 @@ export interface Component extends Directive {
    *   encapsulation.
    *
    * When no `encapsulation` is defined for the component, the default value from the
-   * {@link CompilerConfig} is used. The default is `ViewEncapsulation.Emulated`}. Provide a new
-   * `CompilerConfig` to override this value.
+   * {@link NgModule.defaultEncapsulation} is used. The default is `ViewEncapsulation.Emulated`}.
    *
    * If the encapsulation is set to `ViewEncapsulation.Emulated` and the component has no `styles`
    * nor `styleUrls` the encapsulation will automatically be switched to `ViewEncapsulation.None`.

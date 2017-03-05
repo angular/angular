@@ -6,34 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
-
-import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers, createIdentifier} from './identifiers';
-
+import {MissingTranslationStrategy, isDevMode} from '@angular/core';
 
 export class CompilerConfig {
-  public defaultEncapsulation: ViewEncapsulation;
   // Whether to support the `<template>` tag and the `template` attribute to define angular
   // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.
-  public enableLegacyTemplate: boolean;
-  public useJit: boolean;
-  public missingTranslation: MissingTranslationStrategy;
+  enableLegacyTemplate: boolean;
+  useJit: boolean;
+  missingTranslation: MissingTranslationStrategy;
 
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
 
   constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, genDebugInfo, logBindingUpdate,
-       useJit = true, missingTranslation, enableLegacyTemplate}: {
-        defaultEncapsulation?: ViewEncapsulation,
+      {genDebugInfo, logBindingUpdate, useJit = true, missingTranslation, enableLegacyTemplate}: {
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
         useJit?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
       } = {}) {
-    this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
