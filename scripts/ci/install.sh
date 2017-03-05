@@ -50,7 +50,6 @@ if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
     (
-      printenv
       cd ${PROJECT_ROOT}/aio
       yarn install
     )

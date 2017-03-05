@@ -55,6 +55,7 @@ matrix:
     - env: "CI_MODE=browserstack_optional"
 
 before_install:
+  # source the env.sh script so that the exported variables are available to other scripts later on
   - source ./scripts/ci/env.sh print
 
 install:
