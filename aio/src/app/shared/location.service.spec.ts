@@ -32,7 +32,7 @@ describe('LocationService', () => {
 
       let initialUrl;
       service.currentUrl.subscribe(url => initialUrl = url);
-      expect(initialUrl).toEqual('/next-url3');
+      expect(initialUrl).toEqual('next-url3');
     });
 
     it('should emit all location changes after it has been subscribed to', () => {
@@ -51,10 +51,10 @@ describe('LocationService', () => {
       location.simulatePopState('/next-url3');
 
       expect(urls).toEqual([
-        '/initial-url3',
-        '/next-url1',
-        '/next-url2',
-        '/next-url3'
+        'initial-url3',
+        'next-url1',
+        'next-url2',
+        'next-url3'
       ]);
     });
 
@@ -78,15 +78,15 @@ describe('LocationService', () => {
         location.simulatePopState('/next-url3');
 
         expect(urls1).toEqual([
-          '/initial-url3',
-          '/next-url1',
-          '/next-url2',
-          '/next-url3'
+          'initial-url3',
+          'next-url1',
+          'next-url2',
+          'next-url3'
         ]);
 
         expect(urls2).toEqual([
-          '/next-url2',
-          '/next-url3'
+          'next-url2',
+          'next-url3'
         ]);
     });
   });
