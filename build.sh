@@ -2,9 +2,11 @@
 
 set -u -e -o pipefail
 
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+readonly currentDir=$(cd $(dirname $0); pwd)
+source ${currentDir}/scripts/ci/_travis-fold.sh
 
-cd `dirname $0`
+# TODO(i): wrap into subshell, so that we don't pollute CWD, but not yet to minimize diff collision with Jason
+cd ${currentDir}
 
 PACKAGES=(core
   compiler

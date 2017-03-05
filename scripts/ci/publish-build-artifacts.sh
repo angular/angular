@@ -1,5 +1,10 @@
-#!/bin/bash
-set -e -x
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+# Setup environment
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
 
 
 # Find the most recent tag that is reachable from the current commit.
