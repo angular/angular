@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisPromise as isPromise} from '@angular/core';
+import {InjectionToken, isDevMode, ɵisPromise as isPromise} from '@angular/core';
 import {toPromise} from 'rxjs/operator/toPromise';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
@@ -135,6 +135,10 @@ export class Validators {
 
   /**
    * Validator that requires a control to match a regex to its value.
+   *
+   * Note: Avoid using the g flag on the RegExp, as it will cause each successive search to
+   * start at the index of the last search's match, thus not taking the whole input value into
+   * account.
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
@@ -145,6 +149,11 @@ export class Validators {
       regex = new RegExp(regexStr);
     } else {
       regexStr = pattern.toString();
+      if (isDevMode() && pattern.global && console && <any>console.warn) {
+        console.warn(
+            `Avoid using the g flag on the ${regexStr}, as it will cause each successive search to start at the index of the last search's match, 
+            thus not taking the whole input value into account.`);
+      }
       regex = pattern;
     }
     return (control: AbstractControl): {[key: string]: any} => {
