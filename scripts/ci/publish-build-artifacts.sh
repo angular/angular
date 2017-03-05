@@ -117,7 +117,7 @@ function publishPackages {
     fi
     SHA=`git rev-parse HEAD`
     SHORT_SHA=`git rev-parse --short HEAD`
-    COMMIT_MSG=`git log --oneline | head -n1`
+    COMMIT_MSG=`git log --oneline -1`
     COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
     COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
     LATEST_TAG=`getLatestTag`
