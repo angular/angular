@@ -18,7 +18,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
 import {stringify} from '../../src/facade/lang';
 
 @Component({selector: 'non-existent', template: ''})
@@ -29,11 +28,6 @@ class NonExistentComp {
 class HelloRootCmp {
   greeting: string;
   constructor() { this.greeting = 'hello'; }
-}
-
-@Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
-class HelloRootCmpContent {
-  constructor() {}
 }
 
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
@@ -58,10 +52,6 @@ class HelloRootCmp4 {
   constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
 }
 
-@Component({selector: 'hello-app'})
-class HelloRootMissingTemplate {
-}
-
 @Directive({selector: 'hello-app'})
 class HelloRootDirectiveIsNotCmp {
 }
@@ -72,27 +62,6 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
 
   ngOnDestroy(): void { this.appRef.tick(); }
-}
-
-@Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
-class HelloUrlCmp {
-  greeting = 'hello';
-}
-
-@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
-class SomeDirective {
-  @Input()
-  someDir: string;
-}
-
-@Pipe({name: 'somePipe'})
-class SomePipe {
-  transform(value: string): any { return `transformed ${value}`; }
-}
-
-@Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-class HelloCmpUsingPlatformDirectiveAndPipe {
-  show: boolean = false;
 }
 
 @Component({selector: 'hello-app', template: '<some-el [someProp]="true">hello world!</some-el>'})
@@ -113,12 +82,12 @@ class DummyConsole implements Console {
 }
 
 
-class TestModule {}
 function bootstrap(
-    cmpType: any, providers: Provider[] = [], platformProviders: Provider[] = []): Promise<any> {
+    cmpType: any, providers: Provider[] = [], platformProviders: Provider[] = [],
+    includeInDeclarations: boolean = true): Promise<any> {
   @NgModule({
     imports: [BrowserModule],
-    declarations: [cmpType],
+    declarations: includeInDeclarations ? [cmpType] : [],
     bootstrap: [cmpType],
     providers: providers,
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -233,8 +202,7 @@ export function main() {
        }));
 
     it('should display hello world', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const refPromise = bootstrap(HelloRootCmp, testProviders);
-         refPromise.then((ref) => {
+         bootstrap(HelloRootCmp, testProviders, [], false).then(() => {
            expect(el).toHaveText('hello world!');
            expect(el.getAttribute('ng-version')).toEqual(VERSION.full);
            async.done();
@@ -344,6 +312,24 @@ export function main() {
            expect(log.result()).toEqual('app_init1; app_init2');
            async.done();
          });
+       }));
+
+    it('should bootstrap the cmp declared in another module',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         @NgModule({exports: [HelloRootCmp], declarations: [HelloRootCmp]})
+         class SomeModule {
+         }
+
+         @NgModule({imports: [BrowserModule, SomeModule], bootstrap: [HelloRootCmp]})
+         class AppModule {
+         }
+
+         createPlatformFactory(platformBrowserDynamic, 'someName')()
+             .bootstrapModule(AppModule)
+             .then(() => {
+               expect(el).toHaveText('hello world!');
+               async.done();
+             });
        }));
 
     it('should remove styles when transitioning from a server render',
