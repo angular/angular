@@ -966,12 +966,13 @@ export declare class Testability implements PublicTestability {
 }
 
 /** @experimental */
-export declare class TestabilityRegistry {
+export declare class TestabilityRegistry implements OnDestroy {
     constructor();
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability;
     getAllRootElements(): any[];
     getAllTestabilities(): Testability[];
     getTestability(elem: any): Testability;
+    ngOnDestroy(): void;
     registerApplication(token: any, testability: Testability): void;
 }
 

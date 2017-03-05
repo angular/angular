@@ -8,6 +8,7 @@
 
 import {Injectable} from '../di';
 import {scheduleMicroTask} from '../facade/lang';
+import {OnDestroy} from '../metadata';
 import {NgZone} from '../zone/ng_zone';
 
 /**
@@ -126,7 +127,7 @@ export class Testability implements PublicTestability {
  * @experimental
  */
 @Injectable()
-export class TestabilityRegistry {
+export class TestabilityRegistry implements OnDestroy {
   /** @internal */
   _applications = new Map<any, Testability>();
 
@@ -145,6 +146,8 @@ export class TestabilityRegistry {
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
+
+  ngOnDestroy(): void { this._applications.clear(); }
 }
 
 /**
