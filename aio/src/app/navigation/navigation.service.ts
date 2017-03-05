@@ -9,7 +9,6 @@ import { LocationService } from 'app/shared/location.service';
 
 export interface NavigationNode {
   url?: string;
-  path?: string;
   title?: string;
   tooltip?: string;
   target?: string;
@@ -17,7 +16,7 @@ export interface NavigationNode {
 }
 
 export interface NavigationViews {
-  [name: string]: NavigationNode;
+  [name: string]: NavigationNode[];
 }
 
 export interface NavigationMap {
@@ -58,14 +57,20 @@ export class NavigationService {
 
   private computeNavMap(navigation: NavigationViews): NavigationMap {
     const navMap: NavigationMap = {};
-    Object.keys(navigation).forEach(key => walk(navigation[key], null));
+    Object.keys(navigation).forEach(key => {
+      const nodes = navigation[key];
+      nodes.forEach(node => walk(node, null));
+    });
     return navMap;
 
-    function walk(node: NavigationNode, parent: NavigationMapItem) {
-      const item = { node, parents: [parent.node, ...parent.parents] };
-      if (node.path) {
-        // only map to this item if it has a doc associated with it
-        navMap[node.path] = item;
+    function walk(node: NavigationNode, parent: NavigationMapItem | null) {
+      const item: NavigationMapItem = { node, parents: [] };
+      if (parent) {
+        item.parents = [parent.node, ...parent.parents];
+      }
+      if (node.url) {
+        // only map to this item if it has a url associated with it
+        navMap[node.url] = item;
       }
       if (node.children) {
         node.children.forEach(child => walk(child, item));
