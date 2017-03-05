@@ -3,8 +3,8 @@
 set -u -e -o pipefail
 
 # Setup environment
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
 
 
 # Run unit tests for our tools/ directory

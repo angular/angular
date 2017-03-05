@@ -3,8 +3,8 @@
 set -u -e -o pipefail
 
 # Setup environment
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
 
 
 travisFoldStart "test.e2e.buildPackages"
@@ -26,7 +26,7 @@ travisFoldEnd "test.e2e.integration"
 
 travisFoldStart "test.e2e.offlineCompiler"
   #TODO(alexeagle): move offline_compiler_test to integration/
-  ./scripts/ci-lite/offline_compiler_test.sh
+  ${thisDir}/offline_compiler_test.sh
 travisFoldEnd "test.e2e.offlineCompiler"
 
 

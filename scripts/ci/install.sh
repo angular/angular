@@ -2,12 +2,18 @@
 
 set -u -e -o pipefail
 
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
-
 # Setup environment
-cd `dirname $0`
-source ./env.sh
-cd ../..
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
+
+
+# If the previous commands in the `script` section of .travis.yaml failed, then abort.
+# The variable is not set in early stages of the build, so we default to 0 there.
+# https://docs.travis-ci.com/user/environment-variables/
+if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
+  exit 1;
+fi
+
 
 mkdir -p ${LOGS_DIR}
 
@@ -43,9 +49,11 @@ fi
 if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "docs_test") ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
-    cd "`dirname $0`/../../aio"
-    yarn install
-    cd -
+    (
+      printenv
+      cd ${PROJECT_ROOT}/aio
+      yarn install
+    )
   travisFoldEnd "yarn-install.aio"
 fi
 
@@ -53,7 +61,9 @@ fi
 # Install Chromium
 if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "aio" ]]; then
   travisFoldStart "install-chromium"
-    ./scripts/ci/install_chromium.sh
+    (
+      ${thisDir}/install-chromium.sh
+    )
   travisFoldEnd "install-chromium"
 fi
 
@@ -61,7 +71,9 @@ fi
 # Install Sauce Connect
 if [[ ${TRAVIS}] && (${CI_MODE} == "saucelabs_required" || ${CI_MODE} == "saucelabs_optional") ]]; then
   travisFoldStart "install-sauceConnect"
-    ./scripts/sauce/sauce_connect_setup.sh
+    (
+      ${thisDir}/../sauce/sauce_connect_setup.sh
+    )
   travisFoldEnd "install-sauceConnect"
 fi
 
@@ -69,7 +81,9 @@ fi
 # Install BrowserStack Tunnel
 if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "browserstack_optional") ]]; then
   travisFoldStart "install-browserstack"
-    ./scripts/browserstack/start_tunnel.sh
+    (
+      ${thisDir}/../browserstack/start_tunnel.sh
+    )
   travisFoldEnd "install-browserstack"
 fi
 

@@ -125,7 +125,7 @@ $ cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
 
 # Run the test once
 # (First edit the LINKABLE_PKGS to use npm link instead of npm install)
-$ ./scripts/ci-lite/offline_compiler_test.sh
+$ ./scripts/ci/offline_compiler_test.sh
 
 # Keep a package fresh in watch mode
 ./node_modules/.bin/tsc -p modules/@angular/compiler/tsconfig-es5.json -w

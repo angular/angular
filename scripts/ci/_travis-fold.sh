@@ -13,8 +13,10 @@ function travisFoldStart() {
   travisFoldStack+=("${sanitizedFoldName}|${foldStartTime}")
 
   echo ""
-  echo "travis_fold:start:${sanitizedFoldName}"
-  echo "travis_time:start:${sanitizedFoldName}"
+  if [[ ${TRAVIS:-} ]]; then
+    echo "travis_fold:start:${sanitizedFoldName}"
+    echo "travis_time:start:${sanitizedFoldName}"
+  fi
   local enterArrow="===>  ${foldName}  ==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>"
   # keep all messages consistently wide 80chars regardless of the foldName
   echo ${enterArrow:0:100}
@@ -37,13 +39,16 @@ function travisFoldEnd() {
   # split the string by | and then turn that into an array
   local lastFoldArray=(${lastFoldString//\|/ })
   local lastSanitizedFoldName=${lastFoldArray[0]}
-  local lastFoldStartTime=${lastFoldArray[1]}
-  local foldFinishTime=$(date +%s%N)
-  local foldDuration=$(expr ${foldFinishTime} - ${lastFoldStartTime})
 
-  # write into build-perf.log file
-  local logIndent=$(expr ${lastFoldIndex} \* 2)
-  printf "%6ss%${logIndent}s: %s\n" $(expr ${foldDuration} / 1000000000) " " "${foldName}" >> ${LOGS_DIR}/build-perf.log
+  if [[ ${TRAVIS:-} ]]; then
+    local lastFoldStartTime=${lastFoldArray[1]}
+    local foldFinishTime=$(date +%s%N)
+    local foldDuration=$(expr ${foldFinishTime} - ${lastFoldStartTime})
+
+    # write into build-perf.log file
+    local logIndent=$(expr ${lastFoldIndex} \* 2)
+    printf "%6ss%${logIndent}s: %s\n" $(expr ${foldDuration} / 1000000000) " " "${foldName}" >> ${LOGS_DIR}/build-perf.log
+  fi
 
   # pop
   travisFoldStack=(${travisFoldStack[@]:0:lastFoldIndex})
@@ -58,8 +63,10 @@ function travisFoldEnd() {
   # keep all messages consistently wide 80chars regardless of the foldName
   echo ${returnArrow:0:100}
   echo ""
-  echo "travis_time:end:${sanitizedFoldName}:start=${lastFoldStartTime},finish=${foldFinishTime},duration=${foldDuration}"
-  echo "travis_fold:end:${sanitizedFoldName}"
+  if [[ ${TRAVIS:-} ]]; then
+    echo "travis_time:end:${sanitizedFoldName}:start=${lastFoldStartTime},finish=${foldFinishTime},duration=${foldDuration}"
+    echo "travis_fold:end:${sanitizedFoldName}"
+  fi
 }
 
 

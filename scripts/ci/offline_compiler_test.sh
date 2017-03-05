@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -ex -o pipefail
+
+set -u -e -o pipefail
+
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(

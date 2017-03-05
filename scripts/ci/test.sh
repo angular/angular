@@ -3,33 +3,41 @@
 set -u -e -o pipefail
 
 # Setup environment
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/env.sh
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
+
+
+# If the previous commands in the `script` section of .travis.yaml failed, then abort.
+# The variable is not set in early stages of the build, so we default to 0 there.
+# https://docs.travis-ci.com/user/environment-variables/
+if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
+  exit 1;
+fi
 
 
 case ${CI_MODE} in
   js)
-    ./scripts/ci-lite/test_js.sh
+    ${thisDir}/test-js.sh
     ;;
   e2e)
-    ./scripts/ci-lite/test_e2e.sh
+    ${thisDir}/test-e2e.sh
     ;;
   saucelabs_required)
-    ./scripts/ci-lite/test_saucelabs.sh
+    ${thisDir}/test-saucelabs.sh
     ;;
   browserstack_required)
-    ./scripts/ci-lite/test_browserstack.sh
+    ${thisDir}/test-browserstack.sh
     ;;
   saucelabs_optional)
-    ./scripts/ci-lite/test_saucelabs.sh
+    ${thisDir}/test-saucelabs.sh
     ;;
   browserstack_optional)
-    ./scripts/ci-lite/test_browserstack.sh
+    ${thisDir}/test-browserstack.sh
     ;;
   docs_test)
-    ./scripts/ci-lite/test_docs.sh
+    ${thisDir}/test-docs.sh
     ;;
   aio)
-    ./scripts/ci-lite/test_aio.sh
+    ${thisDir}/test-aio.sh
     ;;
 esac
