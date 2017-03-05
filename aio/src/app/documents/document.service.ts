@@ -61,7 +61,7 @@ export class DocumentService {
   }
 
   private computePath(url) {
-    url = url.startsWith('/') ? url : '/' + url;
+    url = '/' + url;
     url = url.endsWith('/') ? url + 'index' : url;
     return 'content/docs' + url + '.json';
   }
