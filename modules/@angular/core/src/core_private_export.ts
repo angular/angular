@@ -12,7 +12,7 @@ export {ValueUnwrapper as ɵValueUnwrapper, devModeEqual as ɵdevModeEqual} from
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
 export {ERROR_COMPONENT_TYPE as ɵERROR_COMPONENT_TYPE} from './errors';
-export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
+export {ComponentFactory as ɵComponentFactory, ComponentFactoryFromNgModule as ɵComponentFactoryForNgModule} from './linker/component_factory';
 export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} from './linker/component_factory_resolver';
 export {LIFECYCLE_HOOKS_VALUES as ɵLIFECYCLE_HOOKS_VALUES, LifecycleHooks as ɵLifecycleHooks} from './metadata/lifecycle_hooks';
 export {ViewMetadata as ɵViewMetadata} from './metadata/view';

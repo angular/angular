@@ -12,6 +12,7 @@ import {Type} from '../type';
 
 import {ElementRef} from './element_ref';
 import {ViewRef} from './view_ref';
+import {NgModuleRef} from './ng_module_factory';
 
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.
@@ -74,4 +75,12 @@ export abstract class ComponentFactory<C> {
    */
   abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any):
       ComponentRef<C>;
+}
+
+export abstract class ComponentFactoryFromNgModule<C> {
+  abstract get selector(): string;
+  abstract get componentType(): Type<any>;
+  /** Creates a new component */
+  abstract create(ngModuleRef: NgModuleRef<any>, elInjector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any):
+  ComponentRef<C>;
 }

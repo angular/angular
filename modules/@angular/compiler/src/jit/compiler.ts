@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory} from '@angular/core';
+import {Compiler, ComponentFactory, ɵComponentFactoryForNgModule, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
@@ -21,8 +21,6 @@ import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {SyncAsyncResult} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
-
-
 
 /**
  * An internal module of the Angular compiler that begins with component types,
@@ -91,7 +89,7 @@ export class JitCompiler implements Compiler {
       SyncAsyncResult<ModuleWithComponentFactories<T>> {
     const loadingPromise = this._loadModules(moduleType, isSync);
     const createResult = () => {
-      const componentFactories: ComponentFactory<any>[] = [];
+      const componentFactories: ɵComponentFactoryForNgModule<any>[] = [];
       this._compileComponents(moduleType, componentFactories);
       return new ModuleWithComponentFactories(this._compileModule(moduleType), componentFactories);
     };
@@ -140,7 +138,7 @@ export class JitCompiler implements Compiler {
   /**
    * @internal
    */
-  _compileComponents(mainModule: Type<any>, allComponentFactories: ComponentFactory<any>[]) {
+  _compileComponents(mainModule: Type<any>, allComponentFactories: ɵComponentFactoryForNgModule<any>[]) {
     const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule);
     const moduleByDirective = new Map<any, CompileNgModuleMetadata>();
     const templates = new Set<CompiledTemplate>();
@@ -157,7 +155,7 @@ export class JitCompiler implements Compiler {
             const template =
                 this._createCompiledHostTemplate(dirMeta.type.reference, localModuleMeta);
             templates.add(template);
-            allComponentFactories.push(<ComponentFactory<any>>dirMeta.componentFactory);
+            allComponentFactories.push(<ɵComponentFactoryForNgModule<any>>dirMeta.componentFactory);
           }
         }
       });
@@ -212,7 +210,7 @@ export class JitCompiler implements Compiler {
       const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
 
-      const componentFactory = <ComponentFactory<any>>compMeta.componentFactory;
+      const componentFactory = <ɵComponentFactoryForNgModule<any>>compMeta.componentFactory;
       const hostClass = this._metadataResolver.getHostComponentType(compType);
       const hostMeta = createHostComponentMeta(
           hostClass, compMeta, <any>getComponentViewDefinitionFactory(componentFactory));

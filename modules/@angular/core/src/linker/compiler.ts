@@ -11,7 +11,7 @@ import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
 
-import {ComponentFactory} from './component_factory';
+import {ComponentFactory, ComponentFactoryFromNgModule} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
 
 /**
@@ -22,7 +22,7 @@ import {NgModuleFactory} from './ng_module_factory';
 export class ModuleWithComponentFactories<T> {
   constructor(
       public ngModuleFactory: NgModuleFactory<T>,
-      public componentFactories: ComponentFactory<any>[]) {}
+      public componentFactories: ComponentFactoryFromNgModule<any>[]) {}
 }
 
 

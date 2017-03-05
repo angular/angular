@@ -16,7 +16,7 @@ import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-import {Route, Routes} from './config';
+import {InternalRoute, Route, Routes} from './config';
 import {NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
@@ -97,30 +97,30 @@ export class RouterPreloader {
 
   private processRoutes(injector: Injector, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];
-    for (const c of routes) {
+    for (const r of routes) {
+      const route: InternalRoute = r;
       // we already have the config loaded, just recurse
-      if (c.loadChildren && !c.canLoad && (<any>c)._loadedConfig) {
-        const childConfig = (<any>c)._loadedConfig;
+      if (route.loadChildren && !route.canLoad && route._loadedConfig) {
+        const childConfig = route._loadedConfig;
         res.push(this.processRoutes(childConfig.injector, childConfig.routes));
 
         // no config loaded, fetch the config
-      } else if (c.loadChildren && !c.canLoad) {
-        res.push(this.preloadConfig(injector, c));
+      } else if (route.loadChildren && !route.canLoad) {
+        res.push(this.preloadConfig(injector, route));
 
         // recurse into children
-      } else if (c.children) {
-        res.push(this.processRoutes(injector, c.children));
+      } else if (route.children) {
+        res.push(this.processRoutes(injector, route.children));
       }
     }
     return mergeAll.call(from(res));
   }
 
-  private preloadConfig(injector: Injector, route: Route): Observable<void> {
+  private preloadConfig(injector: Injector, route: InternalRoute): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
       const loaded = this.loader.load(injector, route);
       return mergeMap.call(loaded, (config: any): any => {
-        const c: any = route;
-        c._loadedConfig = config;
+        route._loadedConfig = config;
         return this.processRoutes(config.injector, config.routes);
       });
     });

@@ -9,10 +9,8 @@
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
-import {ComponentFactory} from './component_factory';
+import {ComponentFactory, ComponentFactoryFromNgModule} from './component_factory';
 import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
-
-
 
 /**
  * Represents an instance of an NgModule created via a {@link NgModuleFactory}.
@@ -79,9 +77,10 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
   private _destroyed: boolean = false;
 
   public instance: T;
+  public ngModule: NgModuleRef<T> = this;
 
   constructor(
-      public parent: Injector, factories: ComponentFactory<any>[],
+      public parent: Injector, factories: ComponentFactoryFromNgModule<any>[],
       public bootstrapFactories: ComponentFactory<any>[]) {
     super(factories, parent.get(ComponentFactoryResolver, ComponentFactoryResolver.NULL));
   }
@@ -91,7 +90,7 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
   abstract createInternal(): T;
 
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
-    if (token === Injector || token === ComponentFactoryResolver) {
+    if (token === Injector || token === ComponentFactoryResolver || token === NgModuleRef) {
       return this;
     }
     const result = this.getInternal(token, _UNDEFINED);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵComponentFactoryForNgModule} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
@@ -291,7 +291,7 @@ export class CompileTemplateMetadata {
 
 export interface CompileEntryComponentMetadata {
   componentType: any;
-  componentFactory: StaticSymbol|ComponentFactory<any>;
+  componentFactory: StaticSymbol|ɵComponentFactoryForNgModule<any>;
 }
 
 // Note: This should only use interfaces as nested data types
@@ -315,7 +315,7 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
   template: CompileTemplateSummary;
   componentViewType: StaticSymbol|ProxyClass;
   rendererType: StaticSymbol|RendererTypeV2;
-  componentFactory: StaticSymbol|ComponentFactory<any>;
+  componentFactory: StaticSymbol|ɵComponentFactoryForNgModule<any>;
 }
 
 /**
@@ -343,7 +343,7 @@ export class CompileDirectiveMetadata {
         template?: CompileTemplateMetadata,
         componentViewType?: StaticSymbol|ProxyClass,
         rendererType?: StaticSymbol|RendererTypeV2,
-        componentFactory?: StaticSymbol|ComponentFactory<any>,
+        componentFactory?: StaticSymbol|ɵComponentFactoryForNgModule<any>,
       } = {}): CompileDirectiveMetadata {
     const hostListeners: {[key: string]: string} = {};
     const hostProperties: {[key: string]: string} = {};
@@ -421,7 +421,7 @@ export class CompileDirectiveMetadata {
 
   componentViewType: StaticSymbol|ProxyClass;
   rendererType: StaticSymbol|RendererTypeV2;
-  componentFactory: StaticSymbol|ComponentFactory<any>;
+  componentFactory: StaticSymbol|ɵComponentFactoryForNgModule<any>;
 
   constructor({isHost,          type,      isComponent,       selector,      exportAs,
                changeDetection, inputs,    outputs,           hostListeners, hostProperties,
@@ -446,7 +446,7 @@ export class CompileDirectiveMetadata {
     template?: CompileTemplateMetadata,
     componentViewType?: StaticSymbol|ProxyClass,
     rendererType?: StaticSymbol|RendererTypeV2,
-    componentFactory?: StaticSymbol|ComponentFactory<any>,
+    componentFactory?: StaticSymbol|ɵComponentFactoryForNgModule<any>,
   } = {}) {
     this.isHost = !!isHost;
     this.type = type;

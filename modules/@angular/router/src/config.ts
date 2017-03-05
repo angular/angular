@@ -14,6 +14,7 @@ import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 
+
 /**
  * @whatItDoes Represents router configuration.
  *
@@ -360,6 +361,11 @@ export interface Route {
   children?: Routes;
   loadChildren?: LoadChildren;
   runGuardsAndResolvers?: RunGuardsAndResolvers;
+}
+
+export interface InternalRoute extends Route {
+  // `LoadedRouterConfig` loaded via a Route `loadChildren`
+  _loadedConfig?: any;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
