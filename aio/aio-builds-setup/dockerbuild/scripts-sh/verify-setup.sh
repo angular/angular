@@ -2,6 +2,7 @@
 set -e -o pipefail
 
 logFile=/var/log/aio/verify-setup.log
+uploadServerLogFile=/var/log/aio/upload-server-verify-setup.log
 
 exec 3>&1
 exec >> $logFile
@@ -30,7 +31,7 @@ function onExit {
 trap 'onExit' EXIT
 
 # Start an upload-server instance for testing
-aio-upload-server-test start --log $logFile
+aio-upload-server-test start --log $uploadServerLogFile
 
 # Give the upload-server some time to start :(
 countdown "Starting" 5 > /dev/fd/3
