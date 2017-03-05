@@ -1,50 +1,42 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { NavigationService, NavigationNode } from 'app/navigation/navigation.service';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { NavigationNode } from 'app/navigation/navigation.service';
 
 @Component({
   selector: 'aio-nav-item',
-  template: `
-    <div>
-      <a *ngIf="node.url"
-          [href]="node.url"
-          [ngClass]="classes"
-          target={{node.target}}
-          title={{node.title}}
-          class="vertical-menu">
-        {{node.title}}
-        <ng-template [ngIf]="node.children">
-          <md-icon [class.active]="!isActive">keyboard_arrow_right</md-icon>
-          <md-icon [class.active]="isActive">keyboard_arrow_down</md-icon>
-        </ng-template>
-      </a>
-      <div *ngIf="!node.url" [ngClass]="classes">{{node.title}}</div>
-      <div class="TODO:heading-children" [ngClass]="classes" *ngIf="node.children">
-        <aio-nav-item *ngFor="let node of node.children" [level]="level + 1" [node]="node"></aio-nav-item>
-      </div>
-    </div>`,
-  styles: ['nav-item.component.scss'],
-  // we don't expect the inputs to change
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: 'nav-item.component.html',
+  styleUrls: ['nav-item.component.scss']
 })
-export class NavItemComponent implements OnInit {
+export class NavItemComponent implements OnChanges {
+  @Input() selectedNodes: NavigationNode[];
   @Input() node: NavigationNode;
   @Input() level = 1;
 
-  isActive: boolean;
-
+  isExpanded = false;
+  isSelected = false;
   classes: {[index: string]: boolean };
 
-  constructor(navigation: NavigationService) {
-    navigation.activeNodes.subscribe(nodes => {
-      this.classes['active'] = nodes.indexOf(this.node) !== -1;
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['selectedNodes'] || changes['node']) {
+      this.isSelected = this.selectedNodes.indexOf(this.node) !== -1;
+    }
+    this.setClasses();
   }
 
-  ngOnInit() {
+  setClasses() {
     this.classes = {
       ['level-' + this.level]: true,
-      active: false,
-      heading: !!this.node.children
+      expanded: this.isExpanded,
+      selected: this.isSelected
     };
+  }
+
+  itemClicked() {
+    this.isExpanded = true;
+    this.isSelected = !!this.node;
+  }
+
+  headerClicked() {
+    this.isExpanded = !this.isExpanded;
+    this.setClasses();
   }
 }

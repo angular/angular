@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
-import { NavigationService, NavigationViews } from 'app/navigation/navigation.service';
+import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { SearchService, QueryResults } from 'app/search/search.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { SearchService, QueryResults } from 'app/search/search.service';
     <md-sidenav-container class="sidenav-container" (window:resize)="onResize($event.target.innerWidth)">
 
       <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "this.isSideBySide ? 'side' : 'over'">
-        <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav"></aio-nav-menu>
+        <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav" [selectedNodes]="selectedNodes | async"></aio-nav-menu>
       </md-sidenav>
 
       <section class="sidenav-content">
@@ -93,11 +93,13 @@ export class AppComponent implements OnInit {
 
   currentDocument: Observable<DocumentContents>;
   navigationViews: Observable<NavigationViews>;
+  selectedNodes: Observable<NavigationNode[]>;
   searchResults: Observable<QueryResults>;
 
   constructor(documentService: DocumentService, navigationService: NavigationService, private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     this.navigationViews = navigationService.navigationViews;
+    this.selectedNodes = navigationService.activeNodes;
     this.searchResults = searchService.searchResults;
   }
 
