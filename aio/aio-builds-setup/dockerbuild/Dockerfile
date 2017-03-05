@@ -16,19 +16,19 @@ EXPOSE 80 443
 ARG      AIO_BUILDS_DIR=/var/www/aio-builds
 ARG TEST_AIO_BUILDS_DIR=/tmp/aio-builds
 ARG      AIO_DOMAIN_NAME=ngbuilds.io
-ARG TEST_AIO_DOMAIN_NAME=test-ngbuilds.io
+ARG TEST_AIO_DOMAIN_NAME=$AIO_DOMAIN_NAME.localhost
 ARG      AIO_GITHUB_ORGANIZATION=angular
 ARG TEST_AIO_GITHUB_ORGANIZATION=angular
 ARG      AIO_GITHUB_TEAM_SLUGS=angular-core
 ARG TEST_AIO_GITHUB_TEAM_SLUGS=angular-core
-ARG      AIO_NGINX_HOSTNAME=nginx.localhost
-ARG TEST_AIO_NGINX_HOSTNAME=nginx.localhost
+ARG      AIO_NGINX_HOSTNAME=$AIO_DOMAIN_NAME
+ARG TEST_AIO_NGINX_HOSTNAME=$TEST_AIO_DOMAIN_NAME
 ARG      AIO_NGINX_PORT_HTTP=80
 ARG TEST_AIO_NGINX_PORT_HTTP=8080
 ARG      AIO_NGINX_PORT_HTTPS=443
 ARG TEST_AIO_NGINX_PORT_HTTPS=4433
 ARG      AIO_REPO_SLUG=angular/angular
-ARG TEST_AIO_REPO_SLUG=
+ARG TEST_AIO_REPO_SLUG=test-repo/test-slug
 ARG      AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG TEST_AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG      AIO_UPLOAD_MAX_SIZE=20971520
@@ -40,6 +40,7 @@ ENV AIO_BUILDS_DIR=$AIO_BUILDS_DIR                     TEST_AIO_BUILDS_DIR=$TEST
     AIO_DOMAIN_NAME=$AIO_DOMAIN_NAME                   TEST_AIO_DOMAIN_NAME=$TEST_AIO_DOMAIN_NAME                   \
     AIO_GITHUB_ORGANIZATION=$AIO_GITHUB_ORGANIZATION   TEST_AIO_GITHUB_ORGANIZATION=$TEST_AIO_GITHUB_ORGANIZATION   \
     AIO_GITHUB_TEAM_SLUGS=$AIO_GITHUB_TEAM_SLUGS       TEST_AIO_GITHUB_TEAM_SLUGS=$TEST_AIO_GITHUB_TEAM_SLUGS       \
+    AIO_LOCALCERTS_DIR=/etc/ssl/localcerts             TEST_AIO_LOCALCERTS_DIR=/etc/ssl/localcerts-test             \
     AIO_NGINX_HOSTNAME=$AIO_NGINX_HOSTNAME             TEST_AIO_NGINX_HOSTNAME=$TEST_AIO_NGINX_HOSTNAME             \
     AIO_NGINX_PORT_HTTP=$AIO_NGINX_PORT_HTTP           TEST_AIO_NGINX_PORT_HTTP=$TEST_AIO_NGINX_PORT_HTTP           \
     AIO_NGINX_PORT_HTTPS=$AIO_NGINX_PORT_HTTPS         TEST_AIO_NGINX_PORT_HTTPS=$TEST_AIO_NGINX_PORT_HTTPS         \
@@ -84,7 +85,7 @@ RUN crontab /etc/cron.d/aio-builds-cleanup
 
 
 # Set up dnsmasq
-COPY dnsmasq/dnsmasq.conf /etc/dnsmasq.conf
+COPY dnsmasq/dnsmasq.conf /etc/
 RUN sed -i "s|{{\$AIO_NGINX_HOSTNAME}}|$AIO_NGINX_HOSTNAME|" /etc/dnsmasq.conf
 RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|" /etc/dnsmasq.conf
 RUN sed -i "s|{{\$TEST_AIO_NGINX_HOSTNAME}}|$TEST_AIO_NGINX_HOSTNAME|" /etc/dnsmasq.conf
@@ -92,15 +93,11 @@ RUN sed -i "s|{{\$TEST_AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|" /etc/dn
 
 
 # Set up SSL/TLS certificates
-RUN mkdir -p /etc/ssl/localcerts
-RUN openssl req -days 365 -newkey rsa:2048 -nodes -sha256 -x509 -subj "/CN=$AIO_NGINX_HOSTNAME" \
-                -out /etc/ssl/localcerts/$AIO_DOMAIN_NAME.crt \
-                -keyout /etc/ssl/localcerts/$AIO_DOMAIN_NAME.key
-RUN openssl req -days 365 -newkey rsa:2048 -nodes -sha256 -x509 -subj "/CN=$TEST_AIO_NGINX_HOSTNAME" \
-                -out /etc/ssl/localcerts/$TEST_AIO_DOMAIN_NAME.crt \
-                -keyout /etc/ssl/localcerts/$TEST_AIO_DOMAIN_NAME.key
-RUN chmod -R 400 /etc/ssl/localcerts
-RUN cp /etc/ssl/localcerts/*.crt /usr/local/share/ca-certificates
+COPY nginx/create-selfsigned-cert.sh /tmp/
+RUN chmod a+x /tmp/create-selfsigned-cert.sh
+RUN /tmp/create-selfsigned-cert.sh "selfcert-prod" "$AIO_NGINX_HOSTNAME" "$AIO_LOCALCERTS_DIR"
+RUN /tmp/create-selfsigned-cert.sh "selfcert-test" "$TEST_AIO_NGINX_HOSTNAME" "$TEST_AIO_LOCALCERTS_DIR"
+RUN rm /tmp/create-selfsigned-cert.sh
 RUN update-ca-certificates
 
 
@@ -110,6 +107,7 @@ RUN rm /etc/nginx/sites-enabled/*
 COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|" /etc/nginx/sites-available/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$AIO_DOMAIN_NAME|" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|" /etc/nginx/sites-available/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|" /etc/nginx/sites-available/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|" /etc/nginx/sites-available/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|" /etc/nginx/sites-available/aio-builds-prod.conf
@@ -120,6 +118,7 @@ RUN ln -s /etc/nginx/sites-available/aio-builds-prod.conf /etc/nginx/sites-enabl
 COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|" /etc/nginx/sites-available/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$TEST_AIO_DOMAIN_NAME|" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|" /etc/nginx/sites-available/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|" /etc/nginx/sites-available/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|" /etc/nginx/sites-available/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|" /etc/nginx/sites-available/aio-builds-test.conf
