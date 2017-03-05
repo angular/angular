@@ -10,13 +10,22 @@ export class LocationService {
   get currentUrl() { return this.urlSubject.asObservable(); }
 
   constructor(private location: Location) {
-    this.urlSubject = new BehaviorSubject(location.path(true));
-    this.location.subscribe(state => this.urlSubject.next(state.url));
+
+    const initialUrl = this.stripLeadingSlashes(location.path(true));
+    this.urlSubject = new BehaviorSubject(initialUrl);
+
+    this.location.subscribe(state => {
+      const url = this.stripLeadingSlashes(state.url);
+      return this.urlSubject.next(url);
+    });
   }
 
   go(url: string) {
-    url = this.location.normalize(url);
     this.location.go(url);
     this.urlSubject.next(url);
+  }
+
+  private stripLeadingSlashes(url: string) {
+    return url.replace(/^\/+/, '');
   }
 }
