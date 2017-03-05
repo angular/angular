@@ -7,7 +7,6 @@
  */
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, identifierName} from '../compile_metadata';
-import {CompilerConfig} from '../config';
 import {ListWrapper} from '../facade/collection';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -29,10 +28,10 @@ import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName} from './util'
 
 export class AotCompiler {
   constructor(
-      private _config: CompilerConfig, private _host: AotCompilerHost,
-      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
+      private _host: AotCompilerHost, private _metadataResolver: CompileMetadataResolver,
+      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
+      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
+      private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
       private _translationFormat: string, private _symbolResolver: StaticSymbolResolver) {}
 

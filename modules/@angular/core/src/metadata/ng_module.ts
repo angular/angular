@@ -9,6 +9,7 @@
 import {Provider} from '../di';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {ViewEncapsulation} from './view';
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -182,6 +183,12 @@ export interface NgModule {
    * `getModuleFactory`.
    */
   id?: string;
+
+  /**
+   * Specifies the default encapsulation for all components in this module.
+   * See {@link Component.encapsulation}
+   */
+  defaultEncapsulation?: ViewEncapsulation;
 }
 
 /**
@@ -199,4 +206,5 @@ export const NgModule: NgModuleDecorator = <NgModuleDecorator>makeDecorator('NgM
   bootstrap: undefined,
   schemas: undefined,
   id: undefined,
+  defaultEncapsulation: ViewEncapsulation.Emulated,
 });

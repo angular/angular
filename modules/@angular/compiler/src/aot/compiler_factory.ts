@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {MissingTranslationStrategy, ɵConsole as Console} from '@angular/core';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
@@ -24,7 +24,6 @@ import {StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
 import {ViewCompiler} from '../view_compiler/view_compiler';
-
 import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
@@ -33,8 +32,6 @@ import {StaticReflector} from './static_reflector';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
-
-
 
 /**
  * Creates a new AotCompiler based on options and a host.
@@ -55,19 +52,18 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       console);
   const config = new CompilerConfig({
     genDebugInfo: options.debug === true,
-    defaultEncapsulation: ViewEncapsulation.Emulated,
     logBindingUpdate: false,
     useJit: false,
     enableLegacyTemplate: options.enableLegacyTemplate !== false,
   });
   const normalizer = new DirectiveNormalizer(
-      {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);
+      {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser);
   const expressionParser = new Parser(new Lexer());
   const elementSchemaRegistry = new DomElementSchemaRegistry();
   const tmplParser =
       new TemplateParser(config, expressionParser, elementSchemaRegistry, htmlParser, console, []);
   const resolver = new CompileMetadataResolver(
-      config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
+      new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
@@ -79,7 +75,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   };
   const viewCompiler = new ViewCompiler(config, elementSchemaRegistry);
   const compiler = new AotCompiler(
-      config, compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver), viewCompiler,
+      compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver), viewCompiler,
       new NgModuleCompiler(), new TypeScriptEmitter(importResolver), summaryResolver,
       options.locale, options.i18nFormat, symbolResolver);
   return {compiler, reflector: staticReflector};

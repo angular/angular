@@ -95,6 +95,7 @@ export class Compiler {
 export type CompilerOptions = {
   useDebug?: boolean,
   useJit?: boolean,
+  /** @deprecated from 4 use @NgModule.defaultEncapsulation instead */
   defaultEncapsulation?: ViewEncapsulation,
   providers?: any[],
   missingTranslation?: MissingTranslationStrategy,

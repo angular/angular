@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
-import {Type, ViewEncapsulation} from '@angular/core';
+import {AotSummaryResolver, CompileMetadataResolver, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -109,19 +108,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       // This tracks the CompileConfig in codegen.ts. Currently these options
       // are hard-coded except for genDebugInfo which is not applicable as we
       // never generate code.
-      const config = new CompilerConfig({
-        genDebugInfo: false,
-        defaultEncapsulation: ViewEncapsulation.Emulated,
-        logBindingUpdate: false,
-        useJit: false
-      });
-      const directiveNormalizer =
-          new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+      const directiveNormalizer = new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser);
 
       result = this._resolver = new CompileMetadataResolver(
-          config, moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
+          moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
           elementSchemaRegistry, directiveNormalizer, this._staticSymbolCache, this.reflector,
-          (error, type) => this.collectError(error, type && type.filePath));
+          (error: any, type: any) => this.collectError(error, type && type.filePath));
     }
     return result;
   }

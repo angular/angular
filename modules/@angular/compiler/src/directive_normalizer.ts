@@ -7,9 +7,7 @@
  */
 
 import {ViewEncapsulation} from '@angular/core';
-
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata} from './compile_metadata';
-import {CompilerConfig} from './config';
 import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
@@ -39,7 +37,7 @@ export class DirectiveNormalizer {
 
   constructor(
       private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
-      private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
+      private _htmlParser: HtmlParser) {}
 
   clearCache(): void { this._resourceLoaderCache.clear(); }
 
@@ -127,21 +125,16 @@ export class DirectiveNormalizer {
     const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    let encapsulation = prenomData.encapsulation;
-    if (encapsulation == null) {
-      encapsulation = this._config.defaultEncapsulation;
-    }
-
     const styles = templateMetadataStyles.styles.concat(templateStyles.styles);
     const styleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
 
-    if (encapsulation === ViewEncapsulation.Emulated && styles.length === 0 &&
+    if (prenomData.encapsulation === ViewEncapsulation.Emulated && styles.length === 0 &&
         styleUrls.length === 0) {
-      encapsulation = ViewEncapsulation.None;
+      prenomData.encapsulation = ViewEncapsulation.None;
     }
 
     return new CompileTemplateMetadata({
-      encapsulation,
+      encapsulation: prenomData.encapsulation,
       template,
       templateUrl: templateAbsUrl, styles, styleUrls,
       ngContentSelectors: visitor.ngContentSelectors,
