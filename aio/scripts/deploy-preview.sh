@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -eux -o pipefail
+# WARNING: NGBUILDS_IO_KEY should NOT be printed.
+set +x -eu -o pipefail
 
 
 INPUT_DIR=dist/

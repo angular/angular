@@ -74,6 +74,7 @@ if [[ ${TRAVIS:-} ]]; then
 
   # If NGBUILDS_IO_KEY not set yet, export the NGBUILDS_IO_KEY using the JWT token that Travis generated and exported for SAUCE_ACCESS_KEY.
   # This is a workaround for travis-ci/travis-ci#7223
+  # WARNING: NGBUILDS_IO_KEY should NOT be printed
   export NGBUILDS_IO_KEY=${NGBUILDS_IO_KEY:-$SAUCE_ACCESS_KEY}
 
   # Used by karma and karma-chrome-launcher
