@@ -166,7 +166,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpp
 
     it('should pass requests through to the upload server', done => {
       h.runCmd(`curl -iLX POST ${scheme}://${host}/create-build/${pr}/${sha9}`).
-        then(h.verifyResponse(400, /Missing or empty 'X-FILE' header/)).
+        then(h.verifyResponse(401, /Missing or empty 'AUTHORIZATION' header/)).
         then(done);
     });
 
@@ -196,11 +196,11 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpp
 
     it('should accept SHAs with leading zeros (but not ignore them)', done => {
       const cmdPrefix = `curl -iLX POST  ${scheme}://${host}/create-build/${pr}`;
-      const bodyRegex = /Missing or empty 'X-FILE' header/;
+      const bodyRegex = /Missing or empty 'AUTHORIZATION' header/;
 
       Promise.all([
         h.runCmd(`${cmdPrefix}/0${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/${sha0}`).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(`${cmdPrefix}/${sha0}`).then(h.verifyResponse(401, bodyRegex)),
       ]).then(done);
     });
 

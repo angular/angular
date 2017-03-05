@@ -13,8 +13,10 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
   const getFile = (pr: string, sha: string, file: string) =>
     h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha}.${host}/${file}`);
-  const uploadBuild = (pr: string, sha: string, archive: string) =>
-    h.runCmd(`curl -iLX POST --data-binary "@${archive}" ${scheme}://${host}/create-build/${pr}/${sha}`);
+  const uploadBuild = (pr: string, sha: string, archive: string) => {
+    const curlPost = 'curl -iLX POST --header "Authorization: Token FOO"';
+    return h.runCmd(`${curlPost} --data-binary "@${archive}" ${scheme}://${host}/create-build/${pr}/${sha}`);
+  };
 
   beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000);
   afterEach(() => {

@@ -17,7 +17,9 @@ describe('upload-server (on HTTP)', () => {
 
 
   describe(`${host}/create-build/<pr>/<sha>`, () => {
-    const curl = `curl -iL --header "X-FILE: ${h.buildsDir}/snapshot.tar.gz"`;
+    const authorizationHeader = `--header "Authorization: Token FOO"`;
+    const xFileHeader = `--header "X-File: ${h.buildsDir}/snapshot.tar.gz"`;
+    const curl = `curl -iL ${authorizationHeader} ${xFileHeader}`;
 
 
     it('should disallow non-GET requests', done => {
@@ -33,14 +35,28 @@ describe('upload-server (on HTTP)', () => {
     });
 
 
+    it('should reject requests without an \'AUTHORIZATION\' header', done => {
+      const headers1 = '';
+      const headers2 = '--header "AUTHORIXATION: "';
+      const url = `http://${host}/create-build/${pr}/${sha9}`;
+      const bodyRegex = /^Missing or empty 'AUTHORIZATION' header/;
+
+      Promise.all([
+        h.runCmd(`curl -iL ${headers1} ${url}`).then(h.verifyResponse(401, bodyRegex)),
+        h.runCmd(`curl -iL  ${headers2} ${url}`).then(h.verifyResponse(401, bodyRegex)),
+      ]).then(done);
+    });
+
+
     it('should reject requests without an \'X-FILE\' header', done => {
-      const headers = '--header "X-FILE: "';
+      const headers1 = authorizationHeader;
+      const headers2 = `${authorizationHeader} --header "X-FILE: "`;
       const url = `http://${host}/create-build/${pr}/${sha9}`;
       const bodyRegex = /^Missing or empty 'X-FILE' header/;
 
       Promise.all([
-        h.runCmd(`curl -iL ${url}`).then(h.verifyResponse(400, bodyRegex)),
-        h.runCmd(`curl -iL ${headers} ${url}`).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(`curl -iL ${headers1} ${url}`).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(`curl -iL ${headers2} ${url}`).then(h.verifyResponse(400, bodyRegex)),
       ]).then(done);
     });
 
