@@ -1683,7 +1683,15 @@ export function main() {
         const fixture = initTest(FormGroupComp);
 
         expect(() => fixture.detectChanges())
-            .toThrowError(new RegExp(`formGroup expects a FormGroup instance`));
+            .toThrowError(/formGroup expects a FormGroup instance/);
+      });
+
+      it(`should throw if a form isn't an instance of FormGroup`, () => {
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormArray([]) as any;
+
+        expect(() => fixture.detectChanges())
+            .toThrowError(`formGroup expects a FormGroup instance, but received FormArray.`);
       });
 
       it('should throw if formControlName is used without a control container', () => {

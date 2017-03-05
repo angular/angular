@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
-
+import {Directive, Inject, Input, OnChanges, Optional, Output, Provider, Self, SimpleChanges, forwardRef} from '@angular/core';
 import {EventEmitter} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
 import {FormArray, FormControl, FormGroup} from '../../model';
@@ -16,11 +15,10 @@ import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
 import {cleanUpControl, composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
-
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
 
-export const formDirectiveProvider: any = {
+export const formDirectiveProvider: Provider = {
   provide: ControlContainer,
   useExisting: forwardRef(() => FormGroupDirective)
 };
@@ -82,7 +80,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this._checkFormPresent();
+    this._checkFormPresentAndValid();
     if (changes.hasOwnProperty('form')) {
       this._updateValidators();
       this._updateDomValue();
@@ -149,7 +147,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   /** @internal */
-  _updateDomValue() {
+  _updateDomValue(): void {
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
       if (dir._control !== newCtrl) {
@@ -162,13 +160,13 @@ export class FormGroupDirective extends ControlContainer implements Form,
     this.form._updateTreeValidity({emitEvent: false});
   }
 
-  private _updateRegistrations() {
+  private _updateRegistrations(): void {
     this.form._registerOnCollectionChange(() => this._updateDomValue());
     if (this._oldForm) this._oldForm._registerOnCollectionChange(() => {});
     this._oldForm = this.form;
   }
 
-  private _updateValidators() {
+  private _updateValidators(): void {
     const sync = composeValidators(this._validators);
     this.form.validator = Validators.compose([this.form.validator, sync]);
 
@@ -176,9 +174,12 @@ export class FormGroupDirective extends ControlContainer implements Form,
     this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
   }
 
-  private _checkFormPresent() {
+  private _checkFormPresentAndValid(): void {
     if (!this.form) {
       ReactiveErrors.missingFormException();
+    }
+    if (!(this.form instanceof FormGroup)) {
+      ReactiveErrors.expectFormGroupException((<any>this.form).constructor.name);
     }
   }
 }
