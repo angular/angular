@@ -2,17 +2,17 @@
 
 set -u -e -o pipefail
 
-# created based on the official Angular logo from https://angular.io/presskit.html
-# converted using http://www.text-image.com/convert/
-# colors added based on http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
-
-
 # If the previous commands in the `script` section of .travis.yaml failed, then abort.
-if [[ ${TRAVIS_TEST_RESULT} == 1 ]]; then
+# The variable is not set in early stages of the build, so we default to 0 there.
+# https://docs.travis-ci.com/user/environment-variables/
+if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
   exit 1;
 fi
 
 
+# this ascii art was created based on the official Angular logo from https://angular.io/presskit.html
+# converted using http://www.text-image.com/convert/
+# colors added based on http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 RED='\033[0;31m'
 LRED='\033[1;31m'
 WHITE='\033[1;37m'

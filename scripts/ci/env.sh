@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
 
-# If the previous commands in the `script` section of .travis.yaml failed, then abort.
-# The variable is not set in early stages of the build, so we default to 0 there.
-# https://docs.travis-ci.com/user/environment-variables/
-if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
-  exit 1;
-fi
-
-
-# set wasBashSetXOn using the current "set -x" mode state, so that we can restore it at the end
-[[ "${-//[^x]/}" = "x" ]] && wasBashSetXOn=1 || wasBashSetXOn=0
+# because this script is being source-ed via .travis.yaml,
+# we need to restore the original options so that that we don't interfere with
+# travis' internals
+readonly ORIGINAL_SHELL_OPTIONS=$(set +o)
 
 # this script is extra noisy and used in many places during the build so we suppress the trace with +x to reduce the noise
-set +x -u -e -o pipefail
+set -u -e -o pipefail
 
 # sets and optionally prints environmental variable
 # usage: setEnvVar variableName variableValue
@@ -26,14 +20,14 @@ function  setEnvVar() {
   export ${name}=${value}
 }
 
-
-# strip leading "./"
-currentFileName=${0#./}
-currentWorkingDirectory=`pwd`
-#cd ${currentWorkingDirectory%currentFileName}
+# use BASH_SOURCE so that we get the right path when this script is called AND source-d
+readonly thisDir=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
 readonly print=${1:-}
-# TODO(i): this won't work locally
-source ${TRAVIS_BUILD_DIR}/scripts/ci-lite/_travis_fold.sh
+
+# print bash version just so that we know what is running all the scripts
+if [[ ${print} == "print" ]]; then
+  bash --version
+fi
 
 
 #######################
@@ -45,8 +39,7 @@ setEnvVar NPM_VERSION 3.10.7 # do not upgrade to >3.10.8 unless https://github.c
 setEnvVar YARN_VERSION 0.21.3
 setEnvVar CHROMIUM_VERSION 433059 # Chrome 53 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar SAUCE_CONNECT_VERSION 4.3.11
-# TODO(i): this won't work locally
-setEnvVar PROJECT_ROOT ${TRAVIS_BUILD_DIR} # all source includes above for helper files in this env.sh script (e.g. _travis_fold.sh) duplicate this setting, update those if you change it here
+setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
   case ${CI_MODE} in
@@ -124,7 +117,4 @@ if [[ ${print} == "print" ]]; then
   echo PS4=${PS4}
 fi
 
-# restore set -x mode
-if [[ wasBashSetXOn == 1 ]]; then
-  set -x
-fi
+eval "${ORIGINAL_SHELL_OPTIONS}"

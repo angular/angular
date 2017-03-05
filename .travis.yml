@@ -10,6 +10,7 @@ addons:
       # needed to install g++ that is used by npms's native modules
       - ubuntu-toolchain-r-test
     packages:
+      # needed to install g++ that is used by npms's native modules
       - g++-4.8
   # https://docs.travis-ci.com/user/jwt
   jwt:
@@ -54,17 +55,17 @@ matrix:
     - env: "CI_MODE=browserstack_optional"
 
 before_install:
-  - ./scripts/ci-lite/env.sh print
+  - source ./scripts/ci/env.sh print
 
 install:
-  - ./scripts/ci-lite/install.sh
+  - ./scripts/ci/install.sh
 
 script:
-  - ./scripts/ci-lite/build.sh
-  - ./scripts/ci-lite/test.sh
+  - ./scripts/ci/build.sh
+  - ./scripts/ci/test.sh
   # deploy is part of 'script' and not 'after_success' so that we fail the build if the deployment fails
-  - ./scripts/ci-lite/deploy.sh
-  - ./scripts/ci-lite/angular.sh
+  - ./scripts/ci/deploy.sh
+  - ./scripts/ci/angular.sh
   # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
-  - ./scripts/ci-lite/cleanup.sh
-  - ./scripts/ci-lite/print-logs.sh
+  - ./scripts/ci/cleanup.sh
+  - ./scripts/ci/print-logs.sh
