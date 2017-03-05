@@ -147,6 +147,15 @@ export declare const Attribute: AttributeDecorator;
 /** @deprecated */
 export declare const AUTO_STYLE = "*";
 
+/** @experimental */
+export declare const BOOTSTRAP_COMPONENTS: InjectionToken<BootstrapComponent[]>;
+
+/** @experimental */
+export interface BootstrapComponent {
+    selector: string;
+    type: Type<any>;
+}
+
 /** @stable */
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
