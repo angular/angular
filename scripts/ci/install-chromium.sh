@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e -x
+set -u -e -o pipefail
 
 # Setup environment
-cd `dirname $0`
-source ../ci-lite/env.sh
+readonly thisDir=$(cd $(dirname $0); pwd)
+source ${thisDir}/_travis-fold.sh
 
 
 # This script basically follows the instructions to download an old version of Chromium: https://www.chromium.org/getting-involved/download-chromium
@@ -80,6 +80,6 @@ if [[ "$EXISTING_VERSION" != "$CHROMIUM_VERSION" ]]; then
 fi
 
 if [[ "$CHROMIUM_VERSION" != "$LATEST_CHROMIUM_VERSION" ]]; then
-  echo "New version of Chromium available. Update install_chromium.sh with build number: ${LATEST_CHROMIUM_VERSION}"
+  echo "New version of Chromium available. Update install-chromium.sh with build number: ${LATEST_CHROMIUM_VERSION}"
 fi
 
