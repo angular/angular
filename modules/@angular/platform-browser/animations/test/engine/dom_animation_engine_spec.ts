@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
@@ -28,10 +29,12 @@ export function main() {
 
   describe('DomAnimationEngine', () => {
     let element: any;
+    let defaultDoc: Document;
 
     beforeEach(() => {
+      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       MockAnimationDriver.log = [];
-      element = el('<div></div>');
+      element = el(defaultDoc, '<div></div>');
     });
 
     function makeEngine(normalizer: AnimationStyleNormalizer = null) {
@@ -613,9 +616,9 @@ export function main() {
       it('should perform insert operations immediately ', () => {
         const engine = makeEngine();
 
-        let container = <any>el('<div></div>');
-        let child1 = <any>el('<div></div>');
-        let child2 = <any>el('<div></div>');
+        let container = <any>el(defaultDoc, '<div></div>');
+        let child1 = <any>el(defaultDoc, '<div></div>');
+        let child2 = <any>el(defaultDoc, '<div></div>');
 
         engine.onInsert(container, () => container.appendChild(child1));
         engine.onInsert(container, () => container.appendChild(child2));

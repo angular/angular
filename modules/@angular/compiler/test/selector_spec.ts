@@ -16,6 +16,7 @@ export function main() {
     let selectableCollector: (selector: CssSelector, context: any) => void;
     let s1: any[], s2: any[], s3: any[], s4: any[];
     let matched: any[];
+    let doc: Document;
 
     function reset() { matched = []; }
 
@@ -25,6 +26,7 @@ export function main() {
       selectableCollector =
           (selector: CssSelector, context: any) => { matched.push(selector, context); };
       matcher = new SelectorMatcher();
+      doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
     });
 
     it('should select by element name case sensitive', () => {
@@ -127,7 +129,7 @@ export function main() {
       matcher.addSelectables(s1 = CssSelector.parse('[some-decor]'), 1);
 
       const elementSelector = new CssSelector();
-      const element = el('<div attr></div>');
+      const element = el(doc, '<div attr></div>');
       const empty = getDOM().getAttribute(element, 'attr');
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);

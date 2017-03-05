@@ -20,7 +20,7 @@ export function main() {
       doc = getDOM().createHtmlDocument();
       doc.title = '';
       ssh = new DomSharedStylesHost(doc);
-      someHost = getDOM().createElement('div');
+      someHost = getDOM().createElement(doc, 'div');
     });
 
     it('should add existing styles to new hosts', () => {

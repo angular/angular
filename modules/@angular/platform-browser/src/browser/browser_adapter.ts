@@ -117,13 +117,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  createMouseEvent(eventType: string): MouseEvent {
-    const evt: MouseEvent = document.createEvent('MouseEvent');
+  createMouseEvent(doc: Document, eventType: string): MouseEvent {
+    const evt: MouseEvent = doc.createEvent('MouseEvent');
     evt.initEvent(eventType, true, true);
     return evt;
   }
-  createEvent(eventType: any): Event {
-    const evt: Event = document.createEvent('Event');
+  createEvent(doc: Document, eventType: any): Event {
+    const evt: Event = doc.createEvent('Event');
     evt.initEvent(eventType, true, true);
     return evt;
   }
@@ -136,7 +136,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
   getTemplateContent(el: Node): Node {
-    return 'content' in el && el instanceof HTMLTemplateElement ? el.content : null;
+    return 'content' in el && this.isTemplateElement(el) ? (<any>el).content : null;
   }
   getOuterHTML(el: HTMLElement): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
@@ -187,28 +187,30 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setValue(el: any, value: string) { el.value = value; }
   getChecked(el: any): boolean { return el.checked; }
   setChecked(el: any, value: boolean) { el.checked = value; }
-  createComment(text: string): Comment { return document.createComment(text); }
-  createTemplate(html: any): HTMLElement {
-    const t = document.createElement('template');
+  createComment(doc: Document, text: string): Comment { return doc.createComment(text); }
+  createTemplate(doc: Document, html: any): HTMLElement {
+    const t = doc.createElement('template');
     t.innerHTML = html;
     return t;
   }
-  createElement(tagName: string, doc = document): HTMLElement { return doc.createElement(tagName); }
-  createElementNS(ns: string, tagName: string, doc = document): Element {
+  createElement(doc: Document, tagName: string): HTMLElement { return doc.createElement(tagName); }
+  createElementNS(doc: Document, ns: string, tagName: string): Element {
     return doc.createElementNS(ns, tagName);
   }
-  createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
-  createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
+  createTextNode(doc: Document, text: string): Text { return doc.createTextNode(text); }
+  createScriptTag(doc: Document, attrName: string, attrValue: string): HTMLScriptElement {
     const el = <HTMLScriptElement>doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
     return el;
   }
-  createStyleElement(css: string, doc = document): HTMLStyleElement {
+  createStyleElement(doc: Document, css: string): HTMLStyleElement {
     const style = <HTMLStyleElement>doc.createElement('style');
-    this.appendChild(style, this.createTextNode(css));
+    this.appendChild(style, this.createTextNode(doc, css));
     return style;
   }
-  createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
+  createShadowRoot(doc: Document, el: HTMLElement): DocumentFragment {
+    return (<any>el).createShadowRoot();
+  }
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   clone(node: Node): Node { return node.cloneNode(true); }
@@ -278,10 +280,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }
-  getTitle(doc: Document): string { return document.title; }
-  setTitle(doc: Document, newTitle: string) { document.title = newTitle || ''; }
+  getTitle(doc: Document): string { return doc.title; }
+  setTitle(doc: Document, newTitle: string) { doc.title = newTitle || ''; }
   elementMatches(n: any, selector: string): boolean {
-    if (n instanceof HTMLElement) {
+    if (this.isElementNode(n)) {
       return n.matches && n.matches(selector) ||
           n.msMatchesSelector && n.msMatchesSelector(selector) ||
           n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
@@ -290,7 +292,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return false;
   }
   isTemplateElement(el: Node): boolean {
-    return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
+    return this.isElementNode(el) && el.nodeName === 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
@@ -299,8 +301,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return isPresent(node.shadowRoot) && node instanceof HTMLElement;
   }
   isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
-  importIntoDoc(node: Node): any { return document.importNode(this.templateAwareRoot(node), true); }
-  adoptNode(node: Node): any { return document.adoptNode(node); }
   getHref(el: Element): string { return (<any>el).href; }
 
   getEventKey(event: any): string {
@@ -340,8 +340,8 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getHistory(): History { return window.history; }
   getLocation(): Location { return window.location; }
   getBaseHref(doc: Document): string {
-    const href = getBaseElementHref();
-    return isBlank(href) ? null : relativePath(href);
+    const href = getBaseElementHref(doc);
+    return isBlank(href) ? null : relativePath(doc, href);
   }
   resetBaseElement(): void { baseElement = null; }
   getUserAgent(): string { return window.navigator.userAgent; }
@@ -376,9 +376,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 }
 
 let baseElement: HTMLElement = null;
-function getBaseElementHref(): string {
+function getBaseElementHref(doc: Document): string {
   if (!baseElement) {
-    baseElement = document.querySelector('base');
+    baseElement = doc.querySelector('base');
     if (!baseElement) {
       return null;
     }
@@ -388,9 +388,9 @@ function getBaseElementHref(): string {
 
 // based on urlUtils.js in AngularJS 1
 let urlParsingNode: any;
-function relativePath(url: any): string {
+function relativePath(doc: Document, url: any): string {
   if (!urlParsingNode) {
-    urlParsingNode = document.createElement('a');
+    urlParsingNode = doc.createElement('a');
   }
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :

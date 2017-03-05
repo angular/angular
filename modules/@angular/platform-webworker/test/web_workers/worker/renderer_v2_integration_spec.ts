@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactoryV2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -154,9 +155,9 @@ export function main() {
       it('should listen to events', () => {
         const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                             .createComponent(MyComp2);
-
+        const doc = TestBed.get(DOCUMENT);
         const el = fixture.debugElement.children[0];
-        dispatchEvent(getRenderElement(el.nativeElement), 'change');
+        dispatchEvent(doc, getRenderElement(el.nativeElement), 'change');
         expect(fixture.componentInstance.ctxNumProp).toBe(1);
 
         fixture.destroy();

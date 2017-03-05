@@ -93,7 +93,7 @@ export class Meta {
       // check if element has tag attributes
       if (elem && this._containsAttributes(meta, elem)) return elem;
     }
-    const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
+    const element: HTMLMetaElement = this._dom.createElement(this._doc, 'meta') as HTMLMetaElement;
     this._setMetaElementAttributes(meta, element);
     const head = this._dom.getElementsByTagName(this._doc, 'head')[0];
     this._dom.appendChild(head, element);

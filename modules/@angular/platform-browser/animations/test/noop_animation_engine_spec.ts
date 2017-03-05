@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {state, style, trigger} from '@angular/animations';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {NoopAnimationEngine} from '../src/render/noop_animation_engine';
 
 export function main() {
   describe('NoopAnimationEngine', () => {
+    let defaultDoc: Document;
     let captures: string[] = [];
     function capture(value: string = null) { return (v: any = null) => captures.push(value || v); }
 
-    beforeEach(() => { captures = []; });
+    beforeEach(() => {
+      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      captures = [];
+    });
 
     it('should immediately issue DOM removals during remove animations and then fire the animation callbacks after flush',
        () => {
@@ -180,7 +185,7 @@ export function main() {
           state('a', style({width: '100px'})),
         ]));
 
-        const element = el('<div></div>');
+        const element = el(defaultDoc, '<div></div>');
         expect(element.style.width).not.toEqual('100px');
 
         engine.setProperty(element, 'matias', 'a');
@@ -198,7 +203,7 @@ export function main() {
              state('b', style({height: '100px'})),
            ]));
 
-           const element = el('<div></div>');
+           const element = el(defaultDoc, '<div></div>');
 
            engine.setProperty(element, 'matias', 'a');
            engine.flush();
@@ -218,7 +223,7 @@ export function main() {
           state('*', style({opacity: '0.5'})),
         ]));
 
-        const element = el('<div></div>');
+        const element = el(defaultDoc, '<div></div>');
 
         engine.setProperty(element, 'matias', 'xyz');
         engine.flush();

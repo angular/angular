@@ -19,7 +19,7 @@ export function main() {
     let defaultMeta: HTMLMetaElement;
 
     beforeEach(() => {
-      defaultMeta = getDOM().createElement('meta', doc) as HTMLMetaElement;
+      defaultMeta = getDOM().createElement(doc, 'meta') as HTMLMetaElement;
       getDOM().setAttribute(defaultMeta, 'property', 'fb:app_id');
       getDOM().setAttribute(defaultMeta, 'content', '123456789');
       getDOM().appendChild(getDOM().getElementsByTagName(doc, 'head')[0], defaultMeta);

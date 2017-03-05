@@ -119,7 +119,7 @@ export function main() {
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            expect(isPlatformServer(moduleRef.injector.get(PLATFORM_ID))).toBe(true);
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
            platform.destroy();
          });
        }));
@@ -134,13 +134,13 @@ export function main() {
 
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
            platform.destroy();
          });
 
          platform2.bootstrapModule(ExampleModule2).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works too!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works too!');
            platform2.destroy();
          });
        }));
@@ -166,8 +166,8 @@ export function main() {
          platform.bootstrapModule(ImageExampleModule).then(ref => {
            const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
            const app = appRef.components[0].location.nativeElement;
-           const img = getDOM().getElementsByTagName(app, 'img')[0] as any;
-           expect(img.attribs['src']).toEqual('link');
+           const img = getDOM().getElementsByTagName(app, 'img')[0];
+           expect(img.attributes.getNamedItem('src').textContent).toEqual('link');
          });
        }));
 

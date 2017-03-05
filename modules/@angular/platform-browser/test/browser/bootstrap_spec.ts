@@ -147,9 +147,9 @@ export function main() {
         getDOM().remove(oldRoots[i]);
       }
 
-      el = getDOM().createElement('hello-app', doc);
-      el2 = getDOM().createElement('hello-app-2', doc);
-      lightDom = getDOM().createElement('light-dom-el', doc);
+      el = getDOM().createElement(doc, 'hello-app');
+      el2 = getDOM().createElement(doc, 'hello-app-2');
+      lightDom = getDOM().createElement(doc, 'light-dom-el');
       getDOM().appendChild(doc.body, el);
       getDOM().appendChild(doc.body, el2);
       getDOM().appendChild(el, lightDom);
@@ -367,17 +367,17 @@ export function main() {
          // First, set up styles to be removed.
          const dom = getDOM();
          const platform = platformBrowserDynamic();
-         const document = platform.injector.get(DOCUMENT);
-         const style = dom.createElement('style', document);
+         const doc = platform.injector.get(DOCUMENT);
+         const style = dom.createElement(doc, 'style');
          dom.setAttribute(style, 'ng-transition', 'my-app');
-         dom.appendChild(document.head, style);
+         dom.appendChild(doc.head, style);
 
-         const root = dom.createElement('root', document);
-         dom.appendChild(document.body, root);
+         const root = dom.createElement(doc, 'root');
+         dom.appendChild(doc.body, root);
 
          platform.bootstrapModule(TestModule).then(() => {
            const styles: HTMLElement[] =
-               Array.prototype.slice.apply(dom.getElementsByTagName(document, 'style') || []);
+               Array.prototype.slice.apply(dom.getElementsByTagName(doc, 'style') || []);
            styles.forEach(
                style => { expect(dom.getAttribute(style, 'ng-transition')).not.toBe('my-app'); });
            async.done();
