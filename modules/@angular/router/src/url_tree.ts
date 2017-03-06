@@ -103,6 +103,7 @@ function containsSegmentGroupHelper(
  * @stable
  */
 export class UrlTree {
+  private serializer = new DefaultUrlSerializer();
   /** @internal */
   constructor(
       /** The root segment group of the URL tree */
@@ -113,7 +114,7 @@ export class UrlTree {
       public fragment: string) {}
 
   /** @docsNotRequired */
-  toString(): string { return new DefaultUrlSerializer().serialize(this); }
+  toString(): string { return this.serializer.serialize(this); }
 }
 
 /**

@@ -300,12 +300,17 @@ function createNewSegmentChildren(outlets: {[name: string]: any}): any {
   return children;
 }
 
-function stringify(params: {[key: string]: any}): {[key: string]: string} {
-  const res: {[key: string]: string} = {};
-  forEach(params, (v: any, k: string) => res[k] = `${v}`);
+function stringify(params: Params): Params {
+  const res: Params = {};
+  forEach(params, (v: any, k: string) => {
+    if (!Array.isArray(v)) {
+      v = `${v}`;
+    }
+    res[k] = v;
+  });
   return res;
 }
 
-function compare(path: string, params: {[key: string]: any}, segment: UrlSegment): boolean {
+function compare(path: string, params: Params, segment: UrlSegment): boolean {
   return path == segment.path && shallowEqual(params, segment.parameters);
 }
