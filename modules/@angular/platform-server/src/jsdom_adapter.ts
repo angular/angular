@@ -21,7 +21,12 @@ function _notImplemented(methodName: string) {
  * Parses a document string to a Document object.
  */
 export function parseDocument(html: string) {
-  return jsdom.jsdom(html);
+  return jsdom.jsdom(html, {
+    features: {
+      FetchExternalResources : false,
+      ProcessExternalResources: false,
+    }
+  });
 }
 
 /**
@@ -47,7 +52,12 @@ export class JsDomAdapter extends BrowserDomAdapter {
   supportsNativeShadowDOM(): boolean { return false; }
 
   createHtmlDocument(): HTMLDocument {
-    return jsdom.jsdom('<html><head><title>fakeTitle</title></head><body></body></html>');
+    return jsdom.jsdom('<html><head><title>fakeTitle</title></head><body></body></html>', {
+      features: {
+        FetchExternalResources : false,
+        ProcessExternalResources: false,
+      }
+    });
   }
 
   createShadowRoot(doc: Document, el: any): HTMLElement {
