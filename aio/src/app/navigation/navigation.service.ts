@@ -25,7 +25,7 @@ export interface NavigationMapItem {
   parents: NavigationNode[];
 }
 
-const NAVIGATION_PATH = 'content/navigation.json';
+const navigationPath = 'content/navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -36,7 +36,7 @@ export class NavigationService {
   constructor(private http: Http, private location: LocationService, private logger: Logger) { }
 
   private fetchNavigation(): Observable<NavigationViews> {
-    const response = this.http.get(NAVIGATION_PATH)
+    const response = this.http.get(navigationPath)
              .map(res => res.json() as NavigationViews)
              .publishLast();
     response.connect();
