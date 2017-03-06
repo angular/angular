@@ -21,10 +21,14 @@ export const PRIMARY_OUTLET = 'primary';
 /**
  * A collection of parameters.
  *
+ * Values are either `string`s (for single URL params like `?foo=bar` => `{foo: 'bar'}`), or
+ * `string[]` for repeated parameters (for repeated URL params like `?foo=bar&foo=baz` => `{foo:
+ * ['bar', 'baz']}`).
+ *
  * @stable
  */
 export type Params = {
-  [key: string]: any
+  [key: string]: any  // actually string|string[], but cannot change due to backwards compatibility.
 };
 
 const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
