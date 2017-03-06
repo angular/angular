@@ -266,7 +266,7 @@ Run the app again, go to the *Dashboard*, and enter some text in the search box.
 At some point it might look like this.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/toh-hero-search.png' alt="Hero Search Component">  </img>
+  <img src='assets/images/devguide/toh/toh-hero-search.png' alt="Hero Search Component">  </img>
 </figure>
 
 

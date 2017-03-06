@@ -306,7 +306,7 @@ For example, when we select Magneta from the heroes list,
 we can make it pop out visually by giving it a subtle background color as shown here.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/heroes-list-selected.png' alt="Selected hero">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-selected.png' alt="Selected hero">  </img>
 </figure>
 
 We’ll add a property binding on `class` for the `selected` class to the template. We'll set this to an expression that compares the current `selectedHero` to the `hero`.
@@ -329,7 +329,7 @@ The browser reloads our app.
 We select the hero Magneta and the selection is clearly identified by the background color.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app">  </img>
 </figure>
 
 We select a different hero and the tell-tale color switches to that hero.

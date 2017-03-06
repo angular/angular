@@ -17,7 +17,7 @@ Of course, there is more to it than this.
 You'll learn the details in the pages that follow. For now, focus on the big picture.
 
 <figure>
-  <img src="/resources/images/devguide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700">  </img>
+  <img src="assets/images/devguide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700">  </img>
 </figure>
 
 The architecture diagram identifies the eight main building blocks of an Angular application:
@@ -41,13 +41,13 @@ Learn these building blocks, and you're on your way.
 
 ## Modules
 <figure>
-  <img src="/resources/images/devguide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 ### Angular libraries
 
 <figure>
-  <img src="/resources/images/devguide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 
@@ -59,7 +59,7 @@ Learn these building blocks, and you're on your way.
 ## Components
 
 <figure>
-  <img src="/resources/images/devguide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 A _component_ controls a patch of screen called a *view*.
@@ -87,7 +87,7 @@ Your app can take action at each moment in this lifecycle through optional [life
 
 ## Templates
 <figure>
-  <img src="/resources/images/devguide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 You define a component's view with its companion **template**. A template is a form of HTML
@@ -110,7 +110,7 @@ hero that the user selects from the list presented by the `HeroListComponent`.
 The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
 <figure>
-  <img src="/resources/images/devguide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
@@ -122,7 +122,7 @@ Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom 
 
 ## Metadata
 <figure>
-  <img src="/resources/images/devguide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 <p style="padding-top:10px">Metadata tells Angular how to process a class.</p>
@@ -150,7 +150,7 @@ This is one way to tell Angular that the component's constructor requires a `Her
 so it can get the list of heroes to display. 
 
 <figure>
-  <img src="/resources/images/devguide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 The metadata in the `@Component` tells Angular where to get the major building blocks you specify for the component.
@@ -171,7 +171,7 @@ Without a framework, you would be responsible for pushing data values into the H
 into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
 read as any experienced jQuery programmer can attest.
 <figure>
-  <img src="/resources/images/devguide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px">  </img>
+  <img src="assets/images/devguide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px">  </img>
 </figure>
 
 Angular supports **data binding**,
@@ -198,13 +198,13 @@ Angular processes *all* data bindings once per JavaScript event cycle,
 from the root of the application component tree through all child components.
 
 <figure>
-  <img src="/resources/images/devguide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Data binding plays an important role in communication
 between a template and its component.<br class="l-clear-both">
 <figure>
-  <img src="/resources/images/devguide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Data binding is also important for communication between parent and child components.<br class="l-clear-both">
@@ -215,7 +215,7 @@ Data binding is also important for communication between parent and child compon
 
 ## Directives
 <figure>
-  <img src="/resources/images/devguide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Angular templates are *dynamic*. When Angular renders them, it transforms the DOM
@@ -260,7 +260,7 @@ Of course, you can also write your own directives. Components such as
 
 ## Services
 <figure>
-  <img src="/resources/images/devguide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 _Service_ is a broad category encompassing any value, function, or feature that your application needs.
@@ -305,7 +305,7 @@ application logic into services and make those services available to components 
 
 ## Dependency injection
 <figure>
-  <img src="/resources/images/devguide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 _Dependency injection_ is a way to supply a new instance of a class
@@ -324,7 +324,7 @@ This is *dependency injection*.
 
 The process of `HeroService` injection looks a bit like this:
 <figure>
-  <img src="/resources/images/devguide/architecture/injector-injects.png" alt="Service">  </img>
+  <img src="assets/images/devguide/architecture/injector-injects.png" alt="Service">  </img>
 </figure>
 
 If the injector doesn't have a `HeroService`, how does it know how to make one?

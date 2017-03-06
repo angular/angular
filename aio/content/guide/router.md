@@ -411,12 +411,12 @@ Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/hero-list.png' alt="Hero List" width="250">  </img>
+  <img src='assets/images/devguide/router/hero-list.png' alt="Hero List" width="250">  </img>
 </figure>
 
 Select one hero and the app takes you to a hero editing screen.
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/hero-detail.png' alt="Crisis Center Detail" width="250">  </img>
+  <img src='assets/images/devguide/router/hero-detail.png' alt="Crisis Center Detail" width="250">  </img>
 </figure>
 
 Alter the name. 
@@ -430,7 +430,7 @@ Angular app navigation updates the browser history as normal web navigation does
 Now click the *Crisis Center* link for a list of ongoing crises.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/crisis-center-list.png' alt="Crisis Center List" width="250">  </img>
+  <img src='assets/images/devguide/router/crisis-center-list.png' alt="Crisis Center List" width="250">  </img>
 </figure>
 
 Select a crisis and the application takes you to a crisis editing screen.
@@ -440,7 +440,7 @@ Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250">  </img>
+  <img src='assets/images/devguide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250">  </img>
 </figure>
 
 Unlike *Hero Detail*, which updates as you type, 
@@ -453,7 +453,7 @@ Click the browser back button or the "Heroes" link instead.
 Up pops a dialog box.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/confirm-dialog.png' alt="Confirm Dialog" width="250">  </img>
+  <img src='assets/images/devguide/router/confirm-dialog.png' alt="Confirm Dialog" width="250">  </img>
 </figure>
 
 You can say "OK" and lose your changes or click "Cancel" and continue editing.
@@ -470,7 +470,7 @@ Proceed to the first application milestone.
 
 Begin with a simple version of the app that navigates between two empty views.
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/router-1-anim.gif' alt="App in action" width="250">  </img>
+  <img src='assets/images/devguide/router/router-1-anim.gif' alt="App in action" width="250">  </img>
 </figure>
 
 
@@ -575,7 +575,7 @@ The root `AppComponent` is the application shell. It has a title, a navigation b
 and a *router outlet* where the router swaps views on and off the page. Here's what you get:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/shell-and-outlet.png' alt="Shell" width="300">  </img>
+  <img src='assets/images/devguide/router/shell-and-outlet.png' alt="Shell" width="300">  </img>
 </figure>
 
 
@@ -930,7 +930,7 @@ from the <live-example name="toh-4" title="Tour of Heroes: Services example code
 Here's how the user will experience this version of the app:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/router-2-anim.gif' alt="App in action">  </img>
+  <img src='assets/images/devguide/router/router-2-anim.gif' alt="App in action">  </img>
 </figure>
 
 A typical application has multiple *feature areas*, 
@@ -1325,7 +1325,7 @@ For example, when returning to the heroes list from the hero detail view,
 it would be nice if the viewed hero was preselected in the list.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/selected-hero.png' alt="Selected hero">  </img>
+  <img src='assets/images/devguide/router/selected-hero.png' alt="Selected hero">  </img>
 </figure>
 
 You'll implement this feature in a moment by including the viewed hero's `id` 
@@ -1422,7 +1422,7 @@ The binding adds the `selected` CSS class when the method returns `true` and rem
 Look for it within the repeated `<li>` tag as shown here:
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/selected-hero.png' alt="Selected List">  </img>
+  <img src='assets/images/devguide/router/selected-hero.png' alt="Selected List">  </img>
 </figure>
 
 The optional `foo` route parameter is harmless and continues to be ignored.
@@ -1662,7 +1662,7 @@ You'll organize the crisis center to conform to the following recommended patter
 If your app had many feature areas, the app component trees might look like this:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/component-tree.png' alt="Component Tree">  </img>
+  <img src='assets/images/devguide/router/component-tree.png' alt="Component Tree">  </img>
 </figure>
 
 ### Child routing component
@@ -1830,7 +1830,7 @@ It displays a simple form with a header, an input box for the message,
 and two buttons, "Send" and "Cancel".
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/router/contact-popup.png' alt="Contact popup" width="250">  </img>
+  <img src='assets/images/devguide/router/contact-popup.png' alt="Contact popup" width="250">  </img>
 </figure>
 
 Here's the component and its template:
@@ -2507,7 +2507,7 @@ accessing the admin feature area.
 It redirects to the  login page if the user is not authorized.
 
 But the router is still loading the `AdminModule` even if the user can't visit any of its components.
-Ideally, you's only load the `AdminModule` if the user is logged in.
+Ideally, you'd only load the `AdminModule` if the user is logged in.
 
 Add a **`CanLoad`** guard that only loads the `AdminModule` once the user is logged in _and_ attempts to access the admin feature area.
 

@@ -14,7 +14,7 @@ conditionally show a message below the list.
 The final UI looks like this:
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/displaying-data/final.png" alt="Final UI">  </img>
+  <img src="assets/images/devguide/displaying-data/final.png" alt="Final UI">  </img>
 </figure>
 
 # Contents
@@ -63,7 +63,7 @@ inside the `<my-app>` tag.
 
 Now run the app. It should display the title and hero name:
 <figure class='image-display'>
-  <img src="/resources/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero">  </img>
+  <img src="assets/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero">  </img>
 </figure>
 
 ## Template inline or template file?
@@ -111,7 +111,7 @@ In this case, `ngFor` is displaying !{_an} !{_array}, but `ngFor` can
 repeat items for any [iterable](!{_iterableUrl}) object.Now the heroes appear in an unordered list.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor">  </img>
+  <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor">  </img>
 </figure>
 
 
