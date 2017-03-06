@@ -133,6 +133,6 @@ Two sample components and the `AdComponent` interface are shown below:
 
 The final ad banner looks like this:
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dynamic-component-loader/ads.gif" alt="Ads">  </img>
+  <img src="assets/images/cookbooks/dynamic-component-loader/ads.gif" alt="Ads">  </img>
 </figure>
 

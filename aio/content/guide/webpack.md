@@ -38,7 +38,9 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 [Trying it out](#try)
 
 [Conclusions](#conclusions)
-  
+
+You can also <a href="/resources/zips/webpack/webpack.zip">download the final result.</a>
+
 <a id="what-is-webpack"></a>## What is Webpack?
 
 Webpack is a powerful module bundler. 
@@ -156,7 +158,7 @@ Create a **new project folder**
     
 </code-example>
 
-Add these files to the root directory:
+Add these files:
 
 <md-tab-group>
 
@@ -165,8 +167,8 @@ Add these files to the root directory:
   </md-tab>
 
 
-  <md-tab label="tsconfig.json">
-    {@example 'webpack/ts/tsconfig.1.json'}
+  <md-tab label="src/tsconfig.json">
+    {@example 'webpack/ts/src/tsconfig.1.json'}
   </md-tab>
 
 
@@ -304,9 +306,9 @@ Rules tell Webpack which loaders to use for each file (AKA _module_):
 * html - for component templates
 * images/fonts - Images and fonts are bundled as well.
 * css - The pattern matches application-wide styles; the second handles component-scoped styles (the ones specified in a component's `styleUrls` metadata property)
-The first pattern excludes `.css` files within the `/src/app` directories where the component-scoped styles sit.
-It includes only `.css` files located at or above `/src`; these are the application-wide styles.
-The `ExtractTextPlugin` (described below) applies the `style` and `css` loaders to these files.
+The first pattern is for the application-wide styles. It excludes `.css` files within the `src/app` directory
+where the component-scoped styles sit. The `ExtractTextPlugin` (described below) applies the `style` and `css`
+loaders to these files.
 
 The second pattern filters for component-scoped styles and loads them as strings via the `raw` loader &mdash;
 which is what Angular expects to do with styles specified in a `styleUrls` metadata property.
@@ -484,8 +486,8 @@ Webpack techniques covered in this guide.
   </md-tab>
 
 
-  <md-tab label="public/css/styles.css">
-    {@example 'webpack/ts/public/css/styles.css'}
+  <md-tab label="src/assets/css/styles.css">
+    {@example 'webpack/ts/src/assets/css/styles.css'}
   </md-tab>
 
 
@@ -521,14 +523,10 @@ Webpack techniques covered in this guide.
 
 </md-tab-group>
 
-
-<p>
-  The <code>app.component.html</code> displays this downloadable Angular logo  
-    <a href="https://raw.githubusercontent.com/angular/angular.io/master/public/resources/images/logos/angular2/angular.png" target="_blank">  
-    <img src="/resources/images/logos/angular2/angular.png" height="40px" title="download Angular logo"></a>.  
-    
-</p>
-
+The <code>app.component.html</code> displays this downloadable Angular logo
+<a href="https://raw.githubusercontent.com/angular/angular.io/master/publicassets/images/logos/angular2/angular.png" target="_blank">
+<img src="assets/images/logos/angular2/angular.png" height="40px" title="download Angular logo"></a>.
+Create folder `images` under the project's "assets" folder, then right-click and download the image to that folder.
 
 
 {@a bundle-ts}

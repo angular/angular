@@ -74,7 +74,7 @@ The guideline will use the shortcut `hero.component.ts|html|css|spec` to represe
 ## Single responsibility
 
 Apply the 
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle" target="_blank"><i>Single Responsibility Principle</i> (SPR)</a>
+<a href="https://wikipedia.org/wiki/Single_responsibility_principle" target="_blank"><i>Single Responsibility Principle</i> (SRP)</a>
 to all components, services, and other symbols. 
 This helps make the app cleaner, easier to read and maintain, and more testable.
 
@@ -248,7 +248,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 <div class='s-why'>
-  **Why?** The naming conventions should simply help find desited code faster and make it easier to understand.  
+  **Why?** The naming conventions should simply help find desired code faster and make it easier to understand.  
     
 </div>
 

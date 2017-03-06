@@ -309,7 +309,7 @@ everything work seamlessly:
   use in AngularJS.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700">  </img>
+  <img src="assets/images/devguide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700">  </img>
 </figure>
 
 #### Components and the DOM
@@ -349,7 +349,7 @@ ways:
    and Angular content projection together.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500">  </img>
+  <img src="assets/images/devguide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500">  </img>
 </figure>
 
 Whenever we use a component that belongs to the other framework, a
@@ -395,7 +395,7 @@ AngularJS and Angular approaches. Here's what happens:
   detection after every event.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600">  </img>
+  <img src="assets/images/devguide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600">  </img>
 </figure>
 
 What this means in practice is that we do not need to call `$apply()` in
@@ -491,7 +491,7 @@ Congratulations! You're running a hybrid application! The
 existing AngularJS code works as before _and_ you're ready to run Angular code.
 ### Using Angular Components from AngularJS Code
 <figure>
-  <img src="/resources/images/devguide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Once we're running a hybrid app, we can start the gradual process of upgrading
@@ -523,7 +523,7 @@ Angular module.
 
 
 All Angular components, directives and pipes must be declared in an NgModule.
-The net resulit is an AngularJS directive called `heroDetail`, that we can
+The net result is an AngularJS directive called `heroDetail`, that we can
 use like any other directive in our AngularJS templates.
 
 
@@ -602,7 +602,7 @@ For  example, we can easily make multiple copies of the component using `ng-repe
 
 ### Using AngularJS Component Directives from Angular Code
 <figure>
-  <img src="/resources/images/devguide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 So, we can write an Angular component and then use it from AngularJS
@@ -781,7 +781,7 @@ and then provide the input and output using Angular template syntax:
 
 ### Projecting AngularJS Content into Angular Components
 <figure>
-  <img src="/resources/images/devguide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 When we are using a downgraded Angular component from an AngularJS
@@ -815,7 +815,7 @@ remains in "AngularJS land" and is managed by the AngularJS framework.
 
 ### Transcluding Angular Content into AngularJS Component Directives
 <figure>
-  <img src="/resources/images/devguide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Just like we can project AngularJS content into Angular components,
@@ -1657,7 +1657,7 @@ Now set the remaining `phone-detail.component.ts` as follows:
 This is similar to the phone list component. 
 The new wrinkle is the `RouteParams` type annotation that identifies the `routeParams` dependency. 
 
-The AngularJS injector has an AngularJS router dependency called `$routeParams`.
+The AngularJS injector has an AngularJS router dependency called `$routeParams`,
 which was injected into `PhoneDetails` when it was still an AngularJS controller.
 We intend to inject it into the new `PhoneDetailsComponent`.
 

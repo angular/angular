@@ -15,7 +15,7 @@ We received new requirements for our Tour of Heroes application:
 When we’re done, users will be able to navigate the app like this:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
+  <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
 </figure>
 
 We'll add Angular’s *Router* to our app to satisfy these requirements.
@@ -93,6 +93,27 @@ Instead of displaying heroes automatically, we'd like to show them *after* the u
 In other words, we'd like to navigate to the list of heroes.
 
 We'll need the Angular *Router*.
+### *&lt;base href>*
+
+Open `index.html` and ensure there is a `<base href="...">` element
+(or a script that dynamically sets this element)
+at the top of the `<head>` section.
+
+
+~~~ {.callout.is-important}
+
+
+<header>
+  base href is essential
+</header>
+
+See the *base href* section of the [router](../guide/router.html#base-href)
+guide to learn why this matters, and what to add if the `base`
+element is missing.
+
+
+~~~
+
 
 
 {@a configure-routes}
@@ -322,7 +343,7 @@ Although the dashboard heroes are presented as button-like blocks, they should b
 When hovering over a hero block, the target URL should display in the browser status bar 
 and the user should be able to copy the link or open the hero detail view in a new tab.
 
-To achieve this effect, reopen the `dashboard.component.html` and replace the repeated `<div *ngFor...>` tags
+To achieve this effect, reopen the <span ngio-ex>dashboard.component.html</span> and replace the repeated `<div *ngFor...>` tags
 with `<a>` tags. The opening `<a>` tag looks like this:
 
 
@@ -374,7 +395,7 @@ Add the following HTML fragment at the bottom of the template where the `<my-her
 After clicking a hero, the user should see something like this below the hero list:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70">  </img>
+  <img src='assets/images/devguide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70">  </img>
 </figure>
 
 ### Format with the *uppercase* pipe
@@ -420,7 +441,7 @@ back in the `DashboardComponent`.
 Here's the fully revised `HeroesComponent` class:
 Refresh the browser and start clicking.
 We can navigate around the app, from the dashboard to hero details and back,
-for heroes list to the mini-detail to the hero details and back to the heroes again.
+from heroes list to the mini-detail to the hero details and back to the heroes again.
 We can jump back and forth between the dashboard and the heroes.
 
 We've met all of the navigational requirements that propelled this chapter.
@@ -478,7 +499,7 @@ If necessary, also edit <span ngio-ex>index.html</span> to refer to this stylesh
 Look at the app now. Our dashboard, heroes, and navigation links are styling!
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/dashboard-top-heroes.png' alt="View navigations">  </img>
+  <img src='assets/images/devguide/toh/dashboard-top-heroes.png' alt="View navigations">  </img>
 </figure>
 
 
