@@ -72,13 +72,11 @@ export class FocusTrap {
     }
 
     this._ngZone.runOutsideAngular(() => {
-      this._element
-        .insertAdjacentElement('beforebegin', this._startAnchor)
-        .addEventListener('focus', () => this.focusLastTabbableElement());
+      this._startAnchor.addEventListener('focus', () => this.focusLastTabbableElement());
+      this._endAnchor.addEventListener('focus', () => this.focusFirstTabbableElement());
 
-      this._element
-        .insertAdjacentElement('afterend', this._endAnchor)
-        .addEventListener('focus', () => this.focusFirstTabbableElement());
+      this._element.parentNode.insertBefore(this._startAnchor, this._element);
+      this._element.parentNode.insertBefore(this._endAnchor, this._element.nextSibling);
     });
   }
 
