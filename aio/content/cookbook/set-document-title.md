@@ -23,7 +23,7 @@ This cookbook explains how to do it.**See the <live-example name="cb-set-documen
 
 
     <td>
-      <img src='/resources/images/devguide/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right">      </img>      <br>      </br>      <img src='/resources/images/devguide/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right">      </img>
+      <img src='assets/images/devguide/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right">      </img>      <br>      </br>      <img src='assets/images/devguide/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right">      </img>
     </td>
 
 
@@ -64,7 +64,7 @@ Let's inject the `Title` service into the root `AppComponent` and expose a binda
 
 We bind that method to three anchor tags and, voilà!
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/set-document-title/set-title-anim.gif" alt="Set title">  </img>
+  <img src="assets/images/cookbooks/set-document-title/set-title-anim.gif" alt="Set title">  </img>
 </figure>
 
 Here's the complete solution

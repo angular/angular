@@ -615,9 +615,9 @@ The `source-map-explorer` analyzes the source map generated with the bundle and 
 showing exactly which application and Angular modules and classes are included in the bundle.
 
 Here's the map for _Tour of Heroes_.
-<a href="/resources/images/cookbooks/aot-compiler/toh6-bundle.png" target="_blank" title="View larger image">
+<a href="assets/images/cookbooks/aot-compiler/toh6-bundle.png" target="_blank" title="View larger image">
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/aot-compiler/toh6-bundle.png" alt="TOH-6-bundle">  </img>
+  <img src="assets/images/cookbooks/aot-compiler/toh6-bundle.png" alt="TOH-6-bundle">  </img>
 </figure>
 
 </a>

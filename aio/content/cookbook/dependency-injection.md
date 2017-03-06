@@ -122,7 +122,7 @@ The author simply declared what was needed in the constructor (`LoggerService` a
 Once all the dependencies are in place, the `AppComponent` displays the user information:
  
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/logged-in-user.png" alt="Logged In User">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/logged-in-user.png" alt="Logged In User">  </img>
 </figure>
 
 ### *@Injectable()*
@@ -233,7 +233,7 @@ And the template displays this data-bound property.
 Find this example in <live-example name="cb-dependency-injection">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data. 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/hero-bios.png" alt="Bios">       </img>
+  <img src="assets/images/cookbooks/dependency-injection/hero-bios.png" alt="Bios">       </img>
 </figure>
 
 
@@ -280,7 +280,7 @@ placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
 
 It looks like this, with the hero's telephone number from `HeroContactComponent` projected above the hero description:
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/hero-bio-and-content.png" alt="bio and contact">       </img>
+  <img src="assets/images/cookbooks/dependency-injection/hero-bio-and-content.png" alt="bio and contact">       </img>
 </figure>
 
 Here's the `HeroContactComponent` which demonstrates the qualifying decorators that we're talking about in this section:
@@ -304,14 +304,14 @@ Thanks to `@Optional()`, Angular sets the `loggerService` to null and the rest o
 
 We'll come back to the `elementRef` property shortly.Here's the `HeroBiosAndContactsComponent` in action.
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/hero-bios-and-contacts.png" alt="Bios with contact into">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/hero-bios-and-contacts.png" alt="Bios with contact into">  </img>
 </figure>
 
 If we comment out the `@Host()` decorator, Angular now walks up the injector ancestor tree 
 until it finds the logger at the `AppComponent` level. The logger logic kicks in and the hero display updates
 with the gratuitous "!!!", indicating that the logger was found.
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/hero-bio-contact-no-host.png" alt="Without @Host">     </img>
+  <img src="assets/images/cookbooks/dependency-injection/hero-bio-contact-no-host.png" alt="Without @Host">     </img>
 </figure>
 
 On the other hand, if we restore the `@Host()` decorator and comment out `@Optional`, 
@@ -343,7 +343,7 @@ first without a value (yielding the default color) and then with an assigned col
 
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/highlight.png" alt="Highlighted bios">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/highlight.png" alt="Highlighted bios">  </img>
 </figure>
 
 <a id="providers"></a>
@@ -394,7 +394,7 @@ We need other ways to deliver dependency values and that means we need other way
 The `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why we need them. 
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/hero-of-month.png" alt="Hero of the month" width="300px">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/hero-of-month.png" alt="Hero of the month" width="300px">  </img>
 </figure>
 
 It's visually simple: a few properties and the output of a logger. The code behind it gives us plenty to talk about.
@@ -493,14 +493,14 @@ We want to shrink that API surface to just the two members exposed by the `Minim
 
 The constructor's `logger` parameter is typed as `MinimalLogger` so only its two members are visible in TypeScript:
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">  </img>
 </figure>
 
 Angular actually sets the `logger` parameter to the injector's full version of the `LoggerService` 
 which happens to be the `DateLoggerService` thanks to the override provider registered previously via `useClass`.
 The following image, which displays the logging date, confirms the point:
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/date-logger-entry.png" alt="DateLoggerService entry" width="300px">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/date-logger-entry.png" alt="DateLoggerService entry" width="300px">  </img>
 </figure>
 
 
@@ -641,7 +641,7 @@ In this contrived example, `SortedHeroesComponent` inherits from `HeroesBaseComp
 to display a *sorted* list of heroes.
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/sorted-heroes.png" alt="Sorted Heroes">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/sorted-heroes.png" alt="Sorted Heroes">  </img>
 </figure>
 
 The `HeroesBaseComponent` could stand on its own.
@@ -783,7 +783,7 @@ The [*forwardRef*](#forwardref) breaks the circular reference we just created by
 
 Here's *Alex* and family in action:
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/alex.png" alt="Alex in action">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/alex.png" alt="Alex in action">  </img>
 </figure>
 
 
@@ -834,7 +834,7 @@ which *is* what parent means.
 Here's *Alice*, *Barry* and family in action:
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/dependency-injection/alice.png" alt="Alice in action">  </img>
+  <img src="assets/images/cookbooks/dependency-injection/alice.png" alt="Alice in action">  </img>
 </figure>
 
 

@@ -8,6 +8,10 @@ An annotated history of recent documentation improvements.
 The Angular documentation is a living document with continuous improvements.
 This log calls attention to recent significant changes.
 
+## NEW: Downloadable examples for each guide (2017-02-28)
+Now you can download the sample code for any guide and run it locally.
+Look for the new download links next to the "live example" links.
+
 ## Template Syntax/Structural Directives: refreshed (2017-02-06)
 The [_Template-Syntax_](template-syntax.html) and [_Structural Directives_](structural-directives.html)
 guides were significantly revised for clarity, accuracy, and current recommended practices.

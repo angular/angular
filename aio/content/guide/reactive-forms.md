@@ -181,7 +181,7 @@ Now enter the `@Component` decorator that specifies the `HeroDetailComponent` me
 {@example 'reactive-forms/ts/src/app/hero-detail.component.ts' region='metadata'}
 
 The `moduleId: module.id` lets you use 
-[component-relative paths](./cookbook/component-relative-paths.html) in file URLs 
+[component-relative paths](../cookbook/component-relative-paths.html) in file URLs 
 such as when specifying the `templateUrl`.
 
 Next, create an exported `HeroDetailComponent` class with a `FormControl`. 
@@ -285,7 +285,7 @@ Add the `bootstrap` _CSS stylesheet_ to the head of `index.html`:
 Now that everything is wired up, the browser should display something like this: 
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl">  </img>
+  <img src="assets/images/devguide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl">  </img>
 </figure>
 
 
@@ -357,7 +357,7 @@ The `heroForm.value` returns the _form model_.
 Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/json-output.png" width="400px" alt="JSON output">  </img>
+  <img src="assets/images/devguide/reactive-forms/json-output.png" width="400px" alt="JSON output">  </img>
 </figure>
 
 The initial `name` property value is the empty string. 
@@ -429,7 +429,7 @@ Configuring validation is harder in template-driven forms where you must wrap va
 The browser displays the following:
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl">  </img>
+  <img src="assets/images/devguide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl">  </img>
 </figure>
 
 `Validators.required` is working. The status is `INVALID` because the input box has no value.
@@ -527,7 +527,7 @@ After these changes, the JSON output in the browser shows the revised _form mode
 with the nested address `FormGroup`: 
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/address-group.png" width="400px" alt="JSON output">  </img>
+  <img src="assets/images/devguide/reactive-forms/address-group.png" width="400px" alt="JSON output">  </img>
 </figure>
 
 Great! You’ve made a group and you can see that the template 
@@ -712,9 +712,9 @@ Take a moment to refactor the _address_ `FormGroup` definition for brevity and c
 
 {@example 'reactive-forms/ts/src/app/hero-detail-7.component.ts' region='address-form-group'}
 
-Also be sure to update the import from `data-model` so you can reference the `Hero` class:
+Also be sure to update the import from `data-model` so you can reference the `Hero` and `Address` classes:
 
-{@example 'reactive-forms/ts/src/app/hero-detail-6.component.ts' region='import-hero'}
+{@example 'reactive-forms/ts/src/app/hero-detail-7.component.ts' region='import-address'}
 
 
 
@@ -819,7 +819,7 @@ The `HeroDetailComponent` is a nested sub-component of the `HeroListComponent` i
 Together they look a bit like this:
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent">  </img>
+  <img src="assets/images/devguide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent">  </img>
 </figure>
 
 The `HeroListComponent` uses an injected `HeroService` to retrieve heroes from the server
@@ -844,8 +844,8 @@ The techniques involved are covered elsewhere in the documentation, including th
 If you're coding along with the steps in this reactive forms tutorial, 
 create the pertinent files based on the 
 [source code displayed below](#source-code "Reactive Forms source code"). 
-Notice that `hero-list.component.ts` and `hero-list.component.ts` 
-import `Observable` and `finally` from `rxjs`. 
+Notice that `hero-list.component.ts` imports `Observable` and `finally` while `hero.service.ts` imports `Observable`, `of`,
+and `delay` from `rxjs`. 
 Then return here to learn about _form array_ properties.
 
 
@@ -987,7 +987,7 @@ Back in the browser, select the hero named "Magneta".
 "Magneta" doesn't have an address, as you can see in the diagnostic JSON at the bottom of the form.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array">  </img>
+  <img src="assets/images/devguide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array">  </img>
 </figure>
 
 Click the "_Add a Secret Lair_" button. 
@@ -1046,7 +1046,7 @@ In a real app, you'd also be able to revert unsaved changes and resume editing.
 After you implement both features in this section, the form will look like this:
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons">  </img>
+  <img src="assets/images/devguide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons">  </img>
 </figure>
 
 ### Save

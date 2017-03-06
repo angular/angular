@@ -117,7 +117,7 @@ recognizes the directive when it encounters `myHighlight` in the template.
 Now when the app runs, the `myHighlight` directive highlights the paragraph text.
 
 <figure class='image-display'>
-  <img src="/resources/images/devguide/attribute-directives/first-highlight.png" alt="First Highlight">  </img>
+  <img src="assets/images/devguide/attribute-directives/first-highlight.png" alt="First Highlight">  </img>
 </figure>
 
 
@@ -180,7 +180,7 @@ Here's the updated directive in full:
 Run the app and confirm that the background color appears when the mouse hovers over the `p` and
 disappears as it moves out.
 <figure class='image-display'>
-  <img src="/resources/images/devguide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">  </img>
+  <img src="assets/images/devguide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">  </img>
 </figure>
 
 
@@ -260,7 +260,7 @@ lets you pick the highlight color with a radio button and bind your color choice
 Update `app.component.html` as follows:
 Revise the `AppComponent.color` so that it has no initial value.Here is the harness and directive in action.
 <figure class='image-display'>
-  <img src="/resources/images/devguide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2">  </img>
+  <img src="assets/images/devguide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2">  </img>
 </figure>
 
 
@@ -292,7 +292,7 @@ because you made it _public_ with the `@Input` !{_decorator}.
 
 Here's how the harness should work when you're done coding.
 <figure class='image-display'>
-  <img src="/resources/images/devguide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">  </img>
+  <img src="assets/images/devguide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">  </img>
 </figure>
 
 

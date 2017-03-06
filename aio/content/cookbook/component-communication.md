@@ -44,7 +44,7 @@ and each iteration's `hero` instance to the child's `hero` property.
 The running application displays three heroes:
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/parent-to-child.png" alt="Parent-to-child">  </img>
+  <img src="assets/images/cookbooks/component-communication/parent-to-child.png" alt="Parent-to-child">  </img>
 </figure>
 
 ### Test it
@@ -73,7 +73,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/setter.png" alt="Parent-to-child-setter">  </img>
+  <img src="assets/images/cookbooks/component-communication/setter.png" alt="Parent-to-child-setter">  </img>
 </figure>
 
 ### Test it
@@ -103,7 +103,7 @@ The `VersionParentComponent` supplies the `minor` and `major` values and binds b
 Here's the output of a button-pushing sequence:
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">  </img>
+  <img src="assets/images/cookbooks/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">  </img>
 </figure>
 
 ### Test it
@@ -140,7 +140,7 @@ The framework passes the event argument &mdash; represented by `$event` &mdash; 
 and the method processes it:
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/child-to-parent.gif" alt="Child-to-parent">  </img>
+  <img src="assets/images/cookbooks/component-communication/child-to-parent.gif" alt="Child-to-parent">  </img>
 </figure>
 
 ### Test it
@@ -185,7 +185,7 @@ use interpolation to display the child's `seconds` property.
 Here we see the parent and child working together.
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/countdown-timer-anim.gif" alt="countdown timer">  </img>
+  <img src="assets/images/cookbooks/component-communication/countdown-timer-anim.gif" alt="countdown timer">  </img>
 </figure>
 
 
@@ -287,7 +287,7 @@ the parent `MissionControlComponent` and the `AstronautComponent` children,
 facilitated by the service:
 
 <figure class='image-display'>
-  <img src="/resources/images/cookbooks/component-communication/bidirectional-service.gif" alt="bidirectional-service">  </img>
+  <img src="assets/images/cookbooks/component-communication/bidirectional-service.gif" alt="bidirectional-service">  </img>
 </figure>
 
 ### Test it

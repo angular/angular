@@ -2,7 +2,7 @@
 AngularJS to Angular Quick Reference
 
 @intro
-Learn how AngularJS concepts and techniques map to Angular
+Learn how AngularJS concepts and techniques map to Angular.
 
 @description
 
@@ -16,16 +16,16 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 **See the Angular syntax in this <live-example name="cb-ajs-quick-reference"></live-example>**.
 
 ## Contents
-This page covers:
-* [Template basics](#template-basics) - binding and local variables.
 
-* [Template directives](#template-directives) - built-in directives `ngIf` and `ngClass`.
+* [Template basics](#template-basics)&mdash;binding and local variables.
 
-* [Filters/pipes](#filters-pipes) - built-in *filters*, known as *pipes* in Angular.
+* [Template directives](#template-directives)&mdash;built-in directives `ngIf` and `ngClass`.
 
-* [Modules/controllers/components](#controllers-components) - *modules* in Angular are slightly different from *modules* in AngularJS, and *controllers* are *components* in Angular.
+* [Filters/pipes](#filters-pipes)&mdash;built-in *filters*, known as *pipes* in Angular.
 
-* [Style sheets](#style-sheets) - more options for CSS than in AngularJS.
+* [Modules/controllers/components](#controllers-components)&mdash;*modules* in Angular are slightly different from *modules* in AngularJS, and *controllers* are *components* in Angular.
+
+* [Style sheets](#style-sheets)&mdash;more options for CSS than in AngularJS.
 
 ## Template basics
 Templates are the user-facing part of an Angular application and are written in HTML.
@@ -86,7 +86,8 @@ The following table lists some of the key AngularJS template features with their
             The context of the binding is implied and is always the      
             associated component, so it needs no reference variable.      
                   
-            For more information, see the [Interpolation](../guide/template-syntax.html#interpolation) section of the Template Syntax page.
+            For more information, see the [Interpolation](../guide/template-syntax.html#interpolation)      
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -116,7 +117,7 @@ The following table lists some of the key AngularJS template features with their
             Many (but not all) of the built-in filters from AngularJS are      
             built-in pipes in Angular.      
                   
-            For more information, see the heading [Filters/pipes](#filters-pipes) below.
+            For more information, see [Filters/pipes](#filters-pipes) below.
     </td>
 
 
@@ -144,7 +145,8 @@ The following table lists some of the key AngularJS template features with their
       
             Angular has true template input variables that are explicitly defined using the `let` keyword.      
                   
-            For more information, see the [ngFor micro-syntax](../guide/template-syntax.html#ngForMicrosyntax) section of the Template Syntax page.
+            For more information, see the [ngFor micro-syntax](../guide/template-syntax.html#microsyntax)      
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -260,7 +262,8 @@ The following are some of the key AngularJS built-in directives and their equiva
             Angular also has **class binding**, which is a good way to add or remove a single class,      
             as shown in the third example.      
                   
-            For more information see the [Attribute, Class, and Style Bindings](../guide/template-syntax.html#other-bindings) section of the Template Syntax page.      
+            For more information see the [Attribute, class, and style bindings](../guide/template-syntax.html#other-bindings)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.      
             
     </td>
 
@@ -287,7 +290,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
     <td>
-      ### bind to the `click` event      
+      ### Bind to the `click` event      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/app.component.html' region='event-binding'}
       
@@ -306,7 +309,8 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             For a list of DOM events, see: https://developer.mozilla.org/en-US/docs/Web/Events.      
                   
-            For more information, see the [Event Binding](../guide/template-syntax.html#event-binding) section of the Template Syntax page.      
+            For more information, see the [Event binding](../guide/template-syntax.html#event-binding)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.      
             
     </td>
 
@@ -354,7 +358,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
     <td>
-      ### bind to the `hidden` property      
+      ### Bind to the `hidden` property      
             In Angular, you use property binding; there is no built-in *hide* directive.      
             For more information, see [ng-show](#ng-show).
     </td>
@@ -385,20 +389,22 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
     <td>
-      ### bind to the `href` property      
+      ### Bind to the `href` property      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/app.component.html' region='href'}
       
-            Angular, uses property binding; there is no built-in *href* directive.      
+            Angular uses property binding; there is no built-in *href* directive.      
             Place the element's `href` property in square brackets and set it to a quoted template expression.      
                   
-            For more information on property binding, see [Template Syntax](../guide/template-syntax.html#property-binding).      
+            For more information see the [Property binding](../guide/template-syntax.html#property-binding)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.      
                   
-            In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the third example.      
+            In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/app.component.html' region='router-link'}
       
-            For more information on routing, see [Routing & Navigation](../guide/router.html#router-link).      
+            For more information on routing, see the [RouterLink binding](../guide/router.html#router-link)       
+            section of the [Routing & Navigation](../guide/router.html) page.      
             
     </td>
 
@@ -417,7 +423,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       In AngularJS, the `ng-if` directive removes or recreates a portion of the DOM,      
             based on an expression. If the expression is false, the element is removed from the DOM.      
                   
-            In this example, the `table` element is removed from the DOM unless the `movies` array has a length greater than zero.
+            In this example, the `<table>` element is removed from the DOM unless the `movies` array has a length greater than zero.
     </td>
 
 
@@ -426,9 +432,10 @@ The following are some of the key AngularJS built-in directives and their equiva
       
       {@example 'cb-ajs-quick-reference/ts/src/app/movie-list.component.html' region='ngIf'}
       
-            The `*ngIf` directive in Angular works the same as the `ng-if` directive in AngularJS. It removes or recreates a portion of the DOM based on an expression.      
+            The `*ngIf` directive in Angular works the same as the `ng-if` directive in AngularJS. It removes       
+            or recreates a portion of the DOM based on an expression.      
                   
-            In this example, the `table` element is removed from the DOM unless the `movies` array has a length.      
+            In this example, the `<table>` element is removed from the DOM unless the `movies` array has a length.      
                   
             The (*) before `ngIf` is required in this example.      
             For more information, see [Structural Directives](../guide/structural-directives.html).
@@ -459,7 +466,9 @@ The following are some of the key AngularJS built-in directives and their equiva
             In Angular, **two-way binding** is denoted by `[()]`, descriptively referred to as a "banana in a box". This syntax is a shortcut for defining both property binding (from the component to the view)      
             and event binding (from the view to the component), thereby providing two-way binding.      
                   
-            For more information on two-way binding with ngModel, see [Template Syntax](../guide/template-syntax.html#ngModel).
+            For more information on two-way binding with `ngModel`, see the [NgModel&mdash;Two-way binding to       
+            form elements with `[(ngModel)]`](../guide/template-syntax.html#ngModel)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -477,7 +486,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       In AngularJS, the `ng-repeat` directive repeats the associated DOM element      
             for each item in the specified collection.      
                   
-            In this example, the table row (`tr`) element repeats for each movie object in the collection of movies.
+            In this example, the table row (`<tr>`) element repeats for each movie object in the collection of movies.
     </td>
 
 
@@ -486,8 +495,9 @@ The following are some of the key AngularJS built-in directives and their equiva
       
       {@example 'cb-ajs-quick-reference/ts/src/app/movie-list.component.html' region='ngFor'}
       
-            The `*ngFor` directive in Angular is similar to the `ng-repeat` directive in AngularJS. It repeats the associated DOM element for each item in the specified collection.      
-            More accurately, it turns the defined element (`tr` in this example) and its contents into a template and      
+            The `*ngFor` directive in Angular is similar to the `ng-repeat` directive in AngularJS. It repeats       
+            the associated DOM element for each item in the specified collection.      
+            More accurately, it turns the defined element (`<tr>` in this example) and its contents into a template and      
             uses that template to instantiate a view for each item in the list.      
                   
             Notice the other syntax differences:      
@@ -515,24 +525,25 @@ The following are some of the key AngularJS built-in directives and their equiva
       In AngularJS, the `ng-show` directive shows or hides the associated DOM element, based on      
             an expression.      
                   
-            In this example, the `div` element is shown if the `favoriteHero` variable is truthy.
+            In this example, the `<div>` element is shown if the `favoriteHero` variable is truthy.
     </td>
 
 
     <td>
-      ### bind to the `hidden` property      
+      ### Bind to the `hidden` property      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/movie-list.component.html' region='hidden'}
       
-            Angular, uses property binding; there is no built-in *show* directive.      
+            Angular uses property binding; there is no built-in *show* directive.      
             For hiding and showing elements, bind to the HTML `hidden` property.      
                   
             To conditionally display an element, place the element's `hidden` property in square brackets and      
             set it to a quoted template expression that evaluates to the *opposite* of *show*.      
                   
-            In this example, the `div` element is hidden if the `favoriteHero` variable is not truthy.      
+            In this example, the `<div>` element is hidden if the `favoriteHero` variable is not truthy.      
                   
-            For more information on property binding, see [Template Syntax](../guide/template-syntax.html#property-binding).
+            For more information on property binding, see the [Property binding](../guide/template-syntax.html#property-binding)        
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -554,14 +565,15 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
     <td>
-      ### bind to the `src` property      
+      ### Bind to the `src` property      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/app.component.html' region='src'}
       
-            Angular, uses property binding; there is no built-in *src* directive.      
+            Angular uses property binding; there is no built-in *src* directive.      
             Place the `src` property in square brackets and set it to a quoted template expression.      
                   
-            For more information on property binding, see [Template Syntax](../guide/template-syntax.html#property-binding).
+            For more information on property binding, see the [Property binding](../guide/template-syntax.html#property-binding)        
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -578,7 +590,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       In AngularJS, the `ng-style` directive sets a CSS style on an HTML element      
             based on an expression. That expression is often a key-value control object with each      
-            key of the object defined as a CSS style name, and each value defined as an expression      
+            key of the object defined as a CSS property, and each value defined as an expression      
             that evaluates to a value appropriate for the style.      
                   
             In the example, the `color` style is set to the current value of the `colorPreference` variable.
@@ -596,9 +608,11 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             Angular also has **style binding**, which is good way to set a single style. This is shown in the second example.      
                   
-            For more information on style binding, see [Template Syntax](../guide/template-syntax.html#style-binding).      
+            For more information on style binding, see the [Style binding](../guide/template-syntax.html#style-binding) section of the       
+            [Template Syntax](../guide/template-syntax.html) page.      
                   
-            For more information on the ngStyle directive, see [Template Syntax](../guide/template-syntax.html#ngStyle).
+            For more information on the `ngStyle` directive, see [NgStyle](../guide/template-syntax.html#ngStyle)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -650,7 +664,8 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             The (*) before `ngSwitchCase` and `ngSwitchDefault` is required in this example.      
                   
-            For more information on the ngSwitch directive, see [Template Syntax](../guide/template-syntax.html#ngSwitch).
+            For more information, see [The NgSwitch directives](../guide/template-syntax.html#ngSwitch)       
+            section of the [Template Syntax](../guide/template-syntax.html) page.
     </td>
 
 
@@ -665,7 +680,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 {@a filters-pipes}
 
 ## Filters/pipes
-Angular **pipes** provide formatting and transformation for data in our template, similar to AngularJS **filters**.
+Angular **pipes** provide formatting and transformation for data in the template, similar to AngularJS **filters**.
 Many of the built-in filters in AngularJS have corresponding pipes in Angular.
 For more information on pipes, see [Pipes](../guide/pipes.html).
 
@@ -704,7 +719,7 @@ For more information on pipes, see [Pipes](../guide/pipes.html).
         &lt;td>{{movie.price | currency}}&lt;/td>
       </code-example>
 
-      Formats a number as a currency.
+      Formats a number as currency.
     </td>
 
 
@@ -949,17 +964,19 @@ The Angular code is shown using TypeScript.
                 }());
       </code-example>
 
-      In AngularJS, you often defined an immediately invoked function expression (or IIFE) around your controller code.      
-            This kept your controller code out of the global namespace.
+      In AngularJS, an immediately invoked function expression (or IIFE) around controller code       
+            keeps it out of the global namespace.      
+            
     </td>
 
 
     <td>
       ### none      
-            You don't need to worry about this in Angular because you use ES 2015 modules      
-            and modules handle the namespacing for you.      
+            This is a nonissue in Angular because ES 2015 modules       
+            handle the namespacing for you.      
                   
-            For more information on modules, see [Architecture Overview](../guide/architecture.html#module).
+            For more information on modules, see the [Modules](../guide/architecture.html#modules) section of the       
+            [Architecture Overview](../guide/architecture.html).
     </td>
 
 
@@ -974,7 +991,8 @@ The Angular code is shown using TypeScript.
         angular.module("movieHunter", ["ngRoute"]);
       </code-example>
 
-      In AngularJS, an Angular module keeps track of controllers, services, and other code. The second argument defines the list of other modules that this module depends upon.
+      In AngularJS, an Angular module keeps track of controllers, services, and other code.       
+            The second argument defines the list of other modules that this module depends upon.
     </td>
 
 
@@ -987,7 +1005,7 @@ The Angular code is shown using TypeScript.
             - `imports`: specifies the list of other modules that this module depends upon      
             - `declaration`: keeps track of your components, pipes, and directives.      
                   
-            For more information on modules, see [Angular Modules](../guide/ngmodule.html).
+            For more information on modules, see [Angular Modules (NgModule)](../guide/ngmodule.html).
     </td>
 
 
@@ -1006,7 +1024,7 @@ The Angular code is shown using TypeScript.
                                MovieListCtrl]);
       </code-example>
 
-      AngularJS, has code in each controller that looks up an appropriate Angular module      
+      AngularJS has code in each controller that looks up an appropriate Angular module      
             and registers the controller with that module.      
                   
             The first argument is the controller name. The second argument defines the string names of      
@@ -1015,17 +1033,18 @@ The Angular code is shown using TypeScript.
 
 
     <td>
-      ### Component Decorator      
+      ### Component decorator      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/movie-list.component.ts' region='component'}
       
-            Angular, adds a decorator to the component class to provide any required metadata.      
-            The Component decorator declares that the class is a component and provides metadata about      
+            Angular adds a decorator to the component class to provide any required metadata.      
+            The `@Component` decorator declares that the class is a component and provides metadata about      
             that component such as its selector (or tag) and its template.      
                   
-            This is how you associate a template with code, which is defined in the component class.      
+            This is how you associate a template with logic, which is defined in the component class.      
                   
-            For more information, see the [Components](../guide/architecture.html#components) section of the Architecture Overview page.
+            For more information, see the [Components](../guide/architecture.html#components)       
+            section of the [Architecture Overview](../guide/architecture.html) page.
     </td>
 
 
@@ -1054,7 +1073,8 @@ The Angular code is shown using TypeScript.
                   
             NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.      
                   
-            For more information, see the [Components](../guide/architecture.html#components) section of the Architecture Overview page.
+            For more information, see the [Components](../guide/architecture.html#components)       
+            section of the [Architecture Overview](../guide/architecture.html) page.
     </td>
 
 
@@ -1088,7 +1108,8 @@ The Angular code is shown using TypeScript.
             This example injects a `MovieService`.      
             The first parameter's TypeScript type tells Angular what to inject, even after minification.      
                   
-            For more information, see the [Dependency Injection](../guide/architecture.html#dependency-injection) section of the Architecture Overview.
+            For more information, see the [Dependency injection](../guide/architecture.html#dependency-injection)       
+            section of the [Architecture Overview](../guide/architecture.html).
     </td>
 
 

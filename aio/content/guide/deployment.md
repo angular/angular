@@ -342,7 +342,7 @@ See also the [*APP_BASE_HREF*](../api/common/index/APP_BASE_HREF-let.html "API: 
 That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
 
 But on the shared or production server, you might serve the app from a subfolder.
-For example, when the URL to load the app is something like `http://www.mysite.com/mysrc/app/`, 
+For example, when the URL to load the app is something like `http://www.mysite.com/my/app/`, 
 the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the server version of the `index.html`.
 
 When the `base` tag is misconfigured, the app fails to load and the browser console displays `404 - Not Found` errors

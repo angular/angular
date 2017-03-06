@@ -887,7 +887,7 @@ nor property binding.
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
 <figure class='image-display'>
-  <img src='/resources/images/devguide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'>  </img>
+  <img src='assets/images/devguide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'>  </img>
 </figure>
 
 &nbsp;<a href="#toc">back to top</a>
@@ -1353,7 +1353,7 @@ The following contrived example forces the input value to uppercase:
 
 Here are all variations in action, including the uppercase version:
 <figure class='image-display'>
-  <img src='/resources/images/devguide/template-syntax/ng-model-anim.gif' alt="NgModel variations">  </img>
+  <img src='assets/images/devguide/template-syntax/ng-model-anim.gif' alt="NgModel variations">  </img>
 </figure>
 
 &nbsp;
@@ -1555,7 +1555,7 @@ Here is an illustration of the _trackBy_ effect.
 * With `trackBy`, only changing the `id` triggers element replacement. 
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy">  </img>
+  <img src='assets/images/devguide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy">  </img>
 </figure>
 
 <a href="#toc">back to top</a>
@@ -1579,7 +1579,7 @@ Angular puts only the *selected* element into the DOM.
 
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/template-syntax/switch-anim.gif' alt="trackBy">  </img>
+  <img src='assets/images/devguide/template-syntax/switch-anim.gif' alt="trackBy">  </img>
 </figure>
 
 `NgSwitch` is the controller directive. Bind it to an expression that returns the *switch value*.
@@ -1753,7 +1753,7 @@ Don't do both!### Input or output?
 
 The terms _input_ and _output_ reflect the perspective of the target directive.
 <figure class='image-display'>
-  <img src='/resources/images/devguide/template-syntax/input-output.png' alt="Inputs and outputs">  </img>
+  <img src='assets/images/devguide/template-syntax/input-output.png' alt="Inputs and outputs">  </img>
 </figure>
 
 `HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`

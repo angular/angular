@@ -7,7 +7,7 @@ A suggested path through the documentation for Angular newcomers
 @description
 
 <figure>
-  <img src="/resources/images/devguide/intro/people.png" width="200px" height="152px" alt="Us" align="left" style="margin-left:-40px;margin-right:10px">  </img>
+  <img src="assets/images/devguide/intro/people.png" width="200px" height="152px" alt="Us" align="left" style="margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Everyone learns differently.
@@ -17,7 +17,7 @@ Those new to Angular may wish to follow this popular learning path.
 
 1. [Setup](setup.html "Setup locally withe Quickstart seed") for local Angular development, if you haven't already done so.
 
-1. Take the [*Tour of Heroes* tutorial](../tutorial "Tour of Heroes"). 
+1. Take the [*Tour of Heroes* tutorial](../tutorial "Tour of Heroes").
 
   The *Tour of Heroes* takes you step-by-step from [setup](setup.html)
   to a full-featured example that demonstrates the essential characteristics of a professional application:
@@ -42,5 +42,5 @@ After reading the above sections, feel free to skip around among the other pages
 
 ### Next Step
 
-Try the [tutorial](../tutorial "Tour of Heroes") if you're ready to start coding or 
+Try the [tutorial](../tutorial "Tour of Heroes") if you're ready to start coding or
 visit the [Architecture](architecture.html "Basic Concepts") page if you prefer to learn the basic concepts first.

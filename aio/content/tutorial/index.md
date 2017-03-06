@@ -34,7 +34,7 @@ Here's a visual idea of where we're going in this tour, beginning with the "Dash
 view and our most heroic heroes:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">  </img>
+  <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">  </img>
 </figure>
 
 Above the dashboard are two links ("Dashboard" and "Heroes").
@@ -44,7 +44,7 @@ Instead we click the dashboard hero named "Magneta" and the router takes us to a
 of that hero where we can change the hero's name.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/hero-details-1.png' alt="Details of hero in app">  </img>
+  <img src='assets/images/devguide/toh/hero-details-1.png' alt="Details of hero in app">  </img>
 </figure>
 
 Clicking the "Back" button would return us to the "Dashboard".
@@ -52,7 +52,7 @@ Links at the top can take us to either of the main views.
 We'll click "Heroes". The app takes to the "Heroes" master list view.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app">  </img>
 </figure>
 
 We click a different hero and the readonly mini-detail beneath the list reflects our new choice.
@@ -63,13 +63,13 @@ editable details of our selected hero.
 The following diagram captures all of our navigation options.
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
+  <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
 </figure>
 
 Here's our app in action
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action">  </img>
+  <img src='assets/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action">  </img>
 </figure>
 
 
