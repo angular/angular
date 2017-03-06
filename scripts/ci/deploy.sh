@@ -53,7 +53,13 @@ case ${CI_MODE} in
       if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
         # This is a PR: deploy a snapshot for previewing
         travisFoldStart "deploy.aio.pr-preview"
-          yarn run deploy-preview
+          # Only deploy if this PR has touched relevant files.
+          AIO_CHANGED_FILES_COUNT=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep ^aio/ | wc -l)
+          if [[ AIO_CHANGED_FILES_COUNT -eq 0 ]]; then
+            echo "Skipping deploy because this PR did not touch any files inside 'aio/'."
+          else
+            yarn run deploy-preview
+          fi
         travisFoldEnd "deploy.aio.pr-preview"
       else
         # This is upstream master: Deploy to staging
