@@ -9,7 +9,10 @@
 module.exports = {
   target: 'node',
   entry: './test/all_spec.js',
-  output: {filename: './all_spec.js'},
+  output: {filename: './all_spec.js', libraryTarget: 'commonjs2'},
   resolve: {extensions: ['.js']},
-
+  externals: [
+    'canvas',
+    'jsdom'
+  ]
 };

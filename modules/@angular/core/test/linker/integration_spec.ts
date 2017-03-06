@@ -820,8 +820,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         const tc = fixture.debugElement.children[0];
         const listener = tc.injector.get(DirectiveListeningDomEvent);
+        const doc = TestBed.get(DOCUMENT);
 
-        dispatchEvent(tc.nativeElement, 'domEvent');
+        dispatchEvent(doc, tc.nativeElement, 'domEvent');
 
         expect(listener.eventTypes).toEqual([
           'domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent'
@@ -829,7 +830,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.destroy();
         listener.eventTypes = [];
-        dispatchEvent(tc.nativeElement, 'domEvent');
+        dispatchEvent(doc, tc.nativeElement, 'domEvent');
         expect(listener.eventTypes).toEqual([]);
       });
 
@@ -842,16 +843,16 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         const tc = fixture.debugElement.children[0];
         const listener = tc.injector.get(DirectiveListeningDomEvent);
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
 
         listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
         expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
         fixture.destroy();
         listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
         expect(listener.eventTypes).toEqual([]);
       });
 
@@ -973,9 +974,10 @@ function declareTests({useJit}: {useJit: boolean}) {
               '<input type="checkbox" listenerprevent><input type="checkbox" listenernoprevent>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
+          const doc = TestBed.get(DOCUMENT);
 
-          const dispatchedEvent = getDOM().createMouseEvent('click');
-          const dispatchedEvent2 = getDOM().createMouseEvent('click');
+          const dispatchedEvent = getDOM().createMouseEvent(doc, 'click');
+          const dispatchedEvent2 = getDOM().createMouseEvent(doc, 'click');
           getDOM().dispatchEvent(fixture.debugElement.children[0].nativeElement, dispatchedEvent);
           getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement, dispatchedEvent2);
           expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
@@ -1001,7 +1003,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         const listener = tc.injector.get(DirectiveListeningDomEvent);
         const listenerother = tc.injector.get(DirectiveListeningDomEventOther);
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(listener.eventTypes).toEqual(['window_domEvent']);
         expect(listenerother.eventType).toEqual('other_domEvent');
         expect(globalCounter).toEqual(1);
@@ -1009,12 +1011,12 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.componentInstance.ctxBoolProp = false;
         fixture.detectChanges();
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(globalCounter).toEqual(1);
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        dispatchEvent(doc, getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
         expect(globalCounter).toEqual(2);
 
         // need to destroy to release all remaining global event listeners
@@ -1385,9 +1387,11 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     it('should support moving embedded views around', () => {
+      function getAnchorElement(doc: any) { return el(doc, '<div></div>'); }
+
       TestBed.configureTestingModule({
         declarations: [MyComp, SomeImperativeViewport],
-        providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}],
+        providers: [{provide: ANCHOR_ELEMENT, useFactory: getAnchorElement, deps: [DOCUMENT]}],
       });
       const template = '<div><div *someImpvp="ctxBoolProp">hello</div></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
@@ -1568,11 +1572,12 @@ function declareTests({useJit}: {useJit: boolean}) {
           const template = '<with-prop-decorators></with-prop-decorators>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
+          const doc = TestBed.get(DOCUMENT);
 
           fixture.detectChanges();
           const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
           const native = fixture.debugElement.children[0].nativeElement;
-          getDOM().dispatchEvent(native, getDOM().createMouseEvent('click'));
+          getDOM().dispatchEvent(native, getDOM().createMouseEvent(doc, 'click'));
 
           expect(dir.target).toBe(native);
         });
@@ -1710,9 +1715,9 @@ class MyService {
 class SimpleImperativeViewComponent {
   done: any;
 
-  constructor(self: ElementRef) {
+  constructor(@Inject(DOCUMENT) doc: any, self: ElementRef) {
     const hostElement = self.nativeElement;
-    getDOM().appendChild(hostElement, el('hello imp view'));
+    getDOM().appendChild(hostElement, el(doc, 'hello imp view'));
   }
 }
 

@@ -33,7 +33,7 @@ export function main() {
     function createRootEl() {
       const doc = TestBed.get(DOCUMENT);
       const rootEl = <HTMLElement>getDOM().firstChild(
-          getDOM().content(getDOM().createTemplate(`<bootstrap-app></bootstrap-app>`)));
+          getDOM().content(getDOM().createTemplate(doc, `<bootstrap-app></bootstrap-app>`)));
       const oldRoots = getDOM().querySelectorAll(doc, 'bootstrap-app');
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
@@ -495,13 +495,14 @@ export function main() {
            const fixture = TestBed.createComponent(ClickComp);
            const appRef: ApplicationRef = TestBed.get(ApplicationRef);
            const zone: NgZone = TestBed.get(NgZone);
+           const doc = TestBed.get(DOCUMENT);
            appRef.attachView(fixture.componentRef.hostView);
            zone.run(() => appRef.tick());
 
            fixture.whenStable().then(() => {
              expectUnstable(appRef);
              const element = fixture.debugElement.children[0];
-             dispatchEvent(element.nativeElement, 'click');
+             dispatchEvent(doc, element.nativeElement, 'click');
            });
          }));
     });

@@ -13,8 +13,8 @@ import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {SERVER_HTTP_PROVIDERS} from './http';
+import {JsDomAdapter, parseDocument} from './jsdom_adapter';
 import {ServerPlatformLocation} from './location';
-import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
 import {ServerRendererFactoryV2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
@@ -27,14 +27,14 @@ function notSupported(feature: string): Error {
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]},
+  {provide: PLATFORM_INITIALIZER, useFactory: initJsDomAdapter, multi: true, deps: [Injector]},
   {provide: PlatformLocation, useClass: ServerPlatformLocation}, PlatformState,
   // Add special provider that allows multiple instances of platformServer* to be created.
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
-function initParse5Adapter(injector: Injector) {
-  return () => { Parse5DomAdapter.makeCurrent(); };
+function initJsDomAdapter(injector: Injector) {
+  return () => { JsDomAdapter.makeCurrent(); };
 }
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [

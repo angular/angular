@@ -22,36 +22,38 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   private _transitionEnd: string = null;
   constructor() {
     super();
-    try {
-      const element = this.createElement('div', document);
-      if (isPresent(this.getStyle(element, 'animationName'))) {
-        this._animationPrefix = '';
-      } else {
-        const domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
+    if (this.supportsDOMEvents()) {
+      try {
+        const element = this.createElement(document, 'div');
+        if (isPresent(this.getStyle(element, 'animationName'))) {
+          this._animationPrefix = '';
+        } else {
+          const domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
 
-        for (let i = 0; i < domPrefixes.length; i++) {
-          if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
-            this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
-            break;
+          for (let i = 0; i < domPrefixes.length; i++) {
+            if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
+              this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
+              break;
+            }
           }
         }
+
+        const transEndEventNames: {[key: string]: string} = {
+          WebkitTransition: 'webkitTransitionEnd',
+          MozTransition: 'transitionend',
+          OTransition: 'oTransitionEnd otransitionend',
+          transition: 'transitionend'
+        };
+
+        Object.keys(transEndEventNames).forEach((key: string) => {
+          if (isPresent(this.getStyle(element, key))) {
+            this._transitionEnd = transEndEventNames[key];
+          }
+        });
+      } catch (e) {
+        this._animationPrefix = null;
+        this._transitionEnd = null;
       }
-
-      const transEndEventNames: {[key: string]: string} = {
-        WebkitTransition: 'webkitTransitionEnd',
-        MozTransition: 'transitionend',
-        OTransition: 'oTransitionEnd otransitionend',
-        transition: 'transitionend'
-      };
-
-      Object.keys(transEndEventNames).forEach((key: string) => {
-        if (isPresent(this.getStyle(element, key))) {
-          this._transitionEnd = transEndEventNames[key];
-        }
-      });
-    } catch (e) {
-      this._animationPrefix = null;
-      this._transitionEnd = null;
     }
   }
 

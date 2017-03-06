@@ -16,7 +16,7 @@ export declare const platformServer: (extraProviders?: Provider[]) => PlatformRe
 /** @experimental */
 export declare class PlatformState {
     constructor(_doc: any);
-    getDocument(): any;
+    getDocument(): Document;
     renderToString(): string;
 }
 

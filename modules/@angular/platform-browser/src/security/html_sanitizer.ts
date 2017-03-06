@@ -19,12 +19,12 @@ let inertElement: HTMLElement = null;
 let DOM: DomAdapter = null;
 
 /** Returns an HTML element that is guaranteed to not execute code when creating elements in it. */
-function getInertElement() {
+function getInertElement(defaultDoc: Document) {
   if (inertElement) return inertElement;
   DOM = getDOM();
 
   // Prefer using <template> element if supported.
-  const templateEl = DOM.createElement('template');
+  const templateEl = DOM.createElement(defaultDoc, 'template');
   if ('content' in templateEl) return templateEl;
 
   const doc = DOM.createHtmlDocument();
@@ -32,8 +32,8 @@ function getInertElement() {
   if (inertElement == null) {
     // usually there should be only one body element in the document, but IE doesn't have any, so we
     // need to create one.
-    const html = DOM.createElement('html', doc);
-    inertElement = DOM.createElement('body', doc);
+    const html = DOM.createElement(doc, 'html');
+    inertElement = DOM.createElement(doc, 'body');
     DOM.appendChild(html, inertElement);
     DOM.appendChild(doc, html);
   }
@@ -246,7 +246,7 @@ function stripCustomNsAttrs(el: Element) {
  */
 export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   try {
-    const containerEl = getInertElement();
+    const containerEl = getInertElement(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
 

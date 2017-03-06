@@ -8,6 +8,7 @@
 
 import {Component, Injectable, Input} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
+import {DOCUMENT} from '@angular/platform-browser';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -96,12 +97,13 @@ export function main() {
     it('should auto detect changes if autoDetectChanges is called', () => {
 
       const componentFixture = TestBed.createComponent(AutoDetectComp);
+      const doc = TestBed.get(DOCUMENT);
       expect(componentFixture.ngZone).not.toBeNull();
       componentFixture.autoDetectChanges();
       expect(componentFixture.nativeElement).toHaveText('1');
 
       const element = componentFixture.debugElement.children[0];
-      dispatchEvent(element.nativeElement, 'click');
+      dispatchEvent(doc, element.nativeElement, 'click');
 
       expect(componentFixture.isStable()).toBe(true);
       expect(componentFixture.nativeElement).toHaveText('11');
@@ -111,10 +113,11 @@ export function main() {
        withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
 
          const componentFixture = TestBed.createComponent(AutoDetectComp);
+         const doc = TestBed.get(DOCUMENT);
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
 
          expect(componentFixture.nativeElement).toHaveText('11');
        }));
@@ -122,11 +125,12 @@ export function main() {
     it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
        async(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become stable
@@ -141,12 +145,12 @@ export function main() {
     it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
        async(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
-
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become stable
@@ -162,11 +166,12 @@ export function main() {
            '(autoDetectChanges)',
        async(() => {
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become
@@ -183,11 +188,12 @@ export function main() {
        async(() => {
 
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become
@@ -205,12 +211,12 @@ export function main() {
        async(() => {
 
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
-
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become
@@ -227,11 +233,12 @@ export function main() {
        async(() => {
 
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
          const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
+         dispatchEvent(doc, element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
          // Component is updated asynchronously. Wait for the fixture to become
@@ -247,13 +254,14 @@ export function main() {
     it('should stabilize after async task in change detection (autoDetectChanges)', async(() => {
 
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
+         const doc = TestBed.get(DOCUMENT);
 
          componentFixture.autoDetectChanges();
          componentFixture.whenStable().then((_) => {
            expect(componentFixture.nativeElement).toHaveText('1');
 
            const element = componentFixture.debugElement.children[0];
-           dispatchEvent(element.nativeElement, 'click');
+           dispatchEvent(doc, element.nativeElement, 'click');
 
            componentFixture.whenStable().then(
                (_) => { expect(componentFixture.nativeElement).toHaveText('11'); });
@@ -263,6 +271,7 @@ export function main() {
     it('should stabilize after async task in change detection(no autoDetectChanges)', async(() => {
 
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
+         const doc = TestBed.get(DOCUMENT);
          componentFixture.detectChanges();
          componentFixture.whenStable().then((_) => {
            // Run detectChanges again so that stabilized value is reflected in the
@@ -271,7 +280,7 @@ export function main() {
            expect(componentFixture.nativeElement).toHaveText('1');
 
            const element = componentFixture.debugElement.children[0];
-           dispatchEvent(element.nativeElement, 'click');
+           dispatchEvent(doc, element.nativeElement, 'click');
            componentFixture.detectChanges();
 
            componentFixture.whenStable().then((_) => {

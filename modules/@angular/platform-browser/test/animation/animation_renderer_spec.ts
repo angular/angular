@@ -9,15 +9,18 @@ import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transi
 import {Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/browser_util';
 
 export function main() {
   describe('ɵAnimationRenderer', () => {
+    let defaultDoc: Document;
     let element: any;
     beforeEach(() => {
-      element = el('<div></div>');
+      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      element = el(defaultDoc, '<div></div>');
 
       TestBed.configureTestingModule({
         providers: [{provide: ɵAnimationEngine, useClass: MockAnimationEngine}],
@@ -46,7 +49,7 @@ export function main() {
     it('should hook into the engine\'s insert operations when appending children', () => {
       const renderer = makeRenderer();
       const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
-      const container = el('<div></div>');
+      const container = el(defaultDoc, '<div></div>');
 
       renderer.appendChild(container, element);
       expect(engine.captures['onInsert'].pop()).toEqual([element]);
@@ -56,8 +59,8 @@ export function main() {
        () => {
          const renderer = makeRenderer();
          const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
-         const container = el('<div></div>');
-         const element2 = el('<div></div>');
+         const container = el(defaultDoc, '<div></div>');
+         const element2 = el(defaultDoc, '<div></div>');
          container.appendChild(element2);
 
          renderer.insertBefore(container, element, element2);
@@ -67,7 +70,7 @@ export function main() {
     it('should hook into the engine\'s insert operations when removing children', () => {
       const renderer = makeRenderer();
       const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
-      const container = el('<div></div>');
+      const container = el(defaultDoc, '<div></div>');
 
       renderer.removeChild(container, element);
       expect(engine.captures['onRemove'].pop()).toEqual([element]);

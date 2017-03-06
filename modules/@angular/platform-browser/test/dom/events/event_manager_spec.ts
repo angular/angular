@@ -26,7 +26,7 @@ export function main() {
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
        () => {
-         const element = el('<div></div>');
+         const element = el(doc, '<div></div>');
          const handler = (e: any /** TODO #9100 */) => e;
          const plugin = new FakeEventManagerPlugin(doc, ['click']);
          const manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
@@ -35,7 +35,7 @@ export function main() {
        });
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
-      const element = el('<div></div>');
+      const element = el(doc, '<div></div>');
       const clickHandler = (e: any /** TODO #9100 */) => e;
       const dblClickHandler = (e: any /** TODO #9100 */) => e;
       const plugin1 = new FakeEventManagerPlugin(doc, ['dblclick']);
@@ -48,7 +48,7 @@ export function main() {
     });
 
     it('should throw when no plugin can handle the event', () => {
-      const element = el('<div></div>');
+      const element = el(doc, '<div></div>');
       const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
       const manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null))
@@ -56,12 +56,12 @@ export function main() {
     });
 
     it('events are caught when fired from a child', () => {
-      const element = el('<div><div></div></div>');
+      const element = el(doc, '<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
       getDOM().appendChild(doc.body, element);
 
       const child = getDOM().firstChild(element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = getDOM().createMouseEvent(doc, 'click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
@@ -72,9 +72,9 @@ export function main() {
     });
 
     it('should add and remove global event listeners', () => {
-      const element = el('<div><div></div></div>');
+      const element = el(doc, '<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
-      const dispatchedEvent = getDOM().createMouseEvent('click');
+      const dispatchedEvent = getDOM().createMouseEvent(doc, 'click');
       let receivedEvent: any /** TODO #9100 */ = null;
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());

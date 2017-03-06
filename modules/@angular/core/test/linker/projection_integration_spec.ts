@@ -10,6 +10,7 @@ import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEnc
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -393,10 +394,11 @@ export function main() {
           }
         });
         const main = TestBed.createComponent(MainComp);
+        const doc = TestBed.get(DOCUMENT);
 
         const mainEl = main.nativeElement;
         const div1 = getDOM().firstChild(mainEl);
-        const div2 = getDOM().createElement('div');
+        const div2 = getDOM().createElement(doc, 'div');
         getDOM().setAttribute(div2, 'class', 'redStyle');
         getDOM().appendChild(mainEl, div2);
         expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
@@ -413,10 +415,11 @@ export function main() {
           }
         });
         const main = TestBed.createComponent(MainComp);
+        const doc = TestBed.get(DOCUMENT);
 
         const mainEl = main.nativeElement;
         const div1 = getDOM().firstChild(mainEl);
-        const div2 = getDOM().createElement('div');
+        const div2 = getDOM().createElement(doc, 'div');
         getDOM().appendChild(mainEl, div2);
         expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
         expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');

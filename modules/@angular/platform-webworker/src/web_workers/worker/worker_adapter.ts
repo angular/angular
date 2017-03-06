@@ -58,8 +58,8 @@ export class WorkerDomAdapter extends DomAdapter {
   on(el: any, evt: any, listener: any) { throw 'not implemented'; }
   onAndCancel(el: any, evt: any, listener: any): Function { throw 'not implemented'; }
   dispatchEvent(el: any, evt: any) { throw 'not implemented'; }
-  createMouseEvent(eventType: any): any { throw 'not implemented'; }
-  createEvent(eventType: string): any { throw 'not implemented'; }
+  createMouseEvent(doc: Document, eventType: any): any { throw 'not implemented'; }
+  createEvent(doc: Document, eventType: string): any { throw 'not implemented'; }
   preventDefault(evt: any) { throw 'not implemented'; }
   isPrevented(evt: any): boolean { throw 'not implemented'; }
   getInnerHTML(el: any): string { throw 'not implemented'; }
@@ -89,16 +89,16 @@ export class WorkerDomAdapter extends DomAdapter {
   setValue(el: any, value: string) { throw 'not implemented'; }
   getChecked(el: any): boolean { throw 'not implemented'; }
   setChecked(el: any, value: boolean) { throw 'not implemented'; }
-  createComment(text: string): any { throw 'not implemented'; }
-  createTemplate(html: any): HTMLElement { throw 'not implemented'; }
-  createElement(tagName: any, doc?: any): HTMLElement { throw 'not implemented'; }
-  createElementNS(ns: string, tagName: string, doc?: any): Element { throw 'not implemented'; }
-  createTextNode(text: string, doc?: any): Text { throw 'not implemented'; }
-  createScriptTag(attrName: string, attrValue: string, doc?: any): HTMLElement {
+  createComment(doc: Document, text: string): any { throw 'not implemented'; }
+  createTemplate(doc: Document, html: any): HTMLElement { throw 'not implemented'; }
+  createElement(doc: Document, tagName: any): HTMLElement { throw 'not implemented'; }
+  createElementNS(doc: Document, ns: string, tagName: string): Element { throw 'not implemented'; }
+  createTextNode(doc: Document, text: string): Text { throw 'not implemented'; }
+  createScriptTag(doc: Document, attrName: string, attrValue: string): HTMLElement {
     throw 'not implemented';
   }
-  createStyleElement(css: string, doc?: any): HTMLStyleElement { throw 'not implemented'; }
-  createShadowRoot(el: any): any { throw 'not implemented'; }
+  createStyleElement(doc: Document, css: string): HTMLStyleElement { throw 'not implemented'; }
+  createShadowRoot(doc: Document, el: any): any { throw 'not implemented'; }
   getShadowRoot(el: any): any { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
   getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
@@ -137,8 +137,6 @@ export class WorkerDomAdapter extends DomAdapter {
   isElementNode(node: any): boolean { throw 'not implemented'; }
   hasShadowRoot(node: any): boolean { throw 'not implemented'; }
   isShadowRoot(node: any): boolean { throw 'not implemented'; }
-  importIntoDoc(node: Node): Node { throw 'not implemented'; }
-  adoptNode(node: Node): Node { throw 'not implemented'; }
   getHref(element: any): string { throw 'not implemented'; }
   getEventKey(event: any): string { throw 'not implemented'; }
   resolveAndSetHref(element: any, baseUrl: string, href: string) { throw 'not implemented'; }

@@ -15,7 +15,7 @@
     "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
-    "parse5": "^3.0.1",
+    "jsdom": "^9.11.0",
     "xhr2": "^0.1.4"
   },
   "repository": {

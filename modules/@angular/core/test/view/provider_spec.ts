@@ -110,6 +110,8 @@ export function main() {
 
         let err: any;
         try {
+          const defaultDoc =
+              getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
           createRootView(
               compViewDef([
                 elementDef(
@@ -117,7 +119,7 @@ export function main() {
                     () => compViewDef([textDef(null, ['a'])])),
                 directiveDef(NodeFlags.Component, null, 0, SomeService, [])
               ]),
-              TestBed.get(Injector), [], getDOM().createElement('div'));
+              TestBed.get(Injector), [], getDOM().createElement(defaultDoc, 'div'));
         } catch (e) {
           err = e;
         }
