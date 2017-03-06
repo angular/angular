@@ -31,7 +31,7 @@ const NAVIGATION_PATH = 'content/navigation.json';
 export class NavigationService {
 
   navigationViews = this.fetchNavigation();
-  activeNodes = this.getActiveNodes();
+  selectedNodes = this.getActiveNodes();
 
   constructor(private http: Http, private location: LocationService, private logger: Logger) { }
 
