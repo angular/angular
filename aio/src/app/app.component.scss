@@ -1,0 +1,50 @@
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+md-input-container {
+  margin-left: 10px;
+  input {
+    min-width:200px;
+  }
+}
+
+
+.md-input-element {
+  font-size: 70%;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  aio-menu {
+    display: none;
+  }
+}
+
+.sidenav-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.sidenav-content {
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
+}
+
+.sidenav-content button {
+  min-width: 50px;
+}
+
+.sidenav {
+  padding: 0;
+}
+
+// md-toolbar {
+//   display: none;
+//   padding-left: 10px !important;
+// }
+// md-toolbar.active {
+//   display: block;
+// }
