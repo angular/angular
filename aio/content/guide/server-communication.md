@@ -69,7 +69,7 @@ The app uses the !{_Angular_Http} client to communicate via `XMLHttpRequest (XHR
 
 It works like this:
 <figure class='image-display'>
-  <img src='/resources/images/devguide/server-communication/http-toh.gif' alt="ToH mini app" width="250">  </img>
+  <img src='assets/images/devguide/server-communication/http-toh.gif' alt="ToH mini app" width="250">  </img>
 </figure>
 
 This demo has a single component, the `HeroListComponent`.  Here's its template:
@@ -279,7 +279,7 @@ Here is a simple search that shows suggestions from Wikipedia as the user
 types in a text box:
 
 <figure class='image-display'>
-  <img src='/resources/images/devguide/server-communication/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250">  </img>
+  <img src='assets/images/devguide/server-communication/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250">  </img>
 </figure>
 
 

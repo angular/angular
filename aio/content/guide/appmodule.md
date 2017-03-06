@@ -151,7 +151,7 @@ This file is very stable. Once you've set it up, you may never change it again.
 
 Your initial app has only a single module, the _root_ module.
 As your app grows, you'll consider subdividing it into multiple "feature" modules,
-so of which can be loaded later ("lazy loaded") if and when the user chooses
+some of which can be loaded later ("lazy loaded") if and when the user chooses
 to visit those features.
 
 When you're ready to explore these possibilities, visit the [Angular Modules (NgModule)](ngmodule.html) guide.
