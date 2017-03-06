@@ -99,7 +99,7 @@ export class AppComponent implements OnInit {
   constructor(documentService: DocumentService, navigationService: NavigationService, private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     this.navigationViews = navigationService.navigationViews;
-    this.selectedNodes = navigationService.activeNodes;
+    this.selectedNodes = navigationService.selectedNodes;
     this.searchResults = searchService.searchResults;
   }
 

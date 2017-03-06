@@ -1,10 +1,9 @@
 import { ReflectiveInjector } from '@angular/core';
-import { Location, LocationStrategy } from '@angular/common';
-import { MockLocationStrategy } from '@angular/common/testing';
 import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import { NavigationService, NavigationViews } from 'app/navigation/navigation.service';
+import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
+import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
 
 describe('NavigationService', () => {
@@ -18,9 +17,7 @@ describe('NavigationService', () => {
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
         NavigationService,
-        LocationService,
-        Location,
-        { provide: LocationStrategy, useClass: MockLocationStrategy },
+        { provide: LocationService, useFactory: () => new MockLocationService('a') },
         { provide: ConnectionBackend, useClass: MockBackend },
         { provide: RequestOptions, useClass: BaseRequestOptions },
         Http,
@@ -51,8 +48,8 @@ describe('NavigationService', () => {
       service.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { path: 'a' }] }));
-      expect(viewsEvents).toEqual([{ TopBar: [ { path: 'a' }] }]);
+      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
+      expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
 
     });
 
@@ -63,10 +60,10 @@ describe('NavigationService', () => {
       let views2: NavigationViews;
       service.navigationViews.subscribe(views => views2 = views);
 
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ path: 'a' }] }));
+      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ url: 'a' }] }));
 
       // modify the response so we can check that future subscriptions do not trigger another request
-      backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ path: 'error 1' }] }));
+      backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ url: 'error 1' }] }));
 
       let views3: NavigationViews;
       service.navigationViews.subscribe(views => views3 = views);
@@ -81,9 +78,53 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('navigationMap', () => {
-    it('should compute the navigation map', () => {
-      console.warn('PENDING: NavigationService navigationMap should compute the navigation map');
+  describe('selectedNodes', () => {
+    let service: NavigationService, location: MockLocationService;
+    let currentNodes: NavigationNode[];
+    const nodeTree: NavigationNode[] = [
+      { title: 'a', children: [
+        { url: 'b', title: 'b', children: [
+          { url: 'c', title: 'c' },
+          { url: 'd', title: 'd' }
+        ] },
+        { url: 'e', title: 'e' }
+      ] },
+      { url: 'f', title: 'f' }
+    ];
+
+    beforeEach(() => {
+      location = injector.get(LocationService);
+
+      service = injector.get(NavigationService);
+      service.selectedNodes.subscribe(nodes => currentNodes = nodes);
+
+      const backend = injector.get(ConnectionBackend);
+      backend.connectionsArray[0].mockRespond(createResponse({ nav: nodeTree }));
+    });
+
+    it('should list the navigation node that matches the current location, and all its ancestors', () => {
+      location.urlSubject.next('b');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
+
+      location.urlSubject.next('d');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0].children[1],
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
+
+      location.urlSubject.next('f');
+      expect(currentNodes).toEqual([
+        nodeTree[1]
+      ]);
+    });
+
+    it('should be an empty array if no navigation node matches the current location', () => {
+      location.urlSubject.next('g');
+      expect(currentNodes).toEqual([]);
     });
   });
 });
