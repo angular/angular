@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/router/@angular/index.js',
-  dest: '../../../dist/packages-dist/router/bundles/router.umd.js',
+  entry: '../../dist/packages-dist/router/@angular/router.es5.js',
+  dest: '../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
   moduleName: 'ng.router',
   globals: {

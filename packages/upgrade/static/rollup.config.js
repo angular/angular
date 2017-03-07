@@ -7,7 +7,7 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/static.js',
+  entry: '../../../dist/packages-dist/upgrade/@angular/upgrade/static.es5.js',
   dest: '../../../dist/packages-dist/upgrade/bundles/upgrade-static.umd.js',
   format: 'umd',
   moduleName: 'ng.upgrade.static',
