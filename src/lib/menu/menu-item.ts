@@ -1,5 +1,6 @@
-import {Component, ElementRef, Input, HostBinding, Renderer} from '@angular/core';
+import {Component, ElementRef, Input, Renderer} from '@angular/core';
 import {Focusable} from '../core/a11y/focus-key-manager';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 /**
  * This directive is intended to be used inside an md-menu tag.
@@ -11,40 +12,49 @@ import {Focusable} from '../core/a11y/focus-key-manager';
   host: {
     'role': 'menuitem',
     '[class.mat-menu-item]': 'true',
+    '[attr.tabindex]': '_getTabIndex()',
+    '[attr.aria-disabled]': 'disabled.toString()',
+    '[attr.disabled]': '_getDisabledAttr()',
     '(click)': '_checkDisabled($event)',
-    '[attr.tabindex]': '_tabindex'
   },
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem'
 })
 export class MdMenuItem implements Focusable {
-  _disabled: boolean;
+  /** Whether the menu item is disabled */
+  private _disabled: boolean = false;
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
+  /** Focuses the menu item. */
   focus(): void {
-    this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus');
+    this._renderer.invokeElementMethod(this._getHostElement(), 'focus');
   }
 
-  // this is necessary to support anchors
   /** Whether the menu item is disabled. */
-  @HostBinding('attr.disabled')
   @Input()
-  get disabled(): boolean { return this._disabled; }
-  set disabled(value: boolean) {
-    this._disabled = (value === false || value === undefined) ? null : true;
+  get disabled() { return this._disabled; }
+  set disabled(value: any) {
+    this._disabled = coerceBooleanProperty(value);
   }
 
-  /** Sets the aria-disabled property on the menu item. */
-  @HostBinding('attr.aria-disabled')
-  get isAriaDisabled(): string { return String(!!this.disabled); }
-  get _tabindex() { return this.disabled ? '-1' : '0'; }
+  /** Used to set the `tabindex`. */
+  _getTabIndex(): string {
+    return this._disabled ? '-1' : '0';
+  }
 
+  /** Used to set the HTML `disabled` attribute. Necessary for links to be disabled properly. */
+  _getDisabledAttr(): boolean {
+    return this._disabled ? true : null;
+  }
+
+  /** Returns the host DOM element. */
   _getHostElement(): HTMLElement {
     return this._elementRef.nativeElement;
   }
 
-  _checkDisabled(event: Event) {
+  /** Prevents the default element actions if it is disabled. */
+  _checkDisabled(event: Event): void {
     if (this.disabled) {
       event.preventDefault();
       event.stopPropagation();
