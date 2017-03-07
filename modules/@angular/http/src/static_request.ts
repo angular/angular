@@ -148,7 +148,7 @@ export class Request extends Body {
       case ContentType.JSON:
         return this.text();
       case ContentType.FORM:
-        return this.text();
+        return this.text(true);
       case ContentType.FORM_DATA:
         return this._body;
       case ContentType.TEXT:
