@@ -10,7 +10,7 @@ import {InjectionToken, Injector} from '../di';
 import {ViewEncapsulation} from '../metadata/view';
 
 /**
- * @deprecated Use `RendererTypeV2` (and `RendererV2`) instead.
+ * @deprecated Use `RendererType2` (and `Renderer2`) instead.
  */
 export class RenderComponentType {
   constructor(
@@ -32,7 +32,7 @@ export abstract class RenderDebugInfo {
 }
 
 /**
- * @deprecated Use the `RendererV2` instead.
+ * @deprecated Use the `Renderer2` instead.
  */
 export interface DirectRenderer {
   remove(node: any): void;
@@ -43,7 +43,7 @@ export interface DirectRenderer {
 }
 
 /**
- * @deprecated Use the `RendererV2` instead.
+ * @deprecated Use the `Renderer2` instead.
  */
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
@@ -92,7 +92,7 @@ export abstract class Renderer {
       easing: string, previousPlayers?: any[]): any;
 }
 
-export const RendererV2Interceptor = new InjectionToken<RendererV2[]>('RendererV2Interceptor');
+export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');
 
 /**
  * Injectable service that provides a low-level interface for modifying the UI.
@@ -106,7 +106,7 @@ export const RendererV2Interceptor = new InjectionToken<RendererV2[]>('RendererV
  *
  * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  *
- * @deprecated Use `RendererFactoryV2` instead.
+ * @deprecated Use `RendererFactory2` instead.
  */
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
@@ -115,7 +115,7 @@ export abstract class RootRenderer {
 /**
  * @experimental
  */
-export interface RendererTypeV2 {
+export interface RendererType2 {
   id: string;
   encapsulation: ViewEncapsulation;
   styles: (string|any[])[];
@@ -125,14 +125,14 @@ export interface RendererTypeV2 {
 /**
  * @experimental
  */
-export abstract class RendererFactoryV2 {
-  abstract createRenderer(hostElement: any, type: RendererTypeV2): RendererV2;
+export abstract class RendererFactory2 {
+  abstract createRenderer(hostElement: any, type: RendererType2): Renderer2;
 }
 
 /**
  * @experimental
  */
-export abstract class RendererV2 {
+export abstract class Renderer2 {
   /**
    * This field can be used to store arbitrary data on this renderer instance.
    * This is useful for renderers that delegate to other renderers.
@@ -176,5 +176,5 @@ export abstract class RendererV2 {
   abstract setValue(node: any, value: string): void;
   abstract listen(
       target: 'window'|'document'|'body'|any, eventName: string,
-      callback: (event: any) => boolean): () => void;
+      callback: (event: any) => boolean | void): () => void;
 }
