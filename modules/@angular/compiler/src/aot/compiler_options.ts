@@ -7,7 +7,6 @@
  */
 
 export interface AotCompilerOptions {
-  debug?: boolean;
   locale?: string;
   i18nFormat?: string;
   translations?: string;
