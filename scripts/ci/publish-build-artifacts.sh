@@ -37,7 +37,7 @@ function publishRepo {
   BUILD_REPO="${COMPONENT}-builds"
   REPO_DIR="tmp/${BUILD_REPO}"
 
-  if [ -n "$CREATE_REPOS" ]; then
+  if [ -n "${CREATE_REPOS:-}" ]; then
     curl -u "$ORG:$TOKEN" https://api.github.com/user/repos \
          -d '{"name":"'$BUILD_REPO'", "auto_init": true}'
   fi
