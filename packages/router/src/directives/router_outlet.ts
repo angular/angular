@@ -52,7 +52,9 @@ export class RouterOutlet implements OnDestroy {
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
 
+  /** @deprecated since v4 **/
   get locationInjector(): Injector { return this.location.injector; }
+  /** @deprecated since v4 **/
   get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
 
   get isActivated(): boolean { return !!this.activated; }
@@ -90,6 +92,7 @@ export class RouterOutlet implements OnDestroy {
     }
   }
 
+  /** @deprecated since v4, use {@link activateWith} */
   activate(
       activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
       providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
@@ -105,9 +108,51 @@ export class RouterOutlet implements OnDestroy {
     const factory = resolver.resolveComponentFactory(component);
 
     const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
+
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();
 
     this.activateEvents.emit(this.activated.instance);
+  }
+
+  activateWith(
+      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null,
+      outletMap: RouterOutletMap) {
+    if (this.isActivated) {
+      throw new Error('Cannot activate an already activated outlet');
+    }
+
+    this.outletMap = outletMap;
+    this._activatedRoute = activatedRoute;
+
+    const snapshot = activatedRoute._futureSnapshot;
+    const component = <any>snapshot._routeConfig.component;
+
+    resolver = resolver || this.resolver;
+    const factory = resolver.resolveComponentFactory(component);
+
+    const injector = new OutletInjector(activatedRoute, outletMap, this.location.injector);
+
+    this.activated = this.location.createComponent(factory, this.location.length, injector, []);
+    this.activated.changeDetectorRef.detectChanges();
+
+    this.activateEvents.emit(this.activated.instance);
+  }
+}
+
+class OutletInjector implements Injector {
+  constructor(
+      private route: ActivatedRoute, private map: RouterOutletMap, private parent: Injector) {}
+
+  get(token: any, notFoundValue?: any): any {
+    if (token === ActivatedRoute) {
+      return this.route;
+    }
+
+    if (token === RouterOutletMap) {
+      return this.map;
+    }
+
+    return this.parent.get(token, notFoundValue);
   }
 }

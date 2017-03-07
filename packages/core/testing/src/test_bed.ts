@@ -286,8 +286,7 @@ export class TestBed implements Injector {
     const imports = [this.ngModule, this._imports];
     const schemas = this._schemas;
 
-    @NgModule(
-        {providers: providers, declarations: declarations, imports: imports, schemas: schemas})
+    @NgModule({providers, declarations, imports, schemas})
     class DynamicTestModule {
     }
 
@@ -353,10 +352,12 @@ export class TestBed implements Injector {
     this._initIfNeeded();
     const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
         (compFactory) => compFactory.componentType === component);
+
     if (!componentFactory) {
       throw new Error(
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
     }
+
     const noNgZone = this.get(ComponentFixtureNoNgZone, false);
     const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
     const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
@@ -365,7 +366,8 @@ export class TestBed implements Injector {
     testComponentRenderer.insertRootElement(rootElId);
 
     const initComponent = () => {
-      const componentRef = componentFactory.create(this, [], `#${rootElId}`);
+      const componentRef =
+          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef);
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 

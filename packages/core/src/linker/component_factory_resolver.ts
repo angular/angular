@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../di/injector';
 import {Type} from '../type';
 import {stringify} from '../util';
 
-import {ComponentFactory} from './component_factory';
-
-
+import {ComponentFactory, ComponentRef} from './component_factory';
+import {NgModuleRef} from './ng_module_factory';
 
 export function noComponentFactoryError(component: Function) {
   const error = Error(
@@ -44,7 +44,9 @@ export abstract class ComponentFactoryResolver {
 export class CodegenComponentFactoryResolver implements ComponentFactoryResolver {
   private _factories = new Map<any, ComponentFactory<any>>();
 
-  constructor(factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver) {
+  constructor(
+      factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver,
+      private _ngModule: NgModuleRef<any>) {
     for (let i = 0; i < factories.length; i++) {
       const factory = factories[i];
       this._factories.set(factory.componentType, factory);
@@ -52,10 +54,22 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
   }
 
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
-    let result = this._factories.get(component);
-    if (!result) {
-      result = this._parent.resolveComponentFactory(component);
-    }
-    return result;
+    let factory = this._factories.get(component) || this._parent.resolveComponentFactory(component);
+
+    return factory ? new ComponentFactoryBoundToModule(factory, this._ngModule) : null;
+  }
+}
+
+export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
+  constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) { super(); }
+
+  get selector() { return this.factory.selector; }
+  get componentType() { return this.factory.componentType; }
+
+  create(
+      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
+      ngModule?: NgModuleRef<any>): ComponentRef<C> {
+    return this.factory.create(
+        injector, projectableNodes, rootSelectorOrNode, ngModule || this.ngModule);
   }
 }

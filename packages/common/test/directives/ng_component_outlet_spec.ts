@@ -177,13 +177,13 @@ export function main() {
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {
          const compiler = TestBed.get(Compiler) as Compiler;
          const fixture = TestBed.createComponent(TestComponent);
+
          fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
          fixture.componentInstance.currentComponent = Module2InjectedComponent;
          fixture.detectChanges();
-
          expect(fixture.nativeElement).toHaveText('baz');
-
          const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+
          fixture.componentInstance.currentComponent = Module2InjectedComponent2;
          fixture.detectChanges();
 
@@ -247,11 +247,11 @@ class TestComponent {
 export class TestModule {
 }
 
-@Component({selector: 'mdoule-2-injected-component', template: 'baz'})
+@Component({selector: 'module-2-injected-component', template: 'baz'})
 class Module2InjectedComponent {
 }
 
-@Component({selector: 'mdoule-2-injected-component-2', template: 'baz2'})
+@Component({selector: 'module-2-injected-component-2', template: 'baz2'})
 class Module2InjectedComponent2 {
 }
 
@@ -264,7 +264,7 @@ class Module2InjectedComponent2 {
 export class TestModule2 {
 }
 
-@Component({selector: 'mdoule-3-injected-component', template: 'bat'})
+@Component({selector: 'module-3-injected-component', template: 'bat'})
 class Module3InjectedComponent {
 }
 

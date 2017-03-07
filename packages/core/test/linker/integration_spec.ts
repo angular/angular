@@ -1264,13 +1264,12 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.createComponent(SomeComponent);
 
         expect(noSelectorComponentFactory.selector).toBe('ng-component');
+
         expect(
             getDOM()
-                .nodeName(
-                    noSelectorComponentFactory.create(TestBed.get(Injector)).location.nativeElement)
+                .nodeName(noSelectorComponentFactory.create(Injector.NULL).location.nativeElement)
                 .toLowerCase())
             .toEqual('ng-component');
-
       });
     });
 

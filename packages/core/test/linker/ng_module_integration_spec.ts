@@ -130,9 +130,13 @@ function declareTests({useJit}: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
-      const ngModule = createModule(moduleType);
+      const ngModule = createModule(moduleType, injector);
+
       const cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType);
-      return new ComponentFixture(cf.create(injector), null, false);
+
+      const comp = cf.create(Injector.NULL);
+
+      return new ComponentFixture(comp, null, false);
     }
 
     describe('errors', () => {
@@ -417,6 +421,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           }
 
           const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+
           compFixture.detectChanges();
           expect(compFixture.debugElement.children[0].properties['title'])
               .toBe('transformed someValue');
