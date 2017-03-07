@@ -388,9 +388,9 @@ export declare class ErrorHandler {
 
 /** @stable */
 export declare class EventEmitter<T> extends Subject<T> {
-    __isAsync: boolean;
     constructor(isAsync?: boolean);
     emit(value?: T): void;
+    next(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
 }
 
@@ -635,10 +635,10 @@ export declare class NgZone {
     readonly hasPendingMacrotasks: boolean;
     readonly hasPendingMicrotasks: boolean;
     readonly isStable: boolean;
-    readonly onError: EventEmitter<any>;
-    readonly onMicrotaskEmpty: EventEmitter<any>;
-    readonly onStable: EventEmitter<any>;
-    readonly onUnstable: EventEmitter<any>;
+    readonly onError: Observable<any>;
+    readonly onMicrotaskEmpty: Observable<any>;
+    readonly onStable: Observable<any>;
+    readonly onUnstable: Observable<any>;
     constructor({enableLongStackTrace}: {
         enableLongStackTrace?: boolean;
     });

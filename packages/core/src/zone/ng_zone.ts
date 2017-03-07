@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '../event_emitter';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -89,10 +90,10 @@ export class NgZone {
 
   private _isStable = true;
   private _nesting: number = 0;
-  private _onUnstable: EventEmitter<any> = new EventEmitter(false);
-  private _onMicrotaskEmpty: EventEmitter<any> = new EventEmitter(false);
-  private _onStable: EventEmitter<any> = new EventEmitter(false);
-  private _onErrorEvents: EventEmitter<any> = new EventEmitter(false);
+  private _onUnstable = new Subject<any>();
+  private _onMicrotaskEmpty = new Subject<any>();
+  private _onStable = new Subject<any>();
+  private _onErrorEvents = new Subject<any>();
 
   constructor({enableLongStackTrace = false}) {
     if (typeof Zone == 'undefined') {
@@ -164,26 +165,26 @@ export class NgZone {
   /**
    * Notifies when code enters Angular Zone. This gets fired first on VM Turn.
    */
-  get onUnstable(): EventEmitter<any> { return this._onUnstable; }
+  get onUnstable(): Observable<any> { return this._onUnstable.asObservable(); }
 
   /**
    * Notifies when there is no more microtasks enqueue in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
-  get onMicrotaskEmpty(): EventEmitter<any> { return this._onMicrotaskEmpty; }
+  get onMicrotaskEmpty(): Observable<any> { return this._onMicrotaskEmpty.asObservable(); }
 
   /**
    * Notifies when the last `onMicrotaskEmpty` has run and there are no more microtasks, which
    * implies we are about to relinquish VM turn.
    * This event gets called just once.
    */
-  get onStable(): EventEmitter<any> { return this._onStable; }
+  get onStable(): Observable<any> { return this._onStable.asObservable(); }
 
   /**
    * Notify that an error has been delivered.
    */
-  get onError(): EventEmitter<any> { return this._onErrorEvents; }
+  get onError(): Observable<any> { return this._onErrorEvents.asObservable(); }
 
   /**
    * Whether there are no outstanding microtasks or macrotasks.
@@ -194,16 +195,16 @@ export class NgZone {
 
   get hasPendingMacrotasks(): boolean { return this._hasPendingMacrotasks; }
 
-  private checkStable() {
+  private checkStable(): void {
     if (this._nesting == 0 && !this._hasPendingMicrotasks && !this._isStable) {
       try {
         this._nesting++;
-        this._onMicrotaskEmpty.emit(null);
+        this._onMicrotaskEmpty.next(null);
       } finally {
         this._nesting--;
         if (!this._hasPendingMicrotasks) {
           try {
-            this.runOutsideAngular(() => this._onStable.emit(null));
+            this.runOutsideAngular(() => this._onStable.next(null));
           } finally {
             this._isStable = true;
           }
@@ -212,7 +213,7 @@ export class NgZone {
     }
   }
 
-  private forkInnerZoneWithAngularBehavior() {
+  private forkInnerZoneWithAngularBehavior(): void {
     this.inner = this.inner.fork({
       name: 'angular',
       properties: <any>{'isAngularZone': true},
@@ -259,25 +260,25 @@ export class NgZone {
     });
   }
 
-  private onEnter() {
+  private onEnter(): void {
     this._nesting++;
     if (this._isStable) {
       this._isStable = false;
-      this._onUnstable.emit(null);
+      this._onUnstable.next(null);
     }
   }
 
-  private onLeave() {
+  private onLeave(): void {
     this._nesting--;
     this.checkStable();
   }
 
-  private setHasMicrotask(hasMicrotasks: boolean) {
+  private setHasMicrotask(hasMicrotasks: boolean): void {
     this._hasPendingMicrotasks = hasMicrotasks;
     this.checkStable();
   }
 
   private setHasMacrotask(hasMacrotasks: boolean) { this._hasPendingMacrotasks = hasMacrotasks; }
 
-  private triggerError(error: any) { this._onErrorEvents.emit(error); }
+  private triggerError(error: any): void { this._onErrorEvents.next(error); }
 }

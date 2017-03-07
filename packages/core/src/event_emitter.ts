@@ -7,6 +7,8 @@
  */
 
 import {Subject} from 'rxjs/Subject';
+import {isDevMode} from './application_ref';
+import {NgZone} from './zone/ng_zone';
 
 /**
  * Use by directives and components to emit custom Events.
@@ -56,23 +58,20 @@ import {Subject} from 'rxjs/Subject';
  * @stable
  */
 export class EventEmitter<T> extends Subject<T> {
-  // TODO: mark this as internal once all the facades are gone
-  // we can't mark it as internal now because EventEmitter exported via @angular/core would not
-  // contain this property making it incompatible with all the code that uses EventEmitter via
-  // facades, which are local to the code and do not have this property stripped.
-  // tslint:disable-next-line
-  __isAsync: boolean;
-
   /**
    * Creates an instance of [EventEmitter], which depending on [isAsync],
    * delivers events synchronously or asynchronously.
    */
-  constructor(isAsync: boolean = false) {
-    super();
-    this.__isAsync = isAsync;
-  }
+  constructor(private isAsync: boolean = false) { super(); }
 
-  emit(value?: T) { super.next(value); }
+  emit(value?: T): void { this.next(value); }
+
+  next(value?: T): void {
+    if (isDevMode() && !NgZone.isInAngularZone() && console && <any>console.warn) {
+      console.warn('Expected to be in Angular Zone, but it is not!');
+    }
+    super.next(value);
+  }
 
   subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
     let schedulerFn: (t: any) => any;
@@ -80,31 +79,30 @@ export class EventEmitter<T> extends Subject<T> {
     let completeFn = (): any => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any) => {
+      schedulerFn = this.isAsync ? (value: any) => {
         setTimeout(() => generatorOrNext.next(value));
       } : (value: any) => { generatorOrNext.next(value); };
 
       if (generatorOrNext.error) {
-        errorFn = this.__isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
-                                   (err) => { generatorOrNext.error(err); };
+        errorFn = this.isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
+                                 (err) => { generatorOrNext.error(err); };
       }
 
       if (generatorOrNext.complete) {
-        completeFn = this.__isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
-                                      () => { generatorOrNext.complete(); };
+        completeFn = this.isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
+                                    () => { generatorOrNext.complete(); };
       }
     } else {
-      schedulerFn = this.__isAsync ? (value: any) => { setTimeout(() => generatorOrNext(value)); } :
-                                     (value: any) => { generatorOrNext(value); };
+      schedulerFn = this.isAsync ? (value: any) => { setTimeout(() => generatorOrNext(value)); } :
+                                   (value: any) => { generatorOrNext(value); };
 
       if (error) {
         errorFn =
-            this.__isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
+            this.isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
       }
 
       if (complete) {
-        completeFn =
-            this.__isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
+        completeFn = this.isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
       }
     }
 
