@@ -93,6 +93,9 @@ export class Compiler {
  * @experimental
  */
 export type CompilerOptions = {
+  /**
+   * @deprecated since v4 this option has no effect anymore.
+   */
   useDebug?: boolean,
   useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
