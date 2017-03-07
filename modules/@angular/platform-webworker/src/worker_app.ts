@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLATFORM_ID, PlatformRef, Provider, RendererFactoryV2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLATFORM_ID, PlatformRef, Provider, RendererFactory2, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
 import {DOCUMENT, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
@@ -16,7 +16,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_wo
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
-import {WebWorkerRendererFactoryV2} from './web_workers/worker/renderer';
+import {WebWorkerRendererFactory2} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 
@@ -63,8 +63,8 @@ export function setupWebWorker(): void {
     {provide: DOCUMENT, useValue: null},
     {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
-    WebWorkerRendererFactoryV2,
-    {provide: RendererFactoryV2, useExisting: WebWorkerRendererFactoryV2},
+    WebWorkerRendererFactory2,
+    {provide: RendererFactory2, useExisting: WebWorkerRendererFactory2},
     {provide: ON_WEB_WORKER, useValue: true},
     RenderStore,
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},

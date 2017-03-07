@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, Injectable, RendererFactoryV2, RendererTypeV2, ViewChild} from '@angular/core';
+import {Component, Injectable, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -26,13 +26,13 @@ export function main() {
     });
 
     function makeRenderer(animationTriggers: any[] = []) {
-      const type = <RendererTypeV2>{
+      const type = <RendererType2>{
         id: 'id',
         encapsulation: null,
         styles: [],
         data: {'animation': animationTriggers}
       };
-      return (TestBed.get(RendererFactoryV2) as ɵAnimationRendererFactory)
+      return (TestBed.get(RendererFactory2) as ɵAnimationRendererFactory)
           .createRenderer(element, type);
     }
 
