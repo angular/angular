@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider, RendererV2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -208,6 +208,19 @@ function declareTests({useJit}: {useJit: boolean}) {
           {declarations: [HeroComponent, VillianComponent, MainComponent]});
       const fixture = TestBed.createComponent(MainComponent);
       expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villian.');
+    });
+
+    it('should allow to use the renderer outside of views', () => {
+      @Component({template: ''})
+      class MyComp {
+        constructor(public renderer: RendererV2) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const ctx = TestBed.createComponent(MyComp);
+
+      const txtNode = ctx.componentInstance.renderer.createText('test');
+      expect(txtNode).toHaveText('test');
     });
   });
 }
