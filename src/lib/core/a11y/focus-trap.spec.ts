@@ -9,7 +9,13 @@ describe('FocusTrap', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FocusTrapDirective, FocusTrapWithBindings, SimpleFocusTrap, FocusTrapTargets],
+      declarations: [
+        FocusTrapDirective,
+        FocusTrapWithBindings,
+        SimpleFocusTrap,
+        FocusTrapTargets,
+        FocusTrapWithSvg
+      ],
       providers: [InteractivityChecker, Platform, FocusTrapFactory]
     });
 
@@ -112,6 +118,20 @@ describe('FocusTrap', () => {
       expect(document.activeElement.id).toBe('last');
     });
   });
+
+  describe('special cases', () => {
+    it('should not throw when it has a SVG child', () => {
+      let fixture = TestBed.createComponent(FocusTrapWithSvg);
+
+      fixture.detectChanges();
+
+      let focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+
+      expect(() => focusTrapInstance.focusFirstTabbableElement()).not.toThrow();
+      expect(() => focusTrapInstance.focusLastTabbableElement()).not.toThrow();
+    });
+  });
+
 });
 
 
@@ -154,5 +174,19 @@ class FocusTrapWithBindings {
     `
 })
 class FocusTrapTargets {
+  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+}
+
+
+@Component({
+  template: `
+    <div cdkTrapFocus>
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="100"/>
+      </svg>
+    </div>
+    `
+})
+class FocusTrapWithSvg {
   @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
 }
