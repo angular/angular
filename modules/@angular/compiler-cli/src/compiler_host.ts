@@ -351,6 +351,29 @@ export class CompilerHost implements AotCompilerHost {
 
     return checkBundleIndex(path.dirname(filePath));
   }
+
+  calculateEmitPath(filePath: string): string {
+    // Write codegen in a directory structure matching the sources.
+    let root = this.options.basePath;
+    for (const eachRootDir of this.options.rootDirs || []) {
+      if (this.options.trace) {
+        console.error(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
+      }
+      if (path.relative(eachRootDir, filePath).indexOf('.') !== 0) {
+        root = eachRootDir;
+      }
+    }
+
+    // transplant the codegen path to be inside the `genDir`
+    let relativePath: string = path.relative(root, filePath);
+    while (relativePath.startsWith('..' + path.sep)) {
+      // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
+      // into `genDir`.
+      relativePath = relativePath.substr(3);
+    }
+
+    return path.join(this.options.genDir, relativePath);
+  }
 }
 
 export class CompilerHostContextAdapter {
