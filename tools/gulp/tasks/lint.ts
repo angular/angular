@@ -12,4 +12,4 @@ gulp.task('stylelint', execNodeTask(
 ));
 
 /** Task to run TSLint against the e2e/ and src/ directories. */
-gulp.task('tslint', execNodeTask('tslint', ['-c', 'tslint.json', 'src/**/*.ts', 'e2e/**/*.ts']));
+gulp.task('tslint', execNodeTask('tslint', ['-c', 'tslint.json', '+(src|e2e|tools)/**/*.ts']));

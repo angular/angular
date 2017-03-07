@@ -1,12 +1,14 @@
-import gulp = require('gulp');
+import {task, src, dest} from 'gulp';
+import {Dgeni} from 'dgeni';
+import * as path from 'path';
+
+// Node packages that lack of types.
 const markdown = require('gulp-markdown');
 const transform = require('gulp-transform');
 const highlight = require('gulp-highlight-files');
 const rename = require('gulp-rename');
 const flatten = require('gulp-flatten');
 const hljs = require('highlight.js');
-import {task} from 'gulp';
-import * as path from 'path';
 
 // Our docs contain comments of the form `<!-- example(...) -->` which serve as placeholders where
 // example code should be inserted. We replace these comments with divs that have a
@@ -19,10 +21,10 @@ const EXAMPLE_PATTERN = /<!--\W*example\(([^)]+)\)\W*-->/g;
 // documentation page. Using a RegExp to rewrite links in HTML files to work in the docs.
 const LINK_PATTERN = /(<a[^>]*) href="([^"]*)"/g;
 
-gulp.task('docs', ['markdown-docs', 'highlight-docs', 'api-docs'])
+task('docs', ['markdown-docs', 'highlight-docs', 'api-docs']);
 
-gulp.task('markdown-docs', () => {
-  return gulp.src(['src/lib/**/*.md', 'guides/*.md'])
+task('markdown-docs', () => {
+  return src(['src/lib/**/*.md', 'guides/*.md'])
       .pipe(markdown({
         // Add syntax highlight using highlight.js
         highlight: (code: string, language: string) => {
@@ -36,28 +38,27 @@ gulp.task('markdown-docs', () => {
         }
       }))
       .pipe(transform(transformMarkdownFiles))
-      .pipe(gulp.dest('dist/docs/markdown'));
+      .pipe(dest('dist/docs/markdown'));
 });
 
-gulp.task('highlight-docs', () => {
+task('highlight-docs', () => {
   // rename files to fit format: [filename]-[filetype].html
   const renameFile = (path: any) => {
     const extension = path.extname.slice(1);
     path.basename = `${path.basename}-${extension}`;
   };
 
-  return gulp.src('src/examples/**/*.+(html|css|ts)')
+  return src('src/examples/**/*.+(html|css|ts)')
     .pipe(flatten())
     .pipe(rename(renameFile))
     .pipe(highlight())
-    .pipe(gulp.dest('dist/docs/examples'));
+    .pipe(dest('dist/docs/examples'));
 });
 
 task('api-docs', () => {
-  const Dgeni = require('dgeni');
   const docsPackage = require(path.resolve(__dirname, '../../dgeni'));
-  const dgeni = new Dgeni([docsPackage]);
-  return dgeni.generate();
+  const docs = new Dgeni([docsPackage]);
+  return docs.generate();
 });
 
 /** Updates the markdown file's content to work inside of the docs app. */

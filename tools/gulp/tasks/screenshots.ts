@@ -5,7 +5,6 @@ import * as admin from 'firebase-admin';
 import {openScreenshotsBucket, openFirebaseScreenshotsDatabase} from '../task_helpers';
 import {updateGithubStatus} from '../util-functions';
 
-const request = require('request');
 const imageDiff = require('image-diff');
 
 const SCREENSHOT_DIR = './screenshots';
@@ -37,12 +36,15 @@ task('screenshots', () => {
 
 function updateFileResult(database: admin.database.Database, prNumber: string,
                           filenameKey: string, result: boolean) {
-  return database.ref(FIREBASE_REPORT).child(prNumber).child('results').child(filenameKey).set(result);
+  return getPullRequestRef(database, prNumber).child('results').child(filenameKey).set(result);
 }
 
-function updateResult(database: admin.database.Database, prNumber: string,
-                      result: boolean) {
-  return database.ref(FIREBASE_REPORT).child(prNumber).child('result').set(result).then(() => result);
+function updateResult(database: admin.database.Database, prNumber: string, result: boolean) {
+  return getPullRequestRef(database, prNumber).child('result').set(result).then(() => result);
+}
+
+function getPullRequestRef(database: admin.database.Database, prNumber: string) {
+  return database.ref(FIREBASE_REPORT).child(prNumber);
 }
 
 function updateTravis(database: admin.database.Database,
@@ -58,7 +60,7 @@ function updateTravis(database: admin.database.Database,
 function getScreenshotFiles(database: admin.database.Database) {
   let bucket = openScreenshotsBucket();
   return bucket.getFiles({ prefix: 'golds/' }).then(function(data: any) {
-    return data[0].filter((file:any) => file.name.endsWith('.screenshot.png'));
+    return data[0].filter((file: any) => file.name.endsWith('.screenshot.png'));
   });
 }
 

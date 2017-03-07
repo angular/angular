@@ -9,7 +9,7 @@ export function updateGithubStatus(result: boolean, prNumber: string) {
   let data = JSON.stringify({
     state: state,
     target_url: `http://material2-screenshots.firebaseapp.com/${prNumber}`,
-    context: "screenshot-diff",
+    context: 'screenshot-diff',
     description: `Screenshot test ${state}`
   });
 
@@ -20,13 +20,13 @@ export function updateGithubStatus(result: boolean, prNumber: string) {
     'Content-Length': Buffer.byteLength(data)
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     request({
       url: `https://api.github.com/repos/angular/material2/statuses/${sha}`,
       method: 'POST',
       form: data,
       headers: headers
-    }, function (error: any, response: any, body: any){
+    }, function (error: any, response: any) {
       resolve(response.statusCode);
     });
   });

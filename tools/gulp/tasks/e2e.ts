@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import {SOURCE_ROOT, DIST_ROOT, PROJECT_ROOT} from '../constants';
 import {
-  tsBuildTask, sassBuildTask, copyTask, buildAppTask, execNodeTask,
+  tsBuildTask, copyTask, buildAppTask, execNodeTask,
   vendorTask, sequenceTask, serverTask
 } from '../task_helpers';
 
