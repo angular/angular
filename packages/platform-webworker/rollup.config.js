@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/platform-webworker/index.js',
-  dest: '../../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
+  entry: '../../dist/packages-dist/platform-webworker/@angular/platform-webworker.es5.js',
+  dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
   moduleName: 'ng.platformWebworker',
   globals: {

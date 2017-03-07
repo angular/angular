@@ -7,7 +7,7 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/core/testing/index.js',
+  entry: '../../../dist/packages-dist/core/@angular/core/testing.es5.js',
   dest: '../../../dist/packages-dist/core/bundles/core-testing.umd.js',
   format: 'umd',
   moduleName: 'ng.core.testing',

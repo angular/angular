@@ -7,7 +7,7 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/platform-server/testing/index.js',
+  entry: '../../../dist/packages-dist/platform-server/@angular/platform-server/testing.es5.js',
   dest: '../../../dist/packages-dist/platform-server/bundles/platform-server-testing.umd.js',
   format: 'umd',
   moduleName: 'ng.platformServer.testing',

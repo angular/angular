@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/platform-browser/index.js',
-  dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser.umd.js',
+  entry: '../../dist/packages-dist/platform-browser/@angular/platform-browser.es5.js',
+  dest: '../../dist/packages-dist/platform-browser/bundles/platform-browser.umd.js',
   format: 'umd',
   moduleName: 'ng.platformBrowser',
   globals: {

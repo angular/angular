@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/compiler/index.js',
-  dest: '../../../dist/packages-dist/compiler/bundles/compiler.umd.js',
+  entry: '../../dist/packages-dist/compiler/@angular/compiler.es5.js',
+  dest: '../../dist/packages-dist/compiler/bundles/compiler.umd.js',
   format: 'umd',
   moduleName: 'ng.compiler',
   globals: {

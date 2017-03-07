@@ -7,10 +7,10 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/animation/index.js',
-  dest: '../../../dist/packages-dist/animation/bundles/animation.umd.js',
+  entry: '../../dist/packages-dist/animations/@angular/animations.es5.js',
+  dest: '../../dist/packages-dist/animations/bundles/animations.umd.js',
   format: 'umd',
-  moduleName: 'ng.animation',
+  moduleName: 'ng.animations',
   globals: {
     '@angular/core': 'ng.core',
     'rxjs/Observable': 'Rx',
