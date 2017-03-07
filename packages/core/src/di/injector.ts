@@ -56,7 +56,7 @@ export abstract class Injector {
    */
   abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
   /**
-   * @deprecated from v4.0.0 use Type<T> or InjectToken<T>
+   * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
    */
   abstract get(token: any, notFoundValue?: any): any;
