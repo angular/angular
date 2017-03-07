@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/index.js',
-  dest: '../../../dist/packages-dist/upgrade/bundles/upgrade.umd.js',
+  entry: '../../dist/packages-dist/upgrade/@angular/upgrade.es5.js',
+  dest: '../../dist/packages-dist/upgrade/bundles/upgrade.umd.js',
   format: 'umd',
   moduleName: 'ng.upgrade',
   globals: {

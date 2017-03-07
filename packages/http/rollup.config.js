@@ -7,8 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/http/index.js',
-  dest: '../../../dist/packages-dist/http/bundles/http.umd.js',
+  entry: '../../dist/packages-dist/http/@angular/http.es5.js',
+  dest: '../../dist/packages-dist/http/bundles/http.umd.js',
   format: 'umd',
   moduleName: 'ng.http',
   globals: {

@@ -7,7 +7,7 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/router/testing/index.js',
+  entry: '../../../dist/packages-dist/router/@angular/router/testing.es5.js',
   dest: '../../../dist/packages-dist/router/bundles/router-testing.umd.js',
   format: 'umd',
   moduleName: 'ng.router.testing',

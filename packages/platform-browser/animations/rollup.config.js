@@ -7,14 +7,13 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/common/@angular/common/testing.es5.js',
-  dest: '../../../dist/packages-dist/common/bundles/common-testing.umd.js',
+  entry: '../../../dist/packages-dist/platform-browser/@angular/platform-browser/animations.es5.js',
+  dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
   format: 'umd',
-  moduleName: 'ng.common.testing',
+  moduleName: 'ng.platformBrowser.testing',
   globals: {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
-    'rxjs/Observable': 'Rx',
-    'rxjs/Subject': 'Rx'
+    '@angular/platform-browser': 'ng.platformBrowser'
   }
 };

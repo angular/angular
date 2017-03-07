@@ -10,13 +10,13 @@ import commonjs from 'rollup-plugin-commonjs';
 import * as path from 'path';
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
-var location = normalize('../../../dist/packages-dist') + '/';
-var rxjsLocation = normalize('../../../node_modules/rxjs');
+var location = normalize('../../dist/packages-dist') + '/';
+var rxjsLocation = normalize('../../node_modules/rxjs');
 var esm = 'esm/';
 
 var locations = {
-  'tsc-wrapped': normalize('../../../dist/tools/@angular') + '/',
-  'compiler-cli': normalize('../../../dist/esm') + '/'
+  'tsc-wrapped': normalize('../../dist/tools/@angular') + '/',
+  'compiler-cli': normalize('../../dist/packages') + '/'
 };
 
 var esm_suffixes = {};
@@ -24,7 +24,7 @@ var esm_suffixes = {};
 function normalize(fileName) {
   return path.resolve(__dirname, fileName);
 }
-
+console.log('running')
 function resolve(id, from) {
   // console.log('Resolve id:', id, 'from', from)
   if (id == '@angular/tsc-wrapped') {
@@ -37,7 +37,7 @@ function resolve(id, from) {
     var packageName = match[1];
     var esm_suffix = esm_suffixes[packageName] || '';
     var loc = locations[packageName] || location;
-    var r = loc + esm_suffix + packageName + (match[3] || '/index') + '.js';
+    var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') || loc + packageName + '/@angular/' + packageName + '.es5.js';
     // console.log('** ANGULAR MAPPED **: ', r);
     return r;
   }
@@ -62,8 +62,8 @@ module.exports = function(provided) {
 `;
 
 export default {
-  entry: '../../../dist/packages-dist/language-service/index.js',
-  dest: '../../../dist/packages-dist/language-service/bundles/language-service.umd.js',
+  entry: '../../dist/packages-dist/language-service/@angular/language-service.es5.js',
+  dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',
   moduleName: 'ng.language_service',
   exports: 'named',

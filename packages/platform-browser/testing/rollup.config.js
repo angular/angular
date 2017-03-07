@@ -7,7 +7,7 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/platform-browser/testing/index.js',
+  entry: '../../../dist/packages-dist/platform-browser/@angular/platform-browser/testing.es5.js',
   dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-testing.umd.js',
   format: 'umd',
   moduleName: 'ng.platformBrowser.testing',

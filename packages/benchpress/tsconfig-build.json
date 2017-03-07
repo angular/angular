@@ -6,9 +6,9 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "../../../dist/packages/benchpress",
+    "outDir": "../../dist/packages/benchpress",
     "paths": {
-      "@angular/core": ["../../../dist/packages/core"]
+      "@angular/core": ["../../dist/packages/core"]
     },
     "experimentalDecorators": true,
     "rootDir": ".",
