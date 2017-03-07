@@ -1,6 +1,6 @@
 // Imports
 import * as jwt from 'jsonwebtoken';
-import {GithubPullRequests, PullRequest} from '../common/github-pull-requests';
+import {GithubPullRequests} from '../common/github-pull-requests';
 import {GithubTeams} from '../common/github-teams';
 import {assertNotMissingOrEmpty} from '../common/utils';
 import {UploadError} from './upload-error';
@@ -31,13 +31,20 @@ export class BuildVerifier {
   }
 
   // Methods - Public
-  public verify(pr: number, authHeader: string): Promise<void> {
+  public getPrAuthorTeamMembership(pr: number): Promise<{author: string, isMember: boolean}> {
+    return Promise.resolve().
+      then(() => this.githubPullRequests.fetch(pr)).
+      then(prInfo => prInfo.user.login).
+      then(author => this.githubTeams.isMemberBySlug(author, this.allowedTeamSlugs).
+        then(isMember => ({author, isMember})));
+  }
+
+  public verify(expectedPr: number, authHeader: string): Promise<void> {
     return Promise.resolve().
       then(() => this.extractJwtString(authHeader)).
-      then(jwtString => this.verifyJwt(pr, jwtString)).
-      then(jwtPayload => this.fetchPr(jwtPayload['pull-request'])).
-      then(prInfo => this.verifyPr(prInfo.user.login)).
-      catch(err => { throw new UploadError(403, `Error while verifying upload for PR ${pr}: ${err}`); });
+      then(jwtString => this.verifyJwt(expectedPr, jwtString)).
+      then(jwtPayload => this.verifyPr(jwtPayload['pull-request'])).
+      catch(err => { throw new UploadError(403, `Error while verifying upload for PR ${expectedPr}: ${err}`); });
   }
 
   // Methods - Protected
@@ -45,19 +52,15 @@ export class BuildVerifier {
     return input.replace(/^token +/i, '');
   }
 
-  protected fetchPr(pr: number): Promise<PullRequest> {
-    return this.githubPullRequests.fetch(pr);
-  }
-
-  protected verifyJwt(pr: number, token: string): Promise<JwtPayload> {
+  protected verifyJwt(expectedPr: number, token: string): Promise<JwtPayload> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, this.secret, {issuer: 'Travis CI, GmbH'}, (err, payload) => {
         if (err) {
           reject(err.message || err);
         } else if (payload.slug !== this.repoSlug) {
           reject(`jwt slug invalid. expected: ${this.repoSlug}`);
-        } else if (payload['pull-request'] !== pr) {
-          reject(`jwt pull-request invalid. expected: ${pr}`);
+        } else if (payload['pull-request'] !== expectedPr) {
+          reject(`jwt pull-request invalid. expected: ${expectedPr}`);
         } else {
           resolve(payload);
         }
@@ -65,11 +68,11 @@ export class BuildVerifier {
     });
   }
 
-  protected verifyPr(username: string): Promise<void> {
-    const errorMessage = `User '${username}' is not an active member of any of: ` +
-                         `${this.allowedTeamSlugs.join(', ')}`;
-
-    return this.githubTeams.isMemberBySlug(username, this.allowedTeamSlugs).
-      then(isMember => isMember ? Promise.resolve() : Promise.reject(errorMessage));
+  protected verifyPr(pr: number): Promise<void> {
+    return this.getPrAuthorTeamMembership(pr).
+      then(({author, isMember}) => isMember ? Promise.resolve() : Promise.reject(
+        `User '${author}' is not an active member of any of the following teams: ` +
+        `${this.allowedTeamSlugs.join(', ')}`,
+      ));
   }
 }
