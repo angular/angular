@@ -313,7 +313,6 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   writeValue(value: any): void {
     if (this.options) {
       this._setSelectionByValue(value);
-      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -430,17 +429,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    * found with the designated value, the select trigger is cleared.
    */
   private _setSelectionByValue(value: any): void {
-    const options = this.options.toArray();
-
-    for (let i = 0; i < this.options.length; i++) {
-      if (options[i].value === value) {
-        options[i].select();
-        return;
-      }
-    }
-
-    // Clear selection if no item was selected.
-    this._clearSelection();
+    const correspondingOption = this.options.find(option => option.value === value);
+    correspondingOption ? correspondingOption.select() : this._clearSelection();
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Clears the select trigger and deselects every option in the list. */

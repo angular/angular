@@ -39,7 +39,8 @@ describe('MdSelect', () => {
         FloatPlaceholderSelect,
         SelectWithErrorSibling,
         ThrowsErrorOnInit,
-        BasicSelectOnPush
+        BasicSelectOnPush,
+        BasicSelectOnPushPreselected
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1322,16 +1323,25 @@ describe('MdSelect', () => {
   });
 
   describe('with OnPush change detection', () => {
-    let fixture: ComponentFixture<BasicSelectOnPush>;
-    let trigger: HTMLElement;
+    it('should set the trigger text based on the value when initialized', async(() => {
+      let fixture = TestBed.createComponent(BasicSelectOnPushPreselected);
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BasicSelectOnPush);
       fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
-    });
+
+      fixture.whenStable().then(() => {
+        let trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+
+        fixture.detectChanges();
+
+        expect(trigger.textContent).toContain('Pizza');
+      });
+    }));
 
     it('should update the trigger based on the value', () => {
+      let fixture = TestBed.createComponent(BasicSelectOnPush);
+      fixture.detectChanges();
+      let trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
@@ -1342,7 +1352,9 @@ describe('MdSelect', () => {
 
       expect(trigger.textContent).not.toContain('Pizza');
     });
+
   });
+
 });
 
 
@@ -1561,9 +1573,26 @@ class BasicSelectOnPush {
     { value: 'tacos-2', viewValue: 'Tacos' },
   ];
   control = new FormControl();
+}
 
-  @ViewChild(MdSelect) select: MdSelect;
-  @ViewChildren(MdOption) options: QueryList<MdOption>;
+@Component({
+  selector: 'basic-select-on-push-preselected',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <md-select placeholder="Food" [formControl]="control">
+      <md-option *ngFor="let food of foods" [value]="food.value">
+        {{ food.viewValue }}
+      </md-option>
+    </md-select>
+  `
+})
+class BasicSelectOnPushPreselected {
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+  ];
+  control = new FormControl('pizza-1');
 }
 
 @Component({
