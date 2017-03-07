@@ -8,7 +8,7 @@
 
 // #docregion Component
 import {Component, NgModule, animate, state, style, transition, trigger} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'example-app',
@@ -48,7 +48,8 @@ export class MyExpandoCmp {
   collapse() { this.stateExpression = 'collapsed'; }
 }
 
-@NgModule({imports: [BrowserModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
+@NgModule(
+    {imports: [BrowserAnimationsModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
 export class AppModule {
 }
 
