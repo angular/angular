@@ -97,12 +97,8 @@ export class Extractor {
     const staticReflector = new StaticReflector(staticSymbolResolver);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
-    const config = new CompilerConfig({
-      genDebugInfo: false,
-      defaultEncapsulation: ViewEncapsulation.Emulated,
-      logBindingUpdate: false,
-      useJit: false
-    });
+    const config =
+        new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});
 
     const normalizer = new DirectiveNormalizer(
         {get: (url: string) => host.loadResource(url)}, urlResolver, htmlParser, config);

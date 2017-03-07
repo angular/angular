@@ -107,14 +107,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new DummyHtmlParser();
       // This tracks the CompileConfig in codegen.ts. Currently these options
-      // are hard-coded except for genDebugInfo which is not applicable as we
-      // never generate code.
-      const config = new CompilerConfig({
-        genDebugInfo: false,
-        defaultEncapsulation: ViewEncapsulation.Emulated,
-        logBindingUpdate: false,
-        useJit: false
-      });
+      // are hard-coded.
+      const config =
+          new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});
       const directiveNormalizer =
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 

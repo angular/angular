@@ -112,15 +112,11 @@ export class JitCompilerFactory implements CompilerFactory {
         useFactory: () => {
           return new CompilerConfig({
             // let explicit values from the compiler options overwrite options
-            // from the app providers. E.g. important for the testing platform.
-            genDebugInfo: opts.useDebug,
-            // let explicit values from the compiler options overwrite options
             // from the app providers
             useJit: opts.useJit,
             // let explicit values from the compiler options overwrite options
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
-            logBindingUpdate: opts.useDebug,
             missingTranslation: opts.missingTranslation,
             enableLegacyTemplate: opts.enableLegacyTemplate,
           });
@@ -150,7 +146,6 @@ export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDyna
 
 function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {
-    useDebug: _lastDefined(optionsArr.map(options => options.useDebug)),
     useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
     providers: _mergeArrays(optionsArr.map(options => options.providers)),

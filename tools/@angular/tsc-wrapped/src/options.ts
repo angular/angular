@@ -76,7 +76,7 @@ interface Options extends ts.CompilerOptions {
   // Print extra information while running the compiler
   trace?: boolean;
 
-  // Whether to embed debug information in the compiled templates
+  /** @deprecated since v4 this option has no effect anymore. */
   debug?: boolean;
 
   // Whether to enable support for <template> and the template attribute (true by default)

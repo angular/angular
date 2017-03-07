@@ -54,9 +54,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       new HtmlParser(), translations, options.i18nFormat, MissingTranslationStrategy.Warning,
       console);
   const config = new CompilerConfig({
-    genDebugInfo: options.debug === true,
     defaultEncapsulation: ViewEncapsulation.Emulated,
-    logBindingUpdate: false,
     useJit: false,
     enableLegacyTemplate: options.enableLegacyTemplate !== false,
   });

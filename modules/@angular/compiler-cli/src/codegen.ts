@@ -72,7 +72,6 @@ export class CodeGenerator {
       transContent = readFileSync(transFile, 'utf8');
     }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
-      debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
       locale: cliOptions.locale,

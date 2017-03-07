@@ -205,7 +205,7 @@ export declare abstract class CompilerFactory {
 
 /** @experimental */
 export declare type CompilerOptions = {
-    useDebug?: boolean;
+    /** @deprecated */ useDebug?: boolean;
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: any[];
