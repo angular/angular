@@ -25,6 +25,7 @@ import {supportsState} from './history';
 export class BrowserPlatformLocation extends PlatformLocation {
   private _location: Location;
   private _history: History;
+  private _supportsEventConstructor: boolean = typeof(<any>window).PopStateEvent === 'function';
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
@@ -33,7 +34,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
-  _init() {
+  _init(): void {
     this._location = getDOM().getLocation();
     this._history = getDOM().getHistory();
   }
@@ -58,6 +59,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.pushState(state, title, url);
+      this._dispatchPopStateEvent(state);
     } else {
       this._location.hash = url;
     }
@@ -66,6 +68,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   replaceState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.replaceState(state, title, url);
+      this._dispatchPopStateEvent(state);
     } else {
       this._location.hash = url;
     }
@@ -74,4 +77,20 @@ export class BrowserPlatformLocation extends PlatformLocation {
   forward(): void { this._history.forward(); }
 
   back(): void { this._history.back(); }
+
+  private _dispatchPopStateEvent(state: any): void {
+    let popStateEvent: PopStateEvent;
+    // IE doesn't support event constructor
+    if (this._supportsEventConstructor) {
+      popStateEvent =
+          new (<any>PopStateEvent)('popstate', {state, bubbles: true, cancelable: false});
+    } else {
+      popStateEvent = document.createEvent('PopStateEvent');
+      // initPopStateEvent is undefined in mobile Safari
+      if (popStateEvent.initPopStateEvent) {
+        popStateEvent.initPopStateEvent('popstate', true, false, state);
+      }
+    }
+    window.dispatchEvent(popStateEvent);
+  }
 }
