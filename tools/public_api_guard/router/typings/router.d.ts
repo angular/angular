@@ -76,7 +76,7 @@ export declare type Event = NavigationStart | NavigationEnd | NavigationCancel |
 export interface ExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
-    initialNavigation?: boolean;
+    initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     useHash?: boolean;
 }

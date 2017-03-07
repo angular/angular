@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {Subject} from 'rxjs/Subject';
+import {of } from 'rxjs/observable/of';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -19,7 +21,7 @@ import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
-import {ActivatedRoute} from './router_state';
+import {ActivatedRoute, RouterStateSnapshot} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
@@ -208,6 +210,32 @@ export function provideRoutes(routes: Routes): any {
   ];
 }
 
+/**
+ * @whatItDoes Represents an option to configure when the initial navigation is performed.
+ *
+ * @description
+ * * 'enabled' - the initial navigation starts before the root component is created.
+ * The bootstrap is blocked until the initial navigation is complete.
+ * * 'disabled' - the initial navigation is not performed. The location listener is set up before
+ * the root component gets created.
+ * * 'legacy_enabled'- the initial navigation starts after the root component has been created.
+ * The bootstrap is not blocked until the initial navigation is complete. @deprecated
+ * * 'legacy_disabled'- the initial navigation is not performed. The location listener is set up
+ * after @deprecated
+ * the root component gets created.
+ * * `true` - same as 'legacy_enabled'. @deprecated
+ * * `false` - same as 'legacy_disabled'. @deprecated
+ *
+ * The 'enabled' option should be used for applications unless there is a reason to have
+ * more control over when the router starts its initial navigation due to some complex
+ * initialization logic. In this case, 'disabled' should be used.
+ *
+ * The 'legacy_enabled' and 'legacy_disabled' should not be used for new applications.
+ *
+ * @experimental
+ */
+export type InitialNavigation =
+    true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
 
 /**
  * @whatItDoes Represents options to configure the router.
@@ -228,7 +256,7 @@ export interface ExtraOptions {
   /**
    * Disables the initial navigation.
    */
-  initialNavigation?: boolean;
+  initialNavigation?: InitialNavigation;
 
   /**
    * A custom error handler.
@@ -278,22 +306,100 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function initialRouterNavigation(
-    router: Router, ref: ApplicationRef, preloader: RouterPreloader, opts: ExtraOptions) {
-  return (bootstrappedComponentRef: ComponentRef<any>) => {
+/**
+ * To initialize the router properly we need to do in two steps:
+ *
+ * We need to start the navigation in a APP_INITIALIZER to block the bootstrap if
+ * a resolver or a guards executes asynchronously. Second, we need to actually run
+ * activation in a BOOTSTRAP_LISTENER. We utilize the afterPreactivation
+ * hook provided by the router to do that.
+ *
+ * The router navigation starts, reaches the point when preactivation is done, and then
+ * pauses. It waits for the hook to be resolved. We then resolve it only in a bootstrap listener.
+ */
+@Injectable()
+export class RouterInitializer {
+  private initNavigation: boolean = false;
+  private resultOfPreactivationDone = new Subject<void>();
+
+  constructor(private injector: Injector) {}
+
+  appInitializer(): Promise<any> {
+    const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+    return p.then(() => {
+      let resolve: Function = null;
+      const res = new Promise(r => resolve = r);
+      const router = this.injector.get(Router);
+      const opts = this.injector.get(ROUTER_CONFIGURATION);
+
+      if (this.isLegacyDisabled(opts) || this.isLegacyEnabled(opts)) {
+        resolve(true);
+
+      } else if (opts.initialNavigation === 'disabled') {
+        router.setUpLocationChangeListener();
+        resolve(true);
+
+      } else if (opts.initialNavigation === 'enabled') {
+        router.hooks.afterPreactivation = () => {
+          // only the initial navigation should be delayed
+          if (!this.initNavigation) {
+            this.initNavigation = true;
+            resolve(true);
+            return this.resultOfPreactivationDone;
+
+            // subsequent navigations should not be delayed
+          } else {
+            return of (null);
+          }
+        };
+        router.initialNavigation();
+
+      } else {
+        throw new Error(`Invalid initialNavigation options: '${opts.initialNavigation}'`);
+      }
+
+      return res;
+    });
+  }
+
+  bootstrapListener(bootstrappedComponentRef: ComponentRef<any>): void {
+    const opts = this.injector.get(ROUTER_CONFIGURATION);
+    const preloader = this.injector.get(RouterPreloader);
+    const router = this.injector.get(Router);
+    const ref = this.injector.get(ApplicationRef);
 
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;
     }
 
-    router.resetRootComponentType(ref.componentTypes[0]);
-    preloader.setUpPreloading();
-    if (opts.initialNavigation === false) {
-      router.setUpLocationChangeListener();
-    } else {
+    if (this.isLegacyEnabled(opts)) {
       router.initialNavigation();
+    } else if (this.isLegacyDisabled(opts)) {
+      router.setUpLocationChangeListener();
     }
-  };
+
+    preloader.setUpPreloading();
+    router.resetRootComponentType(ref.componentTypes[0]);
+    this.resultOfPreactivationDone.next(null);
+    this.resultOfPreactivationDone.complete();
+  }
+
+  private isLegacyEnabled(opts: ExtraOptions): boolean {
+    return opts.initialNavigation === 'legacy_enabled' || opts.initialNavigation === true ||
+        opts.initialNavigation === undefined;
+  }
+
+  private isLegacyDisabled(opts: ExtraOptions): boolean {
+    return opts.initialNavigation === 'legacy_disabled' || opts.initialNavigation === false;
+  }
+}
+
+export function getAppInitializer(r: RouterInitializer) {
+  return r.appInitializer.bind(r);
+}
+
+export function getBootstrapListener(r: RouterInitializer) {
+  return r.bootstrapListener.bind(r);
 }
 
 /**
@@ -306,11 +412,14 @@ export const ROUTER_INITIALIZER =
 
 export function provideRouterInitializer() {
   return [
+    RouterInitializer,
     {
-      provide: ROUTER_INITIALIZER,
-      useFactory: initialRouterNavigation,
-      deps: [Router, ApplicationRef, RouterPreloader, ROUTER_CONFIGURATION]
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: getAppInitializer,
+      deps: [RouterInitializer]
     },
+    {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener, deps: [RouterInitializer]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},
   ];
 }

@@ -95,6 +95,9 @@ export declare class Location {
 }
 
 /** @experimental */
+export declare const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
+
+/** @experimental */
 export interface LocationChangeEvent {
     type: string;
 }
