@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModule} from '@angular/core';
+import {ApplicationRef, NgModule, NgZone, Provider, RendererFactoryV2} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ServerModule} from '@angular/platform-server';
+import {NoopAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {ServerModule, ɵServerRendererFactoryV2} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 // Note: don't refer to third_party_src as we want to test that
 // we can compile components from node_modules!
@@ -24,6 +24,19 @@ import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferenc
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
+
+export function instantiateServerRendererFactory(
+    renderer: RendererFactoryV2, engine: ɵAnimationEngine, zone: NgZone) {
+  return new ɵAnimationRendererFactory(renderer, engine, zone);
+}
+
+// TODO(matsko): create a server module for animations and use
+// that instead of these manual providers here.
+export const SERVER_ANIMATIONS_PROVIDERS: Provider[] = [{
+  provide: RendererFactoryV2,
+  useFactory: instantiateServerRendererFactory,
+  deps: [ɵServerRendererFactoryV2, ɵAnimationEngine, NgZone]
+}];
 
 @NgModule({
   declarations: [
@@ -58,7 +71,10 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     SomeLibModule.withProviders(),
     ThirdpartyModule,
   ],
-  providers: [SomeService],
+  providers: [
+    SomeService,
+    SERVER_ANIMATIONS_PROVIDERS,
+  ],
   entryComponents: [
     AnimateCmp,
     BasicComp,

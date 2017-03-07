@@ -182,18 +182,30 @@ class DefaultDomRendererV2 implements RendererV2 {
     }
   }
 
-  setProperty(el: any, name: string, value: any): void { el[name] = value; }
+  setProperty(el: any, name: string, value: any): void {
+    checkNoSyntheticProp(name, 'property');
+    el[name] = value;
+  }
 
   setValue(node: any, value: string): void { node.nodeValue = value; }
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
+    checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       return <() => void>this.eventManager.addGlobalEventListener(
           target, event, decoratePreventDefault(callback));
     }
     return <() => void>this.eventManager.addEventListener(
                target, event, decoratePreventDefault(callback)) as() => void;
+  }
+}
+
+const AT_CHARCODE = '@'.charCodeAt(0);
+function checkNoSyntheticProp(name: string, nameKind: string) {
+  if (name.charCodeAt(0) === AT_CHARCODE) {
+    throw new Error(
+        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
   }
 }
 

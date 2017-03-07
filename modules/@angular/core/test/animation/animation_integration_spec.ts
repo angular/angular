@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {Component, HostBinding, HostListener, ViewChild} from '@angular/core';
+import {Component, HostBinding, HostListener, RendererFactoryV2, ViewChild} from '@angular/core';
+import {ɵDomRendererFactoryV2} from '@angular/platform-browser';
 import {AnimationDriver, BrowserAnimationsModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/platform-browser/animations/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+
 import {TestBed} from '../../testing';
 
 export function main() {
@@ -548,6 +550,40 @@ export function main() {
            expect(cmp.event.fromState).toEqual('void');
            expect(cmp.event.toState).toEqual('TRUE');
          });
+    });
+
+    describe('errors for not using the animation module', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [{provide: RendererFactoryV2, useExisting: ɵDomRendererFactoryV2}],
+        });
+      });
+
+      it('should throw when using an @prop binding without the animation module', () => {
+        @Component({template: `<div [@myAnimation]="true"></div>`})
+        class Cmp {
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const comp = TestBed.createComponent(Cmp);
+        expect(() => comp.detectChanges())
+            .toThrowError(
+                'Found the synthetic property @myAnimation. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+      });
+
+      it('should throw when using an @prop listener without the animation module', () => {
+        @Component({template: `<div (@myAnimation.start)="a = true"></div>`})
+        class Cmp {
+          a: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        expect(() => TestBed.createComponent(Cmp))
+            .toThrowError(
+                'Found the synthetic listener @myAnimation.start. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+
+      });
     });
   });
 }
