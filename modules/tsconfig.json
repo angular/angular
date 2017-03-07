@@ -6,16 +6,15 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../dist/all/@angular",
+    "outDir": "../dist/all/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["./*"],
+      "@angular/*": ["../dist/all/@angular/*"],
       "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../dist/tools/@angular/tsc-wrapped/*"],
-      "e2e_util/*": ["../modules/e2e_util/*"]
+      "@angular/tsc-wrapped/*": ["../dist/tools/@angular/tsc-wrapped/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
@@ -26,6 +25,12 @@
     "types": ["angularjs"]
   },
   "exclude": [
-    "compiler-cli/integrationtest"
+    "angular1_router",
+    "benchmarks/e2e_test/old",
+    "benchmarks/src/old",
+    "benchmarks/src/**/index_aot.ts",
+    "benchmarks_external",
+    "payload_tests",
+    "rollup-test"
   ]
 }

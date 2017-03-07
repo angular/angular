@@ -2020,7 +2020,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 
 ### ROUTER CHANGE LOG
 
-[You can find the router changelog here.](https://github.com/angular/angular/blob/master/modules/@angular/router/CHANGELOG.md)
+[You can find the router changelog here.](https://github.com/angular/angular/blob/master/packages/router/CHANGELOG.md)
 
 <a name="2.0.0-rc.4"></a>
 # [2.0.0-rc.4](https://github.com/angular/angular/compare/2.0.0-rc.3...2.0.0-rc.4) (2016-06-30)

@@ -7,7 +7,7 @@ const entrypoints = [
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/upgrade/typings/upgrade.d.ts',
-  'dist/packages-dist/upgrade/typings/static/static.d.ts',
+  'dist/packages-dist/upgrade/typings/static/index.d.ts',
   'dist/packages-dist/platform-browser/typings/platform-browser.d.ts',
   'dist/packages-dist/platform-browser/typings/testing/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/typings/platform-browser-dynamic.d.ts',
@@ -19,7 +19,7 @@ const entrypoints = [
   'dist/packages-dist/http/typings/http.d.ts', 'dist/packages-dist/http/typings/testing/index.d.ts',
   'dist/packages-dist/forms/typings/forms.d.ts', 'dist/packages-dist/router/typings/router.d.ts',
   'dist/packages-dist/animations/typings/animations.d.ts',
-  'dist/packages-dist/platform-browser/typings/animations/animations.d.ts',
+  'dist/packages-dist/platform-browser/typings/animations/index.d.ts',
   'dist/packages-dist/platform-browser/typings/animations/testing/index.d.ts'
 ];
 

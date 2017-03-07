@@ -22,17 +22,17 @@ travisFoldEnd "tsc tools"
 
 
 travisFoldStart "tsc all"
-  node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main -p modules
+  node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main -p packages
 travisFoldEnd "tsc all"
 
 
 # TODO(i): what are these compilations here for?
 travisFoldStart "tsc a bunch of useless stuff"
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-build.json
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/common/tsconfig-build.json
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/platform-browser/tsconfig-build.json
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/router/tsconfig-build.json
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/forms/tsconfig-build.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/core/tsconfig-build.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/common/tsconfig-build.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/platform-browser/tsconfig-build.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/router/tsconfig-build.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/forms/tsconfig-build.json
 travisFoldEnd "tsc a bunch of useless stuff"
 
 

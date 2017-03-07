@@ -38,7 +38,7 @@ const BaseConfig = {
 if (platform == 'node') {
   tscWatch = new TscWatch(Object.assign(
       {
-        tsconfig: 'modules/tsconfig.json',
+        tsconfig: 'packages/tsconfig.json',
         onChangeCmds: [[
           'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
           '@angular/compiler-cli/test/**/*_spec.js', '@angular/benchpress/test/**/*_spec.js'
@@ -48,7 +48,7 @@ if (platform == 'node') {
 } else if (platform == 'browser') {
   tscWatch = new TscWatch(Object.assign(
       {
-        tsconfig: 'modules/tsconfig.json',
+        tsconfig: 'packages/tsconfig.json',
         onStartCmds: [
           [
             'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9876',
@@ -56,7 +56,7 @@ if (platform == 'node') {
           ],
           [
             'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
-            'modules/@angular/router/karma.conf.js'
+            'packages/router/karma.conf.js'
           ],
         ],
         onChangeCmds: [
@@ -68,11 +68,11 @@ if (platform == 'node') {
 } else if (platform == 'router') {
   tscWatch = new TscWatch(Object.assign(
       {
-        tsconfig: 'modules/tsconfig.json',
+        tsconfig: 'packages/tsconfig.json',
         onStartCmds: [
           [
             'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
-            'modules/@angular/router/karma.conf.js'
+            'packages/router/karma.conf.js'
           ],
         ],
         onChangeCmds: [
@@ -83,7 +83,7 @@ if (platform == 'node') {
 } else if (platform == 'browserNoRouter') {
   tscWatch = new TscWatch(Object.assign(
       {
-        tsconfig: 'modules/tsconfig.json',
+        tsconfig: 'packages/tsconfig.json',
         onStartCmds: [[
           'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9876',
           'karma-js.conf.js'

@@ -128,11 +128,11 @@ $ cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
 $ ./scripts/ci/offline_compiler_test.sh
 
 # Keep a package fresh in watch mode
-./node_modules/.bin/tsc -p modules/@angular/compiler/tsconfig-es5.json -w
+./node_modules/.bin/tsc -p packages/compiler/tsconfig-build.json -w
 
 # Recompile @angular/core module (needs to use tsc-ext to keep the metadata)
 $ export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
-$ node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-es5.json
+$ node dist/tools/@angular/tsc-wrapped/src/main -p packages/core/tsconfig-build.json
 
 # Iterate on the test
 $ cd /tmp/wherever/e2e_test.1464388257/

@@ -30,7 +30,7 @@ travisFoldEnd "test.unit.node"
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
-  node dist/tools/@angular/tsc-wrapped/src/main -p modules/tsconfig.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p packages/tsconfig.json
 travisFoldStart "test.unit.rebuildHack"
 
 
@@ -47,5 +47,5 @@ travisFoldEnd "test.unit.localChrome"
 
 
 travisFoldStart "test.unit.localChrome.router"
-  $(npm bin)/karma start ./modules/@angular/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+  $(npm bin)/karma start ./packages/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
 travisFoldEnd "test.unit.localChrome.router"
