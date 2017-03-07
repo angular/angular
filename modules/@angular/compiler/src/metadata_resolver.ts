@@ -425,6 +425,7 @@ export class CompileMetadataResolver {
         }
 
         if (importedModuleType) {
+          if (this._checkSelfImport(moduleType, importedModuleType)) return;
           const importedModuleSummary = this.getNgModuleSummary(importedModuleType);
           if (!importedModuleSummary) {
             this._reportError(
@@ -565,6 +566,15 @@ export class CompileMetadataResolver {
     transitiveModule.addModule(compileMeta.type);
     this._ngModuleCache.set(moduleType, compileMeta);
     return compileMeta;
+  }
+
+  private _checkSelfImport(moduleType: Type<any>, importedModuleType: Type<any>): boolean {
+    if (moduleType === importedModuleType) {
+      this._reportError(
+          syntaxError(`'${stringifyType(moduleType)}' module can't import itself`), moduleType);
+      return true;
+    }
+    return false;
   }
 
   private _getTypeDescriptor(type: Type<any>): string {
