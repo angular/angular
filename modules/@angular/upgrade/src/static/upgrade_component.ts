@@ -93,10 +93,13 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private directive: angular.IDirective;
   private bindings: Bindings;
-  private linkFn: angular.ILinkFn;
 
-  private controllerInstance: IControllerInstance = null;
-  private bindingDestination: IBindingDestination = null;
+  private controllerInstance: IControllerInstance;
+  private bindingDestination: IBindingDestination;
+
+  // We will be instantiating the controller in the `ngOnInit` hook, when the first `ngOnChanges`
+  // will have been already triggered. We store the `SimpleChanges` and "play them back" later.
+  private pendingChanges: SimpleChanges;
 
   private unregisterDoCheckWatcher: Function;
 
@@ -128,7 +131,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     this.directive = this.getDirective(name);
     this.bindings = this.initializeBindings(this.directive);
-    this.linkFn = this.compileTemplate(this.directive);
 
     // We ask for the AngularJS scope from the Angular injector, since
     // we will put the new component scope onto the new injector for each component
@@ -137,6 +139,15 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     // QUESTION 2: Should we make the scope accessible through `$element.scope()/isolateScope()`?
     this.$componentScope = $parentScope.$new(!!this.directive.scope);
 
+    this.initializeOutputs();
+  }
+
+  ngOnInit() {
+    // Collect contents, insert and compile template
+    const contentChildNodes = this.extractChildNodes(this.element);
+    const linkFn = this.compileTemplate(this.directive);
+
+    // Instantiate controller
     const controllerType = this.directive.controller;
     const bindToController = this.directive.bindToController;
     if (controllerType) {
@@ -144,17 +155,14 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
           controllerType, this.$componentScope, this.$element, this.directive.controllerAs);
     } else if (bindToController) {
       throw new Error(
-          `Upgraded directive '${name}' specifies 'bindToController' but no controller.`);
+          `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
     }
 
+    // Set up outputs
     this.bindingDestination = bindToController ? this.controllerInstance : this.$componentScope;
+    this.bindOutputs();
 
-    this.setupOutputs();
-  }
-
-  ngOnInit() {
-    const attrs: angular.IAttributes = NOT_SUPPORTED;
-    const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
+    // Require other controllers
     const directiveRequire = this.getDirectiveRequire(this.directive);
     const requiredControllers =
         this.resolveRequire(this.directive.name, this.$element, directiveRequire);
@@ -166,10 +174,18 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       });
     }
 
+    // Hook: $onChanges
+    if (this.pendingChanges) {
+      this.forwardChanges(this.pendingChanges);
+      this.pendingChanges = null;
+    }
+
+    // Hook: $onInit
     if (this.controllerInstance && isFunction(this.controllerInstance.$onInit)) {
       this.controllerInstance.$onInit();
     }
 
+    // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
       const callDoCheck = () => this.controllerInstance.$doCheck();
 
@@ -177,42 +193,35 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       callDoCheck();
     }
 
+    // Linking
     const link = this.directive.link;
     const preLink = (typeof link == 'object') && (link as angular.IDirectivePrePost).pre;
     const postLink = (typeof link == 'object') ? (link as angular.IDirectivePrePost).post : link;
+    const attrs: angular.IAttributes = NOT_SUPPORTED;
+    const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    const childNodes: Node[] = [];
-    let childNode: Node;
-    while (childNode = this.element.firstChild) {
-      this.element.removeChild(childNode);
-      childNodes.push(childNode);
-    }
-
-    const attachElement: angular.ICloneAttachFunction =
-        (clonedElements, scope) => { this.$element.append(clonedElements); };
-    const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) => cloneAttach(childNodes);
-
-    this.linkFn(this.$componentScope, attachElement, {parentBoundTranscludeFn: attachChildNodes});
+    const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) =>
+        cloneAttach(contentChildNodes);
+    linkFn(this.$componentScope, null, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
+    // Hook: $postLink
     if (this.controllerInstance && isFunction(this.controllerInstance.$postLink)) {
       this.controllerInstance.$postLink();
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Forward input changes to `bindingDestination`
-    Object.keys(changes).forEach(
-        propName => this.bindingDestination[propName] = changes[propName].currentValue);
-
-    if (isFunction(this.bindingDestination.$onChanges)) {
-      this.bindingDestination.$onChanges(changes);
+    if (!this.bindingDestination) {
+      this.pendingChanges = changes;
+    } else {
+      this.forwardChanges(changes);
     }
   }
 
@@ -324,6 +333,18 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     return bindings;
   }
 
+  private extractChildNodes(element: Element): Node[] {
+    const childNodes: Node[] = [];
+    let childNode: Node;
+
+    while (childNode = element.firstChild) {
+      element.removeChild(childNode);
+      childNodes.push(childNode);
+    }
+
+    return childNodes;
+  }
+
   private compileTemplate(directive: angular.IDirective): angular.ILinkFn {
     if (this.directive.template !== undefined) {
       return this.compileHtml(getOrCall(this.directive.template));
@@ -403,22 +424,33 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
   }
 
-  private setupOutputs() {
-    // Set up the outputs for `=` bindings
-    this.bindings.twoWayBoundProperties.forEach(propName => {
-      const outputName = this.bindings.propertyToOutputMap[propName];
-      (this as any)[outputName] = new EventEmitter();
-    });
+  private initializeOutputs() {
+    // Initialize the outputs for `=` and `&` bindings
+    this.bindings.twoWayBoundProperties.concat(this.bindings.expressionBoundProperties)
+        .forEach(propName => {
+          const outputName = this.bindings.propertyToOutputMap[propName];
+          (this as any)[outputName] = new EventEmitter();
+        });
+  }
 
-    // Set up the outputs for `&` bindings
+  private bindOutputs() {
+    // Bind `&` bindings to the corresponding outputs
     this.bindings.expressionBoundProperties.forEach(propName => {
       const outputName = this.bindings.propertyToOutputMap[propName];
-      const emitter = (this as any)[outputName] = new EventEmitter();
+      const emitter = (this as any)[outputName];
 
-      // QUESTION: Do we want the ng1 component to call the function with `<value>` or with
-      //           `{$event: <value>}`. The former is closer to ng2, the latter to ng1.
       this.bindingDestination[propName] = (value: any) => emitter.emit(value);
     });
+  }
+
+  private forwardChanges(changes: SimpleChanges) {
+    // Forward input changes to `bindingDestination`
+    Object.keys(changes).forEach(
+        propName => this.bindingDestination[propName] = changes[propName].currentValue);
+
+    if (isFunction(this.bindingDestination.$onChanges)) {
+      this.bindingDestination.$onChanges(changes);
+    }
   }
 
   private notSupported(feature: string) {
@@ -427,9 +459,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   private compileHtml(html: string): angular.ILinkFn {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return this.$compile(div.childNodes);
+    this.element.innerHTML = html;
+    return this.$compile(this.element.childNodes);
   }
 }
 
