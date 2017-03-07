@@ -1,9 +1,8 @@
 #!/bin/bash
-
 set -eux -o pipefail
 
-# Constants
-SCRIPTS_JS_DIR="`dirname $0`/dockerbuild/scripts-js"
+# Set up env
+source "`dirname $0`/env.sh"
 
 # Test `scripts-js/`
 cd "$SCRIPTS_JS_DIR"

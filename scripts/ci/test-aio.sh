@@ -40,6 +40,6 @@ source ${thisDir}/_travis-fold.sh
 
   # Run unit tests for aio/aio-builds-setup
   travisFoldStart "test.aio.aio-builds-setup"
-    ./aio-builds-setup/test.sh
+    ./aio-builds-setup/scripts/test.sh
   travisFoldEnd "test.aio.aio-builds-setup"
 )
