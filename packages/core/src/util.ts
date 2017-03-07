@@ -69,6 +69,11 @@ export function stringify(token: any): string {
   }
 
   const res = token.toString();
+
+  if (res == null) {
+    return '' + res;
+  }
+
   const newLineIndex = res.indexOf('\n');
   return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }
