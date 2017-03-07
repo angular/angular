@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, sequence, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationDefinitionMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, ɵStyleData} from '@angular/animations';
 
-import {copyStyles, normalizeStyles, parseTimeExpression} from '../util';
+import {copyObj, copyStyles, interpolateStyleLocals, normalizeAnimationEntry, normalizeStyles, resolveTimingValue} from '../util';
 
 import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
-
 
 
 /*
@@ -100,21 +99,23 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  */
 export function buildAnimationKeyframes(
     ast: AnimationMetadata | AnimationMetadata[], startingStyles: ɵStyleData = {},
-    finalStyles: ɵStyleData = {}): AnimationTimelineInstruction[] {
-  const normalizedAst =
-      Array.isArray(ast) ? sequence(<AnimationMetadata[]>ast) : <AnimationMetadata>ast;
-  return new AnimationTimelineVisitor().buildKeyframes(normalizedAst, startingStyles, finalStyles);
+    finalStyles: ɵStyleData = {}, locals: {[varName: string]: string | number | boolean},
+    errors: any[]): AnimationTimelineInstruction[] {
+  return new AnimationTimelineVisitor().buildKeyframes(
+      normalizeAnimationEntry(ast), startingStyles, finalStyles, locals, errors);
 }
 
 export declare type StyleAtTime = {
   time: number; value: string | number;
 };
 
+const DEFAULT_NOOP_PREVIOUS_NODE = <AnimationMetadata>{};
 export class AnimationTimelineContext {
   currentTimeline: TimelineBuilder;
   currentAnimateTimings: AnimateTimings;
-  previousNode: AnimationMetadata = <AnimationMetadata>{};
+  previousNode: AnimationMetadata = DEFAULT_NOOP_PREVIOUS_NODE;
   subContextCount = 0;
+  locals: {[varName: string]: string | number | boolean} = null;
 
   constructor(
       public errors: any[], public timelines: TimelineBuilder[],
@@ -128,11 +129,13 @@ export class AnimationTimelineContext {
         new AnimationTimelineContext(this.errors, this.timelines, this.currentTimeline.fork());
     context.previousNode = this.previousNode;
     context.currentAnimateTimings = this.currentAnimateTimings;
+    context.locals = this.locals ? copyObj(this.locals) : null;
     this.subContextCount++;
     return context;
   }
 
   transformIntoNewTimeline(newTime = 0) {
+    this.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
     this.currentTimeline = this.currentTimeline.fork(newTime);
     this.timelines.push(this.currentTimeline);
     return this.currentTimeline;
@@ -144,10 +147,15 @@ export class AnimationTimelineContext {
 }
 
 export class AnimationTimelineVisitor implements AnimationDslVisitor {
-  buildKeyframes(ast: AnimationMetadata, startingStyles: ɵStyleData, finalStyles: ɵStyleData):
-      AnimationTimelineInstruction[] {
-    const context = new AnimationTimelineContext([], []);
-    context.currentTimeline.setStyles(startingStyles);
+  buildKeyframes(
+      ast: AnimationMetadata, startingStyles: ɵStyleData, finalStyles: ɵStyleData,
+      locals: {[varName: string]: string | number | boolean},
+      errors: any[]): AnimationTimelineInstruction[] {
+    const context = new AnimationTimelineContext(errors, []);
+    if (locals) {
+      context.locals = locals;
+    }
+    context.currentTimeline.setStyles(startingStyles, context.errors);
 
     visitAnimationNode(this, ast, context);
     const normalizedFinalStyles = copyStyles(finalStyles, true);
@@ -165,7 +173,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       });
     }
 
-    context.currentTimeline.setStyles(normalizedFinalStyles);
+    context.currentTimeline.setStyles(normalizedFinalStyles, context.errors);
     const timelineInstructions: AnimationTimelineInstruction[] = [];
     context.timelines.forEach(timeline => {
       // this checks to see if an actual animation happened
@@ -186,6 +194,34 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
   visitTransition(ast: AnimationTransitionMetadata, context: any): any {
     // these values are not visited in this AST
+  }
+
+  visitAnimateChild(ast: AnimationAnimateChildMetadata, context: any): any {
+    const innerContext = context.createSubContext();
+    innerContext.locals = ast.locals ? copyObj(ast.locals) : context.locals;
+    innerContext.transformIntoNewTimeline();
+    this.visitDefinition(ast.animation, innerContext);
+    context.transformIntoNewTimeline(innerContext.currentTimeline.currentTime);
+    context.previousNode = ast;
+  }
+
+  visitDefinition(ast: AnimationDefinitionMetadata, context: AnimationTimelineContext) {
+    // we traverse over all of the DEFAULT local values defined
+    // in the `animation()` declaration. This way if the user has
+    // not provided them in the `animateChild()` call (which is called
+    // just before this then it will substitute them in
+    if (ast.locals) {
+      context.locals = context.locals || {};
+      Object.keys(ast.locals).forEach(varName => {
+        if (!context.locals.hasOwnProperty(varName)) {
+          context.locals[varName] = ast.locals[varName];
+        }
+      });
+    }
+
+    const entry = normalizeAnimationEntry(ast.animation);
+    visitAnimationNode(this, entry, context);
+    context.previousNode = ast;
   }
 
   visitSequence(ast: AnimationSequenceMetadata, context: AnimationTimelineContext) {
@@ -227,9 +263,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
   }
 
   visitAnimate(ast: AnimationAnimateMetadata, context: AnimationTimelineContext) {
-    const timings = ast.timings.hasOwnProperty('duration') ?
-        <AnimateTimings>ast.timings :
-        parseTimeExpression(<string|number>ast.timings, context.errors);
+    const timings = resolveTimingValue(ast.timings, context.errors);
     context.currentAnimateTimings = timings;
 
     if (timings.delay) {
@@ -267,7 +301,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       normalizedStyles['easing'] = easing;
     }
 
-    context.currentTimeline.setStyles(normalizedStyles);
+    context.currentTimeline.setStyles(normalizedStyles, context.errors, context.locals);
     context.previousNode = ast;
   }
 
@@ -295,7 +329,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
           (step.offset != null ? step.offset : parseFloat(normalizedStyles['offset'] as string)) :
           (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
       innerTimeline.forwardTime(offset * duration);
-      innerTimeline.setStyles(normalizedStyles);
+      innerTimeline.setStyles(normalizedStyles, context.errors, context.locals);
     });
 
     // this will ensure that the parent timeline gets all the styles from
@@ -360,10 +394,16 @@ export class TimelineBuilder {
     }
   }
 
-  setStyles(styles: ɵStyleData) {
+  setStyles(
+      styles: ɵStyleData, errors: any[],
+      locals: {[varName: string]: string | number | boolean} = null) {
     Object.keys(styles).forEach(prop => {
       if (prop !== 'offset') {
-        const val = styles[prop];
+        let val = styles[prop];
+        if (locals) {
+          val = interpolateStyleLocals(val, locals, errors);
+        }
+
         this._currentKeyframe[prop] = val;
         if (prop !== 'easing' && !this._localTimelineStyles[prop]) {
           this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;

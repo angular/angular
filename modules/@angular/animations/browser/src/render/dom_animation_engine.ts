@@ -74,7 +74,7 @@ export class DomAnimationEngine {
       const possibleTriggers = Object.keys(lookupRef);
       const hasRemoval = possibleTriggers.some(triggerName => {
         const oldValue = lookupRef[triggerName];
-        const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+        const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void', null);
         return !!instruction;
       });
       if (hasRemoval) {
@@ -97,16 +97,23 @@ export class DomAnimationEngine {
       this._elementTriggerStates.set(element, lookupRef = {});
     }
 
+    let strValue = value;
+    let locals = null;
+    if (value && value.hasOwnProperty('value')) {
+      strValue = value['value'];
+      locals = value;
+    }
+
     let oldValue = lookupRef[property] || 'void';
-    if (oldValue != value) {
-      let instruction = trigger.matchTransition(oldValue, value);
+    if (oldValue != strValue) {
+      let instruction = trigger.matchTransition(oldValue, strValue, locals);
       if (!instruction) {
         // we do this to make sure we always have an animation player so
         // that callback operations are properly called
-        instruction = trigger.createFallbackInstruction(oldValue, value);
+        instruction = trigger.createFallbackInstruction(oldValue, strValue);
       }
       this.animateTransition(element, instruction);
-      lookupRef[property] = value;
+      lookupRef[property] = strValue;
     }
   }
 
@@ -356,7 +363,7 @@ export class DomAnimationEngine {
         if (stateDetails) {
           Object.keys(stateDetails).forEach(triggerName => {
             const oldValue = stateDetails[triggerName];
-            const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+            const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void', null);
             if (instruction) {
               players.push(this.animateTransition(element, instruction));
               flushAgain = true;

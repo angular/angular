@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding, HostListener, ViewChild} from '@angular/core';
-import {AnimationDriver, BrowserAnimationsModule, ɵAnimationEngine} from '@angular/platform-browser/animations';
-import {MockAnimationDriver, MockAnimationPlayer} from '@angular/platform-browser/animations/testing';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+
 import {TestBed} from '../../testing';
 
 export function main() {
@@ -315,6 +317,42 @@ export function main() {
         engine.flush();
         expect(getLog().length).toEqual(0);
         resetLog();
+      });
+
+      it('should subtitute in values if the provided state match is an object with values', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@myAnimation]="exp"></div>
+          `,
+          animations: [trigger(
+              'myAnimation',
+              [transition(
+                  'a => b', [style({opacity: '$start'}), animate(1000, style({opacity: '$end'}))],
+                  {start: '0', end: '1'})])]
+        })
+        class Cmp {
+          public exp: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = {value: 'a'};
+        fixture.detectChanges();
+        engine.flush();
+        resetLog();
+
+        cmp.exp = {value: 'b', start: .3, end: .6};
+        fixture.detectChanges();
+        engine.flush();
+        const player = getLog().pop();
+        expect(player.keyframes).toEqual([
+          {opacity: '0.3', offset: 0}, {opacity: '0.6', offset: 1}
+        ]);
       });
     });
 

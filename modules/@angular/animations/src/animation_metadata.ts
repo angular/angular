@@ -26,7 +26,9 @@ export const enum AnimationMetadataType {
   Group,
   Animate,
   KeyframeSequence,
-  Style
+  Style,
+  Definition,
+  AnimateChild
 }
 
 /**
@@ -67,6 +69,15 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   expr: string|((fromState: string, toState: string) => boolean);
   animation: AnimationMetadata|AnimationMetadata[];
+  locals?: {[varName: string]: string | number | boolean};
+}
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export interface AnimationDefinitionMetadata extends AnimationMetadata {
+  animation: AnimationMetadata|AnimationMetadata[];
+  locals?: {[varName: string]: string | number | boolean};
 }
 
 /**
@@ -99,6 +110,15 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 export interface AnimationAnimateMetadata extends AnimationMetadata {
   timings: string|number|AnimateTimings;
   styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata;
+}
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export interface AnimationAnimateChildMetadata extends AnimationMetadata {
+  timings: string|number|AnimateTimings;
+  animation: AnimationDefinitionMetadata;
+  locals?: {[varName: string]: string | number | boolean};
 }
 
 /**
@@ -554,6 +574,25 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  */
 export function transition(
     stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
-    steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata {
-  return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps};
+    steps: AnimationMetadata | AnimationMetadata[],
+    locals: {[varName: string]: string | number | boolean} = null): AnimationTransitionMetadata {
+  return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, locals};
+}
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export function animation(
+    steps: AnimationMetadata | AnimationMetadata[],
+    locals: {[varName: string]: string | number | boolean} = null): AnimationDefinitionMetadata {
+  return {type: AnimationMetadataType.Definition, animation: steps, locals};
+}
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export function animateChild(
+    animation: AnimationDefinitionMetadata,
+    locals: {[varName: string]: string | number | boolean} = null): AnimationAnimateChildMetadata {
+  return {type: AnimationMetadataType.AnimateChild, timings: null, animation, locals};
 }

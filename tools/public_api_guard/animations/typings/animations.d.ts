@@ -2,6 +2,11 @@
 export declare function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
 
 /** @experimental */
+export declare function animateChild(animation: AnimationDefinitionMetadata, locals?: {
+    [varName: string]: string | number | boolean;
+}): AnimationAnimateChildMetadata;
+
+/** @experimental */
 export declare type AnimateTimings = {
     duration: number;
     delay: number;
@@ -9,9 +14,31 @@ export declare type AnimateTimings = {
 };
 
 /** @experimental */
+export declare function animation(steps: AnimationMetadata | AnimationMetadata[], locals?: {
+    [varName: string]: string | number | boolean;
+}): AnimationDefinitionMetadata;
+
+/** @experimental */
+export interface AnimationAnimateChildMetadata extends AnimationMetadata {
+    animation: AnimationDefinitionMetadata;
+    locals?: {
+        [varName: string]: string | number | boolean;
+    };
+    timings: string | number | AnimateTimings;
+}
+
+/** @experimental */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
     styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata;
     timings: string | number | AnimateTimings;
+}
+
+/** @experimental */
+export interface AnimationDefinitionMetadata extends AnimationMetadata {
+    animation: AnimationMetadata | AnimationMetadata[];
+    locals?: {
+        [varName: string]: string | number | boolean;
+    };
 }
 
 /** @experimental */
@@ -48,6 +75,8 @@ export declare const enum AnimationMetadataType {
     Animate = 4,
     KeyframeSequence = 5,
     Style = 6,
+    Definition = 7,
+    AnimateChild = 8,
 }
 
 /** @experimental */
@@ -93,6 +122,9 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 export interface AnimationTransitionMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
     expr: string | ((fromState: string, toState: string) => boolean);
+    locals?: {
+        [varName: string]: string | number | boolean;
+    };
 }
 
 /** @experimental */
@@ -143,7 +175,9 @@ export declare function style(tokens: {
 }>): AnimationStyleMetadata;
 
 /** @experimental */
-export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[], locals?: {
+    [varName: string]: string | number | boolean;
+}): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;

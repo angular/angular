@@ -5,11 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, ɵStyleData} from '@angular/animations';
+import {AnimateTimings, AnimationMetadata, sequence, ɵStyleData} from '@angular/animations';
 
 export const ONE_SECOND = 1000;
 
-export function parseTimeExpression(exp: string | number, errors: string[]): AnimateTimings {
+export function resolveTimingValue(timings: string | number | AnimateTimings, errors: any[]) {
+  return timings.hasOwnProperty('duration') ? <AnimateTimings>timings :
+                                              parseTimeExpression(<string|number>timings, errors);
+}
+
+function parseTimeExpression(exp: string | number, errors: string[]): AnimateTimings {
   const regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
@@ -49,6 +54,12 @@ export function parseTimeExpression(exp: string | number, errors: string[]): Ani
   return {duration, delay, easing};
 }
 
+export function copyObj(
+    obj: {[key: string]: any}, destination: {[key: string]: any} = {}): {[key: string]: any} {
+  Object.keys(obj).forEach(prop => { destination[prop] = obj[prop]; });
+  return destination;
+}
+
 export function normalizeStyles(styles: ɵStyleData | ɵStyleData[]): ɵStyleData {
   const normalizedStyles: ɵStyleData = {};
   if (Array.isArray(styles)) {
@@ -69,7 +80,7 @@ export function copyStyles(
       destination[prop] = styles[prop];
     }
   } else {
-    Object.keys(styles).forEach(prop => destination[prop] = styles[prop]);
+    copyObj(styles, destination);
   }
   return destination;
 }
@@ -88,4 +99,43 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
       element.style[prop] = '';
     });
   }
+}
+
+export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMetadata[]):
+    AnimationMetadata {
+  return Array.isArray(steps) ? sequence(<AnimationMetadata[]>steps) : <AnimationMetadata>steps;
+}
+
+// this is a naive approach to search/replace
+// TODO: check to see that transforms are not effected
+const STYLE_INTERPOLATION_REGEX = /\$\w+/;
+
+export function validateStyleLocals(
+    value: string | number, locals: {[varName: string]: string | number | boolean},
+    errors: any[] = null) {
+  const matches = value.toString().match(STYLE_INTERPOLATION_REGEX);
+  if (matches) {
+    matches.forEach(varName => {
+      varName = varName.substr(1);  // drop the $
+      if (!locals.hasOwnProperty(varName)) {
+        errors.push(
+            `Unable to resolve the local animation variable $${varName} in the given list of values`);
+      }
+    });
+  }
+}
+
+export function interpolateStyleLocals(
+    value: string | number, locals: {[varName: string]: string | number | boolean},
+    errors: any[]): string {
+  return value.toString().replace(STYLE_INTERPOLATION_REGEX, varName => {
+    varName = varName.substr(1);  // drop the $
+    let localVal = locals[varName];
+    // this means that the value was never overidden by the data passed in by the user
+    if (localVal === true) {
+      errors.push(`Please provide a value for the animation variable $${varName}`);
+      localVal = '';
+    }
+    return localVal.toString();
+  });
 }

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata} from '@angular/animations';
+import {AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationDefinitionMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata} from '@angular/animations';
 
 export interface AnimationDslVisitor {
   visitState(ast: AnimationStateMetadata, context: any): any;
@@ -15,6 +15,8 @@ export interface AnimationDslVisitor {
   visitAnimate(ast: AnimationAnimateMetadata, context: any): any;
   visitStyle(ast: AnimationStyleMetadata, context: any): any;
   visitKeyframeSequence(ast: AnimationKeyframesSequenceMetadata, context: any): any;
+  visitDefinition(ast: AnimationDefinitionMetadata, context: any): any;
+  visitAnimateChild(ast: AnimationAnimateChildMetadata, context: any): any;
 }
 
 export function visitAnimationNode(
@@ -34,6 +36,10 @@ export function visitAnimationNode(
       return visitor.visitKeyframeSequence(<AnimationKeyframesSequenceMetadata>node, context);
     case AnimationMetadataType.Style:
       return visitor.visitStyle(<AnimationStyleMetadata>node, context);
+    case AnimationMetadataType.Definition:
+      return visitor.visitDefinition(<AnimationDefinitionMetadata>node, context);
+    case AnimationMetadataType.AnimateChild:
+      return visitor.visitAnimateChild(<AnimationAnimateChildMetadata>node, context);
     default:
       throw new Error(`Unable to resolve animation metadata node #${node.type}`);
   }

@@ -145,6 +145,31 @@ export function main() {
         expect(t3.timelines[0].duration).toEqual(1234);
       });
 
+      describe('locals', () => {
+        it('should support transition-level animation variable locals', () => {
+          const result = makeTrigger(
+              'name', [transition(
+                          'a => b', [style({height: '$a'}), animate(1000, style({height: '$b'}))],
+                          {a: '100px', b: '200px'})]);
+
+          const trans = result.matchTransition('a', 'b');
+          const keyframes = trans.timelines[0].keyframes;
+          expect(keyframes).toEqual([{height: '100px', offset: 0}, {height: '200px', offset: 1}]);
+        });
+
+        it('should subtitute variable locals provided directly within the transition match', () => {
+          const result = makeTrigger(
+              'name', [transition(
+                          'a => b', [style({height: '$a'}), animate(1000, style({height: '$b'}))],
+                          {a: '100px', b: '200px'})]);
+
+          const trans = result.matchTransition('a', 'b', {a: '300px'});
+
+          const keyframes = trans.timelines[0].keyframes;
+          expect(keyframes).toEqual([{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
+        });
+      });
+
       describe('aliases', () => {
         it('should alias the :enter transition as void => *', () => {
           const result = makeTrigger('name', [transition(':enter', animate(3333))]);

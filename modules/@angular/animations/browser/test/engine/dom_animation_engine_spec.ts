@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {AnimationEvent, AnimationMetadata, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
@@ -308,7 +308,7 @@ export function main() {
       it('should animate a timeline instruction', () => {
         const engine = makeEngine();
         const timelines =
-            buildAnimationKeyframes([style({height: 100}), animate(1000, style({height: 0}))]);
+            buildAndCheckKeyframes([style({height: 100}), animate(1000, style({height: 0}))]);
         expect(MockAnimationDriver.log.length).toEqual(0);
         engine.animateTimeline(element, timelines);
         expect(MockAnimationDriver.log.length).toEqual(1);
@@ -317,7 +317,7 @@ export function main() {
       it('should animate an array of animation instructions', () => {
         const engine = makeEngine();
 
-        const instructions = buildAnimationKeyframes([
+        const instructions = buildAndCheckKeyframes([
           style({height: 100}), animate(1000, style({height: 0})),
           animate(1000, keyframes([style({width: 0}), style({width: 1000})]))
         ]);
@@ -465,7 +465,7 @@ export function main() {
 
         const instruction1 = trig.matchTransition('m', 'n');
         const instructions2 =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 100}))]);
+            buildAndCheckKeyframes([style({height: 0}), animate(1000, style({height: 100}))]);
         const instruction3 = trig.matchTransition('n', 'void');
 
         const player1 = engine.animateTransition(element, instruction1);
@@ -536,7 +536,7 @@ export function main() {
         }
 
         const instructions =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 500}))]);
+            buildAndCheckKeyframes([style({height: 0}), animate(1000, style({height: 500}))]);
 
         const player = engine.animateTimeline(element, instructions);
         player.onDone(capture('done'));
@@ -574,7 +574,7 @@ export function main() {
          () => {
            const engine = makeEngine(new SuffixNormalizer('-normalized'));
 
-           const instructions = buildAnimationKeyframes([
+           const instructions = buildAndCheckKeyframes([
              style({width: '333px'}),
              animate(1000, style({width: '999px'})),
            ]);
@@ -660,4 +660,10 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
     }
     return expectedValue;
   }
+}
+
+function buildAndCheckKeyframes(steps: AnimationMetadata | AnimationMetadata[]) {
+  const errors: any[] = [];
+  const result = buildAnimationKeyframes(steps, {}, {}, null, errors);
+  return result;
 }
