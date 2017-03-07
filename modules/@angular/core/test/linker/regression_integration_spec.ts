@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider, RendererV2} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider, Renderer2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -213,7 +213,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should allow to use the renderer outside of views', () => {
       @Component({template: ''})
       class MyComp {
-        constructor(public renderer: RendererV2) {}
+        constructor(public renderer: Renderer2) {}
       }
 
       TestBed.configureTestingModule({declarations: [MyComp]});
