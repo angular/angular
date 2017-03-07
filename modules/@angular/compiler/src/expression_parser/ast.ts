@@ -320,7 +320,7 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitPropertyWrite(ast: PropertyWrite, context: any): AST {
-    return new PropertyWrite(ast.span, ast.receiver.visit(this), ast.name, ast.value);
+    return new PropertyWrite(ast.span, ast.receiver.visit(this), ast.name, ast.value.visit(this));
   }
 
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
