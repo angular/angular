@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -17,7 +17,7 @@ import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
-import {DomRendererFactoryV2} from './dom/dom_renderer';
+import {DomRendererFactory2} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
@@ -76,8 +76,8 @@ export function _document(): any {
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
-    DomRendererFactoryV2,
-    {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
+    DomRendererFactory2,
+    {provide: RendererFactory2, useExisting: DomRendererFactory2},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     DomSharedStylesHost,
     Testability,
