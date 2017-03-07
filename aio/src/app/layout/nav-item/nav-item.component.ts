@@ -5,8 +5,8 @@ import { NavigationService, NavigationNode } from 'app/navigation/navigation.ser
   selector: 'aio-nav-item',
   template: `
     <div>
-      <a *ngIf="node.path || node.url"
-          [href]="node.path || node.url"
+      <a *ngIf="node.url"
+          [href]="node.url"
           [ngClass]="classes"
           target={{node.target}}
           title={{node.title}}
@@ -17,7 +17,7 @@ import { NavigationService, NavigationNode } from 'app/navigation/navigation.ser
           <md-icon [class.active]="isActive">keyboard_arrow_down</md-icon>
         </ng-template>
       </a>
-      <div *ngIf="!(node.path || node.url)" [ngClass]="classes">{{node.title}}</div>
+      <div *ngIf="!node.url" [ngClass]="classes">{{node.title}}</div>
       <div class="TODO:heading-children" [ngClass]="classes" *ngIf="node.children">
         <aio-nav-item *ngFor="let node of node.children" [level]="level + 1" [node]="node"></aio-nav-item>
       </div>

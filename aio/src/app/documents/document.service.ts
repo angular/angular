@@ -2,22 +2,21 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
+import { AsyncSubject } from 'rxjs/AsyncSubject';
 import 'rxjs/add/operator/switchMap';
 
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { DocumentContents } from './document-contents';
+export { DocumentContents } from './document-contents';
 
-const FILE_NOT_FOUND_DOC = 'file-not-found';
-
-export interface DocumentContents {
-  title: string;
-  contents: string;
-}
+const FILE_NOT_FOUND_URL = 'file-not-found';
 
 @Injectable()
 export class DocumentService {
 
   private cache = new Map<string, Observable<DocumentContents>>();
+  private fileNotFoundPath = this.computePath(FILE_NOT_FOUND_URL);
 
   currentDocument: Observable<DocumentContents>;
 
@@ -28,31 +27,38 @@ export class DocumentService {
 
   private getDocument(url: string) {
     this.logger.log('getting document', url);
-    if ( !this.cache.has(url)) {
-      this.cache.set(url, this.fetchDocument(url));
+    const path = this.computePath(url);
+    if ( !this.cache.has(path)) {
+      this.cache.set(path, this.fetchDocument(path));
     }
-    return this.cache.get(url);
+    return this.cache.get(path);
   }
 
-  private fetchDocument(url: string) {
-    const path = this.computePath(url);
+  private fetchDocument(path: string) {
     this.logger.log('fetching document from', path);
-    return this.http
+    const subject = new AsyncSubject();
+    this.http
       .get(path)
       .map(res => res.json())
       .catch((error: Response) => {
-        if (error.status === 404 && url !== FILE_NOT_FOUND_DOC) {
-          this.logger.error(`Document file not found at '${url}'`);
-          // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
-          return this.getDocument(FILE_NOT_FOUND_DOC);
+        if (error.status === 404) {
+          if (path !== this.fileNotFoundPath) {
+            this.logger.error(`Document file not found at '${path}'`);
+            // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
+            return this.getDocument(FILE_NOT_FOUND_URL);
+          } else {
+            return Observable.of({ title: 'Not Found', contents: 'Document not found' });
+          }
         } else {
           throw error;
         }
-      });
+      })
+      .subscribe(subject);
+    return subject.asObservable();
   }
 
   private computePath(url) {
-    url = url.startsWith('/') ? url : '/' + url;
-    return 'content/docs' + url + '.json';
+    url = url.endsWith('/') ? url + 'index' : url;
+    return 'content/docs/' + url + '.json';
   }
 }
