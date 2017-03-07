@@ -25,6 +25,8 @@ export interface CompilerHostContext extends ts.ModuleResolutionHost {
   assumeFileExists(fileName: string): void;
 }
 
+const DECLARED_PREFIX = 'declared:';
+
 export class CompilerHost implements AotCompilerHost {
   protected metadataCollector = new MetadataCollector();
   private isGenDirChildOfRootDir: boolean;
@@ -34,6 +36,7 @@ export class CompilerHost implements AotCompilerHost {
   private bundleIndexCache = new Map<string, boolean>();
   private bundleIndexNames = new Set<string>();
   protected resolveModuleNameHost: CompilerHostContext;
+  private declaredModules: Set<string>;
 
   constructor(
       protected program: ts.Program, protected options: AngularCompilerOptions,
@@ -81,6 +84,9 @@ export class CompilerHost implements AotCompilerHost {
         ts.resolveModuleName(
               m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)
             .resolvedModule;
+    if (!resolved && this.isDeclaredModule(m)) {
+      return CompilerHost.toDeclaredModuleFilePath(m);
+    }
     return resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
   };
 
@@ -100,6 +106,10 @@ export class CompilerHost implements AotCompilerHost {
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
+    if (CompilerHost.isDeclaredModule(importedFile)) {
+      return CompilerHost.toDeclaredModuleName(importedFile);
+    }
+
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (!this.context.fileExists(importedFile)) {
@@ -259,6 +269,9 @@ export class CompilerHost implements AotCompilerHost {
   }
 
   getOutputFileName(sourceFilePath: string): string {
+    if (CompilerHost.isDeclaredModule(sourceFilePath)) {
+      return sourceFilePath;
+    }
     return sourceFilePath.replace(EXT, '') + '.d.ts';
   }
 
@@ -350,6 +363,33 @@ export class CompilerHost implements AotCompilerHost {
     };
 
     return checkBundleIndex(path.dirname(filePath));
+  }
+
+  private isDeclaredModule(name: string): boolean {
+    if (!this.declaredModules) {
+      this.declaredModules = new Set();
+      for (const sourceFile of this.program.getSourceFiles()) {
+        ts.forEachChild(sourceFile, node => {
+          if (node.kind == ts.SyntaxKind.ModuleDeclaration) {
+            const declaration = node as ts.ModuleDeclaration;
+            if (declaration.name.kind == ts.SyntaxKind.StringLiteral) {
+              const literal = declaration.name as ts.StringLiteral;
+              this.declaredModules.add(literal.text);
+            }
+          }
+        });
+      }
+    }
+    return this.declaredModules.has(name);
+  }
+
+  static isDeclaredModule(filePath: string) { return filePath.startsWith(DECLARED_PREFIX); }
+
+  static toDeclaredModuleFilePath(moduleName: string) { return `${DECLARED_PREFIX}${moduleName}`; }
+
+  static toDeclaredModuleName(filePath: string) {
+    return CompilerHost.isDeclaredModule(filePath) ? filePath.substr(DECLARED_PREFIX.length) :
+                                                     filePath;
   }
 }
 
