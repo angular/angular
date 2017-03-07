@@ -411,7 +411,7 @@ function callWithDebugContext(action: DebugAction, fn: any, self: any, args: any
 }
 
 export function getCurrentDebugContext(): DebugContext {
-  return new DebugContext_(_currentView, _currentNodeIndex);
+  return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
 
@@ -440,23 +440,30 @@ class DebugRendererV2 implements RendererV2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugEl = new DebugElement(el, null, getCurrentDebugContext());
-    debugEl.name = name;
-    indexDebugNode(debugEl);
+    const debugCtx = getCurrentDebugContext();
+    if (debugCtx) {
+      const debugEl = new DebugElement(el, null, debugCtx);
+      debugEl.name = name;
+      indexDebugNode(debugEl);
+    }
     return el;
   }
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugEl = new DebugNode(comment, null, getCurrentDebugContext());
-    indexDebugNode(debugEl);
+    const debugCtx = getCurrentDebugContext();
+    if (debugCtx) {
+      indexDebugNode(new DebugNode(comment, null, debugCtx));
+    }
     return comment;
   }
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugEl = new DebugNode(text, null, getCurrentDebugContext());
-    indexDebugNode(debugEl);
+    const debugCtx = getCurrentDebugContext();
+    if (debugCtx) {
+      indexDebugNode(new DebugNode(text, null, debugCtx));
+    }
     return text;
   }
 
@@ -491,8 +498,10 @@ class DebugRendererV2 implements RendererV2 {
 
   selectRootElement(selectorOrNode: string|any): any {
     const el = this.delegate.selectRootElement(selectorOrNode);
-    const debugEl = new DebugElement(el, null, getCurrentDebugContext());
-    indexDebugNode(debugEl);
+    const debugCtx = getCurrentDebugContext();
+    if (debugCtx) {
+      indexDebugNode(new DebugElement(el, null, debugCtx));
+    }
     return el;
   }
 
