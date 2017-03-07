@@ -16,7 +16,7 @@ export interface CanDisable {
  * of items, it will set the active item correctly when arrow events occur.
  */
 export class ListKeyManager<T extends CanDisable> {
-  private _activeItemIndex: number;
+  private _activeItemIndex: number = null;
   private _activeItem: T;
   private _tabOut: Subject<any> = new Subject();
   private _wrap: boolean = false;

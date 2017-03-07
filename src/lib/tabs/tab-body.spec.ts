@@ -169,7 +169,7 @@ describe('MdTabBody', () => {
     }));
   });
 
-  it('it should toggle the canBeAnimated flag', () => {
+  it('should toggle the canBeAnimated flag', () => {
     let fixture: ComponentFixture<SimpleTabBodyApp>;
     let tabBody: MdTabBody;
 

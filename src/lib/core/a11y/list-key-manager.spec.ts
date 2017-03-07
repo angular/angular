@@ -240,6 +240,16 @@ describe('Key managers', () => {
         expect(TAB_EVENT.defaultPrevented).toBe(false);
       });
 
+      it('should activate the first item when pressing down on a clean key manager', () => {
+        keyManager = new ListKeyManager<FakeFocusable>(itemList);
+
+        expect(keyManager.activeItemIndex).toBeNull('Expected active index to default to null.');
+
+        keyManager.onKeydown(DOWN_ARROW_EVENT);
+
+        expect(keyManager.activeItemIndex).toBe(0, 'Expected first item to become active.');
+      });
+
     });
 
     describe('programmatic focus', () => {
