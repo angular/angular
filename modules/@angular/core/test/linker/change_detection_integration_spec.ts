@@ -619,6 +619,14 @@ export function main() {
              expect(ctx.componentInstance.a).toEqual(2);
            }));
 
+        it('should support empty literals', fakeAsync(() => {
+             const ctx = _bindSimpleProp('(event)="a=[{},[]]"');
+             const childEl = ctx.debugElement.children[0];
+             childEl.triggerEventHandler('event', 'EVENT');
+
+             expect(ctx.componentInstance.a).toEqual([{}, []]);
+           }));
+
         it('should throw when trying to assign to a local', fakeAsync(() => {
              expect(() => {
                _bindSimpleProp('(event)="$event=1"');
