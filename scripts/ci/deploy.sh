@@ -54,11 +54,26 @@ case ${CI_MODE} in
         # This is a PR: deploy a snapshot for previewing
         travisFoldStart "deploy.aio.pr-preview"
           # Only deploy if this PR has touched relevant files.
-          AIO_CHANGED_FILES_COUNT=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep ^aio/ | wc -l)
+          readonly AIO_CHANGED_FILES_COUNT=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep ^aio/ | wc -l)
           if [[ AIO_CHANGED_FILES_COUNT -eq 0 ]]; then
             echo "Skipping deploy because this PR did not touch any files inside 'aio/'."
           else
-            yarn run deploy-preview
+            # Only deploy if this PR meets certain preconditions.
+            readonly AIO_PREVERIFY_EXIT_CODE=$(./aio-builds-setup/scripts/travis-preverify-pr.sh && echo 0 || echo $?)
+            case $AIO_PREVERIFY_EXIT_CODE in
+              2)
+                # An error occurred: Fail the build
+                exit 1;
+                ;;
+              1)
+                # Preconditions not met: Skip deploy
+                echo "Skipping deploy because this PR did not meet the preconditions."
+                ;;
+              0)
+                # Preconditions met: Deploy
+                yarn run deploy-preview
+                ;;
+            esac
           fi
         travisFoldEnd "deploy.aio.pr-preview"
       else
