@@ -53,19 +53,15 @@ describe('BuildVerifier', () => {
       'pull-request': pr,
       'slug': defaultConfig.repoSlug,
     };
-    let prsFetchSpy: jasmine.Spy;
-    let teamsIsMemberBySlugSpy: jasmine.Spy;
+    let bvGetPrAuthorTeamMembership: jasmine.Spy;
 
     // Heleprs
     const createAuthHeader = (partialJwt: Partial<typeof defaultJwt> = {}, secret: string = defaultConfig.secret) =>
       `Token ${jwt.sign({...defaultJwt, ...partialJwt}, secret)}`;
 
     beforeEach(() => {
-      prsFetchSpy = spyOn(GithubPullRequests.prototype, 'fetch').
-        and.returnValue(Promise.resolve({user: {login: 'username'}}));
-
-      teamsIsMemberBySlugSpy = spyOn(GithubTeams.prototype, 'isMemberBySlug').
-        and.returnValue(Promise.resolve(true));
+      bvGetPrAuthorTeamMembership = spyOn(bv, 'getPrAuthorTeamMembership').
+        and.returnValue(Promise.resolve({author: 'some-author', isMember: true}));
     });
 
 
@@ -148,16 +144,16 @@ describe('BuildVerifier', () => {
     });
 
 
-    it('should fetch the corresponding PR if the token is valid', done => {
+    it('should call \'getPrAuthorTeamMembership()\' if the token is valid', done => {
       bv.verify(pr, createAuthHeader()).then(() => {
-        expect(prsFetchSpy).toHaveBeenCalledWith(pr);
+        expect(bvGetPrAuthorTeamMembership).toHaveBeenCalledWith(pr);
         done();
       });
     });
 
 
-    it('should fail if fetching the PR errors', done => {
-      prsFetchSpy.and.callFake(() => Promise.reject('Test'));
+    it('should fail if \'getPrAuthorTeamMembership()\' rejects', done => {
+      bvGetPrAuthorTeamMembership.and.callFake(() => Promise.reject('Test'));
       bv.verify(pr, createAuthHeader()).catch(err => {
         expectToBeUploadError(err, 403, `Error while verifying upload for PR ${pr}: Test`);
         done();
@@ -165,29 +161,12 @@ describe('BuildVerifier', () => {
     });
 
 
-    it('should verify the PR author\'s membership in the specified teams', done => {
-      bv.verify(pr, createAuthHeader()).then(() => {
-        expect(teamsIsMemberBySlugSpy).toHaveBeenCalledWith('username', ['team1', 'team2']);
-        done();
-      });
-    });
+    it('should fail if \'getPrAuthorTeamMembership()\' reports no membership', done => {
+      const errorMessage = `Error while verifying upload for PR ${pr}: User 'test' is not an active member of any of ` +
+                           'the following teams: team1, team2';
 
-
-    it('should fail if verifying membership errors', done => {
-      teamsIsMemberBySlugSpy.and.callFake(() => Promise.reject('Test'));
+      bvGetPrAuthorTeamMembership.and.returnValue(Promise.resolve({author: 'test', isMember: false}));
       bv.verify(pr, createAuthHeader()).catch(err => {
-        expectToBeUploadError(err, 403, `Error while verifying upload for PR ${pr}: Test`);
-        done();
-      });
-    });
-
-
-    it('should fail if the PR author is not a member of the specified teams', done => {
-      teamsIsMemberBySlugSpy.and.callFake(() => Promise.resolve(false));
-      bv.verify(pr, createAuthHeader()).catch(err => {
-        const errorMessage = `Error while verifying upload for PR ${pr}: ` +
-                             `User 'username' is not an active member of any of: team1, team2`;
-
         expectToBeUploadError(err, 403, errorMessage);
         done();
       });
@@ -196,6 +175,77 @@ describe('BuildVerifier', () => {
 
     it('should succeed if everything checks outs', done => {
       bv.verify(pr, createAuthHeader()).then(done);
+    });
+
+  });
+
+
+  describe('getPrAuthorTeamMembership()', () => {
+    const pr = 9;
+    let prsFetchSpy: jasmine.Spy;
+    let teamsIsMemberBySlugSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      prsFetchSpy = spyOn(GithubPullRequests.prototype, 'fetch').
+        and.returnValue(Promise.resolve({user: {login: 'username'}}));
+
+      teamsIsMemberBySlugSpy = spyOn(GithubTeams.prototype, 'isMemberBySlug').
+        and.returnValue(Promise.resolve(true));
+    });
+
+
+    it('should return a promise', () => {
+      expect(bv.getPrAuthorTeamMembership(pr)).toEqual(jasmine.any(Promise));
+    });
+
+
+    it('should fetch the corresponding PR', done => {
+      bv.getPrAuthorTeamMembership(pr).then(() => {
+        expect(prsFetchSpy).toHaveBeenCalledWith(pr);
+        done();
+      });
+    });
+
+
+    it('should fail if fetching the PR errors', done => {
+      prsFetchSpy.and.callFake(() => Promise.reject('Test'));
+      bv.getPrAuthorTeamMembership(pr).catch(err => {
+        expect(err).toBe('Test');
+        done();
+      });
+    });
+
+
+    it('should verify the PR author\'s membership in the specified teams', done => {
+      bv.getPrAuthorTeamMembership(pr).then(() => {
+        expect(teamsIsMemberBySlugSpy).toHaveBeenCalledWith('username', ['team1', 'team2']);
+        done();
+      });
+    });
+
+
+    it('should fail if verifying membership errors', done => {
+      teamsIsMemberBySlugSpy.and.callFake(() => Promise.reject('Test'));
+      bv.getPrAuthorTeamMembership(pr).catch(err => {
+        expect(err).toBe('Test');
+        done();
+      });
+    });
+
+
+    it('should return the PR\'s author and whether they are members', done => {
+      teamsIsMemberBySlugSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+
+      Promise.all([
+        bv.getPrAuthorTeamMembership(pr).then(({author, isMember}) => {
+          expect(author).toBe('username');
+          expect(isMember).toBe(true);
+        }),
+        bv.getPrAuthorTeamMembership(pr).then(({author, isMember}) => {
+          expect(author).toBe('username');
+          expect(isMember).toBe(false);
+        }),
+      ]).then(done);
     });
 
   });
