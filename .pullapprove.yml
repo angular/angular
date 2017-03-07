@@ -87,7 +87,7 @@ groups:
   core:
     conditions:
       files:
-        - "modules/@angular/core/*"
+        - "packages/core/*"
     users:
       - tbosch #primary
       - mhevery
@@ -97,7 +97,7 @@ groups:
   compiler/animations:
     conditions:
       files:
-        - "modules/@angular/compiler/src/animation/*"
+        - "packages/compiler/src/animation/*"
     users:
       - matsko #primary
       - tbosch
@@ -107,7 +107,7 @@ groups:
   compiler/i18n:
     conditions:
       files:
-        - "modules/@angular/compiler/src/i18n/*"
+        - "packages/compiler/src/i18n/*"
     users:
       - vicb #primary
       - tbosch
@@ -117,7 +117,7 @@ groups:
   compiler:
     conditions:
       files:
-        - "modules/@angular/compiler/*"
+        - "packages/compiler/*"
     users:
       - tbosch #primary
       - vicb
@@ -129,7 +129,7 @@ groups:
     conditions:
       files:
         - "tools/@angular/tsc-wrapped/*"
-        - "modules/@angular/compiler-cli/*"
+        - "packages/compiler-cli/*"
     users:
       - alexeagle
       - chuckjaz
@@ -140,7 +140,7 @@ groups:
   common:
     conditions:
       files:
-        - "modules/@angular/common/*"
+        - "packages/common/*"
     users:
       - pkozlowski-opensource #primary
       - vicb
@@ -150,7 +150,7 @@ groups:
   forms:
     conditions:
       files:
-        - "modules/@angular/forms/*"
+        - "packages/forms/*"
     users:
       - kara #primary
       # needs secondary
@@ -160,7 +160,7 @@ groups:
   http:
     conditions:
       files:
-        - "modules/@angular/http/*"
+        - "packages/http/*"
     users:
       - vikerman #primary
       - alxhub
@@ -170,7 +170,7 @@ groups:
   language-service:
     conditions:
       files:
-        - "modules/@angular/language-service/*"
+        - "packages/language-service/*"
     users:
       - chuckjaz #primary
       # needs secondary
@@ -180,7 +180,7 @@ groups:
   router:
     conditions:
       files:
-        - "modules/@angular/router/*"
+        - "packages/router/*"
     users:
       - vicb #primary
       # needs secondary
@@ -190,7 +190,7 @@ groups:
   upgrade:
     conditions:
       files:
-        - "modules/@angular/upgrade/*"
+        - "packages/upgrade/*"
     users:
       - petebacondarwin #primary
       - gkalpak
@@ -200,7 +200,7 @@ groups:
   platform-browser:
     conditions:
       files:
-        - "modules/@angular/platform-browser/*"
+        - "packages/platform-browser/*"
     users:
       - tbosch #primary
       - vicb #secondary
@@ -210,7 +210,7 @@ groups:
   platform-server:
     conditions:
       files:
-        - "modules/@angular/platform-server/*"
+        - "packages/platform-server/*"
     users:
       - vikerman #primary
       - alxhub
@@ -222,7 +222,7 @@ groups:
   platform-webworker:
     conditions:
       files:
-        - "modules/@angular/platform-webworker/*"
+        - "packages/platform-webworker/*"
     users:
       - vicb #primary
       - tbosch #secondary
@@ -234,7 +234,7 @@ groups:
   benchpress:
     conditions:
       files:
-        - "modules/@angular/benchpress/*"
+        - "packages/benchpress/*"
     users:
       - tbosch #primary
       # needs secondary

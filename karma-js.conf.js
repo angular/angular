@@ -42,13 +42,9 @@ module.exports = function(config) {
       'tools/build/file2modulename.js',
       'test-main.js',
       {pattern: 'dist/all/empty.*', included: false, watched: false},
+      {pattern: 'packages/platform-browser/test/static_assets/**', included: false, watched: false},
       {
-        pattern: 'modules/@angular/platform-browser/test/static_assets/**',
-        included: false,
-        watched: false
-      },
-      {
-        pattern: 'modules/@angular/platform-browser/test/browser/static_assets/**',
+        pattern: 'packages/platform-browser/test/browser/static_assets/**',
         included: false,
         watched: false,
       }

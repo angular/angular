@@ -1,6 +1,6 @@
 // clang-format entry points
 const srcsToFmt = [
-  'modules/@angular/**/*.{js,ts}',
+  'packages/**/*.{js,ts}',
   'modules/benchmarks/**/*.{js,ts}',
   'modules/e2e_util/**/*.{js,ts}',
   'modules/playground/**/*.{js,ts}',

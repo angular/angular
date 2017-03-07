@@ -4,7 +4,7 @@ set -ex
 
 cd $(dirname $0)/../../..
 ROOTDIR=$(pwd)
-SRCDIR=${ROOTDIR}/modules/@angular/benchpress
+SRCDIR=${ROOTDIR}/packages/benchpress
 DESTDIR=${ROOTDIR}/dist/packages-dist/benchpress
 
 rm -fr ${DESTDIR}

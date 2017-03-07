@@ -12,7 +12,7 @@ travisFoldStart "test.e2e.buildPackages"
 travisFoldEnd "test.e2e.buildPackages"
 
 
-if [[ ${TRAVIS} ]]; then
+if [[ ${TRAVIS:-} ]]; then
   travisFoldStart "test.e2e.xvfb-start"
     sh -e /etc/init.d/xvfb start
   travisFoldEnd "test.e2e.xvfb-start"

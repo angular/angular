@@ -7,7 +7,8 @@
  */
 
 export default {
-  entry: '../../../dist/packages-dist/platform-browser-dynamic/@angular/platform-browser-dynamic/testing.es5.js',
+  entry:
+      '../../../dist/packages-dist/platform-browser-dynamic/@angular/platform-browser-dynamic/testing.es5.js',
   dest:
       '../../../dist/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js',
   format: 'umd',

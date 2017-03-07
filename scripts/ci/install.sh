@@ -2,6 +2,9 @@
 
 set -u -e -o pipefail
 
+TRAVIS=${TRAVIS:-}
+CI_MODE=${CI_MODE:-}
+
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
 source ${thisDir}/_travis-fold.sh
