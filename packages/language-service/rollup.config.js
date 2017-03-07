@@ -24,7 +24,7 @@ var esm_suffixes = {};
 function normalize(fileName) {
   return path.resolve(__dirname, fileName);
 }
-console.log('running')
+
 function resolve(id, from) {
   // console.log('Resolve id:', id, 'from', from)
   if (id == '@angular/tsc-wrapped') {
@@ -37,7 +37,8 @@ function resolve(id, from) {
     var packageName = match[1];
     var esm_suffix = esm_suffixes[packageName] || '';
     var loc = locations[packageName] || location;
-    var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') || loc + packageName + '/@angular/' + packageName + '.es5.js';
+    var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') ||
+        loc + packageName + '/@angular/' + packageName + '.es5.js';
     // console.log('** ANGULAR MAPPED **: ', r);
     return r;
   }

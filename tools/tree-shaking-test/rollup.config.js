@@ -9,7 +9,8 @@
 class RollupNG2 {
   resolveId(id, from) {
     if (id.startsWith('@angular/')) {
-      return `${__dirname}/../../packages-dist/${id.split('/')[1]}/esm/index.js`;
+      const packageName = id.split('/')[1];
+      return `${__dirname}/../../packages-dist/${packageName}/@angular/packageName.es5.js`;
     }
 
     // if(id.startsWith('rxjs/')){

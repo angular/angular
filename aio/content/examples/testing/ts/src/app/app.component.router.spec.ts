@@ -1,5 +1,5 @@
 // For more examples:
-//   https://github.com/angular/angular/blob/master/modules/@angular/router/test/integration.spec.ts
+//   https://github.com/angular/angular/blob/master/packages/router/test/integration.spec.ts
 
 import { async, ComponentFixture, fakeAsync, TestBed, tick,
 } from '@angular/core/testing';

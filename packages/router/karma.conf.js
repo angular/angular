@@ -40,7 +40,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
 
       // shim
-      {pattern: 'modules/@angular/router/karma-test-shim.js', included: true, watched: true},
+      {pattern: 'packages/router/karma-test-shim.js', included: true, watched: true},
 
       // Angular modules
       {pattern: 'dist/all/@angular/core/*.js', included: false, watched: false},

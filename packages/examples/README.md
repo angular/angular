@@ -11,7 +11,7 @@ behavior) just like an Angular application developer would write.
 ./build.sh
 
 # run when test change
-./modules/@angular/examples/build.sh  
+./packages/examples/build.sh  
 
 # start server
 $(npm bin)/gulp serve-examples
@@ -26,7 +26,7 @@ navigate to [http://localhost:8001](http://localhost:8001)
 ./build.sh
 
 # run to compile tests and run them
-./modules/@angular/examples/test.sh
+./packages/examples/test.sh
 ```
 
 NOTE: sometimes the http server does not exit properly and it retains the `8001` port.
