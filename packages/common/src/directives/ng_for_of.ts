@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, isDevMode} from '@angular/core';
 
 export class NgForOfRow<T> {
   constructor(public $implicit: T, public index: number, public count: number) {}
@@ -140,7 +140,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
     }
   }
 
-  private _applyChanges(changes: IterableChanges<T>) {
+  private _applyChanges(changes: IterableChanges<T>): void {
     const insertTuples: RecordViewTuple<T>[] = [];
     changes.forEachOperation(
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
