@@ -60,23 +60,34 @@ const EMAIL_REGEXP =
  */
 export class Validators {
   /**
-   * Validator that compares the value of the given FormControls
+   * Validator that compares the value of the given FormControls,
+   * provided directly or as a path in the parent group.
    */
-  static equalsTo(...fieldPaths: string[]): ValidatorFn {
+  static equalsTo(...fields: Array<string|AbstractControl>): ValidatorFn {
+    if (fields.length < 1) {
+      throw new Error('You must compare to at least 1 other field');
+    }
     return function(control: FormControl): {[key: string]: any} {
-      if (fieldPaths.length < 1) {
-        throw new Error('You must compare to at least 1 other field');
-      }
-
-      for (let fieldName of fieldPaths) {
-        let field = (<FormGroup>control.parent).get(fieldName);
-        if (!field) {
-          throw new Error(
-              `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in the group`);
-        }
-
-        if (field.value !== control.value) {
-          return {'equalsTo': {'unequalField': fieldName}};
+      for (let fieldToCompare of fields) {
+        if (typeof fieldToCompare === 'string') {
+          const field = (<FormGroup>control.parent).get(fieldToCompare);
+          if (!field) {
+            throw new Error(
+                `Field: ${fieldToCompare} used in the equalsTo validator is undefined. Are you sure that ${fieldToCompare} exists in the group?`);
+          }
+          if (field.value !== control.value) {
+            return {'equalsTo': {'unequalField': fieldToCompare}};
+          }
+        } else {
+          if (fieldToCompare.value !== control.value) {
+            const controls = (<FormGroup>control.parent).controls;
+            const fieldName = Object.keys(controls).find(name => controls[name] === fieldToCompare);
+            if (!fieldName) {
+              throw new Error(
+                  `A field was added to the equalsTo validator, but was not found in the parent group. Are you sure that it exists in the group?`);
+            }
+            return {'equalsTo': {'unequalField': fieldName}};
+          }
         }
       }
       return null;
