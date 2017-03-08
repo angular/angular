@@ -52,7 +52,7 @@ export class ViewCompiler {
     const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
     statements.push(
         renderComponentVar
-            .set(o.importExpr(createIdentifier(Identifiers.createRendererTypeV2)).callFn([
+            .set(o.importExpr(createIdentifier(Identifiers.createRendererType2)).callFn([
               new o.LiteralMapExpr([
                 new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
                 new o.LiteralMapEntry('styles', styles),
@@ -60,8 +60,7 @@ export class ViewCompiler {
               ])
             ]))
             .toDeclStmt(
-                o.importType(createIdentifier(Identifiers.RendererTypeV2)),
-                [o.StmtModifier.Final]));
+                o.importType(createIdentifier(Identifiers.RendererType2)), [o.StmtModifier.Final]));
 
     const viewBuilderFactory = (parent: ViewBuilder): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
@@ -331,7 +330,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver, BuiltinConverter
     //        BindingType.DirectiveHostProperty, string, SecurityContext])[],
     //   outputs?: ([OutputType.ElementOutput | OutputType.DirectiveHostOutput, string, string])[],
     //   handleEvent?: ElementHandleEventFn,
-    //   componentView?: () => ViewDefinition, componentRendererType?: RendererTypeV2): NodeDef;
+    //   componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef;
     const nodeDef = () => o.importExpr(createIdentifier(Identifiers.elementDef)).callFn([
       o.literal(flags), queryMatchesExpr, o.literal(ast.ngContentIndex), o.literal(childCount),
       o.literal(elName), elName ? fixedAttrsDef(ast) : o.NULL_EXPR,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, RendererTypeV2, Type, ɵstringify as stringify} from '@angular/core';
+import {Injectable, RenderComponentType, RendererType2, Type, ɵstringify as stringify} from '@angular/core';
 import {RenderStore} from './render_store';
 
 
@@ -29,8 +29,8 @@ export class LocationType {
  * @experimental WebWorker support in Angular is currently experimental.
  */
 export const enum SerializerTypes {
-  // RendererTypeV2
-  RENDERER_TYPE_V2,
+  // RendererType2
+  RENDERER_TYPE_2,
   // Primitive types
   PRIMITIVE,
   // An object stored in a RenderStore
@@ -54,8 +54,8 @@ export class Serializer {
     if (type === RenderComponentType) {
       return this._serializeRenderComponentType(obj);
     }
-    if (type === SerializerTypes.RENDERER_TYPE_V2) {
-      return this._serializeRendererTypeV2(obj);
+    if (type === SerializerTypes.RENDERER_TYPE_2) {
+      return this._serializeRendererType2(obj);
     }
     if (type === LocationType) {
       return this._serializeLocation(obj);
@@ -77,8 +77,8 @@ export class Serializer {
     if (type === RenderComponentType) {
       return this._deserializeRenderComponentType(map);
     }
-    if (type === SerializerTypes.RENDERER_TYPE_V2) {
-      return this._deserializeRendererTypeV2(map);
+    if (type === SerializerTypes.RENDERER_TYPE_2) {
+      return this._deserializeRendererType2(map);
     }
     if (type === LocationType) {
       return this._deserializeLocation(map);
@@ -122,7 +122,7 @@ export class Serializer {
         this.deserialize(props['encapsulation']), this.deserialize(props['styles']), {});
   }
 
-  private _serializeRendererTypeV2(type: RendererTypeV2): {[key: string]: any} {
+  private _serializeRendererType2(type: RendererType2): {[key: string]: any} {
     return {
       'id': type.id,
       'encapsulation': this.serialize(type.encapsulation),
@@ -131,7 +131,7 @@ export class Serializer {
     };
   }
 
-  private _deserializeRendererTypeV2(props: {[key: string]: any}): RendererTypeV2 {
+  private _deserializeRendererType2(props: {[key: string]: any}): RendererType2 {
     return {
       id: props['id'],
       encapsulation: props['encapsulation'],

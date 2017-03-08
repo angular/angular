@@ -8,4 +8,4 @@
 
 
 export {INTERNAL_SERVER_PLATFORM_PROVIDERS as ɵINTERNAL_SERVER_PLATFORM_PROVIDERS, SERVER_RENDER_PROVIDERS as ɵSERVER_RENDER_PROVIDERS} from './server';
-export {ServerRendererFactoryV2 as ɵServerRendererFactoryV2} from './server_renderer';
+export {ServerRendererFactory2 as ɵServerRendererFactory2} from './server_renderer';

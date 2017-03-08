@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer} from '@angular/core';
+import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, RootRenderer} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DomRendererFactoryV2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -19,11 +19,11 @@ import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '../../../
 import {RenderStore} from '../../../src/web_workers/shared/render_store';
 import {Serializer} from '../../../src/web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory_} from '../../../src/web_workers/shared/service_message_broker';
-import {MessageBasedRendererV2} from '../../../src/web_workers/ui/renderer';
-import {WebWorkerRendererFactoryV2} from '../../../src/web_workers/worker/renderer';
+import {MessageBasedRenderer2} from '../../../src/web_workers/ui/renderer';
+import {WebWorkerRendererFactory2} from '../../../src/web_workers/worker/renderer';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
-let lastCreatedRenderer: RendererV2;
+let lastCreatedRenderer: Renderer2;
 
 export function main() {
   describe('Web Worker Renderer v2', () => {
@@ -43,12 +43,12 @@ export function main() {
         providers: [
           Serializer,
           {provide: RenderStore, useValue: uiRenderStore},
-          DomRendererFactoryV2,
-          {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
+          DomRendererFactory2,
+          {provide: RendererFactory2, useExisting: DomRendererFactory2},
         ]
       });
       const uiSerializer = uiInjector.get(Serializer);
-      const domRendererFactory = uiInjector.get(RendererFactoryV2);
+      const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
       lastCreatedRenderer = null;
@@ -61,9 +61,9 @@ export function main() {
           Serializer,
           {provide: RenderStore, useValue: wwRenderStore},
           {
-            provide: RendererFactoryV2,
+            provide: RendererFactory2,
             useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactoryV2(
+                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
                     wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
             deps: [Serializer],
           },
@@ -174,7 +174,7 @@ class MyComp2 {
 
 function createWebWorkerBrokerFactory(
     messageBuses: PairedMessageBuses, wwSerializer: Serializer, uiSerializer: Serializer,
-    domRendererFactory: DomRendererFactoryV2,
+    domRendererFactory: DomRendererFactory2,
     uiRenderStore: RenderStore): ClientMessageBrokerFactory {
   const uiMessageBus = messageBuses.ui;
   const wwMessageBus = messageBuses.worker;
@@ -184,17 +184,16 @@ function createWebWorkerBrokerFactory(
 
   // set up the ui side
   const uiBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
-  const renderer = new MessageBasedRendererV2(
+  const renderer = new MessageBasedRenderer2(
       uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
   renderer.start();
 
   return wwBrokerFactory;
 }
 
-function createWebWorkerRendererFactoryV2(
-    workerSerializer: Serializer, uiSerializer: Serializer,
-    domRendererFactory: DomRendererFactoryV2, uiRenderStore: RenderStore,
-    workerRenderStore: RenderStore): RendererFactoryV2 {
+function createWebWorkerRendererFactory2(
+    workerSerializer: Serializer, uiSerializer: Serializer, domRendererFactory: DomRendererFactory2,
+    uiRenderStore: RenderStore, workerRenderStore: RenderStore): RendererFactory2 {
   const messageBuses = createPairedMessageBuses();
   const brokerFactory = createWebWorkerBrokerFactory(
       messageBuses, workerSerializer, uiSerializer, domRendererFactory, uiRenderStore);
@@ -205,8 +204,8 @@ function createWebWorkerRendererFactoryV2(
   return rendererFactory;
 }
 
-class RenderFactory extends WebWorkerRendererFactoryV2 {
-  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
+class RenderFactory extends WebWorkerRendererFactory2 {
+  createRenderer(element: any, type: RendererType2): Renderer2 {
     lastCreatedRenderer = super.createRenderer(element, type);
     return lastCreatedRenderer;
   }

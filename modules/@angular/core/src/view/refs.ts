@@ -14,7 +14,7 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
-import {Renderer as RendererV1, RendererV2} from '../render/api';
+import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
 
@@ -291,7 +291,7 @@ export function createRendererV1(view: ViewData): RendererV1 {
 }
 
 class RendererAdapter implements RendererV1 {
-  constructor(private delegate: RendererV2) {}
+  constructor(private delegate: Renderer2) {}
   selectRootElement(selectorOrNode: string|Element): Element {
     return this.delegate.selectRootElement(selectorOrNode);
   }

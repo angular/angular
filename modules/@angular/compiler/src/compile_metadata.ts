@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, RendererTypeV2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵstringify as stringify} from '@angular/core';
 import {StaticSymbol} from './aot/static_symbol';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
@@ -310,7 +310,7 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
   changeDetection: ChangeDetectionStrategy;
   template: CompileTemplateSummary;
   componentViewType: StaticSymbol|ProxyClass;
-  rendererType: StaticSymbol|RendererTypeV2;
+  rendererType: StaticSymbol|RendererType2;
   componentFactory: StaticSymbol|ComponentFactory<any>;
 }
 
@@ -338,7 +338,7 @@ export class CompileDirectiveMetadata {
         entryComponents?: CompileEntryComponentMetadata[],
         template?: CompileTemplateMetadata,
         componentViewType?: StaticSymbol|ProxyClass,
-        rendererType?: StaticSymbol|RendererTypeV2,
+        rendererType?: StaticSymbol|RendererType2,
         componentFactory?: StaticSymbol|ComponentFactory<any>,
       } = {}): CompileDirectiveMetadata {
     const hostListeners: {[key: string]: string} = {};
@@ -416,7 +416,7 @@ export class CompileDirectiveMetadata {
   template: CompileTemplateMetadata;
 
   componentViewType: StaticSymbol|ProxyClass;
-  rendererType: StaticSymbol|RendererTypeV2;
+  rendererType: StaticSymbol|RendererType2;
   componentFactory: StaticSymbol|ComponentFactory<any>;
 
   constructor({isHost,          type,      isComponent,       selector,      exportAs,
@@ -441,7 +441,7 @@ export class CompileDirectiveMetadata {
     entryComponents?: CompileEntryComponentMetadata[],
     template?: CompileTemplateMetadata,
     componentViewType?: StaticSymbol|ProxyClass,
-    rendererType?: StaticSymbol|RendererTypeV2,
+    rendererType?: StaticSymbol|RendererType2,
     componentFactory?: StaticSymbol|ComponentFactory<any>,
   } = {}) {
     this.isHost = !!isHost;

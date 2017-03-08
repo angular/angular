@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {RendererTypeV2, RendererV2} from '../render/api';
+import {Renderer2, RendererType2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement, listenToElementOutputs} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
@@ -202,7 +202,7 @@ export function createRootView(root: RootData, def: ViewDefinition, context?: an
 }
 
 function createView(
-    root: RootData, renderer: RendererV2, parent: ViewData, parentNodeDef: NodeDef,
+    root: RootData, renderer: Renderer2, parent: ViewData, parentNodeDef: NodeDef,
     def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   const disposables = def.outputCount ? new Array(def.outputCount) : undefined;
@@ -242,7 +242,7 @@ function createViewNodes(view: ViewData) {
         if (nodeDef.flags & NodeFlags.ComponentView) {
           const compViewDef = resolveViewDefinition(nodeDef.element.componentView);
           const rendererType = nodeDef.element.componentRendererType;
-          let compRenderer: RendererV2;
+          let compRenderer: Renderer2;
           if (!rendererType) {
             compRenderer = view.root.renderer;
           } else {

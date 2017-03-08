@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent, AnimationTriggerMetadata} from '@angular/animations';
-import {Injectable, NgZone, RendererFactoryV2, RendererTypeV2, RendererV2} from '@angular/core';
+import {Injectable, NgZone, Renderer2, RendererFactory2, RendererType2} from '@angular/core';
 
 import {AnimationEngine} from '../animation_engine';
 
 @Injectable()
-export class AnimationRendererFactory implements RendererFactoryV2 {
+export class AnimationRendererFactory implements RendererFactory2 {
   constructor(
-      private delegate: RendererFactoryV2, private _engine: AnimationEngine,
-      private _zone: NgZone) {}
+      private delegate: RendererFactory2, private _engine: AnimationEngine, private _zone: NgZone) {
+  }
 
-  createRenderer(hostElement: any, type: RendererTypeV2): RendererV2 {
+  createRenderer(hostElement: any, type: RendererType2): Renderer2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
 
@@ -28,12 +28,12 @@ export class AnimationRendererFactory implements RendererFactoryV2 {
   }
 }
 
-export class AnimationRenderer implements RendererV2 {
+export class AnimationRenderer implements Renderer2 {
   public destroyNode: (node: any) => (void|any) = null;
   private _flushPromise: Promise<any> = null;
 
   constructor(
-      public delegate: RendererV2, private _engine: AnimationEngine, private _zone: NgZone,
+      public delegate: Renderer2, private _engine: AnimationEngine, private _zone: NgZone,
       private _namespaceId: string) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode(n) : null;
   }
