@@ -144,6 +144,16 @@ export function main() {
              .toThrowError(`'SomeModule' module can't import itself`);
        }));
 
+    it('should throw with descriptive error message when a module imports decorator',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({imports: [NgModule]})
+         class SomeModule {
+         }
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
+             .toThrowError(
+                 `'SomeModule' module cannot import '@NgModule' decorator. Module imports must contain only modules`);
+       }));
+
     it('should throw with descriptive error message when provider token can not be resolved',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp1]})

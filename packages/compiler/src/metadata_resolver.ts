@@ -426,6 +426,7 @@ export class CompileMetadataResolver {
 
         if (importedModuleType) {
           if (this._checkSelfImport(moduleType, importedModuleType)) return;
+          if (this._checkDecorator(moduleType, importedModuleType)) return;
           const importedModuleSummary = this.getNgModuleSummary(importedModuleType);
           if (!importedModuleSummary) {
             this._reportError(
@@ -572,6 +573,17 @@ export class CompileMetadataResolver {
     if (moduleType === importedModuleType) {
       this._reportError(
           syntaxError(`'${stringifyType(moduleType)}' module can't import itself`), moduleType);
+      return true;
+    }
+    return false;
+  }
+
+  private _checkDecorator(moduleType: Type<any>, importedModuleType: Type<any>): boolean {
+    if (importedModuleType === (<any>importedModuleType).annotationCls) {
+      this._reportError(
+          syntaxError(
+              `'${stringifyType(moduleType)}' module cannot import '${importedModuleType.prototype.toString()}' decorator. Module imports must contain only modules`),
+          moduleType);
       return true;
     }
     return false;
