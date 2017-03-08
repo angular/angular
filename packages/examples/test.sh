@@ -5,4 +5,4 @@ cd `dirname $0`
 
 gulp serve-examples &
 
-(cd ../../../ && NODE_PATH=$NODE_PATH:dist/all $(npm bin)/protractor protractor-examples-e2e.conf.js --bundles=true)
+(cd ../../ && NODE_PATH=$NODE_PATH:dist/all $(npm bin)/protractor protractor-examples-e2e.conf.js --bundles=true)
