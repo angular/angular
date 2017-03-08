@@ -183,7 +183,7 @@ export interface Form {
 export declare class FormArray extends AbstractControl {
     controls: AbstractControl[];
     readonly length: number;
-    constructor(controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
+    constructor(controls: AbstractControl[], validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
     at(index: number): AbstractControl;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
@@ -291,7 +291,7 @@ export declare class FormGroup extends AbstractControl {
     };
     constructor(controls: {
         [key: string]: AbstractControl;
-    }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
+    }, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
     addControl(name: string, control: AbstractControl): void;
     contains(controlName: string): boolean;
     getRawValue(): any;
