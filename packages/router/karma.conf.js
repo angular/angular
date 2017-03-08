@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('../../../browser-providers.conf.js');
+var browserProvidersConf = require('../../browser-providers.conf.js');
 
 // Karma configuration
 module.exports = function(config) {
   config.set({
 
-    basePath: '../../../',
+    basePath: '../../',
 
     frameworks: ['jasmine'],
 
