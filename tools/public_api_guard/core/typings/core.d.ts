@@ -973,6 +973,7 @@ export declare class Testability implements PublicTestability {
 /** @experimental */
 export declare class TestabilityRegistry {
     constructor();
+    destroy(): void;
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability;
     getAllRootElements(): any[];
     getAllTestabilities(): Testability[];

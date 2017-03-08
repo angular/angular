@@ -145,6 +145,11 @@ export class TestabilityRegistry {
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
+
+  destroy(): void {
+    this._applications.clear();
+    _testabilityGetter.onDestroy();
+  }
 }
 
 /**
@@ -158,6 +163,7 @@ export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
       Testability;
+  onDestroy(): void;
 }
 
 class _NoopGetTestability implements GetTestability {
@@ -166,6 +172,8 @@ class _NoopGetTestability implements GetTestability {
       Testability {
     return null;
   }
+
+  onDestroy(): void {}
 }
 
 /**
