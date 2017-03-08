@@ -7,24 +7,24 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
 
 @Injectable()
-export class ServerRendererFactoryV2 implements RendererFactoryV2 {
-  private rendererByCompId = new Map<string, RendererV2>();
-  private defaultRenderer: RendererV2;
+export class ServerRendererFactory2 implements RendererFactory2 {
+  private rendererByCompId = new Map<string, Renderer2>();
+  private defaultRenderer: Renderer2;
   private schema = new DomElementSchemaRegistry();
 
   constructor(
       private ngZone: NgZone, @Inject(DOCUMENT) private document: any,
       private sharedStylesHost: SharedStylesHost) {
-    this.defaultRenderer = new DefaultServerRendererV2(document, ngZone, this.schema);
+    this.defaultRenderer = new DefaultServerRenderer2(document, ngZone, this.schema);
   };
 
-  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
+  createRenderer(element: any, type: RendererType2): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -32,11 +32,11 @@ export class ServerRendererFactoryV2 implements RendererFactoryV2 {
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
-          renderer = new EmulatedEncapsulationServerRendererV2(
+          renderer = new EmulatedEncapsulationServerRenderer2(
               this.document, this.ngZone, this.sharedStylesHost, this.schema, type);
           this.rendererByCompId.set(type.id, renderer);
         }
-        (<EmulatedEncapsulationServerRendererV2>renderer).applyToHost(element);
+        (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
         return renderer;
       }
       case ViewEncapsulation.Native:
@@ -53,7 +53,7 @@ export class ServerRendererFactoryV2 implements RendererFactoryV2 {
   }
 }
 
-class DefaultServerRendererV2 implements RendererV2 {
+class DefaultServerRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
   constructor(
@@ -181,13 +181,13 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
   }
 }
 
-class EmulatedEncapsulationServerRendererV2 extends DefaultServerRendererV2 {
+class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
   private contentAttr: string;
   private hostAttr: string;
 
   constructor(
       document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
-      schema: DomElementSchemaRegistry, private component: RendererTypeV2) {
+      schema: DomElementSchemaRegistry, private component: RendererType2) {
     super(document, ngZone, schema);
     const styles = flattenStyles(component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);

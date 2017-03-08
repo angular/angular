@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, RendererV2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, Renderer2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingType, DebugContext, DepFlags, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {TestBed, inject, withModule} from '@angular/core/testing';
@@ -296,12 +296,12 @@ export function main() {
             expect(instance.dep.createElement).toBeTruthy();
           });
 
-          it('should inject RendererV2', () => {
+          it('should inject Renderer2', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(
                   NodeFlags.None, null, null, 1, 'span', null, null, null, null,
                   () => compViewDef([anchorDef(NodeFlags.None, null, null, 0)])),
-              directiveDef(NodeFlags.Component, null, 0, SomeService, [RendererV2])
+              directiveDef(NodeFlags.Component, null, 0, SomeService, [Renderer2])
             ]));
 
             expect(instance.dep.createElement).toBeTruthy();

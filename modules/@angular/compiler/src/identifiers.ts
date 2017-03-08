@@ -96,9 +96,9 @@ export class Identifiers {
   static nodeValue: IdentifierSpec = {name: 'ɵnov', moduleUrl: CORE, runtime: ɵnov};
   static ngContentDef: IdentifierSpec = {name: 'ɵncd', moduleUrl: CORE, runtime: ɵncd};
   static unwrapValue: IdentifierSpec = {name: 'ɵunv', moduleUrl: CORE, runtime: ɵunv};
-  static createRendererTypeV2: IdentifierSpec = {name: 'ɵcrt', moduleUrl: CORE, runtime: ɵcrt};
-  static RendererTypeV2: IdentifierSpec = {
-    name: 'RendererTypeV2',
+  static createRendererType2: IdentifierSpec = {name: 'ɵcrt', moduleUrl: CORE, runtime: ɵcrt};
+  static RendererType2: IdentifierSpec = {
+    name: 'RendererType2',
     moduleUrl: CORE,
     // type only
     runtime: null

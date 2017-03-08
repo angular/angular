@@ -7,8 +7,8 @@
  */
 
 import {CommonModule, ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
-import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
-import {DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactoryV2 as DomRendererFactoryV2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
+import {DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
@@ -17,7 +17,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_wo
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
-import {MessageBasedRendererV2} from './web_workers/ui/renderer';
+import {MessageBasedRenderer2} from './web_workers/ui/renderer';
 
 
 /**
@@ -54,12 +54,8 @@ export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
 
 export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   {provide: NgZone, useFactory: createNgZone, deps: []},
-  MessageBasedRendererV2,
-  {
-    provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE,
-    useExisting: MessageBasedRendererV2,
-    multi: true
-  },
+  MessageBasedRenderer2,
+  {provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE, useExisting: MessageBasedRenderer2, multi: true},
   BROWSER_SANITIZATION_PROVIDERS,
   {provide: ErrorHandler, useFactory: _exceptionHandler, deps: []},
   {provide: DOCUMENT, useFactory: _document, deps: []},
@@ -70,8 +66,8 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
   {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
   APP_ID_RANDOM_PROVIDER,
-  DomRendererFactoryV2,
-  {provide: RendererFactoryV2, useExisting: DomRendererFactoryV2},
+  DomRendererFactory2,
+  {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
   {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},

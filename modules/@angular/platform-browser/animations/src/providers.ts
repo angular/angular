@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone, Provider, RendererFactoryV2} from '@angular/core';
-import {ɵDomRendererFactoryV2} from '@angular/platform-browser';
+import {Injectable, NgZone, Provider, RendererFactory2} from '@angular/core';
+import {ɵDomRendererFactory2} from '@angular/platform-browser';
 
 import {AnimationEngine} from './animation_engine';
 import {AnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
@@ -37,7 +37,7 @@ export function instantiateDefaultStyleNormalizer() {
 }
 
 export function instantiateRendererFactory(
-    renderer: ɵDomRendererFactoryV2, engine: AnimationEngine, zone: NgZone) {
+    renderer: ɵDomRendererFactory2, engine: AnimationEngine, zone: NgZone) {
   return new AnimationRendererFactory(renderer, engine, zone);
 }
 
@@ -49,9 +49,9 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationDriver, useFactory: instantiateSupportedAnimationDriver},
   {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer},
   {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
-    provide: RendererFactoryV2,
+    provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [ɵDomRendererFactoryV2, AnimationEngine, NgZone]
+    deps: [ɵDomRendererFactory2, AnimationEngine, NgZone]
   }
 ];
 
@@ -61,8 +61,8 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
  */
 export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationEngine, useClass: NoopAnimationEngine}, {
-    provide: RendererFactoryV2,
+    provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [ɵDomRendererFactoryV2, AnimationEngine, NgZone]
+    deps: [ɵDomRendererFactory2, AnimationEngine, NgZone]
   }
 ];

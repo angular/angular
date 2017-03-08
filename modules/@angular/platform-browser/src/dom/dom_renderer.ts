@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
+
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 
@@ -57,15 +58,15 @@ function decoratePreventDefault(eventHandler: Function): Function {
 }
 
 @Injectable()
-export class DomRendererFactoryV2 implements RendererFactoryV2 {
-  private rendererByCompId = new Map<string, RendererV2>();
-  private defaultRenderer: RendererV2;
+export class DomRendererFactory2 implements RendererFactory2 {
+  private rendererByCompId = new Map<string, Renderer2>();
+  private defaultRenderer: Renderer2;
 
   constructor(private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost) {
-    this.defaultRenderer = new DefaultDomRendererV2(eventManager);
+    this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   };
 
-  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
+  createRenderer(element: any, type: RendererType2): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -73,11 +74,11 @@ export class DomRendererFactoryV2 implements RendererFactoryV2 {
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
-          renderer = new EmulatedEncapsulationDomRendererV2(
-              this.eventManager, this.sharedStylesHost, type);
+          renderer =
+              new EmulatedEncapsulationDomRenderer2(this.eventManager, this.sharedStylesHost, type);
           this.rendererByCompId.set(type.id, renderer);
         }
-        (<EmulatedEncapsulationDomRendererV2>renderer).applyToHost(element);
+        (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
         return renderer;
       }
       case ViewEncapsulation.Native:
@@ -94,7 +95,7 @@ export class DomRendererFactoryV2 implements RendererFactoryV2 {
   }
 }
 
-class DefaultDomRendererV2 implements RendererV2 {
+class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
   constructor(private eventManager: EventManager) {}
@@ -209,13 +210,13 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
   }
 }
 
-class EmulatedEncapsulationDomRendererV2 extends DefaultDomRendererV2 {
+class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
   private contentAttr: string;
   private hostAttr: string;
 
   constructor(
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererTypeV2) {
+      private component: RendererType2) {
     super(eventManager);
     const styles = flattenStyles(component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
@@ -233,12 +234,12 @@ class EmulatedEncapsulationDomRendererV2 extends DefaultDomRendererV2 {
   }
 }
 
-class ShadowDomRenderer extends DefaultDomRendererV2 {
+class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererTypeV2) {
+      private hostEl: any, private component: RendererType2) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).createShadowRoot();
     this.sharedStylesHost.addHost(this.shadowRoot);

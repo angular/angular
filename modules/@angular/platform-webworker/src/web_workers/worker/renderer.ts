@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, RendererFactoryV2, RendererTypeV2, RendererV2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
-import {EVENT_V2_CHANNEL, RENDERER_V2_CHANNEL} from '../shared/messaging_api';
+import {EVENT_2_CHANNEL, RENDERER_2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
 import {Serializer, SerializerTypes} from '../shared/serializer';
 
@@ -53,7 +53,7 @@ function eventNameWithTarget(target: string, eventName: string): string {
 }
 
 @Injectable()
-export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
+export class WebWorkerRendererFactory2 implements RendererFactory2 {
   globalEvents = new NamedEventEmitter();
 
   private _messageBroker: ClientMessageBroker;
@@ -61,20 +61,20 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
   constructor(
       messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
       private _serializer: Serializer, public renderStore: RenderStore) {
-    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_V2_CHANNEL);
-    bus.initChannel(EVENT_V2_CHANNEL);
-    const source = bus.from(EVENT_V2_CHANNEL);
+    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_2_CHANNEL);
+    bus.initChannel(EVENT_2_CHANNEL);
+    const source = bus.from(EVENT_2_CHANNEL);
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
-  createRenderer(element: any, type: RendererTypeV2): RendererV2 {
-    const renderer = new WebWorkerRendererV2(this);
+  createRenderer(element: any, type: RendererType2): Renderer2 {
+    const renderer = new WebWorkerRenderer2(this);
 
     const id = this.renderStore.allocateId();
     this.renderStore.store(renderer, id);
     this.callUI('createRenderer', [
       new FnArg(element, SerializerTypes.RENDER_STORE_OBJECT),
-      new FnArg(type, SerializerTypes.RENDERER_TYPE_V2),
+      new FnArg(type, SerializerTypes.RENDERER_TYPE_2),
       new FnArg(renderer, SerializerTypes.RENDER_STORE_OBJECT),
     ]);
 
@@ -114,10 +114,10 @@ export class WebWorkerRendererFactoryV2 implements RendererFactoryV2 {
 }
 
 
-export class WebWorkerRendererV2 implements RendererV2 {
+export class WebWorkerRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
-  constructor(private _rendererFactory: WebWorkerRendererFactoryV2) {}
+  constructor(private _rendererFactory: WebWorkerRendererFactory2) {}
 
   private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);
 
