@@ -8,7 +8,7 @@
 
 import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactoryV2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
@@ -16,7 +16,7 @@ import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
-import {ServerRendererFactoryV2} from './server_renderer';
+import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
@@ -38,8 +38,8 @@ function initParse5Adapter(injector: Injector) {
 }
 
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
-  ServerRendererFactoryV2,
-  {provide: RendererFactoryV2, useExisting: ServerRendererFactoryV2},
+  ServerRendererFactory2,
+  {provide: RendererFactory2, useExisting: ServerRendererFactory2},
   ServerStylesHost,
   {provide: SharedStylesHost, useExisting: ServerStylesHost},
 ];

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModule, NgZone, Provider, RendererFactoryV2} from '@angular/core';
+import {ApplicationRef, NgModule, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {NoopAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
-import {ServerModule, ɵServerRendererFactoryV2} from '@angular/platform-server';
+import {ServerModule, ɵServerRendererFactory2} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 // Note: don't refer to third_party_src as we want to test that
 // we can compile components from node_modules!
@@ -26,16 +26,16 @@ import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
 export function instantiateServerRendererFactory(
-    renderer: RendererFactoryV2, engine: ɵAnimationEngine, zone: NgZone) {
+    renderer: RendererFactory2, engine: ɵAnimationEngine, zone: NgZone) {
   return new ɵAnimationRendererFactory(renderer, engine, zone);
 }
 
 // TODO(matsko): create a server module for animations and use
 // that instead of these manual providers here.
 export const SERVER_ANIMATIONS_PROVIDERS: Provider[] = [{
-  provide: RendererFactoryV2,
+  provide: RendererFactory2,
   useFactory: instantiateServerRendererFactory,
-  deps: [ɵServerRendererFactoryV2, ɵAnimationEngine, NgZone]
+  deps: [ɵServerRendererFactory2, ɵAnimationEngine, NgZone]
 }];
 
 @NgModule({

@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {RendererFactoryV2, RendererTypeV2, RendererV2} from '../render/api';
+import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
@@ -82,7 +82,7 @@ function createDebugServices() {
 function createProdRootView(
     injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
     def: ViewDefinition, context?: any): ViewData {
-  const rendererFactory: RendererFactoryV2 = injector.get(RendererFactoryV2);
+  const rendererFactory: RendererFactory2 = injector.get(RendererFactory2);
   return createRootView(
       createRootData(injector, rendererFactory, projectableNodes, rootSelectorOrNode), def,
       context);
@@ -91,14 +91,14 @@ function createProdRootView(
 function debugCreateRootView(
     injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
     def: ViewDefinition, context?: any): ViewData {
-  const rendererFactory: RendererFactoryV2 = injector.get(RendererFactoryV2);
+  const rendererFactory: RendererFactory2 = injector.get(RendererFactory2);
   const root = createRootData(
-      injector, new DebugRendererFactoryV2(rendererFactory), projectableNodes, rootSelectorOrNode);
+      injector, new DebugRendererFactory2(rendererFactory), projectableNodes, rootSelectorOrNode);
   return callWithDebugContext(DebugAction.create, createRootView, null, [root, def, context]);
 }
 
 function createRootData(
-    injector: Injector, rendererFactory: RendererFactoryV2, projectableNodes: any[][],
+    injector: Injector, rendererFactory: RendererFactory2, projectableNodes: any[][],
     rootSelectorOrNode: any): RootData {
   const sanitizer = injector.get(Sanitizer);
   const renderer = rendererFactory.createRenderer(null, null);
@@ -415,17 +415,17 @@ export function getCurrentDebugContext(): DebugContext {
 }
 
 
-class DebugRendererFactoryV2 implements RendererFactoryV2 {
-  constructor(private delegate: RendererFactoryV2) {}
+class DebugRendererFactory2 implements RendererFactory2 {
+  constructor(private delegate: RendererFactory2) {}
 
-  createRenderer(element: any, renderData: RendererTypeV2): RendererV2 {
-    return new DebugRendererV2(this.delegate.createRenderer(element, renderData));
+  createRenderer(element: any, renderData: RendererType2): Renderer2 {
+    return new DebugRenderer2(this.delegate.createRenderer(element, renderData));
   }
 }
 
 
-class DebugRendererV2 implements RendererV2 {
-  constructor(private delegate: RendererV2) {}
+class DebugRenderer2 implements Renderer2 {
+  constructor(private delegate: Renderer2) {}
 
   get data() { return this.delegate.data; }
 

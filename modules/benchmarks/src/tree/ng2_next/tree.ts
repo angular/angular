@@ -7,9 +7,9 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ComponentFactory, ComponentRef, Injector, RendererFactoryV2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ComponentFactory, ComponentRef, Injector, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ArgumentType, BindingType, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
-import {DomRendererFactoryV2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 import {TreeNode, emptyTree} from '../util';
@@ -87,14 +87,14 @@ function TreeComponent_0(): ViewDefinition {
 export class AppModule implements Injector {
   private sanitizer: DomSanitizerImpl;
   private componentFactory: ComponentFactory<TreeComponent>;
-  private rendererV2: RendererFactoryV2;
+  private renderer2: RendererFactory2;
 
   componentRef: ComponentRef<TreeComponent>;
 
   constructor() {
     initServicesIfNeeded();
     this.sanitizer = new DomSanitizerImpl(document);
-    this.rendererV2 = new DomRendererFactoryV2(null, null);
+    this.renderer2 = new DomRendererFactory2(null, null);
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
     this.componentFactory = createComponentFactory('#root', TreeComponent, TreeComponent_Host);
@@ -102,8 +102,8 @@ export class AppModule implements Injector {
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
     switch (token) {
-      case RendererFactoryV2:
-        return this.rendererV2;
+      case RendererFactory2:
+        return this.renderer2;
       case Sanitizer:
         return this.sanitizer;
       case RootRenderer:

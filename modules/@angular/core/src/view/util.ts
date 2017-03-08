@@ -14,7 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {Renderer, RendererTypeV2} from '../render/api';
+import {Renderer, RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
@@ -43,11 +43,11 @@ export function unwrapValue(value: any): any {
 
 let _renderCompCount = 0;
 
-export function createRendererTypeV2(values: {
+export function createRendererType2(values: {
   styles: (string | any[])[],
   encapsulation: ViewEncapsulation,
   data: {[kind: string]: any[]}
-}): RendererTypeV2 {
+}): RendererType2 {
   const isFilled = values && (values.encapsulation !== ViewEncapsulation.None ||
                               values.styles.length || Object.keys(values.data).length);
   if (isFilled) {
