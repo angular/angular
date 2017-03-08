@@ -83,8 +83,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
           documentation: [],
           kind: 'angular',
           kindModifiers: 'what does this do?',
-          textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start},
-          tags: [],
+          textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start}
         };
       }
     });

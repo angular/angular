@@ -668,7 +668,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   getSpanAt(line: number, column: number): Span { return spanAt(this.source, line, column); }
 
   private getTemplateRefContextType(type: ts.Symbol): ts.Symbol {
-    const constructor = type.members['__constructor'];
+    const constructor = type.members.get('__constructor');
     if (constructor) {
       const constructorDeclaration = constructor.declarations[0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
@@ -722,21 +722,19 @@ function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): 
 }
 
 function toSymbolTable(symbols: ts.Symbol[]): ts.SymbolTable {
-  const result: ts.SymbolTable = <any>{};
+  const result: ts.SymbolTable = <ts.SymbolTable>new Map();
+
   for (const symbol of symbols) {
-    result[symbol.name] = symbol;
+    result.set(symbol.name, symbol);
   }
   return result;
 }
 
 function toSymbols(symbolTable: ts.SymbolTable, filter?: (symbol: ts.Symbol) => boolean) {
   const result: ts.Symbol[] = [];
-  const own = typeof symbolTable.hasOwnProperty === 'function' ?
-      (name: string) => symbolTable.hasOwnProperty(name) :
-      (name: string) => !!symbolTable[name];
-  for (const name in symbolTable) {
-    if (own(name) && (!filter || filter(symbolTable[name]))) {
-      result.push(symbolTable[name]);
+  for (const name of Array.from<string>(symbolTable.keys() as any)) {
+    if (symbolTable.has(name) && (!filter || filter(symbolTable.get(name)))) {
+      result.push(symbolTable.get(name));
     }
   }
   return result;
@@ -892,11 +890,11 @@ class SymbolTableWrapper implements SymbolTable {
   get size(): number { return this.symbols.length; }
 
   get(key: string): Symbol|undefined {
-    const symbol = this.symbolTable[key];
+    const symbol = this.symbolTable.get(key);
     return symbol ? new SymbolWrapper(symbol, this.context) : undefined;
   }
 
-  has(key: string): boolean { return this.symbolTable[key] != null; }
+  has(key: string): boolean { return this.symbolTable.has(key); }
 
   values(): Symbol[] { return this.symbols.map(s => new SymbolWrapper(s, this.context)); }
 }
@@ -1024,7 +1022,7 @@ class PipeSymbol implements Symbol {
   }
 
   private findTransformMethodType(classSymbol: ts.Symbol): ts.Type {
-    const transform = classSymbol.members['transform'];
+    const transform = classSymbol.members.get('transform');
     if (transform) {
       return this.context.checker.getTypeOfSymbolAtLocation(transform, this.context.node);
     }
