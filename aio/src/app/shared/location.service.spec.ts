@@ -119,4 +119,12 @@ describe('LocationService', () => {
       ]);
     });
   });
+
+  describe('search', () => {
+    it('should ...', () => { });
+  });
+
+  describe('setSearch', () => {
+    it('should ...', () => { });
+  });
 });
