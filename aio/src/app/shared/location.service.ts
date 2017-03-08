@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location, PlatformLocation } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -9,7 +9,7 @@ export class LocationService {
   private urlSubject: BehaviorSubject<string>;
   get currentUrl() { return this.urlSubject.asObservable(); }
 
-  constructor(private location: Location) {
+  constructor(private location: Location, private platformLocation: PlatformLocation) {
 
     const initialUrl = this.stripLeadingSlashes(location.path(true));
     this.urlSubject = new BehaviorSubject(initialUrl);
@@ -39,7 +39,9 @@ export class LocationService {
           const params = path.substr(q + 1).split('&');
           params.forEach(p => {
             const pair = p.split('=');
-            search[pair[0]] = decodeURIComponent(pair[1]);
+            if (pair[0]) {
+              search[decodeURIComponent(pair[0])] = pair[1] && decodeURIComponent(pair[1]);
+            }
           });
       } catch (e) { /* don't care */ }
     }
@@ -47,16 +49,13 @@ export class LocationService {
   }
 
   setSearch(label: string, params: {}) {
-    if (!window || !window.history) { return; }
-
     const search = Object.keys(params).reduce((acc, key) => {
       const value = params[key];
       // tslint:disable-next-line:triple-equals
       return value == undefined ? acc :
-        acc += (acc ? '&' : '?') + `${key}=${encodeURIComponent(value)}`;
+        acc += (acc ? '&' : '?') + `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }, '');
 
-    // this.location.replaceState doesn't let you set the history stack label
-    window.history.replaceState({}, 'API Search', window.location.pathname + search);
+    this.platformLocation.replaceState({}, label, this.platformLocation.pathname + search);
   }
 }
