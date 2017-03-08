@@ -36,7 +36,7 @@ module.exports =
 
         // Register the processors
         .processor(require('./processors/convertPrivateClassesToInterfaces'))
-        .processor(require('./processors/generateNavigationDoc'))
+        .processor(require('./processors/generateApiListDoc'))
         .processor(require('./processors/generateKeywords'))
         .processor(require('./processors/createOverviewDump'))
         .processor(require('./processors/checkUnbalancedBackTicks'))
@@ -193,7 +193,7 @@ module.exports =
 
 
 
-        // We are going to be relaxed about ambigous links
+        // We are not going to be relaxed about ambiguous links
         .config(function(getLinkInfo) {
           getLinkInfo.useFirstAmbiguousLink = false;
         })
@@ -201,14 +201,14 @@ module.exports =
 
 
         .config(function(
-            computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES, generateNavigationDoc,
+            computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc,
             generateKeywordsProcessor) {
 
           const API_SEGMENT = 'api';
           const GUIDE_SEGMENT = 'guide';
           const APP_SEGMENT = 'app';
 
-          generateNavigationDoc.outputFolder = APP_SEGMENT;
+          generateApiListDoc.outputFolder = API_SEGMENT;
           generateKeywordsProcessor.outputFolder = APP_SEGMENT;
 
           // Replace any path templates inherited from other packages
@@ -227,11 +227,6 @@ module.exports =
               docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe']),
               pathTemplate: '${moduleDoc.moduleFolder}/${name}',
               outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
-            },
-            {
-              docTypes: ['api-list-data', 'api-list-audit'],
-              pathTemplate: APP_SEGMENT + '/${docType}.json',
-              outputPathTemplate: '${path}'
             },
             {
               docTypes: ['cheatsheet-data'],

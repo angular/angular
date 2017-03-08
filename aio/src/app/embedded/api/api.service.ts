@@ -10,15 +10,13 @@ import 'rxjs/add/operator/takeUntil';
 import { Logger } from 'app/shared/logger.service';
 
 export interface ApiItem {
+  name: string;
   title: string;
   path: string;
   docType: string;
   stability: string;
-  secure: string;
   securityRisk: boolean;
-  barrel: string;
 
-  name?: string;
   show?: boolean;
 }
 
@@ -73,14 +71,7 @@ export class ApiService implements OnDestroy {
     const url = this.apiBase + (src || this.apiListJsonDefault);
     this.http.get(url)
       .takeUntil(this.onDestroy)
-      .map(response => {
-        const sections = response.json();
-        return Object.keys(sections).map(title => {
-          const items = sections[title] as ApiItem[];
-          items.forEach(normalizeItem);
-          return { name: title.toLowerCase(), title, items };
-        });
-      })
+      .map(response => response.json())
       .do(() => this.logger.log(`Got API sections from ${url}`))
       .subscribe(
         sections => this.sectionsSubject.next(sections),
@@ -90,16 +81,5 @@ export class ApiService implements OnDestroy {
           throw err; // rethrow for now.
         }
       );
-
-    function normalizeItem(item: ApiItem) {
-      item.name = item.title.toLowerCase();
-      // convert 'secure' property to boolean `securityRisk`
-      item.securityRisk =  item.secure !== 'false';
-      // 'let' and 'var' doc types should be treated as 'const'
-      const docType = item.docType;
-      if (docType === 'let' || docType === 'var') {
-        item.docType = 'const';
-      }
-    }
   }
 }
