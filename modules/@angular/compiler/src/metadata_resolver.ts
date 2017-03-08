@@ -927,7 +927,7 @@ export class CompileMetadataResolver {
     if (provider.useClass) {
       compileTypeMetadata = this._getInjectableMetadata(provider.useClass, provider.dependencies);
       compileDeps = compileTypeMetadata.diDeps;
-      if (provider.token === provider.useClass) {
+      if (compileTypeMetadata.lifecycleHooks.length) {
         // use the compileTypeMetadata as it contains information about lifecycleHooks...
         token = {identifier: compileTypeMetadata};
       }
