@@ -42,7 +42,10 @@ export const ngControlStatusHost = {
  *
  * @stable
  */
-@Directive({selector: '[formControlName],[ngModel],[formControl]', host: ngControlStatusHost})
+@Directive({
+  selector: ':not([ngNoStatus])[formControlName],:not([ngNoStatus])[ngModel],:not([ngNoStatus])[formControl]',
+  host: ngControlStatusHost
+})
 export class NgControlStatus extends AbstractControlStatus {
   constructor(@Self() cd: NgControl) { super(cd); }
 }
@@ -55,7 +58,7 @@ export class NgControlStatus extends AbstractControlStatus {
  */
 @Directive({
   selector:
-      '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
+      ':not([ngNoStatus])[formGroupName],:not([ngNoStatus])[formArrayName],:not([ngNoStatus])[ngModelGroup],:not([ngNoStatus])[formGroup],form:not([ngNoForm]),:not([ngNoStatus])[ngForm]',
   host: ngControlStatusHost
 })
 export class NgControlStatusGroup extends AbstractControlStatus {
