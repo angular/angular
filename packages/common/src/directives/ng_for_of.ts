@@ -65,8 +65,27 @@ export class NgForOfRow<T> {
  *
  * ### Syntax
  *
- * - `<li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>`
- * - `<li template="ngFor let item of items; let i = index; trackBy: trackByFn">...</li>`
+ * ```
+ * <li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>
+ *
+ * // Method in component class. Track by object property
+ * trackByFn(index: number, item: Item): any {
+ *     return item != null ? item.id : item;
+ * }
+ * ```
+ *
+ * With `<ng-container>` element:
+ *
+ * ```
+ * <ng-container *ngFor="let item of items; let i = index; trackBy: trackByFn">
+ *   <li>...</li>
+ * </ng-container>
+ *
+ * // Track by index
+ * trackByFn(index: number, item: Item): any {
+ *     return index;
+ * }
+ * ```
  *
  * With `<ng-template>` element:
  *
@@ -74,12 +93,12 @@ export class NgForOfRow<T> {
  * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
  *   <li>...</li>
  * </ng-template>
+ *
+ * // Track by identity (default)
+ * trackByFn(index: number, item: Item): any {
+ *     return item;
+ * }
  * ```
- *
- * ### Example
- *
- * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
- * example.
  *
  * @stable
  */
