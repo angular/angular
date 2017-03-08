@@ -129,6 +129,48 @@ describe('CompilerHost', () => {
     });
   });
 
+  describe('rootHostDir', () => {
+    let hostRootDir: CompilerHost;
+    beforeEach(() => {
+      hostRootDir = new CompilerHost(
+          program, {
+            genDir: '/src/gen/',
+            basePath: '/',
+            skipMetadataEmit: false,
+            strictMetadataEmit: false,
+            skipTemplateCodegen: false,
+            trace: false
+          },
+          context);
+    });
+
+    it('should import node_module from factory', () => {
+      expect(hostRootDir.fileNameToModuleName(
+                 '/node_modules/@angular/core.d.ts', '/src/gen/src/my.ngfactory.ts'))
+          .toEqual('@angular/core');
+    });
+
+    it('should import factory from factory', () => {
+      expect(hostRootDir.fileNameToModuleName('/src/my.other.ngfactory.ts', '/src/my.ngfactory.ts'))
+          .toEqual('./my.other.ngfactory');
+      expect(hostRootDir.fileNameToModuleName(
+                 '/src/my.other.css.ngstyle.ts', '/src/a/my.ngfactory.ts'))
+          .toEqual('../my.other.css.ngstyle');
+      expect(hostRootDir.fileNameToModuleName(
+                 '/src/a/my.other.shim.ngstyle.ts', '/src/my.ngfactory.ts'))
+          .toEqual('./a/my.other.shim.ngstyle');
+    });
+
+    it('should import application from factory', () => {
+      expect(hostRootDir.fileNameToModuleName('/src/my.other.ts', '/src/my.ngfactory.ts'))
+          .toEqual('../../my.other');
+      expect(hostRootDir.fileNameToModuleName('/src/my.other.ts', '/src/a/my.ngfactory.ts'))
+          .toEqual('../../../my.other');
+      expect(hostRootDir.fileNameToModuleName('/src/a/my.other.ts', '/src/my.ngfactory.ts'))
+          .toEqual('../../a/my.other');
+    });
+  });
+
   it('should be able to produce an import from main @angular/core', () => {
     expect(hostNestedGenDir.fileNameToModuleName(
                '/tmp/project/node_modules/@angular/core.d.ts', '/tmp/project/src/main.ts'))

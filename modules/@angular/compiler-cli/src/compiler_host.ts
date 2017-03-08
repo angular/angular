@@ -38,7 +38,7 @@ export class CompilerHost implements AotCompilerHost {
   constructor(
       protected program: ts.Program, protected options: AngularCompilerOptions,
       protected context: CompilerHostContext, collectorOptions?: CollectorOptions) {
-    // normalize the path so that it never ends with '/'.
+    // Normalize the path (note that it may still end with '/' if it's a root).
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
@@ -134,7 +134,7 @@ export class CompilerHost implements AotCompilerHost {
       } else {
         if (!this.isGenDirChildOfRootDir) {
           // assume that they are on top of each other.
-          importedFile = importedFile.replace(this.basePath, this.genDir);
+          importedFile = this.replaceBasePathByGenDir(importedFile);
         }
         if (SHALLOW_IMPORT.test(importedFile)) {
           return importedFile;
@@ -160,8 +160,14 @@ export class CompilerHost implements AotCompilerHost {
     } else {
       // pretend that containing file is on top of the `genDir` to normalize the paths.
       // we apply the `genDir` => `rootDir` delta through `rootDirPrefix` later.
-      return filepath.replace(this.basePath, this.genDir);
+      return this.replaceBasePathByGenDir(filepath);
     }
+  }
+
+  private replaceBasePathByGenDir(filepath: string): string {
+    return filepath.startsWith(this.basePath) ?
+        path.join(this.genDir, filepath.slice(this.basePath.length)) :
+        filepath.replace(this.basePath, this.genDir);
   }
 
   protected getSourceFile(filePath: string): ts.SourceFile {
