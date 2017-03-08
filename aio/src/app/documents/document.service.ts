@@ -57,7 +57,8 @@ export class DocumentService {
     return subject.asObservable();
   }
 
-  private computePath(url) {
+  private computePath(url: string) {
+    url = url.match(/[^#?]*/)[0]; // strip off fragment and query
     url = '/' + url;
     url = url.endsWith('/') ? url + 'index' : url;
     return 'content/docs' + url + '.json';

@@ -16,6 +16,7 @@ import { Platform } from '@angular/material/core';
 import 'rxjs/add/operator/first';
 
 import { AppComponent } from 'app/app.component';
+import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
 import { Logger } from 'app/shared/logger.service';
@@ -48,6 +49,7 @@ import { LinkDirective } from 'app/shared/link.directive';
     LinkDirective,
   ],
   providers: [
+    ApiService,
     EmbeddedComponents,
     Logger,
     Location,
