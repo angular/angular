@@ -166,11 +166,11 @@ function _extractLazyRoutesFromStaticModule(
  * @private
  */
 function _getNgModuleMetadata(staticSymbol: StaticSymbol, reflector: StaticReflector): NgModule {
-  const ngModules = reflector.annotations(staticSymbol).filter((s: any) => s instanceof NgModule);
-  if (ngModules.length === 0) {
+  const ngModule = reflector.annotations(staticSymbol).find((s: any) => s instanceof NgModule);
+  if (!ngModule) {
     throw new Error(`${staticSymbol.name} is not an NgModule`);
   }
-  return ngModules[0];
+  return ngModule;
 }
 
 
