@@ -109,41 +109,44 @@ class Recognizer {
 
     if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
 
+    let snapshot: ActivatedRouteSnapshot;
+    let consumedSegments: UrlSegment[] = [];
+    let rawSlicedSegments: UrlSegment[] = [];
+
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments).parameters : {};
-      const snapshot = new ActivatedRouteSnapshot(
+      snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment,
           getData(route), outlet, route.component, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+    } else {
+      const result: MatchResult = match(rawSegment, route, segments);
+      consumedSegments = result.consumedSegments;
+      rawSlicedSegments = segments.slice(result.lastChild);
+
+      snapshot = new ActivatedRouteSnapshot(
+          consumedSegments, result.parameters, Object.freeze(this.urlTree.queryParams),
+          this.urlTree.fragment, getData(route), outlet, route.component, route,
+          getSourceSegmentGroup(rawSegment),
+          getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
     }
 
-    const {consumedSegments, parameters, lastChild} = match(rawSegment, route, segments);
-    const rawSlicedSegments = segments.slice(lastChild);
-    const childConfig = getChildConfig(route);
+    const childConfig: Route[] = getChildConfig(route);
 
     const {segmentGroup, slicedSegments} =
         split(rawSegment, consumedSegments, rawSlicedSegments, childConfig);
 
-    const snapshot = new ActivatedRouteSnapshot(
-        consumedSegments, parameters, Object.freeze(this.urlTree.queryParams),
-        this.urlTree.fragment, getData(route), outlet, route.component, route,
-        getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + consumedSegments.length,
-        getResolve(route));
-
-
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
-
-    } else if (childConfig.length === 0 && slicedSegments.length === 0) {
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
-
-    } else {
-      const children =
-          this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
     }
+
+    if (childConfig.length === 0 && slicedSegments.length === 0) {
+      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+    }
+
+    const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
   }
 }
 
@@ -165,7 +168,13 @@ function getChildConfig(route: Route): Route[] {
   }
 }
 
-function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]) {
+interface MatchResult {
+  consumedSegments: UrlSegment[];
+  lastChild: number;
+  parameters: any;
+}
+
+function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       throw new NoMatch();
