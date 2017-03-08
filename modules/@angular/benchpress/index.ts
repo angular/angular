@@ -32,3 +32,4 @@ export {ChromeDriverExtension} from './src/webdriver/chrome_driver_extension';
 export {FirefoxDriverExtension} from './src/webdriver/firefox_driver_extension';
 export {IOsDriverExtension} from './src/webdriver/ios_driver_extension';
 export {SeleniumWebDriverAdapter} from './src/webdriver/selenium_webdriver_adapter';
+export {WebdriverIOAdapter} from './src/webdriver/webdriverio_adapter';
