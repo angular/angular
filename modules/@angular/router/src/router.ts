@@ -488,6 +488,7 @@ export class Router {
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
+    if (url == null) return false;
     if (url instanceof UrlTree) {
       return containsTree(this.currentUrlTree, url, exact);
     } else {
