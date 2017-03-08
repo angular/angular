@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, Location} from '@angular/common';
+import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
-import {forEach, shallowEqual} from '../src/utils/collection';
+import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -969,6 +968,63 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
+       })));
+  });
+
+  describe('native links (hash)', () => {
+
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, Location]});
+    });
+
+    it(`should ignore <a href="#">`,
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const log: Event[] = [];
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'one', component: SimpleLinkCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/one');
+         advance(fixture);
+
+         expect(location.path()).toEqual('/one');
+
+         router.events.subscribe(e => log.push(e));
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         expect(anchor.getAttribute('href')).toEqual('#');
+         anchor.click();
+         advance(fixture);
+
+         expect(location.path()).toEqual('/one');
+         expect(log.length).toBe(0);
+       })));
+
+    it(`should navigate to the app root`,
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'one', component: SimpleLinkCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/one');
+         advance(fixture);
+
+         expect(location.path()).toEqual('/one');
+
+         const linkCmp: SimpleLinkCmp = fixture.debugElement.childNodes[1].componentInstance;
+         linkCmp.href = '#/';
+         advance(fixture);
+
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         expect(anchor.getAttribute('href')).toEqual('#/');
+         anchor.click();
+         advance(fixture);
+
+         expect(location.path()).toEqual('');
        })));
   });
 
@@ -3026,6 +3082,11 @@ function expectEvents(events: Event[], pairs: any[]) {
 class StringLinkCmp {
 }
 
+@Component({selector: 'simple-link', template: `<a [href]="href">link</a>`})
+class SimpleLinkCmp {
+  href: string = '#';
+}
+
 @Component({selector: 'link-cmp', template: `<button routerLink="/team/33/simple">link</button>`})
 class StringLinkButtonCmp {
 }
@@ -3255,6 +3316,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    SimpleLinkCmp,
   ],
 
 
@@ -3282,6 +3344,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    SimpleLinkCmp,
   ],
 
 
@@ -3310,6 +3373,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    SimpleLinkCmp,
   ]
 })
 class TestModule {
