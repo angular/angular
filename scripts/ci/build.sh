@@ -23,6 +23,7 @@ travisFoldEnd "tsc tools"
 
 travisFoldStart "tsc all"
   node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main -p packages
+  node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main -p modules
 travisFoldEnd "tsc all"
 
 

@@ -31,6 +31,7 @@ travisFoldEnd "test.unit.node"
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
   node dist/tools/@angular/tsc-wrapped/src/main -p packages/tsconfig.json
+  node dist/tools/@angular/tsc-wrapped/src/main -p modules/tsconfig.json
 travisFoldStart "test.unit.rebuildHack"
 
 

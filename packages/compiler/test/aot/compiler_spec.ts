@@ -10,7 +10,6 @@ import {AotCompiler, AotCompilerHost, AotCompilerOptions, createAotCompiler} fro
 import {RenderComponentType, ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
-import * as path from 'path';
 import * as ts from 'typescript';
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockMetadataBundlerHost, settings} from './test_util';
 

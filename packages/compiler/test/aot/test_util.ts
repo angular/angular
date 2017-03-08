@@ -58,7 +58,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
     if (distIndex >= 0) {
       const root = moduleFilename.substr(0, distIndex);
       this.nodeModulesPath = path.join(root, 'node_modules');
-      this.angularSourcePath = path.join(root, 'modules');
+      this.angularSourcePath = path.join(root, 'packages');
 
       // Rewrite references to scripts with '@angular' to its corresponding location in
       // the source tree.
@@ -92,8 +92,10 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   public get written(): Map<string, string> { return this.writtenFiles; }
 
   public effectiveName(fileName: string): string {
-    return fileName.startsWith('@angular/') ? path.join(this.angularSourcePath, fileName) :
-                                              fileName;
+    const prefix = '@angular/';
+    return fileName.startsWith('@angular/') ?
+        path.join(this.angularSourcePath, fileName.substr(prefix.length)) :
+        fileName;
   }
 
   // ts.ModuleResolutionHost
@@ -177,7 +179,7 @@ export class MockCompilerHost implements ts.CompilerHost {
     if (distIndex >= 0) {
       const root = moduleFilename.substr(0, distIndex);
       this.nodeModulesPath = path.join(root, 'node_modules');
-      this.angularSourcePath = path.join(root, 'modules');
+      this.angularSourcePath = path.join(root, 'packages');
     }
   }
 
@@ -309,7 +311,8 @@ export class MockCompilerHost implements ts.CompilerHost {
     const rxjs = '/rxjs';
     if (name.startsWith('/' + node_modules)) {
       if (this.angularSourcePath && name.startsWith('/' + node_modules + at_angular)) {
-        return path.join(this.angularSourcePath, name.substr(node_modules.length + 1));
+        return path.join(
+            this.angularSourcePath, name.substr(node_modules.length + at_angular.length + 1));
       }
       if (this.nodeModulesPath && name.startsWith('/' + node_modules + rxjs)) {
         return path.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
