@@ -1,7 +1,12 @@
 import { ReflectiveInjector } from '@angular/core';
-import { Location, LocationStrategy } from '@angular/common';
+import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
 import { LocationService } from './location.service';
+
+class MockPlatformLocation {
+  pathname = 'a/b/c';
+  replaceState = jasmine.createSpy('PlatformLocation.replaceState');
+}
 
 describe('LocationService', () => {
 
@@ -11,7 +16,8 @@ describe('LocationService', () => {
     injector = ReflectiveInjector.resolveAndCreate([
         LocationService,
         Location,
-        { provide: LocationStrategy, useClass: MockLocationStrategy }
+        { provide: LocationStrategy, useClass: MockLocationStrategy },
+        { provide: PlatformLocation, useClass: MockPlatformLocation }
     ]);
   });
 
@@ -121,10 +127,98 @@ describe('LocationService', () => {
   });
 
   describe('search', () => {
-    it('should ...', () => { });
+    it('should read the query from the current location.path', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      location.simulatePopState('a/b/c?foo=bar&moo=car');
+      expect(service.search()).toEqual({ foo: 'bar', moo: 'car' });
+    });
+
+    it('should cope with an empty query', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      location.simulatePopState('a/b/c');
+      expect(service.search()).toEqual({ });
+
+      location.simulatePopState('x/y/z?');
+      expect(service.search()).toEqual({ });
+
+      location.simulatePopState('x/y/z?x=');
+      expect(service.search()).toEqual({ x: '' });
+
+      location.simulatePopState('x/y/z?x');
+      expect(service.search()).toEqual({ x: undefined });
+    });
+
+    it('should URL decode query values', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      location.simulatePopState('a/b/c?query=a%26b%2Bc%20d');
+      expect(service.search()).toEqual({ query: 'a&b+c d' });
+    });
+
+    it('should URL decode query keys', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      location.simulatePopState('a/b/c?a%26b%2Bc%20d=value');
+      expect(service.search()).toEqual({ 'a&b+c d': 'value' });
+    });
+
+    it('should cope with a hash on the URL', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      spyOn(location, 'path').and.callThrough();
+      service.search();
+      expect(location.path).toHaveBeenCalledWith(false);
+    });
   });
 
   describe('setSearch', () => {
-    it('should ...', () => { });
+    it('should call replaceState on PlatformLocation', () => {
+      const location: MockPlatformLocation = injector.get(PlatformLocation);
+      const service: LocationService = injector.get(LocationService);
+
+      const params = {};
+      service.setSearch('Some label', params);
+      expect(location.replaceState).toHaveBeenCalledWith(jasmine.any(Object), 'Some label', 'a/b/c');
+    });
+
+    it('should convert the params to a query string', () => {
+      const location: MockPlatformLocation = injector.get(PlatformLocation);
+      const service: LocationService = injector.get(LocationService);
+
+      const params = { foo: 'bar', moo: 'car' };
+      service.setSearch('Some label', params);
+      expect(location.replaceState).toHaveBeenCalledWith(jasmine.any(Object), 'Some label', jasmine.any(String));
+      const [path, query] = location.replaceState.calls.mostRecent().args[2].split('?');
+      expect(path).toEqual('a/b/c');
+      expect(query).toContain('foo=bar');
+      expect(query).toContain('moo=car');
+    });
+
+    it('should URL encode param values', () => {
+      const location: MockPlatformLocation = injector.get(PlatformLocation);
+      const service: LocationService = injector.get(LocationService);
+
+      const params = { query: 'a&b+c d' };
+      service.setSearch('', params);
+      const [, query] = location.replaceState.calls.mostRecent().args[2].split('?');
+      expect(query).toContain('query=a%26b%2Bc%20d');
+    });
+
+    it('should URL encode param keys', () => {
+      const location: MockPlatformLocation = injector.get(PlatformLocation);
+      const service: LocationService = injector.get(LocationService);
+
+      const params = { 'a&b+c d': 'value' };
+      service.setSearch('', params);
+      const [, query] = location.replaceState.calls.mostRecent().args[2].split('?');
+      expect(query).toContain('a%26b%2Bc%20d=value');
+    });
   });
 });
