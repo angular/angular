@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef, ɵstringify as stringify} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -41,7 +41,16 @@ export class RouterConfigLoader {
 
       const module = factory.create(parentInjector);
 
-      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)), module);
+      const parentRoutes = new Set(flatten(parentInjector.get(ROUTES)));
+      const moduleRoutes =
+          flatten(module.injector.get(ROUTES)).filter(route => !parentRoutes.has(route));
+
+      if (moduleRoutes.length === 0) {
+        throw new Error(
+            `A lazy loaded module must define at least 1 route, but it seems like the '${stringify(factory.moduleType)}' module hasn't defined any. Have you imported RouterModule.forChild(ROUTES) in this module?`);
+      }
+
+      return new LoadedRouterConfig(moduleRoutes, module);
     });
   }
 
