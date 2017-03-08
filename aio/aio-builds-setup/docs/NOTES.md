@@ -22,6 +22,7 @@
     [-v <host-cert-dir>:/etc/ssl/localcerts:ro] \
      -v <host-secrets-dir>:/aio-secrets:ro \
      -v <host-builds-dir>:/var/www/aio-builds \
+    [-v <host-logs-dir>:/var/log/aio] \
      <name>[:<tag>]
   `
 
