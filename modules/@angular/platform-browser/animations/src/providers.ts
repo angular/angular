@@ -6,17 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵDomAnimationEngine as DomAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver, ɵNoopAnimationEngine as NoopAnimationEngine, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
 import {Injectable, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 
-import {AnimationEngine} from './animation_engine';
-import {AnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
-import {WebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
-import {AnimationDriver, NoopAnimationDriver} from './render/animation_driver';
-import {AnimationRendererFactory} from './render/animation_renderer';
-import {DomAnimationEngine} from './render/dom_animation_engine';
-import {NoopAnimationEngine} from './render/noop_animation_engine';
-import {WebAnimationsDriver, supportsWebAnimations} from './render/web_animations/web_animations_driver';
+import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
 export class InjectableAnimationEngine extends DomAnimationEngine {

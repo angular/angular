@@ -8,6 +8,7 @@
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
       "@angular/animations": ["../../../dist/packages-dist/animations"],
+      "@angular/animations/browser": ["../../../dist/packages-dist/animations/browser"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
     }
   },
