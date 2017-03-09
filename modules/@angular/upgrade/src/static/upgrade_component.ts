@@ -103,6 +103,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private unregisterDoCheckWatcher: Function;
 
+  private unregisterDoCheckWatcher: Function;
+
   /**
    * Create a new `UpgradeComponent` instance. You should not normally need to do this.
    * Instead you should derive a new class from this one and call the super constructor
