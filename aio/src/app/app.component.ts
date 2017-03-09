@@ -11,6 +11,7 @@ import { SearchService, QueryResults } from 'app/search/search.service';
 })
 export class AppComponent implements OnInit {
   readonly sideBySideWidth = 600;
+  readonly homeImageUrl = 'assets/images/logos/angular2/angular_solidBlack.svg';
 
   isHamburgerVisible = true; // always ... for now
   isSideBySide = false;

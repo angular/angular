@@ -3,7 +3,9 @@ import { NavigationNode } from 'app/navigation/navigation.service';
 
 @Component({
   selector: 'aio-top-menu',
-  template: `<span *ngFor="let node of nodes"><a class="nav-link" [href]="node.path || node.url">{{ node.title }}</a></span>`,
+  template: `
+    <span><a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a></span>
+    <span *ngFor="let node of nodes"><a class="nav-link" [href]="node.path || node.url">{{ node.title }}</a></span>`,
   styles: [`
     .fill-remaining-space {
       flex: 1 1 auto;
@@ -13,6 +15,13 @@ import { NavigationNode } from 'app/navigation/navigation.service';
       margin-right: 10px;
       margin-left: 20px;
       cursor: pointer;
+    }
+
+    .nav-link.home img {
+      position: relative;
+      margin-top: -15px;
+      top: 12px;
+      height: 36px;
     }
 
     @media (max-width: 700px) {
@@ -33,4 +42,7 @@ import { NavigationNode } from 'app/navigation/navigation.service';
 export class TopMenuComponent {
   @Input()
   nodes: NavigationNode[];
+
+  @Input()
+  homeImageUrl: string;
 }
