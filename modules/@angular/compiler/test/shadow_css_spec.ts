@@ -258,10 +258,14 @@ export function main() {
        () => { expect(s('/* \n */b {c}', 'a')).toEqual('b[a] {c}'); });
 
     it('should keep sourceMappingURL comments', () => {
-      expect(s('b {c}/*# sourceMappingURL=data:x */', 'a'))
-          .toEqual('b[a] {c}/*# sourceMappingURL=data:x */');
-      expect(s('b {c}/* #sourceMappingURL=data:x */', 'a'))
-          .toEqual('b[a] {c}/* #sourceMappingURL=data:x */');
+      expect(s('b {c}\n/*# sourceMappingURL=data:x */', 'a'))
+          .toEqual('b[a] {c}/*# sourceURL=any-name.css *//*# sourceMappingURL=data:x */');
+    });
+    it('should add sourceURL placeholder if and only if it does not exist', () => {
+      expect(s('b {c}\n/*# sourceMappingURL=data:x */', 'a'))
+          .toEqual('b[a] {c}/*# sourceURL=any-name.css *//*# sourceMappingURL=data:x */');
+      expect(s('b {c}\n/*# sourceURL=my-name.scss */\n/*# sourceMappingURL=data:x */', 'a'))
+          .toEqual('b[a] {c}/*# sourceURL=my-name.scss *//*# sourceMappingURL=data:x */');
     });
   });
 
