@@ -78,7 +78,8 @@ twice in code reviews, with the generated version inscrutible by the reviewer.
 
 In TypeScript 1.8, the generated sources will have to be written alongside your originals,
 so set `genDir` to the same location as your files (typicially the same as `rootDir`).
-Add `**/*.ngfactory.ts` to your `.gitignore` or other mechanism for your version control system.
+Add `**/*.ngfactory.ts` and `**/*.ngsummary.json` to your `.gitignore` or other mechanism for your
+version control system.
 
 In TypeScript 1.9 and above, you can add a generated folder into your application,
 such as `codegen`. Using the `rootDirs` option, you can allow relative imports like
