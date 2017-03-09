@@ -114,7 +114,7 @@ Then bind it to the autocomplete's `displayWith` property.
 
 <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
    <md-option *ngFor="let option of filteredOptions | async" [value]="option">
-      {{ option }}
+      {{ option.name }}
    </md-option>
 </md-autocomplete>
 ```
