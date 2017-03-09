@@ -12,6 +12,8 @@ _main();
 
 // Functions
 function _main() {
+  console.log(`[${new Date()}] - Cleaning up builds...`);
+
   const buildCleaner = new BuildCleaner(AIO_BUILDS_DIR, AIO_REPO_SLUG, AIO_GITHUB_TOKEN);
 
   buildCleaner.cleanUp().catch(err => {
