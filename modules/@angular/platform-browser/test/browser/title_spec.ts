@@ -16,9 +16,12 @@ export function main() {
   describe('title service', () => {
     const doc = getDOM().createHtmlDocument();
     const initialTitle = getDOM().getTitle(doc);
-    const titleService = new Title(doc);
+    let titleService = new Title(doc);
 
-    afterEach(() => { getDOM().setTitle(doc, initialTitle); });
+    afterEach(() => {
+      getDOM().setTitle(doc, initialTitle);
+      titleService = new Title(doc);
+    });
 
     it('should allow reading initial title',
        () => { expect(titleService.getTitle()).toEqual(initialTitle); });
@@ -27,6 +30,20 @@ export function main() {
       titleService.setTitle('test title');
       expect(getDOM().getTitle(doc)).toEqual('test title');
       expect(titleService.getTitle()).toEqual('test title');
+    });
+
+    it('should set a title with prefix', () => {
+      titleService.setPrefix('prefix');
+      titleService.setTitle('test title');
+      expect(getDOM().getTitle(doc)).toEqual('prefix test title');
+      expect(titleService.getTitle()).toEqual('prefix test title');
+    });
+
+    it('should set a title with suffix', () => {
+      titleService.setSuffix('suffix');
+      titleService.setTitle('test title');
+      expect(getDOM().getTitle(doc)).toEqual('test title suffix');
+      expect(titleService.getTitle()).toEqual('test title suffix');
     });
 
     it('should reset title to empty string if title not provided', () => {
