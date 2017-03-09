@@ -7,7 +7,7 @@
  */
 
 import {Observable} from 'rxjs/Observable';
-import {$$observable as symbolObservable} from 'rxjs/symbol/observable';
+import {$$observable} from 'rxjs/symbol/observable';
 
 /**
  * Determine if the argument is shaped like a Promise
@@ -22,7 +22,7 @@ export function isPromise(obj: any): obj is Promise<any> {
  * Determine if the argument is an Observable
  */
 export function isObservable(obj: any | Observable<any>): obj is Observable<any> {
-  return !!(obj && obj[symbolObservable]);
+  return !!(obj && obj[$$observable]);
 }
 
 // TODO(misko): replace with Object.assign once we require ES6.
