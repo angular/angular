@@ -40,7 +40,9 @@ var _uniqueIdCounter = 0;
 
 /** Change event object emitted by MdButtonToggle. */
 export class MdButtonToggleChange {
+  /** The MdButtonToggle that emits the event. */
   source: MdButtonToggle;
+  /** The value assigned to the MdButtonToggle. */
   value: any;
 }
 
