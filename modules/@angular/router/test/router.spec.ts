@@ -52,6 +52,20 @@ describe('Router', () => {
        }));
   });
 
+  describe('isActive', () => {
+    beforeEach(() => TestBed.configureTestingModule({imports: [RouterTestingModule]}));
+
+    it('should return false for null', inject([Router], (router: Router) => {
+         expect(router.isActive(null, false)).toBe(false);
+         expect(router.isActive(null, true)).toBe(false);
+       }));
+
+    it('should return false for undefined', inject([Router], (router: Router) => {
+         expect(router.isActive(undefined, false)).toBe(false);
+         expect(router.isActive(undefined, true)).toBe(false);
+       }));
+  });
+
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};

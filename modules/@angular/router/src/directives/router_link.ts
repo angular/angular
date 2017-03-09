@@ -177,7 +177,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   private preserve: boolean;
 
   // the url displayed on the anchor element.
-  @HostBinding() href: string;
+  @HostBinding('attr.href') href: string;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -194,7 +194,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
-      this.commands = [];
+      this.commands = null;
     }
   }
 
@@ -215,23 +215,28 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    if (typeof this.target === 'string' && this.target != '_self') {
+    if (typeof this.target === 'string' && this.target !== '_self') {
       return true;
     }
 
-    const extras = {
-      skipLocationChange: attrBoolValue(this.skipLocationChange),
-      replaceUrl: attrBoolValue(this.replaceUrl),
-    };
-    this.router.navigateByUrl(this.urlTree, extras);
+    if (this.commands != null) {
+      const extras = {
+        skipLocationChange: attrBoolValue(this.skipLocationChange),
+        replaceUrl: attrBoolValue(this.replaceUrl),
+      };
+      this.router.navigateByUrl(this.urlTree, extras);
+    }
     return false;
   }
 
   private updateTargetUrlAndHref(): void {
-    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    this.href = this.commands != null ?
+        this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree)) :
+        null;
   }
 
   get urlTree(): UrlTree {
+    if (this.commands == null) return null;
     return this.router.createUrlTree(this.commands, {
       relativeTo: this.route,
       queryParams: this.queryParams,

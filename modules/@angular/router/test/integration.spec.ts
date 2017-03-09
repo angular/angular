@@ -1050,24 +1050,53 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 
-    it('should not throw when commands is null', fakeAsync(() => {
+    it('should remove href attr from anchor when commands are null', fakeAsync(() => {
          @Component({
-           selector: 'someCmp',
-           template:
-               `<router-outlet></router-outlet><a [routerLink]="null">Link</a><button [routerLink]="null">Button</button>`
+           selector: 'some-cmp',
+           template: `<router-outlet></router-outlet><a [routerLink]="commands">Link</a>`
+         })
+         class CmpWithLink {
+           commands: string[] = [];
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.get(Router);
+         const location: Location = TestBed.get(Location);
+
+         const fixture = createRoot(router, CmpWithLink);
+
+         const anchor = fixture.nativeElement.querySelector('a');
+         expect(anchor.hasAttribute('href')).toBe(true);
+         expect(location.path()).toEqual('/');
+
+         fixture.componentInstance.commands = null;
+         advance(fixture);
+         expect(anchor.hasAttribute('href')).toBe(false);
+
+         anchor.click();
+         advance(fixture);
+         expect(location.path()).toEqual('/');
+       }));
+
+    it('should not throw when routerLink is bound to null', fakeAsync(() => {
+         @Component({
+           selector: 'some-cmp',
+           template: `<router-outlet></router-outlet><button [routerLink]="null">Button</button>`
          })
          class CmpWithLink {
          }
 
          TestBed.configureTestingModule({declarations: [CmpWithLink]});
          const router: Router = TestBed.get(Router);
+         const location: Location = TestBed.get(Location);
 
-         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
-         router.resetConfig([{path: 'home', component: SimpleCmp}]);
-         const anchor = fixture.nativeElement.querySelector('a');
+         const fixture = createRoot(router, CmpWithLink);
+         expect(location.path()).toEqual('/');
+
          const button = fixture.nativeElement.querySelector('button');
-         expect(() => anchor.click()).not.toThrow();
-         expect(() => button.click()).not.toThrow();
+         button.click();
+         advance(fixture);
+         expect(location.path()).toEqual('/');
        }));
 
     it('should update hrefs when query params or fragment change', fakeAsync(() => {
@@ -2269,7 +2298,6 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
-         const loc: any = TestBed.get(Location);
 
          const f = TestBed.createComponent(RootCmpWithLink);
          advance(f);
@@ -2283,6 +2311,22 @@ describe('Integration', () => {
          expect(link.className).toEqual('active');
        }));
 
+    it('should not set the class when routerLink is bound to null', fakeAsync(() => {
+         @Component({
+           template:
+               '<router-outlet></router-outlet><a [routerLink]="null" routerLinkActive="active">Link</a>'
+         })
+         class RootCmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         const link = fixture.nativeElement.querySelector('a');
+         expect(link.className).toEqual('');
+       }));
 
     it('should set the class on a parent element when the link is active',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
