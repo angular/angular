@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RequestOptions} from './base_request_options';
 import {Body} from './body';
 import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
-import {RequestArgs} from './interfaces';
 import {URLSearchParams} from './url_search_params';
+
 
 
 // TODO(jeffbcross): properly implement body accessors
@@ -71,10 +72,12 @@ export class Request extends Body {
   withCredentials: boolean;
   /** Buffer to store the response */
   responseType: ResponseContentType;
-  constructor(requestOptions: RequestArgs) {
+  constructor(requestOptions: RequestOptions) {
     super();
-    // TODO: assert that url is present
     const url = requestOptions.url;
+    if (url == null) {
+      throw new Error(`url must not be ${url}`);
+    }
     this.url = requestOptions.url;
     if (requestOptions.params) {
       const params = requestOptions.params.toString();

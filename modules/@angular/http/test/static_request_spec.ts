@@ -7,11 +7,11 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-
 import {RequestOptions} from '../src/base_request_options';
 import {ContentType} from '../src/enums';
 import {Headers} from '../src/headers';
 import {ArrayBuffer, Request} from '../src/static_request';
+import {URLSearchParams} from '../src/url_search_params';
 
 export function main() {
   describe('Request', () => {
@@ -107,6 +107,11 @@ export function main() {
       const req = new Request(reqOptions);
 
       expect(req.text()).toEqual('');
+    });
+
+    it('should throw when url is null', () => {
+      const reqOptions = new RequestOptions({url: null, method: 'GET'});
+      expect(() => new Request(reqOptions)).toThrowError('url must not be null');
     });
   });
 }

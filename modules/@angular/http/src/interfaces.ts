@@ -58,11 +58,6 @@ export interface RequestOptionsArgs {
 }
 
 /**
- * Required structure when constructing new Request();
- */
-export interface RequestArgs extends RequestOptionsArgs { url: string; }
-
-/**
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
