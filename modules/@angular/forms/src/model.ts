@@ -650,8 +650,8 @@ export class FormControl extends AbstractControl {
       asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
     super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
     this._applyFormState(formState);
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
+    this.updateValueAndValidity({onlySelf: true, emitEvent: true});
   }
 
   /**
