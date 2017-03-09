@@ -49,7 +49,7 @@ describe('Scroll Dispatcher', () => {
       // Listen for notifications from scroll service with a throttle of 100ms
       const throttleTime = 100;
       let hasServiceScrollNotified = false;
-      scroll.scrolled(throttleTime).subscribe(() => { hasServiceScrollNotified = true; });
+      scroll.scrolled(throttleTime, () => { hasServiceScrollNotified = true; });
 
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
@@ -88,6 +88,29 @@ describe('Scroll Dispatcher', () => {
 
       expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
     });
+  });
+
+  describe('lazy subscription', () => {
+    let scroll: ScrollDispatcher;
+
+    beforeEach(inject([ScrollDispatcher], (s: ScrollDispatcher) => {
+      scroll = s;
+    }));
+
+    it('should lazily add global listeners as service subscriptions are added and removed', () => {
+      expect(scroll._globalSubscription).toBeNull('Expected no global listeners on init.');
+
+      const subscription = scroll.scrolled(0, () => {});
+
+      expect(scroll._globalSubscription).toBeTruthy(
+          'Expected global listeners after a subscription has been added.');
+
+      subscription.unsubscribe();
+
+      expect(scroll._globalSubscription).toBeNull(
+          'Expected global listeners to have been removed after the subscription has stopped.');
+    });
+
   });
 });
 

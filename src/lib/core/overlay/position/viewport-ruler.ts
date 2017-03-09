@@ -17,7 +17,7 @@ export class ViewportRuler {
     this._cacheViewportGeometry();
 
     // Subscribe to scroll and resize events and update the document rectangle on changes.
-    scrollDispatcher.scrolled().subscribe(() => this._cacheViewportGeometry());
+    scrollDispatcher.scrolled(null, () => this._cacheViewportGeometry());
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
