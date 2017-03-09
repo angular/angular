@@ -54,7 +54,7 @@
   $foreground: map-get($theme, foreground);
 
   .mat-button, .mat-icon-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    &.mat-button-focus {
+    &.cdk-keyboard-focused {
       @include _mat-button-focus-color($theme);
     }
   }

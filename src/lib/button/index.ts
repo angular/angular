@@ -1,19 +1,27 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdRippleModule, CompatibilityModule} from '../core';
+import {CompatibilityModule, MdRippleModule, StyleModule} from '../core';
 import {
-  MdButton,
   MdAnchor,
+  MdButton,
   MdButtonCssMatStyler,
-  MdRaisedButtonCssMatStyler,
-  MdIconButtonCssMatStyler,
   MdFabCssMatStyler,
+  MdIconButtonCssMatStyler,
   MdMiniFabCssMatStyler,
+  MdRaisedButtonCssMatStyler
 } from './button';
 
 
+export * from './button';
+
+
 @NgModule({
-  imports: [CommonModule, MdRippleModule, CompatibilityModule],
+  imports: [
+    CommonModule,
+    MdRippleModule,
+    CompatibilityModule,
+    StyleModule,
+  ],
   exports: [
     MdButton,
     MdAnchor,
@@ -22,7 +30,7 @@ import {
     MdRaisedButtonCssMatStyler,
     MdIconButtonCssMatStyler,
     MdFabCssMatStyler,
-    MdMiniFabCssMatStyler
+    MdMiniFabCssMatStyler,
   ],
   declarations: [
     MdButton,
@@ -31,7 +39,7 @@ import {
     MdRaisedButtonCssMatStyler,
     MdIconButtonCssMatStyler,
     MdFabCssMatStyler,
-    MdMiniFabCssMatStyler
+    MdMiniFabCssMatStyler,
   ],
 })
 export class MdButtonModule {
@@ -43,6 +51,3 @@ export class MdButtonModule {
     };
   }
 }
-
-
-export * from './button';
