@@ -43,6 +43,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
 
 /**
  * Wrapper for the contents of a tab.
+ * @docs-private
  */
 @Component({
   moduleId: module.id,
