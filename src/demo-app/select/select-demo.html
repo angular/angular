@@ -1,23 +1,10 @@
 <div style="height: 1000px">This div is for testing scrolled selects.</div>
 <button md-button (click)="showSelect=!showSelect">SHOW SELECT</button>
 <div class="demo-select">
-  <div *ngIf="showSelect">
-    <md-card>
-      <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
-        <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
-      </md-select>
-      <p> Value: {{ foodControl.value }} </p>
-      <p> Touched: {{ foodControl.touched }} </p>
-      <p> Dirty: {{ foodControl.dirty }} </p>
-      <p> Status: {{ foodControl.status }} </p>
-      <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
-      <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
-      <button md-button (click)="foodControl.reset()">RESET</button>
-    </md-card>
-  </div>
-
   <md-card>
-    <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="isRequired" [disabled]="isDisabled"
+    <md-card-subtitle>ngModel</md-card-subtitle>
+
+    <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired" [disabled]="drinksDisabled"
       [floatPlaceholder]="floatPlaceholder" #drinkControl="ngModel">
       <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
         {{ drink.viewValue }}
@@ -37,18 +24,62 @@
     </p>
 
     <button md-button (click)="currentDrink='water-2'">SET VALUE</button>
-    <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
-    <button md-button (click)="isDisabled=!isDisabled">TOGGLE DISABLED</button>
+    <button md-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
+    <button md-button (click)="drinksDisabled=!drinksDisabled">TOGGLE DISABLED</button>
     <button md-button (click)="drinkControl.reset()">RESET</button>
+  </md-card>
+
+  <md-card>
+    <md-card-subtitle>Multiple selection</md-card-subtitle>
+
+    <md-card-content>
+      <md-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
+        [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
+        <md-option *ngFor="let creature of pokemon" [value]="creature.value">
+          {{ creature.viewValue }}
+        </md-option>
+      </md-select>
+      <p> Value: {{ currentPokemon }} </p>
+      <p> Touched: {{ pokemonControl.touched }} </p>
+      <p> Dirty: {{ pokemonControl.dirty }} </p>
+      <p> Status: {{ pokemonControl.control?.status }} </p>
+      <button md-button (click)="setPokemonValue()">SET VALUE</button>
+      <button md-button (click)="pokemonRequired=!pokemonRequired">TOGGLE REQUIRED</button>
+      <button md-button (click)="pokemonDisabled=!pokemonDisabled">TOGGLE DISABLED</button>
+      <button md-button (click)="pokemonControl.reset()">RESET</button>
+    </md-card-content>
   </md-card>
 
   <div *ngIf="showSelect">
     <md-card>
-      <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
-        <md-option *ngFor="let starter of pokemon" [value]="starter.value"> {{ starter.viewValue }} </md-option>
-      </md-select>
+      <md-card-subtitle>formControl</md-card-subtitle>
 
-      <p> Change event value: {{ latestChangeEvent?.value }} </p>
+      <md-card-content>
+        <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
+          <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</md-option>
+        </md-select>
+        <p> Value: {{ foodControl.value }} </p>
+        <p> Touched: {{ foodControl.touched }} </p>
+        <p> Dirty: {{ foodControl.dirty }} </p>
+        <p> Status: {{ foodControl.status }} </p>
+        <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
+        <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
+        <button md-button (click)="foodControl.reset()">RESET</button>
+      </md-card-content>
+    </md-card>
+  </div>
+
+  <div *ngIf="showSelect">
+    <md-card>
+      <md-card-subtitle>Change event</md-card-subtitle>
+
+      <md-card-content>
+        <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
+          <md-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</md-option>
+        </md-select>
+
+        <p> Change event value: {{ latestChangeEvent?.value }} </p>
+      </md-card-content>
     </md-card>
   </div>
 

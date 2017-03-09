@@ -30,5 +30,15 @@
       opacity: 0.5;
     }
   }
+
+  .mat-option-pseudo-checkbox {
+    $margin: $mat-menu-side-padding / 2;
+    margin-right: $margin;
+
+    [dir='rtl'] & {
+      margin-left: $margin;
+      margin-right: 0;
+    }
+  }
 }
 

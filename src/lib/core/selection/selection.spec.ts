@@ -52,6 +52,16 @@ describe('SelectionModel', () => {
       expect(model.isSelected(1)).toBe(true);
       expect(model.isSelected(2)).toBe(true);
     });
+
+    it('should be able to sort the selected values', () => {
+      model = new SelectionModel(true, [2, 3, 1]);
+
+      expect(model.selected).toEqual([2, 3, 1]);
+
+      model.sort();
+
+      expect(model.selected).toEqual([1, 2, 3]);
+    });
   });
 
   describe('onChange event', () => {
@@ -146,6 +156,26 @@ describe('SelectionModel', () => {
     });
   });
 
+  describe('disabling the change event', () => {
+    let model: SelectionModel<any>;
+
+    beforeEach(() => {
+      model = new SelectionModel(true, null, false);
+    });
+
+    it('should not have an onChange stream if change events are disabled', () => {
+      expect(model.onChange).toBeFalsy();
+    });
+
+    it('should still update the select value', () => {
+      model.select(1);
+      expect(model.selected).toEqual([1]);
+
+      model.select(2);
+      expect(model.selected).toEqual([1, 2]);
+    });
+  });
+
   it('should be able to determine whether it is empty', () => {
     let model = new SelectionModel();
 
@@ -154,6 +184,26 @@ describe('SelectionModel', () => {
     model.select(1);
 
     expect(model.isEmpty()).toBe(false);
+  });
+
+  it('should be able to determine whether it has a value', () => {
+    let model = new SelectionModel();
+
+    expect(model.hasValue()).toBe(false);
+
+    model.select(1);
+
+    expect(model.hasValue()).toBe(true);
+  });
+
+  it('should be able to toggle an option', () => {
+    let model = new SelectionModel();
+
+    model.toggle(1);
+    expect(model.isSelected(1)).toBe(true);
+
+    model.toggle(1);
+    expect(model.isSelected(1)).toBe(false);
   });
 
   it('should be able to clear the selected options', () => {

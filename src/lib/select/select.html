@@ -1,12 +1,12 @@
 <div class="mat-select-trigger" cdk-overlay-origin (click)="toggle()" #origin="cdkOverlayOrigin" #trigger>
   <span
     class="mat-select-placeholder"
-    [class.mat-floating-placeholder]="selected"
+    [class.mat-floating-placeholder]="_selectionModel.hasValue()"
     [@transformPlaceholder]="_getPlaceholderAnimationState()"
     [style.visibility]="_getPlaceholderVisibility()"
     [style.width.px]="_selectedValueWidth"> {{ placeholder }} </span>
-  <span class="mat-select-value" *ngIf="selected">
-    <span class="mat-select-value-text">{{ selected?.viewValue }}</span>
+  <span class="mat-select-value" *ngIf="_selectionModel.hasValue()">
+    <span class="mat-select-value-text">{{ triggerValue }}</span>
   </span>
 
   <span class="mat-select-arrow"></span>

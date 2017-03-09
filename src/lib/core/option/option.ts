@@ -7,12 +7,16 @@ import {
   NgModule,
   ModuleWithProviders,
   Renderer,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
 import {MdRippleModule} from '../ripple/index';
+import {MdSelectionModule} from '../selection/index';
+import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -20,9 +24,9 @@ import {MdRippleModule} from '../ripple/index';
  */
 let _uniqueIdCounter = 0;
 
-/** Event object emitted by MdOption when selected. */
-export class MdOptionSelectEvent {
-  constructor(public source: MdOption, public isUserInput = false) {}
+/** Event object emitted by MdOption when selected or deselected. */
+export class MdOptionSelectionChange {
+  constructor(public source: MdOption, public isUserInput = false) { }
 }
 
 
@@ -36,6 +40,7 @@ export class MdOptionSelectEvent {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
     '[class.mat-selected]': 'selected',
+    '[class.mat-option-multiple]': 'multiple',
     '[class.mat-active]': 'active',
     '[id]': 'id',
     '[attr.aria-selected]': 'selected.toString()',
@@ -57,8 +62,14 @@ export class MdOption {
 
   private _id: string = `md-option-${_uniqueIdCounter++}`;
 
+  /** Whether the wrapping component is in multiple selection mode. */
+  multiple: boolean = false;
+
   /** The unique ID of the option. */
   get id() { return this._id; }
+
+  /** Whether or not the option is currently selected. */
+  get selected(): boolean { return this._selected; }
 
   /** The form value of the option. */
   @Input() value: any;
@@ -68,15 +79,13 @@ export class MdOption {
   get disabled() { return this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
-  /** Event emitted when the option is selected. */
-  @Output() onSelect = new EventEmitter<MdOptionSelectEvent>();
+  /** Event emitted when the option is selected or deselected. */
+  @Output() onSelectionChange = new EventEmitter<MdOptionSelectionChange>();
 
-  constructor(private _element: ElementRef, private _renderer: Renderer) {}
-
-  /** Whether or not the option is currently selected. */
-  get selected(): boolean {
-    return this._selected;
-  }
+  constructor(
+    private _element: ElementRef,
+    private _renderer: Renderer,
+    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.
@@ -100,12 +109,13 @@ export class MdOption {
   /** Selects the option. */
   select(): void {
     this._selected = true;
-    this.onSelect.emit(new MdOptionSelectEvent(this, false));
+    this._emitSelectionChangeEvent();
   }
 
   /** Deselects the option. */
   deselect(): void {
     this._selected = false;
+    this._emitSelectionChangeEvent();
   }
 
   /** Sets focus onto this option. */
@@ -118,7 +128,7 @@ export class MdOption {
    * active. This is used by the ActiveDescendantKeyManager so key
    * events will display the proper options as active on arrow key events.
    */
-  setActiveStyles() {
+  setActiveStyles(): void {
     Promise.resolve(null).then(() => this._active = true);
   }
 
@@ -127,7 +137,7 @@ export class MdOption {
    * active. This is used by the ActiveDescendantKeyManager so key
    * events will display the proper options as active on arrow key events.
    */
-  setInactiveStyles() {
+  setInactiveStyles(): void {
     Promise.resolve(null).then(() => this._active = false);
   }
 
@@ -142,26 +152,32 @@ export class MdOption {
    * Selects the option while indicating the selection came from the user. Used to
    * determine if the select's view -> model callback should be invoked.
    */
-  _selectViaInteraction() {
+  _selectViaInteraction(): void {
     if (!this.disabled) {
-      this._selected = true;
-      this.onSelect.emit(new MdOptionSelectEvent(this, true));
+      this._selected = this.multiple ? !this._selected : true;
+      this._emitSelectionChangeEvent(true);
     }
   }
 
   /** Returns the correct tabindex for the option depending on disabled state. */
-  _getTabIndex() {
+  _getTabIndex(): string {
     return this.disabled ? '-1' : '0';
   }
 
+  /** Fetches the host DOM element. */
   _getHostElement(): HTMLElement {
     return this._element.nativeElement;
   }
 
+  /** Emits the selection change event. */
+  private _emitSelectionChangeEvent(isUserInput = false): void {
+    this.onSelectionChange.emit(new MdOptionSelectionChange(this, isUserInput));
+  };
+
 }
 
 @NgModule({
-  imports: [MdRippleModule, CommonModule],
+  imports: [MdRippleModule, CommonModule, MdSelectionModule],
   exports: [MdOption],
   declarations: [MdOption]
 })

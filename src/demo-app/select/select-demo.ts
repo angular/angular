@@ -9,10 +9,13 @@ import {MdSelectChange} from '@angular/material';
     styleUrls: ['select-demo.css'],
 })
 export class SelectDemo {
-  isRequired = false;
-  isDisabled = false;
+  drinksRequired = false;
+  pokemonRequired = false;
+  drinksDisabled = false;
+  pokemonDisabled = false;
   showSelect = false;
   currentDrink: string;
+  currentPokemon: string[];
   latestChangeEvent: MdSelectChange;
   floatPlaceholder: string = 'auto';
   foodControl = new FormControl('pizza-1');
@@ -38,10 +41,18 @@ export class SelectDemo {
   pokemon = [
     {value: 'bulbasaur-0', viewValue: 'Bulbasaur'},
     {value: 'charizard-1', viewValue: 'Charizard'},
-    {value: 'squirtle-2', viewValue: 'Squirtle'}
+    {value: 'squirtle-2', viewValue: 'Squirtle'},
+    {value: 'pikachu-3', viewValue: 'Pikachu'},
+    {value: 'eevee-4', viewValue: 'Eevee'},
+    {value: 'ditto-5', viewValue: 'Ditto'},
+    {value: 'psyduck-6', viewValue: 'Psyduck'},
   ];
 
   toggleDisabled() {
     this.foodControl.enabled ? this.foodControl.disable() : this.foodControl.enable();
+  }
+
+  setPokemonValue() {
+    this.currentPokemon = ['eevee-4', 'psyduck-6'];
   }
 }

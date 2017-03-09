@@ -2,7 +2,7 @@
 // truncate neatly with an ellipsis.
 @mixin mat-truncate-line() {
   white-space: nowrap;
-  overflow-x: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 

@@ -28,9 +28,13 @@ export class SelectionModel<T> {
   }
 
   /** Event emitted when the value has changed. */
-  onChange: Subject<SelectionChange<T>> = new Subject();
+  onChange: Subject<SelectionChange<T>> = this._emitChanges ? new Subject() : null;
 
-  constructor(private _isMulti = false, initiallySelectedValues?: T[]) {
+  constructor(
+    private _isMulti = false,
+    initiallySelectedValues?: T[],
+    private _emitChanges = true) {
+
     if (initiallySelectedValues) {
       if (_isMulti) {
         initiallySelectedValues.forEach(value => this._markSelected(value));
@@ -60,6 +64,13 @@ export class SelectionModel<T> {
   }
 
   /**
+   * Toggles a value between selected and deselected.
+   */
+  toggle(value: T): void {
+    this.isSelected(value) ? this.deselect(value) : this.select(value);
+  }
+
+  /**
    * Clears all of the selected values.
    */
   clear(): void {
@@ -75,10 +86,26 @@ export class SelectionModel<T> {
   }
 
   /**
-   * Determines whether the model has a value.
+   * Determines whether the model does not have a value.
    */
   isEmpty(): boolean {
     return this._selection.size === 0;
+  }
+
+  /**
+   * Determines whether the model has a value.
+   */
+  hasValue(): boolean {
+    return !this.isEmpty();
+  }
+
+  /**
+   * Sorts the selected values based on a predicate function.
+   */
+  sort(predicate?: (a: T, b: T) => number): void {
+    if (this._isMulti && this.selected) {
+      this._selected.sort(predicate);
+    }
   }
 
   /** Emits a change event and clears the records of selected and deselected values. */
@@ -89,8 +116,9 @@ export class SelectionModel<T> {
       this.onChange.next(eventData);
       this._deselectedToEmit = [];
       this._selectedToEmit = [];
-      this._selected = null;
     }
+
+    this._selected = null;
   }
 
   /** Selects a value. */
@@ -101,17 +129,23 @@ export class SelectionModel<T> {
       }
 
       this._selection.add(value);
-      this._selectedToEmit.push(value);
+
+      if (this._emitChanges) {
+        this._selectedToEmit.push(value);
+      }
     }
   }
 
-   /** Deselects a value. */
-   private _unmarkSelected(value: T) {
-     if (this.isSelected(value)) {
-       this._selection.delete(value);
-       this._deselectedToEmit.push(value);
-     }
-   }
+  /** Deselects a value. */
+  private _unmarkSelected(value: T) {
+    if (this.isSelected(value)) {
+      this._selection.delete(value);
+
+      if (this._emitChanges) {
+        this._deselectedToEmit.push(value);
+      }
+    }
+  }
 
   /** Clears out the selected values. */
   private _unmarkAll() {

@@ -15,7 +15,7 @@ import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
 import {Observable} from 'rxjs/Observable';
-import {MdOptionSelectEvent, MdOption} from '../core/option/option';
+import {MdOptionSelectionChange, MdOption} from '../core/option/option';
 import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
 import {Dir} from '../core/rtl/dir';
 import {Subscription} from 'rxjs/Subscription';
@@ -146,7 +146,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected, on blur, and when TAB is pressed.
    */
-  get panelClosingActions(): Observable<MdOptionSelectEvent> {
+  get panelClosingActions(): Observable<MdOptionSelectionChange> {
     return Observable.merge(
         this.optionSelections,
         this._blurStream.asObservable(),
@@ -155,8 +155,8 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** Stream of autocomplete option selections. */
-  get optionSelections(): Observable<MdOptionSelectEvent> {
-    return Observable.merge(...this.autocomplete.options.map(option => option.onSelect));
+  get optionSelections(): Observable<MdOptionSelectionChange> {
+    return Observable.merge(...this.autocomplete.options.map(option => option.onSelectionChange));
   }
 
   /** The currently active option, coerced to MdOption type. */
@@ -301,7 +301,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * control to that value. It will also mark the control as dirty if this interaction
    * stemmed from the user.
    */
-  private _setValueAndClose(event: MdOptionSelectEvent | null): void {
+  private _setValueAndClose(event: MdOptionSelectionChange | null): void {
     if (event) {
       this._setTriggerValue(event.source.value);
       this._onChange(event.source.value);

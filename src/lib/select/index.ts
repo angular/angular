@@ -2,10 +2,7 @@ import {NgModule, ModuleWithProviders} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdSelect} from './select';
 import {MdOptionModule} from '../core/option/option';
-import {
-  CompatibilityModule,
-  OverlayModule,
-} from '../core';
+import {CompatibilityModule, OverlayModule} from '../core';
 
 
 @NgModule({

@@ -12,8 +12,12 @@
     }
 
     &.mat-selected {
-      background: mat-color($background, hover);
       color: mat-color($primary);
+
+      // In multiple mode there is a checkbox to show that the option is selected.
+      &:not(.mat-option-multiple) {
+        background: mat-color($background, hover);
+      }
     }
 
     &.mat-active {

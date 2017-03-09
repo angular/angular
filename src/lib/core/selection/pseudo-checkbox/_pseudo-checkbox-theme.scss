@@ -24,8 +24,6 @@
   }
 
   .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate {
-    border: none;
-
     &.mat-primary {
       background: mat-color($primary, 500);
     }
