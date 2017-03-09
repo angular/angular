@@ -1,14 +1,13 @@
 {
-  "extends": "./tsconfig-build",
+  "extends": "../tsconfig-build",
 
   "compilerOptions": {
-    "outDir": "../../../dist/packages-dist/animations",
     "paths": {
-      "@angular/animations": ["../../../dist/packages-dist/animations"]
+      "@angular/animations": ["../../dist/packages/animations"]
     }
   },
   "files": [
-    "browser/public_api.ts",
+    "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],

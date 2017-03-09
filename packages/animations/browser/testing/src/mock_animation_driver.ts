@@ -7,7 +7,7 @@
  */
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
 
-import {AnimationDriver} from '../src/render/animation_driver';
+import {AnimationDriver} from '../../src/render/animation_driver';
 
 /**
  * @experimental Animation support is experimental.
