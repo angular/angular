@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer} from '@angular/core';
+import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer} from '@angular/core';
 
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_2_CHANNEL, RENDERER_2_CHANNEL} from '../shared/messaging_api';
@@ -48,7 +48,7 @@ export class MessageBasedRenderer2 {
       ['setAttribute', this.setAttribute, RSO, RSO, P, P, P],
       ['removeAttribute', this.removeAttribute, RSO, RSO, P, P],
       ['addClass', this.addClass, RSO, RSO, P], ['removeClass', this.removeClass, RSO, RSO, P],
-      ['setStyle', this.setStyle, RSO, RSO, P, P, P, P],
+      ['setStyle', this.setStyle, RSO, RSO, P, P, P],
       ['removeStyle', this.removeStyle, RSO, RSO, P, P],
       ['setProperty', this.setProperty, RSO, RSO, P, P], ['setValue', this.setValue, RSO, RSO, P],
       ['listen', this.listen, RSO, RSO, P, P, P], ['unlisten', this.unlisten, RSO, RSO],
@@ -118,14 +118,12 @@ export class MessageBasedRenderer2 {
 
   private removeClass(r: Renderer2, el: any, name: string) { r.removeClass(el, name); }
 
-  private setStyle(
-      r: Renderer2, el: any, style: string, value: any, hasVendorPrefix: boolean,
-      hasImportant: boolean) {
-    r.setStyle(el, style, value, hasVendorPrefix, hasImportant);
+  private setStyle(r: Renderer2, el: any, style: string, value: any, flags: RendererStyleFlags2) {
+    r.setStyle(el, style, value, flags);
   }
 
-  private removeStyle(r: Renderer2, el: any, style: string, hasVendorPrefix: boolean) {
-    r.removeStyle(el, style, hasVendorPrefix);
+  private removeStyle(r: Renderer2, el: any, style: string, flags: RendererStyleFlags2) {
+    r.removeStyle(el, style, flags);
   }
 
   private setProperty(r: Renderer2, el: any, name: string, value: any) {
