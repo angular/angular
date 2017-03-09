@@ -18,7 +18,7 @@ import {RippleRef} from './ripple-ref';
 export const MD_DISABLE_RIPPLES = new OpaqueToken('md-disable-ripples');
 
 @Directive({
-  selector: '[md-ripple], [mat-ripple]',
+  selector: '[md-ripple], [mat-ripple], [mdRipple], [matRipple]',
   exportAs: 'mdRipple',
   host: {
     '[class.mat-ripple]': 'true',
