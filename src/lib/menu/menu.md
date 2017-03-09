@@ -4,7 +4,7 @@
 
 By itself, the `<md-menu>` element does not render anything. The menu is attached to and opened 
 via application of the `mdMenuTriggerFor` directive:
-```ts
+```html
 <md-menu #appMenu="mdMenu">
   <button md-menu-item> Settings </button>
   <button md-menu-item> Help </button>
@@ -53,8 +53,19 @@ Menus support displaying `md-icon` elements before the menu item text.
 ### Customizing menu position
 
 By default, the menu will display below (y-axis), after (x-axis), and overlapping its trigger.  The position can be changed
-using the `x-position` (`before | after`) and `y-position` (`above | below`) attributes.
+using the `xPosition` (`before | after`) and `yPosition` (`above | below`) attributes.
 The menu can be be forced to not overlap the trigger using `[overlapTrigger]="false"` attribute.
+
+```html
+<md-menu #appMenu="mdMenu" yPosition="above">
+  <button md-menu-item> Settings </button>
+  <button md-menu-item> Help </button>
+</md-menu>
+
+<button md-icon-button [mdMenuTriggerFor]="appMenu">
+   <md-icon>more_vert</md-icon>
+</button>
+```
 
 
 ### Keyboard interaction

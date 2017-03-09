@@ -38,7 +38,7 @@
       </button>
     </md-toolbar>
 
-    <md-menu x-position="before" #posXMenu="mdMenu" class="before">
+    <md-menu xPosition="before" #posXMenu="mdMenu" class="before">
       <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
         <md-icon>{{ item.icon }}</md-icon>
         {{ item.text }}
@@ -55,7 +55,7 @@
       </button>
     </md-toolbar>
 
-    <md-menu y-position="above" #posYMenu="mdMenu">
+    <md-menu yPosition="above" #posYMenu="mdMenu">
       <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
@@ -89,7 +89,7 @@
       </button>
     </md-toolbar>
 
-    <md-menu x-position="before" [overlapTrigger]="false" #posXMenuOverlay="mdMenu" class="before">
+    <md-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="mdMenu" class="before">
       <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
         <md-icon>{{ item.icon }}</md-icon>
         {{ item.text }}
@@ -106,7 +106,7 @@
       </button>
     </md-toolbar>
 
-    <md-menu y-position="above" [overlapTrigger]="false" #posYMenuOverlay="mdMenu">
+    <md-menu yPosition="above" [overlapTrigger]="false" #posYMenuOverlay="mdMenu">
       <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>

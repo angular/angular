@@ -5,7 +5,7 @@
     <button [mdMenuTriggerFor]="menu" id="trigger">TRIGGER</button>
     <button [mdMenuTriggerFor]="menu" id="trigger-two">TRIGGER 2</button>
 
-    <md-menu #menu="mdMenu" y-position="below" class="custom">
+    <md-menu #menu="mdMenu" yPosition="below" class="custom">
       <button md-menu-item (click)="selected='one'">One</button>
       <button md-menu-item (click)="selected='two'">Two</button>
       <button md-menu-item (click)="selected='three'" disabled>Three</button>
@@ -15,20 +15,20 @@
     <button [mdMenuTriggerFor]="beforeMenu" id="before-t">
       BEFORE
     </button>
-    <md-menu x-position="before" y-position="below" class="before" #beforeMenu="mdMenu">
+    <md-menu xPosition="before" yPosition="below" class="before" #beforeMenu="mdMenu">
       <button md-menu-item>Item</button>
     </md-menu>
 
     <div class="bottom-row">
       <button [mdMenuTriggerFor]="aboveMenu" id="above-t">ABOVE</button>
-      <md-menu y-position="above" class="above" #aboveMenu="mdMenu">
+      <md-menu yPosition="above" class="above" #aboveMenu="mdMenu">
         <button md-menu-item>Item</button>
       </md-menu>
 
       <button [mdMenuTriggerFor]="combined" id="combined-t">
         BOTH
       </button>
-      <md-menu x-position="before" y-position="above" class="combined" #combined="mdMenu">
+      <md-menu xPosition="before" yPosition="above" class="combined" #combined="mdMenu">
         <button md-menu-item>Item</button>
       </md-menu>
 
