@@ -161,7 +161,9 @@ export class MdTooltip implements OnInit, OnDestroy {
       this._disposeTooltip();
     }
 
-    this.scrollSubscription.unsubscribe();
+    if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
+    }
   }
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */

@@ -384,6 +384,12 @@ describe('MdMenu', () => {
 
   });
 
+  describe('destroy', () => {
+    it('does not throw an error on destroy', () => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      expect(fixture.destroy.bind(fixture)).not.toThrow();
+    });
+  });
 });
 
 @Component({

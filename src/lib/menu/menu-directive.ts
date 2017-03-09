@@ -76,7 +76,9 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._tabSubscription.unsubscribe();
+    if (this._tabSubscription) {
+      this._tabSubscription.unsubscribe();
+    }
   }
 
   /**
