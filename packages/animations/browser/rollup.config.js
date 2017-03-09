@@ -7,10 +7,10 @@
  */
 
 export default {
-  entry: '../../../../dist/packages-dist/animations/@angular/animations/browser/testing.es5.js',
-  dest: '../../../../dist/packages-dist/animations/bundles/animations-browser-testing.umd.js',
+  entry: '../../../dist/packages-dist/animations/@angular/animations/browser.es5.js',
+  dest: '../../../dist/packages-dist/animations/bundles/animations-browser.umd.js',
   format: 'umd',
-  moduleName: 'ng.animations.browser.testing',
+  moduleName: 'ng.animations.browser',
   globals: {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
