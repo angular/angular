@@ -1,6 +1,6 @@
 <md-toolbar color="primary" class="app-toolbar">
   <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
-  <aio-top-menu *ngIf="isSideBySide" [nodes]="(navigationViews | async)?.TopBar"></aio-top-menu>
+  <aio-top-menu *ngIf="isSideBySide" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
   <md-input-container >
     <input mdInput placeholder="Search" (keyup)="onSearch($event.target.value)">
   </md-input-container>
@@ -10,7 +10,7 @@
 <md-sidenav-container class="sidenav-container" (window:resize)="onResize($event.target.innerWidth)">
 
   <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "isSideBySide ? 'side' : 'over'">
-    <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar"></aio-top-menu>
+    <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
     <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav" [selectedNodes]="selectedNodes | async"></aio-nav-menu>
   </md-sidenav>
 

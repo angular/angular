@@ -1,10 +1,6 @@
 {
   "TopBar": [
     {
-      "url": "/",
-      "title": "Home"
-    },
-    {
       "url": "api",
       "title": "API"
     },    {
