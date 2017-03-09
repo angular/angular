@@ -85,12 +85,6 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
 
-  /** Event emitted when the group's value changes. */
-  private _change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
-  @Output() get change(): Observable<MdButtonToggleChange> {
-    return this._change.asObservable();
-  }
-
   /** Child button toggle buttons. */
   @ContentChildren(forwardRef(() => MdButtonToggle))
   _buttonToggles: QueryList<MdButtonToggle> = null;
@@ -164,6 +158,12 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
       selected.checked = true;
     }
   }
+
+  /** Event emitted when the group's value changes. */
+  @Output() get change(): Observable<MdButtonToggleChange> {
+    return this._change.asObservable();
+  }
+  private _change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
 
   private _updateButtonToggleNames(): void {
     if (this._buttonToggles) {
@@ -291,15 +291,6 @@ export class MdButtonToggle implements OnInit {
   /** Type of the button toggle. Either 'radio' or 'checkbox'. */
   _type: ToggleType;
 
-  /** The unique ID for this button toggle. */
-  @HostBinding()
-  @Input()
-  id: string;
-
-  /** HTML's 'name' attribute used to group radios for unique selection. */
-  @Input()
-  name: string;
-
   /** Whether or not this button toggle is disabled. */
   private _disabled: boolean = null;
 
@@ -309,11 +300,76 @@ export class MdButtonToggle implements OnInit {
   /** Whether or not the button toggle is a single selection. */
   private _isSingleSelector: boolean = null;
 
+  @ViewChild('input') _inputElement: ElementRef;
+
   /** The parent button toggle group (exclusive selection). Optional. */
   buttonToggleGroup: MdButtonToggleGroup;
 
   /** The parent button toggle group (multiple selection). Optional. */
   buttonToggleGroupMultiple: MdButtonToggleGroupMultiple;
+
+  /** Unique ID for the underlying `input` element. */
+  get inputId(): string {
+    return `${this.id}-input`;
+  }
+
+  /** The unique ID for this button toggle. */
+  @HostBinding()
+  @Input()
+  id: string;
+
+  /** HTML's 'name' attribute used to group radios for unique selection. */
+  @Input()
+  name: string;
+
+  /** Whether the button is checked. */
+  @HostBinding('class.mat-button-toggle-checked')
+  @Input()
+  get checked(): boolean {
+    return this._checked;
+  }
+
+  set checked(newCheckedState: boolean) {
+    if (this._isSingleSelector) {
+      if (newCheckedState) {
+        // Notify all button toggles with the same name (in the same group) to un-check.
+        this._buttonToggleDispatcher.notify(this.id, this.name);
+      }
+    }
+
+    this._checked = newCheckedState;
+
+    if (newCheckedState && this._isSingleSelector && this.buttonToggleGroup.value != this.value) {
+      this.buttonToggleGroup.selected = this;
+    }
+  }
+
+  /** MdButtonToggleGroup reads this to assign its own value. */
+  @Input()
+  get value(): any {
+    return this._value;
+  }
+
+  set value(value: any) {
+    if (this._value != value) {
+      if (this.buttonToggleGroup != null && this.checked) {
+        this.buttonToggleGroup.value = value;
+      }
+      this._value = value;
+    }
+  }
+
+  /** Whether the button is disabled. */
+  @HostBinding('class.mat-button-toggle-disabled')
+  @Input()
+  get disabled(): boolean {
+    return this._disabled || (this.buttonToggleGroup != null && this.buttonToggleGroup.disabled) ||
+        (this.buttonToggleGroupMultiple != null && this.buttonToggleGroupMultiple.disabled);
+  }
+
+  set disabled(value: boolean) {
+    this._disabled = (value != null && value !== false) ? true : null;
+  }
 
   /** Event emitted when the group value changes. */
   private _change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
@@ -321,11 +377,9 @@ export class MdButtonToggle implements OnInit {
     return this._change.asObservable();
   }
 
-  @ViewChild('input') _inputElement: ElementRef;
-
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
-              public buttonToggleDispatcher: UniqueSelectionDispatcher,
+              private _buttonToggleDispatcher: UniqueSelectionDispatcher,
               private _renderer: Renderer,
               private _elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor) {
@@ -334,7 +388,7 @@ export class MdButtonToggle implements OnInit {
     this.buttonToggleGroupMultiple = toggleGroupMultiple;
 
     if (this.buttonToggleGroup) {
-      buttonToggleDispatcher.listen((id: string, name: string) => {
+      _buttonToggleDispatcher.listen((id: string, name: string) => {
         if (id != this.id && name == this.name) {
           this.checked = false;
         }
@@ -362,66 +416,9 @@ export class MdButtonToggle implements OnInit {
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
   }
 
-  /** Unique ID for the underlying `input` element. */
-  get inputId(): string {
-    return `${this.id}-input`;
-  }
-
-  /** Whether the button is checked. */
-  @HostBinding('class.mat-button-toggle-checked')
-  @Input()
-  get checked(): boolean {
-    return this._checked;
-  }
-
-  set checked(newCheckedState: boolean) {
-    if (this._isSingleSelector) {
-      if (newCheckedState) {
-        // Notify all button toggles with the same name (in the same group) to un-check.
-        this.buttonToggleDispatcher.notify(this.id, this.name);
-      }
-    }
-
-    this._checked = newCheckedState;
-
-    if (newCheckedState && this._isSingleSelector && this.buttonToggleGroup.value != this.value) {
-      this.buttonToggleGroup.selected = this;
-    }
-  }
-
-  /** MdButtonToggleGroup reads this to assign its own value. */
-  @Input()
-  get value(): any {
-    return this._value;
-  }
-
-  set value(value: any) {
-    if (this._value != value) {
-      if (this.buttonToggleGroup != null && this.checked) {
-        this.buttonToggleGroup.value = value;
-      }
-      this._value = value;
-    }
-  }
-
-  /** Dispatch change event with current value. */
-  private _emitChangeEvent(): void {
-    let event = new MdButtonToggleChange();
-    event.source = this;
-    event.value = this._value;
-    this._change.emit(event);
-  }
-
-  /** Whether the button is disabled. */
-  @HostBinding('class.mat-button-toggle-disabled')
-  @Input()
-  get disabled(): boolean {
-    return this._disabled || (this.buttonToggleGroup != null && this.buttonToggleGroup.disabled) ||
-        (this.buttonToggleGroupMultiple != null && this.buttonToggleGroupMultiple.disabled);
-  }
-
-  set disabled(value: boolean) {
-    this._disabled = (value != null && value !== false) ? true : null;
+  /** Focuses the button. */
+  focus() {
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
   }
 
   /** Toggle the state of the current button toggle. */
@@ -458,8 +455,11 @@ export class MdButtonToggle implements OnInit {
     event.stopPropagation();
   }
 
-  /** Focuses the button. */
-  focus() {
-    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
+  /** Dispatch change event with current value. */
+  private _emitChangeEvent(): void {
+    let event = new MdButtonToggleChange();
+    event.source = this;
+    event.value = this._value;
+    this._change.emit(event);
   }
 }
