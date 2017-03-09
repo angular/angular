@@ -116,14 +116,14 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   }
 
   private _setPositionX(pos: MenuPositionX): void {
-    if ( pos !== 'before' && pos !== 'after') {
+    if (pos !== 'before' && pos !== 'after') {
       throw new MdMenuInvalidPositionX();
     }
     this.positionX = pos;
   }
 
   private _setPositionY(pos: MenuPositionY): void {
-    if ( pos !== 'above' && pos !== 'below') {
+    if (pos !== 'above' && pos !== 'below') {
       throw new MdMenuInvalidPositionY();
     }
     this.positionY = pos;

@@ -34,7 +34,7 @@ import {MenuPositionX, MenuPositionY} from './menu-positions';
  * responsible for toggling the display of the provided menu instance.
  */
 @Directive({
-  selector: `[md-menu-trigger-for], [mat-menu-trigger-for], 
+  selector: `[md-menu-trigger-for], [mat-menu-trigger-for],
              [mdMenuTriggerFor], [matMenuTriggerFor]`,
   host: {
     'aria-haspopup': 'true',
@@ -144,7 +144,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    */
   private _subscribeToBackdrop(): void {
     this._backdropSubscription = this._overlayRef.backdropClick().subscribe(() => {
-      this.closeMenu();
+      this.menu._emitCloseEvent();
     });
   }
 

@@ -9,4 +9,5 @@ export interface MdMenuPanel {
   close: EventEmitter<void>;
   focusFirstItem: () => void;
   setPositionClasses: (x: MenuPositionX, y: MenuPositionY) => void;
+  _emitCloseEvent: () => void;
 }

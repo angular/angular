@@ -384,6 +384,34 @@ describe('MdMenu', () => {
 
   });
 
+  describe('close event', () => {
+    let fixture: ComponentFixture<SimpleMenu>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openMenu();
+    });
+
+    it('should emit an event when a menu item is clicked', () => {
+      const menuItem = overlayContainerElement.querySelector('[md-menu-item]') as HTMLElement;
+
+      menuItem.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
+    });
+
+    it('should emit a close event when the backdrop is clicked', () => {
+      const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
+
+      backdrop.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
+    });
+  });
+
   describe('destroy', () => {
     it('does not throw an error on destroy', () => {
       const fixture = TestBed.createComponent(SimpleMenu);
@@ -395,7 +423,7 @@ describe('MdMenu', () => {
 @Component({
   template: `
     <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu #menu="mdMenu">
+    <md-menu #menu="mdMenu" (close)="closeCallback()">
       <button md-menu-item> Item </button>
       <button md-menu-item disabled> Disabled </button>
     </md-menu>
@@ -404,6 +432,7 @@ describe('MdMenu', () => {
 class SimpleMenu {
   @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
+  closeCallback = jasmine.createSpy('menu closed callback');
 }
 
 @Component({
@@ -456,6 +485,9 @@ class CustomMenuPanel implements MdMenuPanel {
   @Output() close = new EventEmitter<void>();
   focusFirstItem = () => {};
   setPositionClasses = () => {};
+  _emitCloseEvent() {
+    this.close.emit();
+  }
 }
 
 @Component({
