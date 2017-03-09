@@ -2368,7 +2368,8 @@ describe('Integration', () => {
 
          const fixture = TestBed.createComponent(ComponentWithRouterLink);
          router.navigateByUrl('/team');
-         expect(() => advance(fixture)).not.toThrow();
+         advance(fixture);
+         advance(fixture);
 
          const paragraph = fixture.nativeElement.querySelector('p');
          expect(paragraph.textContent).toEqual('true');

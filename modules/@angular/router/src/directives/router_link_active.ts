@@ -105,7 +105,8 @@ export class RouterLinkActive implements OnChanges,
   ngAfterContentInit(): void {
     this.links.changes.subscribe(_ => this.update());
     this.linksWithHrefs.changes.subscribe(_ => this.update());
-    this.update();
+    Promise.resolve().then(() => this.update());
+    //this.update();
   }
 
   @Input()
@@ -126,7 +127,7 @@ export class RouterLinkActive implements OnChanges,
       this.active = hasActiveLinks;
       this.classes.forEach(
           c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
-      this.cdr.detectChanges();
+      //this.cdr.detectChanges();
     }
   }
 
