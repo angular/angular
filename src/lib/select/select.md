@@ -37,6 +37,19 @@ class MyComp {
 }
 ```
 
+### Setting a static placeholder
+
+It's possible to turn off the placeholder's floating animation using the `floatPlaceholder` property. It accepts one of three string options:
+- `'auto'`: This is the default floating placeholder animation. It will float up when a selection is made.
+- `'never'`: This makes the placeholder static. Rather than floating, it will disappear once a selection is made.
+- `'always'`: This makes the placeholder permanently float above the input. It will not animate up or down.
+    
+```html
+<md-select placeholder="State" [(ngModel)]="myState" floatPlaceholder="never">
+   <md-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</md-option>
+</md-select>
+``` 
+
 #### Keyboard interaction:
 - <kbd>DOWN_ARROW</kbd>: Focus next option
 - <kbd>UP_ARROW</kbd>: Focus previous option
