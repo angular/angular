@@ -228,7 +228,7 @@ export function main() {
          detectChangesAndExpectText('truefalse');
        }));
 
-    it('should display odd items correctly', async(() => {
+    fit('should display odd items correctly', async(() => {
          const template =
              '<span *ngFor="let item of items; let isOdd=odd">{{isOdd.toString()}}</span>';
          fixture = createTestComponent(template);
