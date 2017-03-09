@@ -17,6 +17,7 @@ import {coerceBooleanProperty} from '../core';
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'button[md-button], button[mat-button], a[md-button], a[mat-button]',
@@ -28,6 +29,7 @@ export class MdButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector:
@@ -41,6 +43,7 @@ export class MdRaisedButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector:
@@ -53,6 +56,7 @@ export class MdIconButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'button[md-fab], button[mat-fab], a[md-fab], a[mat-fab]',
@@ -64,6 +68,7 @@ export class MdFabCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'button[md-mini-fab], button[mat-mini-fab], a[md-mini-fab], a[mat-mini-fab]',
