@@ -7,7 +7,7 @@
  */
 import {state, style, trigger} from '@angular/animations';
 import {ɵNoopAnimationEngine as NoopAnimationEngine} from '@angular/animations/browser';
-import {el} from '@angular/platform-browser/testing/browser_util';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('NoopAnimationEngine', () => {
