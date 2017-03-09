@@ -7,7 +7,7 @@ cd "$(dirname $0)/../../"
 
 docsPath="./dist/docs"
 repoPath="/tmp/material2-docs-content"
-repoUrl="https://github.com/DevVersion/material2-docs-content"
+repoUrl="https://github.com/angular/material2-docs-content"
 examplesSource="./dist/docs/examples"
 
 # If the docs directory is not present, generate docs
