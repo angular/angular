@@ -13,5 +13,8 @@
 
 
 ## Mount disk on boot
-- ``echo UUID=`sudo blkid -s UUID -o value /dev/disk/by-id/google-aio-builds` \
-      /mnt/disks/aio-builds ext4 discard,defaults,nofail 0 2 | sudo tee -a /etc/fstab``
+- Run:
+  ```
+  echo UUID=`sudo blkid -s UUID -o value /dev/disk/by-id/google-aio-builds` \
+    /mnt/disks/aio-builds ext4 discard,defaults,nofail 0 2 | sudo tee -a /etc/fstab
+  ```
