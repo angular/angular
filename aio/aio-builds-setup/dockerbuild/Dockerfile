@@ -83,6 +83,7 @@ RUN yarn global add pm2@2
 COPY cronjobs/aio-builds-cleanup /etc/cron.d/
 RUN chmod 0744 /etc/cron.d/aio-builds-cleanup
 RUN crontab /etc/cron.d/aio-builds-cleanup
+RUN printenv | grep AIO_ >> /etc/environment
 
 
 # Set up dnsmasq
