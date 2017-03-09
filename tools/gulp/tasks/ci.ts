@@ -17,3 +17,6 @@ task('ci:aot', ['aot:build']);
 
 /** Task which reports the size of the library and stores it in a database. */
 task('ci:payload', ['payload']);
+
+/** Task that uploads the coverage results to a firebase database. */
+task('ci:coverage', ['coverage:upload']);
