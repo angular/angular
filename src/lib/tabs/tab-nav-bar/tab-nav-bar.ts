@@ -4,10 +4,12 @@ import {
   ViewChild,
   ElementRef,
   ViewEncapsulation,
-  Directive,
+  Directive, NgZone, Inject, Optional,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/index';
+import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
+import {MD_DISABLE_RIPPLES} from '../../core/ripple/ripple';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -79,4 +81,9 @@ export class MdTabLink {
     '[class.mat-tab-link]': 'true',
   },
 })
-export class MdTabLinkRipple extends MdRipple {}
+export class MdTabLinkRipple extends MdRipple {
+  constructor(elementRef: ElementRef, ngZone: NgZone, ruler: ViewportRuler,
+              @Optional() @Inject(MD_DISABLE_RIPPLES) forceDisableRipples: boolean) {
+    super(elementRef, ngZone, ruler, forceDisableRipples);
+  }
+}
