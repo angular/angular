@@ -106,7 +106,9 @@ module.exports = (config) => {
   if (process.env['TRAVIS']) {
     let buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
 
-    if (process.env['TRAVIS_PULL_REQUEST'] === 'false') {
+    if (process.env['TRAVIS_PULL_REQUEST'] === 'false' &&
+        process.env['MODE'] === "browserstack_required") {
+
       config.preprocessors['dist/@angular/material/**/!(*+(.|-)spec).js'] = ['coverage'];
       config.reporters.push('coverage');
     }

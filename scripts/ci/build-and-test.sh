@@ -25,8 +25,8 @@ else
   $(npm bin)/gulp ci:test
 fi
 
-# Don't upload coverage for both test modes (browserstack and saucelabs) and inside of PRs.
-if [[ "$MODE" == "saucelabs_required" ]] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+# Upload coverage results if those are present.
+if [ -f dist/coverage/coverage-summary.json ]; then
   $(npm bin)/gulp ci:coverage
 fi
 
