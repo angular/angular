@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {utf8Encode} from '../util';
+
 import * as i18n from './i18n_ast';
 
 export function digest(message: i18n.Message): string {
@@ -208,49 +210,6 @@ function mix([a, b, c]: [number, number, number]): [number, number, number] {
 enum Endian {
   Little,
   Big,
-}
-
-// TODO(vicb): move this to some shared place, as we also need it
-// for SourceMaps.
-export function utf8Encode(str: string): string {
-  let encoded: string = '';
-
-  for (let index = 0; index < str.length; index++) {
-    const codePoint = decodeSurrogatePairs(str, index);
-
-    if (codePoint <= 0x7f) {
-      encoded += String.fromCharCode(codePoint);
-    } else if (codePoint <= 0x7ff) {
-      encoded += String.fromCharCode(0xc0 | codePoint >>> 6, 0x80 | codePoint & 0x3f);
-    } else if (codePoint <= 0xffff) {
-      encoded += String.fromCharCode(
-          0xe0 | codePoint >>> 12, 0x80 | codePoint >>> 6 & 0x3f, 0x80 | codePoint & 0x3f);
-    } else if (codePoint <= 0x1fffff) {
-      encoded += String.fromCharCode(
-          0xf0 | codePoint >>> 18, 0x80 | codePoint >>> 12 & 0x3f, 0x80 | codePoint >>> 6 & 0x3f,
-          0x80 | codePoint & 0x3f);
-    }
-  }
-
-  return encoded;
-}
-
-// see https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-function decodeSurrogatePairs(str: string, index: number): number {
-  if (index < 0 || index >= str.length) {
-    throw new Error(`index=${index} is out of range in "${str}"`);
-  }
-
-  const high = str.charCodeAt(index);
-
-  if (high >= 0xd800 && high <= 0xdfff && str.length > index + 1) {
-    const low = byteAt(str, index + 1);
-    if (low >= 0xdc00 && low <= 0xdfff) {
-      return (high - 0xd800) * 0x400 + low - 0xdc00 + 0x10000;
-    }
-  }
-
-  return high;
 }
 
 function add32(a: number, b: number): number {

@@ -98,3 +98,35 @@ const STRING_MAP_PROTO = Object.getPrototypeOf({});
 function isStrictStringMap(obj: any): boolean {
   return typeof obj === 'object' && obj !== null && Object.getPrototypeOf(obj) === STRING_MAP_PROTO;
 }
+
+export function utf8Encode(str: string): string {
+  let encoded = '';
+  for (let index = 0; index < str.length; index++) {
+    let codePoint = str.charCodeAt(index);
+
+    // decode surrogate
+    // see https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+    if (codePoint >= 0xd800 && codePoint <= 0xdbff && str.length > (index + 1)) {
+      const low = str.charCodeAt(index + 1);
+      if (low >= 0xdc00 && low <= 0xdfff) {
+        index++;
+        codePoint = ((codePoint - 0xd800) << 10) + low - 0xdc00 + 0x10000;
+      }
+    }
+
+    if (codePoint <= 0x7f) {
+      encoded += String.fromCharCode(codePoint);
+    } else if (codePoint <= 0x7ff) {
+      encoded += String.fromCharCode(((codePoint >> 6) & 0x1F) | 0xc0, (codePoint & 0x3f) | 0x80);
+    } else if (codePoint <= 0xffff) {
+      encoded += String.fromCharCode(
+          (codePoint >> 12) | 0xe0, ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
+    } else if (codePoint <= 0x1fffff) {
+      encoded += String.fromCharCode(
+          ((codePoint >> 18) & 0x07) | 0xf0, ((codePoint >> 12) & 0x3f) | 0x80,
+          ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
+    }
+  }
+
+  return encoded;
+}
