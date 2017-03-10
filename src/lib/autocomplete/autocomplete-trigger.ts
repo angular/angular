@@ -205,7 +205,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this.autocomplete._keyManager.onKeydown(event);
       if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {
         this.openPanel();
-        this._scrollToOption();
+        Promise.resolve().then(() => this._scrollToOption());
       }
     }
   }

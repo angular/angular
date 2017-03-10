@@ -129,7 +129,7 @@ export class MdOption {
    * events will display the proper options as active on arrow key events.
    */
   setActiveStyles(): void {
-    Promise.resolve(null).then(() => this._active = true);
+    this._active = true;
   }
 
   /**
@@ -138,7 +138,7 @@ export class MdOption {
    * events will display the proper options as active on arrow key events.
    */
   setInactiveStyles(): void {
-    Promise.resolve(null).then(() => this._active = false);
+    this._active = false;
   }
 
   /** Ensures the option is selected when activated from the keyboard. */

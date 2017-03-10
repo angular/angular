@@ -23,13 +23,15 @@ export class ActiveDescendantKeyManager extends ListKeyManager<Highlightable> {
    * styles from the previously active item.
    */
   setActiveItem(index: number): void {
-    if (this.activeItem) {
-      this.activeItem.setInactiveStyles();
-    }
-    super.setActiveItem(index);
-    if (this.activeItem) {
-      this.activeItem.setActiveStyles();
-    }
+    Promise.resolve().then(() => {
+      if (this.activeItem) {
+        this.activeItem.setInactiveStyles();
+      }
+      super.setActiveItem(index);
+      if (this.activeItem) {
+        this.activeItem.setActiveStyles();
+      }
+    });
   }
 
 }
