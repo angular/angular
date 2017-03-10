@@ -1,0 +1,24 @@
+{
+  "static.ignore": [
+    "\\.js\\.map$",
+    "^\/assets\/images\/(bios|cookbooks|devguide|examples)\/",
+    "^\/content\/docs\/.*\/"
+  ],
+  "routing": {
+    "index": "/index.html",
+    "routes": {
+      "/": {
+        "prefix": false
+      },
+      "/about": {
+        "prefix": true
+      },
+      "/tutorial": {
+        "prefix": true
+      },
+      "/guide": {
+        "prefix": true
+      }
+    }
+  }
+}

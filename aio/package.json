@@ -35,6 +35,7 @@
     "@angular/platform-browser-dynamic": "next",
     "@angular/platform-server": "next",
     "@angular/router": "next",
+    "@angular/service-worker": "^1.0.0-beta.6",
     "core-js": "^2.4.1",
     "rxjs": "^5.1.0",
     "ts-helpers": "^1.1.1",

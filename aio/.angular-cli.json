@@ -19,6 +19,7 @@
       "test": "test.ts",
       "tsconfig": "tsconfig.json",
       "prefix": "aio",
+      "serviceWorker": true,
       "styles": [
         "styles.scss"
       ],
