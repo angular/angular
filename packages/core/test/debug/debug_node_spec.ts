@@ -13,6 +13,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {DebugElement} from '../../src/debug/debug_node';
 
 @Injectable()
 class Logger {
@@ -352,6 +353,11 @@ export function main() {
       fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
       expect(fixture.componentInstance.customed).toBe(true);
 
+    });
+
+    it('should implement jasmineToString', () => {
+      const element = new DebugElement(null, null, null);
+      expect(element.jasmineToString).toBeDefined();
     });
   });
 }

@@ -140,6 +140,11 @@ export class DebugElement extends DebugNode {
       }
     });
   }
+
+  /** @internal */
+  jasmineToString(): string {
+    return `DebugElement{name=${this.name}, properties=${JSON.stringify(this.properties)}, attributes=${JSON.stringify(this.attributes)}, classes=${JSON.stringify(this.classes)}, styles=${JSON.stringify(this.styles)}}`;
+  }
 }
 
 /**
