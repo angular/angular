@@ -5,7 +5,7 @@ import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
 import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
@@ -26,9 +26,14 @@ describe('MdAutocomplete', () => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [
-          MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), ReactiveFormsModule
+          MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), FormsModule, ReactiveFormsModule
       ],
-      declarations: [SimpleAutocomplete, AutocompleteWithoutForms, NgIfAutocomplete],
+      declarations: [
+        SimpleAutocomplete,
+        AutocompleteWithoutForms,
+        NgIfAutocomplete,
+        AutocompleteWithNgModel
+      ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -863,6 +868,18 @@ describe('MdAutocomplete', () => {
       }).not.toThrowError();
     });
 
+    it('should display an empty input when the value is undefined with ngModel', async(() => {
+      const fixture = TestBed.createComponent(AutocompleteWithNgModel);
+
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        expect(input.value).toBe('');
+      });
+    }));
+
     it('should work when input is wrapped in ngIf', () => {
       const fixture = TestBed.createComponent(NgIfAutocomplete);
       fixture.detectChanges();
@@ -986,6 +1003,36 @@ class NgIfAutocomplete {
 class AutocompleteWithoutForms {
   filteredStates: any[];
   states = ['Alabama', 'California', 'Florida'];
+
+  constructor() {
+    this.filteredStates = this.states.slice();
+  }
+
+  onInput(value: any) {
+    this.filteredStates = this.states.filter(s => new RegExp(value, 'gi').test(s));
+  }
+
+}
+
+
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState"
+      (ngModelChange)="onInput($event)">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let state of filteredStates" [value]="state">
+        <span>{{ state }}</span>
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithNgModel {
+  filteredStates: any[];
+  selectedState: string;
+  states = ['New York', 'Washington', 'Oregon'];
 
   constructor() {
     this.filteredStates = this.states.slice();
