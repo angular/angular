@@ -1,3 +1,5 @@
+@import '../core/style/variables';
+
 $mat-progress-bar-height: 5px !default;
 $mat-progress-bar-full-animation-duration: 2000ms !default;
 $mat-progress-bar-piece-animation-duration: 250ms !default;
@@ -33,7 +35,8 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   // beyond the current value of the primary progress bar.
   .mat-progress-bar-buffer {
     transform-origin: top left;
-    transition: transform $mat-progress-bar-piece-animation-duration ease;
+    transition: transform $mat-progress-bar-piece-animation-duration ease,
+                stroke $swift-ease-in-duration $ease-in-out-curve-function;
   }
 
   // The secondary progress bar is only used in the indeterminate animation, because of this it
@@ -46,7 +49,8 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   .mat-progress-bar-fill {
     animation: none;
     transform-origin: top left;
-    transition: transform $mat-progress-bar-piece-animation-duration ease;
+    transition: transform $mat-progress-bar-piece-animation-duration ease,
+                stroke $swift-ease-in-duration $ease-in-out-curve-function;
   }
 
   // A pseudo element is created for each progress bar bar that fills with the indicator color.
