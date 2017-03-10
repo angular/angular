@@ -206,8 +206,16 @@ export function main() {
           const errors = parser.parse('<DiV><P></p></dIv>', 'TestComp').errors;
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
-            ['p', 'Unexpected closing tag "p"', '0:8'],
-            ['dIv', 'Unexpected closing tag "dIv"', '0:12'],
+            [
+              'p',
+              'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:8'
+            ],
+            [
+              'dIv',
+              'Unexpected closing tag "dIv". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:12'
+            ],
           ]);
         });
 
@@ -485,13 +493,21 @@ export function main() {
         it('should report unexpected closing tags', () => {
           const errors = parser.parse('<div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([['p', 'Unexpected closing tag "p"', '0:5']]);
+          expect(humanizeErrors(errors)).toEqual([[
+            'p',
+            'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+            '0:5'
+          ]]);
         });
 
         it('should report subsequent open tags without proper close tag', () => {
           const errors = parser.parse('<div</div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([['div', 'Unexpected closing tag "div"', '0:4']]);
+          expect(humanizeErrors(errors)).toEqual([[
+            'div',
+            'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+            '0:4'
+          ]]);
         });
 
         it('should report closing tag for void elements', () => {
@@ -523,7 +539,11 @@ export function main() {
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
             [TokenType.COMMENT_START, 'Unexpected character "e"', '0:3'],
-            ['p', 'Unexpected closing tag "p"', '0:14']
+            [
+              'p',
+              'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:14'
+            ]
           ]);
         });
       });
