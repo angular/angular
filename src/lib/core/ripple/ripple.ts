@@ -14,8 +14,13 @@ import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RippleRef} from './ripple-ref';
 
-/** OpaqueToken that can be used to globally disable all ripples. Except programmatic ones. */
-export const MD_DISABLE_RIPPLES = new OpaqueToken('md-disable-ripples');
+/** OpaqueToken that can be used to specify the global ripple options. */
+export const MD_RIPPLE_GLOBAL_OPTIONS = new OpaqueToken('md-ripple-global-options');
+
+export type RippleGlobalOptions = {
+  disabled?: boolean;
+  baseSpeedFactor?: number;
+};
 
 @Directive({
   selector: '[md-ripple], [mat-ripple], [mdRipple], [matRipple]',
@@ -70,10 +75,18 @@ export class MdRipple implements OnChanges, OnDestroy {
   /** Renderer for the ripple DOM manipulations. */
   private _rippleRenderer: RippleRenderer;
 
-  constructor(elementRef: ElementRef, ngZone: NgZone, ruler: ViewportRuler,
-              @Optional() @Inject(MD_DISABLE_RIPPLES) private _forceDisableRipples: boolean) {
+  /** Options that are set globally for all ripples. */
+  private _globalOptions: RippleGlobalOptions;
 
+  constructor(
+    elementRef: ElementRef,
+    ngZone: NgZone,
+    ruler: ViewportRuler,
+    // Type needs to be `any` because of https://github.com/angular/angular/issues/12631
+    @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: any
+  ) {
     this._rippleRenderer = new RippleRenderer(elementRef, ngZone, ruler);
+    this._globalOptions = globalOptions ? globalOptions : {};
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -81,7 +94,7 @@ export class MdRipple implements OnChanges, OnDestroy {
       this._rippleRenderer.setTriggerElement(this.trigger);
     }
 
-    this._rippleRenderer.rippleDisabled = this._forceDisableRipples || this.disabled;
+    this._rippleRenderer.rippleDisabled = this._globalOptions.disabled || this.disabled;
     this._rippleRenderer.rippleConfig = this.rippleConfig;
   }
 
@@ -104,7 +117,7 @@ export class MdRipple implements OnChanges, OnDestroy {
   get rippleConfig(): RippleConfig {
     return {
       centered: this.centered,
-      speedFactor: this.speedFactor,
+      speedFactor: this.speedFactor * (this._globalOptions.baseSpeedFactor || 1),
       radius: this.radius,
       color: this.color
     };

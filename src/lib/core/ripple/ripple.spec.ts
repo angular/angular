@@ -1,9 +1,11 @@
 import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {MdRipple, MdRippleModule, MD_DISABLE_RIPPLES, RippleState} from './index';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 import {dispatchMouseEvent} from '../testing/dispatch-events';
+import {
+  MdRipple, MdRippleModule, MD_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
+} from './index';
 
 /** Extracts the numeric value of a pixel size string like '123px'.  */
 const pxStringToFloat = (s: string) => {
@@ -346,47 +348,84 @@ describe('MdRipple', () => {
 
   });
 
-  describe('with ripples disabled', () => {
+  describe('global ripple options', () => {
     let rippleDirective: MdRipple;
 
-    beforeEach(() => {
-      // Reset the previously configured testing module to be able to disable ripples globally.
+    function createTestComponent(rippleConfig: RippleGlobalOptions) {
+      // Reset the previously configured testing module to be able set new providers.
       // The testing module has been initialized in the root describe group for the ripples.
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [MdRippleModule],
         declarations: [BasicRippleContainer],
-        providers: [{ provide: MD_DISABLE_RIPPLES, useValue: true }]
+        providers: [{ provide: MD_RIPPLE_GLOBAL_OPTIONS, useValue: rippleConfig }]
       });
-    });
 
-    beforeEach(() => {
       fixture = TestBed.createComponent(BasicRippleContainer);
       fixture.detectChanges();
 
       rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
       rippleDirective = fixture.componentInstance.ripple;
-    });
+    }
 
-    it('should not show any ripples on mousedown', () => {
-      dispatchMouseEvent(rippleTarget, 'mousedown');
-      dispatchMouseEvent(rippleTarget, 'mouseup');
-
-      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    it('when disabled should not show any ripples on mousedown', () => {
+      createTestComponent({ disabled: true });
 
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
 
-    it('should still allow manual ripples', () => {
+    it('when disabled should still allow manual ripples', () => {
+      createTestComponent({ disabled: true });
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
       rippleDirective.launch(0, 0);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
     });
+
+    it('should support changing the baseSpeedFactor', fakeAsync(() => {
+      createTestComponent({ baseSpeedFactor: 0.5 });
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      // Calculates the speedFactor for the duration. Those factors needs to be inverted, because
+      // a lower speed factor, will make the duration longer. For example: 0.5 => 2x duration.
+      let fadeInFactor = 1 / 0.5;
+
+      // Calculates the duration for fading-in and fading-out the ripple.
+      tick(RIPPLE_FADE_IN_DURATION * fadeInFactor + RIPPLE_FADE_OUT_DURATION);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
+
+    it('should combine individual speed factor with baseSpeedFactor', fakeAsync(() => {
+      createTestComponent({ baseSpeedFactor: 0.5 });
+
+      rippleDirective.launch(0, 0, { speedFactor: 1.5 });
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      // Calculates the speedFactor for the duration. Those factors needs to be inverted, because
+      // a lower speed factor, will make the duration longer. For example: 0.5 => 2x duration.
+      let fadeInFactor = 1 / (0.5 * 1.5);
+
+      // Calculates the duration for fading-in and fading-out the ripple.
+      tick(RIPPLE_FADE_IN_DURATION * fadeInFactor + RIPPLE_FADE_OUT_DURATION);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
 
   });
 
