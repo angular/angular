@@ -93,12 +93,9 @@ $mat-card-header-size: 40px !default;
 .mat-card-header {
   display: flex;
   flex-direction: row;
-  height: $mat-card-header-size;
-  margin: -8px 0 16px 0;
 }
 
 .mat-card-header-text {
-  height: $mat-card-header-size;
   margin: 0 8px;
 }
 
@@ -106,6 +103,7 @@ $mat-card-header-size: 40px !default;
   height: $mat-card-header-size;
   width: $mat-card-header-size;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .mat-card-header .mat-card-title {
