@@ -305,8 +305,9 @@ class _TreeBuilder {
           fullName, endTagToken.sourceSpan,
           `Void elements do not have end tags "${endTagToken.parts[1]}"`));
     } else if (!this._popElement(fullName)) {
-      this._errors.push(TreeError.create(
-          fullName, endTagToken.sourceSpan, `Unexpected closing tag "${endTagToken.parts[1]}"`));
+      const errMsg =
+          `Unexpected closing tag "${fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
+      this._errors.push(TreeError.create(fullName, endTagToken.sourceSpan, errMsg));
     }
   }
 
