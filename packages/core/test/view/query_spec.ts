@@ -353,7 +353,8 @@ export function main() {
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
-          anchorDef(NodeFlags.None, [[someQueryId, QueryValueType.ViewContainerRef]], null, 2),
+          anchorDef(
+              NodeFlags.EmbeddedViews, [[someQueryId, QueryValueType.ViewContainerRef]], null, 2),
           directiveDef(NodeFlags.None, null, 1, QueryService, []),
           queryDef(
               NodeFlags.TypeContentQuery | NodeFlags.DynamicQuery, someQueryId,

@@ -14,7 +14,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {ViewEncapsulation} from '../metadata/view';
 import {Renderer as RendererV1, Renderer2, RendererFactory2, RendererType2} from '../render/api';
 
-import {createChangeDetectorRef, createInjector, createRendererV1, createTemplateRef, createViewContainerRef} from './refs';
+import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
 import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
 import {checkBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
@@ -356,10 +356,10 @@ export function resolveDep(
         case ElementRefTokenKey:
           return new ElementRef(asElementData(view, elDef.index).renderElement);
         case ViewContainerRefTokenKey:
-          return createViewContainerRef(view, elDef);
+          return asElementData(view, elDef.index).viewContainer;
         case TemplateRefTokenKey: {
           if (elDef.element.template) {
-            return createTemplateRef(view, elDef);
+            return asElementData(view, elDef.index).template;
           }
           break;
         }
