@@ -46,7 +46,7 @@ export class ErrorHandler {
    */
   rethrowError: boolean;
 
-  constructor(rethrowError: boolean = true) { this.rethrowError = rethrowError; }
+  constructor(rethrowError: boolean = false) { this.rethrowError = rethrowError; }
 
   handleError(error: any): void {
     this._console.error(`EXCEPTION: ${this._extractMessage(error)}`);
@@ -71,8 +71,6 @@ export class ErrorHandler {
       }
     }
 
-    // We rethrow exceptions, so operations like 'bootstrap' will result in an error
-    // when an error happens. If we do not rethrow, bootstrap will always succeed.
     if (this.rethrowError) throw error;
   }
 
