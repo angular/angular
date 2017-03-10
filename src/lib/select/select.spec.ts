@@ -42,7 +42,8 @@ describe('MdSelect', () => {
         SelectWithErrorSibling,
         ThrowsErrorOnInit,
         BasicSelectOnPush,
-        BasicSelectOnPushPreselected
+        BasicSelectOnPushPreselected,
+        SelectWithPlainTabindex
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1081,8 +1082,26 @@ describe('MdSelect', () => {
         expect(select.getAttribute('aria-label')).toEqual('Food');
       });
 
-      it('should set the tabindex of the select to 0', () => {
+      it('should set the tabindex of the select to 0 by default', () => {
         expect(select.getAttribute('tabindex')).toEqual('0');
+      });
+
+      it('should be able to override the tabindex', () => {
+        fixture.componentInstance.tabIndexOverride = 3;
+        fixture.detectChanges();
+
+        expect(select.getAttribute('tabindex')).toBe('3');
+      });
+
+      it('should be able to set the tabindex via the native attribute', () => {
+        fixture.destroy();
+
+        const plainTabindexFixture = TestBed.createComponent(SelectWithPlainTabindex);
+
+        plainTabindexFixture.detectChanges();
+        select = plainTabindexFixture.debugElement.query(By.css('md-select')).nativeElement;
+
+        expect(select.getAttribute('tabindex')).toBe('5');
       });
 
       it('should set aria-required for required selects', () => {
@@ -1583,7 +1602,8 @@ describe('MdSelect', () => {
   selector: 'basic-select',
   template: `
     <div [style.height.px]="heightAbove"></div>
-    <md-select placeholder="Food" [formControl]="control" [required]="isRequired">
+    <md-select placeholder="Food" [formControl]="control" [required]="isRequired"
+      [tabIndex]="tabIndexOverride">
       <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
         {{ food.viewValue }}
       </md-option>
@@ -1606,6 +1626,7 @@ class BasicSelect {
   isRequired: boolean;
   heightAbove = 0;
   heightBelow = 0;
+  tabIndexOverride: number;
 
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
@@ -1863,6 +1884,14 @@ class MultiSelect {
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 }
+
+@Component({
+  selector: 'select-with-plain-tabindex',
+  template: `
+    <md-select tabindex="5"></md-select>
+  `
+})
+class SelectWithPlainTabindex { }
 
 
 class FakeViewportRuler {

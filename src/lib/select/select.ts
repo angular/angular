@@ -14,6 +14,7 @@ import {
   ViewEncapsulation,
   ViewChild,
   ChangeDetectorRef,
+  Attribute,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange} from '../core/option/option';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
@@ -99,7 +100,7 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
   encapsulation: ViewEncapsulation.None,
   host: {
     'role': 'listbox',
-    '[attr.tabindex]': '_getTabIndex()',
+    '[attr.tabindex]': 'tabIndex',
     '[attr.aria-label]': 'placeholder',
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -150,6 +151,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   /** The animation state of the placeholder. */
   private _placeholderState = '';
+
+  /** Tab index for the element. */
+  private _tabIndex: number;
 
   /**
    * The width of the trigger. Must be saved to set the min width of the overlay panel
@@ -266,6 +270,15 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   }
   private _floatPlaceholder: MdSelectFloatPlaceholderType = 'auto';
 
+  /** Tab index for the select element. */
+  @Input()
+  get tabIndex(): number { return this._disabled ? -1 : this._tabIndex; }
+  set tabIndex(value: number) {
+    if (typeof value !== 'undefined') {
+      this._tabIndex = value;
+    }
+  }
+
   /** Combined stream of all of the child options' change events. */
   get optionSelectionChanges(): Observable<MdOptionSelectionChange> {
     return Observable.merge(...this.options.map(option => option.onSelectionChange));
@@ -282,10 +295,13 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
               private _viewportRuler: ViewportRuler, private _changeDetectorRef: ChangeDetectorRef,
-              @Optional() private _dir: Dir, @Self() @Optional() public _control: NgControl) {
+              @Optional() private _dir: Dir, @Self() @Optional() public _control: NgControl,
+              @Attribute('tabindex') tabIndex: string) {
     if (this._control) {
       this._control.valueAccessor = this;
     }
+
+    this._tabIndex = parseInt(tabIndex) || 0;
   }
 
   ngAfterContentInit() {
@@ -451,12 +467,6 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       this._onTouched();
     }
   }
-
-  /** Returns the correct tabindex for the select depending on disabled state. */
-  _getTabIndex() {
-    return this.disabled ? '-1' : '0';
-  }
-
 
   /**
    * Sets the scroll position of the scroll container. This must be called after
