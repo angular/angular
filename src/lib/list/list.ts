@@ -29,6 +29,7 @@ export class MdList {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-list, mat-list',
@@ -40,6 +41,7 @@ export class MdListCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-nav-list, mat-nav-list',
@@ -51,6 +53,7 @@ export class MdNavListCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-divider, mat-divider',
@@ -60,7 +63,10 @@ export class MdNavListCssMatStyler {}
 })
 export class MdDividerCssMatStyler {}
 
-/* Need directive for a ContentChild query in list-item */
+/**
+ * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
+ */
 @Directive({
   selector: '[md-list-avatar], [mat-list-avatar]',
   host: {
@@ -69,7 +75,10 @@ export class MdDividerCssMatStyler {}
 })
 export class MdListAvatarCssMatStyler {}
 
-/* Need directive to add mat- CSS styling */
+/**
+ * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
+ */
 @Directive({
   selector: '[md-list-icon], [mat-list-icon]',
   host: {
@@ -80,6 +89,7 @@ export class MdListIconCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: '[md-subheader], [mat-subheader]',

@@ -69,6 +69,7 @@ export class MdGridTileText implements AfterContentInit {
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: '[md-grid-avatar], [mat-grid-avatar]',
@@ -80,6 +81,7 @@ export class MdGridAvatarCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-grid-tile-header, mat-grid-tile-header',
@@ -91,6 +93,7 @@ export class MdGridTileHeaderCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-grid-tile-footer, mat-grid-tile-footer',

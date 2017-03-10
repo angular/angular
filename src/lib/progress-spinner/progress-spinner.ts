@@ -33,6 +33,7 @@ type EasingFn = (currentTime: number, startValue: number,
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-progress-spinner, mat-progress-spinner',
@@ -45,6 +46,7 @@ export class MdProgressSpinnerCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
  */
 @Directive({
   selector: 'md-progress-circle, mat-progress-circle',
