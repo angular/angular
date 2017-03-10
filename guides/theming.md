@@ -32,7 +32,7 @@ in your `styles.css`  file:
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 ```
 
-Alternatively, you can just reference the file directly. This would look something like
+Alternatively, you can just reference the file directly. This would look something like:
 ```html
 <link href="node_modules/@angular/material/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">
 ```
