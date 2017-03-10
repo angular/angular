@@ -2,6 +2,16 @@
   flex: 1 1 auto;
 }
 
+.hamburger {
+  transition-duration: 150ms;
+  transition-property: background-color, color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    background-color: #fdfdfd;
+    color:#00bcd4;
+  }
+}
+
 md-input-container {
   margin-left: 10px;
   input {
@@ -39,6 +49,7 @@ md-input-container {
 
 .sidenav {
   padding: 0;
+  min-width: 220px;
 }
 
 // md-toolbar {
