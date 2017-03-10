@@ -40,7 +40,10 @@
         <td>
           <md-input-container class="demo-full-width">
             <input mdInput #postalCode maxLength="5" placeholder="Postal Code" value="94043">
-            <md-hint align="end">{{postalCode.value.length}} / 5</md-hint>
+            <md-hint align="end">
+              <md-icon>mode_edit</md-icon>
+              {{postalCode.value.length}} / 5
+            </md-hint>
           </md-input-container>
         </td>
       </tr></table>
@@ -51,10 +54,18 @@
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">Prefix + Suffix</md-toolbar>
   <md-card-content>
+    <h4>Text</h4>
     <md-input-container align="end">
       <input mdInput placeholder="amount">
       <span mdPrefix>$&nbsp;</span>
       <span mdSuffix>.00</span>
+    </md-input-container>
+
+    <h4>Icons</h4>
+    <md-input-container>
+      <input mdInput placeholder="amount">
+      <md-icon mdPrefix>attach_money</md-icon>
+      <md-icon mdSuffix>mode_edit</md-icon>
     </md-input-container>
   </md-card-content>
 </md-card>
@@ -152,10 +163,10 @@
       <md-input-container>
         <input mdInput>
         <md-placeholder>
-          I <md-icon class="demo-icons">favorite</md-icon> <b>bold</b> placeholder
+          I <md-icon>favorite</md-icon> <b>bold</b> placeholder
         </md-placeholder>
         <md-hint>
-          I also <md-icon class="demo-icons">home</md-icon> <i>italic</i> hint labels
+          I also <md-icon>home</md-icon> <i>italic</i> hint labels
         </md-hint>
       </md-input-container>
     </p>

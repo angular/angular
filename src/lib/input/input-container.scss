@@ -27,6 +27,14 @@ $mat-input-underline-disabled-background-image:
   [dir='rtl'] & {
     text-align: right;
   }
+
+  // Allow icons in a prefix/suffix/hint/etc to adapt to the correct size.
+  & .mat-icon {
+    width: auto;
+    height: auto;
+    font-size: 100%;
+    vertical-align: top;
+  }
 }
 
 // Global wrapper. We need to apply margin to the element for spacing, but
@@ -238,12 +246,4 @@ $mat-input-underline-disabled-background-image:
   // Prevents the prefix and suffix from stretching together with the container.
   width: 0.1px;
   white-space: nowrap;
-
-  // Allow icons in a prefix/suffix to adapt to the correct size.
-  & .mat-icon {
-    width: auto;
-    height: auto;
-    font-size: 100%;
-    vertical-align: top;
-  }
 }
