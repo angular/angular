@@ -79,6 +79,8 @@ function _sanitizeIdentifier(name: string): string {
 }
 
 let _anonymousTypeIndex = 0;
+let symbolId = 0;
+const symbolIds = new Map<Symbol, string>();
 
 export function identifierName(compileIdentifier: CompileIdentifierMetadata): string {
   if (!compileIdentifier || !compileIdentifier.reference) {
@@ -87,6 +89,14 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata): st
   const ref = compileIdentifier.reference;
   if (ref instanceof StaticSymbol) {
     return ref.name;
+  }
+  if (isSymbol(ref)) {
+    if (symbolIds.has(ref)) {
+      return symbolIds.get(ref);
+    }
+    const symbolStr = `_symbol_${_sanitizeIdentifier(ref.toString())}_${symbolId++}`;
+    symbolIds.set(ref, symbolStr);
+    return symbolStr;
   }
   if (ref['__anonymousType']) {
     return ref['__anonymousType'];
@@ -100,6 +110,10 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata): st
     identifier = _sanitizeIdentifier(identifier);
   }
   return identifier;
+}
+
+function isSymbol(sym: any): sym is Symbol {
+  return typeof sym === 'symbol';
 }
 
 export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
