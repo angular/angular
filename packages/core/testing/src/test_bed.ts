@@ -213,7 +213,13 @@ export class TestBed implements Injector {
     this._imports = [];
     this._schemas = [];
     this._instantiated = false;
-    this._activeFixtures.forEach((fixture) => fixture.destroy());
+    this._activeFixtures.forEach((fixture) => {
+      try {
+        fixture.destroy();
+      } catch (e) {
+        console.error('Error during cleanup of component', fixture.componentInstance);
+      }
+    });
     this._activeFixtures = [];
   }
 

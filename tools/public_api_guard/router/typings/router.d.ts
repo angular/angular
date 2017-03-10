@@ -308,7 +308,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 /** @stable */
 export declare class RouterModule {
-    constructor(guard: any);
+    constructor(guard: any, router: Router);
     static forChild(routes: Routes): ModuleWithProviders;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
 }

@@ -123,7 +123,8 @@ export function routerNgProbeToken() {
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
-  constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any) {}
+  // Note: We are injecting the Router so it gets created eagerly...
+  constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any, @Optional() router: Router) {}
 
   /**
    * Creates a module with all the router providers and directives. It also optionally sets up an

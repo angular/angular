@@ -56,4 +56,6 @@ export function _initViewEngine() {
   ]
 })
 export class ApplicationModule {
+  // Inject ApplicationRef to make it eager...
+  constructor(appRef: ApplicationRef) {}
 }

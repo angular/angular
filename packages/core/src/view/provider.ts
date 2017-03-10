@@ -468,6 +468,9 @@ function callElementProvidersLifecycles(view: ViewData, elDef: NodeDef, lifecycl
 
 function callProviderLifecycles(view: ViewData, index: number, lifecycles: NodeFlags) {
   const provider = asProviderData(view, index).instance;
+  if (provider === NOT_CREATED) {
+    return;
+  }
   Services.setCurrentNode(view, index);
   if (lifecycles & NodeFlags.AfterContentInit) {
     provider.ngAfterContentInit();
