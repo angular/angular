@@ -25,6 +25,7 @@ export class NavItemComponent implements OnChanges {
   setClasses() {
     this.classes = {
       ['level-' + this.level]: true,
+      collapsed: !this.isExpanded,
       expanded: this.isExpanded,
       selected: this.isSelected
     };
