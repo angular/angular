@@ -75,6 +75,8 @@ function publishRepo {
     done
 
     (
+      # SECURITY CRITICAL: DO NOT remove the set -x on the following line. Removing it will leak the github credentials to the travis log.
+      set -x
       cd $REPO_DIR && \
       git config credential.helper "store --file=.git/credentials" && \
       echo "https://${GITHUB_TOKEN_ANGULAR}:@github.com" > .git/credentials
