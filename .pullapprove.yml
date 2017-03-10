@@ -40,6 +40,7 @@ groups:
           - "aio/*"
           - "integration/*"
           - "modules/*"
+          - "packages/*"
           - "tools/*"
     users:
       - IgorMinar
