@@ -43,7 +43,9 @@ var _uniqueIdCounter = 0;
 
 /** Change event object emitted by MdRadio and MdRadioGroup. */
 export class MdRadioChange {
+  /** The MdRadioButton that emits the change event. */
   source: MdRadioButton;
+  /** The value of the MdRadioButton. */
   value: any;
 }
 
@@ -270,9 +272,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 })
 export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
-  /** Whether this radio is checked. */
-  private _checked: boolean = false;
-
   /** The unique ID for the radio button. */
   @Input() id: string = `md-radio-${_uniqueIdCounter++}`;
 
@@ -285,64 +284,10 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   /** The 'aria-labelledby' attribute takes precedence as the element's text alternative. */
   @Input('aria-labelledby') ariaLabelledby: string;
 
-  /** Whether this radio is disabled. */
-  private _disabled: boolean;
-
-  /** Value assigned to this radio.*/
-  private _value: any = null;
-
-  /** Whether the ripple effect on click should be disabled. */
-  private _disableRipple: boolean;
-
-  /** The child ripple instance. */
-  @ViewChild(MdRipple) _ripple: MdRipple;
-
-  /** Stream of focus event from the focus origin monitor. */
-  private _focusOriginMonitorSubscription: Subscription;
-
-  /** Reference to the current focus ripple. */
-  private _focusedRippleRef: RippleRef;
-
-  /** The parent radio group. May or may not be present. */
-  radioGroup: MdRadioGroup;
-
   /** Whether the ripple effect for this radio button is disabled. */
   @Input()
   get disableRipple(): boolean { return this._disableRipple; }
   set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
-
-  /**
-   * Event emitted when the checked state of this radio button changes.
-   * Change events are only emitted when the value changes due to user interaction with
-   * the radio button (the same behavior as `<input type-"radio">`).
-   */
-  @Output()
-  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
-
-  /** The native `<input type=radio>` element */
-  @ViewChild('input') _inputElement: ElementRef;
-
-  constructor(@Optional() radioGroup: MdRadioGroup,
-              private _elementRef: ElementRef,
-              private _renderer: Renderer,
-              private _focusOriginMonitor: FocusOriginMonitor,
-              public radioDispatcher: UniqueSelectionDispatcher) {
-    // Assertions. Ideally these should be stripped out by the compiler.
-    // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
-
-    this.radioGroup = radioGroup;
-
-    radioDispatcher.listen((id: string, name: string) => {
-      if (id != this.id && name == this.name) {
-        this.checked = false;
-      }
-    });
-  }
-
-  /** ID of the native input element inside `<md-radio-button>` */
-  get inputId(): string {
-    return `${this.id}-input`;
-  }
 
   /** Whether this radio button is checked. */
   @Input()
@@ -364,7 +309,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
       if (newCheckedState) {
         // Notify all radio buttons with the same name to un-check.
-        this.radioDispatcher.notify(this.id, this.name);
+        this._radioDispatcher.notify(this.id, this.name);
       }
     }
   }
@@ -429,6 +374,68 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
+  /**
+   * Event emitted when the checked state of this radio button changes.
+   * Change events are only emitted when the value changes due to user interaction with
+   * the radio button (the same behavior as `<input type-"radio">`).
+   */
+  @Output()
+  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
+
+  /** The parent radio group. May or may not be present. */
+  radioGroup: MdRadioGroup;
+
+  /** ID of the native input element inside `<md-radio-button>` */
+  get inputId(): string {
+    return `${this.id}-input`;
+  }
+
+  /** Whether this radio is checked. */
+  private _checked: boolean = false;
+
+  /** Whether this radio is disabled. */
+  private _disabled: boolean;
+
+  /** Value assigned to this radio.*/
+  private _value: any = null;
+
+  /** Whether the ripple effect on click should be disabled. */
+  private _disableRipple: boolean;
+
+  /** The child ripple instance. */
+  @ViewChild(MdRipple) _ripple: MdRipple;
+
+  /** Stream of focus event from the focus origin monitor. */
+  private _focusOriginMonitorSubscription: Subscription;
+
+  /** Reference to the current focus ripple. */
+  private _focusedRippleRef: RippleRef;
+
+  /** The native `<input type=radio>` element */
+  @ViewChild('input') _inputElement: ElementRef;
+
+  constructor(@Optional() radioGroup: MdRadioGroup,
+              private _elementRef: ElementRef,
+              private _renderer: Renderer,
+              private _focusOriginMonitor: FocusOriginMonitor,
+              private _radioDispatcher: UniqueSelectionDispatcher) {
+    // Assertions. Ideally these should be stripped out by the compiler.
+    // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
+
+    this.radioGroup = radioGroup;
+
+    _radioDispatcher.listen((id: string, name: string) => {
+      if (id != this.id && name == this.name) {
+        this.checked = false;
+      }
+    });
+  }
+
+  /** Focuses the radio button. */
+  focus(): void {
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+  }
+
   ngOnInit() {
     if (this.radioGroup) {
       // If the radio is inside a radio group, determine if it should be checked
@@ -467,11 +474,6 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
   _isRippleDisabled() {
     return this.disableRipple || this.disabled;
-  }
-
-  /** Focuses the radio button. */
-  focus(): void {
-    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
   }
 
   _onInputBlur() {
