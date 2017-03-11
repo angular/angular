@@ -100,7 +100,7 @@ For more information, see the [Template Syntax](./template-syntax.html#ngFor) pa
 
 Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](./template-syntax.html#ngForMicrosyntax) section of
+more about template input variables in the [microsyntax](./template-syntax.html#microsyntax) section of
 the [Template Syntax](./template-syntax.html) page.
 
 Angular duplicates the `<li>` for each item in the list, setting the `hero` variable

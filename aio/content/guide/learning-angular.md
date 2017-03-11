@@ -2,7 +2,7 @@
 Learning Angular
 
 @intro
-A suggested path through the documentation for Angular newcomers
+A suggested path through the documentation for Angular newcomers.
 
 @description
 

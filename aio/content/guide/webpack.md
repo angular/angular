@@ -2,7 +2,7 @@
 Webpack: an introduction
 
 @intro
-Create Angular applications with a Webpack based tooling
+Create Angular applications with a Webpack based tooling.
 
 @description
 
@@ -370,7 +370,7 @@ The development build relies on the Webpack development server, configured near 
 
 Although you tell Webpack to put output bundles in the `dist` folder,
 the dev server keeps all bundles in memory; it doesn't write them to disk.
-You won't find any files in the `dist` folder (at least not any generated from `this development build`).
+You won't find any files in the `dist` folder (at least not any generated from *this development build*).
 
 
 The `HtmlWebpackPlugin` (added in `webpack.common.js`) use the *publicPath* and the *filename* settings to generate 

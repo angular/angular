@@ -896,7 +896,7 @@ For more information on pipes, see [Pipes](../guide/pipes.html).
       </code-example>
 
       Displays the collection in the order specified by the expression.      
-            In this example, the movie title orders the movieList.
+            In this example, the movie title orders the `movieList`.
     </td>
 
 
