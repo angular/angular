@@ -19,16 +19,16 @@ can read and write Angular apps in their preferred dialect.
 {@a toc}
 ## Table of contents
 
-[_TypeScript_ to _ES6_ to _ES5_](#from-ts)<br>
-[Modularity: imports and exports](#modularity)<br>
-[Classes and Class Metadata](#class-metadata)<br>
-[_ES5_ DSL](#dsl)<br>
-[Interfaces](#interfaces)<br>
-[Input and Output Metadata](#io-decorators)<br>
-[Dependency Injection](#dependency-injection)<br>
-[Host Binding](#host-binding)<br>
-[View and Child Decorators](#view-child-decorators)<br>
-[AOT compilation in _TypeScript_ Only](#aot)<br>
+[_TypeScript_ to _ES6_ to _ES5_](guide/ts-to-js#from-ts)<br>
+[Modularity: imports and exports](guide/ts-to-js#modularity)<br>
+[Classes and Class Metadata](guide/ts-to-js#class-metadata)<br>
+[_ES5_ DSL](guide/ts-to-js#dsl)<br>
+[Interfaces](guide/ts-to-js#interfaces)<br>
+[Input and Output Metadata](guide/ts-to-js#io-decorators)<br>
+[Dependency Injection](guide/ts-to-js#dependency-injection)<br>
+[Host Binding](guide/ts-to-js#host-binding)<br>
+[View and Child Decorators](guide/ts-to-js#view-child-decorators)<br>
+[AOT compilation in _TypeScript_ Only](guide/ts-to-js#aot)<br>
 
 **Run and compare the live <live-example name="cb-ts-to-js">_TypeScript_</live-example> and <live-example name="cb-ts-to-js" lang="js">JavaScript</live-example>
 code shown in this cookbook.**
@@ -81,7 +81,7 @@ To use decorators and annotations with Babel, install the
 
 In both _TypeScript_ and _ES6_, you import Angular classes, functions, and other members with _ES6_ `import` statements.
 
-In _ES5_, you access the Angular entities of the [the Angular packages](../glossary.html#scoped-package)
+In _ES5_, you access the Angular entities of the [the Angular packages](glossary)
 through the global `ng` object. 
 Anything you can import from `@angular` is a nested member of this `ng` object:
 
@@ -260,7 +260,7 @@ Use the constructor function pattern instead, adding methods to the prototype.
 When writing in _TypeScript_ or _ES6-with-decorators_, 
 provide configuration and metadata by adorning a class with one or more *decorators*. 
 For example, you supply metadata to a component class by preceding its definition with a
-[`@Component`](../api/core/index/Component-decorator.html) decorator function whose
+[`@Component`](api/core/index/Component-decorator) decorator function whose
 argument is an object literal with metadata properties.
 
 In _plain ES6_, you provide metadata by attaching an `annotations` array to the _class_.
@@ -477,7 +477,7 @@ Just implement the methods and ignore interfaces when translating code samples f
 ### Input and Output Decorators
 
 In _TypeScript_ and _ES6-with-decorators_, you often add metadata to class _properties_ with _property decorators_.
-For example, you apply [`@Input` and `@Output` property decorators](../guide/template-syntax.html#inputs-outputs) 
+For example, you apply [`@Input` and `@Output` property decorators](guide/template-syntax) 
 to public class properties that will be the target of data binding expressions in parent components.
 
 There is no equivalent of a property decorator in _ES5_ or _plain ES6_. 
@@ -529,7 +529,7 @@ you specify the special binding name in the argument to the property decorator.
 In _ES5_ and _plain ES6_ code, convey this pairing with the `propertyName: bindingName` syntax in the class metadata.
 
 ## Dependency Injection
-Angular relies heavily on [Dependency Injection](../guide/dependency-injection.html) to provide services to the objects it creates.
+Angular relies heavily on [Dependency Injection](guide/dependency-injection) to provide services to the objects it creates.
 When Angular creates a new component, directive, pipe or another service, 
 it sets the class constructor parameters to instances of services provided by an _Injector_.
 
@@ -642,12 +642,12 @@ You can qualify injection behavior with injection decorators from `@angular/core
 
 In _TypeScript_ and _ES6-with-decorators_, 
 you precede the constructor parameters with injection qualifiers such as:
-* [`@Optional`](../api/core/index/Optional-decorator.html) sets the parameter to `null` if the service is missing
-* [`@Attribute`](../api/core/index/Attribute-interface.html) to inject a host element attribute value
-* [`@ContentChild`](../api/core/index/ContentChild-decorator.html) to inject a content child
-* [`@ViewChild`](../api/core/index/ViewChild-decorator.html) to inject a view child
-* [`@Host`](../api/core/index/Host-decorator.html) to inject a service in this component or its host
-* [`@SkipSelf`](../api/core/index/SkipSelf-decorator.html) to inject a service provided in an ancestor of this component
+* [`@Optional`](api/core/index/Optional-decorator) sets the parameter to `null` if the service is missing
+* [`@Attribute`](api/core/index/Attribute-interface) to inject a host element attribute value
+* [`@ContentChild`](api/core/index/ContentChild-decorator) to inject a content child
+* [`@ViewChild`](api/core/index/ViewChild-decorator) to inject a view child
+* [`@Host`](api/core/index/Host-decorator) to inject a service in this component or its host
+* [`@SkipSelf`](api/core/index/SkipSelf-decorator) to inject a service provided in an ancestor of this component
 
 In _plain ES6_ and _ES5_, create an instance of the equivalent injection qualifier in a nested array within the `parameters` array.
 For example, you'd write `new Optional()` in _plain ES6_ and `new ng.core.Optional()` in _ES5_.
@@ -702,9 +702,9 @@ element whose tag matches the component selector.
 
 In _TypeScript_ and _ES6-with-decorators_, you can use host property decorators to bind a host
 element to a component or directive.
-The [`@HostBinding`](../api/core/index/HostBinding-interface.html) decorator
+The [`@HostBinding`](api/core/index/HostBinding-interface) decorator
 binds host element properties to component data properties. 
-The [`@HostListener`](../api/core/index/HostListener-interface.html) decorator binds
+The [`@HostListener`](api/core/index/HostListener-interface) decorator binds
 host element events to component event handlers.
 
 In _plain ES6_ or _ES5_, add a `host` attribute to the component metadata to achieve the
@@ -778,8 +778,8 @@ Several _property_ decorators query a component's nested view and content compon
 _View_ children are associated with element tags that appear _within_ the component's template.
 
 _Content_ children are associated with elements that appear _between_ the component's element tags;
-they are projected into an `<ng-content>` slot in the component's template.     The [`@ViewChild`](../api/core/index/ViewChild-decorator.html) and
-[`@ViewChildren`](../api/core/index/ViewChildren-decorator.html) property decorators
+they are projected into an `<ng-content>` slot in the component's template.     The [`@ViewChild`](api/core/index/ViewChild-decorator) and
+[`@ViewChildren`](api/core/index/ViewChildren-decorator) property decorators
 allow a component to query instances of other components that are used in
 its view. 
 
@@ -813,13 +813,13 @@ The `queries` property value is a hash map.
 
 </md-tab-group>
 
-The [`@ContentChild`](../api/core/index/ContentChild-decorator.html) and
-[`@ContentChildren`](../api/core/index/ContentChildren-decorator.html) property decorators
+The [`@ContentChild`](api/core/index/ContentChild-decorator) and
+[`@ContentChildren`](api/core/index/ContentChildren-decorator) property decorators
 allow a component to query instances of other components that have been projected
 into its view from elsewhere.
 
-They can be added in the same way as [`@ViewChild`](../api/core/index/ViewChild-decorator.html) and
-[`@ViewChildren`](../api/core/index/ViewChildren-decorator.html).
+They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-decorator) and
+[`@ViewChildren`](api/core/index/ViewChildren-decorator).
 
 <md-tab-group>
 
@@ -862,7 +862,7 @@ instead of the `@ViewChild` and `@ContentChild` property decorators.
 ## AOT Compilation in _TypeScript_ only
 
 Angular offers two modes of template compilation, JIT (_Just-in-Time_) and 
-[AOT (_Ahead-of-Time_)](aot-compiler.html).
+[AOT (_Ahead-of-Time_)](guide/aot-compiler).
 Currently the AOT compiler only works with _TypeScript_ applications because, in part, it generates
 _TypeScript_ files as an intermediate result.
 **AOT is not an option for pure JavaScript applications** at this time.

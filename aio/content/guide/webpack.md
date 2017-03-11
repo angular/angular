@@ -22,22 +22,22 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 <a id="top"></a>
 ## Table of contents
 
-[What is Webpack?](#what-is-webpack)
+[What is Webpack?](guide/webpack#what-is-webpack)
 
-  * [Entries and outputs](#entries-outputs)
-  * [Loaders](#loaders)
-  * [Plugins](#plugins)
+  * [Entries and outputs](guide/webpack#entries-outputs)
+  * [Loaders](guide/webpack#loaders)
+  * [Plugins](guide/webpack#plugins)
   
-[Configuring Webpack](#configure-webpack)
+[Configuring Webpack](guide/webpack#configure-webpack)
 
-  * [Common configuration](#common-configuration)
-  * [Development configuration](#development-configuration)
-  * [Production configuration](#production-configuration)
-  * [Test configuration](#test-configuration)
+  * [Common configuration](guide/webpack#common-configuration)
+  * [Development configuration](guide/webpack#development-configuration)
+  * [Production configuration](guide/webpack#production-configuration)
+  * [Test configuration](guide/webpack#test-configuration)
   
-[Trying it out](#try)
+[Trying it out](guide/webpack#try)
 
-[Conclusions](#conclusions)
+[Conclusions](guide/webpack#conclusions)
 
 You can also <a href="/resources/zips/webpack/webpack.zip">download the final result.</a>
 
@@ -95,7 +95,7 @@ and emits *two* bundle files, one called `app.js` containing only the applicatio
 another called `vendor.js` with all the vendor dependencies.
 
 The `[name]` in the output name is a *placeholder* that a Webpack plugin replaces with the entry names,
-`app` and `vendor`. Plugins are [covered later](#commons-chunk-plugin) in the guide.
+`app` and `vendor`. Plugins are [covered later](guide/webpack#commons-chunk-plugin) in the guide.
 To tell Webpack what belongs in the vendor bundle, 
 add a `vendor.ts` file that only imports the application's third-party modules:
 
@@ -191,8 +191,8 @@ Add these files:
 
 
 Many of these files should be familiar from other Angular documentation guides,
-especially the [_Typescript configuration_](../guide/typescript-configuration.html) and
-[_npm packages_](../guide/npm-packages.html) guides.
+especially the [_Typescript configuration_](guide/typescript-configuration) and
+[_npm packages_](guide/npm-packages) guides.
 
 Webpack, the plugins, and the loaders are also installed as packages. 
 They are listed in the updated `packages.json`.
@@ -209,7 +209,7 @@ Open a terminal window and (re)install the *npm* packages
 ### Polyfills
 
 You'll need polyfills to run an Angular application in most browsers as explained
-in the [_Browser Support_](browser-support.html) guide.
+in the [_Browser Support_](guide/browser-support) guide.
 
 Polyfills should be bundled separately from the application and vendor bundles.
 Add a `polyfills.ts` like this one to the `src/` folder.
@@ -253,10 +253,10 @@ Webpack is a NodeJS-based tool that reads configuration from a JavaScript _commo
 The configuration imports dependencies with `require` statements
 and exports several objects as properties of a `module.exports` object.
 
-* [`entries`](#common-entries) - the entry-point files that define the bundles.
-* [`resolve`](#common-resolve) - how to resolve file names when they lack extensions.
-* [`module.rules`](#common-rules) - `module` is an object with `rules` for deciding how files are loaded.
-* [`plugins`](#common-plugins) - creates instances of the plugins.
+* [`entries`](guide/webpack#common-entries) - the entry-point files that define the bundles.
+* [`resolve`](guide/webpack#common-resolve) - how to resolve file names when they lack extensions.
+* [`module.rules`](guide/webpack#common-rules) - `module` is an object with `rules` for deciding how files are loaded.
+* [`plugins`](guide/webpack#common-plugins) - creates instances of the plugins.
 
 
 {@a common-entries}
@@ -567,4 +567,4 @@ for a small Angular application.
 
 _You could always do more_. Search the web for expert advice and expand your Webpack knowledge.
 
-[Back to top](#top)
+[Back to top](guide/webpack#top)

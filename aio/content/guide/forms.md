@@ -29,7 +29,7 @@ You can run the <live-example></live-example> in Plunker and download the code f
 
 ## Template-driven forms
 
-You can build forms by writing templates in the Angular [template syntax](./template-syntax.html) with
+You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
 
 You can also use a reactive (or model-driven) approach to build forms. 
@@ -74,7 +74,7 @@ You'll build this form in small steps:
 1. Disable the form’s *Submit* button until the form is valid.
 ## Setup
 
-Follow the [setup](setup.html) instructions for creating a new project
+Follow the [setup](guide/setup) instructions for creating a new project
 named <span ngio-ex>angular-forms</span>.
 
 ## Create the Hero model class
@@ -119,8 +119,8 @@ Understanding this component requires only the Angular concepts covered in previ
 - You defined dummy data for `model` and `powers`, as befits a demo.
 Down the road, you can inject a data service to get and save real data
 or perhaps expose these properties as inputs and outputs
-(see [Input and output properties](./template-syntax.html#inputs-outputs) on the
-[Template Syntax](./template-syntax.html) page) for binding to a
+(see [Input and output properties](guide/template-syntax) on the
+[Template Syntax](guide/template-syntax) page) for binding to a
 parent component. This is not a concern now and these future changes won't affect the form.
 - You added a `diagnostic` property to return a JSON representation of the model.
 It'll help you see what you're doing during development; you've left yourself a cleanup note to discard it later.
@@ -230,7 +230,7 @@ You maintain that list internally (in `HeroFormComponent`).
 
 You'll add a `select` to the
 form and bind the options to the `powers` list using `ngFor`,
-a technique seen previously in the [Displaying Data](./displaying-data.html) page.
+a technique seen previously in the [Displaying Data](guide/displaying-data) page.
 
 Add the following HTML *immediately below* the *Alter Ego* group:
 This code repeats the `<option>` tag for each power in the list of powers.
@@ -247,8 +247,8 @@ Running the app right now would be disappointing.
 
 You don't see hero data because you're not binding to the `Hero` yet.
 You know how to do that from earlier pages.
-[Displaying Data](./displaying-data.html) teaches property binding.
-[User Input](./user-input.html) shows how to listen for DOM events with an
+[Displaying Data](guide/displaying-data) teaches property binding.
+[User Input](guide/user-input) shows how to listen for DOM events with an
 event binding and how to update a component property with the displayed value.
 
 Now you need to display, listen, and extract at the same time.
@@ -278,8 +278,8 @@ back again.
 
 That's *two-way data binding*.
 For more information, see
-[Two-way binding with NgModel](template-syntax.html#ngModel) on the
-the [Template Syntax](template-syntax.html) page.
+[Two-way binding with NgModel](guide/template-syntax) on the
+the [Template Syntax](guide/template-syntax) page.
 Notice that you also added a `name` attribute to the `<input>` tag and set it to "name",
 which makes sense for the hero's name. Any unique value will do, but using a descriptive name is helpful.
 Defining a `name` attribute is a requirement when using `[(ngModel)]` in combination with a form.
@@ -287,7 +287,7 @@ Defining a `name` attribute is a requirement when using `[(ngModel)]` in combina
 Internally, Angular creates `FormControl` instances and
 registers them with an `NgForm` directive that Angular attached to the `<form>` tag.
 Each `FormControl` is registered under the name you assigned to the `name` attribute.
-Read more in [The NgForm directive](#ngForm), later in this page.
+Read more in [The NgForm directive](guide/forms#ngForm), later in this page.
 Add similar `[(ngModel)]` bindings and `name` attributes to *Alter Ego* and *Hero Power*.
 You'll ditch the input box binding message
 and add a new binding (at the top) to the component's `diagnostic` property.
@@ -401,7 +401,7 @@ You can leverage those class names to change the appearance of the control.
 
 </table>
 
-Temporarily add a [template reference variable](./template-syntax.html#ref-vars) named `spy`
+Temporarily add a [template reference variable](guide/template-syntax) named `spy`
 to the _Name_ `<input>` tag and use it to display the input's CSS classes.
 Now run the app and look at the _Name_ input box.
 Follow these steps *precisely*:
@@ -458,7 +458,7 @@ When the user deletes the name, the form should look like this:
 </figure>
 
 To achieve this effect, extend the `<input>` tag with the following:
-- A [template reference variable](./template-syntax.html#ref-vars).
+- A [template reference variable](guide/template-syntax).
 - The "*is required*" message in a nearby `<div>`, which you'll display only if the control is invalid.
 
 Here's an example of an error message added to the _name_ input box:
@@ -466,7 +466,7 @@ You need a template reference variable to access the input box's Angular control
 Here you created a variable called `name` and gave it the value "ngModel".
 
 Why "ngModel"?
-A directive's [exportAs](../api/core/index/Directive-decorator.html) property
+A directive's [exportAs](api/core/index/Directive-decorator) property
 tells Angular how to link the reference variable to the directive.
 You set `name` to `ngModel` because the `ngModel` directive's `exportAs` property happens to be "ngModel".
 You control visibility of the name error message by binding properties of the `name`
@@ -481,7 +481,7 @@ you'll see the error message immediately, before you've done anything.
 
 Some developers want to the message to display only when the user makes an invalid change.
 Hiding the message while the control is "pristine" achieves that goal.
-You'll see the significance of this choice when you [add a new hero](#new-hero) to the form.
+You'll see the significance of this choice when you [add a new hero](guide/forms#new-hero) to the form.
 
 The hero *Alter Ego* is optional so you can leave that be.
 
@@ -540,7 +540,7 @@ The variable `heroForm` is now a reference to the `NgForm` directive that govern
 ### The _NgForm_ directive
 
 What `NgForm` directive?
-You didn't add an [NgForm](../api/forms/index/NgForm-directive.html) directive.
+You didn't add an [NgForm](api/forms/index/NgForm-directive) directive.
 
 Angular did. Angular automatically creates and attaches an `NgForm` directive to the `<form>` tag.
 
