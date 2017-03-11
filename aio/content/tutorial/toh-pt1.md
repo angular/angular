@@ -2,7 +2,7 @@
 The Hero Editor
 
 @intro
-We build a simple hero editor
+We build a simple hero editor.
 
 @description
 ## Setup to develop locally

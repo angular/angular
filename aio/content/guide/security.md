@@ -2,7 +2,7 @@
 Security
 
 @intro
-Developing for content security in Angular applications
+Developing for content security in Angular applications.
 
 @description
 This page describes Angular's built-in

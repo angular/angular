@@ -2,7 +2,7 @@
 Routing
 
 @intro
-We add the Angular Router and learn to navigate among the views
+We add the Angular Router and learn to navigate among the views.
 
 @description
 We received new requirements for our Tour of Heroes application:
