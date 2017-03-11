@@ -2,7 +2,7 @@
 Dynamic Component Loader
 
 @intro
-Load components dynamically
+Load components dynamically.
 
 @description
 Component templates are not always fixed. An application may need to load new components at runtime.

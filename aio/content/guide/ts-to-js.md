@@ -2,7 +2,7 @@
 TypeScript to JavaScript
 
 @intro
-Convert Angular TypeScript examples into ES6 and ES5 JavaScript
+Convert Angular TypeScript examples into ES6 and ES5 JavaScript.
 
 @description
 Anything you can do with Angular in _TypeScript_, you can also do
@@ -40,7 +40,7 @@ code shown in this cookbook.**
 
 _TypeScript_ 
 <a href="https://www.typescriptlang.org" target="_blank" title='"TypeScript is a typed, superset of JavaScript"'>is a typed superset of _ES6 JavaScript_</a>.
-&nbsp; _ES6 JavaScript_ is a superset of _ES5 JavaScript_. &nbsp; _ES5_ is the kind of JavaScript that runs natively in all modern browsers.
+_ES6 JavaScript_ is a superset of _ES5 JavaScript_. _ES5_ is the kind of JavaScript that runs natively in all modern browsers.
 The transformation of _TypeScript_ code all the way down to _ES5_ code can be seen as "shedding" features.
 
 The downgrade progression is

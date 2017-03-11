@@ -2,7 +2,7 @@
 Component Interaction
 
 @intro
-Share information between different directives and components
+Share information between different directives and components.
 
 @description
 <a id="top"></a>This cookbook contains recipes for common component communication scenarios
@@ -118,7 +118,7 @@ the expected `ngOnChanges` calls and values:
 
 <a id="child-to-parent"></a>## Parent listens for child event
 
-The child component exposes an `EventEmitter` property with which it `emits`events when something happens. 
+The child component exposes an `EventEmitter` property with which it `emits` events when something happens. 
 The parent binds to that event property and reacts to those events.
 
 The child's `EventEmitter` property is an ***output property***, 

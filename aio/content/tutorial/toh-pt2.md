@@ -2,7 +2,7 @@
 Master/Detail
 
 @intro
-We build a master/detail page with a list of heroes
+We build a master/detail page with a list of heroes.
 
 @description
 Our story needs more heroes.

@@ -2,7 +2,7 @@
 Documentation Overview
 
 @intro
-How to read and use this documentation
+How to read and use this documentation.
 
 @description
 This page describes the Angular documentation at a high level.

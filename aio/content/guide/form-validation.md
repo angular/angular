@@ -2,7 +2,7 @@
 Form Validation
 
 @intro
-Validate user's form entries
+Validate user's form entries.
 
 @description
 
@@ -258,7 +258,7 @@ At runtime, Angular interprets the template and derives its _form control model_
 
 **Reactive Forms** takes a different approach. 
 You create the form control model in code. You write the template with form elements
-and`form...` directives from the Angular `ReactiveFormsModule`.
+and `form...` directives from the Angular `ReactiveFormsModule`.
 At runtime, Angular binds the template elements to your control model based on your instructions.
 
 This approach requires a bit more effort. *You have to write the control model and manage it*.
@@ -365,7 +365,7 @@ Angular has stock validators that correspond to the standard HTML validation att
 The `forbiddenNames` validator on the `"name"` control is a custom validator, 
 discussed in a separate [section below](#custom-validation).
 
- Learn more about `FormBuilder` in a _forthcoming_ chapter on reactive forms. 
+ Learn more about `FormBuilder` in the [Introduction to FormBuilder](../guide/reactive-forms.html#formbuilder) section of Reactive Forms guide. 
 #### Committing hero value changes
 
 In two-way data binding, the user's changes flow automatically from the controls back to the data model properties.

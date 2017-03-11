@@ -2,7 +2,7 @@
 Services
 
 @intro
-We create a reusable service to manage our hero data calls
+We create a reusable service to manage our hero data calls.
 
 @description
 The Tour of Heroes is evolving and we anticipate adding more components in the near future.

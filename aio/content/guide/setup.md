@@ -2,7 +2,7 @@
 Setup for local development
 
 @intro
-Install the Angular QuickStart seed for faster, more efficient development on your machine
+Install the Angular QuickStart seed for faster, more efficient development on your machine.
 
 @description
 

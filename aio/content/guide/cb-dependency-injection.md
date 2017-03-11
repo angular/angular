@@ -2,7 +2,7 @@
 Dependency Injection
 
 @intro
-Techniques for Dependency Injection
+Techniques for Dependency Injection.
 
 @description
 Dependency Injection is a powerful pattern for managing code dependencies. 
@@ -136,7 +136,7 @@ Technically, the `@Injectable()`decorator is only _required_ for a service class
 The `LoggerService` doesn't depend on anything. The logger would work if we omitted `@Injectable()`
 and the generated code would be slightly smaller. 
 
-But the service would break the moment we gave it a dependency and we'd have to go back and
+But the service would break the moment we gave it a dependency and we'd have to go back
 and add `@Injectable()` to fix it. We add `@Injectable()` from the start for the sake of consistency and to avoid future pain.
 
 
@@ -362,7 +362,7 @@ Here's a typical example:
 
 {@example 'cb-dependency-injection/ts/src/app/hero-bios.component.ts' region='ctor'}
 
-Angular asks the injector for the service associated with the `LoggerService` and
+Angular asks the injector for the service associated with the `LoggerService`
 and assigns the returned value to the `logger` parameter.
 
 Where did the injector get that value?

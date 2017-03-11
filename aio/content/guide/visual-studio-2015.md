@@ -2,7 +2,7 @@
 Visual Studio 2015 QuickStart
 
 @intro
-Use Visual Studio 2015 with the QuickStart files
+Use Visual Studio 2015 with the QuickStart files.
 
 @description
 <a id="top"></a>Some developers prefer Visual Studio as their Integrated Development Environment (IDE).

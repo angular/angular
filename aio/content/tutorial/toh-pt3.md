@@ -2,7 +2,7 @@
 Multiple Components
 
 @intro
-We refactor the master/detail view into separate components
+We refactor the master/detail view into separate components.
 
 @description
 Our app is growing.

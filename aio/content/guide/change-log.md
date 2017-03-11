@@ -19,12 +19,12 @@ Discusses `<ng-container>`.
 Revised samples are more clear and cover all topics discussed.
 
 ## NEW: Samples re-structured with `src/` folder (2017-02-02)
-All documentation samples have been realigned with the default folder structure of the angular-cli.
-That's a step along the road to basing our sample in the angular-cli.
+All documentation samples have been realigned with the default folder structure of the Angular CLI.
+That's a step along the road to basing the sample in the Angular CLI.
 But it's also good in its own right. 
 It helps clearly separate app code from setup and configuration files.
 
-We've updated all samples with an `src/` folder at the project root.
+All samples now have a `src/` folder at the project root.
 The former `app/` folder moves under `src/`. 
 Read about moving your existing project to this structure in 
 <a href="https://github.com/angular/quickstart#updating-to-a-newer-version-of-the-quickstart-repo" target="_blank" target="Migrating samples/quickstart app to the src folder">
@@ -50,24 +50,24 @@ The new [Deployment](deployment.html) guide describes techniques for putting you
 It includes important advice on optimizing for production.
 
 ## Hierarchical Dependency Injection: refreshed (2017-01-13)
-[Hierarchical Dependency Injection](hierarchical-dependency-injection.html) guide significantly revised.
-Closes issue #3086
-Revised samples are more clear and cover all topics discussed.
+[Hierarchical Dependency Injection](hierarchical-dependency-injection.html) guide is significantly revised.
+Closes issue #3086.
+Revised samples are clearer and cover all topics discussed.
 
 ## Miscellaneous (2017-01-05)
 * [Setup](setup.html) guide: 
 added (optional) instructions on how to remove _non-essential_ files. 
 * No longer consolidate RxJS operator imports in `rxjs-extensions` file; each file should import what it needs.
-* All samples prepend template/style URLS URLs w/ `./` ... and so should you.
+* All samples prepend template/style URLs with `./` as a best practice.
 * [Style Guide](style-guide.html): copy edits and revised rules.
 
 ## Router: more detail (2016-12-21)
 Added more information to the [Router](router.html) guide 
 including sections named outlets, wildcard routes, and preload strategies.
 
-## Http: how to set default request headers (and other request options) (2016-12-14)
+## HTTP: how to set default request headers (and other request options) (2016-12-14)
 Added section on how to set default request headers (and other request options) to 
-[Http](server-communication.html#override-default-request-options) guide.
+[HTTP](server-communication.html#override-default-request-options) guide.
 
 ## Testing: added component test plunkers (2016-12-02)
 Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" plnkr="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" plnkr="banner-specs">another</live-example> for the Testing guide's `BannerComponent`. 
@@ -79,9 +79,9 @@ translation of alternative texts with `select`.
 The sample demonstrates these features too.
 
 ## Testing: karma file updates (2016-11-30)
-* karma.config + karma-test-shim can handle multiple spec source paths;
-see quickstart issue: [angular/quickstart#294](https://github.com/angular/quickstart/issues/294)
-* Displays Jasmine Runner output in the karma-launched browser
+* `karma.config` + `karma-test-shim` can handle multiple spec source paths;
+see quickstart issue: [angular/quickstart#294](https://github.com/angular/quickstart/issues/294).
+* Displays Jasmine Runner output in the karma-launched browser.
 
 ## QuickStart Rewrite (2016-11-18)
 The QuickStart is completely rewritten so that it actually is quick.
@@ -91,7 +91,7 @@ by downloading (or cloning) the QuickStart github repository.
 You are no longer asked to copy-and-paste code into setup files that were not explained anyway.
 
 ## Sync with Angular v.2.2.0 (2016-11-14)
-Docs and code samples updated and tested with Angular v.2.2.0 
+Docs and code samples updated and tested with Angular v.2.2.0.
 
 ## UPDATE: NgUpgrade Guide for the AOT friendly _upgrade/static_ module (2016-11-14)
 The updated [NgUpgrade Guide](upgrade.html) guide covers the 
@@ -101,20 +101,20 @@ facility for migrating from AngularJS to Angular.
 The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
-The updated "[TypeScript to JavaScript](../cookbook/ts-to-js.html)" cookbook 
+The updated [TypeScript to JavaScript](../cookbook/ts-to-js.html) cookbook 
 now explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
 
 ## Sync with Angular v.2.1.1 (2016-10-21)
-Docs and code samples updated and tested with Angular v.2.1.0 
+Docs and code samples updated and tested with Angular v.2.1.1.
 
 ## npm _@types_ packages replace _typings_ (2016-10-20)
 Documentation samples now get TypeScript type information for 3rd party libraries
 from npm `@types` packages rather than with the _typings_ tooling.
 The `typings.json` file is gone.
 
-The "[AngularJS Upgrade](upgrade.html)" guide reflects this change.
+The [AngularJS Upgrade](upgrade.html) guide reflects this change.
 The `package.json` installs `@types/angular` and several `@types/angular-...`
 packages in support of upgrade; these are not needed for pure Angular development.
 
@@ -135,7 +135,7 @@ _before_ the user navigates to them for improved perceived performance.
 New `:enter` and `:leave` aliases make animation more natural. 
 
 ## Sync with Angular v.2.1.0 (2016-10-12)
-Docs and code samples updated and tested with Angular v.2.1.0 
+Docs and code samples updated and tested with Angular v.2.1.0.
 
 ## NEW "Ahead of time (AOT) Compilation" cookbook (2016-10-11)
 The NEW [Ahead of time (AOT) Compilation](../cookbook/aot-compiler.html) cookbook
@@ -144,7 +144,7 @@ It demonstrates the basics with a QuickStart app
 followed by the more advanced considerations of compiling and bundling the Tour of Heroes.
 
 ## Sync with Angular v.2.0.2 (2016-10-6)
-Docs and code samples updated and tested with Angular v.2.0.2 
+Docs and code samples updated and tested with Angular v.2.0.2.
 
 ## "Routing and Navigation" guide with the _Router Module_ (2016-10-5)
 The [Routing and Navigation](router.html) guide now locates route configuration
@@ -171,16 +171,16 @@ The new "angular-in-memory-web-api" has new features.
 
 ## "Style Guide" with _NgModules_ (2016-09-27)
 
-[StyleGuide](style-guide.html) explains our recommended conventions for Angular modules (NgModule).
+[StyleGuide](style-guide.html) explains recommended conventions for Angular modules (NgModule).
 Barrels now are far less useful and have been removed from the style guide;
 they remain valuable but are not a matter of Angular style.
-We also relaxed the rule that discouraged use of the `@Component.host` property.
+Also relaxed the rule that discouraged use of the `@Component.host` property.
 
 ## _moduleId: module.id_ everywhere (2016-09-25)
 
 Sample components that get their templates or styles with `templateUrl` or `styleUrls`
 have been converted to _module-relative_ URLs.
-We added the `moduleId: module.id` property-and-value to their `@Component` metadata.
+Added the `moduleId: module.id` property-and-value to their `@Component` metadata.
 
 This change is a requirement for compilation with AOT compiler when the app loads
 modules with SystemJS as the samples currently do.

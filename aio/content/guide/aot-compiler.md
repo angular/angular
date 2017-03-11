@@ -2,7 +2,7 @@
 Ahead-of-Time Compilation
 
 @intro
-Learn how to use Ahead-of-time compilation
+Learn how to use Ahead-of-time compilation.
 
 @description
 This cookbook describes how to radically improve performance by compiling _Ahead of Time_ (AOT)

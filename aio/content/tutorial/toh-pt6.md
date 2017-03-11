@@ -2,7 +2,7 @@
 HTTP
 
 @intro
-We convert our service and components to use Angular's HTTP service
+We convert our service and components to use Angular's HTTP service.
 
 @description
 Our stakeholders appreciate our progress.

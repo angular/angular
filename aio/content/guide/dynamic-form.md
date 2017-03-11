@@ -2,7 +2,7 @@
 Dynamic Forms
 
 @intro
-Render dynamic forms with FormGroup
+Render dynamic forms with FormGroup.
 
 @description
 We can't always justify the cost and time to build handcrafted forms, 
@@ -129,7 +129,7 @@ The `ngSwitch` determines which type of question to display.
 In both components  we're relying on Angular's **formGroup** to connect the template HTML to the
 underlying control objects, populated from the question model with display and validation rules.
 
-`formControlName` and `formGroup` are directives defined in `ReactiveFormsModule`. Our templates can can access these directives directly since we imported `ReactiveFormsModule` from `AppModule`.  
+`formControlName` and `formGroup` are directives defined in `ReactiveFormsModule`. Our templates can access these directives directly since we imported `ReactiveFormsModule` from `AppModule`.  
 <a id="questionnaire-metadata"></a>## Questionnaire data`DynamicFormComponent` expects the list of questions in the form of an array bound to  `@Input() questions`.
 
  The set of questions we have defined for the job application is returned from the `QuestionService`. 

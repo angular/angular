@@ -2,7 +2,7 @@
 Architecture Overview
 
 @intro
-The basic building blocks of Angular applications
+The basic building blocks of Angular applications.
 
 @description
 You write Angular applications by composing HTML *templates* with Angularized markup,
