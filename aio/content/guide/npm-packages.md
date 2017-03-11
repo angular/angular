@@ -19,7 +19,7 @@ Older versions produce errors.
 Consider using [nvm](https://github.com/creationix/nvm) for managing multiple
 versions of node and npm. You may need [nvm](https://github.com/creationix/nvm) if
 you already have projects running on your machine that use other versions of node and npm.
-During [Setup](setup.html), a <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a>
+During [Setup](guide/setup), a <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a>
 file is installed with a comprehensive starter set of
 packages as specified in the `dependencies` and `devDependencies` sections.
 
@@ -34,7 +34,7 @@ This page explains what each package does. You can make substitutions later to s
 
 ## *dependencies* and *devDependencies*
 The `package.json` includes two sets of packages,
-[dependencies](#dependencies) and [devDependencies](#dev-dependencies).
+[dependencies](guide/npm-packages#dependencies) and [devDependencies](guide/npm-packages#dev-dependencies).
 
 The *dependencies* are essential to *running* the application.
 The *devDependencies* are only necessary to *develop* the application.
@@ -73,8 +73,8 @@ the pieces that help render into the DOM.
 This package also includes the `bootstrapStatic()` method
 for bootstrapping applications for production builds that pre-compile templates offline.
 
-***@angular/platform-browser-dynamic***: Includes [Providers](../api/core/index/Provider-type-alias.html)
-and a [bootstrap](ngmodule.html#bootstrap) method for applications that
+***@angular/platform-browser-dynamic***: Includes [Providers](api/core/index/Provider-type-alias)
+and a [bootstrap](guide/ngmodule) method for applications that
 compile templates on the client. Don’t use offline compilation.
 Use this package for bootstrapping during development and for bootstrapping plunker samples.
 
@@ -102,7 +102,7 @@ Install these polyfills using the npm packages that Angular lists in the *peerDe
 
 You must list these packages in the `dependencies` section of your own `package.json`.
 
-For background on this requirement, see [Why peerDependencies?](#why-peer-dependencies).***core-js***: Patches the global context (window) with essential features of ES2015 (ES6).
+For background on this requirement, see [Why peerDependencies?](guide/npm-packages#why-peer-dependencies).***core-js***: Patches the global context (window) with essential features of ES2015 (ES6).
  You may substitute an alternative polyfill that provides the same core APIs.
  When these APIs are implemented by the major browsers, this dependency will become unnecessary.
 
@@ -124,7 +124,7 @@ without waiting for Angular updates.
 ***angular-in-memory-web-api***: An Angular-supported library that simulates a remote server's web api
 without requiring an actual server or real HTTP calls.
 Good for demos, samples, and early stage development (before you even have a server).
-Read about it in the [HTTP Client](server-communication.html#in-mem-web-api) page.
+Read about it in the [HTTP Client](guide/server-communication) page.
 
 ***bootstrap***: [Bootstrap](http://getbootstrap.com/) is a popular HTML and CSS framework for designing responsive web apps.
 Some of the samples improve their appearance with *bootstrap*.
@@ -147,7 +147,7 @@ with excellent support for Angular apps that use routing.
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
 ***@types/\****: TypeScript definition files.
-Learn more about it in the [TypeScript Configuration](typescript-configuration.html#typings) guide.
+Learn more about it in the [TypeScript Configuration](guide/typescript-configuration) guide.
 
 
 
@@ -158,7 +158,7 @@ There isn't a [*peerDependencies*](https://nodejs.org/en/blog/npm/peer-dependenc
 But Angular has a *peerDependencies* section in
 *its* `package.json`, which has important consequences for your application.
 
-This section explains why you load the [polyfill](#polyfills) *dependency*
+This section explains why you load the [polyfill](guide/npm-packages#polyfills) *dependency*
 packages in the QuickStart application's `package.json`,
 and why you'll need those packages in your own applications.
 

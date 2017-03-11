@@ -21,15 +21,15 @@ The agency is constantly tinkering with the application process.
 We can create the forms on the fly *without changing our application code*. 
 <a id="toc"></a>## Table of contents
 
-   [Bootstrap](#bootstrap)
+   [Bootstrap](guide/dynamic-form#bootstrap)
 
-   [Question Model](#object-model)
+   [Question Model](guide/dynamic-form#object-model)
 
-   [Form Component](#form-component)
+   [Form Component](guide/dynamic-form#form-component)
 
-   [Questionnaire Metadata](#questionnaire-metadata)
+   [Questionnaire Metadata](guide/dynamic-form#questionnaire-metadata)
    
-   [Dynamic Template](#dynamic-template)
+   [Dynamic Template](guide/dynamic-form#dynamic-template)
 **See the <live-example name="cb-dynamic-form"></live-example>**.
 
 <a id="bootstrap"></a>## Bootstrap
@@ -165,4 +165,4 @@ The final form looks like this:
   <img src="assets/images/cookbooks/dynamic-form/dynamic-form.png" alt="Dynamic-Form">  </img>
 </figure>
 
-[Back to top](#top)
+[Back to top](guide/dynamic-form#top)

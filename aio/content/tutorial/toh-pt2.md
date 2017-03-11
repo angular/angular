@@ -17,7 +17,7 @@ so we’ll need a way to do that.
 
 ## Where We Left Off
 Before we continue with Part 2 of the Tour of Heroes,
-let’s verify we have the following structure after [Part 1](./toh-pt1.html).
+let’s verify we have the following structure after [Part 1](tutorial/toh-pt1).
 If not, we’ll need to go back to Part 1 and figure out what we missed.
 
 <aio-filetree>
@@ -160,8 +160,8 @@ The `let` keyword before "hero" identifies `hero` as a template input variable.
 We can reference this variable within the template to access a hero’s properties.
 
 Learn more about `ngFor` and template input variables in the
-[Displaying Data](../guide/displaying-data.html#ngFor) and
-[Template Syntax](../guide/template-syntax.html#ngFor) chapters.
+[Displaying Data](guide/displaying-data) and
+[Template Syntax](guide/template-syntax) chapters.
 Now we insert some content between the `<li>` tags
 that uses the `hero` template variable to display the hero’s properties.
 
@@ -219,8 +219,8 @@ The expression to the right of the equal sign calls the  `AppComponent` method, 
 passing the template input variable `hero` as an argument.
 That’s the same `hero` variable we defined previously in the `ngFor`.
 Learn more about Event Binding in the 
-[User Input](../guide/user-input.html) and
-[Templating Syntax](../guide/template-syntax.html#event-binding) chapters.### Add the click handler
+[User Input](guide/user-input) and
+[Templating Syntax](guide/template-syntax) chapters.### Add the click handler
 Our event binding refers to an `onSelect` method that doesn’t exist yet.
 We’ll add that method to our component now.
 
@@ -291,8 +291,8 @@ structure of portions of the DOM.
 In other words, they give structure to the way Angular displays content in the DOM.
 
 Learn more about `ngIf`, `ngFor` and other structural directives in the
-[Structural Directives](../guide/structural-directives.html) and
-[Template Syntax](../guide/template-syntax.html#directives) chapters.
+[Structural Directives](guide/structural-directives) and
+[Template Syntax](guide/template-syntax) chapters.
 The browser refreshes and we see the list of heroes but not the selected hero detail.
 The `ngIf` keeps it out of the DOM as long as the `selectedHero` is undefined.
 When we click on a hero in the list, the selected hero displays in the hero details.
@@ -323,7 +323,7 @@ from the data source (the expression `hero === selectedHero`) to a property of `
 {@example 'toh-2/ts-snippets/app.component.snippets.pt2.ts' region='class-selected-2'}
 
 
-Learn more about [property bindings](../guide/template-syntax.html#property-binding)
+Learn more about [property bindings](guide/template-syntax)
 in the Template Syntax chapter.
 The browser reloads our app.
 We select the hero Magneta and the selection is clearly identified by the background color.
@@ -353,4 +353,4 @@ Run the <live-example></live-example> for this part.
 Our Tour of Heroes has grown, but it’s far from complete.
 We can't put the entire app into a single component.
 We need to break it up into sub-components and teach them to work together
-as we learn in the [next chapter](toh-pt3.html).
+as we learn in the [next chapter](tutorial/toh-pt3).

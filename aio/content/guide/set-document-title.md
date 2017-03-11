@@ -51,7 +51,7 @@ inside a Web Worker to improve your app's responsiveness by using multiple threa
 means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
 ## Use the *Title* service
 Fortunately, Angular bridges the gap by providing a `Title` service as part of the *Browser platform*.
-The [Title](../api/platform-browser/index/Title-class.html) service is a simple class that provides an API
+The [Title](api/platform-browser/index/Title-class) service is a simple class that provides an API
 for getting and setting the current HTML document title:
 
 * `getTitle() : string` &mdash; Gets the title of the current HTML document.
@@ -100,4 +100,4 @@ That's exactly what we're doing.
 The `Title` service is part of the Angular *browser platform*.
 If we bootstrap our application into a different platform,
 we'll have to provide a different `Title` service that understands the concept of a "document title" for that specific platform.
-Ideally the application itself neither knows nor cares about the runtime environment.[Back to top](#top)
+Ideally the application itself neither knows nor cares about the runtime environment.[Back to top](guide/set-document-title#top)

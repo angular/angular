@@ -8,5 +8,5 @@
 
 This guide has been withdrawn. 
 The essential information about this feature
-is in the [Structural Directives](structural-directives.html#ngcontainer) guide.
+is in the [Structural Directives](guide/structural-directives) guide.
 The original draft has been retained for possible future use.

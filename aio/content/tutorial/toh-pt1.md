@@ -8,7 +8,7 @@ We build a simple hero editor.
 ## Setup to develop locally
 Real application development takes place in a local development environment like your machine.
 
-Follow the [setup](../guide/setup.html) instructions for creating a new project
+Follow the [setup](guide/setup) instructions for creating a new project
 named <ngio-ex path="angular-tour-of-heroes"></ngio-ex>
 after which the file structure should look like this:
 
@@ -109,7 +109,7 @@ The browser should refresh and display our title and hero.
 
 The double curly braces tell our app to read the `title` and `hero` properties from the component and render them.
 This is the "interpolation" form of one-way data binding.
-Learn more about interpolation in the [Displaying Data chapter](../guide/displaying-data.html).### Hero object
+Learn more about interpolation in the [Displaying Data chapter](guide/displaying-data).### Hero object
 
 At the moment, our hero is just a name.  Our hero needs more properties.
 Let's convert the `hero` from a literal string to a class.
@@ -189,8 +189,8 @@ Now we have included the forms package which includes `ngModel`.
 
 
 Learn more about the `FormsModule` and `ngModel` in the
-[Forms](../guide/forms.html#ngModel) and
-[Template Syntax](../guide/template-syntax.html#ngModel) chapters.
+[Forms](guide/forms) and
+[Template Syntax](guide/template-syntax) chapters.
 Let’s update the template to use the  **`ngModel`** built-in directive for two-way binding.
 
 Replace the `<input>` with the following HTML
@@ -226,4 +226,4 @@ Our Tour of Heroes only displays one hero and we really want to display a list o
 We also want to allow the user to select a hero and display their details.
 We’ll learn more about how to retrieve lists, bind them to the
 template, and allow a user to select a hero in the
-[next tutorial chapter](./toh-pt2.html).
+[next tutorial chapter](tutorial/toh-pt2).

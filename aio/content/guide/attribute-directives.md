@@ -9,12 +9,12 @@ An **Attribute** directive changes the appearance or behavior of a DOM element.
 
 # Contents
 
-* [Directives overview](#directive-overview)
-* [Build a simple attribute directive](#write-directive)
-* [Apply the attribute directive to an element in a template](#apply-directive)
-* [Respond to user-initiated events](#respond-to-user)
-* [Pass values into the directive with an _@Input_ data binding](#bindings)
-* [Bind to a second property](#second-property)
+* [Directives overview](guide/attribute-directives#directive-overview)
+* [Build a simple attribute directive](guide/attribute-directives#write-directive)
+* [Apply the attribute directive to an element in a template](guide/attribute-directives#apply-directive)
+* [Respond to user-initiated events](guide/attribute-directives#respond-to-user)
+* [Pass values into the directive with an _@Input_ data binding](guide/attribute-directives#bindings)
+* [Bind to a second property](guide/attribute-directives#second-property)
 
 Try the <live-example title="Attribute Directive example"></live-example>.
 
@@ -27,15 +27,15 @@ There are three kinds of directives in Angular:
 1. Attribute directives&mdash;change the appearance or behavior of an element, component, or another directive.
 
 *Components* are the most common of the three directives.
-You saw a component for the first time in the [QuickStart](../quickstart.html) guide.
+You saw a component for the first time in the [QuickStart](quickstart) guide.
 
 *Structural Directives* change the structure of the view.
-Two examples are [NgFor](template-syntax.html#ngFor) and [NgIf](template-syntax.html#ngIf).
-Learn about them in the [Structural Directives](structural-directives.html) guide.
+Two examples are [NgFor](guide/template-syntax) and [NgIf](guide/template-syntax).
+Learn about them in the [Structural Directives](guide/structural-directives) guide.
 
 *Attribute directives* are used as attributes of elements.
-The built-in [NgStyle](template-syntax.html#ngStyle) directive in the 
-[Template Syntax](template-syntax.html) guide, for example,
+The built-in [NgStyle](guide/template-syntax) directive in the 
+[Template Syntax](guide/template-syntax) guide, for example,
 can change several element styles at the same time.
 
 ## Build a simple attribute directive
@@ -50,7 +50,7 @@ directive to set an element's background color
 when the user hovers over that element. You can apply it like this:
 ### Write the directive code
 
-Follow the [setup](setup.html) instructions for creating a new local project
+Follow the [setup](guide/setup) instructions for creating a new local project
 named <span ngio-ex>attribute-directives</span>.
 
 Create the following source file in the indicated folder:
@@ -61,7 +61,7 @@ Create the following source file in the indicated folder:
 The `import` statement specifies symbols from the Angular `core`:
 
 1. `Directive` provides the functionality of the `@Directive` decorator.
-1. `ElementRef` [injects](dependency-injection.html) into the directive's constructor
+1. `ElementRef` [injects](guide/dependency-injection) into the directive's constructor
 so the code can access the DOM element.
 1. `Input` allows data to flow from the binding expression into the directive.
 
@@ -195,7 +195,7 @@ Start by adding a `highlightColor` property to the directive class like this:
 Notice the `@Input` !{_decorator}. It adds metadata to the class that makes the directive's `highlightColor` property available for binding.
 
 It's called an *input* property because data flows from the binding expression _into_ the directive.
-Without that input metadata, Angular rejects the binding; see [below](#why-input "Why add @Input?") for more about that.
+Without that input metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more about that.
 
 Try it by adding the following directive binding variations to the `AppComponent` template:
 Add a `color` property to the `AppComponent`.
@@ -268,10 +268,10 @@ Here's how the harness should work when you're done coding.
 
 This page covered how to:
 
-- [Build an **attribute directive**](#write-directive) that modifies the behavior of an element.
-- [Apply the directive](#apply-directive) to an element in a template.
-- [Respond to **events**](#respond-to-user) that change the directive's behavior.
-- [**Bind** values to the directive](#bindings).
+- [Build an **attribute directive**](guide/attribute-directives#write-directive) that modifies the behavior of an element.
+- [Apply the directive](guide/attribute-directives#apply-directive) to an element in a template.
+- [Respond to **events**](guide/attribute-directives#respond-to-user) that change the directive's behavior.
+- [**Bind** values to the directive](guide/attribute-directives#bindings).
 
 The final source code follows:
 
