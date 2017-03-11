@@ -842,7 +842,7 @@ export class FormControl extends AbstractControl {
  */
 export class FormGroup extends AbstractControl {
   constructor(
-      public controls: {[key: string]: AbstractControl}, validator: ValidatorFn = null,
+      private _controls: {[key: string]: AbstractControl}, validator: ValidatorFn = null,
       asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
@@ -851,14 +851,19 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
+   * Controls in the group.
+   */
+  get controls(): {[key: string]: AbstractControl} { return this._controls; }
+
+  /**
    * Registers a control with the group's list of controls.
    *
    * This method does not update value or validity of the control, so for
    * most cases you'll want to use {@link FormGroup.addControl} instead.
    */
   registerControl(name: string, control: AbstractControl): AbstractControl {
-    if (this.controls[name]) return this.controls[name];
-    this.controls[name] = control;
+    if (this._controls[name]) return this._controls[name];
+    this._controls[name] = control;
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
     return control;
@@ -877,8 +882,8 @@ export class FormGroup extends AbstractControl {
    * Remove a control from this group.
    */
   removeControl(name: string): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
+    if (this._controls[name]) this._controls[name]._registerOnCollectionChange(() => {});
+    delete (this._controls[name]);
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -887,8 +892,8 @@ export class FormGroup extends AbstractControl {
    * Replace an existing control.
    */
   setControl(name: string, control: AbstractControl): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
+    if (this._controls[name]) this._controls[name]._registerOnCollectionChange(() => {});
+    delete (this._controls[name]);
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity();
     this._onCollectionChange();
@@ -901,7 +906,7 @@ export class FormGroup extends AbstractControl {
    * existence in the group only, use {@link AbstractControl.get} instead.
    */
   contains(controlName: string): boolean {
-    return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
+    return this._controls.hasOwnProperty(controlName) && this._controls[controlName].enabled;
   }
 
   /**
@@ -932,7 +937,7 @@ export class FormGroup extends AbstractControl {
     this._checkAllValuesPresent(value);
     Object.keys(value).forEach(name => {
       this._throwIfControlMissing(name);
-      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent});
+      this._controls[name].setValue(value[name], {onlySelf: true, emitEvent});
     });
     this.updateValueAndValidity({onlySelf, emitEvent});
   }
@@ -962,8 +967,8 @@ export class FormGroup extends AbstractControl {
       value: {[key: string]: any},
       {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     Object.keys(value).forEach(name => {
-      if (this.controls[name]) {
-        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent});
+      if (this._controls[name]) {
+        this._controls[name].patchValue(value[name], {onlySelf: true, emitEvent});
       }
     });
     this.updateValueAndValidity({onlySelf, emitEvent});
@@ -1027,20 +1032,20 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _throwIfControlMissing(name: string): void {
-    if (!Object.keys(this.controls).length) {
+    if (!Object.keys(this._controls).length) {
       throw new Error(`
         There are no form controls registered with this group yet.  If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
       `);
     }
-    if (!this.controls[name]) {
+    if (!this._controls[name]) {
       throw new Error(`Cannot find form control with name: ${name}.`);
     }
   }
 
   /** @internal */
   _forEachChild(cb: (v: any, k: string) => void): void {
-    Object.keys(this.controls).forEach(k => cb(this.controls[k], k));
+    Object.keys(this._controls).forEach(k => cb(this._controls[k], k));
   }
 
   /** @internal */
@@ -1084,12 +1089,12 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _allControlsDisabled(): boolean {
-    for (const controlName of Object.keys(this.controls)) {
-      if (this.controls[controlName].enabled) {
+    for (const controlName of Object.keys(this._controls)) {
+      if (this._controls[controlName].enabled) {
         return false;
       }
     }
-    return Object.keys(this.controls).length > 0 || this.disabled;
+    return Object.keys(this._controls).length > 0 || this.disabled;
   }
 
   /** @internal */
@@ -1148,7 +1153,7 @@ export class FormGroup extends AbstractControl {
  */
 export class FormArray extends AbstractControl {
   constructor(
-      public controls: AbstractControl[], validator: ValidatorFn = null,
+      private _controls: AbstractControl[], validator: ValidatorFn = null,
       asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
@@ -1157,15 +1162,20 @@ export class FormArray extends AbstractControl {
   }
 
   /**
+   * Controls in the array.
+   */
+  get controls(): AbstractControl[] { return this._controls; }
+
+  /**
    * Get the {@link AbstractControl} at the given `index` in the array.
    */
-  at(index: number): AbstractControl { return this.controls[index]; }
+  at(index: number): AbstractControl { return this._controls[index]; }
 
   /**
    * Insert a new {@link AbstractControl} at the end of the array.
    */
   push(control: AbstractControl): void {
-    this.controls.push(control);
+    this._controls.push(control);
     this._registerControl(control);
     this.updateValueAndValidity();
     this._onCollectionChange();
@@ -1175,7 +1185,7 @@ export class FormArray extends AbstractControl {
    * Insert a new {@link AbstractControl} at the given `index` in the array.
    */
   insert(index: number, control: AbstractControl): void {
-    this.controls.splice(index, 0, control);
+    this._controls.splice(index, 0, control);
 
     this._registerControl(control);
     this.updateValueAndValidity();
@@ -1186,8 +1196,8 @@ export class FormArray extends AbstractControl {
    * Remove the control at the given `index` in the array.
    */
   removeAt(index: number): void {
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    this.controls.splice(index, 1);
+    if (this._controls[index]) this._controls[index]._registerOnCollectionChange(() => {});
+    this._controls.splice(index, 1);
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -1196,11 +1206,11 @@ export class FormArray extends AbstractControl {
    * Replace an existing control.
    */
   setControl(index: number, control: AbstractControl): void {
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    this.controls.splice(index, 1);
+    if (this._controls[index]) this._controls[index]._registerOnCollectionChange(() => {});
+    this._controls.splice(index, 1);
 
     if (control) {
-      this.controls.splice(index, 0, control);
+      this._controls.splice(index, 0, control);
       this._registerControl(control);
     }
 
@@ -1211,7 +1221,7 @@ export class FormArray extends AbstractControl {
   /**
    * Length of the control array.
    */
-  get length(): number { return this.controls.length; }
+  get length(): number { return this._controls.length; }
 
   /**
    *  Sets the value of the {@link FormArray}. It accepts an array that matches
@@ -1322,14 +1332,14 @@ export class FormArray extends AbstractControl {
    * Otherwise, the `value` property is the best way to get the value of the array.
    */
   getRawValue(): any[] {
-    return this.controls.map((control: AbstractControl) => {
+    return this._controls.map((control: AbstractControl) => {
       return control instanceof FormControl ? control.value : (<any>control).getRawValue();
     });
   }
 
   /** @internal */
   _throwIfControlMissing(index: number): void {
-    if (!this.controls.length) {
+    if (!this._controls.length) {
       throw new Error(`
         There are no form controls registered with this array yet.  If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
@@ -1342,18 +1352,18 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   _forEachChild(cb: Function): void {
-    this.controls.forEach((control: AbstractControl, index: number) => { cb(control, index); });
+    this._controls.forEach((control: AbstractControl, index: number) => { cb(control, index); });
   }
 
   /** @internal */
   _updateValue(): void {
-    this._value = this.controls.filter((control) => control.enabled || this.disabled)
+    this._value = this._controls.filter((control) => control.enabled || this.disabled)
                       .map((control) => control.value);
   }
 
   /** @internal */
   _anyControls(condition: Function): boolean {
-    return this.controls.some((control: AbstractControl) => control.enabled && condition(control));
+    return this._controls.some((control: AbstractControl) => control.enabled && condition(control));
   }
 
   /** @internal */
@@ -1372,13 +1382,13 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   _allControlsDisabled(): boolean {
-    for (const control of this.controls) {
+    for (const control of this._controls) {
       if (control.enabled) return false;
     }
-    return this.controls.length > 0 || this.disabled;
+    return this._controls.length > 0 || this.disabled;
   }
 
-  private _registerControl(control: AbstractControl) {
+  private _registerControl(control: AbstractControl): void {
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
   }

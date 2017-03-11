@@ -181,9 +181,9 @@ export interface Form {
 
 /** @stable */
 export declare class FormArray extends AbstractControl {
-    controls: AbstractControl[];
+    readonly controls: AbstractControl[];
     readonly length: number;
-    constructor(controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
+    constructor(_controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     at(index: number): AbstractControl;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
@@ -286,10 +286,10 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
 
 /** @stable */
 export declare class FormGroup extends AbstractControl {
-    controls: {
+    readonly controls: {
         [key: string]: AbstractControl;
     };
-    constructor(controls: {
+    constructor(_controls: {
         [key: string]: AbstractControl;
     }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     addControl(name: string, control: AbstractControl): void;
