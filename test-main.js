@@ -66,11 +66,15 @@ System.config({
 // method and kick off Karma (Jasmine).
 System.import('@angular/core/testing')
     .then(function(coreTesting) {
-      return System.import('@angular/platform-browser-dynamic/testing')
-          .then(function(browserTesting) {
+      return Promise
+          .all([
+            System.import('@angular/platform-browser-dynamic/testing'),
+            System.import('@angular/platform-browser/animations')
+          ])
+          .then(function(mods) {
             coreTesting.TestBed.initTestEnvironment(
-                browserTesting.BrowserDynamicTestingModule,
-                browserTesting.platformBrowserDynamicTesting());
+                [mods[0].BrowserDynamicTestingModule, mods[1].NoopAnimationsModule],
+                mods[0].platformBrowserDynamicTesting());
           });
     })
     .then(function() {

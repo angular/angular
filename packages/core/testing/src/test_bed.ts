@@ -69,7 +69,7 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed {
+  static initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef): TestBed {
     const testBed = getTestBed();
     testBed.initTestEnvironment(ngModule, platform);
     return testBed;
@@ -179,7 +179,7 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  initTestEnvironment(ngModule: Type<any>, platform: PlatformRef) {
+  initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef) {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
@@ -219,7 +219,7 @@ export class TestBed implements Injector {
 
   platform: PlatformRef = null;
 
-  ngModule: Type<any> = null;
+  ngModule: Type<any>|Type<any>[] = null;
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}) {
     this._assertNotInstantiated('TestBed.configureCompiler', 'configure the compiler');
