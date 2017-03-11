@@ -2,7 +2,7 @@
 Cookbook
 
 @intro
-A collection of recipes for common Angular application scenarios
+A collection of recipes for common Angular application scenarios.
 
 @description
 The *Cookbook* offers answers to common implementation questions.
