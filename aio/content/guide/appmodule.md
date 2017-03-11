@@ -7,17 +7,17 @@ Tell Angular how to construct and bootstrap the app in the root "AppModule".
 @description
 An Angular module class describes how the application parts fit together.
 Every application has at least one Angular module, the _root_ module 
-that you [bootstrap](#main) to launch the application.
+that you [bootstrap](guide/appmodule#main) to launch the application.
 You can call it anything you want. The conventional name is `AppModule`.
 
-The [setup](setup.html) instructions produce a new project with the following minimal `AppModule`.
+The [setup](guide/setup) instructions produce a new project with the following minimal `AppModule`.
 You'll evolve this module as your application grows.
 
 
 {@example 'setup/ts/src/app/app.module.ts'}
 
 After the `import` statements, you come to a class adorned with the
-**`@NgModule`** [_decorator_](glossary.html#decorator '"Decorator" explained').
+**`@NgModule`** [_decorator_](guide/glossary).
 
 The `@NgModule` decorator identifies `AppModule` as an Angular module class (also called an `NgModule` class).
 `@NgModule` takes a _metadata_ object that tells Angular how to compile and launch the application.
@@ -26,7 +26,7 @@ The `@NgModule` decorator identifies `AppModule` as an Angular module class (als
 * **_declarations_** &mdash; the application's lone component, which is also ...
 * **_bootstrap_** &mdash; the _root_ component that Angular creates and inserts into the `index.html` host web page.
 
-The [Angular Modules (NgModule)](ngmodule.html) guide dives deeply into the details of Angular modules.
+The [Angular Modules (NgModule)](guide/ngmodule) guide dives deeply into the details of Angular modules.
 All you need to know at the moment is a few basics about these three properties.  
 
 
@@ -76,7 +76,7 @@ You must declare _every_ component in an `NgModule` class.
 If you use a component without declaring it, you'll see a clear error message in the browser console.
 
 You'll learn to create two other kinds of classes &mdash; 
-[directives](attribute-directives.html) and [pipes](pipes.html) &mdash;
+[directives](guide/attribute-directives) and [pipes](guide/pipes) &mdash;
 that you must also add to the `declarations` array.
 
 
@@ -93,7 +93,7 @@ Do not put any other kind of class in `declarations`; _not_ `NgModule` classes, 
 {@a bootstrap-array}
 ### The _bootstrap_ array
 
-You launch the application by [_bootstrapping_](#main) the root `AppModule`. 
+You launch the application by [_bootstrapping_](guide/appmodule#main) the root `AppModule`. 
 Among other things, the _bootstrapping_ process creates the component(s) listed in the `bootstrap` array
 and inserts each one into the browser DOM.
 
@@ -154,4 +154,4 @@ As your app grows, you'll consider subdividing it into multiple "feature" module
 some of which can be loaded later ("lazy loaded") if and when the user chooses
 to visit those features.
 
-When you're ready to explore these possibilities, visit the [Angular Modules (NgModule)](ngmodule.html) guide.
+When you're ready to explore these possibilities, visit the [Angular Modules (NgModule)](guide/ngmodule) guide.

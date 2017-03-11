@@ -6,7 +6,7 @@ Angular's hierarchical dependency injection system supports nested injectors in 
 
 @description
 You learned the basics of Angular Dependency injection in the
-[Dependency Injection](./dependency-injection.html) guide.
+[Dependency Injection](guide/dependency-injection) guide.
 
 Angular has a _Hierarchical Dependency Injection_ system.
 There is actually a tree of injectors that parallel an application's component tree.
@@ -18,7 +18,7 @@ Try the <live-example></live-example>.
 
 ## The injector tree
 
-In the [Dependency Injection](./dependency-injection.html) guide,
+In the [Dependency Injection](guide/dependency-injection) guide,
 you learned how to configure a dependency injector and how to retrieve dependencies where you need them.
 
 In fact, there is no such thing as ***the*** injector.
@@ -150,7 +150,7 @@ You can review it and download it from the <live-example></live-example>.
 Another reason to re-provide a service is to substitute a _more specialized_ implementation of that service,
 deeper in the component tree.
 
-Consider again the Car example from the [Dependency Injection](./dependency-injection.html) guide.
+Consider again the Car example from the [Dependency Injection](guide/dependency-injection) guide.
 Suppose you configured the root injector (marked as A) with _generic_ providers for
 `CarService`, `EngineService` and `TiresService`.
 

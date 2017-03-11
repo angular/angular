@@ -13,7 +13,7 @@ Now you can download the sample code for any guide and run it locally.
 Look for the new download links next to the "live example" links.
 
 ## Template Syntax/Structural Directives: refreshed (2017-02-06)
-The [_Template-Syntax_](template-syntax.html) and [_Structural Directives_](structural-directives.html)
+The [_Template-Syntax_](guide/template-syntax) and [_Structural Directives_](guide/structural-directives)
 guides were significantly revised for clarity, accuracy, and current recommended practices.
 Discusses `<ng-container>`.
 Revised samples are more clear and cover all topics discussed.
@@ -38,43 +38,43 @@ Notably:
 * Added `lite-server` configuration (`bs-config.json`) to serve `src/`.
 
 ## NEW: Reactive Forms guide (2017-01-31)
-The new [**Reactive Forms**](reactive-forms.html) guide explains how and why to build a "reactive form".
+The new [**Reactive Forms**](guide/reactive-forms) guide explains how and why to build a "reactive form".
 "Reactive Forms" are the code-based counterpart to the declarative "Template Driven" forms approach
-introduced in the [Forms](forms.html) guide.
+introduced in the [Forms](guide/forms) guide.
 Check it out before you decide how to add forms to your app. 
 Remember also that you can use both techniques in the same app, 
 choosing the approach that best fits each scenario.
 
 ## NEW: Deployment guide (2017-01-30)
-The new [Deployment](deployment.html) guide describes techniques for putting your application on a server.
+The new [Deployment](guide/deployment) guide describes techniques for putting your application on a server.
 It includes important advice on optimizing for production.
 
 ## Hierarchical Dependency Injection: refreshed (2017-01-13)
-[Hierarchical Dependency Injection](hierarchical-dependency-injection.html) guide is significantly revised.
+[Hierarchical Dependency Injection](guide/hierarchical-dependency-injection) guide is significantly revised.
 Closes issue #3086.
 Revised samples are clearer and cover all topics discussed.
 
 ## Miscellaneous (2017-01-05)
-* [Setup](setup.html) guide: 
+* [Setup](guide/setup) guide: 
 added (optional) instructions on how to remove _non-essential_ files. 
 * No longer consolidate RxJS operator imports in `rxjs-extensions` file; each file should import what it needs.
 * All samples prepend template/style URLs with `./` as a best practice.
-* [Style Guide](style-guide.html): copy edits and revised rules.
+* [Style Guide](guide/style-guide): copy edits and revised rules.
 
 ## Router: more detail (2016-12-21)
-Added more information to the [Router](router.html) guide 
+Added more information to the [Router](guide/router) guide 
 including sections named outlets, wildcard routes, and preload strategies.
 
 ## HTTP: how to set default request headers (and other request options) (2016-12-14)
 Added section on how to set default request headers (and other request options) to 
-[HTTP](server-communication.html#override-default-request-options) guide.
+[HTTP](guide/server-communication) guide.
 
 ## Testing: added component test plunkers (2016-12-02)
 Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" plnkr="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" plnkr="banner-specs">another</live-example> for the Testing guide's `BannerComponent`. 
-Linked to these plunkers in [Testing](testing.html#live-examples) and [Setup anatomy](setup-systemjs-anatomy) guides.
+Linked to these plunkers in [Testing](guide/testing) and [Setup anatomy](guide/setup-systemjs-anatomy) guides.
 
 ## Internationalization: pluralization and _select_ (2016-11-30)
-The [Internationalization (i18n)](../cookbook/i18n.html) guide explains how to handle pluralization and
+The [Internationalization (i18n)](cookbook/i18n) guide explains how to handle pluralization and
 translation of alternative texts with `select`.
 The sample demonstrates these features too.
 
@@ -86,7 +86,7 @@ see quickstart issue: [angular/quickstart#294](https://github.com/angular/quicks
 ## QuickStart Rewrite (2016-11-18)
 The QuickStart is completely rewritten so that it actually is quick.
 It references a minimal "Hello Angular" app running in Plunker.
-The new [Setup](setup.html) page tells you how to install a local development environment
+The new [Setup](guide/setup) page tells you how to install a local development environment
 by downloading (or cloning) the QuickStart github repository.
 You are no longer asked to copy-and-paste code into setup files that were not explained anyway.
 
@@ -94,14 +94,14 @@ You are no longer asked to copy-and-paste code into setup files that were not ex
 Docs and code samples updated and tested with Angular v.2.2.0.
 
 ## UPDATE: NgUpgrade Guide for the AOT friendly _upgrade/static_ module (2016-11-14)
-The updated [NgUpgrade Guide](upgrade.html) guide covers the 
+The updated [NgUpgrade Guide](guide/upgrade) guide covers the 
 new AOT friendly `upgrade/static` module 
 released in v.2.2.0, which is the recommended
 facility for migrating from AngularJS to Angular.
 The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
-The updated [TypeScript to JavaScript](../cookbook/ts-to-js.html) cookbook 
+The updated [TypeScript to JavaScript](cookbook/ts-to-js) cookbook 
 now explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
@@ -114,7 +114,7 @@ Documentation samples now get TypeScript type information for 3rd party librarie
 from npm `@types` packages rather than with the _typings_ tooling.
 The `typings.json` file is gone.
 
-The [AngularJS Upgrade](upgrade.html) guide reflects this change.
+The [AngularJS Upgrade](guide/upgrade) guide reflects this change.
 The `package.json` installs `@types/angular` and several `@types/angular-...`
 packages in support of upgrade; these are not needed for pure Angular development.
 
@@ -138,7 +138,7 @@ New `:enter` and `:leave` aliases make animation more natural.
 Docs and code samples updated and tested with Angular v.2.1.0.
 
 ## NEW "Ahead of time (AOT) Compilation" cookbook (2016-10-11)
-The NEW [Ahead of time (AOT) Compilation](../cookbook/aot-compiler.html) cookbook
+The NEW [Ahead of time (AOT) Compilation](cookbook/aot-compiler) cookbook
 explains what AOT compilation is and why you'd want it.
 It demonstrates the basics with a QuickStart app
 followed by the more advanced considerations of compiling and bundling the Tour of Heroes.
@@ -147,17 +147,17 @@ followed by the more advanced considerations of compiling and bundling the Tour 
 Docs and code samples updated and tested with Angular v.2.0.2.
 
 ## "Routing and Navigation" guide with the _Router Module_ (2016-10-5)
-The [Routing and Navigation](router.html) guide now locates route configuration
+The [Routing and Navigation](guide/router) guide now locates route configuration
 in a _Routing Module_. 
 The _Routing Module_ replaces the previous _routing object_ involving the `ModuleWithProviders`.
 
 All guided samples with routing use the _Routing Module_ and prose content has been updated,
 most conspicuously in the 
-[NgModule](ngmodule.html) guide and [NgModule FAQ](../cookbook/ngmodule-faq.html) cookbook.
+[NgModule](guide/ngmodule) guide and [NgModule FAQ](cookbook/ngmodule-faq) cookbook.
 
 ## New "Internationalization" Cookbook (2016-09-30)
 
-Added a new [Internationalization (i18n)](../cookbook/i18n.html) cookbook that shows how
+Added a new [Internationalization (i18n)](cookbook/i18n) cookbook that shows how
 to use Angular "i18n" facilities to translate template text into multiple languages.
 
 ## "angular-in-memory-web-api" package rename (2016-09-27)
@@ -171,7 +171,7 @@ The new "angular-in-memory-web-api" has new features.
 
 ## "Style Guide" with _NgModules_ (2016-09-27)
 
-[StyleGuide](style-guide.html) explains recommended conventions for Angular modules (NgModule).
+[StyleGuide](guide/style-guide) explains recommended conventions for Angular modules (NgModule).
 Barrels now are far less useful and have been removed from the style guide;
 they remain valuable but are not a matter of Angular style.
 Also relaxed the rule that discouraged use of the `@Component.host` property.
@@ -187,5 +187,5 @@ modules with SystemJS as the samples currently do.
 
 ## "Lifecycle Hooks" guide simplified (2016-09-24)
 
-The [Lifecycle Hooks](lifecycle-hooks.html) guide is shorter, simpler, and 
+The [Lifecycle Hooks](guide/lifecycle-hooks) guide is shorter, simpler, and 
 draws more attention to the order in which Angular calls the hooks.

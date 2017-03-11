@@ -19,9 +19,9 @@ The final UI looks like this:
 
 # Contents
 
-* [Showing component properties with interpolation](#interpolation).
-* [Showing !{_an} !{_array} property with NgFor](#ngFor).
-* [Conditional display with NgIf](#ngIf).
+* [Showing component properties with interpolation](guide/displaying-data#interpolation).
+* [Showing !{_an} !{_array} property with NgFor](guide/displaying-data#ngFor).
+* [Conditional display with NgIf](guide/displaying-data#ngIf).
 
 The <live-example></live-example> demonstrates all of the syntax and code
 snippets described in this page.
@@ -31,7 +31,7 @@ The easiest way to display a component property
 is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Follow the [setup](setup.html) instructions for creating a new project
+Follow the [setup](guide/setup) instructions for creating a new project
 named <ngio-ex path="displaying-data"></ngio-ex>.
 
 Then modify the <ngio-ex path="app.component.ts"></ngio-ex> file by
@@ -93,22 +93,22 @@ It marks that `<li>` element (and its children) as the "repeater template":
 ~~~ {.alert.is-important}
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-For more information, see the [Template Syntax](./template-syntax.html#ngFor) page.
+For more information, see the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
 
 Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](./template-syntax.html#microsyntax) section of
-the [Template Syntax](./template-syntax.html) page.
+more about template input variables in the [microsyntax](guide/template-syntax) section of
+the [Template Syntax](guide/template-syntax) page.
 
 Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
 to the item (the hero) in the current iteration. Angular uses that variable as the
 context for the interpolation in the double curly braces.
 
 In this case, `ngFor` is displaying !{_an} !{_array}, but `ngFor` can
-repeat items for any [iterable](!{_iterableUrl}) object.Now the heroes appear in an unordered list.
+repeat items for any [iterable](guide/!{_iterableUrl}) object.Now the heroes appear in an unordered list.
 
 <figure class='image-display'>
   <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor">  </img>
@@ -150,7 +150,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 ~~~ {.alert.is-important}
 
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
-Read more about `ngIf` and `*` in the [ngIf section](./template-syntax.html#ngIf) of the [Template Syntax](./template-syntax.html) page.
+Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax) of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
@@ -160,8 +160,8 @@ The template expression inside the double quotes,
 When the component's list of heroes has more than three items, Angular adds the paragraph
 to the DOM and the message appears. If there are three or fewer items, Angular omits the
 paragraph, so no message appears. For more information,
-see the [template expressions](./template-syntax.html#template-expressions) section of the
-[Template Syntax](./template-syntax.html) page.
+see the [template expressions](guide/template-syntax) section of the
+[Template Syntax](guide/template-syntax) page.
 
 
 ~~~ {.alert.is-helpful}

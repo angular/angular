@@ -33,7 +33,7 @@ It would be much easier to write and maintain our application components if we c
 
 We can if we build our application as `commonjs` modules and load those modules
 with a suitable package loader such as `systemjs` or `webpack`.
-Learn why [below](#why-default).
+Learn why [below](guide/component-relative-paths#why-default).
 
 The Angular CLI uses these technologies and defaults to the
 *component-relative path* approach described here.
@@ -98,7 +98,7 @@ The result looks like this:
 
 ~~~ {.alert.is-helpful}
 
-Webpack users may prefer [an alternative approach](#webpack).
+Webpack users may prefer [an alternative approach](guide/component-relative-paths#webpack).
 
 
 ~~~
@@ -189,6 +189,6 @@ properties that reference *component-relative URLS.
 {@example 'webpack/ts/src/app/app.component.ts'}
 
 
-Webpack will do a `require` behind the scenes to load the templates and styles. Read more [here](../guide/webpack.html#highlights).
+Webpack will do a `require` behind the scenes to load the templates and styles. Read more [here](guide/webpack).
 
-See the [Introduction to Webpack](../guide/webpack.html).
+See the [Introduction to Webpack](guide/webpack).

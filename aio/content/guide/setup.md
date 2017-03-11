@@ -13,16 +13,16 @@ Install the Angular QuickStart seed for faster, more efficient development on yo
 <span if-docs="ts">
 The <live-example name=quickstart>QuickStart live-coding</live-example> example is an Angular _playground_.
 It's not where you'd develop a real application. 
-You [should develop locally](#why-locally "Why develop locally") on your own machine ... and that's also how we think you should learn Angular.
+You [should develop locally](guide/setup#why-locally "Why develop locally") on your own machine ... and that's also how we think you should learn Angular.
 </span>
 
 Setting up a new project on your machine is quick and easy with the **QuickStart seed**,
-maintained [on github](!{_qsRepo} "Install the github QuickStart repo"). 
-Make sure you have [!{_prereq} installed](#install-prerequisites "What if you don't have !{_prereq}?").
+maintained [on github](guide/!{_qsRepo} "Install the github QuickStart repo"). 
+Make sure you have [!{_prereq} installed](guide/setup#install-prerequisites "What if you don't have !{_prereq}?").
 Then ...
 1. Create a project folder (you can call it `quickstart` and rename it later).
-1. [Clone](#clone "Clone it from github") or [download](#download "download it from github") the **QuickStart seed** into your project folder.
-1. !{_Install} [!{_npm}](#install-prerequisites "What if you don't have !{_prereq}?") packages.
+1. [Clone](guide/setup#clone "Clone it from github") or [download](guide/setup#download "download it from github") the **QuickStart seed** into your project folder.
+1. !{_Install} [!{_npm}](guide/setup#install-prerequisites "What if you don't have !{_prereq}?") packages.
 1. Run `!{_npm} !{_start}` to launch the sample application.
 
 
@@ -180,7 +180,7 @@ The following are all in `src/`
 
 
     <td>
-      Defines `AppModule`, the  [root module](appmodule.html "AppModule: the root module") that tells Angular how to assemble the application.      
+      Defines `AppModule`, the  [root module](guide/appmodule) that tells Angular how to assemble the application.      
             Right now it declares only the `AppComponent`.      
             Soon there will be more components to declare.
     </td>
@@ -197,12 +197,12 @@ The following are all in `src/`
 
 
     <td>
-      Compiles the application with the [JIT compiler](../glossary.html#jit) and      
-            [bootstraps](appmodule.html#main "bootstrap the application")       
+      Compiles the application with the [JIT compiler](glossary) and      
+            [bootstraps](guide/appmodule)       
             the application's main module (`AppModule`) to run in the browser.      
             The JIT compiler is a reasonable choice during the development of most projects and      
             it's the only viable choice for a sample running in a _live-coding_ environment like Plunker.      
-            You'll learn about alternative compiling and [deployment](deployment.html) options later in the documentation.      
+            You'll learn about alternative compiling and [deployment](guide/deployment) options later in the documentation.      
             
     </td>
 
@@ -215,7 +215,7 @@ The following are all in `src/`
 
 ### Next Step
 
-If you're new to Angular, we recommend staying on the [learning path](learning-angular.html "Angular learning path").
+If you're new to Angular, we recommend staying on the [learning path](guide/learning-angular).
 <br></br><br></br>
 
 {@a install-prerequisites}
