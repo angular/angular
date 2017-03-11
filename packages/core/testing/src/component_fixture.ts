@@ -96,7 +96,7 @@ export class ComponentFixture<T> {
   /**
    * Trigger a change detection cycle for the component.
    */
-  detectChanges(checkNoChanges: boolean = true): void {
+  detectChanges(checkNoChanges: boolean = true): ComponentFixture<T> {
     if (this.ngZone != null) {
       // Run the change detection inside the NgZone so that any async tasks as part of the change
       // detection are captured by the zone and can be waited for in isStable.
@@ -105,24 +105,29 @@ export class ComponentFixture<T> {
       // Running without zone. Just do the change detection.
       this._tick(checkNoChanges);
     }
+    return this;
   }
 
   /**
    * Do a change detection run to make sure there were no changes.
    */
-  checkNoChanges(): void { this.changeDetectorRef.checkNoChanges(); }
+  checkNoChanges(): ComponentFixture<T> {
+    this.changeDetectorRef.checkNoChanges();
+    return this;
+  }
 
   /**
    * Set whether the fixture should autodetect changes.
    *
    * Also runs detectChanges once so that any existing change is detected.
    */
-  autoDetectChanges(autoDetect: boolean = true) {
+  autoDetectChanges(autoDetect: boolean = true): ComponentFixture<T> {
     if (this.ngZone == null) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
     }
     this._autoDetect = autoDetect;
     this.detectChanges();
+    return this;
   }
 
   /**
