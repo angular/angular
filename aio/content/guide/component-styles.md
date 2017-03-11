@@ -16,12 +16,12 @@ This page describes how to load and apply these component styles.
 
 ## Table Of Contents
 
-* [Using component styles](#using-component-styles)
-* [Special selectors](#special-selectors)
-* [Loading styles into components](#loading-styles)
-* [Controlling view encapsulation: native, emulated, and none](#view-encapsulation)
-* [Appendix 1: Inspecting the CSS generated in emulated view encapsulation](#inspect-generated-css)
-* [Appendix 2: Loading styles with relative URLs](#relative-urls)
+* [Using component styles](guide/component-styles#using-component-styles)
+* [Special selectors](guide/component-styles#special-selectors)
+* [Loading styles into components](guide/component-styles#loading-styles)
+* [Controlling view encapsulation: native, emulated, and none](guide/component-styles#view-encapsulation)
+* [Appendix 1: Inspecting the CSS generated in emulated view encapsulation](guide/component-styles#inspect-generated-css)
+* [Appendix 2: Loading styles with relative URLs](guide/component-styles#relative-urls)
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
@@ -120,7 +120,7 @@ The `/deep/` selector also has the alias `>>>`. You can use either interchangeab
 
 Use the `/deep/` and `>>>` selectors only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
-[Controlling view encapsulation](#view-encapsulation) section.
+[Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
 
 
 ~~~
@@ -201,7 +201,7 @@ Choose from the following modes:
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Appendix 1](#inspect-generated-css).
+  For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
 * `None` means that Angular does no view encapsulation. 
   Angular adds the CSS to the global styles. 
   The scoping rules, isolations, and protections discussed earlier don't apply. 

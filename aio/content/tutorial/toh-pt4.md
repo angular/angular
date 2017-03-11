@@ -127,7 +127,7 @@ share that service with all components that need heroes.
 ### Create the HeroService
 Create a file in the `app` folder called `hero.service.ts`. 
 We've adopted a convention in which we spell the name of a service in lowercase followed by `.service`.
-If the service name were multi-word, we'd spell the base filename in lower [dash-case](../guide/glossary.html#dash-case).
+If the service name were multi-word, we'd spell the base filename in lower [dash-case](guide/glossary).
 The `SpecialSuperHeroService` would be defined in the `special-super-hero.service.ts` file.We name the class `HeroService` and export it for others to import.
 
 
@@ -234,7 +234,7 @@ Here's the constructor:
 The constructor itself does nothing. The parameter simultaneously 
 defines a private `heroService` property and identifies it as a `HeroService` injection site.Now Angular will know to supply an instance of the `HeroService` when it creates a new `AppComponent`. 
 
-Learn more about Dependency Injection in the [Dependency Injection](../guide/dependency-injection.html) chapter.The *injector* does not know yet how to create a `HeroService`. 
+Learn more about Dependency Injection in the [Dependency Injection](guide/dependency-injection) chapter.The *injector* does not know yet how to create a `HeroService`. 
 If we ran our code now, Angular would fail with an error:
 <code-example format="nocode">
   EXCEPTION: No provider for HeroService! (AppComponent -> HeroService)
@@ -272,7 +272,7 @@ Angular offers a number of interfaces for tapping into critical moments in the c
 at creation, after each change, and at its eventual destruction.
 
 Each interface has a single method. When the component implements that method, Angular calls it at the appropriate time.
-Learn more about lifecycle hooks in the [Lifecycle Hooks](../guide/lifecycle-hooks.html) chapter.Here's the essential outline for the `OnInit` interface:
+Learn more about lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.Here's the essential outline for the `OnInit` interface:
 
 {@example 'toh-4/ts/src/app/app.component.1.ts' region='on-init'}
 
@@ -332,7 +332,7 @@ in the callback is more succinct than the equivalent function expression and gra
 
 Our app should still be running, still showing a list of heroes, and still
 responding to a name selection with a detail view.
-Checkout the "[Take it slow](#slow)" appendix to see what the app might be like with a poor connection.### Review the App Structure
+Checkout the "[Take it slow](tutorial/toh-pt4#slow)" appendix to see what the app might be like with a poor connection.### Review the App Structure
 Let’s verify that we have the following structure after all of our good refactoring in this chapter:
 
 <aio-filetree>
@@ -456,7 +456,7 @@ Our Tour of Heroes has become more reusable using shared components and services
 We want to create a dashboard, add menu links that route between the views, and format data in a template.
 As our app evolves, we’ll learn how to design it to make it easier to grow and maintain.
 
-We learn about Angular Component Router and navigation among the views in the [next tutorial](toh-pt5.html) chapter.
+We learn about Angular Component Router and navigation among the views in the [next tutorial](tutorial/toh-pt5) chapter.
 
 <a id="slow"></a>### Appendix: Take it slow
 

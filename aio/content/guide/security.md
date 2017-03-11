@@ -18,7 +18,7 @@ You can run the <live-example></live-example> in Plunker and download the code f
   Reporting vulnerabilities
 </h2>
 
-To report vulnerabilities in Angular itself, email us at [security@angular.io](mailto:security@angular.io).
+To report vulnerabilities in Angular itself, email us at [security@angular.io](guide/mailto:security@angular).
 
 For more information about how Google handles security issues, see [Google's security
 philosophy](https://www.google.com/about/appsecurity/).
@@ -39,7 +39,7 @@ important security fixes and enhancements. Instead, share your Angular improveme
 community and make a pull request.
 
 * **Avoid Angular APIs marked in the documentation as “_Security Risk_.”**
-For more information, see the [Trusting safe values](#bypass-security-apis) section of this page.
+For more information, see the [Trusting safe values](guide/security#bypass-security-apis) section of this page.
 
 
 <h2 id='xss'>
@@ -68,7 +68,7 @@ _Angular templates are the same as executable code_: HTML, attributes, and bindi
 prevent values that an attacker can control from ever making it into the source code of a
 template. Never generate template source code by concatenating user input and templates. 
 To prevent these vulnerabilities, use
-the [offline template compiler](#offline-template-compiler), also known as _template injection_.
+the [offline template compiler](guide/security#offline-template-compiler), also known as _template injection_.
 
 ### Sanitization and security contexts
 
@@ -124,7 +124,7 @@ and greatly improves application performance. Use the offline template compiler 
 deployments; don't dynamically generate templates. Angular trusts template code, so generating
 templates, in particular templates containing user data, circumvents Angular's built-in protections. 
 For information about dynamically constructing forms in a safe way, see the 
-[Dynamic Forms](../cookbook/dynamic-form.html) cookbook page.
+[Dynamic Forms](cookbook/dynamic-form) cookbook page.
 
 ### Server-side XSS protection
 
@@ -142,5 +142,5 @@ carries a high risk of introducing template-injection vulnerabilities.
 
 Angular applications must follow the same security principles as regular web applications, and
 must be audited as such. Angular-specific APIs that should be audited in a security review,
-such as the [_bypassSecurityTrust_](#bypass-security-apis) methods, are marked in the documentation
+such as the [_bypassSecurityTrust_](guide/security#bypass-security-apis) methods, are marked in the documentation
 as security sensitive.

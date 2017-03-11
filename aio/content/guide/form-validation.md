@@ -12,21 +12,21 @@ We can improve overall data quality by validating user input for accuracy and co
 
 In this cookbook we show how to validate user input in the UI and display useful validation messages 
 using first the template-driven forms and then the reactive forms approach.
-Learn more about these choices in the [Forms chapter.](../guide/forms.html)
+Learn more about these choices in the [Forms chapter.](guide/forms)
 
 
 {@a toc}
 ## Table of Contents
 
-  [Simple Template-Driven Forms](#template1)
+  [Simple Template-Driven Forms](guide/form-validation#template1)
 
-  [Template-Driven Forms with validation messages in code](#template2)
+  [Template-Driven Forms with validation messages in code](guide/form-validation#template2)
 
-  [Reactive Forms with validation in code](#reactive)
+  [Reactive Forms with validation in code](guide/form-validation#reactive)
 
-  [Custom validation](#custom-validation)
+  [Custom validation](guide/form-validation#custom-validation)
 
-  [Testing](#testing)
+  [Testing](guide/form-validation#testing)
 
 
 {@a live-example}
@@ -85,7 +85,7 @@ The full template repeats this kind of layout for each data entry control on the
 We shouldn't show errors for a new hero before the user has had a chance to edit the value.
 The checks for `dirty` and `touched` prevent premature display of errors.
 
-Learn about `dirty` and `touched` in the [Forms](../guide/forms.html) chapter.The component class manages the hero model used in the data binding
+Learn about `dirty` and `touched` in the [Forms](guide/forms) chapter.The component class manages the hero model used in the data binding
 as well as other code to support the view.
 
 
@@ -148,8 +148,8 @@ The `<input>` element HTML is almost the same. There are noteworthy differences:
 - The hard-code error message `<divs>` are gone.
 
 - There's a new attribute, `forbiddenName`, that is actually a custom validation directive.
-It invalidates the control if the user enters "bob" anywhere in the name ([try it](#live-example)).
-We discuss [custom validation directives](#custom-validation) later in this cookbook.
+It invalidates the control if the user enters "bob" anywhere in the name ([try it](guide/form-validation#live-example)).
+We discuss [custom validation directives](guide/form-validation#custom-validation) later in this cookbook.
 
 - The `#name` template variable is gone because we no longer refer to the Angular control for this element.
 
@@ -179,7 +179,7 @@ the name of that variable as a string (`'heroForm'` in this case).
 - The `heroForm` object changes several times during the life of the component, most notably when we add a new hero.
 We'll have to re-inspect it periodically.
 
-- Angular calls the `ngAfterViewChecked` [lifecycle hook method](../guide/lifecycle-hooks.html#afterview) 
+- Angular calls the `ngAfterViewChecked` [lifecycle hook method](guide/lifecycle-hooks) 
 when anything changes in the view.
 That's the right time to see if there's a new `heroForm` object.
 
@@ -245,7 +245,7 @@ Here's how we imported it in the `HeroFormTemplateModule`.
 We haven't talked about the `SharedModule` or its `SubmittedComponent` which appears at the bottom of every
 form template in this cookbook.  
 
-They're not germane to the validation story. Look at the [live example](#live-example) if you're interested.
+They're not germane to the validation story. Look at the [live example](guide/form-validation#live-example) if you're interested.
 
 
 
@@ -266,7 +266,7 @@ This approach requires a bit more effort. *You have to write the control model a
 In return, you can
 * add, change, and remove validation functions on the fly
 * manipulate the control model dynamically from within the component
-* [test](#testing) validation and control logic with isolated unit tests.
+* [test](guide/form-validation#testing) validation and control logic with isolated unit tests.
 
 The third cookbook sample re-writes the hero form in _reactive forms_ style.
 
@@ -346,7 +346,7 @@ Here's the section of code devoted to that process, paired with the template-dri
 
 - we inject the `FormBuilder` in a constructor.
 
-- we call a `buildForm` method in the `ngOnInit` [lifecycle hook method](../guide/lifecycle-hooks.html#hooks-overview)
+- we call a `buildForm` method in the `ngOnInit` [lifecycle hook method](guide/lifecycle-hooks)
 because that's when we'll have the hero data. We'll call it again in the `addHero` method.
 A real app would retrieve the hero asynchronously from a data service, a task best performed in the `ngOnInit` hook.- the `buildForm` method uses the `FormBuilder` (`fb`) to declare the form control model.
 Then it attaches the same `onValueChanged` handler (there's a one line difference) 
@@ -363,9 +363,9 @@ Most of the validator functions are stock validators provided by Angular as stat
 Angular has stock validators that correspond to the standard HTML validation attributes.
 
 The `forbiddenNames` validator on the `"name"` control is a custom validator, 
-discussed in a separate [section below](#custom-validation).
+discussed in a separate [section below](guide/form-validation#custom-validation).
 
- Learn more about `FormBuilder` in the [Introduction to FormBuilder](../guide/reactive-forms.html#formbuilder) section of Reactive Forms guide. 
+ Learn more about `FormBuilder` in the [Introduction to FormBuilder](guide/reactive-forms) section of Reactive Forms guide. 
 #### Committing hero value changes
 
 In two-way data binding, the user's changes flow automatically from the controls back to the data model properties.
@@ -410,7 +410,7 @@ Here's the complete reactive component file, compared to the two template-driven
 </md-tab-group>
 
 
-Run the [live example](#live-example) to see how the reactive form behaves
+Run the [live example](guide/form-validation#live-example) to see how the reactive form behaves
 and to compare all of the files in this cookbook sample.
 
 
@@ -461,7 +461,7 @@ The rest of the directive is unremarkable and we present it here without further
 {@example 'cb-form-validation/ts/src/app/shared/forbidden-name.directive.ts' region='directive'}
 
 
-See the [Attribute Directives](../guide/attribute-directives.html) chapter.
+See the [Attribute Directives](guide/attribute-directives) chapter.
 
 
 

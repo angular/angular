@@ -492,7 +492,7 @@ created under test or before you decide to display it.
 Constructors should do no more than set the initial local variables to simple values.
 
 An `ngOnInit` is a good place for a component to fetch its initial data. The
-[Tutorial](../tutorial/toh-pt4.html#oninit) and [HTTP](server-communication.html#oninit) chapter
+[Tutorial](tutorial/toh-pt4) and [HTTP](guide/server-communication) chapter
 show how.
 
 
@@ -523,7 +523,7 @@ This example monitors the `OnChanges` hook.
 {@example 'lifecycle-hooks/ts/src/app/on-changes.component.ts' region='ng-on-changes'}
 
 The `ngOnChanges` method takes an object that maps each changed property name to a
-[SimpleChange](../api/core/index/SimpleChange-class.html) object holding the current and previous property values.
+[SimpleChange](api/core/index/SimpleChange-class) object holding the current and previous property values.
 This hook iterates over the changed properties and logs them.
 
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
@@ -588,7 +588,7 @@ The `AfterViewComponent` displays this child view *within its template*:
 
 The following hooks take action based on changing values *within the child view*
 which can only be reached by querying for the child view via the property decorated with
-[@ViewChild](../api/core/index/ViewChild-decorator.html).
+[@ViewChild](api/core/index/ViewChild-decorator).
 
 
 {@example 'lifecycle-hooks/ts/src/app/after-view.component.ts' region='hooks'}
@@ -626,7 +626,7 @@ The *AfterContent* sample explores the `AfterContentInit` and `AfterContentCheck
 into the component's template in a designated spot.
 
 AngularJS developers know this technique as *transclusion*.
-Consider this variation on the [previous _AfterView_](#afterview) example.
+Consider this variation on the [previous _AfterView_](guide/lifecycle-hooks#afterview) example.
 This time, instead of including the child view within the template, it imports the content from
 the `AfterContentComponent`'s parent. Here's the parent's template.
 
@@ -661,7 +661,7 @@ projected into the component.
 
 The following *AfterContent* hooks take action based on changing values in a  *content child*
 which can only be reached by querying for it via the property decorated with
-[@ContentChild](../api/core/index/ContentChild-decorator.html).
+[@ContentChild](api/core/index/ContentChild-decorator).
 
 
 {@example 'lifecycle-hooks/ts/src/app/after-content.component.ts' region='hooks'}
@@ -672,7 +672,7 @@ which can only be reached by querying for it via the property decorated with
 ### No unidirectional flow worries with _AfterContent..._
 
 This component's `doSomething` method update's the component's data-bound `comment` property immediately.
-There's no [need to wait](#wait-a-tick).
+There's no [need to wait](guide/lifecycle-hooks#wait-a-tick).
 
 Recall that Angular calls both *AfterContent* hooks before calling either of the *AfterView* hooks.
 Angular completes composition of the projected content *before* finishing the composition of this component's view.

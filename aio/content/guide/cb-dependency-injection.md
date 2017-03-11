@@ -9,41 +9,41 @@ Dependency Injection is a powerful pattern for managing code dependencies.
 In this cookbook we will explore many of the features of Dependency Injection (DI) in Angular.
 <a id="toc"></a>## Table of contents
 
-[Application-wide dependencies](#app-wide-dependencies)
+[Application-wide dependencies](guide/cb-dependency-injection#app-wide-dependencies)
 
-[External module configuration](#external-module-configuration)
+[External module configuration](guide/cb-dependency-injection#external-module-configuration)
 
-[*@Injectable* and nested service dependencies](#nested-dependencies)
+[*@Injectable* and nested service dependencies](guide/cb-dependency-injection#nested-dependencies)
 
-[Limit service scope to a component subtree](#service-scope)
+[Limit service scope to a component subtree](guide/cb-dependency-injection#service-scope)
 
-[Multiple service instances (sandboxing)](#multiple-service-instances)
+[Multiple service instances (sandboxing)](guide/cb-dependency-injection#multiple-service-instances)
 
-[Qualify dependency lookup with *@Optional* and *@Host*](#qualify-dependency-lookup)
+[Qualify dependency lookup with *@Optional* and *@Host*](guide/cb-dependency-injection#qualify-dependency-lookup)
 
-[Inject the component's DOM element](#component-element)
+[Inject the component's DOM element](guide/cb-dependency-injection#component-element)
 
-[Define dependencies with providers](#providers)
-* [The *provide* object literal](#provide)
-* [useValue - the *value provider*](#usevalue)
-* [useClass - the *class provider*](#useclass)
-* [useExisting - the *alias provider*](#useexisting)
-* [useFactory - the *factory provider*](#usefactory)
+[Define dependencies with providers](guide/cb-dependency-injection#providers)
+* [The *provide* object literal](guide/cb-dependency-injection#provide)
+* [useValue - the *value provider*](guide/cb-dependency-injection#usevalue)
+* [useClass - the *class provider*](guide/cb-dependency-injection#useclass)
+* [useExisting - the *alias provider*](guide/cb-dependency-injection#useexisting)
+* [useFactory - the *factory provider*](guide/cb-dependency-injection#usefactory)
 
-[Provider token alternatives](#tokens)
-* [class-interface](#class-interface)
-* [OpaqueToken](#opaque-token)
+[Provider token alternatives](guide/cb-dependency-injection#tokens)
+* [class-interface](guide/cb-dependency-injection#class-interface)
+* [OpaqueToken](guide/cb-dependency-injection#opaque-token)
 
-[Inject into a derived class](#di-inheritance)
+[Inject into a derived class](guide/cb-dependency-injection#di-inheritance)
 
-[Find a parent component by injection](#find-parent)
-  * [Find parent with a known component type](#known-parent)
-  * [Cannot find a parent by its base class](#base-parent)
-  * [Find a parent by its class-interface](#class-interface-parent)
-  * [Find a parent in a tree of parents (*@SkipSelf*)](#parent-tree)
-  * [A *provideParent* helper function](#provideparent)
+[Find a parent component by injection](guide/cb-dependency-injection#find-parent)
+  * [Find parent with a known component type](guide/cb-dependency-injection#known-parent)
+  * [Cannot find a parent by its base class](guide/cb-dependency-injection#base-parent)
+  * [Find a parent by its class-interface](guide/cb-dependency-injection#class-interface-parent)
+  * [Find a parent in a tree of parents (*@SkipSelf*)](guide/cb-dependency-injection#parent-tree)
+  * [A *provideParent* helper function](guide/cb-dependency-injection#provideparent)
 
-[Break circularities with a forward class reference (*forwardRef*)](#forwardref)
+[Break circularities with a forward class reference (*forwardRef*)](guide/cb-dependency-injection#forwardref)
 **See the <live-example name="cb-dependency-injection"></live-example>**
 of the code supporting this cookbook.        
 
@@ -62,7 +62,7 @@ Service classes can act as their own providers which is why listing them in the 
 is all the registration we need.
 A *provider* is something that can create or deliver a service.
 Angular creates a service instance from a class provider by "new-ing" it.
-Learn more about providers [below](#providers).Now that we've registered these services, 
+Learn more about providers [below](guide/cb-dependency-injection#providers).Now that we've registered these services, 
 Angular can inject them into the constructor of *any* component or service, *anywhere* in the application.
 
 {@example 'cb-dependency-injection/ts/src/app/hero-bios.component.ts' region='ctor'}
@@ -79,7 +79,7 @@ We do this when (a) we expect the service to be injectable everywhere
 or (b) we must configure another application global service _before it starts_.
 
 We see an example of the second case here, where we configure the Component Router with a non-default
-[location strategy](../guide/router.html#location-strategy) by listing its provider 
+[location strategy](guide/router) by listing its provider 
 in the `providers` list of the `AppModule`.
 
 
@@ -264,7 +264,7 @@ But when this component is projected into a *parent* component, that parent comp
 We look at this second, more interesting case in our next example.
 
 ### Demonstration
-The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that we looked at [above](#hero-bios-component).
+The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that we looked at [above](guide/cb-dependency-injection#hero-bios-component).
 
 {@example 'cb-dependency-injection/ts/src/app/hero-bios.component.ts' region='hero-bios-and-contacts'}
 
@@ -325,7 +325,7 @@ Although we strive to avoid it, many visual effects and 3rd party tools (such as
 require DOM access. 
 
 To illustrate, we've written a simplified version of the `HighlightDirective` from 
-the [Attribute Directives](../guide/attribute-directives.html) chapter.
+the [Attribute Directives](guide/attribute-directives) chapter.
 
 {@example 'cb-dependency-injection/ts/src/app/highlight.directive.ts'}
 
@@ -371,7 +371,7 @@ If it doesn't, it may be able to make one with the help of a ***provider***.
 A *provider* is a recipe for delivering a service associated with a *token*.
 If the injector doesn't have a provider for the requested *token*, it delegates the request 
 to its parent injector, where the process repeats until there are no more injectors. 
-If the search is futile, the injector throws an error ... unless the request was [optional](#optional).
+If the search is futile, the injector throws an error ... unless the request was [optional](guide/cb-dependency-injection#optional).
 
 Let's return our attention to providers themselves.A new injector has no providers.
 Angular initializes the injectors it creates with some providers it cares about.
@@ -408,7 +408,7 @@ It's visually simple: a few properties and the output of a logger. The code behi
 #### The *provide* object literal
 
 The `provide` object literal takes a *token* and a *definition object*.
-The *token* is usually a class but [it doesn't have to be](#tokens).
+The *token* is usually a class but [it doesn't have to be](guide/cb-dependency-injection#tokens).
 
 The *definition* object has one main property, (e.g. `useValue`) that indicates how the provider 
 should create or return the provided value.
@@ -433,7 +433,7 @@ The `Hero` provider token is a class which makes sense because the value is a `H
 and the consumer of the injected hero would want the type information.
 
 The `TITLE` provider token is *not a class*.
-It's a special kind of provider lookup key called an [OpaqueToken](#opaquetoken).
+It's a special kind of provider lookup key called an [OpaqueToken](guide/cb-dependency-injection#opaquetoken).
 We often use an `OpaqueToken` when the dependency is a simple value like a string, a number, or a function.
 
 The value of a *value provider* must be defined *now*. We can't create the value later. 
@@ -486,7 +486,7 @@ creating ***two ways to access the same service object***.
 Narrowing an API through an aliasing interface is _one_ important use case for this technique.
 We're aliasing for that very purpose here.
 Imagine that the `LoggerService` had a large API (it's actually only three methods and a property).
-We want to shrink that API surface to just the two members exposed by the `MinimalLogger` [*class-interface*](#class-interface):
+We want to shrink that API surface to just the two members exposed by the `MinimalLogger` [*class-interface*](guide/cb-dependency-injection#class-interface):
 
 
 {@example 'cb-dependency-injection/ts/src/app/date-logger.service.ts' region='minimal-logger'}
@@ -718,7 +718,7 @@ after injecting an `AlexComponent` into her constructor:
 
 {@example 'cb-dependency-injection/ts/src/app/parent-finder.component.ts' region='cathy'}
 
-We added the [@Optional](#optional) qualifier for safety but
+We added the [@Optional](guide/cb-dependency-injection#optional) qualifier for safety but
 the <live-example name="cb-dependency-injection"></live-example>
 confirms that the `alex` parameter is set.
 
@@ -741,7 +741,7 @@ That's not possible because TypeScript interfaces disappear from the transpiled 
 which doesn't support interfaces. There's no artifact we could look for.We're not claiming this is good design. 
 We are asking *can a component inject its parent via the parent's base class*?
 
-The sample's `CraigComponent` explores this question. [Looking back](#alex) 
+The sample's `CraigComponent` explores this question. [Looking back](guide/cb-dependency-injection#alex) 
 we see that the `Alex` component *extends* (*inherits*) from a class named `Base`.
 
 {@example 'cb-dependency-injection/ts/src/app/parent-finder.component.ts' region='alex-class-signature'}
@@ -758,14 +758,14 @@ confirms that the `alex` parameter is null.
 <a id="class-interface-parent"></a>
 ### Find a parent by its class-interface
 
-We can find a parent component with a [class-interface](#class-interface).
+We can find a parent component with a [class-interface](guide/cb-dependency-injection#class-interface).
 
 The parent must cooperate by providing an *alias* to itself in the name of a *class-interface* token. 
 
 Recall that Angular always adds a component instance to its own injector; 
-that's why we could inject *Alex* into *Cathy* [earlier](#known-parent).
+that's why we could inject *Alex* into *Cathy* [earlier](guide/cb-dependency-injection#known-parent).
 
-We write an [*alias provider*](#useexisting) &mdash; a `provide` object literal with a `useExisting` definition &mdash;
+We write an [*alias provider*](guide/cb-dependency-injection#useexisting) &mdash; a `provide` object literal with a `useExisting` definition &mdash;
 that creates an *alternative* way to inject the same component instance
 and add that provider to the `providers` array of the `@Component` metadata for the `AlexComponent`:
 
@@ -774,8 +774,8 @@ and add that provider to the `providers` array of the `@Component` metadata for 
 
 {@example 'cb-dependency-injection/ts/src/app/parent-finder.component.ts' region='alex-providers'}
 
-[Parent](#parent-token) is the provider's *class-interface* token. 
-The [*forwardRef*](#forwardref) breaks the circular reference we just created by having the `AlexComponent` refer to itself.
+[Parent](guide/cb-dependency-injection#parent-token) is the provider's *class-interface* token. 
+The [*forwardRef*](guide/cb-dependency-injection#forwardref) breaks the circular reference we just created by having the `AlexComponent` refer to itself.
 
 *Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter, the same way we've done it before:
 
@@ -802,8 +802,8 @@ Here's *Barry*:
 
 {@example 'cb-dependency-injection/ts/src/app/parent-finder.component.ts' region='barry'}
 
-*Barry*'s `providers` array looks just like [*Alex*'s](#alex-providers).
-If we're going to keep writing [*alias providers*](#useexisting) like this we should create a [helper function](#provideparent).
+*Barry*'s `providers` array looks just like [*Alex*'s](guide/cb-dependency-injection#alex-providers).
+If we're going to keep writing [*alias providers*](guide/cb-dependency-injection#useexisting) like this we should create a [helper function](guide/cb-dependency-injection#provideparent).
 
 For now, focus on *Barry*'s constructor:
 <md-tab-group>
@@ -841,7 +841,7 @@ Here's *Alice*, *Barry* and family in action:
 
 {@a parent-token}
 ### The *Parent* class-interface
-We [learned earlier](#class-interface) that a *class-interface* is an abstract class used as an interface rather than as a base class.
+We [learned earlier](guide/cb-dependency-injection#class-interface) that a *class-interface* is an abstract class used as an interface rather than as a base class.
 
 Our example defines a `Parent` *class-interface* .
 
@@ -870,7 +870,7 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 ### A *provideParent* helper function
 
 Writing variations of the same parent *alias provider* gets old quickly, 
-especially this awful mouthful with a [*forwardRef*](#forwardref):
+especially this awful mouthful with a [*forwardRef*](guide/cb-dependency-injection#forwardref):
 
 {@example 'cb-dependency-injection/ts/src/app/parent-finder.component.ts' region='alex-providers'}
 

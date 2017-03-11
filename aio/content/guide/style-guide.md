@@ -60,16 +60,16 @@ The guideline will use the shortcut `hero.component.ts|html|css|spec` to represe
 {@a toc}
 ## Table of contents
 
-  1. [Single responsibility](#single-responsibility)
-  1. [Naming](#naming)
-  1. [Coding conventions](#coding-conventions)
-  1. [App structure and Angular modules](#application-structure-and-angular-modules)
-  1. [Components](#components)
-  1. [Directives](#directives)
-  1. [Services](#services)
-  1. [Data services](#data-services)
-  1. [Lifecycle hooks](#lifecycle-hooks)
-  1. [Appendix](#appendix)
+  1. [Single responsibility](guide/style-guide#single-responsibility)
+  1. [Naming](guide/style-guide#naming)
+  1. [Coding conventions](guide/style-guide#coding-conventions)
+  1. [App structure and Angular modules](guide/style-guide#application-structure-and-angular-modules)
+  1. [Components](guide/style-guide#components)
+  1. [Directives](guide/style-guide#directives)
+  1. [Services](guide/style-guide#services)
+  1. [Data services](guide/style-guide#data-services)
+  1. [Lifecycle hooks](guide/style-guide#lifecycle-hooks)
+  1. [Appendix](guide/style-guide#appendix)
 
 ## Single responsibility
 
@@ -3225,7 +3225,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 <div class='s-why' class='s-why-last'>
-  **Why?** Angular allows for an [alternative syntax](template-syntax.html#binding-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.  
+  **Why?** Angular allows for an [alternative syntax](guide/template-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.  
     
 </div>
 

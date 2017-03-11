@@ -11,13 +11,13 @@ we really can't build an Angular application without it.
 It's used so widely that almost everyone just calls it _DI_.
 
 In this chapter we'll learn what DI is and why we want it.
-Then we'll learn [how to use it](#angular-di) in an Angular app.
+Then we'll learn [how to use it](guide/dependency-injection#angular-di) in an Angular app.
 
-- [Why dependency injection?](#why-dependency-injection)
-- [Angular dependency injection](#angular-dependency-injection)
-- [Injector providers](#injector-providers)
-- [Dependency injection tokens](#dependency-injection-tokens)
-- [Summary](#summary)
+- [Why dependency injection?](guide/dependency-injection#why-dependency-injection)
+- [Angular dependency injection](guide/dependency-injection#angular-dependency-injection)
+- [Injector providers](guide/dependency-injection#injector-providers)
+- [Dependency injection tokens](guide/dependency-injection#dependency-injection-tokens)
+- [Summary](guide/dependency-injection#summary)
 
 Run the <live-example></live-example>.
 
@@ -170,7 +170,7 @@ That sounds nice. What does it do for us when building components in Angular?
 Let's see, one step at a time.
 
 We'll begin with a simplified version of the `HeroesComponent`
-that we built in the [The Tour of Heroes](../tutorial/).
+that we built in the [The Tour of Heroes](tutorial/).
 
 <md-tab-group>
 
@@ -219,7 +219,7 @@ write the service code in its own file.
 Our `HeroService` exposes a `getHeroes` method that returns
 the same mock data as before, but none of its consumers need to know that.
 Notice the `@Injectable()` #{_decorator} above the service class.
-We'll discuss its purpose [shortly](#injectable).
+We'll discuss its purpose [shortly](guide/dependency-injection#injectable).
 
 We aren't even pretending this is a real service.
 If we were actually getting data from a remote server, the API would have to be 
@@ -239,7 +239,7 @@ We don't have to create an Angular injector.
 Angular creates an application-wide injector for us during the bootstrap process.
 We do have to configure the injector by registering the **providers**
 that create the services our application requires.
-We'll explain what [providers](#providers) are later in this chapter.
+We'll explain what [providers](guide/dependency-injection#providers) are later in this chapter.
 ### Registering providers in a component
 
 Here's a revised `HeroesComponent` that registers the `HeroService`.
@@ -251,7 +251,7 @@ Here's a revised `HeroesComponent` that registers the `HeroService`.
 
 The `HeroListComponent` should get heroes from the injected `HeroService`.
 Per the dependency injection pattern, the component must ask for the service in its 
-constructor, [as we explained earlier](#ctor-injection).
+constructor, [as we explained earlier](guide/dependency-injection#ctor-injection).
 It's a small change:
 
 <md-tab-group>
@@ -301,10 +301,10 @@ would be explicitly created:
 {@example 'dependency-injection/ts/src/app/car/car-injector.ts' region='injector-create-and-call'}
 
 We won't find code like that in the Tour of Heroes or any of our other samples.
-We *could* write code that [explicitly creates an injector](#explicit-injector) if we *had* to, but we rarely do.
+We *could* write code that [explicitly creates an injector](guide/dependency-injection#explicit-injector) if we *had* to, but we rarely do.
 Angular takes care of creating and calling injectors
 when it creates components for us &mdash; whether through HTML markup, as in `<hero-list></hero-list>`,
-or after navigating to a component with the [router](./router.html).
+or after navigating to a component with the [router](guide/router).
 If we let Angular do its job, we'll enjoy the benefits of automated dependency injection.
 ### Singleton services
 
@@ -314,7 +314,7 @@ In our example, a single `HeroService` instance is shared among the
 
 However, Angular DI is an hierarchical injection
 system, which means that nested injectors can create their own service instances.
-Learn more about that in the [Hierarchical Injectors](./hierarchical-dependency-injection.html) chapter.
+Learn more about that in the [Hierarchical Injectors](guide/hierarchical-dependency-injection) chapter.
 ### Testing the component
 
 We emphasized earlier that designing a class for dependency injection makes the class easier to test.
@@ -327,7 +327,7 @@ under test:
 {@example 'dependency-injection/ts/src/app/test.component.ts' region='spec'}
 
 
-Learn more in [Testing](./testing.html).
+Learn more in [Testing](guide/testing).
 ### When the service needs a service
 
 Our `HeroService` is very simple. It doesn't have any dependencies of its own.
@@ -453,7 +453,7 @@ We wrote the `providers` #{_array} like this:
 
 {@example 'dependency-injection/ts/src/app/providers.component.ts' region='providers-3'}
 
-The first is the [token](#token) that serves as the key for both locating a dependency value
+The first is the [token](guide/dependency-injection#token) that serves as the key for both locating a dependency value
 and registering the provider.
 
 The second is a !{_secondParam}, 
@@ -528,8 +528,8 @@ which makes this object play the logger role.
 {@example 'dependency-injection/ts/src/app/providers.component.ts' region='providers-7'}
 
 See more `useValue` examples in the
-[Non-class dependencies](#non-class-dependencies) and
-[OpaqueToken](#opaquetoken) sections.
+[Non-class dependencies](guide/dependency-injection#non-class-dependencies) and
+[OpaqueToken](guide/dependency-injection#opaquetoken) sections.
 
 <div id='factory-provider'>
 
@@ -583,7 +583,7 @@ We inject both the `Logger` and the `UserService` into the factory provider and 
 The `useFactory` field tells Angular that the provider is a factory function
 whose implementation is the `heroServiceFactory`.
 
-The `deps` property is #{_an} #{_array} of [provider tokens](#token).
+The `deps` property is #{_an} #{_array} of [provider tokens](guide/dependency-injection#token).
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching factory function parameters.
 Notice that we captured the factory provider in #{_an} #{exportedvar}, `heroServiceProvider`.
@@ -647,7 +647,7 @@ This is especially convenient when we consider that most dependency values are p
 {@example 'dependency-injection/ts/src/app/app.config.ts' region='config'}
 
 We'd like to make this configuration object available for injection.
-We know we can register an object with a [value provider](#value-provider).
+We know we can register an object with a [value provider](guide/dependency-injection#value-provider).
 ### OpaqueToken
 
 One solution to choosing a provider token for non-class dependencies is
@@ -700,7 +700,7 @@ adding a parameter to a constructor.
 Angular dependency injection is more capable than we've described.
 We can learn more about its advanced features, beginning with its support for
 nested injectors, in the
-[Hierarchical Dependency Injection](hierarchical-dependency-injection.html) chapter.
+[Hierarchical Dependency Injection](guide/hierarchical-dependency-injection) chapter.
 
 ## Appendix: Working with injectors directly
 

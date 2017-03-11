@@ -307,7 +307,7 @@ These are the polyfills required to run an Angular application on each supported
 
 
     <td>
-      [ES6](#core-es6)
+      [ES6](guide/browser-support#core-es6)
     </td>
 
 
@@ -322,7 +322,7 @@ These are the polyfills required to run an Angular application on each supported
 
 
     <td>
-      [ES6<br>classList](#classlist)      
+      [ES6<br>classList](guide/browser-support#classlist)      
             
     </td>
 
@@ -370,7 +370,7 @@ Here are the features which may require additional polyfills:
 
 
     <td>
-      [Web Animations](#web-animations)
+      [Web Animations](guide/browser-support#web-animations)
     </td>
 
 
@@ -390,7 +390,7 @@ Here are the features which may require additional polyfills:
 
 
     <td>
-      [Intl API](#intl)
+      [Intl API](guide/browser-support#intl)
     </td>
 
 
@@ -410,7 +410,7 @@ Here are the features which may require additional polyfills:
 
 
     <td>
-             [classList](#classlist)
+             [classList](guide/browser-support#classlist)
     </td>
 
 
@@ -430,7 +430,7 @@ Here are the features which may require additional polyfills:
 
 
     <td>
-             [Typed&nbsp;Array](#typedarray) <br>[Blob](#blob)<br>[FormData](#formdata)
+             [Typed&nbsp;Array](guide/browser-support#typedarray) <br>[Blob](guide/browser-support#blob)<br>[FormData](guide/browser-support#formdata)
     </td>
 
 

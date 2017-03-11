@@ -17,7 +17,7 @@ making some of them public so external components can use them.
 And there are many more options covered here.
 
 Before reading this page, read the
-[The Root Module](appmodule.html) page, which introduces NgModules and the essentials
+[The Root Module](guide/appmodule) page, which introduces NgModules and the essentials
 of creating and maintaining a single root `AppModule` for the entire application.
 
 This page covers NgModules in greater depth.
@@ -29,21 +29,21 @@ This page covers NgModules in greater depth.
 - some pages don't have tables of contents
 I didn't make changes here as I'm not sure what the correct style is. 
 --> 
-* [Angular modularity](#angular-modularity "Add structure to the app with NgModule")
-* [The application root module](#root-module "The startup module that every app requires")
-* [Bootstrap](#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
-* [Declarations](#declarations "Declare the components, directives, and pipes that belong to a module")
-* [Providers](#providers "Extend the app with additional services")
-* [Imports](#imports "Import components, directives, and pipes for use in component templates")
-* [Resolve conflicts](#resolve-conflicts "When two directives have the same selector")
+* [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
+* [The application root module](guide/ngmodule#root-module "The startup module that every app requires")
+* [Bootstrap](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
+* [Declarations](guide/ngmodule#declarations "Declare the components, directives, and pipes that belong to a module")
+* [Providers](guide/ngmodule#providers "Extend the app with additional services")
+* [Imports](guide/ngmodule#imports "Import components, directives, and pipes for use in component templates")
+* [Resolve conflicts](guide/ngmodule#resolve-conflicts "When two directives have the same selector")
 <!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. --> 
-* [Feature modules](#feature-modules "Partition the app into feature modules")
-* [Lazy loaded modules](#lazy-load "Load modules asynchronously") with the router
-* [Shared modules](#shared-module "Create modules for commonly used components, directives, and pipes")
-* [The Core module](#core-module "Create a core module with app-wide singleton services and single-use components")
-* [Configure core services with _forRoot_](#core-for-root "Configure providers during module import")
-* [Prevent reimport of the _CoreModule_](#prevent-reimport "because bad things happen if a lazy loaded module imports Core")
-* [NgModule metadata properties](#ngmodule-properties "A technical summary of the @NgModule metadata properties")
+* [Feature modules](guide/ngmodule#feature-modules "Partition the app into feature modules")
+* [Lazy loaded modules](guide/ngmodule#lazy-load "Load modules asynchronously") with the router
+* [Shared modules](guide/ngmodule#shared-module "Create modules for commonly used components, directives, and pipes")
+* [The Core module](guide/ngmodule#core-module "Create a core module with app-wide singleton services and single-use components")
+* [Configure core services with _forRoot_](guide/ngmodule#core-for-root "Configure providers during module import")
+* [Prevent reimport of the _CoreModule_](guide/ngmodule#prevent-reimport "because bad things happen if a lazy loaded module imports Core")
+* [NgModule metadata properties](guide/ngmodule#ngmodule-properties "A technical summary of the @NgModule metadata properties")
 <!-- CF: This link goes to the top of this page. I would expect it to go to an "NgModule metadata properties"
  section at the end of this page, but that section doesn't exist. -->
 
@@ -61,7 +61,7 @@ Here's an index to live examples at key moments in the evolution of the sample:
 
 This page covers NgModule concepts in a tutorial fashion.
 
-The companion [NgModule FAQs](../cookbook/ngmodule-faq.html "NgModule FAQs") cookbook
+The companion [NgModule FAQs](cookbook/ngmodule-faq) cookbook
 offers answers to specific design and implementation questions.
 Read this page before reading those FAQs.
 
@@ -119,7 +119,7 @@ Later in this page, you'll read about this process. For now, you'll start with t
 Every Angular app has a *root module* class.
 By convention, the *root module* class is called `AppModule` and it exists in a file named `app.module.ts`.
 
-The `AppModule` from the QuickStart seed on the [Setup](setup.html) page is as minimal as possible:
+The `AppModule` from the QuickStart seed on the [Setup](guide/setup) page is as minimal as possible:
 
 {@example 'setup/ts/src/app/app.module.ts'}
 
@@ -153,7 +153,7 @@ Angular offers a variety of bootstrapping options targeting multiple platforms.
 This page describes two options, both targeting the browser.
 
 ### Dynamic bootstrapping with the just-in-time (JIT) compiler
-In the first, _dynamic_ option, the [Angular compiler](../cookbook/ngmodule-faq.html#q-angular-compiler "About the Angular Compiler")
+In the first, _dynamic_ option, the [Angular compiler](cookbook/ngmodule-faq)
 compiles the application in the browser and then launches the app.
 
 
@@ -206,7 +206,7 @@ This is the last time you'll look at `main.ts`.
 
 ## Declare directives and components
 As the app evolves,
-the first addition is a `HighlightDirective`, an [attribute directive](attribute-directives.html)
+the first addition is a `HighlightDirective`, an [attribute directive](guide/attribute-directives)
 that sets the background color of the attached element.
 
 {@example 'ngmodule/ts/src/app/highlight.directive.ts'}
@@ -251,9 +251,9 @@ Import the `TitleComponent` class and add it to the module's `declarations`:
 
 Modules are a great way to provide services for all of the module's components.
 
-The [Dependency Injection](dependency-injection.html) page describes
+The [Dependency Injection](guide/dependency-injection) page describes
 the Angular hierarchical dependency-injection system and how to configure that system
-with [providers](dependency-injection.html#providers) at different levels of the
+with [providers](guide/dependency-injection) at different levels of the
 application's component tree.
 
 A module can add providers to the application's root dependency injector, making those services
@@ -306,7 +306,7 @@ More accurately, `NgIf` is declared in `CommonModule` from `@angular/common`.
 
 `CommonModule` contributes many of the common directives that applications need, including `ngIf` and `ngFor`.
 
-`BrowserModule` imports `CommonModule` and [re-exports](../cookbook/ngmodule-faq.html#q-re-export) it.
+`BrowserModule` imports `CommonModule` and [re-exports](cookbook/ngmodule-faq) it.
 The net effect is that an importer of `BrowserModule` gets `CommonModule` directives automatically.Many familiar Angular directives don't belong to `CommonModule`.
 For example,  `NgModel` and `RouterLink` belong to Angular's `FormsModule` and `RouterModule` respectively.
 You must import those modules before you can use their directives.
@@ -316,16 +316,16 @@ a form component that imports form support from the Angular `FormsModule`.
 
 ### Add the _ContactComponent_
 
-[Angular forms](forms.html) are a great way to manage user data entry.
+[Angular forms](guide/forms) are a great way to manage user data entry.
 
 The `ContactComponent` presents a "contact editor,"
-implemented with Angular forms in the [template-driven form](forms.html#template-driven) style.
+implemented with Angular forms in the [template-driven form](guide/forms) style.
 
 ### Angular form styles
 
 You can write Angular form components in
 template-driven or
-[reactive](../cookbook/dynamic-form.html) style.
+[reactive](cookbook/dynamic-form) style.
 <!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? --> 
 
 The following sample imports the `FormsModule` from `@angular/forms` because
@@ -338,7 +338,7 @@ Add an element with that name to the `AppComponent` template, just below the `<a
 {@example 'ngmodule/ts/src/app/app.component.1b.ts' region='template'}
 
 Form components are often complex. The `ContactComponent` has its own `ContactService`
-and [custom pipe](pipes.html#custom-pipes) (called `Awesome`),
+and [custom pipe](guide/pipes) (called `Awesome`),
 and an alternative version of the `HighlightDirective`.
 
 To make it manageable, place all contact-related material in an `src/app/contact` folder
@@ -434,7 +434,7 @@ To work around this, create an alias for the contact version using the `as` Java
 
 This solves the immediate issue of referencing both directive _types_ in the same file but
 leaves another issue unresolved. 
-You'll learn more about that issue later in this page, in [Resolve directive conflicts](#resolve-conflicts).
+You'll learn more about that issue later in this page, in [Resolve directive conflicts](guide/ngmodule#resolve-conflicts).
 ### Provide the _ContactService_
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
@@ -473,8 +473,8 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
   To inject `ContactService`, you must first import its _type_.
   Only Contact components should import the `ContactService` type.
 
-  Read more in the [How do I restrict service scope to a module?](../cookbook/ngmodule-faq.html#q-component-scoped-providers) section
-  of the [NgModule FAQs](../cookbook/ngmodule-faq.html) page.
+  Read more in the [How do I restrict service scope to a module?](cookbook/ngmodule-faq) section
+  of the [NgModule FAQs](cookbook/ngmodule-faq) page.
 ### Run the app
 Everything is in place to run the application with its contact editor.
 
@@ -549,7 +549,7 @@ Try the example:
  This section seems like more of an introduction to the next section, "Feature modules". 
  Consider moving this section to be a child section of "Feature modules", or striking "Resolve" from this title. -->
 
-An issue arose [earlier](#import-name-conflict) when you declared the contact's `HighlightDirective` because
+An issue arose [earlier](guide/ngmodule#import-name-conflict) when you declared the contact's `HighlightDirective` because
 you already had a `HighlightDirective` class at the application level.
 
 The selectors of the two directives both highlight the attached element with a different color.
@@ -670,8 +670,8 @@ Before `ContactComponent` can bind with `[(ngModel)]`, its `ContactModule` must 
 ~~~
 
 You also replaced `BrowserModule` by `CommonModule`, for reasons explained in the
-[Should I import BrowserModule or CommonModule?](../cookbook/ngmodule-faq.html#q-browser-vs-common-module) 
-section of the [NgModule FAQs](../cookbook/ngmodule-faq.html) page.
+[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq) 
+section of the [NgModule FAQs](cookbook/ngmodule-faq) page.
 
 You _declare_ the contact component, directive, and pipe in the module `declarations`.
 
@@ -762,14 +762,14 @@ The module does _not_ import `HeroModule` or `CrisisModule`.
 They'll be fetched and mounted asynchronously when the user navigates to one of their routes.
 
 The significant change from version 2 is the addition of the *AppRoutingModule* to the module `imports`.
-The `AppRoutingModule` is a [routing module](../guide/router.html#routing-module)
+The `AppRoutingModule` is a [routing module](guide/router)
 that handles the app's routing concerns.
 
 ### App routing
 
 {@example 'ngmodule/ts/src/app/app-routing.module.ts'}
 
-The router is the subject of the [Routing & Navigation](router.html) page, so this section skips many of the details and
+The router is the subject of the [Routing & Navigation](guide/router) page, so this section skips many of the details and
 concentrates on the intersection of NgModules and routing.
 
 The `app-routing.module.ts` file defines three routes.
@@ -839,8 +839,8 @@ _forRoot_ and _forChild_ are conventional names for methods that
 deliver different `import` values to root and feature modules.
 Angular doesn't recognize them but Angular developers do.
 
-[Follow this convention](../cookbook/ngmodule-faq.html#q-for-root) if you write a similar module
-that has both shared [declarables](../cookbook/ngmodule-faq.html#q-declarable) and services.
+[Follow this convention](cookbook/ngmodule-faq) if you write a similar module
+that has both shared [declarables](cookbook/ngmodule-faq) and services.
 
 
 ~~~
@@ -866,7 +866,7 @@ that has both shared [declarables](../cookbook/ngmodule-faq.html#q-declarable) a
 Now that you navigate to `ContactComponent` with the router, there's no reason to make it public.
 Also, `ContactComponent` doesn't need a selector.
 No template will ever again reference this `ContactComponent`.
-It's gone from the [AppComponent template](#app-component-template).
+It's gone from the [AppComponent template](guide/ngmodule#app-component-template).
 
 
 {@a hero-module}
@@ -923,15 +923,15 @@ a more interesting and useful example. Its file structure is as follows:
 </aio-filetree>
 
 This is the child routing scenario familiar to readers of the 
-[Child routing component](router.html#child-routing-component) section of the
-[Routing & Navigation](router.html#child-routing-component) page.
+[Child routing component](guide/router) section of the
+[Routing & Navigation](guide/router) page.
 The `HeroComponent` is the feature's top component and routing host.
 Its template has a `<router-outlet>` that displays either a list of heroes (`HeroList`)
 or an editor of a selected hero (`HeroDetail`).
 Both components delegate to the `HeroService` to fetch and save data.
 
 Yet another `HighlightDirective` colors elements in yet a different shade.
-In the next section, [Shared modules](#shared-module "Shared modules"), you'll resolve the repetition and inconsistencies.
+In the next section, [Shared modules](guide/ngmodule#shared-module "Shared modules"), you'll resolve the repetition and inconsistencies.
 
 The `HeroModule` is a feature module like any other.
 
@@ -1006,7 +1006,7 @@ and only one provider of it.
 
 `UserService` is an application-wide singleton.
 You don't want each module to have its own separate instance.
-Yet there is [a real danger](../cookbook/ngmodule-faq.html#q-why-it-is-bad) of that happening
+Yet there is [a real danger](cookbook/ngmodule-faq) of that happening
 <!-- CF: This link goes to the top of the NgModule FAQs page. 
 It looks like it is supposed to go to a specific question/section within the page. -->
 if the `SharedModule` provides the `UserService`.
@@ -1140,7 +1140,7 @@ A module that adds providers to the application can offer a facility for configu
 
 By convention, the `forRoot` static method both provides and configures services at the same time.
 It takes a service configuration object and returns a
-[ModuleWithProviders](../api/core/index/ModuleWithProviders-interface.html), which is
+[ModuleWithProviders](api/core/index/ModuleWithProviders-interface), which is
 a simple object with the following properties:
 * `ngModule`: the `CoreModule` class
 * `providers`: the configured providers
@@ -1189,7 +1189,7 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 ## Prevent reimport of the _CoreModule_
 
 Only the root `AppModule` should import the `CoreModule`.
-[Bad things happen](../cookbook/ngmodule-faq.html#q-why-it-is-bad) if a lazy-loaded module imports it.
+[Bad things happen](cookbook/ngmodule-faq) if a lazy-loaded module imports it.
 <!-- CF: Again, this link goes to the top of the NgModule FAQs page. 
 It looks like it is supposed to go to a specific question/section within the page. -->
 
@@ -1226,5 +1226,5 @@ You made it! You can examine and download the complete source for this final ver
 ### Frequently asked questions
 
 Now that you understand NgModules, you may be interested
-in the companion [NgModule FAQs](../cookbook/ngmodule-faq.html "NgModule FAQs") page
+in the companion [NgModule FAQs](cookbook/ngmodule-faq) page
 with its ready answers to specific design and implementation questions.

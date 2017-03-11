@@ -12,23 +12,23 @@ This guide explains reactive forms as you follow the steps to build a "Hero Deta
 {@a toc}
 ## Contents
 
-- [Introduction to reactive forms](#intro)
-- [Setup](#setup)
-- [Create a data model](#data-model)
-- [Create a _reactive forms_ component](#create-component)
-- [Create its template file](#create-template)
-- [Import the _ReactiveFormsModule_](#import)
-- [Display the _HeroDetailComponent_](#update)
-- [Add a FormGroup](#formgroup)
-- [Taking a look at the form model](#json)
-- [Introduction to _FormBuilder_](#formbuilder)
-- [Validators.required](#validators)
-- [Nested FormGroups](#grouping)
-- [Inspect _FormControl_ properties](#properties)
-- [Set form model data using _setValue_ and _patchValue_](#set-data)
-- [Use _FormArray_ to present an array of _FormGroups_](#form-array)
-- [Observe control changes](#observe-control)
-- [Save form data](#save)
+- [Introduction to reactive forms](guide/reactive-forms#intro)
+- [Setup](guide/reactive-forms#setup)
+- [Create a data model](guide/reactive-forms#data-model)
+- [Create a _reactive forms_ component](guide/reactive-forms#create-component)
+- [Create its template file](guide/reactive-forms#create-template)
+- [Import the _ReactiveFormsModule_](guide/reactive-forms#import)
+- [Display the _HeroDetailComponent_](guide/reactive-forms#update)
+- [Add a FormGroup](guide/reactive-forms#formgroup)
+- [Taking a look at the form model](guide/reactive-forms#json)
+- [Introduction to _FormBuilder_](guide/reactive-forms#formbuilder)
+- [Validators.required](guide/reactive-forms#validators)
+- [Nested FormGroups](guide/reactive-forms#grouping)
+- [Inspect _FormControl_ properties](guide/reactive-forms#properties)
+- [Set form model data using _setValue_ and _patchValue_](guide/reactive-forms#set-data)
+- [Use _FormArray_ to present an array of _FormGroups_](guide/reactive-forms#form-array)
+- [Observe control changes](guide/reactive-forms#observe-control)
+- [Save form data](guide/reactive-forms#save)
 
 Try the <live-example plnkr="final" title="Reactive Forms (final) in Plunker">Reactive Forms live-example</live-example>.
 
@@ -65,7 +65,7 @@ the form controls and pull user-changed values back out. The component can
 observe changes in form control state and react to those changes.
 
 One advantage of working with form control objects directly is that value and validity updates 
-are [always synchronous and under your control](#async-vs-sync "Async vs sync"). 
+are [always synchronous and under your control](guide/reactive-forms#async-vs-sync "Async vs sync"). 
 You won't encounter the timing issues that sometimes plague a template-driven form
 and reactive forms can be easier to unit test.
 
@@ -82,7 +82,7 @@ but it does facilitate the reactive programming approach should you choose to us
 
 ### _Template-driven_ forms
 
-_Template-driven_ forms, introduced in the [Template guide](forms.html), take a completely different approach.
+_Template-driven_ forms, introduced in the [Template guide](guide/forms), take a completely different approach.
 
 You place HTML form controls (such as `<input>` and `<select>`) in the component template and 
 bind them to _data model_ properties in the component, using directives 
@@ -96,7 +96,7 @@ Angular updates the mutable _data model_ with user changes as they happen.
 For this reason, the `ngModel` directive is not part of the ReactiveFormsModule.
 
 While this means less code in the component class, 
-[template-driven forms are asynchronous](#async-vs-sync "Async vs sync")
+[template-driven forms are asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync")
 which may complicate development in more advanced scenarios. 
 
 
@@ -116,7 +116,7 @@ That means you must wait a tick before manipulating any of the controls
 from within the component class.
 
 For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the 
-[`ngAfterViewInit` lifecycle hook](lifecycle-hooks.html#afterview "Lifecycle hooks guide: AfterView"),
+[`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks),
 you'll discover that it has no children.
 You must wait a tick, using `setTimeout`, before you can
 extract a value from a control, test its validity, or set it to a new value.
@@ -136,17 +136,17 @@ You may decide to use both in the same application.
 
 The balance of this _reactive forms_ guide explores the _reactive_ paradigm and 
 concentrates exclusively on reactive forms techniques. 
-For information on _template-driven forms_, see the [_Forms_](forms.html) guide.
+For information on _template-driven forms_, see the [_Forms_](guide/forms) guide.
 
 In the next section, you'll set up your project for the reactive form demo.
-Then you'll learn about the [Angular form classes](#essentials) and how to use them in a reactive form.
+Then you'll learn about the [Angular form classes](guide/reactive-forms#essentials) and how to use them in a reactive form.
 
 
 
 {@a setup}
 ## Setup
 
-Follow the steps in the [_Setup_ guide](../setup.html "Setup guide") 
+Follow the steps in the [_Setup_ guide](setup) 
 for creating a new project folder (perhaps called `reactive-forms`)
 based on the _QuickStart seed_.
 
@@ -181,7 +181,7 @@ Now enter the `@Component` decorator that specifies the `HeroDetailComponent` me
 {@example 'reactive-forms/ts/src/app/hero-detail.component.ts' region='metadata'}
 
 The `moduleId: module.id` lets you use 
-[component-relative paths](../cookbook/component-relative-paths.html) in file URLs 
+[component-relative paths](cookbook/component-relative-paths) in file URLs 
 such as when specifying the `templateUrl`.
 
 Next, create an exported `HeroDetailComponent` class with a `FormControl`. 
@@ -202,7 +202,7 @@ This simple control doesn't have data or validators.
 In real apps, most form controls have both. 
 
 This guide touches only briefly on `Validators`. For an in-depth look at them,
-read the [Form Validation](../cookbook/form-validation.html) cookbook.
+read the [Form Validation](cookbook/form-validation) cookbook.
 
 
 
@@ -256,21 +256,21 @@ Revise the `AppComponent` template so it displays the `HeroDetailComponent`.
 ### Essential form classes
 It may be helpful to read a brief description of the core form classes.
 
-* [_AbstractControl_](../api/forms/index/AbstractControl-class.html "API Reference: AbstractControl")
+* [_AbstractControl_](api/forms/index/AbstractControl-class)
 is the abstract base class for the three concrete form control classes: 
 `FormControl`, `FormGroup`, and `FormArray`.
 It provides their common behaviors and properties, some of which are _observable_.
 
-* [_FormControl_](../api/forms/index/FormControl-class.html "API Reference: FormControl") 
+* [_FormControl_](api/forms/index/FormControl-class) 
 tracks the value and validity status of an _individual_ form control.
 It corresponds to an HTML form control such as an input box or selector.
 
-* [_FormGroup_](../api/forms/index/FormGroup-class.html "API Reference: FormGroup")
+* [_FormGroup_](api/forms/index/FormGroup-class)
 tracks the value and validity state of a _group_ of `AbstractControl` instances.
 The group's properties include its child controls.
 The top-level form in your component is a `FormGroup`.
 
-* [_FormArray_](../api/forms/index/FormArray-class.html "API Reference: FormArray")
+* [_FormArray_](api/forms/index/FormArray-class)
 tracks the value and validity state of a numerically indexed _array_ of `AbstractControl` instances.
 
 You'll learn more about these classes as you work through this guide.
@@ -440,7 +440,7 @@ Using `Validators.required` is optional for the rest of the guide.
 It remains in each of the following examples with the same configuration.
 
 For more on validating Angular forms, see the
-[Form Validation](../cookbook/form-validation.html) guide. 
+[Form Validation](cookbook/form-validation) guide. 
 ### More FormControls
 A hero has more than a name. 
 A hero has an address, a super power and sometimes a sidekick too. 
@@ -487,9 +487,9 @@ You tie these controls to the template HTML elements in the same way,
 specifiying the `FormControl` name with the `formControlName` directive. 
 
 See the API reference for more information about 
-[radio buttons](../api/forms/index/RadioControlValueAccessor-directive.html "API: RadioControlValueAccessor"), 
-[selects](../api/forms/index/SelectControlValueAccessor-directive.html "API: SelectControlValueAccessor"), and
-[checkboxes](../api/forms/index/CheckboxControlValueAccessor-directive.html "API: CheckboxControlValueAccessor").
+[radio buttons](api/forms/index/RadioControlValueAccessor-directive), 
+[selects](api/forms/index/SelectControlValueAccessor-directive), and
+[checkboxes](api/forms/index/CheckboxControlValueAccessor-directive).
 
 
 
@@ -654,12 +654,12 @@ such as one of the following:
 </table>
 
 Learn about other `FormControl` properties in the 
-[_AbstractControl_](../api/forms/index/AbstractControl-class.html) API reference.
+[_AbstractControl_](api/forms/index/AbstractControl-class) API reference.
 
 One common reason for inspecting `FormControl` properties is to 
 make sure the user entered valid values. 
 Read more about validating Angular forms in the 
-[Form Validation](../cookbook/form-validation.html) guide. 
+[Form Validation](cookbook/form-validation) guide. 
 
 
 
@@ -704,7 +704,7 @@ There are two significant differences between these models:
 1. The `Hero` has an `id`. The form model does not because you generally don't show primary keys to users.
 
 1. The `Hero` has an array of addresses. This form model presents only one address,
-a choice [revisited below](#form-array "Form arrays").
+a choice [revisited below](guide/reactive-forms#form-array "Form arrays").
 
 Nonetheless, the two models are pretty close in shape and you'll see in a moment how this alignment facilitates copying the _data model_ properties
 to the _form model_ with the `patchValue` and `setValue` methods.
@@ -767,7 +767,7 @@ values and does not throw helpful errors.
 Now you know _how_ to set the _form model_ values. But _when_ do you set them?
 The answer depends upon when the component gets the _data model_ values.
 
-The `HeroDetailComponent` in this reactive forms sample is nested within a _master/detail_ `HeroListComponent` ([discussed below](#hero-list)).
+The `HeroDetailComponent` in this reactive forms sample is nested within a _master/detail_ `HeroListComponent` ([discussed below](guide/reactive-forms#hero-list)).
 The `HeroListComponent` displays hero names to the user.
 When the user clicks on a hero, the list component passes the selected hero into the `HeroDetailComponent`
 by binding to its `hero` input property.
@@ -777,7 +777,7 @@ by binding to its `hero` input property.
 
 In this approach, the value of `hero` in the `HeroDetailComponent` changes 
 every time the user selects a new hero.
-You should call  _setValue_ in the [ngOnChanges](lifecyle-hooks.html#onchanges)
+You should call  _setValue_ in the [ngOnChanges](guide/lifecyle-hooks)
 hook, which Angular calls whenever the input `hero` property changes
 as the following steps demonstrate.
 
@@ -839,11 +839,11 @@ A "Refresh" button clears the hero list and the current selected hero before ref
 
 The remaining `HeroListComponent` and `HeroService` implementation details are not relevant to understanding reactive forms.
 The techniques involved are covered elsewhere in the documentation, including the _Tour of Heroes_
-[here](../tutorial/toh-pt3.html "ToH: Multiple Components") and [here](../tutorial/toh-pt4.html "ToH: Services").
+[here](tutorial/toh-pt3) and [here](tutorial/toh-pt4).
 
 If you're coding along with the steps in this reactive forms tutorial, 
 create the pertinent files based on the 
-[source code displayed below](#source-code "Reactive Forms source code"). 
+[source code displayed below](guide/reactive-forms#source-code "Reactive Forms source code"). 
 Notice that `hero-list.component.ts` imports `Observable` and `finally` while `hero.service.ts` imports `Observable`, `of`,
 and `delay` from `rxjs`. 
 Then return here to learn about _form array_ properties.

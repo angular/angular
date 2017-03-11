@@ -17,15 +17,15 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 
 ## Contents
 
-* [Template basics](#template-basics)&mdash;binding and local variables.
+* [Template basics](guide/ajs-quick-reference#template-basics)&mdash;binding and local variables.
 
-* [Template directives](#template-directives)&mdash;built-in directives `ngIf` and `ngClass`.
+* [Template directives](guide/ajs-quick-reference#template-directives)&mdash;built-in directives `ngIf` and `ngClass`.
 
-* [Filters/pipes](#filters-pipes)&mdash;built-in *filters*, known as *pipes* in Angular.
+* [Filters/pipes](guide/ajs-quick-reference#filters-pipes)&mdash;built-in *filters*, known as *pipes* in Angular.
 
-* [Modules/controllers/components](#controllers-components)&mdash;*modules* in Angular are slightly different from *modules* in AngularJS, and *controllers* are *components* in Angular.
+* [Modules/controllers/components](guide/ajs-quick-reference#controllers-components)&mdash;*modules* in Angular are slightly different from *modules* in AngularJS, and *controllers* are *components* in Angular.
 
-* [Style sheets](#style-sheets)&mdash;more options for CSS than in AngularJS.
+* [Style sheets](guide/ajs-quick-reference#style-sheets)&mdash;more options for CSS than in AngularJS.
 
 ## Template basics
 Templates are the user-facing part of an Angular application and are written in HTML.
@@ -86,8 +86,8 @@ The following table lists some of the key AngularJS template features with their
             The context of the binding is implied and is always the      
             associated component, so it needs no reference variable.      
                   
-            For more information, see the [Interpolation](../guide/template-syntax.html#interpolation)      
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information, see the [Interpolation](guide/template-syntax)      
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -117,7 +117,7 @@ The following table lists some of the key AngularJS template features with their
             Many (but not all) of the built-in filters from AngularJS are      
             built-in pipes in Angular.      
                   
-            For more information, see [Filters/pipes](#filters-pipes) below.
+            For more information, see [Filters/pipes](guide/ajs-quick-reference#filters-pipes) below.
     </td>
 
 
@@ -145,8 +145,8 @@ The following table lists some of the key AngularJS template features with their
       
             Angular has true template input variables that are explicitly defined using the `let` keyword.      
                   
-            For more information, see the [ngFor micro-syntax](../guide/template-syntax.html#microsyntax)      
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information, see the [ngFor micro-syntax](guide/template-syntax)      
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -155,7 +155,7 @@ The following table lists some of the key AngularJS template features with their
 
 </table>
 
-[Back to top](#top)
+[Back to top](guide/ajs-quick-reference#top)
 
 ## Template directives
 AngularJS provides more than seventy built-in directives for templates.
@@ -219,7 +219,7 @@ The following are some of the key AngularJS built-in directives and their equiva
             in `main.ts`      
             and the application's root component (`AppComponent`) in `app.module.ts`.      
                   
-            For more information see the [Setup](../guide/setup.html) page.
+            For more information see the [Setup](guide/setup) page.
     </td>
 
 
@@ -262,8 +262,8 @@ The following are some of the key AngularJS built-in directives and their equiva
             Angular also has **class binding**, which is a good way to add or remove a single class,      
             as shown in the third example.      
                   
-            For more information see the [Attribute, class, and style bindings](../guide/template-syntax.html#other-bindings)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.      
+            For more information see the [Attribute, class, and style bindings](guide/template-syntax)       
+            section of the [Template Syntax](guide/template-syntax) page.      
             
     </td>
 
@@ -309,8 +309,8 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             For a list of DOM events, see: https://developer.mozilla.org/en-US/docs/Web/Events.      
                   
-            For more information, see the [Event binding](../guide/template-syntax.html#event-binding)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.      
+            For more information, see the [Event binding](guide/template-syntax)       
+            section of the [Template Syntax](guide/template-syntax) page.      
             
     </td>
 
@@ -340,7 +340,7 @@ The following are some of the key AngularJS built-in directives and their equiva
             In Angular, the template no longer specifies its associated controller.      
             Rather, the component specifies its associated template as part of the component class decorator.      
                   
-            For more information, see [Architecture Overview](../guide/architecture.html#component).      
+            For more information, see [Architecture Overview](guide/architecture).      
             
     </td>
 
@@ -353,14 +353,14 @@ The following are some of the key AngularJS built-in directives and their equiva
     <td>
       ### ng-hide      
             In AngularJS, the `ng-hide` directive shows or hides the associated HTML element based on      
-            an expression. For more information, see [ng-show](#ng-show).
+            an expression. For more information, see [ng-show](guide/ajs-quick-reference#ng-show).
     </td>
 
 
     <td>
       ### Bind to the `hidden` property      
             In Angular, you use property binding; there is no built-in *hide* directive.      
-            For more information, see [ng-show](#ng-show).
+            For more information, see [ng-show](guide/ajs-quick-reference#ng-show).
     </td>
 
 
@@ -396,15 +396,15 @@ The following are some of the key AngularJS built-in directives and their equiva
             Angular uses property binding; there is no built-in *href* directive.      
             Place the element's `href` property in square brackets and set it to a quoted template expression.      
                   
-            For more information see the [Property binding](../guide/template-syntax.html#property-binding)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.      
+            For more information see the [Property binding](guide/template-syntax)       
+            section of the [Template Syntax](guide/template-syntax) page.      
                   
             In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.      
       
       {@example 'cb-ajs-quick-reference/ts/src/app/app.component.html' region='router-link'}
       
-            For more information on routing, see the [RouterLink binding](../guide/router.html#router-link)       
-            section of the [Routing & Navigation](../guide/router.html) page.      
+            For more information on routing, see the [RouterLink binding](guide/router)       
+            section of the [Routing & Navigation](guide/router) page.      
             
     </td>
 
@@ -438,7 +438,7 @@ The following are some of the key AngularJS built-in directives and their equiva
             In this example, the `<table>` element is removed from the DOM unless the `movies` array has a length.      
                   
             The (*) before `ngIf` is required in this example.      
-            For more information, see [Structural Directives](../guide/structural-directives.html).
+            For more information, see [Structural Directives](guide/structural-directives).
     </td>
 
 
@@ -468,7 +468,7 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             For more information on two-way binding with `ngModel`, see the [NgModel&mdash;Two-way binding to       
             form elements with `[(ngModel)]`](../guide/template-syntax.html#ngModel)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -505,7 +505,7 @@ The following are some of the key AngularJS built-in directives and their equiva
             the `let` keyword identifies `movie` as an input variable;      
             the list preposition is `of`, not `in`.      
                   
-            For more information, see [Structural Directives](../guide/structural-directives.html).
+            For more information, see [Structural Directives](guide/structural-directives).
     </td>
 
 
@@ -542,8 +542,8 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             In this example, the `<div>` element is hidden if the `favoriteHero` variable is not truthy.      
                   
-            For more information on property binding, see the [Property binding](../guide/template-syntax.html#property-binding)        
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information on property binding, see the [Property binding](guide/template-syntax)        
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -572,8 +572,8 @@ The following are some of the key AngularJS built-in directives and their equiva
             Angular uses property binding; there is no built-in *src* directive.      
             Place the `src` property in square brackets and set it to a quoted template expression.      
                   
-            For more information on property binding, see the [Property binding](../guide/template-syntax.html#property-binding)        
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information on property binding, see the [Property binding](guide/template-syntax)        
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -608,11 +608,11 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             Angular also has **style binding**, which is good way to set a single style. This is shown in the second example.      
                   
-            For more information on style binding, see the [Style binding](../guide/template-syntax.html#style-binding) section of the       
-            [Template Syntax](../guide/template-syntax.html) page.      
+            For more information on style binding, see the [Style binding](guide/template-syntax) section of the       
+            [Template Syntax](guide/template-syntax) page.      
                   
-            For more information on the `ngStyle` directive, see [NgStyle](../guide/template-syntax.html#ngStyle)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information on the `ngStyle` directive, see [NgStyle](guide/template-syntax)       
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -664,8 +664,8 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             The (*) before `ngSwitchCase` and `ngSwitchDefault` is required in this example.      
                   
-            For more information, see [The NgSwitch directives](../guide/template-syntax.html#ngSwitch)       
-            section of the [Template Syntax](../guide/template-syntax.html) page.
+            For more information, see [The NgSwitch directives](guide/template-syntax)       
+            section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
 
@@ -674,7 +674,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 </table>
 
-[Back to top](#top)
+[Back to top](guide/ajs-quick-reference#top)
 
 
 {@a filters-pipes}
@@ -682,7 +682,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 ## Filters/pipes
 Angular **pipes** provide formatting and transformation for data in the template, similar to AngularJS **filters**.
 Many of the built-in filters in AngularJS have corresponding pipes in Angular.
-For more information on pipes, see [Pipes](../guide/pipes.html).
+For more information on pipes, see [Pipes](guide/pipes).
 
 <table width="100%">
 
@@ -913,7 +913,7 @@ For more information on pipes, see [Pipes](../guide/pipes.html).
 
 </table>
 
-[Back to top](#top)
+[Back to top](guide/ajs-quick-reference#top)
 
 
 {@a controllers-components}
@@ -975,8 +975,8 @@ The Angular code is shown using TypeScript.
             This is a nonissue in Angular because ES 2015 modules       
             handle the namespacing for you.      
                   
-            For more information on modules, see the [Modules](../guide/architecture.html#modules) section of the       
-            [Architecture Overview](../guide/architecture.html).
+            For more information on modules, see the [Modules](guide/architecture) section of the       
+            [Architecture Overview](guide/architecture).
     </td>
 
 
@@ -1005,7 +1005,7 @@ The Angular code is shown using TypeScript.
             - `imports`: specifies the list of other modules that this module depends upon      
             - `declaration`: keeps track of your components, pipes, and directives.      
                   
-            For more information on modules, see [Angular Modules (NgModule)](../guide/ngmodule.html).
+            For more information on modules, see [Angular Modules (NgModule)](guide/ngmodule).
     </td>
 
 
@@ -1043,8 +1043,8 @@ The Angular code is shown using TypeScript.
                   
             This is how you associate a template with logic, which is defined in the component class.      
                   
-            For more information, see the [Components](../guide/architecture.html#components)       
-            section of the [Architecture Overview](../guide/architecture.html) page.
+            For more information, see the [Components](guide/architecture)       
+            section of the [Architecture Overview](guide/architecture) page.
     </td>
 
 
@@ -1073,8 +1073,8 @@ The Angular code is shown using TypeScript.
                   
             NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.      
                   
-            For more information, see the [Components](../guide/architecture.html#components)       
-            section of the [Architecture Overview](../guide/architecture.html) page.
+            For more information, see the [Components](guide/architecture)       
+            section of the [Architecture Overview](guide/architecture) page.
     </td>
 
 
@@ -1108,8 +1108,8 @@ The Angular code is shown using TypeScript.
             This example injects a `MovieService`.      
             The first parameter's TypeScript type tells Angular what to inject, even after minification.      
                   
-            For more information, see the [Dependency injection](../guide/architecture.html#dependency-injection)       
-            section of the [Architecture Overview](../guide/architecture.html).
+            For more information, see the [Dependency injection](guide/architecture)       
+            section of the [Architecture Overview](guide/architecture).
     </td>
 
 
@@ -1118,7 +1118,7 @@ The Angular code is shown using TypeScript.
 
 </table>
 
-[Back to top](#top)
+[Back to top](guide/ajs-quick-reference#top)
 
 
 {@a style-sheets}
@@ -1192,4 +1192,4 @@ also encapsulate a style sheet within a specific component.
 
 </table>
 
-[Back to top](#top)
+[Back to top](guide/ajs-quick-reference#top)

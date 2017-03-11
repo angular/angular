@@ -11,16 +11,16 @@ during a build process.
 
 {@a toc}
 ## Table of Contents
-* [Overview](#overview)
-* [_Ahead-of-Time_ vs _Just-in-Time_](#aot-jit)
-* [Compile with AOT](#compile)
-* [Bootstrap](#bootstrap)
-* [Tree Shaking](#tree-shaking)
-* [Load the bundle](#load)
-* [Serve the app](#serve)
-* [Workflow and convenience script](#workflow)
-* [Source Code](#source-code)
-* [Tour of Heroes](#toh)
+* [Overview](guide/aot-compiler#overview)
+* [_Ahead-of-Time_ vs _Just-in-Time_](guide/aot-compiler#aot-jit)
+* [Compile with AOT](guide/aot-compiler#compile)
+* [Bootstrap](guide/aot-compiler#bootstrap)
+* [Tree Shaking](guide/aot-compiler#tree-shaking)
+* [Load the bundle](guide/aot-compiler#load)
+* [Serve the app](guide/aot-compiler#serve)
+* [Workflow and convenience script](guide/aot-compiler#workflow)
+* [Source Code](guide/aot-compiler#source-code)
+* [Tour of Heroes](guide/aot-compiler#toh)
 
 
 {@a overview}
@@ -128,7 +128,7 @@ then modify it to look as follows.
 
 The `compilerOptions` section is unchanged except for one property.
 **Set the `module` to `es2015`**.
-This is important as explained later in the [Tree Shaking](#tree-shaking) section.
+This is important as explained later in the [Tree Shaking](guide/aot-compiler#tree-shaking) section.
 
 What's really new is the `ngc` section at the bottom called `angularCompilerOptions`.
 Its `"genDir"` property tells the compiler
@@ -198,7 +198,7 @@ The AOT path changes application bootstrapping.
 Instead of bootstrapping `AppModule`, you bootstrap the application with the generated module factory, `AppModuleNgFactory`.
 
 Make a copy of `main.ts` and name it `main-jit.ts`.
-This is the JIT version; set it aside as you may need it [later](#run-jit "Running with JIT").
+This is the JIT version; set it aside as you may need it [later](guide/aot-compiler#run-jit "Running with JIT").
 
 Open `main.ts` and convert it to AOT compilation.
 Switch from the `platformBrowserDynamic.bootstrap` used in JIT compilation to
@@ -408,7 +408,7 @@ The same source code can be built both ways. Here's one way to do that.
 {@example 'cb-aot-compiler/ts/src/index-jit.html' region='jit'}
 
 Notice the slight change to the `system.import` which now specifies `src/app/main-jit`.
-That's the JIT version of the bootstrap file that we preserved [above](#bootstrap)
+That's the JIT version of the bootstrap file that we preserved [above](guide/aot-compiler#bootstrap)
 Open a _different_ terminal window and enter.
 <code-example language="none" class="code-shell">
   npm start
@@ -434,7 +434,7 @@ Now you can develop JIT and AOT, side-by-side.
 
 The sample above is a trivial variation of the QuickStart app.
 In this section you apply what you've learned about AOT compilation and Tree Shaking
-to an app with more substance, the tutorial [_Tour of Heroes_](../tutorial/toh-pt6.html).
+to an app with more substance, the tutorial [_Tour of Heroes_](tutorial/toh-pt6).
 
 ### JIT in development, AOT in production
 
@@ -472,7 +472,7 @@ It does not need `SystemJS`, so that script is absent from its `index.html`
 ***main.ts***
 
 JIT and AOT applications boot in much the same way but require different Angular libraries to do so.
-The key differences, covered in the [Bootstrap](#bootstrap) section above,
+The key differences, covered in the [Bootstrap](guide/aot-compiler#bootstrap) section above,
 are evident in these `main` files which can and should reside in the same folder:
 
 <md-tab-group>

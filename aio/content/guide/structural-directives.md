@@ -17,18 +17,18 @@ how you can write your own structural directives to do the same thing.
 
 ### Table of contents
 
-- [What are structural directives?](#definition)
-- [*NgIf* case study](#ngIf)
-- [The asterisk (*) prefix](#asterisk)
-- [Inside *NgFor*](#ngFor)
-  - [microsyntax](#microsyntax)
-  - [template input variables](#template-input-variable)
-  - [one structural directive per element](#one-per-element)
-- [Inside the *NgSwitch* directives](#ngSwitch)
-- [Prefer the (*) prefix](#prefer-asterisk)
-- [The &lt;template> element](#template)
-- [Group sibling elements with &lt;ng-container&gt;](#ng-container)
-- [Write a structural directive](#unless)
+- [What are structural directives?](guide/structural-directives#definition)
+- [*NgIf* case study](guide/structural-directives#ngIf)
+- [The asterisk (*) prefix](guide/structural-directives#asterisk)
+- [Inside *NgFor*](guide/structural-directives#ngFor)
+  - [microsyntax](guide/structural-directives#microsyntax)
+  - [template input variables](guide/structural-directives#template-input-variable)
+  - [one structural directive per element](guide/structural-directives#one-per-element)
+- [Inside the *NgSwitch* directives](guide/structural-directives#ngSwitch)
+- [Prefer the (*) prefix](guide/structural-directives#prefer-asterisk)
+- [The &lt;template> element](guide/structural-directives#template)
+- [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
+- [Write a structural directive](guide/structural-directives#unless)
 
 Try the <live-example></live-example>.
 
@@ -48,19 +48,19 @@ Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
 No brackets. No parentheses. Just `*ngIf` set to a string.
 
-You'll learn in this guide that the [asterisk (*) is a convenience notation](#asterisk)
-and the string is a [_microsyntax_](#microsyntax) rather than the usual
-[template expression](template-syntax.html#template-expressions).
+You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
+and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
+[template expression](guide/template-syntax).
 Angular desugars this notation into a marked-up `<template>` that surrounds the
 host element and its descendents. 
 Each structural directive does something different with that template.
 
-Three of the common, built-in structural directives&mdash;[NgIf](template-syntax.html#ngIf), 
-[NgFor](template-syntax.html#ngFor), and [NgSwitch...](template-syntax.html#ngSwitch)&mdash;are 
-described in the [_Template Syntax_](template-syntax.html) guide and seen in samples throughout the Angular documentation. 
+Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax), 
+[NgFor](guide/template-syntax), and [NgSwitch...](guide/template-syntax)&mdash;are 
+described in the [_Template Syntax_](guide/template-syntax) guide and seen in samples throughout the Angular documentation. 
 Here's an example of them in a template:
 This guide won't repeat how to _use_ them. But it does explain _how they work_
-and how to [write your own](#unless) structural directive.
+and how to [write your own](guide/structural-directives#unless) structural directive.
 
 
 ~~~ {.callout.is-helpful}
@@ -91,13 +91,13 @@ There are two other kinds of Angular directives, described extensively elsewhere
 A *component* manages a region of HTML in the manner of a native HTML element.
 Technically it's a directive with a template. 
 
-An [*attribute* directive](attribute-directives.html) changes the appearance or behavior
+An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](template-syntax.html#ngStyle) directive
+For example, the built-in [`NgStyle`](guide/template-syntax) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
-You can [only apply one](#one-per-element) _structural_ directive to a host element.
+You can [only apply one](guide/structural-directives#one-per-element) _structural_ directive to a host element.
 
 
 {@a ngIf}
@@ -114,7 +114,7 @@ Confirm that fact using browser developer tools to inspect the DOM.
 </figure>
 
 The top paragraph is in the DOM. The bottom, disused paragraph is not; 
-in its place is a comment about "template bindings" (more about that [later](#asterisk)).
+in its place is a comment about "template bindings" (more about that [later](guide/structural-directives#asterisk)).
 
 When the condition is false, `NgIf` removes its host element from the DOM,
 detaches it from DOM events (the attachments that it made),
@@ -179,7 +179,7 @@ Only the finished product ends up in the DOM.
 Angular consumed the `<template>` content during its actual rendering and 
 replaced the `<template>` with a diagnostic comment.
 
-The [`NgFor`](#ngFor) and [`NgSwitch...`](#ngSwitch) directives follow the same pattern.
+The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/structural-directives#ngSwitch) directives follow the same pattern.
 
 
 {@a ngFor}
@@ -194,7 +194,7 @@ This is manifestly more complicated than `ngIf` and rightly so.
 The `NgFor` directive has more features, both required and optional, than the `NgIf` shown in this guide.
 At minimum `NgFor` needs a looping variable (`let hero`) and a list (`heroes`).
 
-You enable these features in the string assigned to `ngFor`, which you write in Angular's [microsyntax](#microsyntax). 
+You enable these features in the string assigned to `ngFor`, which you write in Angular's [microsyntax](guide/structural-directives#microsyntax). 
 
 
 ~~~ {.alert.is-helpful}
@@ -214,7 +214,7 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
 The microsyntax parser translates that string into attributes on the `<template>`:
 
-* The `let` keyword declares a [_template input variable_](#template-input-variable) 
+* The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable) 
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
 The parser translates `let hero`, `let i`, and `let odd` into variables named, 
 `let-hero`, `let-i`, and `let-odd`.
@@ -235,7 +235,7 @@ It's intended source is implicit.
 Angular sets `let-hero` to the value of the context's `$implicit` property
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](../api/common/index/NgFor-directive.html "API: NgFor") 
+* The [API guide](api/common/index/NgFor-directive) 
 describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
@@ -254,7 +254,7 @@ There are several such variables in this example: `hero`, `i`, and `odd`.
 All are preceded by the keyword `let`.
 
 A _template input variable_ is **_not_** the same as a 
-[template _reference_ variable](template-syntax.html#ref-vars),
+[template _reference_ variable](guide/template-syntax),
 neither _semantically_ nor _syntactically_.
 
 You declare a template _input_ variable using the `let` keyword (`let hero`). 
@@ -283,7 +283,7 @@ If so (and it seems like it should be so), how should Angular generalize the abi
 
 There are no easy answers to these questions. Prohibiting multiple structural directives makes them moot.
 There's an easy solution for this use case: put the `*ngIf` on a container element that wraps the `*ngFor` element.
-One or both elements can be an [`ng-container`](#ngcontainer) so you don't have to introduce extra levels of HTML.
+One or both elements can be an [`ng-container`](guide/structural-directives#ngcontainer) so you don't have to introduce extra levels of HTML.
 
 
 {@a ngSwitch}
@@ -317,12 +317,12 @@ That, in turn, can be desugared into the `<template>` element form.
 ## Prefer the asterisk (*) syntax.
 
 The asterisk (*) syntax is more clear than the other desugared forms.
-Use [&lt;ng-container&gt;](#ng-container) when there's no single element
+Use [&lt;ng-container&gt;](guide/structural-directives#ng-container) when there's no single element
 to host the directive.
 
 While there's rarely a good reason to apply a structural directive in template _attribute_ or _element_ form,
 it's still important to know that Angular creates a `<template>` and to understand how it works.
-You'll refer to the `<template>` when you [write your own structural directive](#unless).
+You'll refer to the `<template>` when you [write your own structural directive](guide/structural-directives#unless).
 
 
 {@a template}
@@ -344,7 +344,7 @@ Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 </figure>
 
 A structural directive puts a `<template>` to work
-as you'll see when you [write your own structural directive](#unless).
+as you'll see when you [write your own structural directive](guide/structural-directives#unless).
 
 
 {@a ngcontainer}
@@ -451,21 +451,21 @@ The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin w
 Don't use `ng`. That prefix belongs to Angular.
 Pick something short that fits you or your company.
 In this example, the prefix is `my`.
-The directive _class_ name ends in `Directive` per the [style guide](style-guide.html#02-03 "Angular Style Guide").
+The directive _class_ name ends in `Directive` per the [style guide](guide/style-guide).
 Angular's own directives do not.
 
 ### _TemplateRef_ and _ViewContainerRef_
 
 A simple structural directive like this one creates an 
-[_embedded view_](../api/core/index/EmbeddedViewRef-class.html "API: EmbeddedViewRef")
+[_embedded view_](api/core/index/EmbeddedViewRef-class)
 from the Angular-generated `<template>` and inserts that view in a 
-[_view container_](../api/core/index/ViewContainerRef-class.html "API: ViewContainerRef")
+[_view container_](api/core/index/ViewContainerRef-class)
 adjacent to the directive's original `<p>` host element.
 
 You'll acquire the `<template>` contents with a
-[`TemplateRef`](../api/core/index/TemplateRef-class.html "API: TemplateRef")
+[`TemplateRef`](api/core/index/TemplateRef-class)
 and access the _view container_ through a
-[`ViewContainerRef`](../api/core/index/ViewContainerRef-class.html "API: ViewContainerRef").
+[`ViewContainerRef`](api/core/index/ViewContainerRef-class).
 
 You inject both in the directive constructor as private variables of the class.
 ### The _myUnless_ property
@@ -473,7 +473,7 @@ You inject both in the directive constructor as private variables of the class.
 The directive consumer expects to bind a true/false condition to `[myUnless]`.
 That means the directive needs a `myUnless` property, decorated with `@Input` 
 
-Read about `@Input` in the [_Template Syntax_](template-syntax.html#inputs-outputs) guide.
+Read about `@Input` in the [_Template Syntax_](guide/template-syntax) guide.
 Angular sets the  `myUnless` property whenever the value of the condition changes.
 Because the `myUnless` property does work, it needs a setter.
 
@@ -548,8 +548,8 @@ Here is the source from the `src/app/` folder.
 You learned
 
 * that structural directives manipulate HTML layout.
-* to use [`<ng-container>`](#ngcontainer) as a grouping element when there is no suitable host element.
-* that the Angular desugars [asterisk (*) syntax](#asterisk) into a `<template>`.
+* to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.
+* that the Angular desugars [asterisk (*) syntax](guide/structural-directives#asterisk) into a `<template>`.
 * how that works for the `NgIf`, `NgFor` and `NgSwitch` built-in directives.
-* about the [_microsyntax_](#microsyntax) that expands into a [`<template>`](#template).
-* to write a [custom structural directive](#unless), `UnlessDirective`.
+* about the [_microsyntax_](guide/structural-directives#microsyntax) that expands into a [`<template>`](guide/structural-directives#template).
+* to write a [custom structural directive](guide/structural-directives#unless), `UnlessDirective`.

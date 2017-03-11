@@ -10,21 +10,21 @@ This page describes tools and techniques for deploy and optimize your Angular ap
 
 {@a toc}
 ## Table of contents
-* [Overview](#overview)
-* [Simplest deployment possible](#dev-deploy)
-* [Optimize for production](#optimize)
-  * [Ahead-of-Time (AOT) compilation](#aot)
-  * [Webpack](#webpack)
-  * [Tree shaking with _rollup_](#rollup)
-  * [Pruned libraries](#prune)
-  * [Measure performance first](#measure)
-* [Angular configuration](#angular-configuration)
-  * [The `base` tag](#base-tag)
-  * [Enable production mode](#enable-prod-mode)
-  * [Lazy loading](#lazy-loading)
-* [Server configuration](#server-configuration)
-  * [Routed apps must fallback to `index.html`](#fallback)  
-  * [CORS: requesting services from a different server](#cors)
+* [Overview](guide/deployment#overview)
+* [Simplest deployment possible](guide/deployment#dev-deploy)
+* [Optimize for production](guide/deployment#optimize)
+  * [Ahead-of-Time (AOT) compilation](guide/deployment#aot)
+  * [Webpack](guide/deployment#webpack)
+  * [Tree shaking with _rollup_](guide/deployment#rollup)
+  * [Pruned libraries](guide/deployment#prune)
+  * [Measure performance first](guide/deployment#measure)
+* [Angular configuration](guide/deployment#angular-configuration)
+  * [The `base` tag](guide/deployment#base-tag)
+  * [Enable production mode](guide/deployment#enable-prod-mode)
+  * [Lazy loading](guide/deployment#lazy-loading)
+* [Server configuration](guide/deployment#server-configuration)
+  * [Routed apps must fallback to `index.html`](guide/deployment#fallback)  
+  * [CORS: requesting services from a different server](guide/deployment#cors)
 
 
 {@a overview}
@@ -34,20 +34,20 @@ This page describes tools and techniques for deploy and optimize your Angular ap
 This guide describes techniques for preparing and deploying an Angular application to a server running remotely.
 The techniques progress from _easy but suboptimal_ to _more optimal and more involved_.
 
-* The [simple way](#dev-deploy "Simplest deployment possible") is to copy the development environment to the server.
+* The [simple way](guide/deployment#dev-deploy "Simplest deployment possible") is to copy the development environment to the server.
 
-* [_Ahead of Time_ compilation (AOT)](#aot "AOT Compilation") is the first of 
-[several optimization strategies](#optimize). 
-You'll also want to read the [detailed instructions in the AOT Cookbook](../cookbook/aot-compiler.html "AOT Cookbook").
+* [_Ahead of Time_ compilation (AOT)](guide/deployment#aot "AOT Compilation") is the first of 
+[several optimization strategies](guide/deployment#optimize). 
+You'll also want to read the [detailed instructions in the AOT Cookbook](cookbook/aot-compiler).
 
-* [Webpack](#webpack "Webpack Optimization") is a popular general purpose packaging tool with a rich ecosystem, including plugins for AOT.
-The Angular [webpack guide](webpack.html "Webpack: an introduction") can get you started and
+* [Webpack](guide/deployment#webpack "Webpack Optimization") is a popular general purpose packaging tool with a rich ecosystem, including plugins for AOT.
+The Angular [webpack guide](guide/webpack) can get you started and
 _this_ page provides additional optimization advice, but you'll probably have to learn more about webpack on your own.
 
-* The [Angular configuration](#angular-configuration "Angular configuration") section calls attention to
+* The [Angular configuration](guide/deployment#angular-configuration "Angular configuration") section calls attention to
 specific client application changes that could improve performance.
 
-* The [Server configuration](#server-configuration "Server configuration") section describes
+* The [Server configuration](guide/deployment#server-configuration "Server configuration") section describes
 server-side changes that may be necessary, _no matter how you deploy the application_.
 
 
@@ -61,7 +61,7 @@ directly out of the development environment.
 It's already running locally. You'll just copy it, almost _as is_, 
 to a non-local server that others can reach.
 
-1. Copy _everything_ (or [_almost_ everything](#node-modules "Loading npm packages from the web")) 
+1. Copy _everything_ (or [_almost_ everything](guide/deployment#node-modules "Loading npm packages from the web")) 
 from the local project folder to a folder on the server.
 
 1. If you're serving the app out of a subfolder,
@@ -69,12 +69,12 @@ edit a version of `index.html` to set the `<base href>` appropriately.
 For example, if the URL to `index.html` is `www.mysite.com/my/app/`, set the _base href_  to 
 `<base href="/my/app/">`.
 Otherwise, leave it alone.
-[More on this below](#base-tag).
+[More on this below](guide/deployment#base-tag).
 
 1. Configure the server to redirect requests for missing files to `index.html`.
-[More on this below](#fallback).
+[More on this below](guide/deployment#fallback).
 
-1. Enable production mode as [described below](#enable-prod-mode) (optional).
+1. Enable production mode as [described below](guide/deployment#enable-prod-mode) (optional).
 
 That's the simplest deployment you can do.
 
@@ -83,7 +83,7 @@ That's the simplest deployment you can do.
 
 This is _not_ a production deployment. It's not optimized and it won't be fast for users.
 It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders.
-Be sure to read about [optimizing for production](#optimize "Optimizing for production") below.
+Be sure to read about [optimizing for production](guide/deployment#optimize "Optimizing for production") below.
 
 
 
@@ -184,7 +184,7 @@ The following trivial router sample app shows these changes.
 
 Practice with this sample before attempting these techniques on your application.
 
-1. Follow the [setup instructions](../guide/setup.html "Angular QuickStart setup") for creating a new project
+1. Follow the [setup instructions](guide/setup) for creating a new project
 named <ngio-ex path="simple-deployment"></ngio-ex>.
 
 1. Add the "Simple deployment" sample files shown above.
@@ -254,9 +254,9 @@ Apps compiled with AOT launch faster for several reasons.
 * You don't download the Angular compiler, which is pretty big on its own.
 * The compiler discards unused Angular directives that a tree-shaking tool can then exclude.
 
-Learn more about AOT Compilation in the [AOT Cookbook](../cookbook/aot-compiler.html "AOT Cookbook")
+Learn more about AOT Compilation in the [AOT Cookbook](cookbook/aot-compiler)
 which describes running the AOT compiler from the command line
-and using [_rollup_](#rollup) for bundling, minification, uglification and tree shaking.
+and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglification and tree shaking.
 
 
 {@a webpack}
@@ -264,7 +264,7 @@ and using [_rollup_](#rollup) for bundling, minification, uglification and tree 
 
 <a href="https://webpack.js.org/" target="_blank" title="Webpack 2">Webpack 2</a> is another
 great option for inlining templates and style-sheets, for bundling, minifying, and uglifying the application.
-The "[Webpack: an introduction](webpack.html "Webpack: an introduction")" guide will get you started 
+The "[Webpack: an introduction](guide/webpack)" guide will get you started 
 using webpack with Angular.
 
 Consider configuring _Webpack_ with the official
@@ -338,7 +338,7 @@ For example, given the `<base href="/my/app/">`, the browser resolves a URL such
 into a server request for `my/app/some/place/foo.jpg`.
 During navigation, the Angular router uses the _base href_ as the base path to component, template, and module files.
 
-See also the [*APP_BASE_HREF*](../api/common/index/APP_BASE_HREF-let.html "API: APP_BASE_HREF") alternative.In development, you typically start the server in the folder that holds `index.html`. 
+See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let) alternative.In development, you typically start the server in the folder that holds `index.html`. 
 That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
 
 But on the shared or production server, you might serve the app from a subfolder.
@@ -361,7 +361,7 @@ console:
 
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
 
-To enable [production mode](../api/core/index/enableProdMode-function.html) when running remotely, add the following code to the `main.ts`. 
+To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`. 
 
 
 {@example 'deployment/ts/src/main.ts' region='enableProdMode'}
@@ -375,8 +375,8 @@ You can dramatically reduce launch time by only loading the application modules 
 absolutely must be present when the app starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by 
-[waiting until the app has launched](router.html#preloading  "Preloading")
-or by [_lazy loading_](router.html#asynchronous-routing "Lazy loading")
+[waiting until the app has launched](guide/router)
+or by [_lazy loading_](guide/router)
 them on demand.
 
 #### Don't eagerly import something from a lazy loaded module
@@ -545,5 +545,5 @@ Read about how to enable CORS for specific servers at
 {@a next-steps}
 
 ## Next steps
- If you want to go beyond the [simple _copy-deploy_](#dev-deploy "Simplest deployment possible") approach,
- read the [AOT Cookbook](../cookbook/aot-compiler.html "AOT Cookbook") next.
+ If you want to go beyond the [simple _copy-deploy_](guide/deployment#dev-deploy "Simplest deployment possible") approach,
+ read the [AOT Cookbook](cookbook/aot-compiler) next.

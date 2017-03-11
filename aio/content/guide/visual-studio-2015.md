@@ -21,15 +21,15 @@ then consider the _experimental_
 Note that the resulting code does not map to the docs. Adjust accordingly.   
 The steps are as follows:
 
-- [Prerequisite](#prereq1): Install Node.js
-- [Prerequisite](#prereq2): Install Visual Studio 2015 Update 3
-- [Prerequisite](#prereq3): Configure External Web tools
-- [Prerequisite](#prereq4): Install TypeScript 2 for Visual Studio 2015
-- [Step 1](#download): Download the QuickStart files
-- [Step 2](#create-project): Create the Visual Studio ASP.NET project
-- [Step 3](#copy): Copy the QuickStart files into the ASP.NET project folder
-- [Step 4](#restore): Restore required packages
-- [Step 5](#build-and-run): Build and run the app
+- [Prerequisite](guide/visual-studio-2015#prereq1): Install Node.js
+- [Prerequisite](guide/visual-studio-2015#prereq2): Install Visual Studio 2015 Update 3
+- [Prerequisite](guide/visual-studio-2015#prereq3): Configure External Web tools
+- [Prerequisite](guide/visual-studio-2015#prereq4): Install TypeScript 2 for Visual Studio 2015
+- [Step 1](guide/visual-studio-2015#download): Download the QuickStart files
+- [Step 2](guide/visual-studio-2015#create-project): Create the Visual Studio ASP.NET project
+- [Step 3](guide/visual-studio-2015#copy): Copy the QuickStart files into the ASP.NET project folder
+- [Step 4](guide/visual-studio-2015#restore): Restore required packages
+- [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app
 
 
 <h2 id='prereq1'>

@@ -9,25 +9,25 @@ Share information between different directives and components.
 in which two or more components share information.
 <a id="toc"></a>## Table of contents
 
-[Pass data from parent to child with input binding](#parent-to-child)
+[Pass data from parent to child with input binding](guide/component-communication#parent-to-child)
 
-[Intercept input property changes with a setter](#parent-to-child-setter)
+[Intercept input property changes with a setter](guide/component-communication#parent-to-child-setter)
 
-[Intercept input property changes with *ngOnChanges*](#parent-to-child-on-changes)
+[Intercept input property changes with *ngOnChanges*](guide/component-communication#parent-to-child-on-changes)
 
-[Parent listens for child event](#child-to-parent)
+[Parent listens for child event](guide/component-communication#child-to-parent)
 
-[Parent interacts with child via a *local variable*](#parent-to-child-local-var)
+[Parent interacts with child via a *local variable*](guide/component-communication#parent-to-child-local-var)
 
-[Parent calls a *ViewChild*](#parent-to-view-child)
+[Parent calls a *ViewChild*](guide/component-communication#parent-to-view-child)
 
-[Parent and children communicate via a service](#bidirectional-service)
+[Parent and children communicate via a service](guide/component-communication#bidirectional-service)
 **See the <live-example name="cb-component-communication"></live-example>**.
 
 <a id="parent-to-child"></a>## Pass data from parent to child with input binding
 
 `HeroChildComponent` has two ***input properties***, 
-typically adorned with [@Input decorations](../guide/template-syntax.html#inputs-outputs).
+typically adorned with [@Input decorations](guide/template-syntax).
 
 
 {@example 'cb-component-communication/ts/src/app/hero-child.component.ts'}
@@ -54,7 +54,7 @@ E2E test that all children were instantiated and displayed as expected:
 
 {@example 'cb-component-communication/e2e-spec.ts' region='parent-to-child'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)
 
 <a id="parent-to-child-setter"></a>## Intercept input property changes with a setter
 
@@ -83,14 +83,14 @@ E2E tests of input property setter with empty and non-empty names:
 
 {@example 'cb-component-communication/e2e-spec.ts' region='parent-to-child-setter'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)
 
 <a id="parent-to-child-on-changes"></a>## Intercept input property changes with *ngOnChanges*
 
 Detect and act upon changes to input property values with the `ngOnChanges` method of the `OnChanges` lifecycle hook interface.
 May prefer this approach to the property setter when watching multiple, interacting input properties.
 
-Learn about `ngOnChanges` in the [LifeCycle Hooks](../guide/lifecycle-hooks.html) chapter.This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
+Learn about `ngOnChanges` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
 
 
 {@example 'cb-component-communication/ts/src/app/version-child.component.ts'}
@@ -114,7 +114,7 @@ the expected `ngOnChanges` calls and values:
 
 {@example 'cb-component-communication/e2e-spec.ts' region='parent-to-child-onchanges'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)
 
 <a id="child-to-parent"></a>## Parent listens for child event
 
@@ -122,7 +122,7 @@ The child component exposes an `EventEmitter` property with which it `emits` eve
 The parent binds to that event property and reacts to those events.
 
 The child's `EventEmitter` property is an ***output property***, 
-  typically adorned with an [@Output decoration](../guide/template-syntax.html#inputs-outputs)
+  typically adorned with an [@Output decoration](guide/template-syntax)
   as seen in this `VoterComponent`:
 
 
@@ -150,7 +150,7 @@ Test that clicking the *Agree* and *Disagree* buttons update the appropriate cou
 
 {@example 'cb-component-communication/e2e-spec.ts' region='child-to-parent'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)
 
 ## Parent interacts with child via *local variable*
 
@@ -200,7 +200,7 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 
 {@example 'cb-component-communication/e2e-spec.ts' region='countdown-timer-tests'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)
 
 <a id="parent-to-view-child"></a>## Parent calls a *ViewChild*
 
@@ -214,9 +214,9 @@ must read or write child component values or must call child component methods.
 When the parent component *class* requires that kind of access, 
 we ***inject*** the child component into the parent as a *ViewChild*.
 
-We'll illustrate this technique with the same [Countdown Timer](#countdown-timer-example) example. 
+We'll illustrate this technique with the same [Countdown Timer](guide/component-communication#countdown-timer-example) example. 
 We won't change its appearance or behavior. 
-The child [CountdownTimerComponent](#countdown-timer-example) is the same as well.
+The child [CountdownTimerComponent](guide/component-communication#countdown-timer-example) is the same as well.
 We are switching from the *local variable* to the *ViewChild* technique
 solely for the purpose of demonstration.Here is the parent, `CountdownViewChildParentComponent`:
 
@@ -248,7 +248,7 @@ We use `setTimeout` to wait one tick and then revise the `seconds` method so
 that it takes future values from the timer component.
 
 ### Test it
-Use [the same countdown timer tests](#countdown-tests) as before.[Back to top](#top)
+Use [the same countdown timer tests](guide/component-communication#countdown-tests) as before.[Back to top](guide/component-communication#top)
 
 <a id="bidirectional-service"></a>## Parent and children communicate via a service
 
@@ -298,4 +298,4 @@ and verify that the *History* meets expectations:
 
 {@example 'cb-component-communication/e2e-spec.ts' region='bidirectional-service'}
 
-[Back to top](#top)
+[Back to top](guide/component-communication#top)

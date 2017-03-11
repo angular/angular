@@ -14,43 +14,43 @@ it isn't covered in this page.Modern browsers support two HTTP-based APIs:
 
 The !{_Angular_http_library} simplifies application programming with the **XHR** and **JSONP** APIs.
 # Contents
-* [Demos](#demos)
-* [Providing HTTP Services](#http-providers)
-* [The Tour of Heroes *HTTP* client demo](#http-client)
-  - [The `HeroListComponent` class](#HeroListComponent)
-* [Fetch data with `http.get()`](#fetch-data)
-<li if-docs="ts"> [RxJS library](#rxjs-library)
+* [Demos](guide/server-communication#demos)
+* [Providing HTTP Services](guide/server-communication#http-providers)
+* [The Tour of Heroes *HTTP* client demo](guide/server-communication#http-client)
+  - [The `HeroListComponent` class](guide/server-communication#HeroListComponent)
+* [Fetch data with `http.get()`](guide/server-communication#fetch-data)
+<li if-docs="ts"> [RxJS library](guide/server-communication#rxjs-library)
   <ul>
-    <li> [Enable RxJS operators](#enable-rxjs-operators)</li>
+    <li> [Enable RxJS operators](guide/server-communication#enable-rxjs-operators)</li>
   </ul>
 </li>
-* [Process the response object](#extract-data)
-  - [Parse to `JSON`](#parse-to-json)
-  - [Do not return the response object](#no-return-response-object)
-  - [Always handle errors](#error-handling)
-  - [`HeroListComponent` error handling](#hero-list-component)
-* [Send data to the server](#update)
-  - [Headers](#headers)
-  - [JSON results](#json-results)
+* [Process the response object](guide/server-communication#extract-data)
+  - [Parse to `JSON`](guide/server-communication#parse-to-json)
+  - [Do not return the response object](guide/server-communication#no-return-response-object)
+  - [Always handle errors](guide/server-communication#error-handling)
+  - [`HeroListComponent` error handling](guide/server-communication#hero-list-component)
+* [Send data to the server](guide/server-communication#update)
+  - [Headers](guide/server-communication#headers)
+  - [JSON results](guide/server-communication#json-results)
 
-<ul><li if-docs="ts"> [Fall back to promises](#promises)</ul>
+<ul><li if-docs="ts"> [Fall back to promises](guide/server-communication#promises)</ul>
 
-* [Cross-Origin Requests: Wikipedia example](#cors)
+* [Cross-Origin Requests: Wikipedia example](guide/server-communication#cors)
 <ul if-docs="ts">
-  <li> [Search Wikipedia](#search-wikipedia)</li>
-  <li> [Search parameters](#search-parameters)</li>
-  <li> [The WikiComponent](#wikicomponent)</li>
+  <li> [Search Wikipedia](guide/server-communication#search-wikipedia)</li>
+  <li> [Search parameters](guide/server-communication#search-parameters)</li>
+  <li> [The WikiComponent](guide/server-communication#wikicomponent)</li>
 </ul>
-* [A wasteful app](#wasteful-app)
-<li if-docs="ts"> [More fun with Observables](#more-observables)
+* [A wasteful app](guide/server-communication#wasteful-app)
+<li if-docs="ts"> [More fun with Observables](guide/server-communication#more-observables)
     <ul>
-      <li> [Create a stream of search terms](#create-stream)</li>
-      <li> [Listen for search terms](#listen-for-search-terms)</li>
+      <li> [Create a stream of search terms](guide/server-communication#create-stream)</li>
+      <li> [Listen for search terms](guide/server-communication#listen-for-search-terms)</li>
     </ul>
 </li>
-* [Guarding against Cross-Site Request Forgery](#xsrf)
-* [Override default request headers (and other request options)](#override-default-request-options)
-* [Appendix: Tour of Heroes _in-memory web api_](#in-mem-web-api)
+* [Guarding against Cross-Site Request Forgery](guide/server-communication#xsrf)
+* [Override default request headers (and other request options)](guide/server-communication#override-default-request-options)
+* [Appendix: Tour of Heroes _in-memory web api_](guide/server-communication#in-mem-web-api)
 
 A <live-example>live example</live-example> illustrates these topics.
 
@@ -73,7 +73,7 @@ The !{_Angular_Http} client communicates with the server using a familiar HTTP r
 The `!{_Http}` client is one of a family of services in the !{_Angular_http_library}.
 Before you can use the `!{_Http}` client, you need to register it as a service provider with the dependency injection system.
 
-Read about providers in the [Dependency Injection](dependency-injection.html) page.
+Read about providers in the [Dependency Injection](guide/dependency-injection) page.
 Register providers by importing other NgModules to the root NgModule in `app.module.ts`.
 
 
@@ -86,7 +86,7 @@ there is a JSONP demo later in this page.
 Loading its module now saves time.
 ## The Tour of Heroes HTTP client demo
 
-The first demo is a mini-version of the [tutorial](../tutorial)'s "Tour of Heroes" (ToH) application.
+The first demo is a mini-version of the [tutorial](tutorial)'s "Tour of Heroes" (ToH) application.
 This version gets some heroes from the server, displays them in a list, lets the user add new heroes, and saves them to the server.
 The app uses the !{_Angular_Http} client to communicate via `XMLHttpRequest (XHR)`.
 
@@ -102,7 +102,7 @@ This demo has a single component, the `HeroListComponent`.  Here's its template:
 It presents the list of heroes with an `ngFor`.
 Below the list is an input box and an *Add Hero* button where you can enter the names of new heroes
 and add them to the database.
-A [template reference variable](template-syntax.html#ref-vars), `newHeroName`, accesses the
+A [template reference variable](guide/template-syntax), `newHeroName`, accesses the
 value of the input box in the `(click)` event binding.
 When the user clicks the button, that value passes to the component's `addHero` method and then
 the event binding clears it to make it ready for a new hero name.
@@ -119,7 +119,7 @@ Here's the component class:
 
 {@example 'server-communication/ts/src/app/toh/hero-list.component.ts' region='component'}
 
-Angular [injects](dependency-injection.html) a `HeroService` into the constructor
+Angular [injects](guide/dependency-injection) a `HeroService` into the constructor
 and the component calls that service to fetch and save data.
 
 The component **does not talk directly to the !{_Angular_Http} client**.
@@ -130,7 +130,7 @@ This is a golden rule: **always delegate data access to a supporting service cla
 
 Although _at runtime_ the component requests heroes immediately after creation,
 you **don't** call the service's `get` method in the component's constructor.
-Instead, call it inside the `ngOnInit` [lifecycle hook](lifecycle-hooks.html)
+Instead, call it inside the `ngOnInit` [lifecycle hook](guide/lifecycle-hooks)
 and rely on Angular to call `ngOnInit` when it instantiates this component.
 This is a *best practice*.
 Components are easier to test and debug when their constructors are simple, and all real work
@@ -151,7 +151,7 @@ You can revise that `HeroService` to get the heroes from the server using the !{
 {@example 'server-communication/ts/src/app/toh/hero.service.ts' region='v1'}
 
 Notice that the !{_Angular_Http} client service is
-[injected](dependency-injection.html) into the `HeroService` constructor.
+[injected](guide/dependency-injection) into the `HeroService` constructor.
 
 {@example 'server-communication/ts/src/app/toh/hero.service.ts' region='ctor'}
 
@@ -161,7 +161,7 @@ Look closely at how to call `!{_priv}http.get`:
 
 You pass the resource URL to `get` and it calls the server which returns heroes.
 
-The server returns heroes once you've set up the [in-memory web api](#in-mem-web-api)
+The server returns heroes once you've set up the [in-memory web api](guide/server-communication#in-mem-web-api)
 described in the appendix below.
 Alternatively, you can temporarily target a JSON file by changing the endpoint URL:
 
@@ -254,7 +254,7 @@ just the name of a new hero and returns an `Observable` of `Hero`. It begins lik
 
 To implement it, you must know the server's API for creating heroes.
 
-[This sample's data server](#in-mem-web-api) follows typical REST guidelines.
+[This sample's data server](guide/server-communication#in-mem-web-api) follows typical REST guidelines.
 It expects a [`POST`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5) request
 at the same endpoint as `GET` heroes.
 It expects the new hero data to arrive in the body of the request,
@@ -285,7 +285,7 @@ In the `headers` object, the `Content-Type` specifies that the body represents J
 {@a json-results}
 ### JSON results
 
-As with `getHeroes()`, use the `!{_priv}extractData()` helper to [extract the data](#extract-data)
+As with `getHeroes()`, use the `!{_priv}extractData()` helper to [extract the data](guide/server-communication#extract-data)
 from the response.
 
 
@@ -305,7 +305,7 @@ This is called the [same-origin policy](https://en.wikipedia.org/wiki/Same-origi
 
 Modern browsers do allow `XHR` requests to servers from a different origin if the server supports the
 [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) protocol.
-If the server requires user credentials, enable them in the [request headers](#headers).
+If the server requires user credentials, enable them in the [request headers](guide/server-communication#headers).
 Some servers do not support CORS but do support an older, read-only alternative called [JSONP](https://en.wikipedia.org/wiki/JSONP).
 Wikipedia is one such server.
 This [Stack Overflow answer](http://stackoverflow.com/questions/2067472/what-is-jsonp-all-about/2067584#2067584) covers many details of JSONP.
@@ -337,7 +337,7 @@ generated authentication token in a cookie named `XSRF-TOKEN`.
 The HTTP client adds an `X-XSRF-TOKEN` header with that token value to subsequent requests. 
 The server receives both the cookie and the header, compares them, and processes the request only if the cookie and header match.
 
-See the [XSRF topic on the Security page](security.html#xsrf) for more information about XSRF and Angular's `XSRFStrategy` counter measures.
+See the [XSRF topic on the Security page](guide/security) for more information about XSRF and Angular's `XSRFStrategy` counter measures.
 
 
 {@a override-default-request-options}
@@ -370,7 +370,7 @@ Remember to include this provider during setup when unit testing the app's HTTP 
 {@example 'server-communication/ts/src/app/toh/hero.service.ts' region='addhero'}
 
 You can confirm that `DefaultRequestOptions` is working by examing HTTP requests in the browser developer tools' network tab.
-If you're short-circuiting the server call with something like the [_in-memory web api_](#in-mem-web-api),
+If you're short-circuiting the server call with something like the [_in-memory web api_](guide/server-communication#in-mem-web-api),
 try commenting-out the `addHero` header option, 
 set a breakpoint on the POST call, and step through the request processing
 to verify the header is there.

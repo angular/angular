@@ -11,11 +11,11 @@ In this cookbook we show how to use `ComponentFactoryResolver` to add components
 
 <a id="toc"></a>## Table of contents
 
-   [Dynamic Component Loading](#dynamic-loading)
+   [Dynamic Component Loading](guide/dynamic-component-loader#dynamic-loading)
 
-   [Where to load the component](#where-to-load)
+   [Where to load the component](guide/dynamic-component-loader#where-to-load)
 
-   [Loading components](#loading-components)
+   [Loading components](guide/dynamic-component-loader#loading-components)
 
 <a id="dynamic-loading"></a>## Dynamic Component Loading      
 

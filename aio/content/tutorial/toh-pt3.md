@@ -117,8 +117,8 @@ Notice that  we have an `AppComponent` in a file named `app.component.ts` and ou
 
 All of our component names end in "Component".  All of our component file names end in ".component".
 
-We spell our file names in lower **[dash case](../guide/glossary.html#dash-case)** 
-(AKA **[kebab-case](../guide/glossary.html#kebab-case)**) so we don't worry about
+We spell our file names in lower **[dash case](guide/glossary)** 
+(AKA **[kebab-case](guide/glossary)**) so we don't worry about
 case sensitivity on the server or in source control.
 
 <!-- TODO
@@ -182,7 +182,7 @@ Notice that the `hero` property is the ***target*** of a property binding &mdash
 
 Angular insists that we declare a ***target*** property to be an ***input*** property.
 If we don't, Angular rejects the binding and throws an error.
-We explain input properties in more detail [here](../guide/attribute-directives.html#why-input) 
+We explain input properties in more detail [here](guide/attribute-directives) 
 where we also explain why *target* properties require this special treatment and 
 *source* properties do not.There are a couple of ways we can declare that `hero` is an *input*. 
 We'll do it the way we *prefer*, by annotating the `hero` property with the `@Input` decorator that we imported earlier.
@@ -191,7 +191,7 @@ We'll do it the way we *prefer*, by annotating the `hero` property with the `@In
 
 
 Learn more about the `@Input()` decorator in the 
-[Attribute Directives](../guide/attribute-directives.html#input) chapter.
+[Attribute Directives](guide/attribute-directives) chapter.
 
 ## Refresh the AppModule
 We return to the `AppModule`, the application's root module, and teach it to use the `HeroDetailComponent`.
@@ -362,4 +362,4 @@ That's not sustainable.
 We should refactor data access to a separate service
 and share it among the components that need data. 
 
-We’ll learn to create services in the [next tutorial](toh-pt4.html) chapter.
+We’ll learn to create services in the [next tutorial](tutorial/toh-pt4) chapter.
