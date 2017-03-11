@@ -89,8 +89,8 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;
     useClass: typeof WebWorkerPlatformLocation;
 } | {
-    provide: InjectionToken<(() => void)[]>;
-    useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () => Promise<boolean>;
+    provide: InjectionToken<AppInitFn[]>;
+    useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => AppInitFn;
     multi: boolean;
     deps: (typeof NgZone | typeof PlatformLocation)[];
 } | {

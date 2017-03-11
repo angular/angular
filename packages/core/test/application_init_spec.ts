@@ -5,6 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
 import {TestBed, async, inject} from '../testing';
 
@@ -24,28 +27,59 @@ export function main() {
     });
 
     describe('with async initializers', () => {
-      let resolve: (result: any) => void;
-      let promise: Promise<any>;
-      beforeEach(() => {
-        promise = new Promise((res) => { resolve = res; });
-        TestBed.configureTestingModule(
-            {providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => promise}]});
+      describe('Promise', () => {
+        let resolve: (result: any) => void;
+        let promise: Promise<any>;
+        beforeEach(() => {
+          promise = new Promise((res) => { resolve = res; });
+          TestBed.configureTestingModule(
+              {providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => promise}]});
+        });
+
+        it('should update the status once all async initializers are done',
+           async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+             let completerResolver = false;
+             setTimeout(() => {
+               completerResolver = true;
+               resolve(null);
+             });
+
+             expect(status.done).toBe(false);
+             status.donePromise.then(() => {
+               expect(status.done).toBe(true);
+               expect(completerResolver).toBe(true);
+             });
+           })));
       });
 
-      it('should update the status once all async initializers are done',
-         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
-           let completerResolver = false;
-           setTimeout(() => {
-             completerResolver = true;
-             resolve(null);
-           });
+      describe('Observable', () => {
+        let observer: Observer<any>;
+        let observable: Observable<any>;
+        beforeEach(() => {
+          observable = new Observable((obs: Observer<any>) => {
+            observer = obs;
+            return () => {};
+          });
+          TestBed.configureTestingModule(
+              {providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => observable}]});
+        });
 
-           expect(status.done).toBe(false);
-           status.donePromise.then(() => {
-             expect(status.done).toBe(true);
-             expect(completerResolver).toBe(true);
-           });
-         })));
+        it('should update the status once all async initializers are done',
+           async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+             let completer = false;
+             setTimeout(() => {
+               completer = true;
+               observer.next(null);
+               observer.complete();
+             });
+
+             expect(status.done).toBe(false);
+             status.donePromise.then(() => {
+               expect(status.done).toBe(true);
+               expect(completer).toBe(true);
+             });
+           })));
+      });
     });
   });
 }
