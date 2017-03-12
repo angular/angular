@@ -323,18 +323,16 @@ describe('uploadServerFactory', () => {
       });
 
 
-      it('should accept SHAs with leading zeros (but not ignore them)', done => {
-        const sha41 = '0'.repeat(41);
+      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
         const sha40 = '0'.repeat(40);
+        const sha41 = `0${sha40}`;
 
-        const request41 = agent.get(`/create-build/${pr}/${sha41}`);
-        const request40 = agent.get(`/create-build/${pr}/${sha40}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar');
+        const request40 = agent.get(`/create-build/${pr}/${sha40}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
+        const request41 = agent.get(`/create-build/${pr}/${sha41}`).set('AUTHORIZATION', 'baz').set('X-FILE', 'qux');
 
         Promise.all([
-          promisifyRequest(request41.expect(404)),
           promisifyRequest(request40.expect(201)),
+          promisifyRequest(request41.expect(404)),
         ]).then(done, done.fail);
       });
 

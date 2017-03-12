@@ -127,12 +127,14 @@ describe(`nginx`, () => {
       });
 
 
-      it('should accept SHAs with leading zeros (but not ignore them)', done => {
-        const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
+      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
+        const bodyRegex9 = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+        const bodyRegex0 = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
 
         Promise.all([
           h.runCmd(`curl -iL ${scheme}://pr${pr}-0${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyRegex)),
+          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}`).then(h.verifyResponse(200, bodyRegex9)),
+          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyRegex0)),
         ]).then(done);
       });
 
@@ -229,7 +231,7 @@ describe(`nginx`, () => {
       });
 
 
-      it('should accept SHAs with leading zeros (but not ignore them)', done => {
+      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
         const cmdPrefix = `curl -iLX POST  ${scheme}://${host}/create-build/${pr}`;
         const bodyRegex = /Missing or empty 'AUTHORIZATION' header/;
 
