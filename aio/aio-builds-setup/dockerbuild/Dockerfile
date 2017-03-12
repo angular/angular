@@ -88,10 +88,10 @@ RUN printenv | grep AIO_ >> /etc/environment
 
 # Set up dnsmasq
 COPY dnsmasq/dnsmasq.conf /etc/
-RUN sed -i "s|{{\$AIO_NGINX_HOSTNAME}}|$AIO_NGINX_HOSTNAME|" /etc/dnsmasq.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|" /etc/dnsmasq.conf
-RUN sed -i "s|{{\$TEST_AIO_NGINX_HOSTNAME}}|$TEST_AIO_NGINX_HOSTNAME|" /etc/dnsmasq.conf
-RUN sed -i "s|{{\$TEST_AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$AIO_NGINX_HOSTNAME}}|$AIO_NGINX_HOSTNAME|g" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$TEST_AIO_NGINX_HOSTNAME}}|$TEST_AIO_NGINX_HOSTNAME|g" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$TEST_AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/dnsmasq.conf
 
 
 # Set up SSL/TLS certificates
@@ -107,27 +107,27 @@ RUN update-ca-certificates
 RUN rm /etc/nginx/sites-enabled/*
 
 COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$AIO_DOMAIN_NAME|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$AIO_NGINX_LOGS_DIR|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$AIO_UPLOAD_MAX_SIZE|" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$AIO_UPLOAD_PORT|" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$AIO_DOMAIN_NAME|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$AIO_NGINX_LOGS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/sites-available/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$AIO_UPLOAD_PORT|g" /etc/nginx/sites-available/aio-builds-prod.conf
 RUN ln -s /etc/nginx/sites-available/aio-builds-prod.conf /etc/nginx/sites-enabled/aio-builds-prod.conf
 
 COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$TEST_AIO_DOMAIN_NAME|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$TEST_AIO_NGINX_LOGS_DIR|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$TEST_AIO_UPLOAD_MAX_SIZE|" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$TEST_AIO_UPLOAD_PORT|" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$TEST_AIO_DOMAIN_NAME|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$TEST_AIO_NGINX_LOGS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$TEST_AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/sites-available/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$TEST_AIO_UPLOAD_PORT|g" /etc/nginx/sites-available/aio-builds-test.conf
 RUN ln -s /etc/nginx/sites-available/aio-builds-test.conf /etc/nginx/sites-enabled/aio-builds-test.conf
 
 
