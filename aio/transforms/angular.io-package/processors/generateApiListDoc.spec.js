@@ -83,11 +83,12 @@ describe('generateApiListDoc processor', () => {
     ]);
   });
 
-  it('should ignore internal exports', () => {
+  it('should ignore internal and private exports', () => {
     const processor = processorFactory();
     const docs = [
       { docType: 'module', id: '@angular/common/index', exports: [
         { docType: 'directive', name: 'AaaAaa', path: 'aaa', internal: true },
+        { docType: 'class', name: 'XxxXxx', path: 'xxx', privateExport: true },
         { docType: 'pipe', name: 'BbbBbb', path: 'bbb' }
       ]}
     ];
