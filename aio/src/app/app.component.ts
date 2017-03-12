@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { GaService } from 'app/shared/ga.service';
@@ -6,6 +6,7 @@ import { LocationService } from 'app/shared/location.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { SearchService } from 'app/search/search.service';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 
 @Component({
   selector: 'aio-shell',
@@ -23,13 +24,18 @@ export class AppComponent implements OnInit {
   navigationViews: Observable<NavigationViews>;
   selectedNodes: Observable<NavigationNode[]>;
 
-  constructor(
-    documentService: DocumentService,
-    gaService: GaService,
-    private locationService: LocationService,
-    navigationService: NavigationService,
-    private searchService: SearchService) {
+  @ViewChildren('searchBox, searchResults', { read: ElementRef })
+  searchElements: QueryList<ElementRef>;
 
+  @ViewChild(SearchResultsComponent)
+  searchResults: SearchResultsComponent;
+
+  constructor(
+      documentService: DocumentService,
+      gaService: GaService,
+      private locationService: LocationService,
+      navigationService: NavigationService,
+      private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     this.navigationViews = navigationService.navigationViews;
@@ -50,6 +56,16 @@ export class AppComponent implements OnInit {
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+
+    // Hide the search results if we clicked outside both the search box and the search results
+    if (this.searchResults) {
+      const hits = this.searchElements.filter(element => element.nativeElement.contains(eventTarget));
+      if (hits.length === 0) {
+        this.searchResults.hideResults();
+      }
+    }
+
+    // Deal with anchor clicks
     if (eventTarget instanceof HTMLAnchorElement) {
       return this.locationService.handleAnchorClick(eventTarget, button, ctrlKey, metaKey);
     }
