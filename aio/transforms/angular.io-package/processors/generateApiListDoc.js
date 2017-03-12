@@ -24,7 +24,9 @@ function getModuleInfo(moduleDoc) {
   return {
     name: moduleName.toLowerCase(),
     title: moduleName,
-    items: moduleDoc.exports.filter(doc => !doc.internal).map(getExportInfo)
+    items: moduleDoc.exports
+                  // Ignore internals and private exports (indicated by the ɵ prefix)
+                  .filter(doc => !doc.internal && !doc.privateExport).map(getExportInfo)
   };
 }
 
