@@ -84,9 +84,10 @@ describe('upload-server (on HTTP)', () => {
     });
 
 
-    it('should accept SHAs with leading zeros (but not ignore them)', done => {
+    it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
       Promise.all([
         h.runCmd(`${curl} http://${host}/create-build/${pr}/0${sha9}`).then(h.verifyResponse(404)),
+        h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).then(h.verifyResponse(500)),
         h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha0}`).then(h.verifyResponse(500)),
       ]).then(done);
     });
