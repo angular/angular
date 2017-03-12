@@ -67,4 +67,12 @@ describe('SearchBoxComponent', () => {
       expect(search.search).toHaveBeenCalledWith('some query');
     }));
   });
+
+  describe('on click', () => {
+    it('should call the search service on click', inject([SearchService], (search: SearchService) => {
+      const input = fixture.debugElement.query(By.css('input'));
+      input.triggerEventHandler('click', { target: { value: 'some query'}});
+      expect(search.search).toHaveBeenCalledWith('some query');
+    }));
+  });
 });
