@@ -1,9 +1,12 @@
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
+import { By } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { GaService } from 'app/shared/ga.service';
 import { SearchService } from 'app/search/search.service';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { MockSearchService } from 'testing/search.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
@@ -84,6 +87,27 @@ describe('AppComponent', () => {
       anchorElement.click();
       expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
     }));
+
+    it('should intercept clicks not on the search elements and hide the search results', () => {
+      const searchResults: SearchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent)).componentInstance;
+      const docViewer = fixture.debugElement.query(By.css('aio-doc-viewer'));
+      spyOn(searchResults, 'hideResults');
+      docViewer.nativeElement.click();
+      expect(searchResults.hideResults).toHaveBeenCalled();
+    });
+
+    it('should not intercept clicks on any of the search elements', () => {
+      const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
+      const searchResultsComponent: SearchResultsComponent = searchResults.componentInstance;
+      const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+      spyOn(searchResultsComponent, 'hideResults');
+
+      searchResults.nativeElement.click();
+      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
+
+      searchBox.nativeElement.click();
+      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
+    });
   });
 });
 
