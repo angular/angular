@@ -11,7 +11,7 @@ UPLOAD_URL=$AIO_BUILDS_HOST/create-build/$TRAVIS_PULL_REQUEST/$TRAVIS_PULL_REQUE
 
 cd "`dirname $0`/.."
 
-yarn run build
+# Assumes the build step has already run
 tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
 
 exec 3>&1
