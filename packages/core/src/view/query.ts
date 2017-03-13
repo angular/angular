@@ -11,7 +11,6 @@ import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 
-import {createTemplateRef, createViewContainerRef} from './refs';
 import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
 import {declaredViewContainer, filterQueryId, isEmbeddedView, viewParentEl} from './util';
 
@@ -141,8 +140,8 @@ function calcQueryValues(
         (nodeDef.element.template.nodeMatchedQueries & queryDef.filterId) === queryDef.filterId) {
       // check embedded views that were attached at the place of their template.
       const elementData = asElementData(view, i);
-      const embeddedViews = elementData.embeddedViews;
-      if (embeddedViews) {
+      if (nodeDef.flags & NodeFlags.EmbeddedViews) {
+        const embeddedViews = elementData.viewContainer._embeddedViews;
         for (let k = 0; k < embeddedViews.length; k++) {
           const embeddedView = embeddedViews[k];
           const dvc = declaredViewContainer(embeddedView);
@@ -151,7 +150,7 @@ function calcQueryValues(
           }
         }
       }
-      const projectedViews = elementData.projectedViews;
+      const projectedViews = elementData.template._projectedViews;
       if (projectedViews) {
         for (let k = 0; k < projectedViews.length; k++) {
           const projectedView = projectedViews[k];
@@ -180,10 +179,10 @@ export function getQueryValue(
         value = new ElementRef(asElementData(view, nodeDef.index).renderElement);
         break;
       case QueryValueType.TemplateRef:
-        value = createTemplateRef(view, nodeDef);
+        value = asElementData(view, nodeDef.index).template;
         break;
       case QueryValueType.ViewContainerRef:
-        value = createViewContainerRef(view, nodeDef);
+        value = asElementData(view, nodeDef.index).viewContainer;
         break;
       case QueryValueType.Provider:
         value = asProviderData(view, nodeDef.index).instance;

@@ -355,12 +355,18 @@ export function asTextData(view: ViewData, index: number): TextData {
 export interface ElementData {
   renderElement: any;
   componentView: ViewData;
-  embeddedViews: ViewData[];
+  viewContainer: ViewContainerData;
+  template: TemplateData;
+}
+
+export interface ViewContainerData extends ViewContainerRef { _embeddedViews: ViewData[]; }
+
+export interface TemplateData extends TemplateRef<any> {
   // views that have been created from the template
   // of this element,
   // but inserted into the embeddedViews of another element.
   // By default, this is undefined.
-  projectedViews: ViewData[];
+  _projectedViews: ViewData[];
 }
 
 /**
