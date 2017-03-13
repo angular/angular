@@ -1,0 +1,7 @@
+<md-input-container >
+  <input #searchBox
+         mdInput
+         placeholder="Search"
+         (keyup)="onSearch($event.target.value, $event.which)"
+         (focus)="onSearch($event.target.value)">
+</md-input-container>
