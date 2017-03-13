@@ -8,7 +8,7 @@
 
 import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵDomAnimationEngine as DomAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver, ɵNoopAnimationEngine as NoopAnimationEngine, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
 import {Injectable, NgZone, Provider, RendererFactory2} from '@angular/core';
-import {DomRendererFactory2} from '../../src/dom/dom_renderer';
+import {ɵDomRendererFactory2} from '@angular/platform-browser';
 
 import {AnimationRendererFactory} from './animation_renderer';
 
@@ -31,7 +31,7 @@ export function instantiateDefaultStyleNormalizer() {
 }
 
 export function instantiateRendererFactory(
-    renderer: DomRendererFactory2, engine: AnimationEngine, zone: NgZone) {
+    renderer: ɵDomRendererFactory2, engine: AnimationEngine, zone: NgZone) {
   return new AnimationRendererFactory(renderer, engine, zone);
 }
 
@@ -45,7 +45,7 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
     provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [DomRendererFactory2, AnimationEngine, NgZone]
+    deps: [ɵDomRendererFactory2, AnimationEngine, NgZone]
   }
 ];
 
@@ -57,6 +57,6 @@ export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationEngine, useClass: NoopAnimationEngine}, {
     provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [DomRendererFactory2, AnimationEngine, NgZone]
+    deps: [ɵDomRendererFactory2, AnimationEngine, NgZone]
   }
 ];

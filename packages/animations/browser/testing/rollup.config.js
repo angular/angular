@@ -7,13 +7,15 @@
  */
 
 export default {
-  entry: '../../../../dist/packages-dist/animations/@angular/animations/browser/testing.es5.js',
-  dest: '../../../../dist/packages-dist/animations/bundles/animations-browser-testing.umd.js',
+  entry:
+      '../../../../dist/packages-dist/platform-browser/@angular/platform-browser/animations/testing.es5.js',
+  dest:
+      '../../../../dist/packages-dist/platform-browser/bundles/platform-browser-animations-testing.umd.js',
   format: 'umd',
-  moduleName: 'ng.animations.browser.testing',
+  moduleName: 'ng.platformBrowser.testing',
   globals: {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
-    '@angular/animations': 'ng.animations'
+    '@angular/platform-browser': 'ng.platformBrowser'
   }
 };

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {DomAnimationEngine} from '../../src/render/dom_animation_engine';
-import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
+import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/mock_animation_driver';
 
 function makeTrigger(name: string, steps: any) {
   const triggerData = trigger(name, steps);

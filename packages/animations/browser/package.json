@@ -1,6 +1,0 @@
-{
-  "typings": "../typings/browser/index.d.ts",
-  "main": "../bundles/animation-browser.umd.js",
-  "module": "../@angular/animations/browser.es5.js",
-  "es2015": "../@angular/animations/browser.js"
-}
