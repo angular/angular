@@ -6,6 +6,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 @Injectable()
 export class LocationService {
 
+  private readonly urlParser = document.createElement('a');
   private urlSubject = new ReplaySubject<string>(1);
   currentUrl = this.urlSubject.asObservable();
 
@@ -59,5 +60,45 @@ export class LocationService {
     }, '');
 
     this.platformLocation.replaceState({}, label, this.platformLocation.pathname + search);
+  }
+
+  /**
+   * Since we are using `LocationService` to navigate between docs, without the browser
+   * reloading the page, we must intercept clicks on links.
+   * If the link is to a document that we will render, then we navigate using `Location.go()`
+   * and tell the browser not to handle the event.
+   *
+   * In most apps you might do this in a `LinkDirective` attached to anchors but in this app
+   * we have a special situation where the `DocViewerComponent` is displaying semi-static
+   * content that cannot contain directives. So all the links in that content would not be
+   * able to use such a `LinkDirective`. Instead we are adding a click handler to the
+   * `AppComponent`, whose element contains all the of the application and so captures all
+   * link clicks both inside and outside the `DocViewerComponent`.
+   */
+  handleAnchorClick(anchor: HTMLAnchorElement, button: number, ctrlKey: boolean, metaKey: boolean) {
+
+    // Check for modifier keys, which indicate the user wants to control navigation
+    if (button !== 0 || ctrlKey || metaKey) {
+      return true;
+    }
+
+    // If there is a target and it is not `_self` then we take this
+    // as a signal that it doesn't want to be intercepted.
+    // TODO: should we also allow an explicit `_self` target to opt-out?
+    const anchorTarget = anchor.target;
+    if (anchorTarget && anchorTarget !== '_self') {
+      return true;
+    }
+
+    // check for external link
+    const { pathname, search, hash } = anchor;
+    const relativeUrl = pathname + search + hash;
+    this.urlParser.href = relativeUrl;
+    if (anchor.href !== this.urlParser.href) {
+      return true;
+    }
+
+    this.go(this.stripLeadingSlashes(relativeUrl));
+    return false;
   }
 }
