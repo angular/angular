@@ -12,15 +12,16 @@
     "build": "yarn check-env && yarn docs && ng build -prod -sm",
     "test": "yarn check-env && ng test --sourcemap=false",
     "lint": "yarn check-env && ng lint",
-    "pree2e": "webdriver-manager update --standalone false --gecko false",
+    "pree2e": "yarn ~~update-webdriver",
     "e2e": "yarn check-env && ng e2e --no-webdriver-update",
     "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-staging": "firebase use staging --token \"$FIREBASE_TOKEN\" && yarn ~~deploy",
-    "pre~~deploy": "yarn build",
-    "~~deploy": "firebase deploy --message \"Commit: $TRAVIS_COMMIT\" --non-interactive --token \"$FIREBASE_TOKEN\"",
     "check-env": "node ../tools/check-environment.js",
     "docs": "dgeni ./transforms/angular.io-package",
-    "docs-test": "node ../dist/tools/cjs-jasmine/index-tools ../../transforms/**/*.spec.js"
+    "docs-test": "node ../dist/tools/cjs-jasmine/index-tools ../../transforms/**/*.spec.js",
+    "~~update-webdriver": "webdriver-manager update --standalone false --gecko false",
+    "pre~~deploy": "yarn build",
+    "~~deploy": "firebase deploy --message \"Commit: $TRAVIS_COMMIT\" --non-interactive --token \"$FIREBASE_TOKEN\""
   },
   "private": true,
   "dependencies": {
