@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererType2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵccf as createComponentFactory, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererType2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵConsole as Console, ɵERROR_COMPONENT_TYPE, ɵLIFECYCLE_HOOKS_VALUES, ɵReflectorReader, ɵccf as createComponentFactory, ɵreflector, ɵstringify as stringify} from '@angular/core';
+
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
@@ -49,7 +50,7 @@ export class CompileMetadataResolver {
       private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
       private _summaryResolver: SummaryResolver<any>,
       private _schemaRegistry: ElementSchemaRegistry,
-      private _directiveNormalizer: DirectiveNormalizer,
+      private _directiveNormalizer: DirectiveNormalizer, private _console: Console,
       @Optional() private _staticSymbolCache: StaticSymbolCache,
       private _reflector: ɵReflectorReader = ɵreflector,
       @Optional() @Inject(ERROR_COLLECTOR_TOKEN) private _errorCollector?: ErrorCollector) {}
@@ -665,7 +666,10 @@ export class CompileMetadataResolver {
   }
 
   getInjectableSummary(type: any): cpl.CompileTypeSummary {
-    return {summaryKind: cpl.CompileSummaryKind.Injectable, type: this._getTypeMetadata(type)};
+    return {
+      summaryKind: cpl.CompileSummaryKind.Injectable,
+      type: this._getTypeMetadata(type, null, false)
+    };
   }
 
   private _getInjectableMetadata(type: Type<any>, dependencies: any[] = null):
@@ -677,11 +681,12 @@ export class CompileMetadataResolver {
     return this._getTypeMetadata(type, dependencies);
   }
 
-  private _getTypeMetadata(type: Type<any>, dependencies: any[] = null): cpl.CompileTypeMetadata {
+  private _getTypeMetadata(type: Type<any>, dependencies: any[] = null, throwOnUnknownDeps = true):
+      cpl.CompileTypeMetadata {
     const identifier = this._getIdentifierMetadata(type);
     return {
       reference: identifier.reference,
-      diDeps: this._getDependenciesMetadata(identifier.reference, dependencies),
+      diDeps: this._getDependenciesMetadata(identifier.reference, dependencies, throwOnUnknownDeps),
       lifecycleHooks:
           ɵLIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, identifier.reference)),
     };
@@ -742,8 +747,9 @@ export class CompileMetadataResolver {
     return pipeMeta;
   }
 
-  private _getDependenciesMetadata(typeOrFunc: Type<any>|Function, dependencies: any[]):
-      cpl.CompileDiDependencyMetadata[] {
+  private _getDependenciesMetadata(
+      typeOrFunc: Type<any>|Function, dependencies: any[],
+      throwOnUnknownDeps = true): cpl.CompileDiDependencyMetadata[] {
     let hasUnknownDeps = false;
     const params = dependencies || this._reflector.parameters(typeOrFunc) || [];
 
@@ -797,10 +803,13 @@ export class CompileMetadataResolver {
     if (hasUnknownDeps) {
       const depsTokens =
           dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
-      this._reportError(
-          syntaxError(
-              `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`),
-          typeOrFunc);
+      const message =
+          `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
+      if (throwOnUnknownDeps) {
+        this._reportError(syntaxError(message), typeOrFunc);
+      } else {
+        this._console.warn(`Warning: ${message} This will become an error in Angular v5.x`);
+      }
     }
 
     return dependenciesMetadata;
