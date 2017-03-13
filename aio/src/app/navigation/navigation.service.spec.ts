@@ -73,9 +73,7 @@ describe('NavigationService', () => {
     });
 
 
-    it('should do WHAT(?) if the request fails', () => {
-      console.warn('PENDING: NavigationService navigationViews should do WHAT(?) if the request fails');
-    });
+    it('should do WHAT(?) if the request fails');
   });
 
   describe('selectedNodes', () => {
