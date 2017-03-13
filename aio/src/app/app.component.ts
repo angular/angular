@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, HostListener, ViewChild, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { GaService } from 'app/shared/ga.service';
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   constructor(
     documentService: DocumentService,
     gaService: GaService,
-    locationService: LocationService,
+    private locationService: LocationService,
     navigationService: NavigationService,
     private searchService: SearchService) {
 
@@ -45,5 +45,13 @@ export class AppComponent implements OnInit {
 
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
+  }
+
+  @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey'])
+  onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+    if (eventTarget instanceof HTMLAnchorElement) {
+      return this.locationService.handleAnchorClick(eventTarget, button, ctrlKey, metaKey);
+    }
+    return true;
   }
 }
