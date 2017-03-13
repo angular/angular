@@ -77,13 +77,14 @@ export class Xliff extends Serializer {
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliffParser = new XliffParser();
-    const {locale, mlNodesByMsgId, errors} = xliffParser.parse(content, url);
+    const {locale, msgIdToHtml, errors} = xliffParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
     const converter = new XmlToI18n();
-    Object.keys(mlNodesByMsgId).forEach(msgId => {
-      const {i18nNodes, errors: e} = converter.convert(mlNodesByMsgId[msgId]);
+
+    Object.keys(msgIdToHtml).forEach(msgId => {
+      const {i18nNodes, errors: e} = converter.convert(msgIdToHtml[msgId], url);
       errors.push(...e);
       i18nNodesByMsgId[msgId] = i18nNodes;
     });
@@ -99,8 +100,6 @@ export class Xliff extends Serializer {
 }
 
 class _WriteVisitor implements i18n.Visitor {
-  private _isInIcu: boolean;
-
   visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
   visitContainer(container: i18n.Container, context?: any): xml.Node[] {
@@ -110,18 +109,13 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu, context?: any): xml.Node[] {
-    if (this._isInIcu) {
-      // nested ICU is not supported
-      throw new Error('xliff does not support nested ICU messages');
-    }
-    this._isInIcu = true;
+    const nodes = [new xml.Text(`{${icu.expressionPlaceholder}, ${icu.type}, `)];
 
-    // TODO(vicb): support ICU messages
-    // https://lists.oasis-open.org/archives/xliff/201201/msg00028.html
-    // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-po/xliff-profile-po-1.2-cd02.html
-    const nodes: xml.Node[] = [];
+    Object.keys(icu.cases).forEach((c: string) => {
+      nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`} `));
+    });
 
-    this._isInIcu = false;
+    nodes.push(new xml.Text(`}`));
 
     return nodes;
   }
@@ -149,7 +143,6 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
-    this._isInIcu = false;
     return [].concat(...nodes.map(node => node.visit(this)));
   }
 }
@@ -157,14 +150,14 @@ class _WriteVisitor implements i18n.Visitor {
 // TODO(vicb): add error management (structure)
 // Extract messages as xml nodes from the xliff file
 class XliffParser implements ml.Visitor {
-  private _unitMlNodes: ml.Node[];
+  private _unitMlString: string;
   private _errors: I18nError[];
-  private _mlNodesByMsgId: {[msgId: string]: ml.Node[]};
+  private _msgIdToHtml: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
-    this._unitMlNodes = [];
-    this._mlNodesByMsgId = {};
+    this._unitMlString = null;
+    this._msgIdToHtml = {};
 
     const xml = new XmlParser().parse(xliff, url, false);
 
@@ -172,7 +165,7 @@ class XliffParser implements ml.Visitor {
     ml.visitAll(this, xml.rootNodes, null);
 
     return {
-      mlNodesByMsgId: this._mlNodesByMsgId,
+      msgIdToHtml: this._msgIdToHtml,
       errors: this._errors,
       locale: this._locale,
     };
@@ -181,18 +174,18 @@ class XliffParser implements ml.Visitor {
   visitElement(element: ml.Element, context: any): any {
     switch (element.name) {
       case _UNIT_TAG:
-        this._unitMlNodes = null;
+        this._unitMlString = null;
         const idAttr = element.attrs.find((attr) => attr.name === 'id');
         if (!idAttr) {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._mlNodesByMsgId.hasOwnProperty(id)) {
+          if (this._msgIdToHtml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             ml.visitAll(this, element.children, null);
-            if (this._unitMlNodes) {
-              this._mlNodesByMsgId[id] = this._unitMlNodes;
+            if (typeof this._unitMlString === 'string') {
+              this._msgIdToHtml[id] = this._unitMlString;
             } else {
               this._addError(element, `Message ${id} misses a translation`);
             }
@@ -205,7 +198,11 @@ class XliffParser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        this._unitMlNodes = element.children;
+        const innerTextStart = element.startSourceSpan.end.offset;
+        const innerTextEnd = element.endSourceSpan.start.offset;
+        const content = element.startSourceSpan.start.file.content;
+        const innerText = content.slice(innerTextStart, innerTextEnd);
+        this._unitMlString = innerText;
         break;
 
       case _FILE_TAG:
@@ -242,10 +239,16 @@ class XliffParser implements ml.Visitor {
 class XmlToI18n implements ml.Visitor {
   private _errors: I18nError[];
 
-  convert(nodes: ml.Node[]) {
-    this._errors = [];
+  convert(message: string, url: string) {
+    const xmlIcu = new XmlParser().parse(message, url, true);
+    this._errors = xmlIcu.errors;
+
+    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
+        [] :
+        ml.visitAll(this, xmlIcu.rootNodes);
+
     return {
-      i18nNodes: ml.visitAll(this, nodes),
+      i18nNodes: i18nNodes,
       errors: this._errors,
     };
   }
@@ -265,9 +268,22 @@ class XmlToI18n implements ml.Visitor {
     }
   }
 
-  visitExpansion(icu: ml.Expansion, context: any) {}
+  visitExpansion(icu: ml.Expansion, context: any) {
+    const caseMap: {[value: string]: i18n.Node} = {};
 
-  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {}
+    ml.visitAll(this, icu.cases).forEach((c: any) => {
+      caseMap[c.value] = new i18n.Container(c.nodes, icu.sourceSpan);
+    });
+
+    return new i18n.Icu(icu.switchValue, icu.type, caseMap, icu.sourceSpan);
+  }
+
+  visitExpansionCase(icuCase: ml.ExpansionCase, context: any): any {
+    return {
+      value: icuCase.value,
+      nodes: ml.visitAll(this, icuCase.expression),
+    };
+  }
 
   visitComment(comment: ml.Comment, context: any) {}
 
