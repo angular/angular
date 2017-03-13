@@ -24,21 +24,21 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpp
 
     it('should return /index.html', done => {
       const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
-      const bodyegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+      const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
 
       Promise.all([
-        h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyegex)),
-        h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyegex)),
-        h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyegex)),
+        h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyRegex)),
+        h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyRegex)),
+        h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyRegex)),
       ]).then(done);
     });
 
 
     it('should return /foo/bar.js', done => {
-      const bodyegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
+      const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
 
       h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/bar.js`).
-        then(h.verifyResponse(200, bodyegex)).
+        then(h.verifyResponse(200, bodyRegex)).
         then(done);
     });
 
@@ -51,10 +51,20 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpp
     });
 
 
-    it('should respond with 404 for unknown paths', done => {
+    it('should respond with 404 for unknown paths to files', done => {
       h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz.css`).
         then(h.verifyResponse(404)).
         then(done);
+    });
+
+
+    it('should rewrite to \'index.html\' for unknown paths that don\'t look like files', done => {
+      const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+
+      Promise.all([
+        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz`).then(h.verifyResponse(200, bodyRegex)),
+        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz/`).then(h.verifyResponse(200, bodyRegex)),
+      ]).then(done);
     });
 
 
@@ -93,11 +103,11 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpp
 
 
     it('should accept SHAs with leading zeros (but not ignore them)', done => {
-      const bodyegex = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
+      const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
 
       Promise.all([
         h.runCmd(`curl -iL ${scheme}://pr${pr}-0${sha9}.${host}`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyegex)),
+        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyRegex)),
       ]).then(done);
     });
 

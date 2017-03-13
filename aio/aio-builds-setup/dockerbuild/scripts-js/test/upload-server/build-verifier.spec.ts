@@ -65,8 +65,12 @@ describe('BuildVerifier', () => {
     });
 
 
-    it('should return a promise', () => {
-      expect(bv.verify(pr, createAuthHeader())).toEqual(jasmine.any(Promise));
+    it('should return a promise', done => {
+      const promise = bv.verify(pr, createAuthHeader());
+      promise.then(done);   // Do not complete the test (and release the spies) synchronously
+                            // to avoid running the actual `bvGetPrAuthorTeamMembership()`.
+
+      expect(promise).toEqual(jasmine.any(Promise));
     });
 
 
@@ -194,8 +198,12 @@ describe('BuildVerifier', () => {
     });
 
 
-    it('should return a promise', () => {
-      expect(bv.getPrAuthorTeamMembership(pr)).toEqual(jasmine.any(Promise));
+    it('should return a promise', done => {
+      const promise = bv.getPrAuthorTeamMembership(pr);
+      promise.then(done);   // Do not complete the test (and release the spies) synchronously
+                            // to avoid running the actual `GithubTeams#isMemberBySlug()`.
+
+      expect(promise).toEqual(jasmine.any(Promise));
     });
 
 
