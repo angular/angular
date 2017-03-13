@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -164,17 +164,17 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeClass(el: any, name: string): void { el.classList.remove(name); }
 
-  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
-      void {
-    if (hasVendorPrefix || hasImportant) {
-      el.style.setProperty(style, value, hasImportant ? 'important' : '');
+  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
+    if (flags & RendererStyleFlags2.DashCase) {
+      el.style.setProperty(
+          style, value, !!(flags & RendererStyleFlags2.Important) ? 'important' : '');
     } else {
       el.style[style] = value;
     }
   }
 
-  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
-    if (hasVendorPrefix) {
+  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
+    if (flags & RendererStyleFlags2.DashCase) {
       el.style.removeProperty(style);
     } else {
       // IE requires '' instead of null

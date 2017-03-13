@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
+import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
@@ -127,12 +127,11 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
 
-  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
-      void {
+  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     getDOM().setStyle(el, style, value);
   }
 
-  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
     getDOM().removeStyle(el, style);
   }
 

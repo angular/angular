@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -240,22 +240,20 @@ export class WebWorkerRenderer2 implements Renderer2 {
     ]);
   }
 
-  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
-      void {
+  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     this.callUIWithRenderer('setStyle', [
       new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(style),
       new FnArg(value),
-      new FnArg(hasVendorPrefix),
-      new FnArg(hasImportant),
+      new FnArg(flags),
     ]);
   }
 
-  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
     this.callUIWithRenderer('removeStyle', [
       new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
       new FnArg(style),
-      new FnArg(hasVendorPrefix),
+      new FnArg(flags),
     ]);
   }
 

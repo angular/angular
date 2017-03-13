@@ -9,7 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
+import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
@@ -539,21 +539,20 @@ class DebugRenderer2 implements Renderer2 {
     this.delegate.removeClass(el, name);
   }
 
-  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
-      void {
+  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     const debugEl = getDebugNode(el);
     if (debugEl && debugEl instanceof DebugElement) {
       debugEl.styles[style] = value;
     }
-    this.delegate.setStyle(el, style, value, hasVendorPrefix, hasImportant);
+    this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
+  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
     const debugEl = getDebugNode(el);
     if (debugEl && debugEl instanceof DebugElement) {
       debugEl.styles[style] = null;
     }
-    this.delegate.removeStyle(el, style, hasVendorPrefix);
+    this.delegate.removeStyle(el, style, flags);
   }
 
   setProperty(el: any, name: string, value: any): void {

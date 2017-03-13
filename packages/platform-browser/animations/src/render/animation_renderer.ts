@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent, AnimationTriggerMetadata} from '@angular/animations';
-import {Injectable, NgZone, Renderer2, RendererFactory2, RendererType2} from '@angular/core';
+import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
 import {AnimationEngine} from '../animation_engine';
 
@@ -70,13 +70,12 @@ export class AnimationRenderer implements Renderer2 {
 
   removeClass(el: any, name: string): void { this.delegate.removeClass(el, name); }
 
-  setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean):
-      void {
-    this.delegate.setStyle(el, style, value, hasVendorPrefix, hasImportant);
+  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
+    this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, hasVendorPrefix: boolean): void {
-    this.delegate.removeStyle(el, style, hasVendorPrefix);
+  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
+    this.delegate.removeStyle(el, style, flags);
   }
 
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }

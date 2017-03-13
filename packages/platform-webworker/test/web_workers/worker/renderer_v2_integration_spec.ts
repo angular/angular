@@ -106,10 +106,10 @@ export function main() {
            lastCreatedRenderer.removeClass(workerEl, 'a');
            expect(getDOM().hasClass(el, 'a')).toBe(false);
 
-           lastCreatedRenderer.setStyle(workerEl, 'width', '10px', false, false);
+           lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
            expect(getDOM().getStyle(el, 'width')).toEqual('10px');
 
-           lastCreatedRenderer.removeStyle(workerEl, 'width', false);
+           lastCreatedRenderer.removeStyle(workerEl, 'width');
            expect(getDOM().getStyle(el, 'width')).toEqual('');
 
            lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
