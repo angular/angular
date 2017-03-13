@@ -386,9 +386,9 @@ class RendererAdapter implements RendererV1 {
 
   setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
     if (styleValue != null) {
-      this.delegate.setStyle(renderElement, styleName, styleValue, false, false);
+      this.delegate.setStyle(renderElement, styleName, styleValue);
     } else {
-      this.delegate.removeStyle(renderElement, styleName, false);
+      this.delegate.removeStyle(renderElement, styleName);
     }
   }
 

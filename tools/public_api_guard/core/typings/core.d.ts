@@ -825,17 +825,23 @@ export declare abstract class Renderer2 {
     abstract removeAttribute(el: any, name: string, namespace?: string): void;
     abstract removeChild(parent: any, oldChild: any): void;
     abstract removeClass(el: any, name: string): void;
-    abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+    abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
     abstract selectRootElement(selectorOrNode: string | any): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string): void;
     abstract setProperty(el: any, name: string, value: any): void;
-    abstract setStyle(el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
+    abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
     abstract setValue(node: any, value: string): void;
 }
 
 /** @experimental */
 export declare abstract class RendererFactory2 {
     abstract createRenderer(hostElement: any, type: RendererType2): Renderer2;
+}
+
+/** @experimental */
+export declare enum RendererStyleFlags2 {
+    Important = 1,
+    DashCase = 2,
 }
 
 /** @experimental */
