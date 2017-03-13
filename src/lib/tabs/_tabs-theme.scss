@@ -26,4 +26,12 @@
   .mat-ink-bar {
     background-color: mat-color($primary, 500);
   }
+
+  .mat-tab-label, .mat-tab-link {
+    color: currentColor;
+
+    &.mat-tab-disabled {
+      color: mat-color($foreground, disabled-text);
+    }
+  }
 }
