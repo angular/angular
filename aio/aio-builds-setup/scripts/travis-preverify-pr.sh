@@ -6,7 +6,7 @@ source "`dirname $0`/env.sh"
 
 # Preverify PR
 AIO_GITHUB_ORGANIZATION="angular" \
-AIO_GITHUB_TEAM_SLUGS="angular-core" \
+AIO_GITHUB_TEAM_SLUGS="angular-core,aio-contributors" \
 AIO_GITHUB_TOKEN=$(echo ${GITHUB_TEAM_MEMBERSHIP_CHECK_KEY} | rev) \
 AIO_REPO_SLUG=$TRAVIS_REPO_SLUG \
 AIO_PREVERIFY_PR=$TRAVIS_PULL_REQUEST \
