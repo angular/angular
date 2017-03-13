@@ -7,5 +7,6 @@ yarn-error.log
 
 # Ignore generated content
 /dist
+/tmp
 /src/content/docs
 /.sass-cache
