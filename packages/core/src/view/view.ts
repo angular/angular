@@ -318,12 +318,10 @@ function createViewNodes(view: ViewData) {
 export function checkNoChangesView(view: ViewData) {
   Services.updateDirectives(view, CheckType.CheckNoChanges);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
-  execQueriesAction(
-      view, NodeFlags.TypeContentQuery, NodeFlags.DynamicQuery, CheckType.CheckNoChanges);
   Services.updateRenderer(view, CheckType.CheckNoChanges);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
-  execQueriesAction(
-      view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckNoChanges);
+  // Note: We don't check queries for changes as we didn't do this in v2.x.
+  // TODO(tbosch): investigate if we can enable the check again in v5.x with a nicer error message.
 }
 
 export function checkAndUpdateView(view: ViewData) {
