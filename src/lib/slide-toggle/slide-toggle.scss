@@ -15,7 +15,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
 
 .mat-slide-toggle {
-  display: flex;
+  display: inline-block;
   height: $mat-slide-toggle-height;
 
   margin: $mat-slide-toggle-margin 0;
