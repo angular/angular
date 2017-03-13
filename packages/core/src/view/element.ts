@@ -299,9 +299,9 @@ function setElementStyle(
   }
   const renderer = view.renderer;
   if (renderValue != null) {
-    renderer.setStyle(renderNode, name, renderValue, false, false);
+    renderer.setStyle(renderNode, name, renderValue);
   } else {
-    renderer.removeStyle(renderNode, name, false);
+    renderer.removeStyle(renderNode, name);
   }
 }
 

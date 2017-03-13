@@ -132,6 +132,14 @@ export abstract class RendererFactory2 {
 /**
  * @experimental
  */
+export enum RendererStyleFlags2 {
+  Important = 1 << 0,
+  DashCase = 1 << 1
+}
+
+/**
+ * @experimental
+ */
 export abstract class Renderer2 {
   /**
    * This field can be used to store arbitrary data on this renderer instance.
@@ -169,9 +177,8 @@ export abstract class Renderer2 {
   abstract removeAttribute(el: any, name: string, namespace?: string): void;
   abstract addClass(el: any, name: string): void;
   abstract removeClass(el: any, name: string): void;
-  abstract setStyle(
-      el: any, style: string, value: any, hasVendorPrefix: boolean, hasImportant: boolean): void;
-  abstract removeStyle(el: any, style: string, hasVendorPrefix: boolean): void;
+  abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
+  abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
   abstract setProperty(el: any, name: string, value: any): void;
   abstract setValue(node: any, value: string): void;
   abstract listen(
