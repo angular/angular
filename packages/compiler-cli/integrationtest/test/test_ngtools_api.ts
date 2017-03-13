@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {AngularCompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext, __NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
+import {NodeCompilerHostContext, __NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
 
 const glob = require('glob');
 
