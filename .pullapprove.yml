@@ -20,6 +20,7 @@
 # tbosch - Tobias Bosch
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
+# wardbell - Ward Bell
 
 version: 2
 
@@ -247,7 +248,8 @@ groups:
       files:
         - "aio/*"
     users:
-      - IgorMinar
-      - robwormald
-      - petebacondarwin
+      - IgorMinar #primary
+      - petebacondarwin #secondary
+      - gkalpak
+      - wardbell
       - mhevery #fallback
