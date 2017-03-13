@@ -219,6 +219,35 @@ describe('compiler (unbundled Angular)', () => {
          }));
     }
   });
+
+  describe('errors', () => {
+    it('should only warn if not all arguments of an @Injectable class can be resolved',
+       fakeAsync(() => {
+         const FILES: MockData = {
+           app: {
+             'app.ts': `
+                import {Injectable} from '@angular/core';
+
+                @Injectable()
+                export class MyService {
+                  constructor(a: boolean) {}
+                }
+              `
+           }
+         };
+         const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
+         const aotHost = new MockAotCompilerHost(host);
+         let ok = false;
+         const warnSpy = spyOn(console, 'warn');
+         compile(host, aotHost, expectNoDiagnostics).then(() => ok = true);
+
+         tick();
+
+         expect(ok).toBe(true);
+         expect(warnSpy).toHaveBeenCalledWith(
+             `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
+       }));
+  });
 });
 
 describe('compiler (bundled Angular)', () => {

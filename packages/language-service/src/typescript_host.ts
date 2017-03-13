@@ -7,7 +7,7 @@
  */
 
 import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
-import {Type, ViewEncapsulation} from '@angular/core';
+import {Type, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -115,8 +115,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       result = this._resolver = new CompileMetadataResolver(
           config, moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
-          elementSchemaRegistry, directiveNormalizer, this._staticSymbolCache, this.reflector,
-          (error, type) => this.collectError(error, type && type.filePath));
+          elementSchemaRegistry, directiveNormalizer, new Console(), this._staticSymbolCache,
+          this.reflector, (error, type) => this.collectError(error, type && type.filePath));
     }
     return result;
   }
