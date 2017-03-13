@@ -28,6 +28,8 @@ import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { LinkDirective } from 'app/shared/link.directive';
+import { SearchResultsComponent } from './search/search-results/search-results.component';
+import { SearchBoxComponent } from './search/search-box/search-box.component';
 
 @NgModule({
   imports: [
@@ -47,6 +49,8 @@ import { LinkDirective } from 'app/shared/link.directive';
     NavMenuComponent,
     NavItemComponent,
     LinkDirective,
+    SearchResultsComponent,
+    SearchBoxComponent,
   ],
   providers: [
     ApiService,
