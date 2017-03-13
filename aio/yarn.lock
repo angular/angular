@@ -6835,6 +6835,10 @@ zip-stream@~0.6.0:
     lodash "~3.10.1"
     readable-stream "~1.0.26"
 
-zone.js@^0.7.2, zone.js@^0.7.6:
+zone.js@0.7.8:
+  version "0.7.8"
+  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.8.tgz#4f3fe8834d44597f2639053a0fa438df34fffded"
+
+zone.js@^0.7.2:
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.7.tgz#0d7b7ae7f68012d03438b8a18f5763441bbf9620"
