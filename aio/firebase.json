@@ -4,11 +4,10 @@
   },
   "hosting": {
     "public": "dist",
-    "cleanUrls": true,
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/:path*",
+        "destination": "/content/docs-prerendered/:path*.html"
       }
     ]
   }

@@ -4,33 +4,32 @@
 
 /*global jasmine */
 const { SpecReporter } = require('jasmine-spec-reporter');
+const path = require('path');
+const { BASE_URL, BROWSER_INSTANCES, TMP_SPECS_DIR } = require('./constants');
 
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    './e2e/**/*.e2e-spec.ts'
+    path.join(TMP_SPECS_DIR, 'chunk*.spec.js')
   ],
   capabilities: {
     browserName: 'chrome',
+    shardTestFiles: true,
+    maxInstances: BROWSER_INSTANCES,
     // For Travis
     chromeOptions: {
       binary: process.env.CHROME_BIN
     }
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: BASE_URL,
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
     print: function() {}
   },
-  beforeLaunch: function() {
-    require('ts-node').register({
-      project: 'e2e'
-    });
-  },
   onPrepare() {
-    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+    jasmine.getEnv().addReporter(new SpecReporter({spec: {displayStacktrace: true}}));
   }
 };
