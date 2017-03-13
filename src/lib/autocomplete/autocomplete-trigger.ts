@@ -114,7 +114,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /* Whether or not the autocomplete panel is open. */
   get panelOpen(): boolean {
-    return this._panelOpen;
+    return this._panelOpen && this.autocomplete.showPanel;
   }
 
   /** Opens the autocomplete suggestion panel. */
