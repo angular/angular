@@ -221,4 +221,124 @@ describe('LocationService', () => {
       expect(query).toContain('a%26b%2Bc%20d=value');
     });
   });
+
+  describe('handleAnchorClick', () => {
+    let service: LocationService, anchor: HTMLAnchorElement;
+    beforeEach(() => {
+      service = injector.get(LocationService);
+      anchor = document.createElement('a');
+    });
+
+    describe('intercepting', () => {
+      it('should intercept clicks on anchors for relative local urls', () => {
+        anchor.href = 'some/local/url';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url');
+        expect(result).toBe(false);
+      });
+
+      it('should intercept clicks on anchors for absolute local urls', () => {
+        anchor.href = '/some/local/url';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url');
+        expect(result).toBe(false);
+      });
+
+      it('should intercept clicks on anchors for local urls, with query params', () => {
+        anchor.href = 'some/local/url?query=xxx&other=yyy';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url?query=xxx&other=yyy');
+        expect(result).toBe(false);
+      });
+
+      it('should intercept clicks on anchors for local urls, with hash fragment', () => {
+        anchor.href = 'some/local/url#somefragment';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url#somefragment');
+        expect(result).toBe(false);
+      });
+
+      it('should intercept clicks on anchors for local urls, with query params and hash fragment', () => {
+        anchor.href = 'some/local/url?query=xxx&other=yyy#somefragment';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url?query=xxx&other=yyy#somefragment');
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('not intercepting', () => {
+      it('should not intercept clicks on anchors for external urls', () => {
+        anchor.href = 'http://other.com/some/local/url?query=xxx&other=yyy#somefragment';
+        spyOn(service, 'go');
+        let result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+
+        anchor.href = 'some/local/url.pdf';
+        anchor.protocol = 'ftp';
+        result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should not intercept clicks on anchors if button is not zero', () => {
+        anchor.href = 'some/local/url';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 1, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should not intercept clicks on anchors if ctrl key is pressed', () => {
+        anchor.href = 'some/local/url';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, true, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should not intercept clicks on anchors if meta key is pressed', () => {
+        anchor.href = 'some/local/url';
+        spyOn(service, 'go');
+        const result = service.handleAnchorClick(anchor, 0, false, true);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('should not intercept clicks on links with (non-_self) targets', () => {
+        anchor.href = 'some/local/url';
+        spyOn(service, 'go');
+
+        anchor.target = '_blank';
+        let result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+
+        anchor.target = '_parent';
+        result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+
+        anchor.target = '_top';
+        result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+
+        anchor.target = 'other-frame';
+        result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+
+        anchor.target = '_self';
+        result = service.handleAnchorClick(anchor, 0, false, false);
+        expect(service.go).toHaveBeenCalledWith('some/local/url');
+        expect(result).toBe(false);
+      });
+    });
+  });
 });
