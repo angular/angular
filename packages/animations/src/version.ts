@@ -12,21 +12,7 @@
  * Entry point for all public APIs of the animation package.
  */
 
-/**
- * @whatItDoes Represents the version of angular/animations
- *
- * @stable
- */
-export class Version {
-  constructor(public full: string) {}
-
-  get major(): string { return this.full.split('.')[0]; }
-
-  get minor(): string { return this.full.split('.')[1]; }
-
-  get patch(): string { return this.full.split('.').slice(2).join('.'); }
-}
-
+import {Version} from '@angular/core';
 /**
  * @stable
  */

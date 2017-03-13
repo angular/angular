@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, style, transition, trigger} from '@angular/animations';
-import {ɵAnimationEngine, ɵNoopAnimationEngine} from '@angular/animations/browser';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
+import {ɵAnimationEngine} from '@angular/platform-browser/animations';
 import {NoopAnimationsModule} from '../src/module';
+import {NoopAnimationEngine} from '../src/render/noop_animation_engine';
 
 export function main() {
   describe('NoopAnimationsModule', () => {
@@ -18,7 +18,7 @@ export function main() {
 
     it('the engine should be a Noop engine', () => {
       const engine = TestBed.get(ɵAnimationEngine);
-      expect(engine instanceof ɵNoopAnimationEngine).toBeTruthy();
+      expect(engine instanceof NoopAnimationEngine).toBeTruthy();
     });
 
     it('should flush and fire callbacks when the zone becomes stable', (async) => {
