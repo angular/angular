@@ -44,24 +44,29 @@ export class ViewCompiler {
 
     const statements: o.Statement[] = [];
 
-    const customRenderData: o.LiteralMapEntry[] = [];
-    if (component.template.animations && component.template.animations.length) {
-      customRenderData.push(new o.LiteralMapEntry(
-          'animation', convertValueToOutputAst(component.template.animations), true));
-    }
+    let renderComponentVarName: string;
+    if (!component.isHost) {
+      const customRenderData: o.LiteralMapEntry[] = [];
+      if (component.template.animations && component.template.animations.length) {
+        customRenderData.push(new o.LiteralMapEntry(
+            'animation', convertValueToOutputAst(component.template.animations), true));
+      }
 
-    const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
-    statements.push(
-        renderComponentVar
-            .set(o.importExpr(createIdentifier(Identifiers.createRendererType2)).callFn([
-              new o.LiteralMapExpr([
-                new o.LiteralMapEntry('encapsulation', o.literal(component.template.encapsulation)),
-                new o.LiteralMapEntry('styles', styles),
-                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
-              ])
-            ]))
-            .toDeclStmt(
-                o.importType(createIdentifier(Identifiers.RendererType2)), [o.StmtModifier.Final]));
+      const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
+      renderComponentVarName = renderComponentVar.name;
+      statements.push(
+          renderComponentVar
+              .set(o.importExpr(createIdentifier(Identifiers.createRendererType2))
+                       .callFn([new o.LiteralMapExpr([
+                         new o.LiteralMapEntry(
+                             'encapsulation', o.literal(component.template.encapsulation)),
+                         new o.LiteralMapEntry('styles', styles),
+                         new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
+                       ])]))
+              .toDeclStmt(
+                  o.importType(createIdentifier(Identifiers.RendererType2)),
+                  [o.StmtModifier.Final]));
+    }
 
     const viewBuilderFactory = (parent: ViewBuilder): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
@@ -74,7 +79,7 @@ export class ViewCompiler {
 
     statements.push(...visitor.build());
 
-    return new ViewCompileResult(statements, visitor.viewName, renderComponentVar.name);
+    return new ViewCompileResult(statements, visitor.viewName, renderComponentVarName);
   }
 }
 
@@ -204,7 +209,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     let updateFn: o.Expression;
     if (updateStmts.length > 0) {
       const preStmts: o.Statement[] = [];
-      if (!this.component.isHost) {
+      if (!this.component.isHost && o.findReadVarNames(updateStmts).has(COMP_VAR.name)) {
         preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
       }
       updateFn = o.fn(
@@ -835,7 +840,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     if (handleEventStmts.length > 0) {
       const preStmts: o.Statement[] =
           [ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
-      if (!this.component.isHost) {
+      if (!this.component.isHost && o.findReadVarNames(handleEventStmts).has(COMP_VAR.name)) {
         preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
       }
       handleEventFn = o.fn(

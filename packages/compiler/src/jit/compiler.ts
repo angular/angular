@@ -258,15 +258,17 @@ export class JitCompiler implements Compiler {
         usedPipes);
     const statements =
         stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
+    let viewClassAndRendererTypeVars = compMeta.isHost ?
+        [compileResult.viewClassVar] :
+        [compileResult.viewClassVar, compileResult.rendererTypeVar];
     let viewClass: any;
     let rendererType: any;
     if (!this._compilerConfig.useJit) {
-      [viewClass, rendererType] = interpretStatements(
-          statements, [compileResult.viewClassVar, compileResult.rendererTypeVar]);
+      [viewClass, rendererType] = interpretStatements(statements, viewClassAndRendererTypeVars);
     } else {
       [viewClass, rendererType] = jitStatements(
           templateJitUrl(template.ngModule.type, template.compMeta), statements,
-          [compileResult.viewClassVar, compileResult.rendererTypeVar]);
+          viewClassAndRendererTypeVars);
     }
     template.compiled(viewClass, rendererType);
   }

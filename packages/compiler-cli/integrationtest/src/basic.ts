@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
 import {Component, Inject, LOCALE_ID, TRANSLATIONS_FORMAT} from '@angular/core';
 
 

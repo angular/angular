@@ -1001,6 +1001,28 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
 }
 
+export function findReadVarNames(stmts: Statement[]): Set<string> {
+  const visitor = new _ReadVarVisitor();
+  visitor.visitAllStatements(stmts, null);
+  return visitor.varNames;
+}
+
+class _ReadVarVisitor extends RecursiveAstVisitor {
+  varNames = new Set<string>();
+  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
+    // Don't descend into nested functions
+    return stmt;
+  }
+  visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
+    // Don't descend into nested classes
+    return stmt;
+  }
+  visitReadVarExpr(ast: ReadVarExpr, context: any): any {
+    this.varNames.add(ast.name);
+    return null;
+  }
+}
+
 export function applySourceSpanToStatementIfNeeded(
     stmt: Statement, sourceSpan: ParseSourceSpan): Statement {
   if (!sourceSpan) {

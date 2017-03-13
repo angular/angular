@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {platformBrowser} from '@angular/platform-browser';
 import {BasicComp} from './basic';
 import {MainModuleNgFactory} from './module.ngfactory';
 

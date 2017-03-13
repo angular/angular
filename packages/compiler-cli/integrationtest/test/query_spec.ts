@@ -7,7 +7,7 @@
  */
 
 import './init';
-import {DebugElement, QueryList} from '@angular/core';
+import {QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {CompForChildQuery, CompWithChildQuery} from '../src/queries';
 import {createComponent} from './util';
@@ -16,7 +16,7 @@ describe('child queries', () => {
   it('should support compiling child queries', () => {
     const childQueryCompFixture = createComponent(CompWithChildQuery);
     const debugElement = childQueryCompFixture.debugElement;
-    const compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
+    debugElement.query(By.directive(CompWithChildQuery));
     expect(childQueryCompFixture.componentInstance.child).toBeDefined();
     expect(childQueryCompFixture.componentInstance.child instanceof CompForChildQuery).toBe(true);
 
@@ -25,7 +25,7 @@ describe('child queries', () => {
   it('should support compiling children queries', () => {
     const childQueryCompFixture = createComponent(CompWithChildQuery);
     const debugElement = childQueryCompFixture.debugElement;
-    const compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
+    debugElement.query(By.directive(CompWithChildQuery));
 
     childQueryCompFixture.detectChanges();
 
