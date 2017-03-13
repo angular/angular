@@ -217,11 +217,10 @@ module.exports =
             {
               docTypes: ['module'],
               getPath: function computeModulePath(doc) {
-                doc.moduleFolder =
-                    doc.id.replace(/^@angular\//, API_SEGMENT + '/').replace(/\/index$/, '');
+                doc.moduleFolder = `${API_SEGMENT}/${doc.id.replace(/\/index$/, '')}`;
                 return doc.moduleFolder;
               },
-              outputPathTemplate: '${moduleFolder}/index.json'
+              outputPathTemplate: '${moduleFolder}.json'
             },
             {
               docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe']),
