@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LowerCasePipe, NgIf} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Pipe} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, Injectable, InjectionToken, Input, NgModule, Pipe} from '@angular/core';
 
 @Injectable()
 export class SomeService {
