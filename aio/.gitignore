@@ -1,0 +1,11 @@
+# Ignore node_modules
+node_modules
+
+# Ignore npm/yarn debug log
+npm-debug.log
+yarn-error.log
+
+# Ignore generated content
+/dist
+/src/content/docs
+/.sass-cache
