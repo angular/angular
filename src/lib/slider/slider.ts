@@ -1,26 +1,29 @@
 import {
   Component,
   ElementRef,
-  Input,
-  Output,
-  ViewEncapsulation,
-  forwardRef,
   EventEmitter,
-  Optional
+  forwardRef,
+  Input,
+  OnDestroy,
+  Optional,
+  Output,
+  Renderer,
+  ViewEncapsulation
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {HammerInput, coerceBooleanProperty, coerceNumberProperty} from '../core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {coerceBooleanProperty, coerceNumberProperty, HammerInput} from '../core';
 import {Dir} from '../core/rtl/dir';
 import {
-  PAGE_UP,
-  PAGE_DOWN,
+  DOWN_ARROW,
   END,
   HOME,
   LEFT_ARROW,
-  UP_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
   RIGHT_ARROW,
-  DOWN_ARROW
+  UP_ARROW
 } from '../core/keyboard/keycodes';
+import {FocusOrigin, FocusOriginMonitor} from '../core/style/focus-origin-monitor';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -66,6 +69,7 @@ export class MdSliderChange {
   providers: [MD_SLIDER_VALUE_ACCESSOR],
   host: {
     '[class.mat-slider]': 'true',
+    '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',
     '(click)': '_onClick($event)',
     '(keydown)': '_onKeydown($event)',
@@ -80,7 +84,6 @@ export class MdSliderChange {
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuenow]': 'value',
-    '[class.mat-slider-active]': '_isActive',
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-slider-has-ticks]': 'tickInterval',
     '[class.mat-slider-horizontal]': '!vertical',
@@ -89,13 +92,13 @@ export class MdSliderChange {
     '[class.mat-slider-thumb-label-showing]': 'thumbLabel',
     '[class.mat-slider-vertical]': 'vertical',
     '[class.mat-slider-min-value]': '_isMinValue',
-    '[class.mat-slider-hide-last-tick]': '_isMinValue && _thumbGap && _invertAxis',
+    '[class.mat-slider-hide-last-tick]': 'disabled || _isMinValue && _thumbGap && _invertAxis',
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSlider implements ControlValueAccessor {
+export class MdSlider implements ControlValueAccessor, OnDestroy {
   /** Whether or not the slider is disabled. */
   @Input()
   get disabled(): boolean { return this._disabled; }
@@ -369,8 +372,15 @@ export class MdSlider implements ControlValueAccessor {
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
-  constructor(@Optional() private _dir: Dir, elementRef: ElementRef) {
-    this._renderer = new SliderRenderer(elementRef);
+  constructor(renderer: Renderer, private _elementRef: ElementRef,
+              private _focusOriginMonitor: FocusOriginMonitor, @Optional() private _dir: Dir) {
+    this._focusOriginMonitor.monitor(this._elementRef.nativeElement, renderer, true)
+        .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');
+    this._renderer = new SliderRenderer(this._elementRef);
+  }
+
+  ngOnDestroy() {
+    this._focusOriginMonitor.unmonitor(this._elementRef.nativeElement);
   }
 
   _onMouseenter() {
@@ -389,7 +399,6 @@ export class MdSlider implements ControlValueAccessor {
       return;
     }
 
-    this._isActive = true;
     this._isSliding = false;
     this._renderer.addFocus();
     this._updateValueFromPosition({x: event.clientX, y: event.clientY});
@@ -422,7 +431,6 @@ export class MdSlider implements ControlValueAccessor {
 
     event.preventDefault();
     this._isSliding = true;
-    this._isActive = true;
     this._renderer.addFocus();
     this._updateValueFromPosition({x: event.center.x, y: event.center.y});
   }
@@ -432,8 +440,14 @@ export class MdSlider implements ControlValueAccessor {
     this._emitValueIfChanged();
   }
 
+  _onFocus() {
+    // We save the dimensions of the slider here so we can use them to update the spacing of the
+    // ticks and determine where on the slider click and slide events happen.
+    this._sliderDimensions = this._renderer.getSliderDimensions();
+    this._updateTickIntervalPercent();
+  }
+
   _onBlur() {
-    this._isActive = false;
     this.onTouched();
   }
 

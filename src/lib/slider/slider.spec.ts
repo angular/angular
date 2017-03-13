@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormControl, FormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './index';
 import {TestGestureConfig} from './test-gesture-config';
 import {RtlModule} from '../core/rtl/dir';
 import {
-  UP_ARROW,
-  RIGHT_ARROW,
   DOWN_ARROW,
-  PAGE_DOWN,
-  PAGE_UP,
   END,
   HOME,
-  LEFT_ARROW
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW
 } from '../core/keyboard/keycodes';
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '../core/testing/dispatch-events';
 
@@ -23,7 +23,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule.forRoot(), RtlModule.forRoot(), ReactiveFormsModule, FormsModule],
+      imports: [MdSliderModule, ReactiveFormsModule, FormsModule, RtlModule],
       declarations: [
         StandardSlider,
         DisabledSlider,
@@ -129,28 +129,6 @@ describe('MdSlider', () => {
       expect(trackFillElement.style.transform).toContain('scaleX(0.86)');
     });
 
-    it('should add the mat-slider-active class on click', () => {
-      expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
-
-      dispatchClickEventSequence(sliderNativeElement, 0.23);
-      fixture.detectChanges();
-
-      expect(sliderNativeElement.classList).toContain('mat-slider-active');
-    });
-
-    it('should remove the mat-slider-active class on blur', () => {
-      dispatchClickEventSequence(sliderNativeElement, 0.95);
-      fixture.detectChanges();
-
-      expect(sliderNativeElement.classList).toContain('mat-slider-active');
-
-      // Call the `onBlur` handler directly because we cannot simulate a focus event in unit tests.
-      sliderInstance._onBlur();
-      fixture.detectChanges();
-
-      expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
-    });
-
     it('should add and remove the mat-slider-sliding class when sliding', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
 
@@ -167,11 +145,6 @@ describe('MdSlider', () => {
 
     it('should have thumb gap when at min value', () => {
       expect(trackFillElement.style.transform).toContain('translateX(-7px)');
-
-      dispatchClickEventSequence(sliderNativeElement, 0);
-      fixture.detectChanges();
-
-      expect(trackFillElement.style.transform).toContain('translateX(-10px)');
     });
 
     it('should not have thumb gap when not at min value', () => {
@@ -571,29 +544,6 @@ describe('MdSlider', () => {
 
       // The thumb label text is set to the slider's value. These should always be the same.
       expect(thumbLabelTextElement.textContent).toBe(`${sliderInstance.value}`);
-    });
-
-    it('should show the thumb label on click', () => {
-      expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
-      expect(sliderNativeElement.classList).toContain('mat-slider-thumb-label-showing');
-
-      dispatchClickEventSequence(sliderNativeElement, 0.49);
-      fixture.detectChanges();
-
-      // The thumb label appears when the slider is active and the 'mat-slider-thumb-label-showing'
-      // class is applied.
-      expect(sliderNativeElement.classList).toContain('mat-slider-thumb-label-showing');
-      expect(sliderNativeElement.classList).toContain('mat-slider-active');
-    });
-
-    it('should show the thumb label on slide', () => {
-      expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
-
-      dispatchSlideEventSequence(sliderNativeElement, 0, 0.91, gestureConfig);
-      fixture.detectChanges();
-
-      expect(sliderNativeElement.classList).toContain('mat-slider-thumb-label-showing');
-      expect(sliderNativeElement.classList).toContain('mat-slider-active');
     });
   });
 

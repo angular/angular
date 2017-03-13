@@ -10,6 +10,8 @@
   $mat-slider-disabled-color: rgba(black, 0.26);
   $mat-slider-labeled-min-value-thumb-color: black;
   $mat-slider-labeled-min-value-thumb-label-color: rgba(black, 0.26);
+  $mat-slider-focus-ring-color: rgba(mat-color($accent), 0.2);
+  $mat-slider-focus-ring-min-value-color: rgba(black, 0.12);
 
   .mat-slider-track-background {
     background-color: $mat-slider-off-color;
@@ -17,6 +19,10 @@
 
   .mat-slider-track-fill {
     background-color: mat-color($accent);
+  }
+
+  .mat-slider-focus-ring {
+    background-color: $mat-slider-focus-ring-color;
   }
 
   .mat-slider-thumb {
@@ -32,7 +38,7 @@
   }
 
   .mat-slider:hover,
-  .mat-slider-active {
+  .cdk-focused {
     .mat-slider-track-background {
       background-color: $mat-slider-off-focused-color;
     }
@@ -53,13 +59,17 @@
   }
 
   .mat-slider-min-value {
+    .mat-slider-focus-ring {
+      background-color: $mat-slider-focus-ring-min-value-color;
+    }
+
     &.mat-slider-thumb-label-showing {
       .mat-slider-thumb,
       .mat-slider-thumb-label {
         background-color: $mat-slider-labeled-min-value-thumb-color;
       }
 
-      &.mat-slider-active {
+      &.cdk-focused {
         .mat-slider-thumb,
         .mat-slider-thumb-label {
           background-color: $mat-slider-labeled-min-value-thumb-label-color;
@@ -74,7 +84,7 @@
       }
 
       &:hover,
-      &.mat-slider-active {
+      &.cdk-focused {
         .mat-slider-thumb {
           border-color: $mat-slider-off-focused-color;
         }
