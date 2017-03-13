@@ -12,6 +12,7 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
 
 /** @stable */
 export declare class CommonModule {
+    static forRoot(): ModuleWithProviders;
 }
 
 /** @stable */
