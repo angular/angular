@@ -17,10 +17,13 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation
 const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
+<!-- i18n -->{ count, plural, =0 {<p>test</p>}}<!-- /i18n -->
 <p i18n="m|d">foo</p>
 <p i18n="m|d@@i">foo</p>
 <p i18n="@@bar">foo</p>
 <p i18n="ph names"><br><img><div></div></p>
+<p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
+<p i18n>{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
 `;
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -33,6 +36,10 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
         <target/>
       </trans-unit>
       <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
@@ -56,6 +63,14 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <target/>
         <note priority="1" from="description">ph names</note>
       </trans-unit>
+      <trans-unit id="baz" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target/>
+      </trans-unit>
     </body>
   </file>
 </xliff>
@@ -72,6 +87,10 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
         <target><x id="INTERPOLATION"/> footnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="x-b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></target>
+      </trans-unit>
+      <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
+        <target>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>TEST<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</target>
       </trans-unit>
       <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
         <source>foo</source>
@@ -98,6 +117,14 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target/>
         <note priority="1" from="description">ph names</note>
+      </trans-unit>
+      <trans-unit id="baz" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>profondément imbriqué<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</target>
+      </trans-unit>
+      <trans-unit id="0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>profondément imbriqué<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</target>
       </trans-unit>
     </body>
   </file>
@@ -136,12 +163,18 @@ export function main(): void {
           '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
           'ec1d033f2436133c14ab038286c4f5df4697484a':
               '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
+          'e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2':
+              '{VAR_PLURAL, plural, =0 {[<ph name="START_PARAGRAPH"/>, TEST, <ph name="CLOSE_PARAGRAPH"/>]}}',
           'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
           'i': 'toto',
           'bar': 'tata',
           'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
               '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
           'empty target': '',
+          'baz':
+              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+          '0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4':
+              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}'
         });
       });
 
