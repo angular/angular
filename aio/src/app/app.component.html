@@ -14,7 +14,7 @@
 
   <section class="sidenav-content">
     <aio-search-results #searchResults></aio-search-results>
-    <aio-doc-viewer [doc]="currentDocument | async"></aio-doc-viewer>
+    <aio-doc-viewer [doc]="currentDocument | async" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
   </section>
 
 </md-sidenav-container>
