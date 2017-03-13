@@ -1,9 +1,0 @@
-{
-  "presets": ["es2015"],
-  "plugins": [["transform-es2015-modules-umd", {
-    "globals": {
-    },
-    "exactGlobals": true
-  }]],
-  "moduleId": "@angular/animations/browser"
-}

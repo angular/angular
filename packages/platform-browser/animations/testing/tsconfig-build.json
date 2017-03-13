@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig-build",
+  "compilerOptions": {
+    "outDir": "../../../../dist/packages/platform-browser",
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/core/testing": ["../../dist/packages/core/testing"],
+      "@angular/animations": ["../../dist/packages/animations"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "@angular/platform-browser/animations": ["../../dist/packages/platform-browser/animations"],
+      "@angular/common": ["../../dist/packages/common"],
+      "@angular/common/testing": ["../../dist/packages/common/testing"]
+    }
+  },
+  "files": [
+    "index.ts",
+    "../../../../node_modules/@types/hammerjs/index.d.ts",
+    "../../../../node_modules/@types/jasmine/index.d.ts",
+    "../../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

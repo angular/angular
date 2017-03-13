@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, ɵDomRendererFactory2} from '@angular/platform-browser';
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
 

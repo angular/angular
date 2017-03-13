@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵAnimationEngine} from '@angular/animations/browser';
 import {ApplicationRef, NgModule, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule, ɵAnimationEngine, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {ServerModule, ɵServerRendererFactory2} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 // Note: don't refer to third_party_src as we want to test that

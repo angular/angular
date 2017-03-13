@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTriggerMetadata} from '@angular/animations';
-import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
+import {AnimationEvent, AnimationTriggerMetadata} from '@angular/animations';
 import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+
+import {AnimationEngine} from '../animation_engine';
 
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
