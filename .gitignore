@@ -26,7 +26,3 @@ yarn-error.log
 
 # rollup-test output
 /modules/rollup-test/dist/
-
-# angular.io
-/aio/src/content/docs
-/aio/dist
