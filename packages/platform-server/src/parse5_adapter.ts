@@ -491,8 +491,10 @@ export class Parse5DomAdapter extends DomAdapter {
     return newDoc;
   }
   getBoundingClientRect(el: any): any { return {left: 0, top: 0, width: 0, height: 0}; }
-  getTitle(doc: Document): string { return doc.title || ''; }
-  setTitle(doc: Document, newTitle: string) { doc.title = newTitle; }
+  getTitle(doc: Document): string { return this.getText(this.getTitleNode(doc)) || ''; }
+  setTitle(doc: Document, newTitle: string) {
+    this.setText(this.getTitleNode(doc), newTitle || '');
+  }
   isTemplateElement(el: any): boolean {
     return this.isElementNode(el) && this.tagName(el) === 'template';
   }
@@ -591,6 +593,16 @@ export class Parse5DomAdapter extends DomAdapter {
   getCookie(name: string): string { throw new Error('not implemented'); }
   setCookie(name: string, value: string) { throw new Error('not implemented'); }
   animate(element: any, keyframes: any[], options: any): any { throw new Error('not implemented'); }
+  private getTitleNode(doc: Document) {
+    let title = this.querySelector(doc, 'title');
+
+    if (!title) {
+      title = <HTMLTitleElement>this.createElement('title');
+      this.appendChild(this.querySelector(doc, 'head'), title);
+    }
+
+    return title;
+  }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
