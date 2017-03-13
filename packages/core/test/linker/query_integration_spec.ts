@@ -536,6 +536,29 @@ export function main() {
         expect(q.query.length).toBe(0);
       });
 
+      it('should not throw if a content template is queried and created in the view during change detection',
+         () => {
+           @Component(
+               {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
+           class AutoProjecting {
+             @ContentChild(TemplateRef)
+             content: TemplateRef<any>;
+
+             @ContentChildren(TextDirective)
+             query: QueryList<TextDirective>;
+           }
+
+           TestBed.configureTestingModule({declarations: [AutoProjecting]});
+           const template =
+               '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
+           const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+           const q = view.debugElement.children[0].references['q'];
+           // This should be 1, but due to
+           // https://github.com/angular/angular/issues/15117 this is 0.
+           expect(q.query.length).toBe(0);
+         });
+
     });
   });
 }
