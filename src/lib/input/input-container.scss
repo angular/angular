@@ -178,6 +178,7 @@ $mat-input-underline-disabled-background-image:
   padding-top: 1em;
   overflow: hidden;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
+  transform: translate3d(0, 0, 0); // Prevents the label from shifting after the animation is done.
 
   // Keeps the element height since the placeholder text is `position: absolute`.
   &::after {
