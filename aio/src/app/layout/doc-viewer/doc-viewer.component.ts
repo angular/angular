@@ -1,6 +1,7 @@
 import {
   Component, ComponentFactory, ComponentFactoryResolver, ComponentRef,
-  DoCheck, ElementRef, Injector, Input, OnDestroy, ViewEncapsulation
+  DoCheck, ElementRef, EventEmitter, Injector, Input, OnDestroy,
+  Output, ViewEncapsulation
 } from '@angular/core';
 
 import { EmbeddedComponents } from 'app/embedded';
@@ -33,6 +34,9 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
   private hostElement: HTMLElement;
 
+  @Output()
+  docRendered = new EventEmitter<DocumentContents>();
+
   constructor(
     componentFactoryResolver: ComponentFactoryResolver,
     elementRef: ElementRef,
@@ -55,8 +59,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   set doc(newDoc: DocumentContents) {
     this.ngOnDestroy();
     if (newDoc) {
-      window.scrollTo(0, 0);
       this.build(newDoc);
+      this.docRendered.emit(newDoc);
     }
   }
 

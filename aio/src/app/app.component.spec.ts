@@ -7,6 +7,7 @@ import { GaService } from 'app/shared/ga.service';
 import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { MockSearchService } from 'testing/search.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
@@ -32,6 +33,7 @@ describe('AppComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -68,6 +70,23 @@ describe('AppComponent', () => {
 
   describe('navigationViews', () => {
     console.log('PENDING: AppComponent navigationViews');
+  });
+
+  describe('autoScrolling', () => {
+    it('should AutoScrollService.scroll when the url changes', () => {
+      const locationService: MockLocationService = fixture.debugElement.injector.get(LocationService) as any;
+      const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
+      spyOn(scrollService, 'scroll');
+      locationService.urlSubject.next('some/url#fragment');
+      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+    });
+
+    it('should be called when a document has been rendered', () => {
+      const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
+      spyOn(scrollService, 'scroll');
+      component.onDocRendered(null);
+      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+    });
   });
 
   describe('initialisation', () => {
