@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, InjectionToken, Injector, Pipe, PipeTransform, Provider, Renderer2} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
@@ -221,6 +222,52 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       const txtNode = ctx.componentInstance.renderer.createText('test');
       expect(txtNode).toHaveText('test');
+    });
+
+    it('should not recreate TemplateRef references during dirty checking', () => {
+      @Component({template: '<div [someDir]="someRef"></div><ng-template #someRef></ng-template>'})
+      class MyComp {
+      }
+
+      @Directive({selector: '[someDir]'})
+      class MyDir {
+        @Input('someDir') template: TemplateRef<any>;
+      }
+
+      const ctx =
+          TestBed.configureTestingModule({declarations: [MyComp, MyDir]}).createComponent(MyComp);
+      const dir = <MyDir>ctx.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+
+      expect(dir.template).toBeUndefined();
+
+      ctx.detectChanges();
+      const template = dir.template;
+      expect(template).toBeDefined();
+
+      ctx.detectChanges();
+      expect(dir.template).toBe(template);
+    });
+
+    it('should not recreate ViewContainerRefs in queries', () => {
+      @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
+      class MyComp {
+        @ViewChildren('vc', {read: ViewContainerRef})
+        viewContainers: QueryList<ViewContainerRef>;
+
+        show = true;
+      }
+
+      const ctx = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+
+      ctx.componentInstance.show = true;
+      ctx.detectChanges();
+      expect(ctx.componentInstance.viewContainers.length).toBe(2);
+      const vc = ctx.componentInstance.viewContainers.first;
+      expect(vc).toBeDefined();
+
+      ctx.componentInstance.show = false;
+      ctx.detectChanges();
+      expect(ctx.componentInstance.viewContainers.first).toBe(vc);
     });
   });
 }

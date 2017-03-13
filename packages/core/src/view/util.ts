@@ -293,11 +293,9 @@ function visitRenderNode(
     const rn = renderNode(view, nodeDef);
     execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
-      const embeddedViews = asElementData(view, nodeDef.index).embeddedViews;
-      if (embeddedViews) {
-        for (let k = 0; k < embeddedViews.length; k++) {
-          visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
-        }
+      const embeddedViews = asElementData(view, nodeDef.index).viewContainer._embeddedViews;
+      for (let k = 0; k < embeddedViews.length; k++) {
+        visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
       }
     }
     if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element.name) {

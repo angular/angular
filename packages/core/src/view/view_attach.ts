@@ -11,7 +11,7 @@ import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, ro
 
 export function attachEmbeddedView(
     parentView: ViewData, elementData: ElementData, viewIndex: number, view: ViewData) {
-  let embeddedViews = elementData.embeddedViews;
+  let embeddedViews = elementData.viewContainer._embeddedViews;
   if (viewIndex == null) {
     viewIndex = embeddedViews.length;
   }
@@ -19,9 +19,9 @@ export function attachEmbeddedView(
   addToArray(embeddedViews, viewIndex, view);
   const dvcElementData = declaredViewContainer(view);
   if (dvcElementData && dvcElementData !== elementData) {
-    let projectedViews = dvcElementData.projectedViews;
+    let projectedViews = dvcElementData.template._projectedViews;
     if (!projectedViews) {
-      projectedViews = dvcElementData.projectedViews = [];
+      projectedViews = dvcElementData.template._projectedViews = [];
     }
     projectedViews.push(view);
   }
@@ -33,7 +33,7 @@ export function attachEmbeddedView(
 }
 
 export function detachEmbeddedView(elementData: ElementData, viewIndex: number): ViewData {
-  const embeddedViews = elementData.embeddedViews;
+  const embeddedViews = elementData.viewContainer._embeddedViews;
   if (viewIndex == null || viewIndex >= embeddedViews.length) {
     viewIndex = embeddedViews.length - 1;
   }
@@ -46,7 +46,7 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
 
   const dvcElementData = declaredViewContainer(view);
   if (dvcElementData && dvcElementData !== elementData) {
-    const projectedViews = dvcElementData.projectedViews;
+    const projectedViews = dvcElementData.template._projectedViews;
     removeFromArray(projectedViews, projectedViews.indexOf(view));
   }
 
@@ -59,7 +59,7 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex: number):
 
 export function moveEmbeddedView(
     elementData: ElementData, oldViewIndex: number, newViewIndex: number): ViewData {
-  const embeddedViews = elementData.embeddedViews;
+  const embeddedViews = elementData.viewContainer._embeddedViews;
   const view = embeddedViews[oldViewIndex];
   removeFromArray(embeddedViews, oldViewIndex);
   if (newViewIndex == null) {
