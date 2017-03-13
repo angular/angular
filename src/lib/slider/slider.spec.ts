@@ -517,6 +517,17 @@ describe('MdSlider', () => {
       expect(ticksElement.style.transform).toContain('translateX(9%)');
       expect(ticksContainerElement.style.transform).toBe('translateX(-9%)');
     });
+
+    it('should be able to reset the tick interval after it has been set', () => {
+      expect(sliderNativeElement.classList)
+          .toContain('mat-slider-has-ticks', 'Expected element to have ticks initially.');
+
+      fixture.componentInstance.tickInterval = null;
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList)
+          .not.toContain('mat-slider-has-ticks', 'Expected element not to have ticks after reset.');
+    });
   });
 
   describe('slider with thumb label', () => {
@@ -1248,10 +1259,12 @@ class SliderWithStep {
 class SliderWithAutoTickInterval { }
 
 @Component({
-  template: `<md-slider step="3" tickInterval="6"></md-slider>`,
+  template: `<md-slider step="3" [tickInterval]="tickInterval"></md-slider>`,
   styles: [styles],
 })
-class SliderWithSetTickInterval { }
+class SliderWithSetTickInterval {
+  tickInterval = 6;
+}
 
 @Component({
   template: `<md-slider thumbLabel></md-slider>`,

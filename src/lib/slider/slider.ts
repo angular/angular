@@ -164,8 +164,14 @@ export class MdSlider implements ControlValueAccessor {
    */
   @Input()
   get tickInterval() { return this._tickInterval; }
-  set tickInterval(v) {
-    this._tickInterval = (v == 'auto') ? v : coerceNumberProperty(v, <number>this._tickInterval);
+  set tickInterval(value) {
+    if (value === 'auto') {
+      this._tickInterval = 'auto';
+    } else if (typeof value === 'number' || typeof value === 'string') {
+      this._tickInterval = coerceNumberProperty(value, this._tickInterval as number);
+    } else {
+      this._tickInterval = 0;
+    }
   }
   private _tickInterval: 'auto' | number = 0;
 
