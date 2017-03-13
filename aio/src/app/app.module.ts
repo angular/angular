@@ -30,6 +30,7 @@ import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
 
 @NgModule({
   imports: [
@@ -62,7 +63,8 @@ import { SearchBoxComponent } from './search/search-box/search-box.component';
     NavigationService,
     DocumentService,
     SearchService,
-    Platform
+    Platform,
+    AutoScrollService,
   ],
   entryComponents: [ embeddedComponents ],
   bootstrap: [AppComponent]
