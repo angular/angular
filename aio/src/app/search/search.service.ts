@@ -11,9 +11,17 @@ import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/concatMap';
 import { WebWorkerClient } from 'app/shared/web-worker';
 
-export interface QueryResults {
+export interface SearchResults {
   query: string;
-  results: Object[];
+  results: SearchResult[];
+}
+
+export interface SearchResult {
+  path: string;
+  title: string;
+  type: string;
+  titleWords: string;
+  keywords: string;
 }
 
 
@@ -21,7 +29,7 @@ export interface QueryResults {
 export class SearchService {
   private worker: WebWorkerClient;
   private ready: Observable<boolean>;
-  private resultsSubject = new Subject<QueryResults>();
+  private resultsSubject = new Subject<SearchResults>();
   get searchResults() { return this.resultsSubject.asObservable(); }
 
   constructor(private zone: NgZone) {}
@@ -38,7 +46,7 @@ export class SearchService {
 
   search(query: string) {
     this.ready.concatMap(ready => {
-      return this.worker.sendMessage('query-index', query) as Observable<QueryResults>;
+      return this.worker.sendMessage('query-index', query) as Observable<SearchResults>;
     }).subscribe(results => this.resultsSubject.next(results));
   }
 }
