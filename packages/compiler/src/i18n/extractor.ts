@@ -10,7 +10,7 @@
 /**
  * Extract i18n messages from source code
  */
-import {ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
@@ -106,7 +106,7 @@ export class Extractor {
     const resolver = new CompileMetadataResolver(
         config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
         new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-        symbolCache, staticReflector);
+        new Console(), symbolCache, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {}, locale);
