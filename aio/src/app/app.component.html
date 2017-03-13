@@ -1,9 +1,7 @@
 <md-toolbar color="primary" class="app-toolbar">
   <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
-  <md-input-container >
-    <input mdInput placeholder="Search" (keyup)="onSearch($event.target.value)">
-  </md-input-container>
+  <aio-search-box></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
 
@@ -15,11 +13,7 @@
   </md-sidenav>
 
   <section class="sidenav-content">
-    <div class="search-results">
-      <div *ngFor="let result of (searchResults | async)?.results">
-        <a href="{{ result.path }}">{{ result.title }}</a>
-      </div>
-    </div>
+    <aio-search-results></aio-search-results>
     <aio-doc-viewer [doc]="currentDocument | async"></aio-doc-viewer>
   </section>
 

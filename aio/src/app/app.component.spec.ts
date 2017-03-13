@@ -3,6 +3,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { SearchService } from 'app/search/search.service';
+import { MockSearchService } from 'testing/search.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -12,7 +13,8 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [ AppModule ],
       providers: [
-        { provide: APP_BASE_HREF, useValue: '/' }
+        { provide: APP_BASE_HREF, useValue: '/' },
+        { provide: SearchService, useClass: MockSearchService }
       ]
     });
     TestBed.compileComponents();
@@ -39,25 +41,19 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('onSearch', () => {
-    it('should call the search service', inject([SearchService], (search: SearchService) => {
-      spyOn(search, 'search');
-      component.onSearch('some query');
-      expect(search.search).toHaveBeenCalledWith('some query');
-    }));
-  });
-
   describe('currentDocument', () => {
-
+    console.log('PENDING: AppComponent currentDocument');
   });
 
   describe('navigationViews', () => {
-
+    console.log('PENDING: AppComponent navigationViews');
   });
 
-  describe('searchResults', () => {
-
+  describe('initialisation', () => {
+    it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
+      fixture.detectChanges(); // triggers ngOnInit
+      expect(searchService.initWorker).toHaveBeenCalled();
+      expect(searchService.loadIndex).toHaveBeenCalled();
+    }));
   });
-
-
 });
