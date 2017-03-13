@@ -4,9 +4,11 @@ import { Observable } from 'rxjs/Observable';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
+import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
 
 @Component({
   selector: 'aio-shell',
@@ -29,12 +31,16 @@ export class AppComponent implements OnInit {
   @ViewChild(SearchResultsComponent)
   searchResults: SearchResultsComponent;
 
-  constructor(
-      documentService: DocumentService,
-      gaService: GaService,
-      private locationService: LocationService,
-      navigationService: NavigationService,
-      private searchService: SearchService) {
+  // We need the doc-viewer element for scrolling the contents
+  @ViewChild(DocViewerComponent, { read: ElementRef })
+  docViewer: ElementRef;
+
+  constructor(documentService: DocumentService,
+              gaService: GaService,
+              navigationService: NavigationService,
+              private autoScroll: AutoScrollService,
+              private locationService: LocationService,
+              private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     this.navigationViews = navigationService.navigationViews;
@@ -46,6 +52,18 @@ export class AppComponent implements OnInit {
     this.searchService.loadIndex();
 
     this.onResize(window.innerWidth);
+
+    // The url changed, so scroll to the anchor in the hash fragment.
+    // This subscription is needed when navigating between anchors within a document
+    // and the document itself has not changed
+    this.locationService.currentUrl.subscribe(url => this.autoScroll.scroll(this.docViewer.nativeElement.offsetParent));
+  }
+
+  onDocRendered(doc: DocumentContents) {
+    // A new document has been rendered, so scroll to the anchor in the hash fragment.
+    // This handler is needed because the subscription to the `currentUrl` in `ngOnInit`
+    // gets triggered too early before the doc-viewer has finished rendering the doc
+    this.autoScroll.scroll(this.docViewer.nativeElement.offsetParent);
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
