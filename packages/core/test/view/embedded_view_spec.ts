@@ -101,7 +101,7 @@ export function main() {
 
       moveEmbeddedView(viewContainerData, 0, 1);
 
-      expect(viewContainerData.embeddedViews).toEqual([childView1, childView0]);
+      expect(viewContainerData.viewContainer._embeddedViews).toEqual([childView1, childView0]);
       // 2 anchors + 2 elements
       const rootChildren = getDOM().childNodes(rootNodes[0]);
       expect(rootChildren.length).toBe(4);

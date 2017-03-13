@@ -15,6 +15,7 @@ import {appendNgContent} from './ng_content';
 import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAndUpdateDirectiveInline, createDirectiveInstance, createPipeInstance, createProviderInstance} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery, queryDef} from './query';
+import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
 import {checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
@@ -255,9 +256,12 @@ function createViewNodes(view: ViewData) {
         nodeData = <ElementData>{
           renderElement: el,
           componentView,
-          embeddedViews: (nodeDef.flags & NodeFlags.EmbeddedViews) ? [] : undefined,
-          projectedViews: undefined
+          viewContainer: undefined,
+          template: nodeDef.element.template ? createTemplateData(view, nodeDef) : undefined
         };
+        if (nodeDef.flags & NodeFlags.EmbeddedViews) {
+          nodeData.viewContainer = createViewContainerData(view, nodeDef, nodeData);
+        }
         break;
       case NodeFlags.TypeText:
         nodeData = createText(view, renderHost, nodeDef) as any;
@@ -525,11 +529,9 @@ function execEmbeddedViewsAction(view: ViewData, action: ViewAction) {
     const nodeDef = def.nodes[i];
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
       // a leaf
-      const embeddedViews = asElementData(view, i).embeddedViews;
-      if (embeddedViews) {
-        for (let k = 0; k < embeddedViews.length; k++) {
-          callViewAction(embeddedViews[k], action);
-        }
+      const embeddedViews = asElementData(view, i).viewContainer._embeddedViews;
+      for (let k = 0; k < embeddedViews.length; k++) {
+        callViewAction(embeddedViews[k], action);
       }
     } else if ((nodeDef.childFlags & NodeFlags.EmbeddedViews) === 0) {
       // a parent with leafs

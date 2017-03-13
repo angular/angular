@@ -96,7 +96,7 @@ export function main() {
       const anchor = asElementData(view, 2);
       expect((getDOM().childNodes(getDOM().firstChild(rootNodes[0]))[0]))
           .toBe(anchor.renderElement);
-      const embeddedView = anchor.embeddedViews[0];
+      const embeddedView = anchor.viewContainer._embeddedViews[0];
       expect((getDOM().childNodes(getDOM().firstChild(rootNodes[0]))[1]))
           .toBe(asTextData(embeddedView, 0).renderText);
     });

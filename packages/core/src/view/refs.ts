@@ -18,7 +18,7 @@ import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
 
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, TemplateData, ViewContainerData, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
 import {isComponentView, markParentViewsForCheck, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
@@ -84,15 +84,17 @@ class ComponentRef_ extends ComponentRef<any> {
   onDestroy(callback: Function): void { this._viewRef.onDestroy(callback); }
 }
 
-export function createViewContainerRef(view: ViewData, elDef: NodeDef): ViewContainerRef {
-  return new ViewContainerRef_(view, elDef);
+export function createViewContainerData(
+    view: ViewData, elDef: NodeDef, elData: ElementData): ViewContainerData {
+  return new ViewContainerRef_(view, elDef, elData);
 }
 
-class ViewContainerRef_ implements ViewContainerRef {
-  private _data: ElementData;
-  constructor(private _view: ViewData, private _elDef: NodeDef) {
-    this._data = asElementData(_view, _elDef.index);
-  }
+class ViewContainerRef_ implements ViewContainerData {
+  /**
+   * @internal
+   */
+  _embeddedViews: ViewData[] = [];
+  constructor(private _view: ViewData, private _elDef: NodeDef, private _data: ElementData) {}
 
   get element(): ElementRef { return new ElementRef(this._data.renderElement); }
 
@@ -109,7 +111,7 @@ class ViewContainerRef_ implements ViewContainerRef {
   }
 
   clear(): void {
-    const len = this._data.embeddedViews.length;
+    const len = this._embeddedViews.length;
     for (let i = len - 1; i >= 0; i--) {
       const view = detachEmbeddedView(this._data, i);
       Services.destroyView(view);
@@ -117,7 +119,7 @@ class ViewContainerRef_ implements ViewContainerRef {
   }
 
   get(index: number): ViewRef {
-    const view = this._data.embeddedViews[index];
+    const view = this._embeddedViews[index];
     if (view) {
       const ref = new ViewRef_(view);
       ref.attachToViewContainerRef(this);
@@ -126,7 +128,7 @@ class ViewContainerRef_ implements ViewContainerRef {
     return null;
   }
 
-  get length(): number { return this._data.embeddedViews.length; };
+  get length(): number { return this._embeddedViews.length; };
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
@@ -153,13 +155,13 @@ class ViewContainerRef_ implements ViewContainerRef {
   }
 
   move(viewRef: ViewRef_, currentIndex: number): ViewRef {
-    const previousIndex = this._data.embeddedViews.indexOf(viewRef._view);
+    const previousIndex = this._embeddedViews.indexOf(viewRef._view);
     moveEmbeddedView(this._data, previousIndex, currentIndex);
     return viewRef;
   }
 
   indexOf(viewRef: ViewRef): number {
-    return this._data.embeddedViews.indexOf((<ViewRef_>viewRef)._view);
+    return this._embeddedViews.indexOf((<ViewRef_>viewRef)._view);
   }
 
   remove(index?: number): void {
@@ -240,11 +242,16 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
   }
 }
 
-export function createTemplateRef(view: ViewData, def: NodeDef): TemplateRef<any> {
+export function createTemplateData(view: ViewData, def: NodeDef): TemplateData {
   return new TemplateRef_(view, def);
 }
 
-class TemplateRef_ extends TemplateRef<any> {
+class TemplateRef_ extends TemplateRef<any> implements TemplateData {
+  /**
+   * @internal
+   */
+  _projectedViews: ViewData[];
+
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
   createEmbeddedView(context: any): EmbeddedViewRef<any> {
@@ -273,11 +280,8 @@ class Injector_ implements Injector {
 export function nodeValue(view: ViewData, index: number): any {
   const def = view.def.nodes[index];
   if (def.flags & NodeFlags.TypeElement) {
-    if (def.element.template) {
-      return createTemplateRef(view, def);
-    } else {
-      return asElementData(view, def.index).renderElement;
-    }
+    const elData = asElementData(view, def.index);
+    return def.element.template ? elData.template : elData.renderElement;
   } else if (def.flags & NodeFlags.TypeText) {
     return asTextData(view, def.index).renderText;
   } else if (def.flags & (NodeFlags.CatProvider | NodeFlags.TypePipe)) {
