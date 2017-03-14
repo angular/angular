@@ -319,7 +319,28 @@ export class Router {
   /** The current url */
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
-  /** An observable of router events */
+  /**
+   * An observable of router events.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.events.subscribe(event => {
+   *  // Subscribe to all events
+   * })
+   * ```
+   *
+   * You can subscribe to specific events by using
+   * a filter operator like:
+   *
+   * ```
+   * router.events
+   *  .filter(event => event instanceof NavigationStart)
+   *  .subscribe((event: NavigationStart) => {
+   *    // Subscribe to the NavigationStart event
+   *  });
+   * ```
+   */
   get events(): Observable<Event> { return this.routerEvents; }
 
   /** @internal */
