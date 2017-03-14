@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class LocationService {
 
-  private urlSubject: BehaviorSubject<string>;
-  get currentUrl() { return this.urlSubject.asObservable(); }
+  private urlSubject = new ReplaySubject<string>(1);
+  currentUrl = this.urlSubject.asObservable();
 
-  constructor(private location: Location, private platformLocation: PlatformLocation) {
+  constructor(
+    private location: Location,
+    private platformLocation: PlatformLocation) {
 
     const initialUrl = this.stripLeadingSlashes(location.path(true));
-    this.urlSubject = new BehaviorSubject(initialUrl);
+    this.urlSubject.next(initialUrl);
 
     this.location.subscribe(state => {
       const url = this.stripLeadingSlashes(state.url);
