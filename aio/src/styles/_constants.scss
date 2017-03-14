@@ -1,1 +1,21 @@
 $small-breakpoint-width: 840px;
+
+// TYPOGRAPHY
+$main-font: "Roboto","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+$support-font: "Lato","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+$code-font: "Droid Sans Mono", monospace;
+
+// COLOR PALETTE
+$blue: #1976D2;
+$brightred: #DD0031;
+$darkred: #C3002F;
+$offwhite: #FAFAFA;
+$backgroundgray: #F1F1F1;
+$lightgray: #DBDBDB;
+$mediumgray: #7E7E7E;
+$darkgray: #333;
+$black: #0A1014;
+
+// GRADIENTS
+$bluegradient: linear-gradient(145deg,#0D47A1,#42A5F5);
+$redgradient: linear-gradient(145deg,$darkred,$brightred);
