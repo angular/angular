@@ -11,7 +11,7 @@ describe('site App', function() {
 
   it('should show features text after clicking "Features"', () => {
     page.featureLink.click().then(() => {
-      expect(page.getDocViewerText()).toContain('Progressive web apps');
+      expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
     });
   });
 
