@@ -420,7 +420,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, `}`, useNewLine);
     return null;
   }
-
+  visitCommaExpr(ast: o.CommaExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(ast, '(');
+    this.visitAllExpressions(ast.parts, ctx, ',');
+    ctx.print(ast, ')');
+    return null;
+  }
   visitAllExpressions(
       expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {

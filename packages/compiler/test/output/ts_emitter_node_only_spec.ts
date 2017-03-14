@@ -14,9 +14,7 @@ import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
-import {extractSourceMap} from './abstract_emitter_node_only_spec';
-
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
+import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 const someModuleUrl = 'somePackage/somePath';
 
@@ -59,12 +57,11 @@ export function main() {
         const sourceSpan = new ParseSourceSpan(startLocation, endLocation);
         const someVar = o.variable('someVar', null, sourceSpan);
         const sm = emitSourceMap(someVar.toStmt());
-        const smc = new SourceMapConsumer(sm);
 
         expect(sm.sources).toEqual(['in.js']);
         expect(sm.sourcesContent).toEqual([';;;var']);
-        expect(smc.originalPositionFor({line: 1, column: 0}))
-            .toEqual({line: 1, column: 3, source: 'in.js', name: null});
+        expect(originalPositionFor(sm, {line: 1, column: 0}))
+            .toEqual({line: 1, column: 3, source: 'in.js'});
       });
     });
   });

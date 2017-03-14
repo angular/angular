@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵstringify as stringify} from '@angular/core';
+
 import {StaticSymbol} from './aot/static_symbol';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
@@ -257,6 +258,7 @@ export class CompileTemplateMetadata {
   encapsulation: ViewEncapsulation;
   template: string;
   templateUrl: string;
+  isInline: boolean;
   styles: string[];
   styleUrls: string[];
   externalStylesheets: CompileStylesheetMetadata[];
@@ -265,7 +267,7 @@ export class CompileTemplateMetadata {
   interpolation: [string, string];
   constructor(
       {encapsulation, template, templateUrl, styles, styleUrls, externalStylesheets, animations,
-       ngContentSelectors, interpolation}: {
+       ngContentSelectors, interpolation, isInline}: {
         encapsulation?: ViewEncapsulation,
         template?: string,
         templateUrl?: string,
@@ -275,6 +277,7 @@ export class CompileTemplateMetadata {
         ngContentSelectors?: string[],
         animations?: any[],
         interpolation?: [string, string],
+        isInline?: boolean
       } = {}) {
     this.encapsulation = encapsulation;
     this.template = template;
@@ -288,6 +291,7 @@ export class CompileTemplateMetadata {
       throw new Error(`'interpolation' should have a start and an end symbol.`);
     }
     this.interpolation = interpolation;
+    this.isInline = isInline;
   }
 
   toSummary(): CompileTemplateSummary {
@@ -524,7 +528,8 @@ export function createHostComponentMeta(
       styles: [],
       styleUrls: [],
       ngContentSelectors: [],
-      animations: []
+      animations: [],
+      isInline: true,
     }),
     changeDetection: ChangeDetectionStrategy.Default,
     inputs: [],
@@ -751,4 +756,42 @@ export function flatten<T>(list: Array<T|T[]>): T[] {
     const flatItem = Array.isArray(item) ? flatten(item) : item;
     return (<T[]>flat).concat(flatItem);
   }, []);
+}
+
+/**
+ * Note: Using `location.origin` as prefix helps displaying them as a hierarchy in chrome.
+ * It also helps long-stack-trace zone when rewriting stack traces to not break
+ * source maps (as now all scripts have the same origin).
+ */
+function ngJitFolder() {
+  return 'ng://';
+}
+
+export function templateSourceUrl(
+    ngModuleType: CompileIdentifierMetadata, compMeta: {type: CompileIdentifierMetadata},
+    templateMeta: {isInline: boolean, templateUrl: string}) {
+  if (templateMeta.isInline) {
+    if (compMeta.type.reference instanceof StaticSymbol) {
+      return compMeta.type.reference.filePath;
+    } else {
+      return `${ngJitFolder()}/${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.html`;
+    }
+  } else {
+    return templateMeta.templateUrl;
+  }
+}
+
+export function sharedStylesheetJitUrl(meta: CompileStylesheetMetadata, id: number) {
+  const pathParts = meta.moduleUrl.split(/\/\\/g);
+  const baseName = pathParts[pathParts.length - 1];
+  return `${ngJitFolder()}/css/${id}${baseName}.ngstyle.js`;
+}
+
+export function ngModuleJitUrl(moduleMeta: CompileNgModuleMetadata): string {
+  return `${ngJitFolder()}/${identifierName(moduleMeta.type)}/module.ngfactory.js`;
+}
+
+export function templateJitUrl(
+    ngModuleType: CompileIdentifierMetadata, compMeta: CompileDirectiveMetadata): string {
+  return `${ngJitFolder()}/${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.ngfactory.js`;
 }

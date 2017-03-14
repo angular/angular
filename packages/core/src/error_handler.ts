@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_ORIGINAL_ERROR, getDebugContext, getOriginalError} from './errors';
+import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError} from './errors';
+
 
 
 /**
@@ -49,34 +50,21 @@ export class ErrorHandler {
   constructor(rethrowError: boolean = false) { this.rethrowError = rethrowError; }
 
   handleError(error: any): void {
-    this._console.error(`EXCEPTION: ${this._extractMessage(error)}`);
+    const originalError = this._findOriginalError(error);
+    const context = this._findContext(error);
+    // Note: Browser consoles show the place from where console.error was called.
+    // We can use this to give users additional information about the error.
+    const errorLogger = getErrorLogger(error);
 
-    if (error instanceof Error) {
-      const originalError = this._findOriginalError(error);
-      const originalStack = this._findOriginalStack(error);
-      const context = this._findContext(error);
-
-      if (originalError) {
-        this._console.error(`ORIGINAL EXCEPTION: ${this._extractMessage(originalError)}`);
-      }
-
-      if (originalStack) {
-        this._console.error('ORIGINAL STACKTRACE:');
-        this._console.error(originalStack);
-      }
-
-      if (context) {
-        this._console.error('ERROR CONTEXT:');
-        this._console.error(context);
-      }
+    errorLogger(this._console, `ERROR`, error);
+    if (originalError) {
+      errorLogger(this._console, `ORIGINAL ERROR`, originalError);
+    }
+    if (context) {
+      errorLogger(this._console, 'ERROR CONTEXT', context);
     }
 
     if (this.rethrowError) throw error;
-  }
-
-  /** @internal */
-  _extractMessage(error: any): string {
-    return error instanceof Error ? error.message : error.toString();
   }
 
   /** @internal */
@@ -97,20 +85,6 @@ export class ErrorHandler {
     }
 
     return e;
-  }
-
-  /** @internal */
-  _findOriginalStack(error: Error): string {
-    let e: any = error;
-    let stack: string = e.stack;
-    while (e instanceof Error && getOriginalError(e)) {
-      e = getOriginalError(e);
-      if (e instanceof Error && e.stack) {
-        stack = e.stack;
-      }
-    }
-
-    return stack;
   }
 }
 

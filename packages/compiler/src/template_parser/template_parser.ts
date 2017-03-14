@@ -132,8 +132,7 @@ export class TemplateParser {
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = removeSummaryDuplicates(directives);
       const uniqPipes = removeSummaryDuplicates(pipes);
-      const providerViewContext =
-          new ProviderViewContext(component, htmlAstWithErrors.rootNodes[0].sourceSpan);
+      const providerViewContext = new ProviderViewContext(component);
       let interpolationConfig: InterpolationConfig;
       if (component.template && component.template.interpolation) {
         interpolationConfig = {

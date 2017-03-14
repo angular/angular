@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SimpleChange} from '../change_detection/change_detection_util';
 import {Injector} from '../di';
@@ -18,7 +17,9 @@ import {Renderer, RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+
+export const NOOP: any = () => {};
 
 const _tokenKeyCache = new Map<any, string>();
 
@@ -194,27 +195,11 @@ const VIEW_DEFINITION_CACHE = new WeakMap<any, ViewDefinition>();
 export function resolveViewDefinition(factory: ViewDefinitionFactory): ViewDefinition {
   let value: ViewDefinition = VIEW_DEFINITION_CACHE.get(factory);
   if (!value) {
-    value = factory();
+    value = factory(() => NOOP);
+    value.factory = factory;
     VIEW_DEFINITION_CACHE.set(factory, value);
   }
   return value;
-}
-
-export function sliceErrorStack(start: number, end: number): string {
-  let err: any;
-  try {
-    throw new Error();
-  } catch (e) {
-    err = e;
-  }
-  const stack = err.stack || '';
-  const lines = stack.split('\n');
-  if (lines[0].startsWith('Error')) {
-    // Chrome always adds the message to the stack as well...
-    start++;
-    end++;
-  }
-  return lines.slice(start, end).join('\n');
 }
 
 export function rootRenderNodes(view: ViewData): any[] {
