@@ -133,7 +133,6 @@ export function createPipeInstance(view: ViewData, def: NodeDef): any {
 export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
   // components can see other private services, other directives can't.
   const allowPrivateServices = (def.flags & NodeFlags.Component) > 0;
-  const providerDef = def.provider;
   // directives are always eager and classes!
   const instance =
       createClass(view, def.parent, allowPrivateServices, def.provider.value, def.provider.deps);
@@ -325,6 +324,25 @@ function callFactory(
   return injectable;
 }
 
+// This default value is when checking the hierarchy for a token.
+//
+// It means both:
+// - the token is not provided by the current injector,
+// - only the element injectors should be checked (ie do not check module injectors
+//
+//          mod1
+//         /
+//       el1   mod2
+//         \  /
+//         el2
+//
+// When requesting el2.injector.get(token), we should check in the following order and return the
+// first found value:
+// - el2.injector.get(token, default)
+// - el1.injector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) -> do not check the module
+// - mod2.injector.get(token, default)
+const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
+
 export function resolveDep(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
     notFoundValue = Injector.THROW_IF_NOT_FOUND): any {
@@ -386,7 +404,20 @@ export function resolveDep(
     elDef = viewParentEl(view);
     view = view.parent;
   }
-  return startView.root.injector.get(depDef.token, notFoundValue);
+
+  const value = startView.root.injector.get(depDef.token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
+
+  if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+      notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+    // Return the value from the root element injector when
+    // - it provides it
+    //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+    // - the module injector should not be checked
+    //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+    return value;
+  }
+
+  return startView.root.ngModule.injector.get(depDef.token, notFoundValue);
 }
 
 function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {

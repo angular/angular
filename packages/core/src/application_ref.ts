@@ -8,20 +8,21 @@
 
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
-import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {share} from 'rxjs/operator/share';
+
 import {ErrorHandler} from '../src/error_handler';
 import {scheduleMicroTask, stringify} from '../src/util';
 import {isPromise} from '../src/util/lang';
+
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, Optional, Provider, ReflectiveInjector} from './di';
+import {Injectable, InjectionToken, Injector, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
-import {ComponentFactoryResolver} from './linker/component_factory_resolver';
+import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
@@ -328,7 +329,7 @@ export class PlatformRef_ extends PlatformRef {
   private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef.bootstrapFactories.length > 0) {
-      moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
+      moduleRef.bootstrapFactories.forEach(f => appRef.bootstrap(f));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
@@ -502,7 +503,13 @@ export class ApplicationRef_ extends ApplicationRef {
       componentFactory = this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
     }
     this._rootComponentTypes.push(componentFactory.componentType);
-    const compRef = componentFactory.create(this._injector, [], componentFactory.selector);
+
+    // Create a factory associated with the current module if it's not bound to some other
+    const ngModule = componentFactory instanceof ComponentFactoryBoundToModule ?
+        null :
+        this._injector.get(NgModuleRef);
+    const compRef = componentFactory.create(Injector.NULL, [], componentFactory.selector, ngModule);
+
     compRef.onDestroy(() => { this._unloadComponent(compRef); });
     const testability = compRef.injector.get(Testability, null);
     if (testability) {

@@ -1125,13 +1125,14 @@ function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst
   if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
     const entryComponentFactories = componentDirMeta.directive.entryComponents.map(
         (entryComponent) => o.importExpr({reference: entryComponent.componentFactory}));
-    const cfrExpr = o.importExpr(createIdentifier(Identifiers.CodegenComponentFactoryResolver))
-                        .instantiate([o.literalArr(entryComponentFactories)]);
+
     const token = createIdentifierToken(Identifiers.ComponentFactoryResolver);
+
     const classMeta: CompileTypeMetadata = {
       diDeps: [
         {isValue: true, value: o.literalArr(entryComponentFactories)},
-        {token: token, isSkipSelf: true, isOptional: true}
+        {token: token, isSkipSelf: true, isOptional: true},
+        {token: createIdentifierToken(Identifiers.NgModuleRef)},
       ],
       lifecycleHooks: [],
       reference: resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)

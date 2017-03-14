@@ -9,6 +9,7 @@
 import {PipeTransform} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {ComponentRef} from '../linker/component_factory';
+import {NgModuleRef} from '../linker/ng_module_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -424,6 +425,7 @@ export function asQueryList(view: ViewData, index: number): QueryList<any> {
 
 export interface RootData {
   injector: Injector;
+  ngModule: NgModuleRef<any>;
   projectableNodes: any[][];
   selectorOrNode: any;
   renderer: Renderer2;
@@ -454,7 +456,7 @@ export interface Services {
   setCurrentNode(view: ViewData, nodeIndex: number): void;
   createRootView(
       injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string|any,
-      def: ViewDefinition, context?: any): ViewData;
+      def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData;
   createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;

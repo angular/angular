@@ -6,7 +6,7 @@
 *found in the LICENSE file at https://angular.io/license
 */
 
-import {Compiler, Injectable, Injector, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
@@ -91,37 +91,40 @@ export class RouterPreloader {
     this.subscription = concatMap.call(navigations, () => this.preload()).subscribe(() => {});
   }
 
-  preload(): Observable<any> { return this.processRoutes(this.injector, this.router.config); }
+  preload(): Observable<any> {
+    const ngModule = this.injector.get(NgModuleRef);
+    return this.processRoutes(ngModule, this.router.config);
+  }
 
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
-  private processRoutes(injector: Injector, routes: Routes): Observable<void> {
+  private processRoutes(ngModule: NgModuleRef<any>, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];
     for (const c of routes) {
       // we already have the config loaded, just recurse
       if (c.loadChildren && !c.canLoad && (<any>c)._loadedConfig) {
         const childConfig = (<any>c)._loadedConfig;
-        res.push(this.processRoutes(childConfig.injector, childConfig.routes));
+        res.push(this.processRoutes(childConfig.module, childConfig.routes));
 
         // no config loaded, fetch the config
       } else if (c.loadChildren && !c.canLoad) {
-        res.push(this.preloadConfig(injector, c));
+        res.push(this.preloadConfig(ngModule, c));
 
         // recurse into children
       } else if (c.children) {
-        res.push(this.processRoutes(injector, c.children));
+        res.push(this.processRoutes(ngModule, c.children));
       }
     }
     return mergeAll.call(from(res));
   }
 
-  private preloadConfig(injector: Injector, route: Route): Observable<void> {
+  private preloadConfig(ngModule: NgModuleRef<any>, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
-      const loaded = this.loader.load(injector, route);
+      const loaded = this.loader.load(ngModule.injector, route);
       return mergeMap.call(loaded, (config: any): any => {
         const c: any = route;
         c._loadedConfig = config;
-        return this.processRoutes(config.injector, config.routes);
+        return this.processRoutes(config.module, config.routes);
       });
     });
   }

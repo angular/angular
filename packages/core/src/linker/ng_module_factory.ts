@@ -11,8 +11,7 @@ import {Type} from '../type';
 import {stringify} from '../util';
 
 import {ComponentFactory} from './component_factory';
-import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
-
+import {CodegenComponentFactoryResolver, ComponentFactoryBoundToModule, ComponentFactoryResolver} from './component_factory_resolver';
 
 
 /**
@@ -62,10 +61,7 @@ export class NgModuleFactory<T> {
   get moduleType(): Type<T> { return this._moduleType; }
 
   create(parentInjector: Injector): NgModuleRef<T> {
-    if (!parentInjector) {
-      parentInjector = Injector.NULL;
-    }
-    const instance = new this._injectorClass(parentInjector);
+    const instance = new this._injectorClass(parentInjector || Injector.NULL);
     instance.create();
     return instance;
   }
@@ -73,18 +69,21 @@ export class NgModuleFactory<T> {
 
 const _UNDEFINED = new Object();
 
-export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolver implements
-    Injector,
-    NgModuleRef<T> {
+export abstract class NgModuleInjector<T> implements Injector, NgModuleRef<T> {
+  bootstrapFactories: ComponentFactory<any>[];
+  instance: T;
+
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
-
-  public instance: T;
+  private _cmpFactoryResolver: CodegenComponentFactoryResolver;
 
   constructor(
       public parent: Injector, factories: ComponentFactory<any>[],
-      public bootstrapFactories: ComponentFactory<any>[]) {
-    super(factories, parent.get(ComponentFactoryResolver, ComponentFactoryResolver.NULL));
+      bootstrapFactories: ComponentFactory<any>[]) {
+    this.bootstrapFactories =
+        bootstrapFactories.map(f => new ComponentFactoryBoundToModule(f, this));
+    this._cmpFactoryResolver = new CodegenComponentFactoryResolver(
+        factories, parent.get(ComponentFactoryResolver, ComponentFactoryResolver.NULL), this);
   }
 
   create() { this.instance = this.createInternal(); }
@@ -92,9 +91,14 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
   abstract createInternal(): T;
 
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
-    if (token === Injector || token === ComponentFactoryResolver) {
+    if (token === Injector || token === NgModuleRef) {
       return this;
     }
+
+    if (token === ComponentFactoryResolver) {
+      return this._cmpFactoryResolver;
+    }
+
     const result = this.getInternal(token, _UNDEFINED);
     return result === _UNDEFINED ? this.parent.get(token, notFoundValue) : result;
   }
@@ -103,7 +107,7 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
 
   get injector(): Injector { return this; }
 
-  get componentFactoryResolver(): ComponentFactoryResolver { return this; }
+  get componentFactoryResolver(): ComponentFactoryResolver { return this._cmpFactoryResolver; }
 
   destroy(): void {
     if (this._destroyed) {

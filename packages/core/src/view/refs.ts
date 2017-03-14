@@ -11,6 +11,7 @@ import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ElementRef} from '../linker/element_ref';
+import {NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
@@ -52,12 +53,15 @@ class ComponentFactory_ extends ComponentFactory<any> {
    * Creates a new component.
    */
   create(
-      injector: Injector, projectableNodes: any[][] = null,
-      rootSelectorOrNode: string|any = null): ComponentRef<any> {
+      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
+      ngModule?: NgModuleRef<any>): ComponentRef<any> {
+    if (!ngModule) {
+      throw new Error('ngModule should be provided');
+    }
     const viewDef = resolveViewDefinition(this.viewDefFactory);
     const componentNodeIndex = viewDef.nodes[0].element.componentProvider.index;
     const view = Services.createRootView(
-        injector, projectableNodes || [], rootSelectorOrNode, viewDef, EMPTY_CONTEXT);
+        injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
     view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
 
@@ -107,6 +111,7 @@ class ViewContainerRef_ implements ViewContainerData {
       elDef = viewParentEl(view);
       view = view.parent;
     }
+
     return view ? new Injector_(view, elDef) : this._view.root.injector;
   }
 

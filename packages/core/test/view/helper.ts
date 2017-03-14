@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, RootRenderer, Sanitizer} from '@angular/core';
+import {Injector, NgModuleRef, RootRenderer, Sanitizer} from '@angular/core';
 import {ArgumentType, NodeCheckFn, RootData, Services, ViewData, ViewDefinition, initServicesIfNeeded} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -33,7 +33,8 @@ export function createRootView(
     rootSelectorOrNode?: any): ViewData {
   initServicesIfNeeded();
   return Services.createRootView(
-      TestBed.get(Injector), projectableNodes || [], rootSelectorOrNode, def, context);
+      TestBed.get(Injector), projectableNodes || [], rootSelectorOrNode, def,
+      TestBed.get(NgModuleRef), context);
 }
 
 export let removeNodes: Node[];

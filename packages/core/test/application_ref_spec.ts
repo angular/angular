@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -71,6 +71,33 @@ export function main() {
       }
       return MyModule;
     }
+
+    it('should bootstrap a component from a child module',
+       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
+
+         @NgModule({
+           providers: [{provide: 'hello', useValue: 'component'}],
+           declarations: [SomeComponent],
+           entryComponents: [SomeComponent],
+         })
+         class SomeModule {
+         }
+
+         createRootEl();
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
+         const component = app.bootstrap(cmpFactory);
+
+         // The component should see the child module providers
+         expect(component.injector.get('hello')).toEqual('component');
+       })));
 
     describe('ApplicationRef', () => {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });

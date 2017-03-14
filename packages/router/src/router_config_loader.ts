@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactoryResolver, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -22,9 +22,7 @@ import {flatten, wrapIntoObservable} from './utils/collection';
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 
 export class LoadedRouterConfig {
-  constructor(
-      public routes: Route[], public injector: Injector,
-      public factoryResolver: ComponentFactoryResolver, public injectorFactory: Function) {}
+  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
 }
 
 export class RouterConfigLoader {
@@ -46,11 +44,8 @@ export class RouterConfigLoader {
       }
 
       const module = factory.create(parentInjector);
-      const injectorFactory = (parent: Injector) => factory.create(parent).injector;
 
-      return new LoadedRouterConfig(
-          flatten(module.injector.get(ROUTES)), module.injector, module.componentFactoryResolver,
-          injectorFactory);
+      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)), module);
     });
   }
 
