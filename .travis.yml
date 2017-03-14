@@ -32,7 +32,7 @@ env:
   global:
     # GITHUB_TOKEN_ANGULAR=<github token, a personal access token of the angular-builds account, account access in valentine>
     # This is needed for the e2e Travis matrix task to publish packages to github for continuous packages delivery.
-    - secure: "PJXJptSS0ukNH4rxXpLFQ4wLxY/uiyFz0V5VQysM9adYu4tebqwP5fzZp6pb7IdYMJKaW9Lw1R9VGcV0dWqr4blf/H3MMc4Y6z18cPq+j56WoM5sgsDo5lRlsCC0g63TZUuBKQhKE2WQgAERJebCQSDkFyPi88Qmph6fkP3bbjg="
+    - secure: "rNqXoy2gqjbF5tBXlRBy+oiYntO3BtzcxZuEtlLMzNaTNzC4dyMOFub0GkzIPWwOzkARoEU9Kv+bC97fDVbCBUKeyzzEqxqddUKhzRxeaYjsefJ6XeTvBvDxwo7wDwyxZSuWdBeGAe4eARVHm7ypsd+AlvqxtzjyS27TK2BzdL4="
     # FIREBASE_TOKEN
     # This is needed for publishing builds to the "aio-staging" firebase site.
     # TODO(i): the token was generated using the iminar@google account, we should switch to a shared/role-base account.
