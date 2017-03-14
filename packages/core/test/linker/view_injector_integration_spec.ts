@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -640,6 +640,28 @@ export function main() {
         expect(
             el.children[0].injector.get(NeedsViewContainerRef).viewContainer.element.nativeElement)
             .toBe(el.children[0].nativeElement);
+      });
+
+      it('should inject ViewContainerRef', () => {
+        @Component({template: ''})
+        class TestComp {
+          constructor(public vcr: ViewContainerRef) {}
+        }
+
+        @NgModule({
+          declarations: [TestComp],
+          entryComponents: [TestComp],
+        })
+        class TestModule {
+        }
+
+        const testInjector = {};
+
+        const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
+                                .get(ComponentFactoryResolver)
+                                .resolveComponentFactory(TestComp);
+        const component = compFactory.create(<Injector>testInjector);
+        expect(component.instance.vcr.parentInjector).toBe(testInjector);
       });
 
       it('should inject TemplateRef', () => {

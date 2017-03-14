@@ -216,11 +216,15 @@ class _InjectorBuilder implements ClassBuilder {
       result = o.literal(dep.value);
     }
     if (!dep.isSkipSelf) {
-      if (dep.token &&
-          (tokenReference(dep.token) === resolveIdentifier(Identifiers.Injector) ||
-           tokenReference(dep.token) === resolveIdentifier(Identifiers.ComponentFactoryResolver))) {
-        result = o.THIS_EXPR;
+      if (dep.token) {
+        if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Injector)) {
+          result = o.THIS_EXPR;
+        } else if (
+            tokenReference(dep.token) === resolveIdentifier(Identifiers.ComponentFactoryResolver)) {
+          result = o.THIS_EXPR.prop('componentFactoryResolver');
+        }
       }
+
       if (!result) {
         result = this._instances.get(tokenReference(dep.token));
       }

@@ -8,8 +8,6 @@
 
 import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, Provider, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
 
-
-
 /**
  * Instantiates a single {@link Component} type and inserts its Host View into current View.
  * `NgComponentOutlet` provides a declarative approach for dynamic component creation.
@@ -81,34 +79,35 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this._componentRef) {
-      this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._componentRef.hostView));
-    }
     this._viewContainerRef.clear();
     this._componentRef = null;
 
     if (this.ngComponentOutlet) {
-      let injector = this.ngComponentOutletInjector || this._viewContainerRef.parentInjector;
+      const elInjector = this.ngComponentOutletInjector || this._viewContainerRef.parentInjector;
 
-      if ((changes as any).ngComponentOutletNgModuleFactory) {
+      if (changes['ngComponentOutletNgModuleFactory']) {
         if (this._moduleRef) this._moduleRef.destroy();
+
         if (this.ngComponentOutletNgModuleFactory) {
-          this._moduleRef = this.ngComponentOutletNgModuleFactory.create(injector);
+          const parentModule = elInjector.get(NgModuleRef);
+          this._moduleRef = this.ngComponentOutletNgModuleFactory.create(parentModule.injector);
         } else {
           this._moduleRef = null;
         }
       }
-      if (this._moduleRef) {
-        injector = this._moduleRef.injector;
-      }
 
-      let componentFactory =
-          injector.get(ComponentFactoryResolver).resolveComponentFactory(this.ngComponentOutlet);
+      const componentFactoryResolver = this._moduleRef ? this._moduleRef.componentFactoryResolver :
+                                                         elInjector.get(ComponentFactoryResolver);
+
+      const componentFactory =
+          componentFactoryResolver.resolveComponentFactory(this.ngComponentOutlet);
 
       this._componentRef = this._viewContainerRef.createComponent(
-          componentFactory, this._viewContainerRef.length, injector, this.ngComponentOutletContent);
+          componentFactory, this._viewContainerRef.length, elInjector,
+          this.ngComponentOutletContent);
     }
   }
+
   ngOnDestroy() {
     if (this._moduleRef) this._moduleRef.destroy();
   }

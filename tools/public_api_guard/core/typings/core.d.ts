@@ -227,7 +227,7 @@ export interface ComponentDecorator {
 export declare abstract class ComponentFactory<C> {
     readonly abstract componentType: Type<any>;
     readonly abstract selector: string;
-    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
+    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
 }
 
 /** @stable */

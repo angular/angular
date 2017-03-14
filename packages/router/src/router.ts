@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type, isDevMode} from '@angular/core';
+import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, Type, isDevMode} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -225,6 +225,7 @@ export class Router {
   private locationSubscription: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
+  private ngModule: NgModuleRef<any>;
 
   /**
    * Error handler that is invoked when a navigation errors.
@@ -263,10 +264,12 @@ export class Router {
   // TODO: vsavkin make internal after the final is out.
   constructor(
       private rootComponentType: Type<any>, private urlSerializer: UrlSerializer,
-      private outletMap: RouterOutletMap, private location: Location, private injector: Injector,
+      private outletMap: RouterOutletMap, private location: Location, injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
+
+    this.ngModule = injector.get(NgModuleRef);
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
@@ -607,8 +610,9 @@ export class Router {
       // this operation do not result in any side effects
       let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, snapshot: RouterStateSnapshot}>;
       if (!precreatedState) {
+        const moduleInjector = this.ngModule.injector;
         const redirectsApplied$ =
-            applyRedirects(this.injector, this.configLoader, this.urlSerializer, url, this.config);
+            applyRedirects(moduleInjector, this.configLoader, this.urlSerializer, url, this.config);
 
         urlAndSnapshot$ = mergeMap.call(redirectsApplied$, (appliedUrl: UrlTree) => {
           return map.call(
@@ -636,8 +640,9 @@ export class Router {
       const preactivationTraverse$ = map.call(
           beforePreactivationDone$,
           ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
+            const moduleInjector = this.ngModule.injector;
             preActivation =
-                new PreActivation(snapshot, this.currentRouterState.snapshot, this.injector);
+                new PreActivation(snapshot, this.currentRouterState.snapshot, moduleInjector);
             preActivation.traverse(this.outletMap);
             return {appliedUrl, snapshot};
           });
@@ -771,7 +776,7 @@ export class PreActivation {
   private checks: Array<CanActivate|CanDeactivate> = [];
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
-      private injector: Injector) {}
+      private moduleInjector: Injector) {}
 
   traverse(parentOutletMap: RouterOutletMap): void {
     const futureRoot = this.future._root;
@@ -991,7 +996,7 @@ export class PreActivation {
 
   private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {
     const config = closestLoadedConfig(snapshot);
-    const injector = config ? config.injector : this.injector;
+    const injector = config ? config.module.injector : this.moduleInjector;
     return injector.get(token);
   }
 }
@@ -1102,26 +1107,10 @@ class ActivateRoutes {
 
   private placeComponentIntoOutlet(
       outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
-    const resolved = <any[]>[{provide: ActivatedRoute, useValue: future}, {
-      provide: RouterOutletMap,
-      useValue: outletMap
-    }];
-
     const config = parentLoadedConfig(future.snapshot);
+    const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
 
-    let resolver: ComponentFactoryResolver = null;
-    let injector: Injector = null;
-
-    if (config) {
-      injector = config.injectorFactory(outlet.locationInjector);
-      resolver = config.factoryResolver;
-      resolved.push({provide: ComponentFactoryResolver, useValue: resolver});
-    } else {
-      injector = outlet.locationInjector;
-      resolver = outlet.locationFactoryResolver;
-    }
-
-    outlet.activate(future, resolver, injector, ReflectiveInjector.resolve(resolved), outletMap);
+    outlet.activateWith(future, cmpFactoryResolver, outletMap);
   }
 
   private deactiveRouteAndItsChildren(
