@@ -8,6 +8,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "dependencies": {
+    "@angular/animations": "file:../../../dist/packages-dist/animations",
     "@angular/common": "file:../../../dist/packages-dist/common",
     "@angular/compiler": "file:../../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../../dist/packages-dist/compiler-cli",

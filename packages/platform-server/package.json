@@ -9,6 +9,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
+    "@angular/animations": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
