@@ -65,6 +65,9 @@ export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
 
   get selector() { return this.factory.selector; }
   get componentType() { return this.factory.componentType; }
+  get ngContentSelectors() { return this.factory.ngContentSelectors; }
+  get inputs() { return this.factory.inputs; }
+  get outputs() { return this.factory.outputs; }
 
   create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
