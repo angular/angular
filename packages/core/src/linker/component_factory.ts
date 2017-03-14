@@ -71,6 +71,18 @@ export abstract class ComponentFactory<C> {
   abstract get selector(): string;
   abstract get componentType(): Type<any>;
   /**
+   * selector for all <ng-content> elements in the component.
+   */
+  abstract get ngContentSelectors(): string[];
+  /**
+   * the inputs of the component.
+   */
+  abstract get inputs(): {propName: string, templateName: string}[];
+  /**
+   * the outputs of the component.
+   */
+  abstract get outputs(): {propName: string, templateName: string}[];
+  /**
    * Creates a new component.
    */
   abstract create(
