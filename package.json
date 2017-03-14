@@ -17,7 +17,7 @@
     "deploy": "firebase deploy",
     "webdriver-manager": "webdriver-manager",
     "docs": "gulp docs",
-    "api": "gulp api"
+    "api": "gulp api-docs"
   },
   "version": "2.0.0-beta.2",
   "license": "MIT",
