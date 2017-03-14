@@ -155,7 +155,8 @@ export class CompileMetadataResolver {
     return typeSummary && typeSummary.summaryKind === kind ? typeSummary : null;
   }
 
-  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): Promise<any> {
+  private _loadDirectiveMetadata(ngModuleType: any, directiveType: any, isSync: boolean):
+      Promise<any> {
     if (this._directiveCache.has(directiveType)) {
       return;
     }
@@ -191,6 +192,7 @@ export class CompileMetadataResolver {
 
     if (metadata.isComponent) {
       const templateMeta = this._directiveNormalizer.normalizeTemplate({
+        ngModuleType,
         componentType: directiveType,
         moduleUrl: componentModuleUrl(this._reflector, directiveType, annotation),
         encapsulation: metadata.template.encapsulation,
@@ -249,7 +251,8 @@ export class CompileMetadataResolver {
         styles: dirMeta.styles,
         styleUrls: dirMeta.styleUrls,
         animations: animations,
-        interpolation: dirMeta.interpolation
+        interpolation: dirMeta.interpolation,
+        isInline: !!dirMeta.template
       });
     }
 
@@ -378,7 +381,7 @@ export class CompileMetadataResolver {
     const loading: Promise<any>[] = [];
     if (ngModule) {
       ngModule.declaredDirectives.forEach((id) => {
-        const promise = this._loadDirectiveMetadata(id.reference, isSync);
+        const promise = this._loadDirectiveMetadata(moduleType, id.reference, isSync);
         if (promise) {
           loading.push(promise);
         }

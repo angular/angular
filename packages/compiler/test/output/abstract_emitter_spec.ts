@@ -33,7 +33,10 @@ export function main() {
   });
 }
 
-export function stripSourceMap(source: string): string {
+export function stripSourceMapAndNewLine(source: string): string {
+  if (source.endsWith('\n')) {
+    source = source.substring(0, source.length - 1);
+  }
   const smi = source.lastIndexOf('\n//#');
   if (smi == -1) return source;
   return source.slice(0, smi);

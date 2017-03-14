@@ -1414,8 +1414,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.createComponent(MyComp);
           throw 'Should throw';
         } catch (e) {
-          expect(e.message).toEqual(
-              `Template parse errors:\nCan't bind to 'unknown' since it isn't a known property of 'div'. ("<div [ERROR ->]unknown="{{ctxProp}}"></div>"): MyComp@0:5`);
+          expect(e.message).toMatch(
+              /Template parse errors:\nCan't bind to 'unknown' since it isn't a known property of 'div'. \("<div \[ERROR ->\]unknown="{{ctxProp}}"><\/div>"\): .*MyComp.html@0:5/);
         }
       });
 

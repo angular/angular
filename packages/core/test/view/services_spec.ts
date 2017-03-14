@@ -58,7 +58,6 @@ export function main() {
         expect(debugCtx.component).toBe(compView.component);
         expect(debugCtx.context).toBe(compView.context);
         expect(debugCtx.providerTokens).toEqual([AService]);
-        expect(debugCtx.source).toBeTruthy();
         expect(debugCtx.references['ref'].nativeElement)
             .toBe(asElementData(compView, 0).renderElement);
       });
@@ -74,7 +73,6 @@ export function main() {
         expect(debugCtx.injector.get(AComp)).toBe(compView.component);
         expect(debugCtx.component).toBe(compView.component);
         expect(debugCtx.context).toBe(compView.context);
-        expect(debugCtx.source).toBeTruthy();
       });
 
       it('should provide data for other nodes based on the nearest element parent', () => {
@@ -85,6 +83,7 @@ export function main() {
 
         expect(debugCtx.renderNode).toBe(asElementData(compView, 0).renderElement);
       });
+
     });
   });
 }

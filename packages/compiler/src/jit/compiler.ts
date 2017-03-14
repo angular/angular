@@ -8,7 +8,7 @@
 
 import {Compiler, ComponentFactory, Inject, Injector, ModuleWithComponentFactories, NgModuleFactory, Type, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory, ɵstringify as stringify} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileStylesheetMetadata, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName, ngModuleJitUrl, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {CompilerInjectable} from '../injectable';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -38,6 +38,7 @@ export class JitCompiler implements Compiler {
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledDirectiveWrapperCache = new Map<Type<any>, Type<any>>();
   private _compiledNgModuleCache = new Map<Type<any>, NgModuleFactory<any>>();
+  private _sharedStylesheetCount = 0;
 
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
@@ -128,7 +129,7 @@ export class JitCompiler implements Compiler {
             interpretStatements(compileResult.statements, [compileResult.ngModuleFactoryVar])[0];
       } else {
         ngModuleFactory = jitStatements(
-            `/${identifierName(moduleMeta.type)}/module.ngfactory.js`, compileResult.statements,
+            ngModuleJitUrl(moduleMeta), compileResult.statements,
             [compileResult.ngModuleFactoryVar])[0];
       }
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
@@ -251,7 +252,7 @@ export class JitCompiler implements Compiler {
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
-        identifierName(compMeta.type));
+        templateSourceUrl(template.ngModule.type, template.compMeta, template.compMeta.template));
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
         usedPipes);
@@ -263,10 +264,9 @@ export class JitCompiler implements Compiler {
       [viewClass, rendererType] = interpretStatements(
           statements, [compileResult.viewClassVar, compileResult.rendererTypeVar]);
     } else {
-      const sourceUrl =
-          `/${identifierName(template.ngModule.type)}/${identifierName(template.compType)}/${template.isHost?'host':'component'}.ngfactory.js`;
       [viewClass, rendererType] = jitStatements(
-          sourceUrl, statements, [compileResult.viewClassVar, compileResult.rendererTypeVar]);
+          templateJitUrl(template.ngModule.type, template.compMeta), statements,
+          [compileResult.viewClassVar, compileResult.rendererTypeVar]);
     }
     template.compiled(viewClass, rendererType);
   }
@@ -289,7 +289,8 @@ export class JitCompiler implements Compiler {
       return interpretStatements(result.statements, [result.stylesVar])[0];
     } else {
       return jitStatements(
-          `/${result.meta.moduleUrl}.ngstyle.js`, result.statements, [result.stylesVar])[0];
+          sharedStylesheetJitUrl(result.meta, this._sharedStylesheetCount++), result.statements,
+          [result.stylesVar])[0];
     }
   }
 }

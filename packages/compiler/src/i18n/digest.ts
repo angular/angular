@@ -210,7 +210,9 @@ enum Endian {
   Big,
 }
 
-function utf8Encode(str: string): string {
+// TODO(vicb): move this to some shared place, as we also need it
+// for SourceMaps.
+export function utf8Encode(str: string): string {
   let encoded: string = '';
 
   for (let index = 0; index < str.length; index++) {

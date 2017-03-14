@@ -9,10 +9,7 @@
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
-
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
-const b64 = require('base64-js');
-
+import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 export function main() {
   describe('AbstractEmitter', () => {
@@ -47,12 +44,10 @@ export function main() {
         ctx.print(createSourceSpan(fileA, 0), 'fileA-0');
 
         const sm = ctx.toSourceMapGenerator(null, 10).toJSON();
-        const smc = new SourceMapConsumer(sm);
-        expect(smc.originalPositionFor({line: 11, column: 0})).toEqual({
+        expect(originalPositionFor(sm, {line: 11, column: 0})).toEqual({
           line: 1,
           column: 0,
           source: 'a.js',
-          name: null,
         });
       });
 
@@ -109,9 +104,8 @@ function expectMap(
     ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string = null,
     srcLine: number = null, srcCol: number = null) {
   const sm = ctx.toSourceMapGenerator().toJSON();
-  const smc = new SourceMapConsumer(sm);
   const genPosition = {line: genLine + 1, column: genCol};
-  const origPosition = smc.originalPositionFor(genPosition);
+  const origPosition = originalPositionFor(sm, genPosition);
   expect(origPosition.source).toEqual(source);
   expect(origPosition.line).toEqual(srcLine === null ? null : srcLine + 1);
   expect(origPosition.column).toEqual(srcCol);
@@ -133,16 +127,4 @@ function createSourceSpan(file: ParseSourceFile, idx: number) {
   const end = new ParseLocation(file, col + 2, 0, col + 2);
   const sourceSpan = new ParseSourceSpan(start, end);
   return {sourceSpan};
-}
-
-export function extractSourceMap(source: string): SourceMap {
-  let idx = source.lastIndexOf('\n//#');
-  if (idx == -1) return null;
-  const smComment = source.slice(idx).trim();
-  const smB64 = smComment.split('sourceMappingURL=data:application/json;base64,')[1];
-  return smB64 ? JSON.parse(decodeB64String(smB64)) : null;
-}
-
-function decodeB64String(s: string): string {
-  return b64.toByteArray(s).reduce((s: string, c: number) => s + String.fromCharCode(c), '');
 }

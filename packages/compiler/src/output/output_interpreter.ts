@@ -304,7 +304,10 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
         (entry) => (result as any)[entry.key] = entry.value.visitExpression(this, ctx));
     return result;
   }
-
+  visitCommaExpr(ast: o.CommaExpr, context: any): any {
+    const values = this.visitAllExpressions(ast.parts, context);
+    return values[values.length - 1];
+  }
   visitAllExpressions(expressions: o.Expression[], ctx: _ExecutionContext): any {
     return expressions.map((expr) => expr.visitExpression(this, ctx));
   }

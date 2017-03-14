@@ -302,7 +302,7 @@ export declare class DebugElement extends DebugNode {
     styles: {
         [key: string]: string;
     };
-    constructor(nativeNode: any, parent: any, _debugInfo: RenderDebugInfo);
+    constructor(nativeNode: any, parent: any, _debugContext: DebugContext);
     addChild(child: DebugNode): void;
     insertBefore(refChild: DebugNode, newChild: DebugNode): void;
     insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]): void;
@@ -325,8 +325,8 @@ export declare class DebugNode {
     readonly references: {
         [key: string]: any;
     };
-    readonly source: string;
-    constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
+    /** @deprecated */ readonly source: string;
+    constructor(nativeNode: any, parent: DebugNode, _debugContext: DebugContext);
 }
 
 /** @deprecated */

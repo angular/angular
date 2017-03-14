@@ -23,6 +23,8 @@ export class MockResourceLoader extends ResourceLoader {
     return request.getPromise();
   }
 
+  hasPendingRequests() { return !!this._requests.length; }
+
   /**
    * Add an expectation for the given URL. Incoming requests will be checked against
    * the next expectation (in FIFO order). The `verifyNoOutstandingExpectations` method

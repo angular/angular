@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata} from './compile_metadata';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
@@ -20,6 +20,7 @@ import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult, syntaxError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
+  ngModuleType: any;
   componentType: any;
   moduleUrl: string;
   template?: string;
@@ -104,20 +105,25 @@ export class DirectiveNormalizer {
   }
 
   normalizeLoadedTemplate(
-      prenomData: PrenormalizedTemplateMetadata, template: string,
+      prenormData: PrenormalizedTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
-    const interpolationConfig = InterpolationConfig.fromArray(prenomData.interpolation);
+    const isInline = !!prenormData.template;
+    const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation);
     const rootNodesAndErrors = this._htmlParser.parse(
-        template, stringify(prenomData.componentType), true, interpolationConfig);
+        template,
+        templateSourceUrl(
+            {reference: prenormData.ngModuleType}, {type: {reference: prenormData.componentType}},
+            {isInline, templateUrl: templateAbsUrl}),
+        true, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
       throw syntaxError(`Template parse errors:\n${errorString}`);
     }
 
     const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
-      styles: prenomData.styles,
-      styleUrls: prenomData.styleUrls,
-      moduleUrl: prenomData.moduleUrl
+      styles: prenormData.styles,
+      styleUrls: prenormData.styleUrls,
+      moduleUrl: prenormData.moduleUrl
     }));
 
     const visitor = new TemplatePreparseVisitor();
@@ -125,7 +131,7 @@ export class DirectiveNormalizer {
     const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    let encapsulation = prenomData.encapsulation;
+    let encapsulation = prenormData.encapsulation;
     if (encapsulation == null) {
       encapsulation = this._config.defaultEncapsulation;
     }
@@ -143,8 +149,8 @@ export class DirectiveNormalizer {
       template,
       templateUrl: templateAbsUrl, styles, styleUrls,
       ngContentSelectors: visitor.ngContentSelectors,
-      animations: prenomData.animations,
-      interpolation: prenomData.interpolation,
+      animations: prenormData.animations,
+      interpolation: prenormData.interpolation, isInline
     });
   }
 
@@ -160,7 +166,8 @@ export class DirectiveNormalizer {
                 externalStylesheets: externalStylesheets,
                 ngContentSelectors: templateMeta.ngContentSelectors,
                 animations: templateMeta.animations,
-                interpolation: templateMeta.interpolation
+                interpolation: templateMeta.interpolation,
+                isInline: templateMeta.isInline,
               }));
   }
 

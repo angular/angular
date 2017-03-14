@@ -14,7 +14,7 @@ import {CompilerInjectable} from './injectable';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan, typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {ProviderAst} from './template_parser/template_ast';
 
@@ -37,14 +37,7 @@ export class NgModuleCompileResult {
 export class NgModuleCompiler {
   compile(ngModuleMeta: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[]):
       NgModuleCompileResult {
-    const moduleUrl = identifierModuleUrl(ngModuleMeta.type);
-    const sourceFileName = moduleUrl != null ?
-        `in NgModule ${identifierName(ngModuleMeta.type)} in ${moduleUrl}` :
-        `in NgModule ${identifierName(ngModuleMeta.type)}`;
-    const sourceFile = new ParseSourceFile('', sourceFileName);
-    const sourceSpan = new ParseSourceSpan(
-        new ParseLocation(sourceFile, null, null, null),
-        new ParseLocation(sourceFile, null, null, null));
+    const sourceSpan = typeSourceSpan('NgModule', ngModuleMeta.type);
     const deps: ComponentFactoryDependency[] = [];
     const bootstrapComponentFactories: CompileIdentifierMetadata[] = [];
     const entryComponentFactories =

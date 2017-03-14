@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -189,7 +189,7 @@ export class AotCompiler {
 
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, ngModule.schemas,
-        identifierName(compMeta.type));
+        templateSourceUrl(ngModule.type, compMeta, compMeta.template));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult =
         this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes);

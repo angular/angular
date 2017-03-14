@@ -34,11 +34,12 @@ export class JavaScriptEmitter implements OutputEmitter {
     srcParts.push(ctx.toSource());
 
     const prefixLines = converter.importsWithPrefixes.size;
-    const sm = ctx.toSourceMapGenerator(null, prefixLines).toJsComment();
+    const sm = ctx.toSourceMapGenerator(genFilePath, prefixLines).toJsComment();
     if (sm) {
       srcParts.push(sm);
     }
-
+    // always add a newline at the end, as some tools have bugs without it.
+    srcParts.push('');
     return srcParts.join('\n');
   }
 }

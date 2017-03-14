@@ -98,8 +98,8 @@ class HelloCmpUsingCustomElement {
 }
 
 class MockConsole {
-  res: any[] = [];
-  error(s: any): void { this.res.push(s); }
+  res: any[][] = [];
+  error(...s: any[]): void { this.res.push(s); }
 }
 
 
@@ -208,8 +208,8 @@ export function main() {
            const refPromise =
                bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason) => {
-             expect(logger.res.join(''))
-                 .toContain('The selector "non-existent" did not match any elements');
+             expect(logger.res[0].join('#'))
+                 .toContain('ERROR#Error: The selector "non-existent" did not match any elements');
              async.done();
              return null;
            });

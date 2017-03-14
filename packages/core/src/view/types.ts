@@ -22,6 +22,7 @@ import {Sanitizer, SecurityContext} from '../security';
 // -------------------------------------
 
 export interface ViewDefinition {
+  factory: ViewDefinitionFactory;
   flags: ViewFlags;
   updateDirectives: ViewUpdateFn;
   updateRenderer: ViewUpdateFn;
@@ -45,9 +46,22 @@ export interface ViewDefinition {
   nodeMatchedQueries: number;
 }
 
-export type ViewDefinitionFactory = () => ViewDefinition;
+/**
+ * Factory for ViewDefinitions.
+ * We use a function so we can reexeute it in case an error happens and use the given logger
+ * function to log the error from the definition of the node, which is shown in all browser
+ * logs.
+ */
+export interface ViewDefinitionFactory { (logger: NodeLogger): ViewDefinition; }
 
-export type ViewUpdateFn = (check: NodeCheckFn, view: ViewData) => void;
+/**
+ * Function to call console.error at the right source location. This is an indirection
+ * via another function as browser will log the location that actually called
+ * `console.error`.
+ */
+export interface NodeLogger { (): () => void; }
+
+export interface ViewUpdateFn { (check: NodeCheckFn, view: ViewData): void; }
 
 // helper functions to create an overloaded function type.
 export interface NodeCheckFn {
@@ -57,10 +71,11 @@ export interface NodeCheckFn {
    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
 }
 
-export type ViewHandleEventFn =
-    (view: ViewData, nodeIndex: number, eventName: string, event: any) => boolean;
-
 export const enum ArgumentType {Inline, Dynamic}
+
+export interface ViewHandleEventFn {
+  (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
+}
 
 /**
  * Bitmask for ViewDefintion.flags.
@@ -221,11 +236,10 @@ export interface ElementDef {
    * that are located on this element.
    */
   allProviders: {[tokenKey: string]: NodeDef};
-  source: string;
   handleEvent: ElementHandleEventFn;
 }
 
-export type ElementHandleEventFn = (view: ViewData, eventName: string, event: any) => boolean;
+export interface ElementHandleEventFn { (view: ViewData, eventName: string, event: any): boolean; }
 
 export interface ProviderDef {
   token: any;
@@ -250,10 +264,7 @@ export const enum DepFlags {
   Value = 2 << 2,
 }
 
-export interface TextDef {
-  prefix: string;
-  source: string;
-}
+export interface TextDef { prefix: string; }
 
 export interface QueryDef {
   id: number;
@@ -318,7 +329,7 @@ export const enum ViewState {
   Destroyed = 1 << 3
 }
 
-export type DisposableFn = () => void;
+export interface DisposableFn { (): void; }
 
 /**
  * Node instance data.
@@ -428,9 +439,9 @@ export abstract class DebugContext {
   abstract get providerTokens(): any[];
   abstract get references(): {[key: string]: any};
   abstract get context(): any;
-  abstract get source(): string;
   abstract get componentRenderElement(): any;
   abstract get renderNode(): any;
+  abstract logError(console: Console, ...values: any[]): void;
 }
 
 // -------------------------------------

@@ -18,9 +18,7 @@ import {checkAndUpdateQuery, createQuery, queryDef} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
-import {checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
-
-const NOOP = (): any => undefined;
+import {NOOP, checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
 
 export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
@@ -137,6 +135,8 @@ export function viewDef(
   const handleEvent: ViewHandleEventFn = (view, nodeIndex, eventName, event) =>
       nodes[nodeIndex].element.handleEvent(view, eventName, event);
   return {
+    // Will be filled later...
+    factory: undefined,
     nodeFlags: viewNodeFlags,
     rootNodeFlags: viewRootNodeFlags,
     nodeMatchedQueries: viewMatchedQueries, flags,

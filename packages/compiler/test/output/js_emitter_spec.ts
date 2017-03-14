@@ -12,7 +12,7 @@ import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 
-import {stripSourceMap} from './abstract_emitter_spec';
+import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
@@ -50,7 +50,7 @@ export function main() {
 
     function emitStmt(stmt: o.Statement, exportedVars: string[] = null): string {
       const source = emitter.emitStatements(someModuleUrl, [stmt], exportedVars || []);
-      return stripSourceMap(source);
+      return stripSourceMapAndNewLine(source);
     }
 
     it('should declare variables', () => {
