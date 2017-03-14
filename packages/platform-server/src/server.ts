@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵAnimationEngine} from '@angular/animations/browser';
 import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
@@ -37,9 +39,18 @@ function initParse5Adapter(injector: Injector) {
   return () => { Parse5DomAdapter.makeCurrent(); };
 }
 
+export function instantiateServerRendererFactory(
+    renderer: RendererFactory2, engine: ɵAnimationEngine, zone: NgZone) {
+  return new ɵAnimationRendererFactory(renderer, engine, zone);
+}
+
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRendererFactory2,
-  {provide: RendererFactory2, useExisting: ServerRendererFactory2},
+  {
+    provide: RendererFactory2,
+    useFactory: instantiateServerRendererFactory,
+    deps: [ServerRendererFactory2, ɵAnimationEngine, NgZone]
+  },
   ServerStylesHost,
   {provide: SharedStylesHost, useExisting: ServerStylesHost},
 ];
@@ -51,7 +62,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
  */
 @NgModule({
   exports: [BrowserModule],
-  imports: [HttpModule],
+  imports: [HttpModule, NoopAnimationsModule],
   providers: [
     SERVER_RENDER_PROVIDERS,
     SERVER_HTTP_PROVIDERS,

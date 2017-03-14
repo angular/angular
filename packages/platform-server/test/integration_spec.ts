@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {ApplicationRef, CompilerFactory, Component, HostListener, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
@@ -83,6 +84,25 @@ class SVGComponent {
   bootstrap: [SVGComponent]
 })
 class SVGServerModule {
+}
+
+@Component({
+  selector: 'app',
+  template: '<div @myAnimation>{{text}}</div>',
+  animations: [trigger(
+      'myAnimation',
+      [transition('void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+})
+class MyAnimationApp {
+  text = 'Works!';
+}
+
+@NgModule({
+  declarations: [MyAnimationApp],
+  imports: [BrowserModule.withServerTransition({appId: 'anim-server'}), ServerModule],
+  bootstrap: [MyAnimationApp]
+})
+class AnimationServerModule {
 }
 
 @Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
@@ -349,6 +369,15 @@ export function main() {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('works with animation', async(() => {
+           renderModule(AnimationServerModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div>Works!</div></app></body></html>');
              called = true;
            });
          }));
