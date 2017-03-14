@@ -23,19 +23,19 @@ var CIconfiguration = {
   'IE9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Android4.1': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android4.2': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
-  'Android4.3': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android4.1': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'Android4.2': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'Android4.3': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
   'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'Safari10': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Safari9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Safari10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'iOS7': {unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   'iOS8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'iOS9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'iOS9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'iOS10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
@@ -54,7 +54,7 @@ var customLaunchers = {
   'SL_SAFARI8': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.10', version: '8.0'},
   'SL_SAFARI9': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.11', version: '9.0'},
   'SL_SAFARI10':
-      {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.12', version: '10.0'},
+      {base: 'SauceLabs', browserName: 'safari', platform: 'Mac 10.11'},
   'SL_IOS7': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '7.1'},
   'SL_IOS8': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '8.4'},
   'SL_IOS9': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '9.3'},
@@ -73,11 +73,8 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'MicrosoftEdge',
     platform: 'Windows 10',
-    version: '13.10586'
+    version: '14.14393'
   },
-  'SL_ANDROID4.1': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.1'},
-  'SL_ANDROID4.2': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.2'},
-  'SL_ANDROID4.3': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.3'},
   'SL_ANDROID4.4': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.4'},
   'SL_ANDROID5': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '5.1'},
 
@@ -111,7 +108,7 @@ var customLaunchers = {
   'BS_WINDOWSPHONE':
       {base: 'BrowserStack', device: 'Nokia Lumia 930', os: 'winphone', os_version: '8.1'},
   'BS_ANDROID5': {base: 'BrowserStack', device: 'Google Nexus 5', os: 'android', os_version: '5.0'},
-  'BS_ANDROID4.4': {base: 'BrowserStack', device: 'HTC One M8', os: 'android', os_version: '4.4'},
+  'BS_ANDROID4.4': {base: 'BrowserStack', device: 'Samsung Galaxy S5', os: 'android', os_version: '4.4'},
   'BS_ANDROID4.3':
       {base: 'BrowserStack', device: 'Samsung Galaxy S4', os: 'android', os_version: '4.3'},
   'BS_ANDROID4.2':
@@ -129,10 +126,10 @@ var sauceAliases = {
     'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'
   ],
   'MOBILE': [
-    'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7',
+    'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7',
     'SL_IOS8', 'SL_IOS9', 'SL_IOS10'
   ],
-  'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5'],
+  'ANDROID': ['SL_ANDROID4.4', 'SL_ANDROID5'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
   'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9', 'SL_IOS10'],
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'],
@@ -151,9 +148,9 @@ var browserstackAliases = {
     'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'
   ],
   'MOBILE': [
-    'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10', 'BS_WINDOWSPHONE'
+    'BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10', 'BS_WINDOWSPHONE'
   ],
-  'ANDROID': ['BS_ANDROID4.3', 'BS_ANDROID4.4'],
+  'ANDROID': ['BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5'],
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10'],
   'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'],
