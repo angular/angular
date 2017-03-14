@@ -342,34 +342,36 @@ export function main() {
         expect(created).toBe(true);
       });
 
-      it('should instantiate providers lazily', () => {
-        TestBed.configureTestingModule({declarations: [SimpleDirective]});
+      it('should support ngOnDestroy for lazy providers', () => {
         let created = false;
-        TestBed.overrideDirective(
-            SimpleDirective,
-            {set: {providers: [{provide: 'service', useFactory: () => created = true}]}});
+        let destroyed = false;
 
-        const el = createComponent('<div simpleDirective></div>');
-
-        expect(created).toBe(false);
-
-        el.children[0].injector.get('service');
-
-        expect(created).toBe(true);
-      });
-
-      it('should instantiate providers with a lifecycle hook eagerly', () => {
-        let created = false;
         class SomeInjectable {
           constructor() { created = true; }
-          ngOnDestroy() {}
+          ngOnDestroy() { destroyed = true; }
         }
-        TestBed.configureTestingModule({declarations: [SimpleDirective]});
-        TestBed.overrideDirective(SimpleDirective, {set: {providers: [SomeInjectable]}});
 
-        const el = createComponent('<div simpleDirective></div>');
+        @Component({providers: [SomeInjectable], template: ''})
+        class SomeComp {
+        }
 
+        TestBed.configureTestingModule({declarations: [SomeComp]});
+
+
+        let compRef = TestBed.createComponent(SomeComp).componentRef;
+        expect(created).toBe(false);
+        expect(destroyed).toBe(false);
+
+        // no error if the provider was not yet created
+        compRef.destroy();
+        expect(created).toBe(false);
+        expect(destroyed).toBe(false);
+
+        compRef = TestBed.createComponent(SomeComp).componentRef;
+        compRef.injector.get(SomeInjectable);
         expect(created).toBe(true);
+        compRef.destroy();
+        expect(destroyed).toBe(true);
       });
 
       it('should instantiate view providers lazily', () => {

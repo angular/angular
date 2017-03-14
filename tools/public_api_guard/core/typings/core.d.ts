@@ -121,6 +121,7 @@ export declare class ApplicationInitStatus {
 
 /** @experimental */
 export declare class ApplicationModule {
+    constructor(appRef: ApplicationRef);
 }
 
 /** @stable */
