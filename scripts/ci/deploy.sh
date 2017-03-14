@@ -40,9 +40,9 @@ case ${CI_MODE} in
     travisFoldEnd "deploy.packages"
     ;;
   aio)
-    # Don't deploy if this build is not for master
-    if [[ ${TRAVIS_BRANCH} != "master" ]]; then
-      echo "Skipping deploy because this build is not for master."
+    # Don't deploy if this build is not for master or aio-master
+    if [[ ${TRAVIS_BRANCH} != "master" && ${TRAVIS_BRANCH} != "aio-master" ]]; then
+      echo "Skipping deploy because this build is not for master or aio-master."
       exit 0
     fi
 
@@ -76,6 +76,9 @@ case ${CI_MODE} in
             esac
           fi
         travisFoldEnd "deploy.aio.pr-preview"
+      elif [[ ${TRAVIS_BRANCH} == "aio-master" ]]; then
+        # This is upstream aio-master: Don't deploy to staging
+        echo "Skipping deploy to staging because this build is for upstream aio-master."
       else
         # This is upstream master: Deploy to staging
         travisFoldStart "deploy.aio.staging"
