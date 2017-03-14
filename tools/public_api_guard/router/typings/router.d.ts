@@ -320,11 +320,12 @@ export declare class RouterOutlet implements OnDestroy {
     readonly component: Object;
     deactivateEvents: EventEmitter<any>;
     readonly isActivated: boolean;
-    readonly locationFactoryResolver: ComponentFactoryResolver;
-    readonly locationInjector: Injector;
+    /** @deprecated */ readonly locationFactoryResolver: ComponentFactoryResolver;
+    /** @deprecated */ readonly locationInjector: Injector;
     outletMap: RouterOutletMap;
     constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
-    activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    /** @deprecated */ activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null, outletMap: RouterOutletMap): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     deactivate(): void;
     detach(): ComponentRef<any>;
