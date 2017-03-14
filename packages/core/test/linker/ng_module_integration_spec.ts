@@ -907,6 +907,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
           @NgModule({providers: [SomeInjectable]})
           class SomeModule {
+            // Inject SomeInjectable to make it eager...
+            constructor(i: SomeInjectable) {}
           }
 
           const moduleRef = createModule(SomeModule);
@@ -915,17 +917,33 @@ function declareTests({useJit}: {useJit: boolean}) {
           expect(destroyed).toBe(true);
         });
 
-        it('should instantiate providers with lifecycle eagerly', () => {
+        it('should support ngOnDestroy for lazy providers', () => {
           let created = false;
+          let destroyed = false;
 
           class SomeInjectable {
             constructor() { created = true; }
-            ngOnDestroy() {}
+            ngOnDestroy() { destroyed = true; }
           }
 
-          createInjector([SomeInjectable]);
+          @NgModule({providers: [SomeInjectable]})
+          class SomeModule {
+          }
 
+          let moduleRef = createModule(SomeModule);
+          expect(created).toBe(false);
+          expect(destroyed).toBe(false);
+
+          // no error if the provider was not yet created
+          moduleRef.destroy();
+          expect(created).toBe(false);
+          expect(destroyed).toBe(false);
+
+          moduleRef = createModule(SomeModule);
+          moduleRef.injector.get(SomeInjectable);
           expect(created).toBe(true);
+          moduleRef.destroy();
+          expect(destroyed).toBe(true);
         });
       });
 
