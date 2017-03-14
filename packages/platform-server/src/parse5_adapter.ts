@@ -453,11 +453,15 @@ export class Parse5DomAdapter extends DomAdapter {
   hasAttribute(element: any, attribute: string): boolean {
     return element.attribs && element.attribs[attribute] != null;
   }
-  hasAttributeNS(element: any, ns: string, attribute: string): boolean { throw 'not implemented'; }
+  hasAttributeNS(element: any, ns: string, attribute: string): boolean {
+    return this.hasAttribute(element, attribute);
+  }
   getAttribute(element: any, attribute: string): string {
     return this.hasAttribute(element, attribute) ? element.attribs[attribute] : null;
   }
-  getAttributeNS(element: any, ns: string, attribute: string): string { throw 'not implemented'; }
+  getAttributeNS(element: any, ns: string, attribute: string): string {
+    return this.getAttribute(element, attribute);
+  }
   setAttribute(element: any, attribute: string, value: string) {
     if (attribute) {
       element.attribs[attribute] = value;
@@ -467,7 +471,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
   }
   setAttributeNS(element: any, ns: string, attribute: string, value: string) {
-    throw 'not implemented';
+    this.setAttribute(element, attribute, value);
   }
   removeAttribute(element: any, attribute: string) {
     if (attribute) {
