@@ -12,6 +12,7 @@ export interface ComponentInfo {
   component: Type<any>;
   inputs?: string[];
   outputs?: string[];
+  selectors?: string[];
 }
 
 /**

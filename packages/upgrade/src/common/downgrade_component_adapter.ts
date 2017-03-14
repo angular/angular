@@ -9,10 +9,12 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular1';
+import {createElementCssSelector} from './compiler_helpers/createElementCssSelector';
+import {CssSelector, SelectorMatcher} from './compiler_helpers/selector';
 import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {ContentProjectionHelper} from './content_projection_helper';
-import {getComponentName, hookupNgModel} from './util';
+import {NgContentSelectorHelper} from './ng_content_selector_helper';
+import {getAttributesAsArray, getComponentName, hookupNgModel} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -38,12 +40,7 @@ export class DowngradeComponentAdapter {
 
   compileContents(): Node[][] {
     const compiledProjectableNodes: Node[][] = [];
-
-    // The projected content has to be grouped, before it is compiled.
-    const projectionHelper: ContentProjectionHelper =
-        this.parentInjector.get(ContentProjectionHelper);
-    const projectableNodes: Node[][] = projectionHelper.groupProjectableNodes(
-        this.$injector, this.info.component, this.element.contents());
+    const projectableNodes: Node[][] = this.groupProjectableNodes();
     const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
     this.element.empty();
@@ -185,5 +182,57 @@ export class DowngradeComponentAdapter {
     }
 
     this.component[prop] = currValue;
+  }
+
+  groupProjectableNodes() {
+    const ngContentSelectorHelper =
+        this.parentInjector.get(NgContentSelectorHelper) as NgContentSelectorHelper;
+    const ngContentSelectors = ngContentSelectorHelper.getNgContentSelectors(this.info);
+
+    if (!ngContentSelectors) {
+      throw new Error('Expecting ngContentSelectors for: ' + getComponentName(this.info.component));
+    }
+
+    return this._groupNodesBySelector(ngContentSelectors, this.element.contents());
+  }
+
+  /**
+   * Group a set of DOM nodes into `ngContent` groups, based on the given content selectors.
+   */
+  private _groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
+    const projectableNodes: Node[][] = [];
+    let matcher = new SelectorMatcher();
+    let wildcardNgContentIndex: number;
+
+    for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
+      projectableNodes[i] = [];
+
+      const selector = ngContentSelectors[i];
+      if (selector === '*') {
+        wildcardNgContentIndex = i;
+      } else {
+        matcher.addSelectables(CssSelector.parse(selector), i);
+      }
+    }
+
+    for (let j = 0, jj = nodes.length; j < jj; ++j) {
+      const ngContentIndices: number[] = [];
+      const node = nodes[j];
+      const selector =
+          createElementCssSelector(node.nodeName.toLowerCase(), getAttributesAsArray(node));
+
+      matcher.match(selector, (_, index) => ngContentIndices.push(index));
+      ngContentIndices.sort();
+
+      if (wildcardNgContentIndex !== undefined) {
+        ngContentIndices.push(wildcardNgContentIndex);
+      }
+
+      if (ngContentIndices.length) {
+        projectableNodes[ngContentIndices[0]].push(node);
+      }
+    }
+
+    return projectableNodes;
   }
 }

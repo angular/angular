@@ -3,6 +3,7 @@ export declare function downgradeComponent(info: {
     component: Type<any>;
     inputs?: string[];
     outputs?: string[];
+    selectors?: string[];
 }): any;
 
 /** @experimental */

@@ -140,5 +140,39 @@ export function main() {
            expect(document.body.textContent).toEqual('ng1(ng2(ng1(ng2-transclude)))');
          });
        }));
+
+    it('should support multi-slot projection', async(() => {
+
+         @Component({
+           selector: 'ng2',
+           template: '2a(<ng-content select=".ng1a"></ng-content>)' +
+               '2b(<ng-content select=".ng1b"></ng-content>)'
+         })
+         class Ng2Component {
+           constructor() {}
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component, selectors: ['.ng1a', '.ng1b']}));
+
+         // The ng-if on one of the projected children is here to make sure
+         // the correct slot is targeted even with structural directives in play.
+         const element = html(
+             '<ng2><div ng-if="true" class="ng1a">1a</div><div' +
+             ' class="ng1b">1b</div></ng2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
+         });
+       }));
   });
 }
