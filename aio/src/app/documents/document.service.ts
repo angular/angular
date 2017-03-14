@@ -5,10 +5,11 @@ import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import 'rxjs/add/operator/switchMap';
 
-import { LocationService } from 'app/shared/location.service';
-import { Logger } from 'app/shared/logger.service';
 import { DocumentContents } from './document-contents';
 export { DocumentContents } from './document-contents';
+
+import { LocationService } from 'app/shared/location.service';
+import { Logger } from 'app/shared/logger.service';
 
 const FILE_NOT_FOUND_URL = 'file-not-found';
 
@@ -20,7 +21,10 @@ export class DocumentService {
 
   currentDocument: Observable<DocumentContents>;
 
-  constructor(private logger: Logger, private http: Http, location: LocationService) {
+  constructor(
+    private logger: Logger,
+    private http: Http,
+    location: LocationService) {
     // Whenever the URL changes we try to get the appropriate doc
     this.currentDocument = location.currentUrl.switchMap(url => this.getDocument(url));
   }
