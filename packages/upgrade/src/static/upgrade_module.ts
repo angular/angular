@@ -209,8 +209,23 @@ export class UpgradeModule {
                 // stabilizing
                 setTimeout(() => {
                   const $rootScope = $injector.get('$rootScope');
-                  const subscription =
-                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
+                  const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
+                    if (!Zone.current.get('isNgUpgradeZone')) {
+                      Zone.current
+                          .fork({
+                            name: 'ngUpgrade',
+                            properties: {'isNgUpgradeZone': true},
+                            onInvoke: function(
+                                delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                                callback: Function, applyThis: any, applyArgs: any,
+                                source: string) {
+                              delegate.invoke(targetZone, callback, applyThis, applyArgs, source);
+                              $rootScope.$digest();
+                            },
+                          })
+                          .run(() => {$rootScope.$digest()})
+                    }
+                  });
                   $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                 }, 0);
               }
