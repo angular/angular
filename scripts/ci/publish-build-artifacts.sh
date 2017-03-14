@@ -78,7 +78,7 @@ function publishRepo {
       cd $REPO_DIR && \
       git config credential.helper "store --file=.git/credentials" && \
       # SECURITY CRITICAL: DO NOT use shell to expand vars since it could be logged and leaked.
-      node -e "console.log('https://'+process.env.GITHUB_TOKEN_ANGULAR+':github.com')" > .git/credentials
+      node -e "console.log('https://'+process.env.GITHUB_TOKEN_ANGULAR+':@github.com')" > .git/credentials
     )
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
