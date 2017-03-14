@@ -14,7 +14,6 @@ export interface SearchArea {
 @Component({
   selector: 'aio-search-results',
   templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsComponent implements OnInit {
