@@ -47,6 +47,7 @@ describe('AppComponent', () => {
   });
 
   describe('isHamburgerVisible', () => {
+    console.log('PENDING: AppComponent isHamburgerVisible');
   });
 
   describe('onResize', () => {
