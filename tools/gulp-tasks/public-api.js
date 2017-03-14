@@ -19,8 +19,9 @@ const entrypoints = [
   'dist/packages-dist/http/typings/http.d.ts', 'dist/packages-dist/http/typings/testing/index.d.ts',
   'dist/packages-dist/forms/typings/forms.d.ts', 'dist/packages-dist/router/typings/router.d.ts',
   'dist/packages-dist/animations/typings/animations.d.ts',
-  'dist/packages-dist/platform-browser/typings/animations/index.d.ts',
-  'dist/packages-dist/platform-browser/typings/animations/testing/index.d.ts'
+  'dist/packages-dist/animations/typings/browser/index.d.ts',
+  'dist/packages-dist/animations/typings/browser/testing/index.d.ts',
+  'dist/packages-dist/platform-browser/typings/animations/index.d.ts'
 ];
 
 const publicApiDir = 'tools/public_api_guard';
