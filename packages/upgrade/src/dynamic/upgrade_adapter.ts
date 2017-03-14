@@ -6,19 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveResolver} from '@angular/compiler';
 import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {ComponentInfo} from '../common/component_info';
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {NgContentSelectorHelper} from '../common/ng_content_selector_helper';
 import {Deferred, controllerKey, onError} from '../common/util';
 
-import {DynamicNgContentSelectorHelper} from './ng_content_selector_helper';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
 let upgradeCount: number = 0;
@@ -104,7 +100,6 @@ let upgradeCount: number = 0;
  */
 export class UpgradeAdapter {
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
-  private directiveResolver: DirectiveResolver = new DirectiveResolver();
   private downgradedComponents: Type<any>[] = [];
   /**
    * An internal map of ng1 components which need to up upgraded to ng2.
@@ -190,10 +185,7 @@ export class UpgradeAdapter {
   downgradeNg2Component(component: Type<any>): Function {
     this.downgradedComponents.push(component);
 
-    const metadata: Directive = this.directiveResolver.resolve(component);
-    const info: ComponentInfo = {component, inputs: metadata.inputs, outputs: metadata.outputs};
-
-    return downgradeComponent(info);
+    return downgradeComponent({component});
   }
 
   /**
@@ -561,7 +553,6 @@ export class UpgradeAdapter {
                     providers: [
                       {provide: $INJECTOR, useFactory: () => ng1Injector},
                       {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                      {provide: NgContentSelectorHelper, useClass: DynamicNgContentSelectorHelper},
                       this.upgradedProviders
                     ],
                     imports: [this.ng2AppModule],
