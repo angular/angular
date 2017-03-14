@@ -9,6 +9,7 @@
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {NgModule, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS, ɵSERVER_RENDER_PROVIDERS as SERVER_RENDER_PROVIDERS} from '@angular/platform-server';
 
 
@@ -25,6 +26,10 @@ export const platformServerTesting = createPlatformFactory(
  *
  * @experimental API related to bootstrapping are still under review.
  */
-@NgModule({exports: [BrowserDynamicTestingModule], providers: SERVER_RENDER_PROVIDERS})
+@NgModule({
+  exports: [BrowserDynamicTestingModule],
+  imports: [NoopAnimationsModule],
+  providers: SERVER_RENDER_PROVIDERS
+})
 export class ServerTestingModule {
 }
