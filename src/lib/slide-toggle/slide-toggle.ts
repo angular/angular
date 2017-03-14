@@ -258,8 +258,12 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   _onDragEnd() {
     if (this._slideRenderer.dragging) {
+      let _previousChecked = this.checked;
       this.checked = this._slideRenderer.dragPercentage > 50;
-      this._emitChangeEvent();
+
+      if (_previousChecked !== this.checked) {
+        this._emitChangeEvent();
+      }
 
       // The drag should be stopped outside of the current event handler, because otherwise the
       // click event will be fired before and will revert the drag change.
