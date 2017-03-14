@@ -63,6 +63,9 @@ done
 # Move highlighted examples into $repoPath
 cp -r $examplesSource/* $repoPath/examples
 
+# Copies assets over to the docs-content repository.
+cp LICENSE $repoPath/
+
 # Push content to repo
 cd $repoPath
 git config user.name "$commitAuthorName"
