@@ -22,8 +22,8 @@ interface Hero {
   selector: 'ng2-heroes',
   // This template uses the upgraded `ng1-hero` component
   // Note that because its element is compiled by Angular we must use camelCased attribute names
-  template: `<h1>Heroes</h1>
-             <p><ng-content></ng-content></p>
+  template: `<header><ng-content selector="h1"></ng-content></header>
+             <ng-content selector=".extra"></ng-content>
              <div *ngFor="let hero of heroes">
                <ng1-hero [hero]="hero" (onRemove)="removeHero.emit(hero)"><strong>Super Hero</strong></ng1-hero>
              </div>
@@ -167,7 +167,8 @@ ng1AppModule.component('exampleApp', {
   // inputs and outputs
   template: `<link rel="stylesheet" href="./styles.css">
              <ng2-heroes [heroes]="$ctrl.heroesService.heroes" (add-hero)="$ctrl.heroesService.addHero()" (remove-hero)="$ctrl.heroesService.removeHero($event)">
-               There are {{ $ctrl.heroesService.heroes.length }} heroes.
+               <h1>Heroes</h1>
+               <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
              </ng2-heroes>`
 });
 // #enddocregion

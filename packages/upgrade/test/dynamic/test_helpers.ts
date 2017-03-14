@@ -7,9 +7,3 @@
  */
 
 export * from '../common/test_helpers';
-
-export function nodes(html: string) {
-  const div = document.createElement('div');
-  div.innerHTML = html.trim();
-  return Array.prototype.slice.call(div.childNodes);
-}
