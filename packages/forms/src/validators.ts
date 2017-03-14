@@ -60,30 +60,6 @@ const EMAIL_REGEXP =
  */
 export class Validators {
   /**
-   * Validator that compares the value of the given FormControls
-   */
-  static equalsTo(...fieldPaths: string[]): ValidatorFn {
-    return function(control: FormControl): {[key: string]: any} {
-      if (fieldPaths.length < 1) {
-        throw new Error('You must compare to at least 1 other field');
-      }
-
-      for (let fieldName of fieldPaths) {
-        let field = (<FormGroup>control.parent).get(fieldName);
-        if (!field) {
-          throw new Error(
-              `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in the group`);
-        }
-
-        if (field.value !== control.value) {
-          return {'equalsTo': {'unequalField': fieldName}};
-        }
-      }
-      return null;
-    };
-  }
-
-  /**
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: AbstractControl): {[key: string]: boolean} {
