@@ -1,3 +1,4 @@
+import { browser, element, by, promise } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -15,4 +16,31 @@ describe('site App', function() {
   });
 
   it('should convert a doc with a code-example');
+
+  describe('google analytics', () => {
+    beforeEach(done => page.gaReady.then(done));
+
+    it('should call ga', done => {
+      page.ga()
+        .then(calls => {
+          expect(calls.length).toBeGreaterThan(2, 'ga calls');
+          done();
+        });
+    });
+
+    it('should call ga with initial URL', done => {
+      let path: string;
+
+      page.locationPath()
+        .then(p => path = p)
+        .then(() => page.ga().then(calls => {
+          expect(calls.length).toBeGreaterThan(2, 'ga calls');
+          expect(calls[1]).toEqual(['set', 'page', path]);
+          done();
+        }));
+    });
+
+    // Todo: add test to confirm tracking URL when navigate.
+  });
+
 });

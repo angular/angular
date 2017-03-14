@@ -1,5 +1,8 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+
+import { GaService } from 'app/shared/ga.service';
+import { LocationService } from 'app/shared/location.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { SearchService } from 'app/search/search.service';
@@ -20,8 +23,15 @@ export class AppComponent implements OnInit {
   navigationViews: Observable<NavigationViews>;
   selectedNodes: Observable<NavigationNode[]>;
 
-  constructor(documentService: DocumentService, navigationService: NavigationService, private searchService: SearchService) {
+  constructor(
+    documentService: DocumentService,
+    gaService: GaService,
+    locationService: LocationService,
+    navigationService: NavigationService,
+    private searchService: SearchService) {
+
     this.currentDocument = documentService.currentDocument;
+    locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     this.navigationViews = navigationService.navigationViews;
     this.selectedNodes = navigationService.selectedNodes;
   }
