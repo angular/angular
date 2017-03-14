@@ -279,7 +279,6 @@ describe('compiler (unbundled Angular)', () => {
          const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
          const aotHost = new MockAotCompilerHost(host);
          let generatedFiles: GeneratedFile[];
-         const warnSpy = spyOn(console, 'warn');
          compile(host, aotHost, expectNoDiagnostics).then((f) => generatedFiles = f);
 
          tick();
