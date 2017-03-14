@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di';
-import {RenderDebugInfo} from '../render/api';
+import {DebugContext} from '../view/index';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
 
@@ -19,7 +19,7 @@ export class DebugNode {
   listeners: EventListener[];
   parent: DebugElement;
 
-  constructor(nativeNode: any, parent: DebugNode, private _debugInfo: RenderDebugInfo) {
+  constructor(nativeNode: any, parent: DebugNode, private _debugContext: DebugContext) {
     this.nativeNode = nativeNode;
     if (parent && parent instanceof DebugElement) {
       parent.addChild(this);
@@ -29,19 +29,24 @@ export class DebugNode {
     this.listeners = [];
   }
 
-  get injector(): Injector { return this._debugInfo ? this._debugInfo.injector : null; }
+  get injector(): Injector { return this._debugContext ? this._debugContext.injector : null; }
 
-  get componentInstance(): any { return this._debugInfo ? this._debugInfo.component : null; }
+  get componentInstance(): any { return this._debugContext ? this._debugContext.component : null; }
 
-  get context(): any { return this._debugInfo ? this._debugInfo.context : null; }
+  get context(): any { return this._debugContext ? this._debugContext.context : null; }
 
   get references(): {[key: string]: any} {
-    return this._debugInfo ? this._debugInfo.references : null;
+    return this._debugContext ? this._debugContext.references : null;
   }
 
-  get providerTokens(): any[] { return this._debugInfo ? this._debugInfo.providerTokens : null; }
+  get providerTokens(): any[] {
+    return this._debugContext ? this._debugContext.providerTokens : null;
+  }
 
-  get source(): string { return this._debugInfo ? this._debugInfo.source : null; }
+  /**
+   * @deprecated since v4
+   */
+  get source(): string { return 'Deprecated since v4'; }
 }
 
 /**
@@ -56,8 +61,8 @@ export class DebugElement extends DebugNode {
   childNodes: DebugNode[];
   nativeElement: any;
 
-  constructor(nativeNode: any, parent: any, _debugInfo: RenderDebugInfo) {
-    super(nativeNode, parent, _debugInfo);
+  constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
+    super(nativeNode, parent, _debugContext);
     this.properties = {};
     this.attributes = {};
     this.classes = {};

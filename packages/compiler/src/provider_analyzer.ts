@@ -32,7 +32,7 @@ export class ProviderViewContext {
   viewProviders: Map<any, boolean>;
   errors: ProviderError[] = [];
 
-  constructor(public component: CompileDirectiveMetadata, public sourceSpan: ParseSourceSpan) {
+  constructor(public component: CompileDirectiveMetadata) {
     this.viewQueries = _getViewQueries(component);
     this.viewProviders = new Map<any, boolean>();
     component.viewProviders.forEach((provider) => {

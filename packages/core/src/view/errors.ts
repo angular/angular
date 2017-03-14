@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT, ERROR_ORIGINAL_ERROR, getDebugContext} from '../errors';
+import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, getDebugContext} from '../errors';
 import {DebugContext, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
@@ -21,17 +21,25 @@ export function expressionChangedAfterItHasBeenCheckedError(
   return viewDebugError(msg, context);
 }
 
-export function viewWrappedDebugError(originalError: any, context: DebugContext): Error {
-  const err = viewDebugError(originalError.message, context);
-  (err as any)[ERROR_ORIGINAL_ERROR] = originalError;
+export function viewWrappedDebugError(err: any, context: DebugContext): Error {
+  if (!(err instanceof Error)) {
+    // errors that are not Error instances don't have a stack,
+    // so it is ok to wrap them into a new Error object...
+    err = new Error(err.toString());
+  }
+  _addDebugContext(err, context);
   return err;
 }
 
 export function viewDebugError(msg: string, context: DebugContext): Error {
   const err = new Error(msg);
-  (err as any)[ERROR_DEBUG_CONTEXT] = context;
-  err.stack = context.source;
+  _addDebugContext(err, context);
   return err;
+}
+
+function _addDebugContext(err: Error, context: DebugContext) {
+  (err as any)[ERROR_DEBUG_CONTEXT] = context;
+  (err as any)[ERROR_LOGGER] = context.logError.bind(context);
 }
 
 export function isViewDebugError(err: Error): boolean {

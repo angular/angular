@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {utf8Encode} from '../i18n/digest';
+
 // https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit
 const VERSION = 3;
 
@@ -143,7 +145,7 @@ export class SourceMapGenerator {
 
 export function toBase64String(value: string): string {
   let b64 = '';
-
+  value = utf8Encode(value);
   for (let i = 0; i < value.length;) {
     const i1 = value.charCodeAt(i++);
     const i2 = value.charCodeAt(i++);

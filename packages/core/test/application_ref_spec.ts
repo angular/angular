@@ -172,7 +172,7 @@ export function main() {
                ]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
+                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
                });
          }));
 
@@ -213,7 +213,7 @@ export function main() {
                  const expectedErrMsg =
                      `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
                  expect(e.message).toEqual(expectedErrMsg);
-                 expect(mockConsole.res[0]).toEqual('EXCEPTION: ' + expectedErrMsg);
+                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
                });
          }));
 
@@ -269,7 +269,7 @@ export function main() {
            defaultPlatform.bootstrapModuleFactory(moduleFactory)
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
+                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
                });
          }));
     });
@@ -509,7 +509,7 @@ export function main() {
 }
 
 class MockConsole {
-  res: any[] = [];
-  log(s: any): void { this.res.push(s); }
-  error(s: any): void { this.res.push(s); }
+  res: any[][] = [];
+  log(...args: any[]): void { this.res.push(args); }
+  error(...args: any[]): void { this.res.push(args); }
 }

@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {Renderer2, RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
-import {checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, sliceErrorStack, splitMatchedQueriesDsl, splitNamespace} from './util';
-
-const NOOP: any = () => {};
+import {NOOP, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -24,8 +21,6 @@ export function anchorDef(
   }
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  // skip the call to sliceErrorStack itself + the call to this function.
-  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
 
   return {
@@ -45,7 +40,7 @@ export function anchorDef(
     element: {
       ns: undefined,
       name: undefined,
-      attrs: undefined, template, source,
+      attrs: undefined, template,
       componentProvider: undefined,
       componentView: undefined,
       componentRendererType: undefined,
@@ -71,12 +66,10 @@ export function elementDef(
            string, SecurityContext
          ])[],
     outputs?: ([string, string])[], handleEvent?: ElementHandleEventFn,
-    componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef {
+    componentView?: ViewDefinitionFactory, componentRendererType?: RendererType2): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
   }
-  // skip the call to sliceErrorStack itself + the call to this function.
-  const source = isDevMode() ? sliceErrorStack(2, 3) : '';
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   let ns: string;
   let name: string;
@@ -146,7 +139,6 @@ export function elementDef(
       ns,
       name,
       attrs,
-      source,
       template: undefined,
       // will bet set by the view definition
       componentProvider: undefined, componentView, componentRendererType,

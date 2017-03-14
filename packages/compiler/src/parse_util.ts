@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as chars from './chars';
+import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 
 export class ParseLocation {
   constructor(
@@ -123,4 +124,14 @@ export class ParseError {
     const details = this.span.details ? `, ${this.span.details}` : '';
     return `${this.msg}${contextStr}: ${this.span.start}${details}`;
   }
+}
+
+export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): ParseSourceSpan {
+  const moduleUrl = identifierModuleUrl(type);
+  const sourceFileName = moduleUrl != null ? `in ${kind} ${identifierName(type)} in ${moduleUrl}` :
+                                             `in ${kind} ${identifierName(type)}`;
+  const sourceFile = new ParseSourceFile('', sourceFileName);
+  return new ParseSourceSpan(
+      new ParseLocation(sourceFile, null, null, null),
+      new ParseLocation(sourceFile, null, null, null));
 }
