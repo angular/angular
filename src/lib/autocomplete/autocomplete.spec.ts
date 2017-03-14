@@ -967,11 +967,37 @@ describe('MdAutocomplete', () => {
     }));
 
   });
+
+  it('should have correct width when opened', () => {
+    const widthFixture = TestBed.createComponent(SimpleAutocomplete);
+    widthFixture.componentInstance.width = 300;
+    widthFixture.detectChanges();
+
+    widthFixture.componentInstance.trigger.openPanel();
+    widthFixture.detectChanges();
+
+    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+    // Firefox, edge return a decimal value for width, so we need to parse and round it to verify
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toEqual(300);
+
+    widthFixture.componentInstance.trigger.closePanel();
+    widthFixture.detectChanges();
+
+    widthFixture.componentInstance.width = 500;
+    widthFixture.detectChanges();
+
+    widthFixture.componentInstance.trigger.openPanel();
+    widthFixture.detectChanges();
+
+    // Firefox, edge return a decimal value for width, so we need to parse and round it to verify
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toEqual(500);
+
+  });
 });
 
 @Component({
   template: `
-    <md-input-container [floatPlaceholder]="placeholder">
+    <md-input-container [floatPlaceholder]="placeholder" [style.width.px]="width">
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
     </md-input-container>
 
@@ -987,6 +1013,7 @@ class SimpleAutocomplete implements OnDestroy {
   filteredStates: any[];
   valueSub: Subscription;
   placeholder = 'auto';
+  width: number;
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
   @ViewChild(MdAutocomplete) panel: MdAutocomplete;
