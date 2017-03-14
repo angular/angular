@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
+import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, Injectable, NgModule, destroyPlatform} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -27,6 +27,7 @@ describe('bootstrap', () => {
   class SecondRootCmp {
   }
 
+  @Injectable()
   class TestResolver implements Resolve<any> {
     resolve() {
       let resolve: any = null;

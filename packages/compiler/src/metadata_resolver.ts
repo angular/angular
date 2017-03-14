@@ -826,12 +826,13 @@ export class CompileMetadataResolver {
         this._getProvidersMetadata(provider, targetEntryComponents, debugInfo, compileProviders);
       } else {
         provider = resolveForwardRef(provider);
+        if (isValidType(provider)) {
+          provider = {provide: provider, useClass: provider};
+        }
         let providerMeta: cpl.ProviderMeta;
         if (provider && typeof provider === 'object' && provider.hasOwnProperty('provide')) {
           this._validateProvider(provider);
           providerMeta = new cpl.ProviderMeta(provider.provide, provider);
-        } else if (isValidType(provider)) {
-          providerMeta = new cpl.ProviderMeta(provider, {useClass: provider});
         } else if (provider === void 0) {
           this._reportError(syntaxError(
               `Encountered undefined provider! Usually this means you have a circular dependencies (might be caused by using 'barrel' index.ts files.`));
@@ -866,12 +867,18 @@ export class CompileMetadataResolver {
   }
 
   private _validateProvider(provider: any): void {
-    if (provider.hasOwnProperty('useClass') && provider.useClass == null) {
-      this._reportError(syntaxError(
-          `Invalid provider for ${stringifyType(provider.provide)}. useClass cannot be ${provider.useClass}.
+    if (provider.hasOwnProperty('useClass')) {
+      const identifier = resolveForwardRef(provider.useClass);
+      if (identifier == null) {
+        this._reportError(syntaxError(
+            `Invalid provider for ${stringifyType(provider.provide)}. useClass cannot be ${identifier}.
            Usually it happens when:
            1. There's a circular dependency (might be caused by using index.ts (barrel) files).
            2. Class was used before it was declared. Use forwardRef in this case.`));
+      } else if (!this.isInjectable(identifier)) {
+        this._reportError(
+            syntaxError(`${stringifyType(identifier)} must be annotated with @Injectable`));
+      }
     }
   }
 

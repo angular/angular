@@ -7,16 +7,15 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
+import {Component, Injectable, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
-import {forEach, shallowEqual} from '../src/utils/collection';
+import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -844,6 +843,7 @@ describe('Integration', () => {
      })));
 
   describe('data', () => {
+    @Injectable()
     class ResolveSix implements Resolve<number> {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
     }
@@ -1391,6 +1391,7 @@ describe('Integration', () => {
       });
 
       describe('should work when given a class', () => {
+        @Injectable()
         class AlwaysTrue implements CanActivate {
           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
             return true;
@@ -1870,6 +1871,7 @@ describe('Integration', () => {
         describe('next state', () => {
           let log: string[];
 
+          @Injectable()
           class ClassWithNextState implements CanDeactivate<TeamCmp> {
             canDeactivate(
                 component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
@@ -1932,6 +1934,7 @@ describe('Integration', () => {
         });
 
         describe('should work when given a class', () => {
+          @Injectable()
           class AlwaysTrue implements CanDeactivate<TeamCmp> {
             canDeactivate(
                 component: TeamCmp, route: ActivatedRouteSnapshot,
@@ -2169,6 +2172,7 @@ describe('Integration', () => {
 
     describe('order', () => {
 
+      @Injectable()
       class Logger {
         logs: string[] = [];
         add(thing: string) { this.logs.push(thing); }
@@ -2546,8 +2550,9 @@ describe('Integration', () => {
 
 
     describe('should use the injector of the lazily-loaded configuration', () => {
-      class LazyLoadedServiceDefinedInModule {}
-      class LazyLoadedServiceDefinedInCmp {}
+      @Injectable()
+      class LazyLoadedServiceDefinedInModule {
+      }
 
       @Component({
         selector: 'eager-parent',
@@ -2775,6 +2780,7 @@ describe('Integration', () => {
     });
 
     describe('custom url handling strategies', () => {
+      @Injectable()
       class CustomUrlHandlingStrategy implements UrlHandlingStrategy {
         shouldProcessUrl(url: UrlTree): boolean {
           return url.toString().startsWith('/include') || url.toString() === '/';
