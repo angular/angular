@@ -1,0 +1,44 @@
+aio-top-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 80%;
+}
+
+aio-top-menu ul {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  list-style-position: inside;
+  padding: 0px;
+  margin: 0px;
+}
+
+aio-top-menu li {
+  list-style-type: none;
+}
+
+md-toolbar.mat-toolbar {
+  box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+  padding: 0 16px 0px 0px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+aio-search-box input {
+  color: $darkgray;
+  border: none;
+  border-radius: 5px;
+  background-color: $offwhite;
+  padding: 5px 10px;
+  margin-left: 8px;
+  min-width:200px;
+  width: 50%;
+  height: 40%;
+}

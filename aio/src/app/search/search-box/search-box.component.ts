@@ -17,7 +17,6 @@ import { LocationService } from 'app/shared/location.service';
 @Component({
   selector: 'aio-search-box',
   templateUrl: './search-box.component.html',
-  styleUrls: ['./search-box.component.scss']
 })
 export class SearchBoxComponent implements OnInit {
 

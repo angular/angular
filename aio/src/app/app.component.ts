@@ -11,11 +11,10 @@ import { SearchResultsComponent } from 'app/search/search-results/search-results
 @Component({
   selector: 'aio-shell',
   templateUrl: './app.component.html',
-  styleUrls:  ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   readonly sideBySideWidth = 600;
-  readonly homeImageUrl = 'assets/images/logos/angular2/angular_solidBlack.svg';
+  readonly homeImageUrl = 'assets/images/logos/standard/logo-nav.png';
 
   isHamburgerVisible = true; // always ... for now
   isSideBySide = false;
