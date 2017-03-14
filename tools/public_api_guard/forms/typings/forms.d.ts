@@ -554,7 +554,6 @@ export declare class Validators {
     static email(control: AbstractControl): {
         [key: string]: boolean;
     };
-    static equalsTo(...fieldPaths: string[]): ValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
     static nullValidator(c: AbstractControl): {
