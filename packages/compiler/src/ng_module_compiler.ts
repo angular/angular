@@ -84,6 +84,7 @@ class _InjectorBuilder implements ClassBuilder {
   getters: o.ClassGetter[] = [];
   methods: o.ClassMethod[] = [];
   ctorStmts: o.Statement[] = [];
+  private _lazyProps = new Map<string, o.Expression>();
   private _tokens: CompileTokenMetadata[] = [];
   private _instances = new Map<any, o.Expression>();
   private _createStmts: o.Statement[] = [];
@@ -103,7 +104,11 @@ class _InjectorBuilder implements ClassBuilder {
         propName, resolvedProvider, providerValueExpressions, resolvedProvider.multiProvider,
         resolvedProvider.eager);
     if (resolvedProvider.lifecycleHooks.indexOf(ɵLifecycleHooks.OnDestroy) !== -1) {
-      this._destroyStmts.push(instance.callMethod('ngOnDestroy', []).toStmt());
+      let callNgOnDestroy: o.Expression = instance.callMethod('ngOnDestroy', []);
+      if (!resolvedProvider.eager) {
+        callNgOnDestroy = this._lazyProps.get(instance.name).and(callNgOnDestroy);
+      }
+      this._destroyStmts.push(callNgOnDestroy.toStmt());
     }
     this._tokens.push(resolvedProvider.token);
     this._instances.set(tokenReference(resolvedProvider.token), instance);
@@ -173,7 +178,7 @@ class _InjectorBuilder implements ClassBuilder {
 
   private _createProviderProperty(
       propName: string, provider: ProviderAst, providerValueExpressions: o.Expression[],
-      isMulti: boolean, isEager: boolean): o.Expression {
+      isMulti: boolean, isEager: boolean): o.ReadPropExpr {
     let resolvedProviderValueExpr: o.Expression;
     let type: o.Type;
     if (isMulti) {
@@ -190,16 +195,17 @@ class _InjectorBuilder implements ClassBuilder {
       this.fields.push(new o.ClassField(propName, type));
       this._createStmts.push(o.THIS_EXPR.prop(propName).set(resolvedProviderValueExpr).toStmt());
     } else {
-      const internalField = `_${propName}`;
-      this.fields.push(new o.ClassField(internalField, type));
+      const internalFieldProp = o.THIS_EXPR.prop(`_${propName}`);
+      this.fields.push(new o.ClassField(internalFieldProp.name, type));
       // Note: Equals is important for JS so that it also checks the undefined case!
       const getterStmts = [
         new o.IfStmt(
-            o.THIS_EXPR.prop(internalField).isBlank(),
-            [o.THIS_EXPR.prop(internalField).set(resolvedProviderValueExpr).toStmt()]),
-        new o.ReturnStatement(o.THIS_EXPR.prop(internalField))
+            internalFieldProp.isBlank(),
+            [internalFieldProp.set(resolvedProviderValueExpr).toStmt()]),
+        new o.ReturnStatement(internalFieldProp)
       ];
       this.getters.push(new o.ClassGetter(propName, getterStmts, type));
+      this._lazyProps.set(propName, internalFieldProp);
     }
     return o.THIS_EXPR.prop(propName);
   }
