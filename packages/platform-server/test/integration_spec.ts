@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation, isPlatformServer} from '@angular/common';
+import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
@@ -167,6 +167,19 @@ export function main() {
            const title = getDOM().querySelector(doc, 'title');
            expect(getDOM().getText(title)).toBe('Test App Title');
            expect(state.renderToString()).toContain('<title>Test App Title</title>');
+         });
+       }));
+
+    it('should get base href from document', async(() => {
+         const platform = platformDynamicServer([{
+           provide: INITIAL_CONFIG,
+           useValue:
+               {document: '<html><head><base href="/"></head><body><app></app></body></html>'}
+         }]);
+         platform.bootstrapModule(ExampleModule).then((moduleRef) => {
+           const location = moduleRef.injector.get(PlatformLocation);
+           expect(location.getBaseHrefFromDOM()).toEqual('/');
+           platform.destroy();
          });
        }));
 

@@ -505,7 +505,7 @@ export class Parse5DomAdapter extends DomAdapter {
   isShadowRoot(node: any): boolean { return this.getShadowRoot(node) == node; }
   importIntoDoc(node: any): any { return this.clone(node); }
   adoptNode(node: any): any { return node; }
-  getHref(el: any): string { return el.href; }
+  getHref(el: any): string { return this.getAttribute(el, 'href'); }
   resolveAndSetHref(el: any, baseUrl: string, href: string) {
     if (href == null) {
       el.href = baseUrl;
