@@ -29,6 +29,7 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       return this.defaultRenderer;
     }
     switch (type.encapsulation) {
+      case ViewEncapsulation.Native:
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
