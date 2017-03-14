@@ -2,6 +2,7 @@
   "extends": "../tsconfig-build",
   "compilerOptions": {
     "paths": {
+      "@angular/animations/browser": ["../../dist/packages/animations/browser"],
       "@angular/core": ["../../dist/packages/core"],
       "@angular/core/testing": ["../../dist/packages/core/testing"],
       "@angular/common": ["../../dist/packages/common"],
@@ -9,6 +10,7 @@
       "@angular/compiler": ["../../dist/packages/compiler"],
       "@angular/compiler/testing": ["../../dist/packages/compiler/testing"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "@angular/platform-browser/animations": ["../../dist/packages/platform-browser/animations"],
       "@angular/platform-browser/testing": ["../../dist/packages/platform-browser/testing"],
       "@angular/platform-browser-dynamic": ["../../dist/packages/platform-browser-dynamic"],
       "@angular/platform-browser-dynamic/testing": ["../../dist/packages/platform-browser-dynamic/testing"],
