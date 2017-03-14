@@ -3,7 +3,7 @@ import path = require('path');
 import gulpMerge = require('merge2');
 
 import {PROJECT_ROOT, COMPONENTS_DIR} from '../constants';
-import {sequenceTask} from '../task_helpers';
+import {sequenceTask} from '../util/task_helpers';
 
 const karma = require('karma');
 const runSequence = require('run-sequence');

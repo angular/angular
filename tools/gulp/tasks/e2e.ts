@@ -5,7 +5,7 @@ import {SOURCE_ROOT, DIST_ROOT, PROJECT_ROOT} from '../constants';
 import {
   tsBuildTask, copyTask, buildAppTask, execNodeTask,
   vendorTask, sequenceTask, serverTask
-} from '../task_helpers';
+} from '../util/task_helpers';
 
 const gulpRunSequence = require('run-sequence');
 const gulpConnect = require('gulp-connect');

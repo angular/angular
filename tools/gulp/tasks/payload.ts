@@ -2,8 +2,9 @@ import {task} from 'gulp';
 import {join} from 'path';
 import {statSync, readFileSync} from 'fs';
 import {DIST_COMPONENTS_ROOT} from '../constants';
-import {openFirebaseDashboardDatabase, isTravisPushBuild} from '../task_helpers';
 import {spawnSync} from 'child_process';
+import {isTravisPushBuild} from '../util/travis-ci';
+import {openFirebaseDashboardDatabase} from '../util/firebase';
 
 // Those imports lack types.
 const uglifyJs = require('uglify-js');

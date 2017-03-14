@@ -1,7 +1,7 @@
 import {task} from 'gulp';
 import {join} from 'path';
 import {DIST_ROOT} from '../constants';
-import {execNodeTask, sequenceTask} from '../task_helpers';
+import {execNodeTask, sequenceTask} from '../util/task_helpers';
 
 /** Copies the source files of the demo-app to the dist folder. */
 task('aot:copy', [':build:devapp:scss', ':build:devapp:assets']);

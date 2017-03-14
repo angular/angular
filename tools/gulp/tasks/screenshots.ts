@@ -2,8 +2,8 @@ import {task} from 'gulp';
 import {readdirSync, statSync, existsSync, mkdirp} from 'fs-extra';
 import * as path from 'path';
 import * as admin from 'firebase-admin';
-import {openScreenshotsBucket, openFirebaseScreenshotsDatabase} from '../task_helpers';
-import {updateGithubStatus} from '../util-functions';
+import {openScreenshotsBucket, openFirebaseScreenshotsDatabase} from '../util/firebase';
+import {setGithubStatus} from '../util/github';
 
 const imageDiff = require('image-diff');
 
@@ -19,7 +19,7 @@ task('screenshots', () => {
     return getScreenshotFiles(database)
       .then((files: any[]) => downloadAllGoldsAndCompare(files, database, prNumber))
       .then((results: boolean) => updateResult(database, prNumber, results))
-      .then((result: boolean) => updateGithubStatus(result, prNumber))
+      .then((result: boolean) => updateGithubStatus(prNumber, result))
       .then(() => uploadScreenshots('diff', prNumber))
       .then(() => uploadScreenshots('test', prNumber))
       .then(() => updateTravis(database, prNumber))
@@ -158,4 +158,14 @@ function setScreenFilenames(database: admin.database.Database,
     database.ref(FIREBASE_REPORT).child(prNumber).child('filenames') :
     database.ref(FIREBASE_FILELIST);
   return filelistDatabase.set(filenames);
+}
+
+/** Updates the Github Status of the given Pullrequest. */
+function updateGithubStatus(prNumber: number, result: boolean) {
+  setGithubStatus(process.env['TRAVIS_PULL_REQUEST_SHA'], {
+    result: result,
+    name: 'Screenshot Tests',
+    description: `Screenshot Tests ${result ? 'passed' : 'failed'})`,
+    url: `http://material2-screenshots.firebaseapp.com/${prNumber}`
+  });
 }

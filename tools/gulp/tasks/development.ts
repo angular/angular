@@ -5,7 +5,7 @@ import {DIST_ROOT, SOURCE_ROOT} from '../constants';
 import {
   sassBuildTask, tsBuildTask, copyTask, buildAppTask, vendorTask,
   serverTask, sequenceTask, triggerLivereload
-} from '../task_helpers';
+} from '../util/task_helpers';
 
 
 const appDir = path.join(SOURCE_ROOT, 'demo-app');

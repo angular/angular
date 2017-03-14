@@ -5,7 +5,7 @@ import gulpRunSequence = require('run-sequence');
 import path = require('path');
 import minimist = require('minimist');
 
-import {execTask, cleanTask} from '../task_helpers';
+import {execTask, cleanTask} from '../util/task_helpers';
 import {DIST_COMPONENTS_ROOT} from '../constants';
 
 const argv = minimist(process.argv.slice(3));

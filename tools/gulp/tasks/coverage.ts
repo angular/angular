@@ -2,7 +2,8 @@ import {task} from 'gulp';
 import {existsSync} from 'fs-extra';
 import {COVERAGE_RESULT_FILE} from '../constants';
 import {spawnSync} from 'child_process';
-import {isTravisPushBuild, openFirebaseDashboardDatabase} from '../task_helpers';
+import {isTravisPushBuild} from '../util/travis-ci';
+import {openFirebaseDashboardDatabase} from '../util/firebase';
 
 task('coverage:upload', () => {
   if (!existsSync(COVERAGE_RESULT_FILE)) {

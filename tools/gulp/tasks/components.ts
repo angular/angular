@@ -7,7 +7,7 @@ import {
 import {
   sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask,
   triggerLivereload
-} from '../task_helpers';
+} from '../util/task_helpers';
 
 // No typings for these.
 const inlineResources = require('../../../scripts/release/inline-resources');
