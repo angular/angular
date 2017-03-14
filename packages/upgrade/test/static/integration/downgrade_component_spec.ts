@@ -108,15 +108,9 @@ export function main() {
            };
          }
 
-         ng1Module.directive(
-             'ng2', downgradeComponent({
-               component: Ng2Component,
-               inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
-               outputs: [
-                 'eventA', 'eventB', 'twoWayAEmitter: twoWayAChange',
-                 'twoWayBEmitter: twoWayBChange'
-               ]
-             }));
+         ng1Module.directive('ng2', downgradeComponent({
+                               component: Ng2Component,
+                             }));
 
          @NgModule({
            declarations: [Ng2Component],

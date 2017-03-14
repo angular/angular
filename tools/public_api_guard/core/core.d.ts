@@ -193,7 +193,7 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
-    getNgContentSelectors(component: Type<any>): string[];
+    /** @deprecated */ getNgContentSelectors(component: Type<any>): string[];
 }
 
 /** @experimental */
@@ -226,6 +226,15 @@ export interface ComponentDecorator {
 /** @stable */
 export declare abstract class ComponentFactory<C> {
     readonly abstract componentType: Type<any>;
+    readonly abstract inputs: {
+        propName: string;
+        templateName: string;
+    }[];
+    readonly abstract ngContentSelectors: string[];
+    readonly abstract outputs: {
+        propName: string;
+        templateName: string;
+    }[];
     readonly abstract selector: string;
     abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
 }
