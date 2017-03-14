@@ -1,0 +1,23 @@
+.hamburger {
+  transition-duration: 150ms;
+  transition-property: background-color, color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    color: $lightgray;
+  }
+}
+
+.hamburger.mat-button {
+    transition: color 0.2s;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.hamburger.mat-button:hover {
+    color: $offwhite;
+}
+
+.hamburger md-icon {
+  position: inherit;
+}

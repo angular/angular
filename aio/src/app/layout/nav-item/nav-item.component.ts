@@ -4,7 +4,6 @@ import { NavigationNode } from 'app/navigation/navigation.service';
 @Component({
   selector: 'aio-nav-item',
   templateUrl: 'nav-item.component.html',
-  styleUrls: ['nav-item.component.scss']
 })
 export class NavItemComponent implements OnChanges {
   @Input() selectedNodes: NavigationNode[];

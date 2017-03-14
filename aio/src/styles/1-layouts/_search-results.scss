@@ -1,0 +1,15 @@
+.search-results {
+    background-color: $lightgray;
+    padding: 20px;
+}
+
+.search-result-item {
+    color: $darkgray;
+    text-decoration: none;
+    &:hover {
+        color: $blue
+    }
+    &:visited {
+        text-decoration: none;
+    }
+}
