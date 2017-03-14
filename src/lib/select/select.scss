@@ -111,21 +111,13 @@ $mat-select-trigger-font-size: 16px !default;
 }
 
 .mat-select-arrow {
-  position: absolute;
-  right: 0;
   width: 0;
   height: 0;
   border-left: $mat-select-arrow-size solid transparent;
   border-right: $mat-select-arrow-size solid transparent;
   border-top: $mat-select-arrow-size solid;
   margin: 0 $mat-select-arrow-margin;
-
-  [dir='rtl'] & {
-    right: auto;
-    left: 0;
-  }
 }
-
 
 .mat-select-panel {
   @include mat-menu-base();
