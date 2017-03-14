@@ -70,6 +70,18 @@ class MyAsyncServerApp {
 class AsyncServerModule {
 }
 
+@Component({selector: 'app', template: '<svg><use xlink:href="#clear"></use></svg>'})
+class SVGComponent {
+}
+
+@NgModule({
+  declarations: [SVGComponent],
+  imports: [BrowserModule.withServerTransition({appId: 'svg-server'}), ServerModule],
+  bootstrap: [SVGComponent]
+})
+class SVGServerModule {
+}
+
 @Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
 class MyStylesApp {
 }
@@ -322,6 +334,15 @@ export function main() {
              called = true;
            });
          })));
+
+      it('works with SVG elements', async(() => {
+           renderModule(SVGServerModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+             called = true;
+           });
+         }));
     });
 
     describe('http', () => {
