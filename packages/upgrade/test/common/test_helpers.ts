@@ -23,3 +23,9 @@ export function html(html: string): Element {
 export function multiTrim(text: string): string {
   return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
 }
+
+export function nodes(html: string) {
+  const div = document.createElement('div');
+  div.innerHTML = html.trim();
+  return Array.prototype.slice.call(div.childNodes);
+}
