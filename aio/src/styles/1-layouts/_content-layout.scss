@@ -1,0 +1,24 @@
+.sidenav-content {
+    padding: 1rem 3rem;
+    height: 100vh;
+    margin: auto;
+}
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 600px) {
+  aio-menu {
+    display: none;
+  }
+}
+
+.sidenav-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.sidenav-content button {
+  min-width: 50px;
+}

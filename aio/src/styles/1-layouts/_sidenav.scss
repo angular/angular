@@ -42,17 +42,23 @@
 
 /************************************/
 
+.mat-sidenav.sidenav {
+    box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+    background-color: $offwhite;
+    padding: 10px 0px 0px;
+    min-width: 220px;
+}
+
 .vertical-menu-item {
   box-sizing: border-box;
-  color: #545454;
+  color: $darkgray;
   cursor: pointer;
   display: block;
   max-width: 260px;
   overflow-wrap: break-word;
-  padding-bottom: 10px;
   padding-top: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-bottom: 10px;
+  padding-left: 20px;
   text-decoration: none;
   text-align: left;
   transition-duration: 180ms;
@@ -63,8 +69,8 @@
   outline: none;
 
   &:hover {
-    background-color: #ddd;
     text-shadow: 0px 0px 5px #ffffff;
+    background-color: $lightgray;
   }
 
   //icons _within_ nav
@@ -81,22 +87,22 @@
 }
 
 .vertical-menu-item.selected {
-  color:#018494;
+  color: $blue;
 }
 
 .heading {
   color: #444;
   cursor: pointer;
-  font-size: .85rem;
   position: relative;
   text-transform: uppercase;
   width: 100%;
 }
 
-.material-icons.expanded {
+.material-icons {
   display: inline-block;
   position: absolute;
   top: 6px;
+  right: 8px;
 }
 
 .heading-children.expanded {
@@ -120,17 +126,32 @@
 
 .heading.selected.level-1,
 .heading-children.selected.level-1 {
-  border-left: 3px #00bcd4 solid;
+  border-left: 3px $blue solid;
 }
+
 .level-1 {
+  font-family: $support-font;
+  font-weight: 500;
+  text-transform: uppercase;
   padding-left: 10px;
+  transition: background-color 0.2s;
 }
+
 .level-2 {
+  font-family: $main-font;
+  font-size: 14px;
+  color: $mediumgray;
+  font-weight: 400;
   padding-left: 20px;
+  text-transform: none;
 }
 
 .level-3 {
-  padding-left: 20px;
+  font-family: $support-font;
+  font-size: 14px;
+  color: $mediumgray;
+  text-transform: uppercase;
+  padding-left: 30px;
 }
 
 @mixin rotate($degrees) {
