@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+import {toObservable} from './validators';
 
 
 
@@ -57,11 +57,6 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
     return null;
   }, control);
 }
-
-function toObservable(r: any): Observable<any> {
-  return isPromise(r) ? fromPromise(r) : r;
-}
-
 function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
   return Array.isArray(validator) ? composeValidators(validator) : validator;
 }
@@ -420,12 +415,8 @@ export abstract class AbstractControl {
     if (this.asyncValidator) {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
-      if (!(isObservable(obs))) {
-        throw new Error(
-            `expected the following validator to return Promise or Observable: ${this.asyncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
-      }
       this._asyncValidationSubscription =
-          obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
+          obs.subscribe((res: {[key: string]: any}) => this.setErrors(res, {emitEvent}));
     }
   }
 
