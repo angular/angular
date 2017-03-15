@@ -63,6 +63,15 @@ export class Parse5DomAdapter extends DomAdapter {
     setRootDomAdapter(new Parse5DomAdapter());
   }
 
+  contains(nodeA: any, nodeB: any): boolean {
+    let inner = nodeB;
+    while (inner) {
+      if (inner === nodeA) return true;
+      inner = inner.parent;
+    }
+    return false;
+  }
+
   hasProperty(element: any, name: string): boolean {
     return _HTMLElementPropertyList.indexOf(name) > -1;
   }
