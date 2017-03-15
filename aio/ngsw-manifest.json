@@ -11,13 +11,16 @@
         "prefix": false
       },
       "/about": {
-        "prefix": true
+        "prefix": true,
+        "onlyWithoutExtension": true
       },
       "/tutorial": {
-        "prefix": true
+        "prefix": true,
+        "onlyWithoutExtension": true
       },
       "/guide": {
-        "prefix": true
+        "prefix": true,
+        "onlyWithoutExtension": true
       }
     }
   }

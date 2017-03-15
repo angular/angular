@@ -124,9 +124,9 @@
   version "4.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0-rc.2.tgz#66fc5be012caa38441314d0a0b9c9b6a723c471a"
 
-"@angular/service-worker@^1.0.0-beta.6":
-  version "1.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.6.tgz#ae3ca0b43ab1cbd572a191b2ef3e1b787f71ed1e"
+"@angular/service-worker@^1.0.0-beta.7":
+  version "1.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.7.tgz#e8edd2e993948caffc2d45d6935667f9b5a3c221"
   dependencies:
     base64-js "^1.1.2"
     jshashes "^1.0.5"
@@ -6835,10 +6835,6 @@ zip-stream@~0.6.0:
     lodash "~3.10.1"
     readable-stream "~1.0.26"
 
-zone.js@0.7.8:
+zone.js@0.7.8, zone.js@^0.7.2:
   version "0.7.8"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.8.tgz#4f3fe8834d44597f2639053a0fa438df34fffded"
-
-zone.js@^0.7.2:
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.7.tgz#0d7b7ae7f68012d03438b8a18f5763441bbf9620"
