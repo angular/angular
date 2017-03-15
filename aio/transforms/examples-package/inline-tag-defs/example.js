@@ -14,7 +14,7 @@ var entities = require('entities');
  * @kind function
  */
 module.exports = function exampleInlineTagDef(
-    parseArgString, exampleMap, getExampleFilename, createDocMessage, log, collectExamples) {
+    parseArgString, exampleMap, createDocMessage, log, collectExamples) {
   return {
     name: 'example',
     description:
@@ -33,16 +33,21 @@ module.exports = function exampleInlineTagDef(
 
       // Find the example in the folders
       var exampleFile;
+      // Try an "annotated" version first
       EXAMPLES_FOLDERS.some(
-          EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath]; });
+          EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath + '.annotated']; });
 
+      // If no annotated version is available then try the actual file
+      if (!exampleFile) {
+        EXAMPLES_FOLDERS.some(
+            EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath]; });
+      }
+
+      // If still no file then we error
       if (!exampleFile) {
         log.error(
             createDocMessage('Missing example file... relativePath: "' + relativePath + '".', doc));
-        log.error(
-            'Example files available are:',
-            EXAMPLES_FOLDERS.map(
-                EXAMPLES_FOLDER => Object.keys(exampleMap[EXAMPLES_FOLDER]).join('\n')));
+        log.error('Example files can be found in: ' + EXAMPLES_FOLDERS.join(', '));
         return '';
       }
 

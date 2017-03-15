@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-rc.3",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -5087,8 +5087,14 @@
       "dev": true
     },
     "parse5": {
-      "version": "2.2.1",
-      "dev": true
+      "version": "3.0.1",
+      "dev": true,
+      "dependencies": {
+        "@types/node": {
+          "version": "6.0.63",
+          "dev": true
+        }
+      }
     },
     "parsejson": {
       "version": "0.0.1",
@@ -6834,7 +6840,7 @@
       }
     },
     "zone.js": {
-      "version": "0.7.2"
+      "version": "0.8.2"
     }
   }
 }

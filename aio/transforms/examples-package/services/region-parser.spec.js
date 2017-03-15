@@ -25,7 +25,7 @@ describe('regionParser service', () => {
 
   it('should return just the contents if there is a region-matcher but no regions', () => {
     const output = regionParser('some contents', 'test-type');
-    expect(output).toEqual({contents: 'some contents', regions: {}});
+    expect(output).toEqual({contents: 'some contents', regions: { '': 'some contents' }});
   });
 
   it('should remove start region annotations from the contents', () => {
@@ -96,24 +96,24 @@ describe('regionParser service', () => {
   it('should error if we attempt to open an already open region', () => {
     expect(() => regionParser(t('/* #docregion */', 'abc', '/* #docregion */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to open a region, named "", that is already open (at line 2).');
+            'regionParser: Tried to open a region, named "", that is already open (at line 3).');
 
     expect(
         () =>
             regionParser(t('/* #docregion X */', 'abc', '/* #docregion X */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to open a region, named "X", that is already open (at line 2).');
+            'regionParser: Tried to open a region, named "X", that is already open (at line 3).');
   });
 
   it('should error if we attempt to close an already closed region', () => {
     expect(() => regionParser(t('abc', '/* #enddocregion */', 'def'), 'test-type'))
-        .toThrowError('regionParser: Tried to close a region when none are open (at line 1).');
+        .toThrowError('regionParser: Tried to close a region when none are open (at line 2).');
 
     expect(
         () =>
             regionParser(t('/* #docregion */', 'abc', '/* #enddocregion X */', 'def'), 'test-type'))
         .toThrowError(
-            'regionParser: Tried to close a region, named "X", that is not open (at line 2).');
+            'regionParser: Tried to close a region, named "X", that is not open (at line 3).');
   });
 
   it('should handle whitespace in region names on single annotation', () => {
@@ -145,8 +145,9 @@ describe('regionParser service', () => {
   it('should parse multiple region names separated by commas', () => {
     const output = regionParser(
         t('/* #docregion , A, B */', 'abc', '/* #enddocregion B */', '/* #docregion C */', 'xyz',
-          '/* #enddocregion A, C, */'),
+          '/* #enddocregion A, C */', '123', '/* #enddocregion */'),
         'test-type');
+    expect(output.regions['']).toEqual(t('abc', 'xyz', '123'));
     expect(output.regions['A']).toEqual(t('abc', 'xyz'));
     expect(output.regions['B']).toEqual(t('abc'));
     expect(output.regions['C']).toEqual(t('xyz'));

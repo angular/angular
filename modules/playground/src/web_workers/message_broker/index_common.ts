@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {PRIMITIVE, ServiceMessageBrokerFactory} from '@angular/platform-webworker';
+import {SerializerTypes, ServiceMessageBrokerFactory} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 
@@ -15,16 +15,9 @@ const ECHO_CHANNEL = 'ECHO';
 export class App {
   constructor(private _serviceBrokerFactory: ServiceMessageBrokerFactory) {
     const broker = _serviceBrokerFactory.createMessageBroker(ECHO_CHANNEL, false);
-    broker.registerMethod('echo', [PRIMITIVE], this._echo, PRIMITIVE);
+    broker.registerMethod(
+        'echo', [SerializerTypes.PRIMITIVE], this._echo, SerializerTypes.PRIMITIVE);
   }
 
-  private _echo(val: string) {
-    return new Promise((res, rej) => {
-      try {
-        res(val);
-      } catch (e) {
-        rej(e);
-      }
-    });
-  }
+  private _echo(val: string) { return new Promise((res) => res(val)); }
 }

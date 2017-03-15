@@ -1,0 +1,25 @@
+{
+  "extends": "../tsconfig-build",
+
+  "compilerOptions": {
+    "paths": {
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/core/testing": ["../../dist/packages/core/testing"],
+      "@angular/animations": ["../../dist/packages/animations"],
+      "@angular/animations/browser": ["../../dist/packages/animations/browser"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"]
+    }
+  },
+  "files": [
+    "public_api.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform-browser/animations"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig-build",
+
+  "compilerOptions": {
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/common": ["../../dist/packages/common"]
+    }
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

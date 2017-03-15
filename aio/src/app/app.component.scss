@@ -2,6 +2,16 @@
   flex: 1 1 auto;
 }
 
+.hamburger {
+  transition-duration: 150ms;
+  transition-property: background-color, color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    background-color: #fdfdfd;
+    color:#00bcd4;
+  }
+}
+
 md-input-container {
   margin-left: 10px;
   input {
@@ -19,4 +29,25 @@ md-input-container {
   aio-menu {
     display: none;
   }
+}
+
+.sidenav-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.sidenav-content {
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
+}
+
+.sidenav-content button {
+  min-width: 50px;
+}
+
+.sidenav {
+  padding: 0;
+  min-width: 220px;
 }

@@ -21,6 +21,7 @@ else
   if [[ $1 == 'node' ]]; then
     # Note: .metadata.json files are needed for the language service tests!
     echo "Creating .metadata.json files..."
+    node dist/tools/@angular/tsc-wrapped/src/main -p packages
     node dist/tools/@angular/tsc-wrapped/src/main -p modules
   fi
   node dist/tools/tsc-watch/ $1 watch

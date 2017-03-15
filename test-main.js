@@ -33,6 +33,10 @@ System.config({
   packages: {
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations/browser/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations/browser': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/animations': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common/testing': {main: 'index.js', defaultExtension: 'js'},
@@ -44,7 +48,10 @@ System.config({
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
     '@angular/http/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/http': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/upgrade/static': {main: 'index.js', defaultExtension: 'js'},
     '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-browser/animations/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-browser/animations': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic/testing': {main: 'index.js', defaultExtension: 'js'},
@@ -61,11 +68,15 @@ System.config({
 // method and kick off Karma (Jasmine).
 System.import('@angular/core/testing')
     .then(function(coreTesting) {
-      return System.import('@angular/platform-browser-dynamic/testing')
-          .then(function(browserTesting) {
+      return Promise
+          .all([
+            System.import('@angular/platform-browser-dynamic/testing'),
+            System.import('@angular/platform-browser/animations')
+          ])
+          .then(function(mods) {
             coreTesting.TestBed.initTestEnvironment(
-                browserTesting.BrowserDynamicTestingModule,
-                browserTesting.platformBrowserDynamicTesting());
+                [mods[0].BrowserDynamicTestingModule, mods[1].NoopAnimationsModule],
+                mods[0].platformBrowserDynamicTesting());
           });
     })
     .then(function() {

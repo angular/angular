@@ -10,8 +10,13 @@ addons:
       # needed to install g++ that is used by npms's native modules
       - ubuntu-toolchain-r-test
     packages:
+      # needed to install g++ that is used by npms's native modules
       - g++-4.8
-
+  # https://docs.travis-ci.com/user/jwt
+  jwt:
+    # SAUCE_ACCESS_KEY<=secret for NGBUILDS_IO_KEY to work around travis-ci/travis-ci#7223, unencrypted value in valentine as NGBUILDS_IO_KEY>
+    # we alias NGBUILDS_IO_KEY to $SAUCE_ACCESS_KEY in env.sh and set the SAUCE_ACCESS_KEY there
+    - secure: "L7nrZwkAtFtYrP2DykPXgZvEKjkv0J/TwQ/r2QGxFTaBq4VZn+2Dw0YS7uCxoMqYzDwH0aAOqxoutibVpk8Z/16nE3tNmU5RzltMd6Xmt3qU2f/JDQLMo6PSlBodnjOUsDHJgmtrcbjhqrx/znA237BkNUu6UZRT7mxhXIZpn0U="
 branches:
   except:
     - g3_v2_0
@@ -25,16 +30,17 @@ cache:
 
 env:
   global:
-    # GITHUB_TOKEN_ANGULAR
+    # GITHUB_TOKEN_ANGULAR=<github token, a personal access token of the angular-builds account, account access in valentine>
     # This is needed for the e2e Travis matrix task to publish packages to github for continuous packages delivery.
-    - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
+    - secure: "rNqXoy2gqjbF5tBXlRBy+oiYntO3BtzcxZuEtlLMzNaTNzC4dyMOFub0GkzIPWwOzkARoEU9Kv+bC97fDVbCBUKeyzzEqxqddUKhzRxeaYjsefJ6XeTvBvDxwo7wDwyxZSuWdBeGAe4eARVHm7ypsd+AlvqxtzjyS27TK2BzdL4="
     # FIREBASE_TOKEN
     # This is needed for publishing builds to the "aio-staging" firebase site.
     # TODO(i): the token was generated using the iminar@google account, we should switch to a shared/role-base account.
     - secure: "MPx3UM77o5IlhT75PKHL0FXoB5tSXDc3vnCXCd1sRy4XUTZ9vjcV6nNuyqEf+SOw659bGbC1FI4mACGx1Q+z7MQDR85b1mcA9uSgHDkh+IR82CnCVdaX9d1RXafdJIArahxfmorbiiPPLyPIKggo7ituRm+2c+iraoCkE/pXxYg="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - CI_MODE=e2e EXPERIMENTAL_ES2015_DISTRO=1
+    - CI_MODE=e2e
+    - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
     - CI_MODE=browserstack_required
@@ -49,14 +55,19 @@ matrix:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
 
+before_install:
+  # source the env.sh script so that the exported variables are available to other scripts later on
+  - source ./scripts/ci/env.sh print
+
 install:
-  - ./scripts/ci-lite/install.sh
+  - ./scripts/ci/install.sh
 
 script:
-  - ./scripts/ci-lite/build.sh && ./scripts/ci-lite/test.sh
-
-after_success:
-  - ./scripts/ci-lite/deploy_aio_staging.sh
-
-after_script:
-  - ./scripts/ci-lite/cleanup.sh
+  - ./scripts/ci/build.sh
+  - ./scripts/ci/test.sh
+  # deploy is part of 'script' and not 'after_success' so that we fail the build if the deployment fails
+  - ./scripts/ci/deploy.sh
+  - ./scripts/ci/angular.sh
+  # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
+  - ./scripts/ci/cleanup.sh
+  - ./scripts/ci/print-logs.sh

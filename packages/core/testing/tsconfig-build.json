@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig-build",
+  "compilerOptions": {
+    "paths": {
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/core": ["../../dist/packages/core"]
+    }
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

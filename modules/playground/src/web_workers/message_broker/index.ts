@@ -7,7 +7,7 @@
  */
 
 import {PlatformRef} from '@angular/core';
-import {ClientMessageBrokerFactory, FnArg, PRIMITIVE, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
+import {ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 
@@ -23,14 +23,10 @@ function afterBootstrap(ref: PlatformRef) {
     const val = (<HTMLInputElement>document.getElementById('echo_input')).value;
     // TODO(jteplitz602): Replace default constructors with real constructors
     // once they're in the .d.ts file (#3926)
-    const args = new UiArguments('echo');
-    args.method = 'echo';
-    const fnArg = new FnArg(val, PRIMITIVE);
-    fnArg.value = val;
-    fnArg.type = PRIMITIVE;
-    args.args = [fnArg];
+    const fnArg = new FnArg(val);
+    const args = new UiArguments('echo', [fnArg]);
 
-    broker.runOnService(args, PRIMITIVE).then((echo_result: string) => {
+    broker.runOnService(args, SerializerTypes.PRIMITIVE).then((echo_result: string) => {
       document.getElementById('echo_result').innerHTML =
           `<span class='response'>${echo_result}</span>`;
     });

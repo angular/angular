@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "outDir": "../../dist/packages/compiler-cli",
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/common": ["../../dist/packages/common"],
+      "@angular/compiler": ["../../dist/packages/compiler"],
+      "@angular/http": ["../../dist/packages/http"],
+      "@angular/platform-server": ["../../dist/packages/platform-server"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "@angular/tsc-wrapped": ["../../dist/tools/@angular/tsc-wrapped"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "integrationtest"
+  ],
+  "files": [
+    "index.ts",
+    "src/main.ts",
+    "src/extract_i18n.ts",
+    "../../node_modules/@types/node/index.d.ts",
+    "../../node_modules/@types/jasmine/index.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
+}

@@ -10,16 +10,16 @@
   .docs-component-viewer-tabbed-content,
   .docs-guide-content {
        h1 {
-        color: md-color($primary, 800);
-        background: rgba(md-color($foreground, secondary-text), .03);
+        color: mat-color($primary, 800);
+        background: rgba(mat-color($foreground, secondary-text), .03);
       }
 
       h3, h2, h4, h5, p, ol, li{
-        color: md-color($foreground, secondary-text);
+        color: mat-color($foreground, secondary-text);
       }
 
       a {
-        color: md-color($primary);
+        color: mat-color($primary);
       }
 
       table {
@@ -27,17 +27,17 @@
       }
 
       table tbody th{
-        border: 1px solid rgba(md-color($foreground, secondary-text), .03);
+        border: 1px solid rgba(mat-color($foreground, secondary-text), .03);
       }
 
       td {
-        color: md-color($foreground, secondary-text);
-        border: 1px solid rgba(md-color($foreground, secondary-text), .03);
+        color: mat-color($foreground, secondary-text);
+        border: 1px solid rgba(mat-color($foreground, secondary-text), .03);
       }
 
       th {
-        color: md-color($foreground, secondary-text);
-        background: rgba(md-color($foreground, secondary-text), .03);
+        color: mat-color($foreground, secondary-text);
+        background: rgba(mat-color($foreground, secondary-text), .03);
       }
   }
 }

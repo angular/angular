@@ -1,0 +1,14 @@
+{
+  "description": "Testing - 1st.specs",
+  "basePath": "src/",
+  "files":[
+    "browser-test-shim.js",
+    "styles.css",
+
+    "app/1st.spec.ts",
+    "1st-specs.html"
+  ],
+  "main": "1st-specs.html",
+  "open": "app/1st.spec.ts",
+  "tags": ["testing"]
+}

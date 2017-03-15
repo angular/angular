@@ -19,7 +19,9 @@ regionParserImpl.regionMatchers = {
   html: html,
   css: blockC,
   yaml: inlineHash,
-  jade: inlineCOnly
+  jade: inlineCOnly,
+  json: inlineC,
+  'json.annotated': inlineC
 };
 
 /**
@@ -96,6 +98,9 @@ function regionParserImpl(contents, fileType) {
       // this line contained an annotation so let's filter it out
       return false;
     });
+    if (!regionMap['']) {
+      regionMap[''] = {lines};
+    }
     return {
       contents: lines.join('\n'),
       regions: mapObject(regionMap, (regionName, region) => region.lines.join('\n'))
@@ -106,7 +111,7 @@ function regionParserImpl(contents, fileType) {
 }
 
 function getRegionNames(input) {
-  return input.split(',').map(name => name.trim()).filter(name => name.length > 0);
+  return (input.trim() === '') ? [] : input.split(',').map(name => name.trim());
 }
 
 function removeLast(array, item) {
@@ -114,7 +119,8 @@ function removeLast(array, item) {
   array.splice(index, 1);
 }
 
-function RegionParserError(message, lineNum) {
+function RegionParserError(message, index) {
+  const lineNum = index + 1;
   this.message = `regionParser: ${message} (at line ${lineNum}).`;
   this.lineNum = lineNum;
   this.stack = (new Error()).stack;

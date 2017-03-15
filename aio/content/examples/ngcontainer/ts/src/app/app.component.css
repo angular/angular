@@ -1,0 +1,34 @@
+/* #docregion */
+button {
+  min-width: 100px;
+  font-size: 100%;
+}
+
+code, .code {
+  background-color: #eee;
+  color: black;
+  font-family: Courier, sans-serif;
+  font-size: 85%;
+}
+
+div.code {
+  width: 400px;
+}
+
+.heroic {
+  font-size: 150%;
+  font-weight: bold;
+}
+
+hr {
+  margin: 40px 0
+}
+
+td, th {
+  text-align: left;
+  vertical-align: top;
+}
+
+/* #docregion p-span */
+p span { color: red; font-size: 70%; }
+/* #enddocregion p-span */

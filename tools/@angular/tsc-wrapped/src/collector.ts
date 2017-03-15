@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
+import {Evaluator, errorSymbol} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
@@ -37,6 +37,11 @@ export class CollectorOptions {
    * the source.
    */
   quotedNames?: boolean;
+
+  /**
+   * Do not simplify invalid expressions.
+   */
+  verboseInvalidExpression?: boolean;
 }
 
 /**
@@ -426,7 +431,8 @@ export class MetadataCollector {
                 metadata[exportedIdentifierName(nameNode)] = recordEntry(varValue, node);
                 exported = true;
               }
-              if (isPrimitive(varValue)) {
+              if (typeof varValue == 'string' || typeof varValue == 'number' ||
+                  typeof varValue == 'boolean') {
                 locals.define(nameNode.text, varValue);
               } else if (!exported) {
                 if (varValue && !isMetadataError(varValue)) {
@@ -575,6 +581,16 @@ function validateMetadata(
     if (classData.members) {
       Object.getOwnPropertyNames(classData.members)
           .forEach(name => classData.members[name].forEach((m) => validateMember(classData, m)));
+    }
+    if (classData.statics) {
+      Object.getOwnPropertyNames(classData.statics).forEach(name => {
+        const staticMember = classData.statics[name];
+        if (isFunctionMetadata(staticMember)) {
+          validateExpression(staticMember.value);
+        } else {
+          validateExpression(staticMember);
+        }
+      });
     }
   }
 

@@ -65,7 +65,7 @@ syntax:
 `<p *myUnless="myExpression">...</p>`|`*myUnless`
 description:
 The `*` symbol turns the current element into an embedded template. Equivalent to:
-`<template [myUnless]="myExpression"><p>...</p></template>`
+`<ng-template [myUnless]="myExpression"><p>...</p></ng-template>`
 
 @cheatsheetItem
 syntax:

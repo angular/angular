@@ -8,12 +8,11 @@
     "moduleResolution": "node",
     "outDir": "../dist/all/",
     "noImplicitAny": true,
-    // Attention: This is only set to false for @angular/core.
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["./@angular/*"],
+      "@angular/*": ["../dist/all/@angular/*"],
       "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"],
       "@angular/tsc-wrapped/*": ["../dist/tools/@angular/tsc-wrapped/*"]
     },
@@ -32,7 +31,6 @@
     "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
     "payload_tests",
-    "rollup-test",
-    "@angular/compiler-cli/integrationtest"
+    "rollup-test"
   ]
 }

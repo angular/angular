@@ -1,0 +1,18 @@
+{
+  "name": "@angular/common",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - commonly needed directives and services",
+  "main": "./bundles/common.umd.js",
+  "module": "./@angular/common.es5.js",
+  "es2015": "./@angular/common.js",
+  "typings": "./typings/common.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  }
+}

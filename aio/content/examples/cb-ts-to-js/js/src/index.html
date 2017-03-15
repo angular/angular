@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <title>TypeScript to JavaScript</title>
+
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+
+    <!-- Angular and RxJS umd scripts -->
+    <script src="node_modules/rxjs/bundles/Rx.js"></script>
+    <script src="node_modules/@angular/core/bundles/core.umd.js"></script>
+    <script src="node_modules/@angular/common/bundles/common.umd.js"></script>
+    <script src="node_modules/@angular/compiler/bundles/compiler.umd.js"></script>
+    <script src="node_modules/@angular/platform-browser/bundles/platform-browser.umd.js"></script>
+    <script src="node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js"></script>
+
+    <!-- Application scripts -->
+    <script src="app/app.component.js"></script>
+    <script src="app/confirm.component.js"></script>
+    <script src="app/data.service.js"></script>
+    <script src="app/hero.component.js"></script>
+    <script src="app/hero-io.component.js"></script>
+    <script src="app/hero-di.component.js"></script>
+    <script src="app/hero-di-inject.component.js"></script>
+    <script src="app/hero-di-inject-additional.component.js"></script>
+    <script src="app/hero-host.component.js"></script>
+    <script src="app/hero-lifecycle.component.js"></script>
+    <script src="app/hero-queries.component.js"></script>
+    <script src="app/hero-title.component.js"></script>
+
+    <script src="app/app.module.js"></script>
+    <script src="main.js"></script>
+  </head>
+
+  <body>
+    <my-app>Loading...</my-app>
+  </body>
+
+</html>

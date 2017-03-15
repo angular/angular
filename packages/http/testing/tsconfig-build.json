@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig-build",
+  "compilerOptions": {
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/http": ["../../dist/packages/http"],
+      "rxjs/*": ["../../node_modules/rxjs/*"]
+    }
+  },
+  "files": [
+    "index.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

@@ -1,0 +1,42 @@
+<div class="l-flex-wrap banner is-plain api-filter">
+
+  <div class="form-select-menu">
+    <button class="form-select-button has-symbol" (click)="toggleTypeMenu()">
+      <strong>Type:</strong><span class="symbol {{type.name}}"></span>{{type.title}}
+    </button>
+    <ul class="form-select-dropdown" *ngIf="showTypeMenu">
+      <li *ngFor="let t of types" (click)="setType(t)" [class.selected]="t === type">
+        <span class="symbol {{t.name}}"></span>{{t.title}}
+      </li>
+    </ul>
+  </div>
+
+  <div class="form-select-menu">
+    <button class="form-select-button" (click)="toggleStatusMenu()">
+      <strong>Status:</strong>{{status.title}}
+    </button>
+    <ul class="form-select-dropdown" *ngIf="showStatusMenu">
+      <li *ngFor="let s of statuses" (click)="setStatus(s)" [class.selected]="s === status">
+        {{s.title}}
+      </li>
+    </ul>
+  </div>
+
+  <div class="form-search">
+    <i class="material-icons">search</i>
+    <input #filter placeholder="Filter" (input)="setQuery($event.target.value)">
+  </div>
+</div>
+
+<article class="l-content-small docs-content">
+  <div *ngFor="let section of filteredSections | async" >
+    <h2>{{section.title}}</h2>
+    <ul class="api-list">
+      <ng-container *ngFor="let item of section.items">
+        <li *ngIf="item.show" class="api-item">
+          <a [href]="item.path"><span class="symbol {{item.docType}}"></span> {{item.title}}</a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</article>
