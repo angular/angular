@@ -61,7 +61,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * A better way to do this is to use `ngIf` and store the result of the condition in a local
  * variable as shown in the the example below:
  *
- * {@example common/ngIf/ts/module.ts region='NgIfLet'}
+ * {@example common/ngIf/ts/module.ts region='NgIfAs'}
  *
  * Notice that:
  *  - We use only one `async` pipe and hence only one subscription gets created.
@@ -93,7 +93,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *
  * Form with storing the value locally:
  * ```
- * <div *ngIf="condition; else elseBlock; let value">{{value}}</div>
+ * <div *ngIf="condition as value; else elseBlock">{{value}}</div>
  * <ng-template #elseBlock>...</ng-template>
  * ```
  *
@@ -113,7 +113,7 @@ export class NgIf {
 
   @Input()
   set ngIf(condition: any) {
-    this._context.$implicit = condition;
+    this._context.$implicit = this._context.ngIf = condition;
     this._updateView();
   }
 
@@ -154,4 +154,10 @@ export class NgIf {
   }
 }
 
-export class NgIfContext { public $implicit: any = null; }
+/**
+ * @stable
+ */
+export class NgIfContext {
+  public $implicit: any = null;
+  public ngIf: any = null;
+}

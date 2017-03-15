@@ -267,6 +267,7 @@ export class _ParseAST {
   }
 
   peekKeywordLet(): boolean { return this.next.isKeywordLet(); }
+  peekKeywordAs(): boolean { return this.next.isKeywordAs(); }
 
   expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
@@ -686,11 +687,12 @@ export class _ParseAST {
     const warnings: string[] = [];
     while (this.index < this.tokens.length) {
       const start = this.inputIndex;
-      const keyIsVar: boolean = this.peekKeywordLet();
+      let keyIsVar: boolean = this.peekKeywordLet();
       if (keyIsVar) {
         this.advance();
       }
-      let key = this.expectTemplateBindingKey();
+      let rawKey = this.expectTemplateBindingKey();
+      let key = rawKey;
       if (!keyIsVar) {
         if (prefix == null) {
           prefix = key;
@@ -707,6 +709,12 @@ export class _ParseAST {
         } else {
           name = '\$implicit';
         }
+      } else if (this.peekKeywordAs()) {
+        const letStart = this.inputIndex;
+        this.advance();  // consume `as`
+        name = rawKey;
+        key = this.expectTemplateBindingKey();  // read local var name
+        keyIsVar = true;
       } else if (this.next !== EOF && !this.peekKeywordLet()) {
         const start = this.inputIndex;
         const ast = this.parsePipe();
@@ -714,6 +722,12 @@ export class _ParseAST {
         expression = new ASTWithSource(ast, source, this.location, this.errors);
       }
       bindings.push(new TemplateBinding(this.span(start), key, keyIsVar, name, expression));
+      if (this.peekKeywordAs() && !keyIsVar) {
+        const letStart = this.inputIndex;
+        this.advance();                                   // consume `as`
+        const letName = this.expectTemplateBindingKey();  // read local var name
+        bindings.push(new TemplateBinding(this.span(letStart), letName, true, key, null));
+      }
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
       }
