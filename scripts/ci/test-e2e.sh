@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# First shard for the e2e tests. Balance it with runtime of test-e2e-2.sh
+
 set -u -e -o pipefail
 
 # Setup environment
@@ -17,18 +19,6 @@ if [[ ${TRAVIS:-} ]]; then
     sh -e /etc/init.d/xvfb start
   travisFoldEnd "test.e2e.xvfb-start"
 fi
-
-
-travisFoldStart "test.e2e.integration"
-  ./integration/run_tests.sh
-travisFoldEnd "test.e2e.integration"
-
-
-travisFoldStart "test.e2e.offlineCompiler"
-  #TODO(alexeagle): move offline_compiler_test to integration/
-  ${thisDir}/offline_compiler_test.sh
-travisFoldEnd "test.e2e.offlineCompiler"
-
 
 travisFoldStart "test.e2e.publicApi"
   $(npm bin)/gulp public-api:enforce
