@@ -112,6 +112,28 @@ export function main() {
       }
     });
 
+    it('should not enter an infinite loop on clobbered elements', () => {
+      // Some browsers are vulnerable to clobbered elements and will throw an expected exception
+      // IE and EDGE does not seems to be affected by those cases
+      // Anyway what we want to test is that browsers do not enter an infinite loop which would
+      // result in a timeout error for the test.
+      try {
+        sanitizeHtml(defaultDoc, '<form><input name="parentNode" /></form>');
+      } catch (e) {
+        // depending on the browser, we might ge an exception
+      }
+      try {
+        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>')
+      } catch (e) {
+        // depending on the browser, we might ge an exception
+      }
+      try {
+        sanitizeHtml(defaultDoc, '<form><div><div><input name="nextSibling" /></div></div></form>');
+      } catch (e) {
+        // depending on the browser, we might ge an exception
+      }
+    });
+
     if (browserDetection.isWebkit) {
       it('should prevent mXSS attacks', function() {
         expect(sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>'))
