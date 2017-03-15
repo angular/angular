@@ -615,6 +615,21 @@ export function main() {
                {background: 'red', height: AUTO_STYLE, offset: 1}
              ]);
            });
+
+        it('should produce an animation from start to end between the to and from styles if there are animate steps in between with an easing value',
+           () => {
+             const steps: AnimationMetadata[] = [animate('1s ease-out')];
+
+             const fromStyles: ɵStyleData[] = [{background: 'blue'}];
+
+             const toStyles: ɵStyleData[] = [{background: 'red'}];
+
+             const players = invokeAnimationSequence(steps, fromStyles, toStyles);
+             expect(players[0].keyframes).toEqual([
+               {background: 'blue', offset: 0},
+               {background: 'red', easing: 'ease-out', offset: 1}
+             ]);
+           });
       });
     });
   });
