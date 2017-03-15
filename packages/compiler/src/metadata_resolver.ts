@@ -142,26 +142,7 @@ export class CompileMetadataResolver {
           ngfactoryFilePath(dirType.filePath), cpl.componentFactoryName(dirType));
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
-      // Note: inputs / outputs / ngContentSelectors will be filled later once the template is
-      // loaded.
-      return createComponentFactory(selector, dirType, <any>hostView, {}, {}, []);
-    }
-  }
-
-  private initComponentFactory(
-      factory: StaticSymbol|ComponentFactory<any>, inputs: {[key: string]: string},
-      outputs: {[key: string]: string}, ngContentSelectors: string[]) {
-    if (!(factory instanceof StaticSymbol)) {
-      for (let propName in inputs) {
-        const templateName = inputs[propName];
-        factory.inputs.push({propName, templateName});
-      }
-      const outputsArr: {propName: string, templateName: string}[] = [];
-      for (let propName in outputs) {
-        const templateName = outputs[propName];
-        factory.outputs.push({propName, templateName});
-      }
-      factory.ngContentSelectors.push(...ngContentSelectors);
+      return createComponentFactory(selector, dirType, <any>hostView);
     }
   }
 
@@ -205,11 +186,6 @@ export class CompileMetadataResolver {
         componentFactory: metadata.componentFactory,
         template: templateMetadata
       });
-      if (templateMetadata) {
-        this.initComponentFactory(
-            metadata.componentFactory, metadata.inputs, metadata.outputs,
-            templateMetadata.ngContentSelectors);
-      }
       this._directiveCache.set(directiveType, normalizedDirMeta);
       this._summaryCache.set(directiveType, normalizedDirMeta.toSummary());
       return normalizedDirMeta;

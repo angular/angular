@@ -248,55 +248,6 @@ describe('compiler (unbundled Angular)', () => {
              `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
        }));
   });
-
-  describe('ComponentFactories', () => {
-    it('should include inputs, outputs and ng-content selectors in the component factory',
-       fakeAsync(() => {
-         const FILES: MockData = {
-           app: {
-             'app.ts': `
-                import {Component, NgModule, Input, Output} from '@angular/core';
-
-                @Component({
-                  selector: 'my-comp',
-                  template: '<ng-content></ng-content><ng-content select="child"></ng-content>'
-                })
-                export class MyComp {
-                  @Input('aInputName')
-                  aInputProp: string;
-
-                  @Output('aOutputName')
-                  aOutputProp: any;
-                }
-
-                @NgModule({
-                  declarations: [MyComp]
-                })
-                export class MyModule {}
-              `
-           }
-         };
-         const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
-         const aotHost = new MockAotCompilerHost(host);
-         let generatedFiles: GeneratedFile[];
-         const warnSpy = spyOn(console, 'warn');
-         compile(host, aotHost, expectNoDiagnostics).then((f) => generatedFiles = f);
-
-         tick();
-
-         const genFile = generatedFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
-         const createComponentFactoryCall =
-             /ɵccf\([^)]*\)/m.exec(genFile.source)[0].replace(/\s*/g, '');
-         // selector
-         expect(createComponentFactoryCall).toContain('my-comp');
-         // inputs
-         expect(createComponentFactoryCall).toContain(`{aInputProp:'aInputName'}`);
-         // outputs
-         expect(createComponentFactoryCall).toContain(`{aOutputProp:'aOutputName'}`);
-         // ngContentSelectors
-         expect(createComponentFactoryCall).toContain(`['*','child']`);
-       }));
-  });
 });
 
 describe('compiler (bundled Angular)', () => {
