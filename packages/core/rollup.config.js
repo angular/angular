@@ -16,7 +16,6 @@ export default {
     'rxjs/Subject': 'Rx',
     'rxjs/Observer': 'Rx',
     'rxjs/Subscription': 'Rx',
-    'rxjs/symbol/observable': 'Rx.Symbol.observable',
     'rxjs/observable/merge': 'Rx.Observable',
     'rxjs/operator/share': 'Rx.Observable.prototype'
   }
