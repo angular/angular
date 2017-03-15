@@ -52,6 +52,7 @@ export abstract class DomAdapter {
   /** @internal */
   _attrToPropMap: {[key: string]: string};
 
+  abstract contains(nodeA: any, nodeB: any): boolean;
   abstract parse(templateHtml: string): any;
   abstract querySelector(el: any, selector: string): any;
   abstract querySelectorAll(el: any, selector: string): any[];

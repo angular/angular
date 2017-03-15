@@ -9,7 +9,6 @@
 import {isDevMode} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
-import {DOCUMENT} from '../dom/dom_tokens';
 
 import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
@@ -146,11 +145,15 @@ class SanitizingHtmlSerializer {
         if (DOM.isElementNode(current)) {
           this.endElement(current as Element);
         }
-        if (DOM.nextSibling(current)) {
-          current = DOM.nextSibling(current);
+
+        let next = checkClobberedElement(current, DOM.nextSibling(current));
+
+        if (next) {
+          current = next;
           break;
         }
-        current = DOM.parentElement(current);
+
+        current = checkClobberedElement(current, DOM.parentElement(current));
       }
     }
     return this.buf.join('');
@@ -191,7 +194,15 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars: any /** TODO #9100 */) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
+}
+
+function checkClobberedElement(node: Node, nextNode: Node): Node {
+  if (nextNode && DOM.contains(node, nextNode)) {
+    throw new Error(
+        `Failed to sanitize html because the element is clobbered: ${DOM.getOuterHTML(node)}`);
+  }
+  return nextNode;
 }
 
 // Regular Expressions for parsing tags and attributes
