@@ -156,6 +156,7 @@ export class CompileMetadataResolver {
         const templateName = inputs[propName];
         factory.inputs.push({propName, templateName});
       }
+      const outputsArr: {propName: string, templateName: string}[] = [];
       for (let propName in outputs) {
         const templateName = outputs[propName];
         factory.outputs.push({propName, templateName});

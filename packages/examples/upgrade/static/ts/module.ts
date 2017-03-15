@@ -145,7 +145,12 @@ ng1AppModule.factory('heroesService', downgradeInjectable(HeroesService));
 
 // #docregion ng2-heroes-wrapper
 // This is directive will act as the interface to the "downgraded"  Angular component
-ng1AppModule.directive('ng2Heroes', downgradeComponent({component: Ng2HeroesComponent}));
+ng1AppModule.directive(
+    'ng2Heroes',
+    downgradeComponent(
+        // The inputs and outputs here must match the relevant names of the properties on the
+        // "downgraded" component
+        {component: Ng2HeroesComponent, inputs: ['heroes'], outputs: ['addHero', 'removeHero']}));
 // #enddocregion
 
 // #docregion example-app
