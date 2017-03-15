@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {ApplicationRef, CompilerFactory, Component, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -56,6 +56,9 @@ class TitleAppModule {
 @Component({selector: 'app', template: '{{text}}'})
 class MyAsyncServerApp {
   text = '';
+
+  @HostListener('window:scroll')
+  track() { console.error('scroll'); }
 
   ngOnInit() {
     Promise.resolve(null).then(() => setTimeout(() => { this.text = 'Works!'; }, 10));
@@ -141,7 +144,13 @@ export function main() {
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            expect(isPlatformServer(moduleRef.injector.get(PLATFORM_ID))).toBe(true);
            const doc = moduleRef.injector.get(DOCUMENT);
+
+           expect(doc.head).toBe(getDOM().querySelector(doc, 'head'));
+           expect(doc.body).toBe(getDOM().querySelector(doc, 'body'));
+           expect((<any>doc)._window).toEqual({});
+
            expect(getDOM().getText(doc)).toEqual('Works!');
+
            platform.destroy();
          });
        }));
