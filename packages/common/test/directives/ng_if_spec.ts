@@ -189,8 +189,22 @@ export function main() {
            expect(fixture.nativeElement).toHaveText('FALSE2');
          }));
 
-      it('should support binding to variable', async(() => {
+      it('should support binding to variable using let', async(() => {
            const template = '<span *ngIf="booleanCondition; else elseBlock; let v">{{v}}</span>' +
+               '<ng-template #elseBlock let-v>{{v}}</ng-template>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('true');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('false');
+         }));
+
+      it('should support binding to variable using as', async(() => {
+           const template = '<span *ngIf="booleanCondition as v; else elseBlock">{{v}}</span>' +
                '<ng-template #elseBlock let-v>{{v}}</ng-template>';
 
            fixture = createTestComponent(template);

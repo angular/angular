@@ -151,11 +151,24 @@ export declare const NgFor: typeof NgForOf;
 /** @stable */
 export declare class NgForOf<T> implements DoCheck, OnChanges {
     ngForOf: NgIterable<T>;
-    ngForTemplate: TemplateRef<NgForOfRow<T>>;
+    ngForTemplate: TemplateRef<NgForOfContext<T>>;
     ngForTrackBy: TrackByFunction<T>;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfRow<T>>, _differs: IterableDiffers);
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
+}
+
+/** @stable */
+export declare class NgForOfContext<T> {
+    $implicit: T;
+    count: number;
+    readonly even: boolean;
+    readonly first: boolean;
+    index: number;
+    readonly last: boolean;
+    ngForOf: NgIterable<T>;
+    readonly odd: boolean;
+    constructor($implicit: T, ngForOf: NgIterable<T>, index: number, count: number);
 }
 
 /** @stable */
@@ -164,6 +177,12 @@ export declare class NgIf {
     ngIfElse: TemplateRef<NgIfContext>;
     ngIfThen: TemplateRef<NgIfContext>;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
+}
+
+/** @stable */
+export declare class NgIfContext {
+    $implicit: any;
+    ngIf: any;
 }
 
 /** @experimental */

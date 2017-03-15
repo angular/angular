@@ -73,19 +73,19 @@ class NgIfThenElse implements OnInit {
 }
 // #enddocregion
 
-// #docregion NgIfLet
+// #docregion NgIfAs
 @Component({
   selector: 'ng-if-let',
   template: `
     <button (click)="nextUser()">Next User</button>
     <br>
-    <div *ngIf="userObservable | async; else loading; let user">
+    <div *ngIf="userObservable | async as user; else loading">
       Hello {{user.last}}, {{user.first}}!
     </div>
     <ng-template #loading let-user>Waiting... (user is {{user|json}})</ng-template>
 `
 })
-class NgIfLet {
+class NgIfAs {
   userObservable = new Subject<{first: string, last: string}>();
   first = ['John', 'Mike', 'Mary', 'Bob'];
   firstIndex = 0;
@@ -121,7 +121,7 @@ class ExampleApp {
 
 @NgModule({
   imports: [BrowserModule],
-  declarations: [ExampleApp, NgIfSimple, NgIfElse, NgIfThenElse, NgIfLet],
+  declarations: [ExampleApp, NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
   bootstrap: [ExampleApp]
 })
 export class AppModule {

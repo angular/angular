@@ -181,6 +181,14 @@ export function main() {
          detectChangesAndExpectText('0|even|1|2|even|');
        }));
 
+    it('should allow of saving the collection', async(() => {
+         const template =
+             '<ul><li *ngFor="let item of [1,2,3] as items; index as i">{{i}}/{{items.length}} - {{item}};</li></ul>';
+         fixture = createTestComponent(template);
+
+         detectChangesAndExpectText('0/3 - 1;1/3 - 2;2/3 - 3;');
+       }));
+
     it('should display indices correctly', async(() => {
          const template = '<span *ngFor ="let item of items; let i=index">{{i.toString()}}</span>';
          fixture = createTestComponent(template);
