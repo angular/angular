@@ -44,6 +44,7 @@ export class WorkerDomAdapter extends DomAdapter {
     }
   }
 
+  contains(nodeA: any, nodeB: any): boolean { throw 'not implemented'; }
   hasProperty(element: any, name: string): boolean { throw 'not implemented'; }
   setProperty(el: Element, name: string, value: any) { throw 'not implemented'; }
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
