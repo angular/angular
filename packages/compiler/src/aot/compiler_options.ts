@@ -11,4 +11,6 @@ export interface AotCompilerOptions {
   i18nFormat?: string;
   translations?: string;
   enableLegacyTemplate?: boolean;
+  /** preamble for all generated source files */
+  genFilePreamble?: string;
 }

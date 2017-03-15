@@ -11,5 +11,9 @@ module.exports = {
   entry: './test/all_spec.js',
   output: {filename: './all_spec.js'},
   resolve: {extensions: ['.js']},
-
+  devtool: '#source-map',
+  module: {
+    loaders:
+        [{test: /\.js$/, exclude: /node_modules/, loaders: ['source-map-loader'], enforce: 'pre'}]
+  },
 };

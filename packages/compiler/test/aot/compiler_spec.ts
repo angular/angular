@@ -8,7 +8,7 @@
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler} from '@angular/compiler';
 import {RenderComponentType, ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
-import {async, fakeAsync, tick} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -94,19 +94,18 @@ describe('compiler (unbundled Angular)', () => {
       rootDir = {'app': appDir};
     });
 
-    function compileApp(): GeneratedFile {
-      const host = new MockCompilerHost(['/app/app.module.ts'], rootDir, angularFiles);
-      const aotHost = new MockAotCompilerHost(host);
-      let result: GeneratedFile[];
-      let error: Error;
-      compile(host, aotHost, expectNoDiagnostics, expectNoDiagnostics)
-          .then((files) => result = files, (err) => error = err);
-      tick();
-      if (error) {
-        throw error;
-      }
-      return result.find(genFile => genFile.srcFileUrl === componentPath);
-      ;
+    function compileApp(): Promise<GeneratedFile> {
+      return new Promise((resolve, reject) => {
+        const host = new MockCompilerHost(['/app/app.module.ts'], rootDir, angularFiles);
+        const aotHost = new MockAotCompilerHost(host);
+        let result: GeneratedFile[];
+        let error: Error;
+        resolve(compile(host, aotHost, expectNoDiagnostics, expectNoDiagnostics)
+                    .then(
+                        (files) => files.find(
+                            genFile => genFile.srcFileUrl === componentPath &&
+                                genFile.genFileUrl.endsWith('.ts'))));
+      });
     }
 
     function findLineAndColumn(file: string, token: string): {line: number, column: number} {
@@ -134,7 +133,7 @@ describe('compiler (unbundled Angular)', () => {
     }
 
     describe('inline templates', () => {
-      const templateUrl = componentPath;
+      const templateUrl = `${componentPath}#AppComponent.html`;
 
       function templateDecorator(template: string) { return `template: \`${template}\`,`; }
 
@@ -155,74 +154,96 @@ describe('compiler (unbundled Angular)', () => {
     function declareTests(
         {templateUrl, templateDecorator}:
             {templateUrl: string, templateDecorator: (template: string) => string}) {
-      it('should use the right source url in html parse errors', fakeAsync(() => {
+      it('should use the right source url in html parse errors', async(() => {
            appDir['app.component.ts'] =
                createComponentSource(templateDecorator('<div>\n  </error>'));
 
-           expect(() => compileApp())
-               .toThrowError(new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:2`));
+           expectPromiseToThrow(
+               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:2`));
          }));
 
-      it('should use the right source url in template parse errors', fakeAsync(() => {
+      it('should use the right source url in template parse errors', async(() => {
            appDir['app.component.ts'] = createComponentSource(
                templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>'));
 
-           expect(() => compileApp())
-               .toThrowError(new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:7`));
+           expectPromiseToThrow(
+               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:7`));
          }));
 
-      it('should create a sourceMap for the template', fakeAsync(() => {
+      it('should create a sourceMap for the template', async(() => {
            const template = 'Hello World!';
 
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           const genFile = compileApp();
-           const sourceMap = extractSourceMap(genFile.source);
-           expect(sourceMap.file).toEqual(genFile.genFileUrl);
-           // the generated file contains the host view and the component view.
-           // we are only interested in the component view.
-           const sourceIndex = sourceMap.sources.indexOf(templateUrl);
-           expect(sourceMap.sourcesContent[sourceIndex]).toEqual(template);
+           compileApp().then((genFile) => {
+             const sourceMap = extractSourceMap(genFile.source);
+             expect(sourceMap.file).toEqual(genFile.genFileUrl);
+
+             // the generated file contains code that is not mapped to
+             // the template but rather to the original source file (e.g. import statements, ...)
+             const templateIndex = sourceMap.sources.indexOf(templateUrl);
+             expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
+
+             // for the mapping to the original source file we don't store the source code
+             // as we want to keep whatever TypeScript / ... produced for them.
+             const sourceIndex = sourceMap.sources.indexOf(componentPath);
+             expect(sourceMap.sourcesContent[sourceIndex]).toBe(null);
+           });
          }));
 
-      it('should map elements correctly to the source', fakeAsync(() => {
+      it('should map elements correctly to the source', async(() => {
            const template = '<div>\n   <span></span></div>';
 
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           const genFile = compileApp();
-           const sourceMap = extractSourceMap(genFile.source);
-           expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
-               .toEqual({line: 2, column: 3, source: templateUrl});
+           compileApp().then((genFile) => {
+             const sourceMap = extractSourceMap(genFile.source);
+             expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
+                 .toEqual({line: 2, column: 3, source: templateUrl});
+           });
          }));
 
-      it('should map bindings correctly to the source', fakeAsync(() => {
+      it('should map bindings correctly to the source', async(() => {
            const template = `<div>\n   <span [title]="someMethod()"></span></div>`;
 
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           const genFile = compileApp();
-           const sourceMap = extractSourceMap(genFile.source);
-           expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-               .toEqual({line: 2, column: 9, source: templateUrl});
+           compileApp().then((genFile) => {
+             const sourceMap = extractSourceMap(genFile.source);
+             expect(
+                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
+                 .toEqual({line: 2, column: 9, source: templateUrl});
+           });
          }));
 
-      it('should map events correctly to the source', fakeAsync(() => {
+      it('should map events correctly to the source', async(() => {
            const template = `<div>\n   <span (click)="someMethod()"></span></div>`;
 
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           const genFile = compileApp();
-           const sourceMap = extractSourceMap(genFile.source);
-           expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-               .toEqual({line: 2, column: 9, source: templateUrl});
+           compileApp().then((genFile) => {
+             const sourceMap = extractSourceMap(genFile.source);
+             expect(
+                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
+                 .toEqual({line: 2, column: 9, source: templateUrl});
+           });
+         }));
+
+      it('should map non template parts to the source file', async(() => {
+           appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
+
+           compileApp().then((genFile) => {
+             const sourceMap = extractSourceMap(genFile.source);
+             expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
+                 .toEqual({line: 1, column: 0, source: componentPath});
+           });
          }));
     }
   });
 
   describe('errors', () => {
     it('should only warn if not all arguments of an @Injectable class can be resolved',
-       fakeAsync(() => {
+       async(() => {
          const FILES: MockData = {
            app: {
              'app.ts': `
@@ -237,17 +258,40 @@ describe('compiler (unbundled Angular)', () => {
          };
          const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
          const aotHost = new MockAotCompilerHost(host);
-         let ok = false;
          const warnSpy = spyOn(console, 'warn');
-         compile(host, aotHost, expectNoDiagnostics).then(() => ok = true);
+         compile(host, aotHost, expectNoDiagnostics).then(() => {
+           expect(warnSpy).toHaveBeenCalledWith(
+               `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
+         });
 
-         tick();
-
-         expect(ok).toBe(true);
-         expect(warnSpy).toHaveBeenCalledWith(
-             `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
        }));
   });
+
+  it('should add the preamble to generated files', async(() => {
+       const FILES: MockData = {
+         app: {
+           'app.ts': `
+              import { NgModule, Component } from '@angular/core';
+
+              @Component({ template: '' })
+              export class AppComponent {}
+
+              @NgModule({ declarations: [ AppComponent ] })
+              export class AppModule { }
+            `
+         }
+       };
+       const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
+       const aotHost = new MockAotCompilerHost(host);
+       const genFilePreamble = '/* Hello world! */';
+       compile(host, aotHost, expectNoDiagnostics, expectNoDiagnostics, {genFilePreamble})
+           .then((generatedFiles) => {
+             const genFile = generatedFiles.find(
+                 gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+             expect(genFile.source.startsWith(genFilePreamble)).toBe(true);
+           });
+
+     }));
 });
 
 describe('compiler (bundled Angular)', () => {
@@ -426,3 +470,8 @@ const FILES: MockData = {
     }
   }
 };
+
+function expectPromiseToThrow(p: Promise<any>, msg: RegExp) {
+  p.then(
+      () => { throw new Error('Expected to throw'); }, (e) => { expect(e.message).toMatch(msg); });
+}

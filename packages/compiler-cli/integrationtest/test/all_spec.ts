@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+require('source-map-support').install();
+
 import './init';
 import './animate_spec';
 import './basic_spec';
@@ -14,3 +16,4 @@ import './i18n_spec';
 import './ng_module_spec';
 import './projection_spec';
 import './query_spec';
+import './source_map_spec';

@@ -14,11 +14,12 @@ import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
-const someModuleUrl = 'somePackage/somePath';
+const someGenFilePath = 'somePackage/someGenFile';
+const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier: CompileIdentifierMetadata = {
-  reference: new StaticSymbol(someModuleUrl, 'someLocalId', [])
+  reference: new StaticSymbol(someGenFilePath, 'someLocalId', [])
 };
 
 const externalModuleIdentifier: CompileIdentifierMetadata = {
@@ -49,9 +50,12 @@ export function main() {
       someVar = o.variable('someVar');
     });
 
-    function emitStmt(stmt: o.Statement | o.Statement[], exportedVars: string[] = null): string {
+    function emitStmt(
+        stmt: o.Statement | o.Statement[], exportedVars: string[] = null,
+        preamble?: string): string {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      const source = emitter.emitStatements(someModuleUrl, stmts, exportedVars || []);
+      const source = emitter.emitStatements(
+          someSourceFilePath, someGenFilePath, stmts, exportedVars || [], preamble);
       return stripSourceMapAndNewLine(source);
     }
 
@@ -458,6 +462,12 @@ export function main() {
           .toEqual('var a:{[key: string]:any} = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(o.INT_TYPE))))
           .toEqual('var a:{[key: string]:number} = (null as any);');
+    });
+
+    it('should support a preamble', () => {
+      expect(emitStmt(o.variable('a').toStmt(), [], '/* SomePreamble */')).toBe([
+        '/* SomePreamble */', 'a;'
+      ].join('\n'));
     });
   });
 }

@@ -772,7 +772,9 @@ export function templateSourceUrl(
     templateMeta: {isInline: boolean, templateUrl: string}) {
   if (templateMeta.isInline) {
     if (compMeta.type.reference instanceof StaticSymbol) {
-      return compMeta.type.reference.filePath;
+      // Note: a .ts file might contain multiple components with inline templates,
+      // so we need to give them unique urls, as these will be used for sourcemaps.
+      return `${compMeta.type.reference.filePath}#${compMeta.type.reference.name}.html`;
     } else {
       return `${ngJitFolder()}/${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.html`;
     }

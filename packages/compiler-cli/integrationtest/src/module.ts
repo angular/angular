@@ -22,6 +22,7 @@ import {BasicComp} from './basic';
 import {ComponentUsingThirdParty} from './comp_using_3rdp';
 import {CUSTOM} from './custom_token';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
+import {BindingErrorComp} from './errors';
 import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
@@ -63,6 +64,7 @@ export const SERVER_ANIMATIONS_PROVIDERS: Provider[] = [{
     SomeDirectiveInRootModule,
     SomePipeInRootModule,
     ComponentUsingThirdParty,
+    BindingErrorComp,
   ],
   imports: [
     NoopAnimationsModule,
@@ -88,6 +90,7 @@ export const SERVER_ANIMATIONS_PROVIDERS: Provider[] = [{
     CompWithReferences,
     ProjectingComp,
     ComponentUsingThirdParty,
+    BindingErrorComp,
   ]
 })
 export class MainModule {

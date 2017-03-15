@@ -18,29 +18,29 @@ import {ImportResolver} from './path_util';
 export class JavaScriptEmitter implements OutputEmitter {
   constructor(private _importResolver: ImportResolver) {}
 
-  emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
+  emitStatements(
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[], exportedVars: string[],
+      preamble: string = ''): string {
     const converter = new JsEmitterVisitor(genFilePath, this._importResolver);
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
 
-    const srcParts: string[] = [];
+    const preambleLines = preamble ? preamble.split('\n') : [];
     converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
-      srcParts.push(
+      preambleLines.push(
           `var ${prefix} = req` +
           `uire('${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}');`);
     });
 
-    srcParts.push(ctx.toSource());
-
-    const prefixLines = converter.importsWithPrefixes.size;
-    const sm = ctx.toSourceMapGenerator(genFilePath, prefixLines).toJsComment();
+    const sm =
+        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment();
+    const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
-      srcParts.push(sm);
+      // always add a newline at the end, as some tools have bugs without it.
+      lines.push('');
     }
-    // always add a newline at the end, as some tools have bugs without it.
-    srcParts.push('');
-    return srcParts.join('\n');
+    return lines.join('\n');
   }
 }
 
