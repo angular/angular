@@ -10,6 +10,7 @@ import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {NgContentSelectorHelper} from '../common/ng_content_selector_helper';
 import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
@@ -129,7 +130,7 @@ import {angular1Providers, setTempInjectorRef} from './angular1_providers';
  *
  * @experimental
  */
-@NgModule({providers: [angular1Providers]})
+@NgModule({providers: [angular1Providers, NgContentSelectorHelper]})
 export class UpgradeModule {
   /**
    * The AngularJS `$injector` for the upgrade application.

@@ -72,14 +72,16 @@ export function main() {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', [])
-                               .directive('ng2', downgradeComponent({component: Ng2Component}))
-                               .run(($rootScope: angular.IRootScopeService) => {
-                                 $rootScope['items'] = [
-                                   {id: 'a', subitems: [1, 2, 3]}, {id: 'b', subitems: [4, 5, 6]},
-                                   {id: 'c', subitems: [7, 8, 9]}
-                                 ];
-                               });
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive(
+                     'ng2', downgradeComponent({component: Ng2Component, inputs: ['itemId']}))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   $rootScope['items'] = [
+                     {id: 'a', subitems: [1, 2, 3]}, {id: 'b', subitems: [4, 5, 6]},
+                     {id: 'c', subitems: [7, 8, 9]}
+                   ];
+                 });
 
          const element = html(`
            <ng2 ng-repeat="item in items" [item-id]="item.id">
@@ -160,7 +162,7 @@ export function main() {
          }
 
          const ng1Module = angular.module('ng1', []).directive(
-             'ng2', downgradeComponent({component: Ng2Component}));
+             'ng2', downgradeComponent({component: Ng2Component, selectors: ['.ng1a', '.ng1b']}));
 
          // The ng-if on one of the projected children is here to make sure
          // the correct slot is targeted even with structural directives in play.
