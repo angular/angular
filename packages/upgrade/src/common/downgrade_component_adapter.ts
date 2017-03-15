@@ -9,6 +9,8 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular1';
+import {createElementCssSelector} from './compiler_helpers/createElementCssSelector';
+import {CssSelector, SelectorMatcher} from './compiler_helpers/selector';
 import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {NgContentSelectorHelper} from './ng_content_selector_helper';
@@ -199,52 +201,38 @@ export class DowngradeComponentAdapter {
    */
   private _groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
     const projectableNodes: Node[][] = [];
+    let matcher = new SelectorMatcher();
     let wildcardNgContentIndex: number;
 
     for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
       projectableNodes[i] = [];
+
+      const selector = ngContentSelectors[i];
+      if (selector === '*') {
+        wildcardNgContentIndex = i;
+      } else {
+        matcher.addSelectables(CssSelector.parse(selector), i);
+      }
     }
 
     for (let j = 0, jj = nodes.length; j < jj; ++j) {
+      const ngContentIndices: number[] = [];
       const node = nodes[j];
-      const ngContentIndex = findMatchingNgContentIndex(node, ngContentSelectors);
-      if (ngContentIndex != null) {
-        projectableNodes[ngContentIndex].push(node);
+      const selector =
+          createElementCssSelector(node.nodeName.toLowerCase(), getAttributesAsArray(node));
+
+      matcher.match(selector, (_, index) => ngContentIndices.push(index));
+      ngContentIndices.sort();
+
+      if (wildcardNgContentIndex !== undefined) {
+        ngContentIndices.push(wildcardNgContentIndex);
+      }
+
+      if (ngContentIndices.length) {
+        projectableNodes[ngContentIndices[0]].push(node);
       }
     }
 
     return projectableNodes;
   }
-}
-
-let _matches: (this: any, selector: string) => boolean;
-
-function matchesSelector(el: any, selector: string): boolean {
-  if (!_matches) {
-    const elProto = <any>Element.prototype;
-    _matches = elProto.matchesSelector || elProto.mozMatchesSelector || elProto.msMatchesSelector ||
-        elProto.oMatchesSelector || elProto.webkitMatchesSelector;
-  }
-  return _matches.call(el, selector);
-}
-
-function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number {
-  const ngContentIndices: number[] = [];
-  let wildcardNgContentIndex: number;
-  for (let i = 0; i < ngContentSelectors.length; i++) {
-    const selector = ngContentSelectors[i];
-    if (selector === '*') {
-      wildcardNgContentIndex = i;
-    } else {
-      if (matchesSelector(element, selector)) {
-        ngContentIndices.push(i);
-      }
-    }
-  }
-  ngContentIndices.sort();
-
-  if (wildcardNgContentIndex !== undefined) {
-    ngContentIndices.push(wildcardNgContentIndex);
-  }
-  return ngContentIndices.length ? ngContentIndices[0] : null;
 }
