@@ -50,7 +50,8 @@ describe('Collector', () => {
       'static-method-with-default.ts',
       'class-inheritance.ts',
       'class-inheritance-parent.ts',
-      'class-inheritance-declarations.d.ts'
+      'class-inheritance-declarations.d.ts',
+      'interface-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -60,9 +61,16 @@ describe('Collector', () => {
   it('should not have errors in test data', () => { expectValidSources(service, program); });
 
   it('should return undefined for modules that have no metadata', () => {
-    const sourceFile = program.getSourceFile('app/hero.ts');
+    const sourceFile = program.getSourceFile('app/empty.ts');
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toBeUndefined();
+  });
+
+  it('should return an interface reference for interfaces', () => {
+    const sourceFile = program.getSourceFile('app/hero.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toEqual(
+        {__symbolic: 'module', version: 3, metadata: {Hero: {__symbolic: 'interface'}}});
   });
 
   it('should be able to collect a simple component\'s metadata', () => {
@@ -609,6 +617,22 @@ describe('Collector', () => {
     });
   });
 
+  it('should collect any for interface parameter reference', () => {
+    const source = program.getSourceFile('/interface-reference.ts');
+    const metadata = collector.getMetadata(source);
+    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
+      __ctor__: [{
+        __symbolic: 'constructor',
+        parameterDecorators: [[{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Inject'},
+          arguments: ['a']
+        }]],
+        parameters: [{__symbolic: 'reference', name: 'any'}]
+      }]
+    });
+  });
+
   describe('in strict mode', () => {
     it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
       const source = program.getSourceFile('/local-symbol-ref.ts');
@@ -759,6 +783,7 @@ const FILES: Directory = {
         id: number;
         name: string;
       }`,
+    'empty.ts': ``,
     'hero-detail.component.ts': `
       import {Component, Input} from 'angular2/core';
       import {Hero} from './hero';
@@ -925,6 +950,15 @@ const FILES: Directory = {
       static someStatic() {
         return Foo;
       }
+    }
+  `,
+  'interface-reference.ts': `
+    import {Injectable, Inject} from 'angular2/core';
+    export interface Test {}
+
+    @Injectable()
+    export class SomeClass {
+      constructor(@Inject("a") test: Test) {}
     }
   `,
   'import-star.ts': `
@@ -1146,6 +1180,11 @@ const FILES: Directory = {
               (): any;
           }
           export declare var Injectable: InjectableFactory;
+          export interface InjectFactory {
+            (binding?: any): any;
+            new (binding?: any): any;
+          }
+          export declare var Inject: InjectFactory;
           export interface OnInit {
               ngOnInit(): any;
           }

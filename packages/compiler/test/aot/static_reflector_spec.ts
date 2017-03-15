@@ -726,6 +726,31 @@ describe('StaticReflector', () => {
       expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
           .toEqual([]);
     });
+
+    it('should support constructor parameters with @Inject and an interface type', () => {
+      const data = Object.create(DEFAULT_TEST_DATA);
+      const file = '/tmp/src/inject_interface.ts';
+      data[file] = `
+        import {Injectable, Inject} from '@angular/core';
+        import {F} from './f';
+
+        export interface InjectedInterface {
+
+        }
+
+        export class Token {}
+
+        @Injectable()
+        export class SomeClass {
+          constructor (@Inject(Token) injected: InjectedInterface, t: Token, @Inject(Token) f: F) {}
+        }
+      `;
+
+      init(data);
+
+      expect(reflector.parameters(reflector.getStaticSymbol(file, 'SomeClass'))[0].length)
+          .toEqual(1);
+    });
   });
 
 });
