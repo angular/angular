@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, sequence, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateTimings, AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, sequence, style, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, normalizeStyles, parseTimeExpression} from '../util';
 
@@ -241,9 +241,13 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
     if (astType == AnimationMetadataType.KeyframeSequence) {
       this.visitKeyframeSequence(<AnimationKeyframesSequenceMetadata>ast.styles, context);
     } else {
+      let styleAst = ast.styles as AnimationStyleMetadata;
+      if (!styleAst && timings.easing) {
+        styleAst = style({easing: timings.easing});
+      }
       context.incrementTime(timings.duration);
-      if (astType == AnimationMetadataType.Style) {
-        this.visitStyle(<AnimationStyleMetadata>ast.styles, context);
+      if (styleAst) {
+        this.visitStyle(styleAst, context);
       }
     }
 
