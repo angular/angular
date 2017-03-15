@@ -163,6 +163,7 @@ describe('url serializer', () => {
   it('should handle multiple query params of the same name into an array', () => {
     const tree = url.parse('/one?a=foo&a=bar&a=swaz');
     expect(tree.queryParams).toEqual({a: ['foo', 'bar', 'swaz']});
+    expect(url.serialize(tree)).toEqual('/one?a=foo&a=bar&a=swaz');
   });
 
   it('should parse fragment', () => {
