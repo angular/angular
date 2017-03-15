@@ -45,7 +45,7 @@ export class CodeGenerator {
             const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
             const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
             const source = GENERATED_META_FILES.test(emitPath) ? generatedModule.source :
-                                                                 PREAMBLE + generatedModule.source;
+                                                                 generatedModule.source;
             this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
           });
         });
@@ -76,6 +76,7 @@ export class CodeGenerator {
       i18nFormat: cliOptions.i18nFormat,
       locale: cliOptions.locale,
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
+      genFilePreamble: PREAMBLE,
     });
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
   }

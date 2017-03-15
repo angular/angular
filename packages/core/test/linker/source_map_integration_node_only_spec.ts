@@ -125,8 +125,10 @@ export function main() {
            compileAndCreateComponent(MyComp);
 
            const sourceMap = getSourceMap('ng:///DynamicTestModule/MyComp.ngfactory.js');
-           expect(sourceMap.sources).toEqual([templateUrl]);
-           expect(sourceMap.sourcesContent).toEqual([template]);
+           expect(sourceMap.sources).toEqual([
+             'ng:///DynamicTestModule/MyComp.ngfactory.js', templateUrl
+           ]);
+           expect(sourceMap.sourcesContent).toEqual([null, template]);
          }));
 
 
