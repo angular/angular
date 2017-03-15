@@ -27,11 +27,26 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in Parse5DomAdapter: ' + methodName);
 }
 
+function _getElement(el: any, name: string) {
+  for (let i = 0; i < el.childNodes.length; i++) {
+    let node = el.childNodes[i];
+    if (node.name === name) {
+      return node;
+    }
+  }
+  return null;
+}
+
 /**
  * Parses a document string to a Document object.
  */
 export function parseDocument(html: string) {
-  return parse5.parse(html, {treeAdapter: parse5.treeAdapters.htmlparser2});
+  let doc = parse5.parse(html, {treeAdapter: parse5.treeAdapters.htmlparser2});
+  let docElement = _getElement(doc, 'html');
+  doc['head'] = _getElement(docElement, 'head');
+  doc['body'] = _getElement(docElement, 'body');
+  doc['_window'] = {};
+  return doc;
 }
 
 
