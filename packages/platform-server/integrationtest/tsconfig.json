@@ -1,0 +1,27 @@
+{
+  "angularCompilerOptions": {
+    "annotationsAs": "static fields",
+    "annotateForClosureCompiler": true
+  },
+
+  "compilerOptions": {
+    "module": "es2015",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "target": "es6",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "experimentalDecorators": true,
+    "outDir": "built/src",
+    "declaration": true,
+    "typeRoots": ["node_modules/@types"]
+  },
+
+  "exclude": [
+    "vendor",
+    "node_modules",
+    "built",
+    "dist",
+    "e2e"
+  ]
+}
