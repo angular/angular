@@ -41,7 +41,7 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'dist/all/empty.*', included: false, watched: false},
+      {pattern: 'dist/all/@angular/empty.*', included: false, watched: false},
       {pattern: 'packages/platform-browser/test/static_assets/**', included: false, watched: false},
       {
         pattern: 'packages/platform-browser/test/browser/static_assets/**',
