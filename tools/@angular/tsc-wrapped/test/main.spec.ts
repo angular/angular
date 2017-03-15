@@ -153,6 +153,40 @@ describe('tsc-wrapped', () => {
         .catch(e => done.fail(e));
   });
 
+  it('should allow all options disabled with metadata emit', (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": false,
+        "module": "es2015",
+        "moduleResolution": "node"
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": false,
+        "annotationsAs": "decorators",
+        "skipMetadataEmit": false,
+        "skipTemplateCodegen": true
+      },
+      "files": ["test.ts"]
+    }`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const out = readOut('js');
+          // TypeScript's decorator emit
+          expect(out).toContain('__decorate');
+          // Not annotated for Closure compiler
+          expect(out).not.toContain('* @param {?} x');
+          expect(() => fs.accessSync(path.join(basePath, 'built', 'test.d.ts'))).toThrow();
+          const metadata = readOut('metadata.json');
+          expect(metadata).toContain('"Comp":{"__symbolic":"class"');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
   it('should allow JSDoc annotations without decorator downleveling', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {
