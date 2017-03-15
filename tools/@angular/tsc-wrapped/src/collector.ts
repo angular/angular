@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
 // In TypeScript 2.1 these flags moved
@@ -56,7 +56,8 @@ export class MetadataCollector {
    */
   public getMetadata(sourceFile: ts.SourceFile, strict: boolean = false): ModuleMetadata {
     const locals = new Symbols(sourceFile);
-    const nodeMap = new Map<MetadataValue|ClassMetadata|FunctionMetadata, ts.Node>();
+    const nodeMap =
+        new Map<MetadataValue|ClassMetadata|InterfaceMetadata|FunctionMetadata, ts.Node>();
     const evaluator = new Evaluator(locals, nodeMap, this.options);
     let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
     let exports: ModuleExportMetadata[];
@@ -264,13 +265,14 @@ export class MetadataCollector {
     });
 
     const isExportedIdentifier = (identifier: ts.Identifier) => exportMap.has(identifier.text);
-    const isExported = (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.EnumDeclaration) =>
-        isExport(node) || isExportedIdentifier(node.name);
+    const isExported =
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+         ts.EnumDeclaration) => isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier: ts.Identifier) =>
         exportMap.get(identifier.text) || identifier.text;
     const exportedName =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.EnumDeclaration) =>
-            exportedIdentifierName(node.name);
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+         ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
     // Predeclare classes and functions
@@ -287,6 +289,15 @@ export class MetadataCollector {
               locals.define(
                   className, errorSym('Reference to non-exported class', node, {className}));
             }
+          }
+          break;
+
+        case ts.SyntaxKind.InterfaceDeclaration:
+          const interfaceDeclaration = <ts.InterfaceDeclaration>node;
+          if (interfaceDeclaration.name) {
+            const interfaceName = interfaceDeclaration.name.text;
+            // All references to interfaces should be converted to references to `any`.
+            locals.define(interfaceName, {__symbolic: 'reference', name: 'any'});
           }
           break;
 
@@ -354,6 +365,14 @@ export class MetadataCollector {
             }
           }
           // Otherwise don't record metadata for the class.
+          break;
+
+        case ts.SyntaxKind.InterfaceDeclaration:
+          const interfaceDeclaration = <ts.InterfaceDeclaration>node;
+          if (interfaceDeclaration.name && isExported(interfaceDeclaration)) {
+            if (!metadata) metadata = {};
+            metadata[exportedName(interfaceDeclaration)] = {__symbolic: 'interface'};
+          }
           break;
 
         case ts.SyntaxKind.FunctionDeclaration:
