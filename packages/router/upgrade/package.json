@@ -1,5 +1,5 @@
 {
-  "typings": "../typings/upgrade/index.d.ts",
+  "typings": "../upgrade.d.ts",
   "main": "../bundles/router-upgrade.umd.js",
   "module": "../@angular/router/upgrade.es5.js",
   "es2015": "../@angular/router/upgrade.js"

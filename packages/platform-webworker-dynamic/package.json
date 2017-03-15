@@ -5,7 +5,7 @@
   "main": "./bundles/platform-webworker-dynamic.umd.js",
   "module": "./@angular/platform-webworker-dynamic.es5.js",
   "es2015": "./@angular/platform-webworker-dynamic.js",
-  "typings": "./typings/platform-webworker-dynamic.d.ts",
+  "typings": "./platform-webworker-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
