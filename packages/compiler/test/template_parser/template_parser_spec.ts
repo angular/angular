@@ -1334,6 +1334,18 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           expect(humanizeTplAst(parse('<div data-*ngIf="let a=b">', []))).toEqual(targetAst);
         });
 
+        it('should parse variables via as ...', () => {
+          const targetAst = [
+            [EmbeddedTemplateAst],
+            [VariableAst, 'local', 'ngIf'],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'expr'],
+            [ElementAst, 'div'],
+          ];
+
+          expect(humanizeTplAst(parse('<div *ngIf="expr as local">', [ngIf]))).toEqual(targetAst);
+        });
+
         describe('directives', () => {
           it('should locate directives in property bindings', () => {
             const dirA =

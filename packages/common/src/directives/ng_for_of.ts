@@ -8,8 +8,13 @@
 
 import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
-export class NgForOfRow<T> {
-  constructor(public $implicit: T, public index: number, public count: number) {}
+/**
+ * @stable
+ */
+export class NgForOfContext<T> {
+  constructor(
+      public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
+      public count: number) {}
 
   get first(): boolean { return this.index === 0; }
 
@@ -29,13 +34,21 @@ export class NgForOfRow<T> {
  *
  * `NgForOf` provides several exported values that can be aliased to local variables:
  *
- * * `index` will be set to the current loop iteration for each template context.
- * * `first` will be set to a boolean value indicating whether the item is the first one in the
- *   iteration.
- * * `last` will be set to a boolean value indicating whether the item is the last one in the
- *   iteration.
- * * `even` will be set to a boolean value indicating whether this item has an even index.
- * * `odd` will be set to a boolean value indicating whether this item has an odd index.
+ * - `$implicit: T`: The value of the individual items in the iterable (`ngForOf`).
+ * - `ngForOf: NgIterable<T>`: The value of the iterable expression. Useful when the expression is
+ * more complex then a property access, for example when using the async pipe (`userStreams |
+ * async`).
+ * - `index: number`: The index of the current item in the iterable.
+ * - `first: boolean`: True when the item is the first item in the iterable.
+ * - `last: boolean`: True when the item is the last item in the iterable.
+ * - `even: boolean`: True when the item has an even index in the iterable.
+ * - `odd: boolean`: True when the item has an odd index in the iterable.
+ *
+ * ```
+ * <li *ngFor="let user of userObservable | async as users; indexes as i; first as isFirst">
+ *    {{i}}/{{users.length}}. {{user}} <span *ngIf="isFirst">default</span>
+ * </li>
+ * ```
  *
  * ### Change Propagation
  *
@@ -105,11 +118,11 @@ export class NgForOf<T> implements DoCheck, OnChanges {
   private _trackByFn: TrackByFunction<T>;
 
   constructor(
-      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfRow<T>>,
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
       private _differs: IterableDiffers) {}
 
   @Input()
-  set ngForTemplate(value: TemplateRef<NgForOfRow<T>>) {
+  set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
     // TODO(TS2.1): make TemplateRef<Partial<NgForRowOf<T>>> once we move to TS v2.1
     // The current type is too restrictive; a template that just uses index, for example,
     // should be acceptable.
@@ -146,7 +159,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfRow(null, null, null), currentIndex);
+                this._template, new NgForOfContext(null, this.ngForOf, null, null), currentIndex);
             const tuple = new RecordViewTuple(item, view);
             insertTuples.push(tuple);
           } else if (currentIndex == null) {
@@ -154,7 +167,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
           } else {
             const view = this._viewContainer.get(adjustedPreviousIndex);
             this._viewContainer.move(view, currentIndex);
-            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfRow<T>>>view);
+            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T>>>view);
             insertTuples.push(tuple);
           }
         });
@@ -164,24 +177,26 @@ export class NgForOf<T> implements DoCheck, OnChanges {
     }
 
     for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      const viewRef = <EmbeddedViewRef<NgForOfRow<T>>>this._viewContainer.get(i);
+      const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
     changes.forEachIdentityChange((record: any) => {
-      const viewRef = <EmbeddedViewRef<NgForOfRow<T>>>this._viewContainer.get(record.currentIndex);
+      const viewRef =
+          <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
   }
 
-  private _perViewChange(view: EmbeddedViewRef<NgForOfRow<T>>, record: IterableChangeRecord<any>) {
+  private _perViewChange(
+      view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
   }
 }
 
 class RecordViewTuple<T> {
-  constructor(public record: any, public view: EmbeddedViewRef<NgForOfRow<T>>) {}
+  constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
 
 /**

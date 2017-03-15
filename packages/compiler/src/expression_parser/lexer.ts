@@ -19,7 +19,7 @@ export enum TokenType {
   Error
 }
 
-const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
+const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
 @CompilerInjectable()
 export class Lexer {
@@ -57,6 +57,8 @@ export class Token {
   isKeyword(): boolean { return this.type == TokenType.Keyword; }
 
   isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
+
+  isKeywordAs(): boolean { return this.type == TokenType.Keyword && this.strValue == 'as'; }
 
   isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }
 

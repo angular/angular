@@ -429,6 +429,16 @@ export function main() {
         ]);
       });
 
+      it('should support as notation', () => {
+        let bindings = parseTemplateBindings('ngIf exp as local', 'location');
+        expect(keyValues(bindings)).toEqual(['ngIf=exp  in location', 'let local=ngIf']);
+
+        bindings = parseTemplateBindings('ngFor let item of items as iter; index as i', 'L');
+        expect(keyValues(bindings)).toEqual([
+          'ngFor', 'let item=$implicit', 'ngForOf=items  in L', 'let iter=ngForOf', 'let i=index'
+        ]);
+      });
+
       it('should parse pipes', () => {
         const bindings = parseTemplateBindings('key value|pipe');
         const ast = bindings[0].expression.ast;
