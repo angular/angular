@@ -2,6 +2,7 @@
 
 set -u -e -o pipefail
 
+
 readonly currentDir=$(cd $(dirname $0); pwd)
 source ${currentDir}/scripts/ci/_travis-fold.sh
 
