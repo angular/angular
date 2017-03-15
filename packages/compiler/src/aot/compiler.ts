@@ -162,27 +162,12 @@ export class AotCompiler {
                 hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements)
             .viewClassVar;
     const compFactoryVar = componentFactoryName(compMeta.type.reference);
-    const inputsExprs: o.LiteralMapEntry[] = [];
-    for (let propName in compMeta.inputs) {
-      const templateName = compMeta.inputs[propName];
-      // Don't quote so that the key gets minified...
-      inputsExprs.push(new o.LiteralMapEntry(propName, o.literal(templateName), false));
-    }
-    const outputsExprs: o.LiteralMapEntry[] = [];
-    for (let propName in compMeta.outputs) {
-      const templateName = compMeta.outputs[propName];
-      // Don't quote so that the key gets minified...
-      outputsExprs.push(new o.LiteralMapEntry(propName, o.literal(templateName), false));
-    }
-
     targetStatements.push(
         o.variable(compFactoryVar)
             .set(o.importExpr(createIdentifier(Identifiers.createComponentFactory)).callFn([
-              o.literal(compMeta.selector), o.importExpr(compMeta.type),
-              o.variable(hostViewFactoryVar), new o.LiteralMapExpr(inputsExprs),
-              new o.LiteralMapExpr(outputsExprs),
-              o.literalArr(
-                  compMeta.template.ngContentSelectors.map(selector => o.literal(selector)))
+              o.literal(compMeta.selector),
+              o.importExpr(compMeta.type),
+              o.variable(hostViewFactoryVar),
             ]))
             .toDeclStmt(
                 o.importType(

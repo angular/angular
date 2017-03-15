@@ -26,21 +26,9 @@ import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachVi
 const EMPTY_CONTEXT = new Object();
 
 export function createComponentFactory(
-    selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory,
-    inputs: {[propName: string]: string}, outputs: {[propName: string]: string},
-    ngContentSelectors: string[]): ComponentFactory<any> {
-  const inputsArr: {propName: string, templateName: string}[] = [];
-  for (let propName in inputs) {
-    const templateName = inputs[propName];
-    inputsArr.push({propName, templateName});
-  }
-  const outputsArr: {propName: string, templateName: string}[] = [];
-  for (let propName in outputs) {
-    const templateName = outputs[propName];
-    outputsArr.push({propName, templateName});
-  }
-  return new ComponentFactory_(
-      selector, componentType, viewDefFactory, inputsArr, outputsArr, ngContentSelectors);
+    selector: string, componentType: Type<any>,
+    viewDefFactory: ViewDefinitionFactory): ComponentFactory<any> {
+  return new ComponentFactory_(selector, componentType, viewDefFactory);
 }
 
 export function getComponentViewDefinitionFactory(componentFactory: ComponentFactory<any>):
@@ -56,10 +44,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
 
   constructor(
       public selector: string, public componentType: Type<any>,
-      viewDefFactory: ViewDefinitionFactory,
-      public inputs: {propName: string, templateName: string}[],
-      public outputs: {propName: string, templateName: string}[],
-      public ngContentSelectors: string[]) {
+      viewDefFactory: ViewDefinitionFactory) {
     super();
     this.viewDefFactory = viewDefFactory;
   }
