@@ -244,9 +244,7 @@ const FILES: Entry = {
       'alias': {
         'file.d.ts': dummyModule,
         'file.metadata.json': '{ "alias": "sub/index.metadata.json"}',
-        'sub': {
-          'index.metadata.json': JSON.stringify(dummyMetadata)
-        }
+        'sub': {'index.metadata.json': JSON.stringify(dummyMetadata)}
       },
       'metadata_versions': {
         'v1.d.ts': `

@@ -1,5 +1,5 @@
 {
-  "typings": "../typings/testing/index.d.ts",
+  "typings": "../testing.d.ts",
   "main": "../bundles/platform-browser-dynamic-testing.umd.js",
   "module": "../@angular/platform-browser-dynamic/testing.es5.js",
   "es2015": "../@angular/platform-browser-dynamic/testing.js"

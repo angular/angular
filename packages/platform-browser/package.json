@@ -5,7 +5,7 @@
   "main": "./bundles/platform-browser.umd.js",
   "module": "./@angular/platform-browser.es5.js",
   "es2015": "./@angular/platform-browser.js",
-  "typings": "./typings/platform-browser.d.ts",
+  "typings": "./platform-browser.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

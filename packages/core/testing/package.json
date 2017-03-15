@@ -1,5 +1,5 @@
 {
-  "typings": "../typings/testing/index.d.ts",
+  "typings": "../testing.d.ts",
   "main": "../bundles/core-testing.umd.js",
   "module": "../@angular/core/testing.es5.js",
   "es2015": "../@angular/core/testing.js"

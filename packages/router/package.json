@@ -5,7 +5,7 @@
   "main": "./bundles/router.umd.js",
   "module": "./@angular/router.es5.js",
   "es2015": "./@angular/router.js",
-  "typings": "./typings/router.d.ts",
+  "typings": "./router.d.ts",
   "keywords": [
     "angular",
     "router"

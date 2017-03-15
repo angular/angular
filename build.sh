@@ -37,9 +37,16 @@ REMOVE_BENCHPRESS=false
 BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
 TYPECHECK_ALL=true
+BUILD_TOOLS=true
 
 for ARG in "$@"; do
   case "$ARG" in
+    --quick-bundle=*)
+      COMPILE_SOURCE=false
+      TYPECHECK_ALL=false
+      BUILD_EXAMPLES=false
+      BUILD_TOOLS=false
+      ;;
     --packages=*)
       PACKAGES_STR=${ARG#--packages=}
       PACKAGES=( ${PACKAGES_STR//,/ } )
@@ -60,6 +67,9 @@ for ARG in "$@"; do
       ;;
     --typecheck=*)
       TYPECHECK_ALL=${ARG#--typecheck=}
+      ;;
+    --tools=*)
+      BUILD_TOOLS=${ARG#--tools=}
       ;;
     *)
       echo "Unknown option $ARG."
@@ -257,6 +267,7 @@ compilePackage() {
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for Closure"
     echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
+    echo "{\"alias\": \"./${package_name}/index.metadata.json\"}" > ${2}/../${package_name}.metadata.json
   fi
 
   for DIR in ${1}/* ; do
@@ -269,15 +280,16 @@ compilePackage() {
 }
 
 #######################################
-# Renames typings index to package name
+# Moves typings and metadata files appropriately
 # Arguments:
-#   param1 - Source directory of typings files
-#   param2 - Package name
+#   param1 - Source of typings & metadata files
+#   param2 - Root of destination directory
+#   param3 - Package name (needed to correspond to name of d.ts and metadata.json files)
 # Returns:
 #   None
 #######################################
 moveTypings() {
-  if [[ -f ${1}/index.d.ts ]]; then
+  if [[ -f ${1}/index.d.ts && -f ${1}/index.metadata.json ]]; then
     mv ${1}/index.d.ts ${1}/${2}.d.ts
     mv ${1}/index.metadata.json ${1}/${2}.metadata.json
   fi
@@ -329,24 +341,25 @@ UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
 
+if [[ ${BUILD_TOOLS} == true ]]; then
+  travisFoldStart "build tools" "no-xtrace"
+    echo "====== (tools)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
+    rm -rf ./dist/tools/
+    mkdir -p ./dist/tools/
+    $(npm bin)/tsc -p ${TSCONFIG}
 
-travisFoldStart "build tools"
-  echo "====== (tools)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
-  rm -rf ./dist/tools/
-  mkdir -p ./dist/tools/
-  $(npm bin)/tsc -p ${TSCONFIG}
-
-  cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
-travisFoldEnd "build tools"
+    cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
+  travisFoldEnd "build tools"
+fi
 
 
 if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
-  travisFoldStart "clean dist"
+  travisFoldStart "clean dist" "no-xtrace"
     rm -rf ./dist/all/
     rm -rf ./dist/packages
   travisFoldEnd "clean dist"
 
-  travisFoldStart "copy e2e files"
+  travisFoldStart "copy e2e files" "no-xtrace"
     mkdir -p ./dist/all/
 
     echo "====== Copying files needed for e2e tests ====="
@@ -384,11 +397,11 @@ if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
   travisFoldEnd "copy e2e files"
 
   TSCONFIG="packages/tsconfig.json"
-  travisFoldStart "tsc -p ${TSCONFIG}"
+  travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
     $NGC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
   TSCONFIG="modules/tsconfig.json"
-  travisFoldStart "tsc -p ${TSCONFIG}"
+  travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
     $NGC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
 
@@ -403,7 +416,7 @@ fi
 
 for PACKAGE in ${PACKAGES[@]}
 do
-  travisFoldStart "build package: ${PACKAGE}"
+  travisFoldStart "build package: ${PACKAGE}" "no-xtrace"
   PWD=`pwd`
   ROOT_DIR=${PWD}/packages
   SRC_DIR=${ROOT_DIR}/${PACKAGE}
@@ -433,9 +446,12 @@ do
     if ! containsElement "${PACKAGE}" "${NODE_PACKAGES[@]}"; then
 
       echo "======        Copy ${PACKAGE} typings"
-      rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}/typings
-      moveTypings ${NPM_DIR}/typings ${PACKAGE}
-      addNgcPackageJson ${NPM_DIR}/typings
+      rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}
+#      echo "$(cat ${LICENSE_BANNER}) ${N} export * from './index'" > ${NPM_DIR}/${PACKAGE}.d.ts
+#      echo "{\"alias\": \"./index.metadata.json\"}" > ${NPM_DIR}/${PACKAGE}.metadata.json
+#      exit 0
+      moveTypings ${NPM_DIR} ${PACKAGE}
+#      addNgcPackageJson ${NPM_DIR}/typings
 
       (
         cd  ${SRC_DIR}
@@ -478,14 +494,14 @@ do
 done
 
 if [[ ${BUILD_EXAMPLES} == true ]]; then
-  travisFoldStart "build examples"
+  travisFoldStart "build examples" "no-xtrace"
     echo "====== Building examples: ./packages/examples/build.sh ====="
     ./packages/examples/build.sh
   travisFoldEnd "build examples"
 fi
 
 if [[ ${REMOVE_BENCHPRESS} == true ]]; then
-  travisFoldStart "remove benchpress"
+  travisFoldStart "remove benchpress" "no-xtrace"
     echo ""
     echo "==== Removing benchpress from publication"
     rm -r dist/packages-dist/benchpress

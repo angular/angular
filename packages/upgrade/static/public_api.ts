@@ -12,10 +12,10 @@
  * Entry point for all public APIs of the upgrade/static package, allowing
  * Angular 1 and Angular 2+ to run side by side in the same application.
  */
-export {downgradeComponent} from '../src/common/downgrade_component';
-export {downgradeInjectable} from '../src/common/downgrade_injectable';
-export {VERSION} from '../src/common/version';
-export {UpgradeComponent} from '../src/static/upgrade_component';
-export {UpgradeModule} from '../src/static/upgrade_module';
+export {downgradeComponent} from './src/common/downgrade_component';
+export {downgradeInjectable} from './src/common/downgrade_injectable';
+export {VERSION} from './src/common/version';
+export {UpgradeComponent} from './src/static/upgrade_component';
+export {UpgradeModule} from './src/static/upgrade_module';
 
 // This file only re-exports content of the `src` folder. Keep it that way.

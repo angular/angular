@@ -4,7 +4,7 @@
   "description": "Angular - language services",
   "main": "./bundles/language-service.umd.js",
   "module": "./@angular/language-service.es5.js",
-  "typings": "./typings/language-service.d.ts",
+  "typings": "./language-service.d.ts",
   "author": "angular",
   "license": "MIT",
   "repository": {

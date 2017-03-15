@@ -1,5 +1,5 @@
 {
-  "typings": "../typings/static/index.d.ts",
+  "typings": "../static.d.ts",
   "main": "../bundles/upgrade-static.umd.js",
   "module": "../@angular/upgrade/static.es5.js",
   "es2015": "../@angular/upgrade/static.js"

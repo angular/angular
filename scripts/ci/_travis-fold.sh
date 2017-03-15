@@ -20,9 +20,11 @@ function travisFoldStart() {
   local enterArrow="===>  ${foldName}  ==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>"
   # keep all messages consistently wide 80chars regardless of the foldName
   echo ${enterArrow:0:100}
-  # turn on verbose mode so that we have better visibility into what's going on
-  # http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_02_03.html#table_02_01
-  set -x
+  if [[ ${2:-} != "no-xtrace" ]]; then
+    # turn on verbose mode so that we have better visibility into what's going on
+    # http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_02_03.html#table_02_01
+    set -x
+  fi
 }
 
 function travisFoldEnd() {
