@@ -161,7 +161,7 @@ export class BindingParser {
         this._reportError(
             `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
                 ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
-            sourceSpan, ParseErrorLevel.FATAL);
+            sourceSpan, ParseErrorLevel.ERROR);
       }
       this._parseAnimation(name, value, sourceSpan, targetMatchableAttrs, targetProps);
     } else {
@@ -366,7 +366,7 @@ export class BindingParser {
 
   private _reportError(
       message: string, sourceSpan: ParseSourceSpan,
-      level: ParseErrorLevel = ParseErrorLevel.FATAL) {
+      level: ParseErrorLevel = ParseErrorLevel.ERROR) {
     this._targetErrors.push(new ParseError(sourceSpan, message, level));
   }
 
@@ -405,7 +405,7 @@ export class BindingParser {
     const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
                             this._schemaRegistry.validateProperty(propName);
     if (report.error) {
-      this._reportError(report.msg, sourceSpan, ParseErrorLevel.FATAL);
+      this._reportError(report.msg, sourceSpan, ParseErrorLevel.ERROR);
     }
   }
 }

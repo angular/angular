@@ -110,17 +110,18 @@ export class ParseSourceSpan {
 
 export enum ParseErrorLevel {
   WARNING,
-  FATAL
+  ERROR,
 }
 
 export class ParseError {
   constructor(
       public span: ParseSourceSpan, public msg: string,
-      public level: ParseErrorLevel = ParseErrorLevel.FATAL) {}
+      public level: ParseErrorLevel = ParseErrorLevel.ERROR) {}
 
   toString(): string {
     const ctx = this.span.start.getContext(100, 3);
-    const contextStr = ctx ? ` ("${ctx.before}[ERROR ->]${ctx.after}")` : '';
+    const contextStr =
+        ctx ? ` ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` : '';
     const details = this.span.details ? `, ${this.span.details}` : '';
     return `${this.msg}${contextStr}: ${this.span.start}${details}`;
   }
