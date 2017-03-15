@@ -56,7 +56,10 @@ const DTS = /\.d\.ts$/;
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector({quotedNames: true});
   private metadataCollector1 = new MetadataCollector({version: 1});
-  constructor(delegate: ts.CompilerHost, private ngOptions: NgOptions) { super(delegate); }
+  constructor(
+      delegate: ts.CompilerHost, private ngOptions: NgOptions, private emitAllFiles: boolean) {
+    super(delegate);
+  }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
     // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
@@ -87,10 +90,12 @@ export class MetadataWriterHost extends DelegatingHost {
   writeFile: ts.WriteFileCallback =
       (fileName: string, data: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        if (/\.d\.ts$/.test(fileName)) {
+        const isDts = /\.d\.ts$/.test(fileName);
+        if (this.emitAllFiles || isDts) {
           // Let the original file be written first; this takes care of creating parent directories
           this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-
+        }
+        if (isDts) {
           // TODO: remove this early return after https://github.com/Microsoft/TypeScript/pull/8412
           // is
           // released
