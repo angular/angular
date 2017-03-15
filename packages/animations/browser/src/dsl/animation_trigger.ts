@@ -86,7 +86,8 @@ class AnimationTriggerVisitor implements AnimationDslVisitor {
   }
 
   visitState(ast: AnimationStateMetadata, context: any): any {
-    context.states[ast.name] = normalizeStyles(ast.styles.styles);
+    const styles = normalizeStyles(ast.styles.styles);
+    ast.name.split(/\s*,\s*/).forEach(name => { context.states[name] = styles; });
   }
 
   visitTransition(ast: AnimationTransitionMetadata, context: any): any {

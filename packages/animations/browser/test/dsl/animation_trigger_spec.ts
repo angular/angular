@@ -51,6 +51,15 @@ export function main() {
         expect(result.transitionFactories.length).toEqual(2);
       });
 
+      it('should allow multiple state values to use the same styles', () => {
+        const result = makeTrigger('name', [
+          state('on, off', style({width: 50})), transition('on => off', animate(1000)),
+          transition('off => on', animate(1000))
+        ]);
+
+        expect(result.states).toEqual({'on': {width: 50}, 'off': {width: 50}});
+      });
+
       it('should find the first transition that matches', () => {
         const result = makeTrigger(
             'name', [transition('a => b', animate(1234)), transition('b => c', animate(5678))]);
