@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0-rc.3",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -6840,7 +6840,7 @@
       }
     },
     "zone.js": {
-      "version": "0.7.2"
+      "version": "0.8.2"
     }
   }
 }
