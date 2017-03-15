@@ -284,8 +284,45 @@ describe('tsc-wrapped', () => {
     // Provide a file called test.ts that has an inline source map
     // which says that it was transpiled from a file other_test.ts
     // with exactly the same content.
+    const inputSourceMap =
+        `{"version":3,"sources":["other_test.ts"],"names":[],"mappings":"AAAA,MAAM,EAAE,EAAE,CAAC","file":"../test.ts","sourceRoot":""}`;
+    const encodedSourceMap = new Buffer(inputSourceMap, 'utf8').toString('base64');
     write('test.ts', `const x = 3;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm90aGVyX3Rlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsTUFBTSxFQUFFLEVBQUUsQ0FBQyIsImZpbGUiOiIuLi90ZXN0LnRzIiwic291cmNlUm9vdCI6IiJ9`);
+//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const out = readOut('js.map');
+          expect(out).toContain('"sources":["other_test.ts"]');
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
+  it(`should accept input source maps that don't match the file name`, (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": true,
+        "moduleResolution": "node",
+        "target": "es2015",
+        "sourceMap": true
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": true
+      },
+      "files": ["test.ts"]
+    }`);
+    // Provide a file called test.ts that has an inline source map
+    // which says that it was transpiled from a file other_test.ts
+    // with exactly the same content.
+    const inputSourceMap =
+        `{"version":3,"sources":["other_test.ts"],"names":[],"mappings":"AAAA,MAAM,EAAE,EAAE,CAAC","file":"test.ts","sourceRoot":""}`;
+    const encodedSourceMap = new Buffer(inputSourceMap, 'utf8').toString('base64');
+    write('test.ts', `const x = 3;
+//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`);
 
     main(basePath, {basePath})
         .then(() => {
