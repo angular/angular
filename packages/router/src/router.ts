@@ -110,7 +110,7 @@ export interface NavigationExtras {
   * this.router.navigate(['/view'], { preserveQueryParams: true });
   * ```
   *
-  * @deprecated
+  * @deprecated since v4
   */
   preserveQueryParams?: boolean;
 
