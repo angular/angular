@@ -433,7 +433,7 @@ export class CompileMetadataResolver {
           if (!importedModuleSummary) {
             this._reportError(
                 syntaxError(
-                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
+                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'. Please add a @NgModule annotation.`),
                 moduleType);
             return;
           }
@@ -491,7 +491,7 @@ export class CompileMetadataResolver {
         } else {
           this._reportError(
               syntaxError(
-                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
+                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`),
               moduleType);
           return;
         }

@@ -1279,7 +1279,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => TestBed.createComponent(MyComp))
             .toThrowError(
-                `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'`);
+                `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
       });
 
       it('should report a meaningful error when a component is missing view annotation', () => {
