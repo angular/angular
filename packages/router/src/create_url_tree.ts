@@ -40,13 +40,18 @@ function isMatrixParams(command: any): boolean {
 function tree(
     oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
     queryParams: Params, fragment: string): UrlTree {
-  if (urlTree.root === oldSegmentGroup) {
-    return new UrlTree(newSegmentGroup, stringify(queryParams), fragment);
+  let qp: any = {};
+  if (queryParams) {
+    forEach(queryParams, (value: any, name: any) => {
+      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
+    });
   }
 
-  return new UrlTree(
-      replaceSegment(urlTree.root, oldSegmentGroup, newSegmentGroup), stringify(queryParams),
-      fragment);
+  if (urlTree.root === oldSegmentGroup) {
+    return new UrlTree(newSegmentGroup, qp, fragment);
+  }
+
+  return new UrlTree(replaceSegment(urlTree.root, oldSegmentGroup, newSegmentGroup), qp, fragment);
 }
 
 function replaceSegment(

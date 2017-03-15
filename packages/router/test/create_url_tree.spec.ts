@@ -16,6 +16,30 @@ import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
+  describe('query parameters', () => {
+    it('should support parameter with multiple values', () => {
+      const p1 = serializer.parse('/');
+      const t1 = createRoot(p1, ['/'], {m: ['v1', 'v2']});
+      expect(serializer.serialize(t1)).toEqual('/?m=v1&m=v2');
+
+      const p2 = serializer.parse('/a/c');
+      const t2 = create(p2.root.children[PRIMARY_OUTLET], 1, p2, ['c2'], {m: ['v1', 'v2']});
+      expect(serializer.serialize(t2)).toEqual('/a/c/c2?m=v1&m=v2');
+    });
+
+    it('should set query params', () => {
+      const p = serializer.parse('/');
+      const t = createRoot(p, [], {a: 'hey'});
+      expect(t.queryParams).toEqual({a: 'hey'});
+    });
+
+    it('should stringify query params', () => {
+      const p = serializer.parse('/');
+      const t = createRoot(p, [], <any>{a: 1});
+      expect(t.queryParams).toEqual({a: '1'});
+    });
+  });
+
   it('should navigate to the root', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, ['/']);
@@ -207,18 +231,6 @@ describe('createUrlTree', () => {
       const t = create(p.root.children[PRIMARY_OUTLET], 1, p, [{outlets: {right: ['c']}}]);
       expect(serializer.serialize(t)).toEqual('/a/b/(right:c)');
     });
-  });
-
-  it('should set query params', () => {
-    const p = serializer.parse('/');
-    const t = createRoot(p, [], {a: 'hey'});
-    expect(t.queryParams).toEqual({a: 'hey'});
-  });
-
-  it('should stringify query params', () => {
-    const p = serializer.parse('/');
-    const t = createRoot(p, [], <any>{a: 1});
-    expect(t.queryParams).toEqual({a: '1'});
   });
 
   it('should set fragment', () => {
