@@ -17,7 +17,8 @@
     "baseUrl": ".",
     // Prevent scanning up the directory tree for types
     "typeRoots": ["node_modules/@types"],
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "sourceMap": true
   },
 
   "files": [

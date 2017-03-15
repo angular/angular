@@ -33,7 +33,8 @@ export class AotCompiler {
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
-      private _translationFormat: string, private _symbolResolver: StaticSymbolResolver) {}
+      private _translationFormat: string, private _genFilePreamble: string,
+      private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
 
@@ -215,7 +216,8 @@ export class AotCompiler {
       exportedVars: string[]): GeneratedFile {
     return new GeneratedFile(
         srcFileUrl, genFileUrl,
-        this._outputEmitter.emitStatements(genFileUrl, statements, exportedVars));
+        this._outputEmitter.emitStatements(
+            srcFileUrl, genFileUrl, statements, exportedVars, this._genFilePreamble));
   }
 }
 

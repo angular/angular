@@ -44,40 +44,38 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 export class TypeScriptEmitter implements OutputEmitter {
   constructor(private _importResolver: ImportResolver) {}
 
-  emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
+  emitStatements(
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[], exportedVars: string[],
+      preamble: string = ''): string {
     const converter = new _TsEmitterVisitor(genFilePath, this._importResolver);
 
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
 
     converter.visitAllStatements(stmts, ctx);
 
-    const srcParts: string[] = [];
-
+    const preambleLines = preamble ? preamble.split('\n') : [];
     converter.reexports.forEach((reexports, exportedFilePath) => {
       const reexportsCode =
           reexports.map(reexport => `${reexport.name} as ${reexport.as}`).join(',');
-      srcParts.push(
+      preambleLines.push(
           `export {${reexportsCode}} from '${this._importResolver.fileNameToModuleName(exportedFilePath, genFilePath)}';`);
     });
 
     converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
-      srcParts.push(
+      preambleLines.push(
           `imp` +
           `ort * as ${prefix} from '${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}';`);
     });
 
-    srcParts.push(ctx.toSource());
-
-    const prefixLines = converter.reexports.size + converter.importsWithPrefixes.size;
-    const sm = ctx.toSourceMapGenerator(genFilePath, prefixLines).toJsComment();
+    const sm =
+        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment();
+    const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
-      srcParts.push(sm);
+      // always add a newline at the end, as some tools have bugs without it.
+      lines.push('');
     }
-    // always add a newline at the end, as some tools have bugs without it.
-    srcParts.push('');
-
-    return srcParts.join('\n');
+    return lines.join('\n');
   }
 }
 
