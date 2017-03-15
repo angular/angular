@@ -97,8 +97,7 @@ export class AppModule implements Injector, NgModuleRef<any> {
     this.renderer2 = new DomRendererFactory2(null, null);
     trustedEmptyColor = this.sanitizer.bypassSecurityTrustStyle('');
     trustedGreyColor = this.sanitizer.bypassSecurityTrustStyle('grey');
-    this.componentFactory =
-        createComponentFactory('#root', TreeComponent, TreeComponent_Host, {}, {}, []);
+    this.componentFactory = createComponentFactory('#root', TreeComponent, TreeComponent_Host);
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
