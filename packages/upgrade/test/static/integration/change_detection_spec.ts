@@ -73,7 +73,7 @@ export function main() {
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
            expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
            // https://github.com/angular/angular.js/issues/12983
-           expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+           expect(log).toEqual(['1A', '1B', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
          });
        }));
 

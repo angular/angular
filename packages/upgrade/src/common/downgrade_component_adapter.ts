@@ -9,8 +9,9 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular1';
-import {PropertyBinding} from './component_info';
+import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
+import {NgContentSelectorHelper} from './ng_content_selector_helper';
 import {getAttributesAsArray, getComponentName, hookupNgModel} from './util';
 
 const INITIAL_VALUE = {
@@ -26,7 +27,7 @@ export class DowngradeComponentAdapter {
   private changeDetector: ChangeDetectorRef = null;
 
   constructor(
-      private id: string, private element: angular.IAugmentedJQuery,
+      private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
       private ngModel: angular.INgModelController, private parentInjector: Injector,
       private $injector: angular.IInjectorService, private $compile: angular.ICompileService,
@@ -66,9 +67,9 @@ export class DowngradeComponentAdapter {
 
   setupInputs(): void {
     const attrs = this.attrs;
-    const inputs = this.componentFactory.inputs || [];
+    const inputs = this.info.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
-      const input = new PropertyBinding(inputs[i].propName, inputs[i].templateName);
+      const input = new PropertyBinding(inputs[i]);
       let expr: any /** TODO #9100 */ = null;
 
       if (attrs.hasOwnProperty(input.attr)) {
@@ -102,7 +103,7 @@ export class DowngradeComponentAdapter {
       }
     }
 
-    const prototype = this.componentFactory.componentType.prototype;
+    const prototype = this.info.component.prototype;
     if (prototype && (<OnChanges>prototype).ngOnChanges) {
       // Detect: OnChanges interface
       this.inputChanges = {};
@@ -117,9 +118,9 @@ export class DowngradeComponentAdapter {
 
   setupOutputs() {
     const attrs = this.attrs;
-    const outputs = this.componentFactory.outputs || [];
+    const outputs = this.info.outputs || [];
     for (let j = 0; j < outputs.length; j++) {
-      const output = new PropertyBinding(outputs[j].propName, outputs[j].templateName);
+      const output = new PropertyBinding(outputs[j]);
       let expr: any /** TODO #9100 */ = null;
       let assignExpr = false;
 
@@ -157,7 +158,7 @@ export class DowngradeComponentAdapter {
           });
         } else {
           throw new Error(
-              `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+              `Missing emitter '${output.prop}' on component '${getComponentName(this.info.component)}'!`);
         }
       }
     }
@@ -182,31 +183,49 @@ export class DowngradeComponentAdapter {
   }
 
   groupProjectableNodes() {
-    let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents());
+    const ngContentSelectorHelper =
+        this.parentInjector.get(NgContentSelectorHelper) as NgContentSelectorHelper;
+    const ngContentSelectors = ngContentSelectorHelper.getNgContentSelectors(this.info);
+
+    if (!ngContentSelectors) {
+      throw new Error('Expecting ngContentSelectors for: ' + getComponentName(this.info.component));
+    }
+
+    return this._groupNodesBySelector(ngContentSelectors, this.element.contents());
+  }
+
+  /**
+   * Group a set of DOM nodes into `ngContent` groups, based on the given content selectors.
+   */
+  private _groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
+    const projectableNodes: Node[][] = [];
+    let wildcardNgContentIndex: number;
+
+    for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
+      projectableNodes[i] = [];
+    }
+
+    for (let j = 0, jj = nodes.length; j < jj; ++j) {
+      const node = nodes[j];
+      const ngContentIndex = findMatchingNgContentIndex(node, ngContentSelectors);
+      if (ngContentIndex != null) {
+        projectableNodes[ngContentIndex].push(node);
+      }
+    }
+
+    return projectableNodes;
   }
 }
 
-/**
- * Group a set of DOM nodes into `ngContent` groups, based on the given content selectors.
- */
-export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
-  const projectableNodes: Node[][] = [];
-  let wildcardNgContentIndex: number;
+let _matches: (this: any, selector: string) => boolean;
 
-  for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
-    projectableNodes[i] = [];
+function matchesSelector(el: any, selector: string): boolean {
+  if (!_matches) {
+    const elProto = <any>Element.prototype;
+    _matches = elProto.matchesSelector || elProto.mozMatchesSelector || elProto.msMatchesSelector ||
+        elProto.oMatchesSelector || elProto.webkitMatchesSelector;
   }
-
-  for (let j = 0, jj = nodes.length; j < jj; ++j) {
-    const node = nodes[j];
-    const ngContentIndex = findMatchingNgContentIndex(node, ngContentSelectors);
-    if (ngContentIndex != null) {
-      projectableNodes[ngContentIndex].push(node);
-    }
-  }
-
-  return projectableNodes;
+  return _matches.call(el, selector);
 }
 
 function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number {
@@ -228,15 +247,4 @@ function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]):
     ngContentIndices.push(wildcardNgContentIndex);
   }
   return ngContentIndices.length ? ngContentIndices[0] : null;
-}
-
-let _matches: (this: any, selector: string) => boolean;
-
-function matchesSelector(el: any, selector: string): boolean {
-  if (!_matches) {
-    const elProto = <any>Element.prototype;
-    _matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-        elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
-  }
-  return el.nodeType === Node.ELEMENT_NODE ? _matches.call(el, selector) : false;
 }

@@ -6,6 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
+
+export interface ComponentInfo {
+  component: Type<any>;
+  inputs?: string[];
+  outputs?: string[];
+  selectors?: string[];
+}
+
 /**
  * A `PropertyBinding` represents a mapping between a property name
  * and an attribute name. It is parsed from a string of the form
@@ -13,6 +22,8 @@
  * and attribute have the same identifier.
  */
 export class PropertyBinding {
+  prop: string;
+  attr: string;
   bracketAttr: string;
   bracketParenAttr: string;
   parenAttr: string;
@@ -20,9 +31,12 @@ export class PropertyBinding {
   bindAttr: string;
   bindonAttr: string;
 
-  constructor(public prop: string, public attr: string) { this.parseBinding(); }
+  constructor(public binding: string) { this.parseBinding(); }
 
   private parseBinding() {
+    const parts = this.binding.split(':');
+    this.prop = parts[0].trim();
+    this.attr = (parts[1] || this.prop).trim();
     this.bracketAttr = `[${this.attr}]`;
     this.parenAttr = `(${this.attr})`;
     this.bracketParenAttr = `[(${this.attr})]`;

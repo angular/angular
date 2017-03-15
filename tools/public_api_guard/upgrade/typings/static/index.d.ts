@@ -1,9 +1,9 @@
 /** @experimental */
 export declare function downgradeComponent(info: {
     component: Type<any>;
-    /** @deprecated */ inputs?: string[];
-    /** @deprecated */ outputs?: string[];
-    /** @deprecated */ selectors?: string[];
+    inputs?: string[];
+    outputs?: string[];
+    selectors?: string[];
 }): any;
 
 /** @experimental */
