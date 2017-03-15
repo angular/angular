@@ -9002,9 +9002,9 @@
       }
     },
     "tsickle": {
-      "version": "0.21.5",
-      "from": "tsickle@0.21.5",
-      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.21.5.tgz",
+      "version": "0.21.6",
+      "from": "tsickle@0.21.6",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.21.6.tgz",
       "dev": true
     },
     "tslint": {
