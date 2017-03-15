@@ -44,6 +44,7 @@ $mat-dense-three-line-height: 76px;
     font-size: $font-size;
     height: $base-height;
     padding: 0 $mat-list-side-padding;
+    position: relative;
   }
 
   &.mat-list-item-avatar .mat-list-item-content {

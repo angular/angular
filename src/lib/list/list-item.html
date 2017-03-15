@@ -1,4 +1,5 @@
-<div class="mat-list-item-content" [class.mat-list-item-focus]="_hasFocus">
+<div class="mat-list-item-content" [class.mat-list-item-focus]="_hasFocus"
+    md-ripple [mdRippleDisabled]="!isRippleEnabled()">
   <ng-content
       select="[md-list-avatar],[md-list-icon], [mat-list-avatar], [mat-list-icon]"></ng-content>
   <div class="mat-list-text"><ng-content select="[md-line], [mat-line]"></ng-content></div>

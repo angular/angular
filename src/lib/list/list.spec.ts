@@ -1,5 +1,5 @@
 import {async, TestBed} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {Component, QueryList, ViewChildren} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdListItem, MdListModule} from './index';
 
@@ -19,6 +19,7 @@ describe('MdList', () => {
         ListWithDynamicNumberOfLines,
         ListWithMultipleItems,
         ListWithManyLines,
+        NavListWithOneAnchorItem,
       ],
     });
 
@@ -114,6 +115,29 @@ describe('MdList', () => {
     expect(list.nativeElement.getAttribute('role')).toBe('list');
     expect(listItem.nativeElement.getAttribute('role')).toBe('listitem');
   });
+
+  it('should not show ripples for non-nav lists', () => {
+    let fixture = TestBed.createComponent(ListWithOneAnchorItem);
+    fixture.detectChanges();
+
+    const items: QueryList<MdListItem> = fixture.debugElement.componentInstance.listItems;
+    expect(items.length).toBeGreaterThan(0);
+    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+  });
+
+  it('should maybe show ripples for nav lists', () => {
+    let fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+    fixture.detectChanges();
+
+    const items: QueryList<MdListItem> = fixture.debugElement.componentInstance.listItems;
+    expect(items.length).toBeGreaterThan(0);
+    // Ripples should be enabled by default, and can be disabled with a binding.
+    items.forEach(item => expect(item.isRippleEnabled()).toBe(true));
+
+    fixture.debugElement.componentInstance.disableRipple = true;
+    fixture.detectChanges();
+    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+  });
 });
 
 
@@ -132,7 +156,22 @@ class BaseTestList {
       Paprika
     </a>
   </md-list>`})
-class ListWithOneAnchorItem extends BaseTestList { }
+class ListWithOneAnchorItem extends BaseTestList {
+  // This needs to be declared directly on the class; if declared on the BaseTestList superclass,
+  // it doesn't get populated.
+  @ViewChildren(MdListItem) listItems: QueryList<MdListItem>;
+}
+
+@Component({template: `
+  <md-nav-list>
+    <a md-list-item [disableRipple]="disableRipple">
+      Paprika
+    </a>
+  </md-nav-list>`})
+class NavListWithOneAnchorItem extends BaseTestList {
+  @ViewChildren(MdListItem) listItems: QueryList<MdListItem>;
+  disableRipple: boolean = false;
+}
 
 @Component({template: `
   <md-list>

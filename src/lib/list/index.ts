@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {MdLineModule, CompatibilityModule} from '../core';
+import {MdLineModule, MdRippleModule, CompatibilityModule} from '../core';
 import {
   MdList,
   MdListItem,
@@ -10,11 +10,12 @@ import {
   MdNavListCssMatStyler,
   MdDividerCssMatStyler,
   MdListSubheaderCssMatStyler,
+  MdNavListTokenSetter,
 } from './list';
 
 
 @NgModule({
-  imports: [MdLineModule, CompatibilityModule],
+  imports: [MdLineModule, MdRippleModule, CompatibilityModule],
   exports: [
     MdList,
     MdListItem,
@@ -26,7 +27,8 @@ import {
     MdListCssMatStyler,
     MdNavListCssMatStyler,
     MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler
+    MdListSubheaderCssMatStyler,
+    MdNavListTokenSetter,
   ],
   declarations: [
     MdList,
@@ -37,7 +39,8 @@ import {
     MdListCssMatStyler,
     MdNavListCssMatStyler,
     MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler
+    MdListSubheaderCssMatStyler,
+    MdNavListTokenSetter,
   ],
 })
 export class MdListModule {
