@@ -39,7 +39,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finished = false;
   public parentPlayer: AnimationPlayer = null;
-  constructor() { scheduleMicroTask(() => this._onFinish()); }
+  constructor() {}
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
@@ -54,10 +54,14 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
-      this._onStartFns.forEach(fn => fn());
-      this._onStartFns = [];
+      scheduleMicroTask(() => this._onFinish());
+      this._onStart();
     }
     this._started = true;
+  }
+  private _onStart() {
+    this._onStartFns.forEach(fn => fn());
+    this._onStartFns = [];
   }
   pause(): void {}
   restart(): void {}
@@ -65,6 +69,9 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   destroy(): void {
     if (!this._destroyed) {
       this._destroyed = true;
+      if (!this.hasStarted()) {
+        this._onStart();
+      }
       this.finish();
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];

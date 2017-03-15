@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {TestBed} from '../../testing';
+import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 
 export function main() {
   // these tests are only mean't to be run within the DOM (for now)
@@ -551,6 +551,80 @@ export function main() {
            expect(cmp.event.fromState).toEqual('void');
            expect(cmp.event.toState).toEqual('TRUE');
          });
+
+      it('should always fire callbacks even when a transition is not detected', fakeAsync(() => {
+           @Component({
+             selector: 'my-cmp',
+             template: `
+              <div [@myAnimation]="exp" (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
+            `,
+             animations: [trigger('myAnimation', [])]
+           })
+           class Cmp {
+             exp: string;
+             log: any[] = [];
+             callback = (event: any) => { this.log.push(`${event.phaseName} => ${event.toState}`); }
+           }
+
+           TestBed.configureTestingModule({
+             providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+             declarations: [Cmp]
+           });
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = 'a';
+           fixture.detectChanges();
+           flushMicrotasks();
+           expect(cmp.log).toEqual(['start => a', 'done => a']);
+
+           cmp.log = [];
+           cmp.exp = 'b';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(['start => b', 'done => b']);
+         }));
+
+      it('should fire callback events for leave animations', fakeAsync(() => {
+           @Component({
+             selector: 'my-cmp',
+             template: `
+              <div *ngIf="exp" @myAnimation (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
+            `,
+             animations: [trigger('myAnimation', [])]
+           })
+           class Cmp {
+             exp: boolean = false;
+             log: any[] = [];
+             callback = (event: any) => {
+               const state = event.toState || '_default_';
+               this.log.push(`${event.phaseName} => ${state}`);
+             }
+           }
+
+           TestBed.configureTestingModule({
+             providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+             declarations: [Cmp]
+           });
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+           expect(cmp.log).toEqual(['start => _default_', 'done => _default_']);
+
+           cmp.log = [];
+
+           cmp.exp = false;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(['start => void', 'done => void']);
+         }));
     });
 
     describe('errors for not using the animation module', () => {

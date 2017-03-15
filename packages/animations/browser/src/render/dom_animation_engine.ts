@@ -43,6 +43,8 @@ export class DomAnimationEngine {
   private _triggers: {[triggerName: string]: AnimationTrigger} = Object.create(null);
   private _triggerListeners = new Map<any, TriggerListenerTuple[]>();
 
+  private _pendingListenerRemovals = new Map<any, TriggerListenerTuple[]>();
+
   constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
 
   get queuedPlayers(): AnimationPlayer[] {
@@ -82,6 +84,13 @@ export class DomAnimationEngine {
         this._queuedRemovals.set(element, domFn);
         return;
       }
+    }
+
+    // this means that there are no animations to take on this
+    // leave operation therefore we should fire the done|start callbacks
+    if (this._triggerListeners.has(element)) {
+      element[MARKED_FOR_REMOVAL] = true;
+      this._queuedRemovals.set(element, () => {});
     }
     domFn();
   }
@@ -128,11 +137,25 @@ export class DomAnimationEngine {
     const tuple = <TriggerListenerTuple>{triggerName: eventName, phase: eventPhase, callback};
     elementListeners.push(tuple);
     return () => {
-      const index = elementListeners.indexOf(tuple);
-      if (index >= 0) {
-        elementListeners.splice(index, 1);
-      }
+      // this is queued up in the event that a removal animation is set
+      // to fire on the element (the listeners need to be set during flush)
+      getOrSetAsInMap(this._pendingListenerRemovals, element, []).push(tuple);
     };
+  }
+
+  private _clearPendingListenerRemovals() {
+    this._pendingListenerRemovals.forEach((tuples: TriggerListenerTuple[], element: any) => {
+      const elementListeners = this._triggerListeners.get(element);
+      if (elementListeners) {
+        tuples.forEach(tuple => {
+          const index = elementListeners.indexOf(tuple);
+          if (index >= 0) {
+            elementListeners.splice(index, 1);
+          }
+        });
+      }
+    });
+    this._pendingListenerRemovals.clear();
   }
 
   private _onRemovalTransition(element: any): AnimationPlayer[] {
@@ -293,13 +316,6 @@ export class DomAnimationEngine {
         if (parent[MARKED_FOR_REMOVAL]) continue parentLoop;
       }
 
-      // if a removal exists for the given element then we need cancel
-      // all the queued players so that a proper removal animation can go
-      if (this._queuedRemovals.has(element)) {
-        player.destroy();
-        continue;
-      }
-
       const listeners = this._triggerListeners.get(element);
       if (listeners) {
         listeners.forEach(tuple => {
@@ -307,6 +323,13 @@ export class DomAnimationEngine {
             listenOnPlayer(player, tuple.phase, event, tuple.callback);
           }
         });
+      }
+
+      // if a removal exists for the given element then we need cancel
+      // all the queued players so that a proper removal animation can go
+      if (this._queuedRemovals.has(element)) {
+        player.destroy();
+        continue;
       }
 
       this._markPlayerAsActive(element, player);
@@ -321,6 +344,18 @@ export class DomAnimationEngine {
   }
 
   flush() {
+    const leaveListeners = new Map<any, TriggerListenerTuple[]>();
+    this._queuedRemovals.forEach((callback, element) => {
+      const tuple = this._pendingListenerRemovals.get(element);
+      if (tuple) {
+        leaveListeners.set(element, tuple);
+        this._pendingListenerRemovals.delete(element);
+      }
+    });
+
+    this._clearPendingListenerRemovals();
+    this._pendingListenerRemovals = leaveListeners;
+
     this._flushQueuedAnimations();
 
     let flushAgain = false;
@@ -355,11 +390,15 @@ export class DomAnimationEngine {
         const stateDetails = this._elementTriggerStates.get(element);
         if (stateDetails) {
           Object.keys(stateDetails).forEach(triggerName => {
+            flushAgain = true;
             const oldValue = stateDetails[triggerName];
             const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
             if (instruction) {
               players.push(this.animateTransition(element, instruction));
-              flushAgain = true;
+            } else {
+              const event = makeAnimationEvent(element, triggerName, oldValue, 'void', '', 0);
+              const player = new NoopAnimationPlayer();
+              this._queuePlayer(element, triggerName, player, event);
             }
           });
         }
@@ -378,6 +417,7 @@ export class DomAnimationEngine {
     // this means that one or more leave animations were detected
     if (flushAgain) {
       this._flushQueuedAnimations();
+      this._clearPendingListenerRemovals();
     }
   }
 }
