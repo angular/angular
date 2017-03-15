@@ -208,7 +208,7 @@ export class CompilerHost implements AotCompilerHost {
     }
     try {
       let metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
-      while (metadataOrMetadatas.alias) {
+      while (metadataOrMetadatas && metadataOrMetadatas.alias) {
         filePath = path.join(path.dirname(filePath), metadataOrMetadatas.alias);
         metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
       }
