@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
+import {Component, Directive, Input, Type, ViewChild, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -911,11 +911,9 @@ export function main() {
       it('writeValue should be called only once with actual value', async(() => {
         const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
         fixture.componentInstance.name = 'Nancy';
-        const dir = fixture.debugElement.children[0].injector.get(NgModelCustomComp);
-        expect(dir).not.toBeFalsy('must present');
-        expect(dir.log.length).toBe(0);
         fixture.detectChanges();
-        expect(dir.log.length).toBe(1);
+        const customCmp: NgModelCustomComp = fixture.componentInstance.customCmp;
+        expect(customCmp.log.length).toBe(1);
       }));
 
     });
@@ -1461,6 +1459,7 @@ class NgModelCustomComp implements ControlValueAccessor {
   `
 })
 class NgModelCustomWrapper {
+  @ViewChild(NgModelCustomComp) customCmp: NgModelCustomComp;
   name: string;
   isDisabled = false;
 }
