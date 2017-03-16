@@ -2,10 +2,6 @@
 
 cd `dirname $0`
 
-while read RAW_PACKAGE || [[ -n "$RAW_PACKAGE" ]]
-do
-  PACKAGE=${RAW_PACKAGE%$'\r'}
-  DESTDIR=./../../modules/\@angular/${PACKAGE}
-  mv ${DESTDIR}/facade ${DESTDIR}/facade.old
-  cmd <<< "mklink \"..\\..\\modules\\\@angular\\"${PACKAGE}"\\facade\" \"..\\..\\facade\\src\\\""
-done < packages.txt
+DESTDIR=./../../packages/core/src/animation
+mv ${DESTDIR}/dsl.ts ${DESTDIR}/dsl.ts.old
+cmd <<< "mklink \"..\\..\\packages\\core\\src\\animation\\dsl.ts\" \"..\\..\\..\\animations\\src\\animation_metadata.ts\""
