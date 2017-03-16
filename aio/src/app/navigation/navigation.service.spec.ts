@@ -1,6 +1,8 @@
 import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+
+import { FileLoaderService } from 'app/shared/file-loader.service';
+import { TestFileLoaderService } from 'testing/file-loader.service';
+
 import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
@@ -10,17 +12,11 @@ describe('NavigationService', () => {
 
   let injector: ReflectiveInjector;
 
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
-
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
         NavigationService,
         { provide: LocationService, useFactory: () => new MockLocationService('a') },
-        { provide: ConnectionBackend, useClass: MockBackend },
-        { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http,
+        { provide: FileLoaderService, useClass: TestFileLoaderService },
         Logger
     ]);
   });
@@ -31,39 +27,43 @@ describe('NavigationService', () => {
   });
 
   describe('navigationViews', () => {
-    let service: NavigationService, backend: MockBackend;
+    let service: NavigationService;
+    let loader: TestFileLoaderService;
 
     beforeEach(() => {
-      backend = injector.get(ConnectionBackend);
+      loader = injector.get(FileLoaderService);
       service = injector.get(NavigationService);
     });
 
     it('should make a single connection to the server', () => {
-      expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('content/navigation.json');
+      expect(loader.connectionsArray.length).toEqual(1);
+      expect(loader.connectionsArray[0].url).toBe('navigation.json');
     });
 
     it('should expose the server response', () => {
       const viewsEvents: NavigationViews[] = [];
+      const json = { TopBar: [ { url: 'a' }] };
       service.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
-      expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
-
+      loader.connectionsArray[0].mockRespond(json);
+      expect(viewsEvents).toEqual([json]);
     });
 
     it('should return the same object to all subscribers', () => {
+
+      const json = { TopBar: [ { url: 'a' }] };
+
       let views1: NavigationViews;
       service.navigationViews.subscribe(views => views1 = views);
 
       let views2: NavigationViews;
       service.navigationViews.subscribe(views => views2 = views);
 
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ url: 'a' }] }));
+      loader.connectionsArray[0].mockRespond(json);
 
       // modify the response so we can check that future subscriptions do not trigger another request
-      backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ url: 'error 1' }] }));
+      loader.connectionsArray[0].mockRespond({ TopBar: [{ url: 'error 1' }] });
 
       let views3: NavigationViews;
       service.navigationViews.subscribe(views => views3 = views);
@@ -77,7 +77,9 @@ describe('NavigationService', () => {
   });
 
   describe('selectedNodes', () => {
-    let service: NavigationService, location: MockLocationService;
+    let service: NavigationService;
+    let loader: TestFileLoaderService;
+    let location: MockLocationService;
     let currentNodes: NavigationNode[];
     const nodeTree: NavigationNode[] = [
       { title: 'a', children: [
@@ -96,8 +98,8 @@ describe('NavigationService', () => {
       service = injector.get(NavigationService);
       service.selectedNodes.subscribe(nodes => currentNodes = nodes);
 
-      const backend = injector.get(ConnectionBackend);
-      backend.connectionsArray[0].mockRespond(createResponse({ nav: nodeTree }));
+      loader = injector.get(FileLoaderService);
+      loader.connectionsArray[0].mockRespond({ nav: nodeTree });
     });
 
     it('should list the navigation node that matches the current location, and all its ancestors', () => {

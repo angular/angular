@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { FileLoaderService, Response } from 'app/shared/file-loader.service';
 
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
@@ -23,7 +23,7 @@ export class DocumentService {
 
   constructor(
     private logger: Logger,
-    private http: Http,
+    private loader: FileLoaderService,
     location: LocationService) {
     // Whenever the URL changes we try to get the appropriate doc
     this.currentDocument = location.currentUrl.switchMap(url => this.getDocument(url));
@@ -41,8 +41,8 @@ export class DocumentService {
   private fetchDocument(path: string) {
     this.logger.log('fetching document from', path);
     const subject = new AsyncSubject();
-    this.http
-      .get(path)
+    this.loader
+      .load(path)
       .map(res => res.json())
       .catch((error: Response) => {
         if (error.status === 404) {
@@ -65,6 +65,6 @@ export class DocumentService {
     url = url.match(/[^#?]*/)[0]; // strip off fragment and query
     url = '/' + url;
     url = url.endsWith('/') ? url + 'index' : url;
-    return 'content/docs' + url + '.json';
+    return 'docs' + url + '.json';
   }
 }

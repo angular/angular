@@ -11,12 +11,13 @@ import { LocationService } from 'app/shared/location.service';
 
 import { NavigationNode } from './navigation-node';
 export { NavigationNode } from './navigation-node';
+import { FileLoaderService } from 'app/shared/file-loader.service';
 
 export interface NavigationViews {
   [name: string]: NavigationNode[];
 }
 
-const navigationPath = 'content/navigation.json';
+const navigationPath = 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -30,7 +31,7 @@ export class NavigationService {
    */
   selectedNodes = this.getSelectedNodes();
 
-  constructor(private http: Http, private location: LocationService, private logger: Logger) { }
+  constructor(private loader: FileLoaderService, private location: LocationService, private logger: Logger) { }
 
   /**
    * Get an observable that fetches the `NavigationViews` from the server.
@@ -44,7 +45,7 @@ export class NavigationService {
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationViews(): Observable<NavigationViews> {
-    const navigationViews = this.http.get(navigationPath)
+    const navigationViews = this.loader.load(navigationPath)
              .map(res => res.json() as NavigationViews)
              .publishLast();
     navigationViews.connect();
