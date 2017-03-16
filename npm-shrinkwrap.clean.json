@@ -2591,6 +2591,10 @@
       "version": "0.17.9",
       "dev": true
     },
+    "es6-promise": {
+      "version": "3.3.1",
+      "dev": true
+    },
     "es6-symbol": {
       "version": "3.0.2",
       "dev": true
@@ -5569,47 +5573,7 @@
     },
     "rollup": {
       "version": "0.26.3",
-      "dev": true,
-      "dependencies": {
-        "ansi-regex": {
-          "version": "2.0.0",
-          "dev": true
-        },
-        "ansi-styles": {
-          "version": "2.2.1",
-          "dev": true
-        },
-        "chalk": {
-          "version": "1.1.3",
-          "dev": true
-        },
-        "has-ansi": {
-          "version": "2.0.0",
-          "dev": true
-        },
-        "source-map": {
-          "version": "0.1.32",
-          "dev": true,
-          "dependencies": {
-            "amdefine": {
-              "version": "1.0.1",
-              "dev": true
-            }
-          }
-        },
-        "source-map-support": {
-          "version": "0.4.0",
-          "dev": true
-        },
-        "strip-ansi": {
-          "version": "3.0.1",
-          "dev": true
-        },
-        "supports-color": {
-          "version": "2.0.0",
-          "dev": true
-        }
-      }
+      "dev": true
     },
     "rollup-plugin-commonjs": {
       "version": "5.0.5",
@@ -5639,6 +5603,24 @@
     },
     "rxjs": {
       "version": "5.0.1"
+    },
+    "sander": {
+      "version": "0.5.1",
+      "dev": true,
+      "dependencies": {
+        "glob": {
+          "version": "7.1.1",
+          "dev": true
+        },
+        "graceful-fs": {
+          "version": "4.1.11",
+          "dev": true
+        },
+        "rimraf": {
+          "version": "2.6.1",
+          "dev": true
+        }
+      }
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
@@ -5848,6 +5830,10 @@
         }
       }
     },
+    "sorcery": {
+      "version": "0.10.0",
+      "dev": true
+    },
     "source-list-map": {
       "version": "0.1.5",
       "dev": true
@@ -5871,6 +5857,10 @@
           }
         }
       }
+    },
+    "sourcemap-codec": {
+      "version": "1.3.0",
+      "dev": true
     },
     "sparkles": {
       "version": "1.0.0",

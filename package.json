@@ -85,6 +85,7 @@
     "rollup-plugin-commonjs": "^5.0.5",
     "selenium-webdriver": "^2.53.3",
     "semver": "^5.1.0",
+    "sorcery": "^0.10.0",
     "source-map": "^0.5.6",
     "source-map-support": "^0.4.2",
     "systemjs": "0.18.10",
