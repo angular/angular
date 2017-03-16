@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '@angular/core';
-
+import {Subscription} from 'rxjs/Subscription';
 
 /**
  * Fixture for debugging and testing a component.
@@ -44,10 +44,7 @@ export class ComponentFixture<T> {
   private _isDestroyed: boolean = false;
   private _resolve: (result: any) => void;
   private _promise: Promise<any> = null;
-  private _onUnstableSubscription: any /** TODO #9100 */ = null;
-  private _onStableSubscription: any /** TODO #9100 */ = null;
-  private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
-  private _onErrorSubscription: any /** TODO #9100 */ = null;
+  private _subscription: Subscription = null;
 
   constructor(
       public componentRef: ComponentRef<T>, public ngZone: NgZone, private _autoDetect: boolean) {
@@ -56,48 +53,40 @@ export class ComponentFixture<T> {
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
-    this.componentRef = componentRef;
-    this.ngZone = ngZone;
 
     if (ngZone != null) {
-      this._onUnstableSubscription =
-          ngZone.onUnstable.subscribe({next: () => { this._isStable = false; }});
-      this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
-        next: () => {
-          if (this._autoDetect) {
-            // Do a change detection run with checkNoChanges set to true to check
-            // there are no changes on the second run.
-            this.detectChanges(true);
-          }
+      this._subscription = ngZone.onUnstable.subscribe(() => this._isStable = false);
+      this._subscription.add(ngZone.onMicrotaskEmpty.subscribe(() => {
+        if (this._autoDetect) {
+          // Do a change detection run with checkNoChanges set to true to check
+          // there are no changes on the second run.
+          this.detectChanges(true);
         }
-      });
-      this._onStableSubscription = ngZone.onStable.subscribe({
-        next: () => {
-          this._isStable = true;
-          // Check whether there is a pending whenStable() completer to resolve.
-          if (this._promise !== null) {
-            // If so check whether there are no pending macrotasks before resolving.
-            // Do this check in the next tick so that ngZone gets a chance to update the state of
-            // pending macrotasks.
-            scheduleMicroTask(() => {
-              if (!this.ngZone.hasPendingMacrotasks) {
-                if (this._promise !== null) {
-                  this._resolve(true);
-                  this._resolve = null;
-                  this._promise = null;
-                }
+      }));
+      this._subscription.add(ngZone.onStable.subscribe(() => {
+        this._isStable = true;
+        // Check whether there is a pending whenStable() completer to resolve.
+        if (this._promise !== null) {
+          // If so check whether there are no pending macrotasks before resolving.
+          // Do this check in the next tick so that ngZone gets a chance to update the state of
+          // pending macrotasks.
+          scheduleMicroTask(() => {
+            if (!this.ngZone.hasPendingMacrotasks) {
+              if (this._promise !== null) {
+                this._resolve(true);
+                this._resolve = null;
+                this._promise = null;
               }
-            });
-          }
+            }
+          });
         }
-      });
+      }));
 
-      this._onErrorSubscription =
-          ngZone.onError.subscribe({next: (error: any) => { throw error; }});
+      this._subscription.add(ngZone.onError.subscribe((error: any) => { throw error; }));
     }
   }
 
-  private _tick(checkNoChanges: boolean) {
+  private _tick(checkNoChanges: boolean): void {
     this.changeDetectorRef.detectChanges();
     if (checkNoChanges) {
       this.checkNoChanges();
@@ -107,33 +96,38 @@ export class ComponentFixture<T> {
   /**
    * Trigger a change detection cycle for the component.
    */
-  detectChanges(checkNoChanges: boolean = true): void {
+  detectChanges(checkNoChanges: boolean = true): ComponentFixture<T> {
     if (this.ngZone != null) {
       // Run the change detection inside the NgZone so that any async tasks as part of the change
       // detection are captured by the zone and can be waited for in isStable.
-      this.ngZone.run(() => { this._tick(checkNoChanges); });
+      this.ngZone.run(() => this._tick(checkNoChanges));
     } else {
       // Running without zone. Just do the change detection.
       this._tick(checkNoChanges);
     }
+    return this;
   }
 
   /**
    * Do a change detection run to make sure there were no changes.
    */
-  checkNoChanges(): void { this.changeDetectorRef.checkNoChanges(); }
+  checkNoChanges(): ComponentFixture<T> {
+    this.changeDetectorRef.checkNoChanges();
+    return this;
+  }
 
   /**
    * Set whether the fixture should autodetect changes.
    *
    * Also runs detectChanges once so that any existing change is detected.
    */
-  autoDetectChanges(autoDetect: boolean = true) {
+  autoDetectChanges(autoDetect: boolean = true): ComponentFixture<T> {
     if (this.ngZone == null) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
     }
     this._autoDetect = autoDetect;
     this.detectChanges();
+    return this;
   }
 
   /**
@@ -151,12 +145,12 @@ export class ComponentFixture<T> {
   whenStable(): Promise<any> {
     if (this.isStable()) {
       return Promise.resolve(false);
-    } else if (this._promise !== null) {
-      return this._promise;
-    } else {
-      this._promise = new Promise(res => { this._resolve = res; });
+    }
+    if (this._promise !== null) {
       return this._promise;
     }
+    this._promise = new Promise(res => this._resolve = res);
+    return this._promise;
   }
 
   /**
@@ -165,27 +159,15 @@ export class ComponentFixture<T> {
   destroy(): void {
     if (!this._isDestroyed) {
       this.componentRef.destroy();
-      if (this._onUnstableSubscription != null) {
-        this._onUnstableSubscription.unsubscribe();
-        this._onUnstableSubscription = null;
-      }
-      if (this._onStableSubscription != null) {
-        this._onStableSubscription.unsubscribe();
-        this._onStableSubscription = null;
-      }
-      if (this._onMicrotaskEmptySubscription != null) {
-        this._onMicrotaskEmptySubscription.unsubscribe();
-        this._onMicrotaskEmptySubscription = null;
-      }
-      if (this._onErrorSubscription != null) {
-        this._onErrorSubscription.unsubscribe();
-        this._onErrorSubscription = null;
+      if (this._subscription != null) {
+        this._subscription.unsubscribe();
+        this._subscription = null;
       }
       this._isDestroyed = true;
     }
   }
 }
 
-function scheduleMicroTask(fn: Function) {
+function scheduleMicroTask(fn: Function): void {
   Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }

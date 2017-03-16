@@ -11,10 +11,10 @@ export declare class ComponentFixture<T> {
     nativeElement: any;
     ngZone: NgZone;
     constructor(componentRef: ComponentRef<T>, ngZone: NgZone, _autoDetect: boolean);
-    autoDetectChanges(autoDetect?: boolean): void;
-    checkNoChanges(): void;
+    autoDetectChanges(autoDetect?: boolean): ComponentFixture<T>;
+    checkNoChanges(): ComponentFixture<T>;
     destroy(): void;
-    detectChanges(checkNoChanges?: boolean): void;
+    detectChanges(checkNoChanges?: boolean): ComponentFixture<T>;
     isStable(): boolean;
     whenStable(): Promise<any>;
 }
