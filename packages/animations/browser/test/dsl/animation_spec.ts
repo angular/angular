@@ -160,9 +160,9 @@ export function main() {
           ];
 
           const player = invokeAnimationSequence(steps)[0];
-          const lastKeyframe = player.keyframes[1];
-          const lastKeyframeEasing = <string>lastKeyframe['easing'];
-          expect(lastKeyframeEasing.replace(/\s+/g, '')).toEqual('cubic-bezier(.29,.55,.53,1.53)');
+          const firstKeyframe = player.keyframes[0];
+          const firstKeyframeEasing = firstKeyframe['easing'] as string;
+          expect(firstKeyframeEasing.replace(/\s+/g, '')).toEqual('cubic-bezier(.29,.55,.53,1.53)');
         });
       });
 
@@ -524,8 +524,8 @@ export function main() {
 
              const player = invokeAnimationSequence(steps)[0];
              expect(player.keyframes).toEqual([
-               {opacity: 0, offset: 0}, {opacity: 0, offset: .25},
-               {opacity: 1, offset: 1, easing: 'ease-out'}
+               {opacity: 0, offset: 0}, {opacity: 0, offset: .25, easing: 'ease-out'},
+               {opacity: 1, offset: 1}
              ]);
            });
 
@@ -540,9 +540,8 @@ export function main() {
 
           const player = players[0];
           expect(player.keyframes).toEqual([
-            {width: 0, offset: 0}, {width: 10, offset: .25, easing: 'linear'},
-            {width: 20, offset: .75, easing: 'ease-out'},
-            {width: 30, offset: 1, easing: 'ease-in'}
+            {width: 0, offset: 0, easing: 'linear'}, {width: 10, offset: .25, easing: 'ease-out'},
+            {width: 20, offset: .75, easing: 'ease-in'}, {width: 30, offset: 1}
           ]);
         });
 
@@ -626,8 +625,8 @@ export function main() {
 
              const players = invokeAnimationSequence(steps, fromStyles, toStyles);
              expect(players[0].keyframes).toEqual([
-               {background: 'blue', offset: 0},
-               {background: 'red', easing: 'ease-out', offset: 1}
+               {background: 'blue', offset: 0, easing: 'ease-out'},
+               {background: 'red', offset: 1}
              ]);
            });
       });
