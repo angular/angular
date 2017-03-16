@@ -427,8 +427,12 @@ export class Parse5DomAdapter extends DomAdapter {
       const styleList = styleAttrValue.split(/;+/g);
       for (let i = 0; i < styleList.length; i++) {
         if (styleList[i].length > 0) {
-          const elems = styleList[i].split(/:+/g);
-          (styleMap as any)[elems[0].trim()] = elems[1].trim();
+          const style = styleList[i] as string;
+          const colon = style.indexOf(':');
+          if (colon === -1) {
+            throw new Error(`Invalid CSS style: ${style}`);
+          }
+          (styleMap as any)[style.substr(0, colon).trim()] = style.substr(colon + 1).trim();
         }
       }
     }
