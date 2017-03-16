@@ -115,7 +115,8 @@ downlevelES2015() {
       cp ${file} ${ts_file}
 
       echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib"
-      ($TSC ${ts_file} --target es5 --module es2015 --noLib) > /dev/null 2>&1 || true
+      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap) > /dev/null 2>&1 || true
+      mapSources "${BASH_REMATCH[1]}${2:-".es5.js"}"
       rm -f ${ts_file}
     fi
   done
@@ -131,30 +132,37 @@ downlevelES2015() {
 # Rollup index files recursively, ignoring blacklisted directories
 # Arguments:
 #   param1 - Base source folder
-#   param2 - Source folder being rolled up (
-#   param2 - Naming suffix to apply. Must end in ".ts" (defaults to .es5.ts)
+#   param2 - Destination directory
+#   param3 - Config file
 # Returns:
 #   None
 #######################################
 rollupIndex() {
   # Iterate over the files in this directory, rolling up each into ${2} directory
-  regex=".+/(.+)/index.js"
+  local regex=".+/(.+)/index.js"
   if [[ "${1}/index.js" =~ $regex ]]; then
     in_file="${1}/index.js"
     out_file="${2}/${BASH_REMATCH[1]}.js"
 
     echo "======           $ROLLUP -i ${in_file} -o ${out_file}"
-    $ROLLUP -i ${in_file} -o ${out_file}
+
+    if [[ -f "${3}" ]]; then
+      $ROLLUP -i ${in_file} -o ${out_file} -c ${3} --sourcemap
+    else
+      $ROLLUP -i ${in_file} -o ${out_file} --sourcemap
+    fi
     cat ${LICENSE_BANNER} > ${out_file}.tmp
     cat ${out_file} >> ${out_file}.tmp
     mv ${out_file}.tmp ${out_file}
+
+    mapSources "${out_file}"
 
     # Recurse for sub directories
     for DIR in ${1}/* ; do
       isIgnoredDirectory ${DIR} && continue
       # NOTE: We need to re-run this regex and use the new match as Bash doesn't have closures
       if [[ "${1}/index.js" =~ $regex ]]; then
-        rollupIndex ${DIR} ${2}/${BASH_REMATCH[1]}
+        rollupIndex ${DIR} ${2}/${BASH_REMATCH[1]} "$(dirname $3)/${BASH_REMATCH[1]}/rollup.config.js"
       fi
     done
   fi
@@ -165,16 +173,21 @@ rollupIndex() {
 # Recursively runs rollup on any entry point that has a "rollup.config.js" file
 # Arguments:
 #   param1 - Base source folder containing rollup.config.js
-#   param2 - Package name
 # Returns:
 #   None
 #######################################
 runRollup() {
-  if [[ "${1}/rollup.config.js" =~ $regex ]]; then
+  local regex="dest: ['\"](.+)['\"],*"
+  if [[ -f "${1}/rollup.config.js" ]]; then
     cd ${1}
 
     echo "======           $ROLLUP -c ${1}/rollup.config.js"
-    $ROLLUP -c rollup.config.js
+    $ROLLUP -c rollup.config.js --sourcemap
+
+    local dest_line=$(cat "${1}/rollup.config.js" | grep 'dest:')
+    if [[ ${dest_line} =~ $regex ]]; then
+      mapSources "${BASH_REMATCH[1]}"
+    fi
 
     # Recurse for sub directories
     for DIR in ${1}/* ; do
@@ -193,7 +206,7 @@ runRollup() {
 #######################################
 addBanners() {
   for file in ${1}/*; do
-    if [[ -f ${file} ]]; then
+    if [[ -f ${file} && "${file##*.}" != "map" ]]; then
       cat ${LICENSE_BANNER} > ${file}.tmp
       cat ${file} >> ${file}.tmp
       mv ${file}.tmp ${file}
@@ -216,8 +229,10 @@ minify() {
   for file in "${files[@]}"; do
     echo "${file}"
     base_file=$( basename "${file}" )
-    if [[ "${base_file}" =~ $regex ]]; then
-      $UGLIFYJS -c --screw-ie8 --comments -o ${1}/${BASH_REMATCH[1]}.min.js ${file}
+    if [[ "${base_file}" =~ $regex && "${base_file##*.}" != "map" ]]; then
+      local out_file=$(dirname "${file}")/${BASH_REMATCH[1]}.min.js
+      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --source-map-include-sources ${file}
+      mapSources "${out_file}"
     fi
   done
 }
@@ -288,6 +303,19 @@ addNgcPackageJson() {
   done
 }
 
+#######################################
+# This is read by NGC to be able to find the flat module index.
+# Arguments:
+#   param1 - JavaScript file on which to re-map sources
+# Returns:
+#   None
+#######################################
+mapSources() {
+  if [[ -f "${1}.map" ]]; then
+    $MAP_SOURCES -f "${1}"
+  fi
+}
+
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
 ROUTER_VERSION="${ROUTER_VERSION_PREFIX}${VERSION_SUFFIX}"
 echo "====== BUILDING: Version ${VERSION} (Router ${ROUTER_VERSION})"
@@ -296,6 +324,7 @@ N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
 NGC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
+MAP_SOURCES="node `pwd`/scripts/build/map_sources.js "
 UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
@@ -411,7 +440,7 @@ do
       (
         cd  ${SRC_DIR}
         echo "======         Rollup ${PACKAGE}"
-        rollupIndex ${OUT_DIR} ${MODULES_DIR}
+        rollupIndex ${OUT_DIR} ${MODULES_DIR} ${ROOT_DIR}
 
         echo "======         Downleveling ES2015 to ESM/ES5"
         downlevelES2015 ${MODULES_DIR}
