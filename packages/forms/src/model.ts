@@ -204,13 +204,13 @@ export abstract class AbstractControl {
    * Emits an event every time the value of the control changes, in
    * the UI or programmatically.
    */
-  get valueChanges(): Observable<any> { return this._valueChanges.asObservable(); }
+  get valueChanges(): Observable<any> { return this._valueChanges; }
 
   /**
    * Emits an event every time the validation status of the control
    * is re-calculated.
    */
-  get statusChanges(): Observable<any> { return this._statusChanges.asObservable(); }
+  get statusChanges(): Observable<any> { return this._statusChanges; }
 
   /**
    * Sets the synchronous validators that are active on this control.  Calling
