@@ -267,12 +267,16 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
     const normalizedStyles = normalizeStyles(ast.styles);
     const easing = context.currentAnimateTimings && context.currentAnimateTimings.easing;
-    if (easing) {
-      normalizedStyles['easing'] = easing;
-    }
-
-    context.currentTimeline.setStyles(normalizedStyles);
+    this._applyStyles(normalizedStyles, easing, context);
     context.previousNode = ast;
+  }
+
+  private _applyStyles(styles: ɵStyleData, easing: string, context: AnimationTimelineContext) {
+    if (styles.hasOwnProperty('easing')) {
+      easing = easing || styles['easing'] as string;
+      delete styles['easing'];
+    }
+    context.currentTimeline.setStyles(styles, easing);
   }
 
   visitKeyframeSequence(
@@ -299,7 +303,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
           (step.offset != null ? step.offset : parseFloat(normalizedStyles['offset'] as string)) :
           (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
       innerTimeline.forwardTime(offset * duration);
-      innerTimeline.setStyles(normalizedStyles);
+      this._applyStyles(normalizedStyles, null, innerContext);
     });
 
     // this will ensure that the parent timeline gets all the styles from
@@ -316,6 +320,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 export class TimelineBuilder {
   public duration: number = 0;
   public easing: string = '';
+  private _previousKeyframe: ɵStyleData = {};
   private _currentKeyframe: ɵStyleData;
   private _keyframes = new Map<number, ɵStyleData>();
   private _styleSummary: {[prop: string]: StyleAtTime} = {};
@@ -339,6 +344,9 @@ export class TimelineBuilder {
   }
 
   private _loadKeyframe() {
+    if (this._currentKeyframe) {
+      this._previousKeyframe = this._currentKeyframe;
+    }
     this._currentKeyframe = this._keyframes.get(this.duration);
     if (!this._currentKeyframe) {
       this._currentKeyframe = Object.create(this._backFill, {});
@@ -357,19 +365,20 @@ export class TimelineBuilder {
   }
 
   private _updateStyle(prop: string, value: string|number) {
-    if (prop != 'easing') {
-      this._localTimelineStyles[prop] = value;
-      this._globalTimelineStyles[prop] = value;
-      this._styleSummary[prop] = {time: this.currentTime, value};
-    }
+    this._localTimelineStyles[prop] = value;
+    this._globalTimelineStyles[prop] = value;
+    this._styleSummary[prop] = {time: this.currentTime, value};
   }
 
-  setStyles(styles: ɵStyleData) {
+  setStyles(styles: ɵStyleData, easing: string = null) {
+    if (easing) {
+      this._previousKeyframe['easing'] = easing;
+    }
     Object.keys(styles).forEach(prop => {
       if (prop !== 'offset') {
         const val = styles[prop];
         this._currentKeyframe[prop] = val;
-        if (prop !== 'easing' && !this._localTimelineStyles[prop]) {
+        if (!this._localTimelineStyles[prop]) {
           this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;
         }
         this._updateStyle(prop, val);
