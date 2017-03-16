@@ -8,8 +8,8 @@
 
 import {EventEmitter, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {fromPromise} from 'rxjs/observable/fromPromise';
-
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 
@@ -88,8 +88,8 @@ export abstract class AbstractControl {
   /** @internal */
   _onCollectionChange = () => {};
 
-  private _valueChanges: EventEmitter<any>;
-  private _statusChanges: EventEmitter<any>;
+  private _valueChanges: BehaviorSubject<any>;
+  private _statusChanges: BehaviorSubject<any>;
   private _status: string;
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
@@ -325,8 +325,8 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (emitEvent !== false) {
-      this._valueChanges.emit(this._value);
-      this._statusChanges.emit(this._status);
+      this._valueChanges.next(this._value);
+      this._statusChanges.next(this._status);
     }
 
     this._updateAncestors(onlySelf);
@@ -395,8 +395,8 @@ export abstract class AbstractControl {
     }
 
     if (emitEvent !== false) {
-      this._valueChanges.emit(this._value);
-      this._statusChanges.emit(this._status);
+      this._valueChanges.next(this._value);
+      this._statusChanges.next(this._status);
     }
 
     if (this._parent && !onlySelf) {
@@ -517,7 +517,7 @@ export abstract class AbstractControl {
     this._status = this._calculateStatus();
 
     if (emitEvent) {
-      this._statusChanges.emit(this._status);
+      this._statusChanges.next(this._status);
     }
 
     if (this._parent) {
@@ -527,8 +527,8 @@ export abstract class AbstractControl {
 
   /** @internal */
   _initObservables() {
-    this._valueChanges = new EventEmitter();
-    this._statusChanges = new EventEmitter();
+    this._valueChanges = new BehaviorSubject<any>(null);
+    this._statusChanges = new BehaviorSubject<any>(null);
   }
 
 

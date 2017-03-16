@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
+import {Component, Directive, Input, Type, ViewChild, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -908,6 +908,20 @@ export function main() {
            });
          }));
 
+      it('writeValue should be called only once with actual value', async(() => {
+        const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+        fixture.componentInstance.name = 'Nancy';
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            const customCmp: NgModelCustomComp = fixture.componentInstance.customCmp;
+            expect(customCmp.log.length).toBe(1);
+            expect(customCmp.log[0]).toBe('Nancy');
+          });
+        });
+      }));
+
     });
 
     describe('validation directives', () => {
@@ -1425,11 +1439,15 @@ class NgModelSelectMultipleForm {
   providers: [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: NgModelCustomComp}]
 })
 class NgModelCustomComp implements ControlValueAccessor {
+  log: string[] = [];
   model: string;
   @Input('disabled') isDisabled: boolean = false;
   changeFn: (value: any) => void;
 
-  writeValue(value: any) { this.model = value; }
+  writeValue(value: any): void {
+    this.log.push(value);
+    this.model = value;
+  }
 
   registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
 
@@ -1447,6 +1465,7 @@ class NgModelCustomComp implements ControlValueAccessor {
   `
 })
 class NgModelCustomWrapper {
+  @ViewChild(NgModelCustomComp) customCmp: NgModelCustomComp;
   name: string;
   isDisabled = false;
 }
