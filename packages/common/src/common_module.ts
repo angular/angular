@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-
-import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/index';
+import {ModuleWithProviders, NgModule} from '@angular/core';
+import {COMMON_DIRECTIVES} from './directives/index';
 import {NgLocaleLocalization, NgLocalization} from './localization';
-import {COMMON_PIPES} from './pipes/index';
+import {COMMON_PIPES, COMMON_PIPE_PROVIDERS} from './pipes/index';
 
 
 // Note: This does not contain the location providers,
@@ -23,9 +22,15 @@ import {COMMON_PIPES} from './pipes/index';
 @NgModule({
   declarations: [COMMON_DIRECTIVES, COMMON_PIPES],
   exports: [COMMON_DIRECTIVES, COMMON_PIPES],
-  providers: [
-    {provide: NgLocalization, useClass: NgLocaleLocalization},
-  ],
 })
 export class CommonModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: CommonModule,
+      providers: [
+        {provide: NgLocalization, useClass: NgLocaleLocalization},
+        COMMON_PIPE_PROVIDERS,
+      ]
+    };
+  }
 }

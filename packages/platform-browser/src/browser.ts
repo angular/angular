@@ -16,7 +16,6 @@ import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-trans
 import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
-import {getDOM} from './dom/dom_adapter';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
@@ -86,6 +85,7 @@ export function _document(): any {
     Meta,
     Title,
   ],
+  imports: [CommonModule.forRoot()],
   exports: [CommonModule, ApplicationModule]
 })
 export class BrowserModule {

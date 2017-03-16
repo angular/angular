@@ -35,12 +35,7 @@ export {
   UpperCasePipe
 };
 
-
-/**
- * A collection of Angular pipes that are likely to be used in each and every application.
- */
-export const COMMON_PIPES = [
-  AsyncPipe,
+export const COMMON_PIPE_PROVIDERS = [
   UpperCasePipe,
   LowerCasePipe,
   JsonPipe,
@@ -53,3 +48,9 @@ export const COMMON_PIPES = [
   I18nPluralPipe,
   I18nSelectPipe,
 ];
+
+
+/**
+ * A collection of Angular pipes that are likely to be used in each and every application.
+ */
+export const COMMON_PIPES = [AsyncPipe, ...COMMON_PIPE_PROVIDERS];
