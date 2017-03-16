@@ -908,6 +908,16 @@ export function main() {
            });
          }));
 
+      it('writeValue should be called only once with actual value', async(() => {
+        const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+        fixture.componentInstance.name = 'Nancy';
+        const dir = fixture.debugElement.children[0].injector.get(NgModelCustomComp);
+        expect(dir).not.toBeFalsy('must present');
+        expect(dir.log.length).toBe(0);
+        fixture.detectChanges();
+        expect(dir.log.length).toBe(1);
+      }));
+
     });
 
     describe('validation directives', () => {
@@ -1425,11 +1435,15 @@ class NgModelSelectMultipleForm {
   providers: [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: NgModelCustomComp}]
 })
 class NgModelCustomComp implements ControlValueAccessor {
+  log: string[] = [];
   model: string;
   @Input('disabled') isDisabled: boolean = false;
   changeFn: (value: any) => void;
 
-  writeValue(value: any) { this.model = value; }
+  writeValue(value: any): void {
+    this.log.push(value);
+    this.model = value;
+  }
 
   registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
 
