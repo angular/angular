@@ -181,7 +181,8 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpControl(): void {
-                this._control.setValue(this.model);
+                this._updateValue(this.model);
+                // this._control.setValue(this.model, {emitViewToModelChange: false});
                 this.viewModel = this.model;
 
                 this._isStandalone() ? this._setUpStandalone() :
