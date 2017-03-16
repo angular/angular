@@ -383,7 +383,8 @@ export declare function enableProdMode(): void;
 
 /** @stable */
 export declare class ErrorHandler {
-    constructor(rethrowError?: boolean);
+    constructor(
+        deprecatedParameter?: boolean);
     handleError(error: any): void;
 }
 
