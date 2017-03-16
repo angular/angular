@@ -89,6 +89,10 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () => Promise<boolean>;
     multi: boolean;
     deps: (typeof NgZone | typeof PlatformLocation)[];
+} | {
+    provide: OpaqueToken;
+    useFactory: (platformLocation: WebWorkerPlatformLocation) => Promise<any>;
+    deps: typeof PlatformLocation[];
 })[];
 
 /** @experimental */

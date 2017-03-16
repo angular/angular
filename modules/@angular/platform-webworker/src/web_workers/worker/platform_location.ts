@@ -25,6 +25,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _hashChangeListeners: Array<Function> = [];
   private _location: LocationType = null;
   private _channelSource: EventEmitter<Object>;
+  public initialized: Promise<any>;
+  private initializedResolve: () => void;
 
   constructor(
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
@@ -52,6 +54,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
         }
       }
     });
+    this.initialized = new Promise(res => this.initializedResolve = res);
   }
 
   /** @internal **/
@@ -63,6 +66,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
         (val: LocationType):
             boolean => {
               this._location = val;
+              this.initializedResolve();
               return true;
             },
         (err): boolean => { throw new Error(err); });
