@@ -17,6 +17,7 @@ export default {
     'rxjs/Observer': 'Rx',
     'rxjs/Subscription': 'Rx',
     'rxjs/observable/merge': 'Rx.Observable',
-    'rxjs/operator/share': 'Rx.Observable.prototype'
+    'rxjs/operator/share': 'Rx.Observable.prototype',
+    'rxjs/operator/toPromise': 'Rx.Observable.prototype'
   }
 };

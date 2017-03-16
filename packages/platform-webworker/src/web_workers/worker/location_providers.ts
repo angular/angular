@@ -7,10 +7,8 @@
  */
 
 import {LOCATION_INITIALIZED, PlatformLocation} from '@angular/common';
-import {APP_INITIALIZER, InjectionToken, NgZone} from '@angular/core';
-
+import {APP_INITIALIZER, AppInitFn, InjectionToken, NgZone} from '@angular/core';
 import {WebWorkerPlatformLocation} from './platform_location';
-
 
 /**
  * Those providers should be added when the router is used in a worker context in addition to the
@@ -31,7 +29,7 @@ export function locationInitialized(platformLocation: WebWorkerPlatformLocation)
   return platformLocation.initialized;
 }
 
-export function appInitFnFactory(platformLocation: WebWorkerPlatformLocation, zone: NgZone): () =>
-    Promise<boolean> {
+export function appInitFnFactory(
+    platformLocation: WebWorkerPlatformLocation, zone: NgZone): AppInitFn {
   return () => zone.runGuarded(() => platformLocation.init());
 }

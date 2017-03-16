@@ -110,13 +110,16 @@ export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: Component
 export declare const APP_ID: InjectionToken<string>;
 
 /** @experimental */
-export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
+export declare const APP_INITIALIZER: InjectionToken<AppInitFn[]>;
+
+/** @experimental */
+export declare type AppInitFn = () => void | Observable<any> | Promise<any>;
 
 /** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
-    constructor(appInits: (() => any)[]);
+    constructor(appInits: AppInitFn[]);
 }
 
 /** @experimental */
