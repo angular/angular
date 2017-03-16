@@ -11,10 +11,8 @@ export class SitePage {
     .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
     .first();
   gaReady: promise.Promise<any>;
-  getNavHeading(pattern: RegExp) {
-    return element.all(by.css('aio-nav-item a'))
-                  .filter(element => element.getText().then(text => pattern.test(text)))
-                  .first();
+  getNavItem(searchString: string) {
+    return element.all(by.cssContainingText('aio-nav-item a', searchString)).first();
   }
   getLink(path) { return element(by.css(`a[href="${path}"]`)); }
   ga() { return browser.executeScript('return window["gaCalls"]') as promise.Promise<any[][]>; }

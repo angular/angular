@@ -1,39 +1,32 @@
 import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { MockBackend } from '@angular/http/testing';
+import { FileLoaderService } from 'app/shared/file-loader.service';
+import { TestFileLoaderService } from 'testing/file-loader.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
 import { DocumentService, DocumentContents } from './document.service';
 
-
-const CONTENT_URL_PREFIX = 'content/docs/';
-
-function createResponse(body: any) {
-  return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-}
+const CONTENT_URL_PREFIX = 'docs/';
 
 function createInjector(initialUrl: string) {
   return ReflectiveInjector.resolveAndCreate([
       DocumentService,
       { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
-      { provide: ConnectionBackend, useClass: MockBackend },
-      { provide: RequestOptions, useClass: BaseRequestOptions },
-      { provide: Logger, useClass: MockLogger },
-      Http,
+      { provide: FileLoaderService, useClass: TestFileLoaderService },
+      { provide: Logger, useClass: MockLogger }
   ]);
 }
 
 function getServices(initialUrl: string = '') {
   const injector = createInjector(initialUrl);
   return {
-    backend: injector.get(ConnectionBackend) as MockBackend,
+    loader: injector.get(FileLoaderService) as TestFileLoaderService,
     location: injector.get(LocationService) as MockLocationService,
     service: injector.get(DocumentService) as DocumentService,
     logger: injector.get(Logger) as MockLogger
@@ -50,58 +43,58 @@ describe('DocumentService', () => {
   describe('currentDocument', () => {
 
     it('should fetch a document for the initial location url', () => {
-      const { service, backend } = getServices('initial/url');
-      const connections = backend.connectionsArray;
+      const { service, loader } = getServices('initial/url');
+      const connections = loader.connectionsArray;
       service.currentDocument.subscribe();
 
       expect(connections.length).toEqual(1);
-      expect(connections[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
-      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
+      expect(connections[0].url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
+      expect(loader.connectionsArray[0].url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
     });
 
     it('should emit a document each time the location changes', () => {
       let latestDocument: DocumentContents;
       const doc0 = { title: 'doc 0' };
       const doc1 = { title: 'doc 1' };
-      const { service, backend, location } = getServices('initial/url');
-      const connections = backend.connectionsArray;
+      const { service, loader, location } = getServices('initial/url');
+      const connections = loader.connectionsArray;
 
       service.currentDocument.subscribe(doc => latestDocument = doc);
       expect(latestDocument).toBeUndefined();
 
-      connections[0].mockRespond(createResponse(doc0));
+      connections[0].mockRespond(doc0);
       expect(latestDocument).toEqual(doc0);
 
       location.urlSubject.next('new/url');
-      connections[1].mockRespond(createResponse(doc1));
+      connections[1].mockRespond(doc1);
       expect(latestDocument).toEqual(doc1);
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {
-      const { service, backend } = getServices('missing/url');
-      const connections = backend.connectionsArray;
+      const { service, loader } = getServices('missing/url');
+      const connections = loader.connectionsArray;
       service.currentDocument.subscribe();
 
-      connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
+      connections[0].mockRespond(undefined, { status: 404, statusText: 'NOT FOUND'});
       expect(connections.length).toEqual(2);
-      expect(connections[1].request.url).toEqual(CONTENT_URL_PREFIX + 'file-not-found.json');
+      expect(connections[1].url).toEqual(CONTENT_URL_PREFIX + 'file-not-found.json');
     });
 
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
       let currentDocument: DocumentContents;
       const notFoundDoc = { title: 'Not Found', contents: 'Document not found' };
       const nextDoc = { title: 'Next Doc' };
-      const { service, backend, location } = getServices('file-not-found');
-      const connections = backend.connectionsArray;
+      const { service, loader, location } = getServices('file-not-found');
+      const connections = loader.connectionsArray;
       service.currentDocument.subscribe(doc => currentDocument = doc);
 
-      connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
+      connections[0].mockRespond(null, { status: 404, statusText: 'NOT FOUND'});
       expect(connections.length).toEqual(1);
       expect(currentDocument).toEqual(notFoundDoc);
 
       // now check that we haven't killed the currentDocument observable sequence
       location.urlSubject.next('new/url');
-      connections[1].mockRespond(createResponse(nextDoc));
+      connections[1].mockRespond(nextDoc);
       expect(currentDocument).toEqual(nextDoc);
     });
 
@@ -111,27 +104,27 @@ describe('DocumentService', () => {
 
       const doc0 = { title: 'doc 0' };
       const doc1 = { title: 'doc 1' };
-      const { service, backend, location } = getServices('url/0');
-      const connections = backend.connectionsArray;
+      const { service, loader, location } = getServices('url/0');
+      const connections = loader.connectionsArray;
 
       subscription = service.currentDocument.subscribe(doc => latestDocument = doc);
       expect(connections.length).toEqual(1);
-      connections[0].mockRespond(createResponse(doc0));
+      connections[0].mockRespond(doc0);
       expect(latestDocument).toEqual(doc0);
       subscription.unsubscribe();
 
       // modify the response so we can check that future subscriptions do not trigger another request
-      connections[0].response.next(createResponse({ title: 'error 0' }));
+      connections[0].mockRespond({ title: 'error 0' });
 
       subscription = service.currentDocument.subscribe(doc => latestDocument = doc);
       location.urlSubject.next('url/1');
       expect(connections.length).toEqual(2);
-      connections[1].mockRespond(createResponse(doc1));
+      connections[1].mockRespond(doc1);
       expect(latestDocument).toEqual(doc1);
       subscription.unsubscribe();
 
       // modify the response so we can check that future subscriptions do not trigger another request
-      connections[1].response.next(createResponse({ title: 'error 1' }));
+      connections[1].mockRespond({ title: 'error 1' });
 
       subscription = service.currentDocument.subscribe(doc => latestDocument = doc);
       location.urlSubject.next('url/0');
@@ -147,20 +140,28 @@ describe('DocumentService', () => {
     });
   });
 
-  describe('computeMap', () => {
+  describe('computePath', () => {
+
+    it('should map a doc location to the correct document request', () => {
+      const { service, loader } = getServices('guide/animations');
+      service.currentDocument.subscribe();
+
+      expect(loader.connectionsArray[0].url).toEqual(CONTENT_URL_PREFIX + 'guide/animations.json');
+    });
+
     it('should map the "empty" location to the correct document request', () => {
       let latestDocument: DocumentContents;
-      const { service, backend } = getServices();
+      const { service, loader } = getServices();
       service.currentDocument.subscribe(doc => latestDocument = doc);
 
-      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'index.json');
+      expect(loader.connectionsArray[0].url).toEqual(CONTENT_URL_PREFIX + 'index.json');
     });
 
     it('should map the "folder" locations to the correct document request', () => {
-      const { service, backend, location } = getServices('guide/');
+      const { service, loader } = getServices('guide/');
       service.currentDocument.subscribe();
 
-      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'guide.json');
+      expect(loader.connectionsArray[0].url).toEqual(CONTENT_URL_PREFIX + 'guide.json');
     });
   });
 });
