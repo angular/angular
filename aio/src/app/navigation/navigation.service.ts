@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/publishLast';
 
+import { FileLoaderService } from 'app/shared/file-loader.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 
 import { NavigationNode } from './navigation-node';
 export { NavigationNode } from './navigation-node';
-
 
 export type NavigationResponse = {__versionInfo: VersionInfo } & { [name: string]: NavigationNode[]|VersionInfo };
 
@@ -38,8 +37,7 @@ export interface VersionInfo {
   commitSHA: string;
 }
 
-const navigationPath = 'content/navigation.json';
-
+const navigationPath = 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -59,27 +57,28 @@ export class NavigationService {
    */
   selectedNodes: Observable<NavigationNode[]>;
 
-  constructor(private http: Http, private location: LocationService, private logger: Logger) {
-    const navigationInfo = this.fetchNavigationInfo();
-    // The version information is packaged inside the navigation response to save us an extra request.
-    this.versionInfo = this.getVersionInfo(navigationInfo);
-    this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.selectedNodes = this.getSelectedNodes(this.navigationViews);
-  }
-
+  constructor(
+    private loader: FileLoaderService,
+    private location: LocationService,
+    private logger: Logger) {
+      const navigationInfo = this.fetchNavigationInfo();
+      // The version information is packaged inside the navigation response to save us an extra request.
+      this.versionInfo = this.getVersionInfo(navigationInfo);
+      this.navigationViews = this.getNavigationViews(navigationInfo);
+      this.selectedNodes = this.getSelectedNodes(this.navigationViews);
+    }
   /**
    * Get an observable that fetches the `NavigationResponse` from the server.
-   * We create an observable by calling `http.get` but then publish it to share the result
+   * We create an observable by calling `loader.load` but then publish it to share the result
    * among multiple subscribers, without triggering new requests.
-   * We use `publishLast` because once the http request is complete the request observable completes.
+   * We use `publishLast` because once the loader loads, its observable completes.
    * If you use `publish` here then the completed request observable will cause the subscribed observables to complete too.
    * We `connect` to the published observable to trigger the request immediately.
-   * We could use `.refCount` here but then if the subscribers went from 1 -> 0 -> 1 then you would get
-   * another request to the server.
+   * We could use `.refCount` here but then if the subscribers went from 1 -> 0 -> 1 then you would get another request to the server.
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
-    const navigationInfo = this.http.get(navigationPath)
+    const navigationInfo = this.loader.load(navigationPath)
              .map(res => res.json() as NavigationResponse)
              .publishLast();
     navigationInfo.connect();
@@ -139,7 +138,7 @@ export class NavigationService {
 }
 
 function unpluck(obj: any, property: string) {
-  const result = Object.assign({}, obj);
+  const result = { ...obj };
   delete result[property];
   return result;
 }

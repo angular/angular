@@ -71,7 +71,7 @@
       "tooltip": "A gentle introduction to Angular.",
       "children": [
         {
-          "url": "guide/docs-overview",
+          "url": "guide/",
           "title": "Overview",
           "tooltip": "How to read and use this documentation."
         },
