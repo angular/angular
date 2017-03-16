@@ -18,6 +18,7 @@ export default {
     'rxjs/Observable': 'Rx',
     'rxjs/Subject': 'Rx',
     'rxjs/observable/fromPromise': 'Rx.Observable',
-    'rxjs/operator/toPromise': 'Rx.Observable.prototype'
+    'rxjs/observable/forkJoin': 'Rx.Observable',
+    'rxjs/operator/map': 'Rx.Observable.prototype'
   }
 };

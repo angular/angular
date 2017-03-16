@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisPromise as isPromise, ɵmerge as merge} from '@angular/core';
-import {toPromise} from 'rxjs/operator/toPromise';
+import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵmerge as merge} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {forkJoin} from 'rxjs/observable/forkJoin';
+import {fromPromise} from 'rxjs/observable/fromPromise';
+import {map} from 'rxjs/operator/map';
+
 import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl, FormControl, FormGroup} from './model';
 
@@ -156,8 +160,8 @@ export class Validators {
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
-      const promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
-      return Promise.all(promises).then(_mergeErrors);
+      const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
+      return map.call(forkJoin(observables), _mergeErrors);
     };
   }
 }
@@ -166,8 +170,12 @@ function isPresent(o: any): boolean {
   return o != null;
 }
 
-function _convertToPromise(obj: any): Promise<any> {
-  return isPromise(obj) ? obj : toPromise.call(obj);
+export function toObservable(r: any): Observable<any> {
+  const obs = isPromise(r) ? fromPromise(r) : r;
+  if (!(isObservable(obs))) {
+    throw new Error(`Expected validator to return Promise or Observable.`);
+  }
+  return obs;
 }
 
 function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {

@@ -166,7 +166,7 @@ export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
  * @stable
  */
 export interface AsyncValidatorFn {
-  (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
+  (c: AbstractControl): Promise<{[key: string]: any}>|Observable<{[key: string]: any}>;
 }
 
 /**
