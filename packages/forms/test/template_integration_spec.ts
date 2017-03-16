@@ -912,8 +912,13 @@ export function main() {
         const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
         fixture.componentInstance.name = 'Nancy';
         fixture.detectChanges();
-        const customCmp: NgModelCustomComp = fixture.componentInstance.customCmp;
-        expect(customCmp.log.length).toBe(1);
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            const customCmp: NgModelCustomComp = fixture.componentInstance.customCmp;
+            expect(customCmp.log.length).toBe(1);
+          });
+        });
       }));
 
     });
