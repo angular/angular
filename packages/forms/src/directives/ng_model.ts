@@ -111,10 +111,10 @@ const resolvedPromise = Promise.resolve(null);
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
   /** @internal */
-  _control = new FormControl();
+  _control: FormControl;
   /** @internal */
-  _registered = false;
-  private _composing = false;
+  _registered: boolean = false;
+  private _composing: boolean = false;
   viewModel: any;
 
   @Input() name: string;
@@ -145,16 +145,17 @@ export class NgModel extends NgControl implements OnChanges,
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
-              ngOnChanges(changes: SimpleChanges) {
+              ngOnChanges(changes: SimpleChanges): void {
                 this._checkForErrors();
-                if (!this._registered) this._setUpControl();
-                if ('isDisabled' in changes) {
-                  this._updateDisabled(changes);
-                }
-
-                if (isPropertyUpdated(changes, this.viewModel)) {
+                if (!this._registered) {
+                  this._setUpControl();
+                } else if (isPropertyUpdated(changes, this.viewModel)) {
                   this._updateValue(this.model);
                   this.viewModel = this.model;
+                }
+
+                if ('isDisabled' in changes) {
+                  this._updateDisabled(changes);
                 }
               }
 
@@ -180,6 +181,9 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpControl(): void {
+                this._control = new FormControl(this.model);
+                this.viewModel = this.model;
+
                 this._isStandalone() ? this._setUpStandalone() :
                                        this.formDirective.addControl(this);
                 this._registered = true;

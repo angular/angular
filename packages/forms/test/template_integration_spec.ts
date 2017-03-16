@@ -917,6 +917,7 @@ export function main() {
           fixture.whenStable().then(() => {
             const customCmp: NgModelCustomComp = fixture.componentInstance.customCmp;
             expect(customCmp.log.length).toBe(1);
+            expect(customCmp.log[0]).toBe('Nancy');
           });
         });
       }));
