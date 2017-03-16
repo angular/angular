@@ -111,7 +111,7 @@ const resolvedPromise = Promise.resolve(null);
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
   /** @internal */
-  _control: FormControl;
+  _control: FormControl = new FormControl();
   /** @internal */
   _registered: boolean = false;
   private _composing: boolean = false;
@@ -181,7 +181,7 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpControl(): void {
-                this._control = new FormControl(this.model);
+                this._control.setValue(this.model);
                 this.viewModel = this.model;
 
                 this._isStandalone() ? this._setUpStandalone() :
