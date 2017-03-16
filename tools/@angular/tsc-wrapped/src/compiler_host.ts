@@ -7,6 +7,7 @@
  */
 
 import {writeFileSync} from 'fs';
+import {normalize} from 'path';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
@@ -121,28 +122,37 @@ export class MetadataWriterHost extends DelegatingHost {
 }
 
 export class SyntheticIndexHost extends DelegatingHost {
+  private normalSyntheticIndexName: string;
+  private indexContent: string;
+  private indexMetadata: string;
+
   constructor(
       delegate: ts.CompilerHost,
-      private syntheticIndex: {name: string, content: string, metadata: string}) {
+      syntheticIndex: {name: string, content: string, metadata: string}) {
     super(delegate);
+    this.normalSyntheticIndexName = normalize(syntheticIndex.name);
+    this.indexContent = syntheticIndex.content;
+    this.indexMetadata = syntheticIndex.metadata;
   }
 
   fileExists = (fileName: string):
       boolean => {
-        return fileName == this.syntheticIndex.name || this.delegate.fileExists(fileName);
+        return normalize(fileName) == this.normalSyntheticIndexName ||
+            this.delegate.fileExists(fileName);
       }
 
   readFile =
       (fileName: string) => {
-        return fileName == this.syntheticIndex.name ? this.syntheticIndex.content :
-                                                      this.delegate.readFile(fileName);
+        return normalize(fileName) == this.normalSyntheticIndexName ?
+            this.indexContent :
+            this.delegate.readFile(fileName);
       }
 
   getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget,
        onError?: (message: string) => void) => {
-        if (fileName == this.syntheticIndex.name) {
-          return ts.createSourceFile(fileName, this.syntheticIndex.content, languageVersion, true);
+        if (normalize(fileName) == this.normalSyntheticIndexName) {
+          return ts.createSourceFile(fileName, this.indexContent, languageVersion, true);
         }
         return this.delegate.getSourceFile(fileName, languageVersion, onError);
       }
@@ -152,10 +162,10 @@ export class SyntheticIndexHost extends DelegatingHost {
            onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
             this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
             if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
-                sourceFiles[0].fileName == this.syntheticIndex.name) {
+                normalize(sourceFiles[0].fileName) == this.normalSyntheticIndexName) {
               // If we are writing the synthetic index, write the metadata along side.
               const metadataName = fileName.replace(DTS, '.metadata.json');
-              writeFileSync(metadataName, this.syntheticIndex.metadata, 'utf8');
+              writeFileSync(metadataName, this.indexMetadata, 'utf8');
             }
           }
 }
