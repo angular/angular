@@ -983,8 +983,7 @@ export function main() {
           // test for the specific error since without the error check it would still throw an error
           // but
           // not a meaningful one
-          expect(fn).toThrowError(
-              `expected the following validator to return Promise or Observable: ${syncValidator}. If you are using FormBuilder; did you forget to brace your validators in an array?`);
+          expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
         });
 
       });
