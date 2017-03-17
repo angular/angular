@@ -1598,9 +1598,9 @@ detect-indent@^4.0.0:
   dependencies:
     repeating "^2.0.0"
 
-dgeni-packages@^0.16.8:
-  version "0.16.8"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.16.8.tgz#e0596f1902ef76799576bed7bcc1d69943f853a3"
+dgeni-packages@0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.17.0.tgz#b2e5117670e99109f664703af26a460a5064d6cc"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -5595,15 +5595,7 @@ sha.js@^2.3.6:
   dependencies:
     inherits "^2.0.1"
 
-shelljs@^0.7.0:
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.6.tgz#379cccfb56b91c8601e4793356eb5382924de9ad"
-  dependencies:
-    glob "^7.0.0"
-    interpret "^1.0.0"
-    rechoir "^0.6.2"
-
-shelljs@^0.7.7:
+shelljs@^0.7.0, shelljs@^0.7.7:
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.7.tgz#b2f5c77ef97148f4b4f6e22682e10bba8667cff1"
   dependencies:
@@ -6910,10 +6902,6 @@ zip-stream@~0.6.0:
     lodash "~3.10.1"
     readable-stream "~1.0.26"
 
-zone.js@0.7.8:
+zone.js@0.7.8, zone.js@^0.7.2:
   version "0.7.8"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.8.tgz#4f3fe8834d44597f2639053a0fa438df34fffded"
-
-zone.js@^0.7.2:
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.7.7.tgz#0d7b7ae7f68012d03438b8a18f5763441bbf9620"
