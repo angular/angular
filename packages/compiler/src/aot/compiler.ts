@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -217,7 +217,7 @@ export class AotCompiler {
     return new GeneratedFile(
         srcFileUrl, genFileUrl,
         this._outputEmitter.emitStatements(
-            srcFileUrl, genFileUrl, statements, exportedVars, this._genFilePreamble));
+            sourceUrl(srcFileUrl), genFileUrl, statements, exportedVars, this._genFilePreamble));
   }
 }
 
