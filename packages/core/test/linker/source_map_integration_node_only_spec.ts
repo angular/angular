@@ -73,36 +73,36 @@ export function main() {
     }
 
     describe('inline templates', () => {
-      const templateUrl = 'ng:///DynamicTestModule/MyComp.html';
+      const ngUrl = 'ng:///DynamicTestModule/MyComp.html';
 
       function templateDecorator(template: string) { return {template}; }
 
-      declareTests({templateUrl, templateDecorator});
+      declareTests({ngUrl, templateDecorator});
     });
 
     describe('external templates', () => {
-      const templateUrl = 'http://localhost:1234:some/url.html';
+      const ngUrl = 'ng:///some/url.html';
+      const templateUrl = 'http://localhost:1234/some/url.html';
 
       function templateDecorator(template: string) {
         resourceLoader.expect(templateUrl, template);
         return {templateUrl};
       }
 
-      declareTests({templateUrl, templateDecorator});
+      declareTests({ngUrl, templateDecorator});
     });
 
-    function declareTests({templateUrl, templateDecorator}: {
-      templateUrl: string,
-      templateDecorator: (template: string) => { [key: string]: any }
-    }) {
+    function declareTests(
+        {ngUrl, templateDecorator}:
+            {ngUrl: string, templateDecorator: (template: string) => { [key: string]: any }}) {
       it('should use the right source url in html parse errors', fakeAsync(() => {
            @Component({...templateDecorator('<div>\n  </error>')})
            class MyComp {
            }
 
            expect(() => compileAndCreateComponent(MyComp))
-               .toThrowError(new RegExp(
-                   `Template parse errors[\\s\\S]*${templateUrl.replace('$', '\\$')}@1:2`));
+               .toThrowError(
+                   new RegExp(`Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:2`));
          }));
 
       it('should use the right source url in template parse errors', fakeAsync(() => {
@@ -111,8 +111,8 @@ export function main() {
            }
 
            expect(() => compileAndCreateComponent(MyComp))
-               .toThrowError(new RegExp(
-                   `Template parse errors[\\s\\S]*${templateUrl.replace('$', '\\$')}@1:7`));
+               .toThrowError(
+                   new RegExp(`Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:7`));
          }));
 
       it('should create a sourceMap for templates', fakeAsync(() => {
@@ -126,7 +126,7 @@ export function main() {
 
            const sourceMap = getSourceMap('ng:///DynamicTestModule/MyComp.ngfactory.js');
            expect(sourceMap.sources).toEqual([
-             'ng:///DynamicTestModule/MyComp.ngfactory.js', templateUrl
+             'ng:///DynamicTestModule/MyComp.ngfactory.js', ngUrl
            ]);
            expect(sourceMap.sourcesContent).toEqual([null, template]);
          }));
@@ -155,7 +155,7 @@ export function main() {
            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
              line: 2,
              column: 4,
-             source: templateUrl,
+             source: ngUrl,
            });
          }));
 
@@ -179,13 +179,13 @@ export function main() {
            expect(getSourcePositionForStack(error.stack)).toEqual({
              line: 2,
              column: 12,
-             source: templateUrl,
+             source: ngUrl,
            });
            // The error should be logged from the element
            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
              line: 2,
              column: 4,
-             source: templateUrl,
+             source: ngUrl,
            });
          }));
 
@@ -209,13 +209,13 @@ export function main() {
            expect(getSourcePositionForStack(error.stack)).toEqual({
              line: 2,
              column: 12,
-             source: templateUrl,
+             source: ngUrl,
            });
            // The error should be logged from the element
            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
              line: 2,
              column: 4,
-             source: templateUrl,
+             source: ngUrl,
            });
 
          }));
