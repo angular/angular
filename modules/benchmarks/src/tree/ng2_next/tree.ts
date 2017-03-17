@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector, NgModuleRef, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
-import {ArgumentType, BindingType, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingFlags, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
@@ -63,7 +63,7 @@ function TreeComponent_0(): ViewDefinition {
       [
         elementDef(
             NodeFlags.None, null, null, 1, 'span', null,
-            [[BindingType.ElementStyle, 'backgroundColor', null]]),
+            [[BindingFlags.TypeElementStyle, 'backgroundColor', null]]),
         textDef(null, [' ', ' ']),
         anchorDef(NodeFlags.EmbeddedViews, null, null, 1, null, TreeComponent_1),
         directiveDef(

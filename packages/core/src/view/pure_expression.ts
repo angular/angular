@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingDef, BindingType, DepDef, DepFlags, NodeData, NodeDef, NodeFlags, ProviderData, PureExpressionData, Services, ViewData, asPureExpressionData} from './types';
-import {checkAndUpdateBinding, tokenKey} from './util';
+import {BindingDef, BindingFlags, DepDef, DepFlags, NodeData, NodeDef, NodeFlags, ProviderData, PureExpressionData, Services, ViewData, asPureExpressionData} from './types';
+import {calcBindingFlags, checkAndUpdateBinding, tokenKey} from './util';
 
 export function purePipeDef(argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
@@ -27,7 +27,7 @@ function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef 
   for (let i = 0; i < propertyNames.length; i++) {
     const prop = propertyNames[i];
     bindings[i] = {
-      type: BindingType.PureExpressionProperty,
+      flags: BindingFlags.TypeProperty,
       name: prop,
       ns: undefined,
       nonMinifiedName: prop,
@@ -52,6 +52,7 @@ function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef 
     references: {},
     ngContentIndex: undefined,
     childCount: 0, bindings,
+    bindingFlags: calcBindingFlags(bindings),
     outputs: [],
     element: undefined,
     provider: undefined,

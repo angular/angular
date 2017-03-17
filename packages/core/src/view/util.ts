@@ -17,7 +17,7 @@ import {Renderer, RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {BindingDef, BindingFlags, DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
@@ -341,6 +341,14 @@ export function splitNamespace(name: string): string[] {
     return [match[1], match[2]];
   }
   return ['', name];
+}
+
+export function calcBindingFlags(bindings: BindingDef[]): BindingFlags {
+  let flags = 0;
+  for (let i = 0; i < bindings.length; i++) {
+    flags |= bindings[i].flags;
+  }
+  return flags;
 }
 
 export function interpolate(valueCount: number, constAndInterp: string[]): string {

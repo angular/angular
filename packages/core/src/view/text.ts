@@ -8,14 +8,14 @@
 
 import {looseIdentical} from '../util';
 
-import {BindingDef, BindingType, DebugContext, NodeData, NodeDef, NodeFlags, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
-import {checkAndUpdateBinding, getParentRenderElement} from './util';
+import {BindingDef, BindingFlags, DebugContext, NodeData, NodeDef, NodeFlags, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {calcBindingFlags, checkAndUpdateBinding, getParentRenderElement} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   const bindings: BindingDef[] = new Array(constants.length - 1);
   for (let i = 1; i < constants.length; i++) {
     bindings[i - 1] = {
-      type: BindingType.TextInterpolation,
+      flags: BindingFlags.TypeProperty,
       name: undefined,
       ns: undefined,
       nonMinifiedName: undefined,
@@ -40,6 +40,7 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     matchedQueryIds: 0,
     references: {}, ngContentIndex,
     childCount: 0, bindings,
+    bindingFlags: calcBindingFlags(bindings),
     outputs: [],
     element: undefined,
     provider: undefined,

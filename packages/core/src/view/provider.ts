@@ -15,8 +15,8 @@ import {ViewEncapsulation} from '../metadata/view';
 import {Renderer as RendererV1, Renderer2, RendererFactory2, RendererType2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
-import {BindingDef, BindingType, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {checkBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
+import {BindingDef, BindingFlags, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {calcBindingFlags, checkBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
 const RendererV1TokenKey = tokenKey(RendererV1);
 const Renderer2TokenKey = tokenKey(Renderer2);
@@ -37,7 +37,7 @@ export function directiveDef(
     for (let prop in props) {
       const [bindingIndex, nonMinifiedName] = props[prop];
       bindings[bindingIndex] = {
-        type: BindingType.DirectiveProperty,
+        flags: BindingFlags.TypeProperty,
         name: prop, nonMinifiedName,
         ns: undefined,
         securityContext: undefined,
@@ -103,7 +103,8 @@ export function _def(
     childFlags: 0,
     directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
-    ngContentIndex: undefined, childCount, bindings, outputs,
+    ngContentIndex: undefined, childCount, bindings,
+    bindingFlags: calcBindingFlags(bindings), outputs,
     element: undefined,
     provider: {token, tokenKey: tokenKey(token), value, deps: depDefs},
     text: undefined,

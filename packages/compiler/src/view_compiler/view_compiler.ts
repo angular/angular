@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingType as BindingType, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {BuiltinConverter, BuiltinConverterFactory, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
@@ -355,10 +355,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     //   flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     //   ngContentIndex: number, childCount: number, namespaceAndName: string,
     //   fixedAttrs: [string, string][] = [],
-    //   bindings?:
-    //       ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
-    //        [BindingType.ElementAttribute | BindingType.ElementProperty |
-    //        BindingType.DirectiveHostProperty, string, SecurityContext])[],
+    //   bindings?: [BindingFlags, string, string | SecurityContext][],
     //   outputs?: ([OutputType.ElementOutput | OutputType.DirectiveHostOutput, string, string])[],
     //   handleEvent?: ElementHandleEventFn,
     //   componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef;
@@ -1024,26 +1021,27 @@ function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveA
   switch (inputAst.type) {
     case PropertyBindingType.Attribute:
       return o.literalArr([
-        o.literal(BindingType.ElementAttribute), o.literal(inputAst.name),
+        o.literal(BindingFlags.TypeElementAttribute), o.literal(inputAst.name),
         o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Property:
       return o.literalArr([
-        o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
+        o.literal(BindingFlags.TypeProperty), o.literal(inputAst.name),
         o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Animation:
       const bindingType = dirAst && dirAst.directive.isComponent ?
-          BindingType.ComponentHostProperty :
-          BindingType.ElementProperty;
+          BindingFlags.TypeProperty | BindingFlags.SyntheticComponentHostProperty :
+          BindingFlags.TypeProperty;
       return o.literalArr([
         o.literal(bindingType), o.literal('@' + inputAst.name), o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Class:
-      return o.literalArr([o.literal(BindingType.ElementClass), o.literal(inputAst.name)]);
+      return o.literalArr(
+          [o.literal(BindingFlags.TypeElementClass), o.literal(inputAst.name), o.NULL_EXPR]);
     case PropertyBindingType.Style:
       return o.literalArr([
-        o.literal(BindingType.ElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
+        o.literal(BindingFlags.TypeElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
       ]);
   }
 }
