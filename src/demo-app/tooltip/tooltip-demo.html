@@ -7,6 +7,7 @@
             color="primary"
             [mdTooltip]="message"
             [mdTooltipPosition]="position"
+            [mdTooltipDisabled]="disabled"
             [mdTooltipShowDelay]="showDelay"
             [mdTooltipHideDelay]="hideDelay">
       Mouse over to see the tooltip
@@ -25,10 +26,14 @@
       <md-radio-button value="after">After</md-radio-button>
     </md-radio-group>
   </p>
-
   <p>
     <strong>Message: </strong>
     <md-input-container><input mdInput type="text" [(ngModel)]="message"></md-input-container>
+  </p>
+
+  <p>
+    <strong>Disabled: </strong>
+    <md-checkbox [(ngModel)]="disabled"></md-checkbox>
   </p>
 
   <p>

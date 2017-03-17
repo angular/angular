@@ -112,6 +112,37 @@ describe('MdTooltip', () => {
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
     }));
 
+    it('should not show if disabled', fakeAsync(() => {
+      // Test that disabling the tooltip will not set the tooltip visible
+      tooltipDirective.disabled = true;
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+
+      // Test to make sure setting disabled to false will show the tooltip
+      // Sanity check to make sure everything was correct before (detectChanges, tick)
+      tooltipDirective.disabled = false;
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+    }));
+
+    it('should hide if disabled while visible', fakeAsync(() => {
+      // Display the tooltip with a timeout before hiding.
+      tooltipDirective.hideDelay = 1000;
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      // Set tooltip to be disabled and verify that the tooltip hides.
+      tooltipDirective.disabled = true;
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+    }));
+
     it('should not show if hide is called before delay finishes', fakeAsync(() => {
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
 

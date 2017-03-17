@@ -33,3 +33,5 @@ delay of 1500ms. The longpress behavior requires HammerJS to be loaded on the pa
 The tooltip can also be shown and hidden through the `show` and `hide` directive methods,
 which both accept a number in milliseconds to delay before applying the display change.
 
+To turn off the tooltip and prevent it from showing to the user, use the `mdTooltipDisabled` input flag.
+
