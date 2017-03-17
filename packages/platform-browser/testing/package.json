@@ -1,4 +1,5 @@
 {
+  "name": "@angular/platform-browser/testing",
   "typings": "../testing.d.ts",
   "main": "../bundles/platform-browser-testing.umd.js",
   "module": "../@angular/platform-browser/testing.es5.js",
