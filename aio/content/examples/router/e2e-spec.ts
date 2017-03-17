@@ -1,30 +1,34 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by, ExpectedConditions } from 'protractor';
 
-describe('Router', function () {
+const numDashboardTabs = 5;
+const numCrises = 4;
+const numHeroes = 6;
+const EC = ExpectedConditions;
 
-  beforeAll(function () {
-    browser.get('');
-  });
+describe('Router', () => {
+
+  beforeAll(() => browser.get(''));
 
   function getPageStruct() {
-    let hrefEles = element.all(by.css('my-app a'));
+    const hrefEles = element.all(by.css('my-app a'));
+    const crisisDetail = element.all(by.css('my-app > ng-component > ng-component > ng-component > div')).first();
+    const heroDetail = element(by.css('my-app > ng-component > div'));
 
     return {
       hrefs: hrefEles,
-      routerParent: element(by.css('my-app > ng-component')),
-      routerTitle: element(by.css('my-app > ng-component > h2')),
+      activeHref: element(by.css('my-app a.active')),
 
       crisisHref: hrefEles.get(0),
       crisisList: element.all(by.css('my-app > ng-component > ng-component li')),
-      crisisDetail: element(by.css('my-app > ng-component > ng-component > ng-component > div')),
-      crisisDetailTitle: element(by.css('my-app > ng-component > ng-component > ng-component > div > h3')),
+      crisisDetail: crisisDetail,
+      crisisDetailTitle: crisisDetail.element(by.xpath('*[1]')),
 
       heroesHref: hrefEles.get(1),
       heroesList: element.all(by.css('my-app > ng-component li')),
-      heroDetail: element(by.css('my-app > ng-component > div')),
-      heroDetailTitle: element(by.css('my-app > ng-component > div > h3')),
+      heroDetail: heroDetail,
+      heroDetailTitle: heroDetail.element(by.xpath('*[1]')),
 
       adminHref: hrefEles.get(2),
       adminPreloadList: element.all(by.css('my-app > ng-component > ng-component > ul > li')),
@@ -39,9 +43,9 @@ describe('Router', function () {
     };
   }
 
-  it('should be able to see the start screen', function () {
-    let page = getPageStruct();
-    expect(page.hrefs.count()).toEqual(5, 'should be 5 dashboard choices');
+  it('has expected dashboard tabs', () => {
+    const page = getPageStruct();
+    expect(page.hrefs.count()).toEqual(numDashboardTabs, 'dashboard tab count');
     expect(page.crisisHref.getText()).toEqual('Crisis Center');
     expect(page.heroesHref.getText()).toEqual('Heroes');
     expect(page.adminHref.getText()).toEqual('Admin');
@@ -49,118 +53,110 @@ describe('Router', function () {
     expect(page.contactHref.getText()).toEqual('Contact');
   });
 
-  it('should be able to see crises center items', function () {
-    let page = getPageStruct();
-    page.crisisHref.click().then(function() {
-      expect(page.crisisList.count()).toBe(4, 'should be 4 crisis center entries at start');
-    });
+  it('has heroes selected as opening tab', () => {
+    const page = getPageStruct();
+    expect(page.activeHref.getText()).toEqual('Heroes');
   });
 
-  it('should be able to see hero items', function () {
-    let page = getPageStruct();
-    page.heroesHref.click().then(function() {
-      expect(page.routerTitle.getText()).toContain('HEROES');
-      expect(page.heroesList.count()).toBe(6, 'should be 6 heroes');
-    });
+  it('has crises center items', async () => {
+    const page = getPageStruct();
+    await page.crisisHref.click();
+    expect(page.activeHref.getText()).toEqual('Crisis Center');
+    expect(page.crisisList.count()).toBe(numCrises, 'crisis list count');
   });
 
-  it('should be able to toggle the views', function () {
-    let page = getPageStruct();
-    page.crisisHref.click().then(function() {
-      expect(page.crisisList.count()).toBe(4, 'should be 4 crisis center entries');
-      return page.heroesHref.click();
-    }).then(function() {
-      expect(page.heroesList.count()).toBe(6, 'should be 6 heroes');
-    });
+  it('has hero items', async () => {
+    const page = getPageStruct();
+    await page.heroesHref.click();
+    expect(page.activeHref.getText()).toEqual('Heroes');
+    expect(page.heroesList.count()).toBe(numHeroes, 'hero list count');
   });
 
-  it('should be able to edit and save details from the crisis center view', function () {
-    let page = getPageStruct();
-    page.crisisHref.click().then(function() {
-      crisisCenterEdit(2, true);
-    });
+  it('toggles views', async () => {
+    const page = getPageStruct();
+    await page.crisisHref.click();
+    expect(page.activeHref.getText()).toEqual('Crisis Center');
+    expect(page.crisisList.count()).toBe(numCrises, 'crisis list count');
+    await page.heroesHref.click();
+    expect(page.activeHref.getText()).toEqual('Heroes');
+    expect(page.heroesList.count()).toBe(numHeroes, 'hero list count');
   });
 
-  xit('should be able to edit and cancel details from the crisis center view', function () {
-    let page = getPageStruct();
-    page.crisisHref.click().then(function() {
-      crisisCenterEdit(3, false);
-    });
+  it('saves changed crisis details', async () => {
+    const page = getPageStruct();
+    await page.crisisHref.click();
+    await crisisCenterEdit(2, true);
   });
 
-  it('should be able to edit and save details from the heroes view', function () {
-    let page = getPageStruct();
-    let heroEle: ElementFinder;
-    let heroText: string;
-    page.heroesHref.click().then(function() {
-      heroEle = page.heroesList.get(4);
-      return heroEle.getText();
-    }).then(function(text: string) {
-      expect(text.length).toBeGreaterThan(0, 'should have some text');
-      // remove leading id from text
-      heroText = text.substr(text.indexOf(' ')).trim();
-      return heroEle.click();
-    }).then(function() {
-      expect(page.heroesList.count()).toBe(0, 'should no longer see crisis center entries');
-      expect(page.heroDetail.isPresent()).toBe(true, 'should be able to see crisis detail');
-      expect(page.heroDetailTitle.getText()).toContain(heroText);
-      let inputEle = page.heroDetail.element(by.css('input'));
-      inputEle.sendKeys('-foo');
-      expect(page.heroDetailTitle.getText()).toContain(heroText + '-foo');
-      let buttonEle = page.heroDetail.element(by.css('button'));
-      return buttonEle.click();
-    }).then(function() {
-      expect(heroEle.getText()).toContain(heroText + '-foo');
-    });
+  it('can cancel changed crisis details', async () => {
+    const page = getPageStruct();
+    await page.crisisHref.click();
+    await crisisCenterEdit(3, false);
   });
 
-  it('should be able to see the preloaded modules', function () {
-    let page = getPageStruct();
-    page.loginHref.click().then(function() {
-      return page.loginButton.click();
-    }).then(function() {
-      expect(page.adminPreloadList.count()).toBe(1, 'should be 1 preloaded module');
-      expect(page.adminPreloadList.first().getText()).toBe('crisis-center', 'first preload should be crisis center');
-    });
+  it('saves changed hero details', async () => {
+    const page = getPageStruct();
+    await page.heroesHref.click();
+    const heroEle = page.heroesList.get(4);
+    let text = await heroEle.getText();
+    expect(text.length).toBeGreaterThan(0, 'hero item text length');
+    // remove leading id from text
+    const heroText = text.substr(text.indexOf(' ')).trim();
+
+    await heroEle.click();
+    expect(page.heroesList.count()).toBe(0, 'hero list count');
+    expect(page.heroDetail.isPresent()).toBe(true, 'hero detail');
+    expect(page.heroDetailTitle.getText()).toContain(heroText);
+    let inputEle = page.heroDetail.element(by.css('input'));
+    await inputEle.sendKeys('-foo');
+    expect(page.heroDetailTitle.getText()).toContain(heroText + '-foo');
+
+    let buttonEle = page.heroDetail.element(by.css('button'));
+    await buttonEle.click();
+    expect(heroEle.getText()).toContain(heroText + '-foo');
   });
 
-  it('should be able to see the secondary route', function () {
-    let page = getPageStruct();
-    page.heroesHref.click().then(function() {
-      return page.contactHref.click();
-    }).then(function() {
-      expect(page.outletComponents.count()).toBe(2, 'should be 2 displayed routes');
-    });
+  it('sees preloaded modules', async () => {
+    const page = getPageStruct();
+    await page.loginHref.click();
+    await page.loginButton.click();
+    const list = page.adminPreloadList;
+    expect(list.count()).toBe(1, 'preloaded module');
+    expect(await list.first().getText()).toBe('crisis-center', 'first preloaded module');
   });
 
-  function crisisCenterEdit(index: number, shouldSave: boolean) {
-    let page = getPageStruct();
-    let crisisEle: ElementFinder;
-    let crisisText: string;
-    page.crisisHref.click()
-    .then(function () {
-      crisisEle = page.crisisList.get(index);
-      return crisisEle.getText();
-    }).then(function(text: string) {
-      expect(text.length).toBeGreaterThan(0, 'should have some text');
-      // remove leading id from text
-      crisisText = text.substr(text.indexOf(' ')).trim();
-      return crisisEle.click();
-    }).then(function () {
-      expect(page.crisisDetail.isPresent()).toBe(true, 'should be able to see crisis detail');
-      expect(page.crisisDetailTitle.getText()).toContain(crisisText);
-      let inputEle = page.crisisDetail.element(by.css('input'));
-      inputEle.sendKeys('-foo');
-      expect(page.crisisDetailTitle.getText()).toContain(crisisText + '-foo');
-      let buttonEle = page.crisisDetail.element(by.cssContainingText('button', shouldSave ? 'Save' : 'Cancel'));
-      return buttonEle.click();
-    }).then(function () {
-      if (shouldSave) {
-        expect(crisisEle.getText()).toContain(crisisText + '-foo');
-      } else {
-        expect(crisisEle.getText()).not.toContain(crisisText + '-foo');
-      }
-    });
+  it('sees the secondary route', async () => {
+    const page = getPageStruct();
+    await page.heroesHref.click();
+    await page.contactHref.click();
+    expect(page.outletComponents.count()).toBe(2, 'route count');
+  });
+
+  async function crisisCenterEdit(index: number, save: boolean) {
+    const page = getPageStruct();
+    await page.crisisHref.click();
+    let crisisEle = page.crisisList.get(index);
+    let text = await crisisEle.getText();
+    expect(text.length).toBeGreaterThan(0, 'crisis item text length');
+    // remove leading id from text
+    const crisisText = text.substr(text.indexOf(' ')).trim();
+
+    await crisisEle.click();
+    expect(page.crisisDetail.isPresent()).toBe(true, 'crisis detail present');
+    expect(page.crisisDetailTitle.getText()).toContain(crisisText);
+    let inputEle = page.crisisDetail.element(by.css('input'));
+    await inputEle.sendKeys('-foo');
+
+    let buttonEle = page.crisisDetail.element(by.buttonText(save ? 'Save' : 'Cancel'));
+    await buttonEle.click();
+    crisisEle = page.crisisList.get(index);
+    if (save) {
+      expect(crisisEle.getText()).toEqual(crisisText + '-foo');
+    } else {
+      await browser.wait(EC.alertIsPresent(), 4000);
+      await browser.switchTo().alert().accept();
+      expect(crisisEle.getText()).toEqual(crisisText);
+    }
   }
 
 });
