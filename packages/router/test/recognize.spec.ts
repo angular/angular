@@ -665,6 +665,7 @@ describe('recognize', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(config, 'a?q=11', (s: RouterStateSnapshot) => {
         expect(s.root.queryParams).toEqual({q: '11'});
+        expect(s.root.queryParamMap.get('q')).toEqual('11');
       });
     });
 

@@ -84,6 +84,8 @@ describe('create router state', () => {
     const currC = state.children(currP);
 
     expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});
+    expect(currP._futureSnapshot.paramMap.get('id')).toEqual('2');
+    expect(currP._futureSnapshot.paramMap.get('p')).toEqual('22');
     checkActivatedRoute(currC[0], ComponentA);
     checkActivatedRoute(currC[1], ComponentB, 'right');
   });

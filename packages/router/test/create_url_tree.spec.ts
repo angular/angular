@@ -31,12 +31,14 @@ describe('createUrlTree', () => {
       const p = serializer.parse('/');
       const t = createRoot(p, [], {a: 'hey'});
       expect(t.queryParams).toEqual({a: 'hey'});
+      expect(t.queryParamMap.get('a')).toEqual('hey');
     });
 
     it('should stringify query params', () => {
       const p = serializer.parse('/');
       const t = createRoot(p, [], <any>{a: 1});
       expect(t.queryParams).toEqual({a: '1'});
+      expect(t.queryParamMap.get('a')).toEqual('1');
     });
   });
 
