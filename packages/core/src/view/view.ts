@@ -24,10 +24,6 @@ export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
     updateRenderer?: ViewUpdateFn): ViewDefinition {
   // clone nodes and set auto calculated values
-  if (nodes.length === 0) {
-    throw new Error(`Illegal State: Views without nodes are not allowed!`);
-  }
-
   const reverseChildNodes: NodeDef[] = new Array(nodes.length);
   let viewBindingCount = 0;
   let viewDisposableCount = 0;
@@ -152,6 +148,9 @@ export function viewDef(
 function validateNode(parent: NodeDef, node: NodeDef, nodeCount: number) {
   const template = node.element && node.element.template;
   if (template) {
+    if (!template.lastRenderRootNode) {
+      throw new Error(`Illegal State: Embedded templates without nodes are not allowed!`);
+    }
     if (template.lastRenderRootNode &&
         template.lastRenderRootNode.flags & NodeFlags.EmbeddedViews) {
       throw new Error(

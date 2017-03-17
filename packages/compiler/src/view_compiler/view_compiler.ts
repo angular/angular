@@ -166,10 +166,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       });
     }
     templateVisitAll(this, astNodes);
-    if (astNodes.length === 0 ||
-        (this.parent && needsAdditionalRootNode(astNodes[astNodes.length - 1]))) {
-      // if the view is empty, or an embedded view has a view container as last root nde,
-      // create an additional root node.
+    if (this.parent && (astNodes.length === 0 || needsAdditionalRootNode(astNodes))) {
+      // if the view is an embedded view, then we need to add an additional root node in some cases
       this.nodes.push(() => ({
                         sourceSpan: null,
                         nodeDef: o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
@@ -971,19 +969,20 @@ function depDef(dep: CompileDiDependencyMetadata): o.Expression {
   return flags === DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
 }
 
-function needsAdditionalRootNode(ast: TemplateAst): boolean {
-  if (ast instanceof EmbeddedTemplateAst) {
-    return ast.hasViewContainer;
+function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
+  const lastAstNode = astNodes[astNodes.length - 1];
+  if (lastAstNode instanceof EmbeddedTemplateAst) {
+    return lastAstNode.hasViewContainer;
   }
 
-  if (ast instanceof ElementAst) {
-    if (ast.name === NG_CONTAINER_TAG && ast.children.length) {
-      return needsAdditionalRootNode(ast.children[ast.children.length - 1]);
+  if (lastAstNode instanceof ElementAst) {
+    if (lastAstNode.name === NG_CONTAINER_TAG && lastAstNode.children.length) {
+      return needsAdditionalRootNode(lastAstNode.children);
     }
-    return ast.hasViewContainer;
+    return lastAstNode.hasViewContainer;
   }
 
-  return ast instanceof NgContentAst;
+  return lastAstNode instanceof NgContentAst;
 }
 
 function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlags {

@@ -306,6 +306,36 @@ function declareTests({useJit}: {useJit: boolean}) {
       ctx.detectChanges();
       expect(ctx.componentInstance.viewContainers.first).toBe(vc);
     });
+
+    describe('empty templates - #15143', () => {
+      it('should allow empty components', () => {
+        @Component({template: ''})
+        class MyComp {
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.childNodes.length).toBe(0);
+      });
+
+      it('should allow empty embedded templates', () => {
+        @Component({template: '<ng-template [ngIf]="true"></ng-template>'})
+        class MyComp {
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+        fixture.detectChanges();
+
+        // Note: We always need to create at least a comment in an embedded template,
+        // so we can append other templates after it.
+        // 1 comment for the anchor,
+        // 1 comment for the empty embedded template.
+        expect(fixture.debugElement.childNodes.length).toBe(2);
+      });
+    });
   });
 }
 
