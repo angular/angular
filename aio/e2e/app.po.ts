@@ -1,16 +1,22 @@
-import { browser, element, by, promise } from 'protractor';
+import { browser, element, by, promise, ElementFinder } from 'protractor';
+
+const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 
 export class SitePage {
   links = element.all(by.css('md-toolbar a'));
   docViewer = element(by.css('aio-doc-viewer'));
   codeExample = element.all(by.css('aio-doc-viewer pre > code'));
+  ghLink = this.docViewer
+    .all(by.css('a'))
+    .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
+    .first();
   featureLink = element(by.css('md-toolbar a[href="features"]'));
   gaReady: promise.Promise<any>;
   ga = () => browser.executeScript('return window["gaCalls"]') as promise.Promise<any[][]>;
   locationPath = () => browser.executeScript('return document.location.pathname') as promise.Promise<string>;
 
-  navigateTo() {
-    return browser.get('/').then(_ => this.replaceGa(_));
+  navigateTo(pageUrl = '') {
+    return browser.get('/' + pageUrl).then(_ => this.replaceGa(_));
   }
 
   getDocViewerText() {
