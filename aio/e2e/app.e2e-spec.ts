@@ -17,6 +17,14 @@ describe('site App', function() {
 
   it('should convert a doc with a code-example');
 
+  describe('api-docs', () => {
+    it('should show a link to github', () => {
+      page.navigateTo('api/common/NgClass');
+      expect(page.ghLink.getAttribute('href'))
+          .toMatch(/https:\/\/github.com\/angular\/angular\/tree\/.+\/packages\/common\/src\/directives\/ng_class\.ts/);
+    });
+  });
+
   describe('google analytics', () => {
     beforeEach(done => page.gaReady.then(done));
 
