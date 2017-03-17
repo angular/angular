@@ -515,7 +515,7 @@ export function main() {
              expect(renderLog.log).toEqual([]);
            }));
 
-        it('should unwrap the wrapped value', fakeAsync(() => {
+        it('should unwrap the wrapped value and force a change', fakeAsync(() => {
              const ctx = _bindSimpleValue('"Megatron" | wrappedPipe', Person);
 
              ctx.detectChanges(false);
@@ -526,6 +526,28 @@ export function main() {
              ctx.detectChanges(false);
 
              expect(renderLog.log).toEqual(['someProp=Megatron']);
+           }));
+
+        it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
+             const ctx = createCompFixture(
+                 '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
+             const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
+             ctx.detectChanges(false);
+             dir.changes = {};
+             ctx.detectChanges(false);
+
+             // Note: the binding for `b` did not change and has no ValueWrapper,
+             // and should therefore stay unchanged.
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
+
+             ctx.detectChanges(false);
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
            }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
@@ -669,9 +691,16 @@ export function main() {
                  '<div [testDirective]="\'aName\'" [a]="1" [b]="2"></div><div [testDirective]="\'bName\'" [a]="4"></div>');
              ctx.detectChanges(false);
 
-             const dirs = queryDirs(ctx.debugElement, TestDirective);
-             expect(dirs[0].changes).toEqual({'a': 1, 'b': 2, 'name': 'aName'});
-             expect(dirs[1].changes).toEqual({'a': 4, 'name': 'bName'});
+             const dirs = <TestDirective[]>queryDirs(ctx.debugElement, TestDirective);
+             expect(dirs[0].changes).toEqual({
+               'a': new SimpleChange(undefined, 1, true),
+               'b': new SimpleChange(undefined, 2, true),
+               'name': new SimpleChange(undefined, 'aName', true)
+             });
+             expect(dirs[1].changes).toEqual({
+               'a': new SimpleChange(undefined, 4, true),
+               'name': new SimpleChange(undefined, 'bName', true)
+             });
            }));
       });
     });
@@ -1457,7 +1486,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  changes: any;
+  changes: SimpleChanges;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
@@ -1480,9 +1509,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   ngOnChanges(changes: SimpleChanges) {
     this.log.add(this.name, 'ngOnChanges');
-    const r: {[k: string]: string} = {};
-    Object.keys(changes).forEach(key => { r[key] = changes[key].currentValue; });
-    this.changes = r;
+    this.changes = changes;
     if (this.throwOn == 'ngOnChanges') {
       throw new Error('Boom!');
     }
