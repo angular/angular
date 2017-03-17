@@ -57,7 +57,7 @@ export function main() {
         const sm = emitSourceMap(someVar.toStmt(), [], '/* MyPreamble \n */');
 
         expect(sm.sources).toEqual([someSourceFilePath, 'in.js']);
-        expect(sm.sourcesContent).toEqual([null, ';;;var']);
+        expect(sm.sourcesContent).toEqual([' ', ';;;var']);
         expect(originalPositionFor(sm, {line: 3, column: 0}))
             .toEqual({line: 1, column: 3, source: 'in.js'});
       });
