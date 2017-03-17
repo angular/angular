@@ -29,7 +29,7 @@ gulp.task(':test:deps', sequenceTask(
     ':build:test:vendor',
     ':build:components:assets',
     ':build:components:scss',
-    ':build:components:spec',
+    ':build:components:ts:spec',
   ]
 ));
 
@@ -84,7 +84,7 @@ gulp.task('test', [':test:deps'], () => {
   server.on('browser_register', runTests);
 
   // Watch for file changes, rebuild and run the tests.
-  gulp.watch(patternRoot + '.ts', () => runSequence(':build:components:spec', runTests));
+  gulp.watch(patternRoot + '.ts', () => runSequence(':build:components:ts:spec', runTests));
   gulp.watch(patternRoot + '.scss', () => runSequence(':build:components:scss', runTests));
   gulp.watch(patternRoot + '.html', () => runSequence(':build:components:assets', runTests));
 });

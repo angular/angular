@@ -3,18 +3,20 @@ import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
 import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT} from '../constants';
+import {CompilerOptions} from 'typescript';
+import {compileProject} from './ts-compiler';
 
-
-/** Those imports lack typings. */
+/* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
 const gulpMerge = require('merge2');
 const gulpRunSequence = require('run-sequence');
 const gulpSass = require('gulp-sass');
 const gulpSourcemaps = require('gulp-sourcemaps');
 const gulpConnect = require('gulp-connect');
+const gulpIf = require('gulp-if');
+const gulpCleanCss = require('gulp-clean-css');
+
 const resolveBin = require('resolve-bin');
-
-
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
@@ -32,17 +34,20 @@ function _globify(maybeGlob: string, suffix = '**/*') {
 
 
 /** Creates a task that runs the TypeScript compiler */
-export function tsBuildTask(tsConfigPath: string) {
-  return execNodeTask('typescript', 'tsc', ['-p', tsConfigPath]);
+export function tsBuildTask(tsConfigPath: string, extraOptions?: CompilerOptions) {
+  return () => {
+    compileProject(tsConfigPath, extraOptions);
+  };
 }
 
 
 /** Create a SASS Build Task. */
-export function sassBuildTask(dest: string, root: string) {
+export function sassBuildTask(dest: string, root: string, minify = false) {
   return () => {
     return gulp.src(_globify(root, '**/*.scss'))
-      .pipe(gulpSourcemaps.init())
+      .pipe(gulpSourcemaps.init({ loadMaps: true }))
       .pipe(gulpSass().on('error', gulpSass.logError))
+      .pipe(gulpIf(minify, gulpCleanCss()))
       .pipe(gulpSourcemaps.write('.'))
       .pipe(gulp.dest(dest));
   };

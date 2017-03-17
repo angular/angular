@@ -4,19 +4,17 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "es2015", "dom"],
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
     "outDir": "../../dist/@angular/material",
     "rootDir": ".",
     "sourceMap": true,
-    "target": "es5",
+    "target": "es6",
     "inlineSources": true,
     "stripInternal": false,
     "baseUrl": "",
-    "paths": {
-    },
     "typeRoots": [
       "../../node_modules/@types/!(node)"
     ],

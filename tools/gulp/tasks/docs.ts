@@ -3,7 +3,7 @@ import {Dgeni} from 'dgeni';
 import * as path from 'path';
 import {HTML_MINIFIER_OPTIONS} from '../constants';
 
-// Node packages that lack of types.
+// There are no type definitions available for these imports.
 const markdown = require('gulp-markdown');
 const transform = require('gulp-transform');
 const highlight = require('gulp-highlight-files');
