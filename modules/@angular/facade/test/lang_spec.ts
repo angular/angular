@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, escapeRegExp} from '../src/lang';
+import {NumberWrapper, escapeRegExp, stringify} from '../src/lang';
 
 export function main() {
   describe('RegExp', () => {
@@ -38,6 +38,22 @@ export function main() {
 
       it('should return false when passing parseable but non numeric',
          () => { expect(NumberWrapper.isNumeric('2a')).toBe(false); });
+    });
+  });
+
+  describe('stringify', () => {
+    it('should return string undefined when toString returns undefined', () => {
+      class Foo {
+        toString(): string { return undefined; }
+      }
+      expect(stringify(new Foo())).toBe('undefined');
+    });
+
+    it('should return string null when toString returns null', () => {
+      class Foo {
+        toString(): string { return null; }
+      }
+      expect(stringify(new Foo())).toBe('null');
     });
   });
 }
