@@ -27,6 +27,9 @@ export function isObservable(obj: any | Observable<any>): obj is Observable<any>
 
 // TODO(misko): replace with Object.assign once we require ES6.
 export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
+  if (!m1) return m2;
+  if (!m2) return m1;
+
   const m: {[key: string]: V} = {};
 
   for (const k of Object.keys(m1)) {
