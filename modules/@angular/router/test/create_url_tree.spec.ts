@@ -217,8 +217,8 @@ describe('createUrlTree', () => {
 
   it('should stringify query params', () => {
     const p = serializer.parse('/');
-    const t = createRoot(p, [], <any>{a: 1});
-    expect(t.queryParams).toEqual({a: '1'});
+    const t = createRoot(p, [], {a: 1, b: [1, 2, 3]});
+    expect(t.queryParams).toEqual({a: '1', b: [1, 2, 3]});
   });
 
   it('should set fragment', () => {
