@@ -35,6 +35,8 @@ const dgeniPackageDeps = [
 
 let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
 
+.processor(require('./processors/link-inherited-docs'))
+
 // Processor that filters out symbols that should not be shown in the docs.
 .processor(require('./processors/docs-private-filter'))
 
