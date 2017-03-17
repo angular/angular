@@ -40,6 +40,7 @@ export function queryDef(
     references: {},
     childCount: 0,
     bindings: [],
+    bindingFlags: 0,
     outputs: [],
     element: undefined,
     provider: undefined,

@@ -27,6 +27,7 @@ export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
     references: {}, ngContentIndex,
     childCount: 0,
     bindings: [],
+    bindingFlags: 0,
     outputs: [],
     element: undefined,
     provider: undefined,
