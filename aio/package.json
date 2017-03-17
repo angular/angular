@@ -58,7 +58,7 @@
     "codelyzer": "~2.0.0-beta.4",
     "concurrently": "^3.4.0",
     "dgeni": "^0.4.7",
-    "dgeni-packages": "^0.16.8",
+    "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
     "firebase-tools": "^3.2.1",
     "gulp": "^3.9.1",
