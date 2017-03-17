@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {EventEmitter, ɵmerge as merge} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {toObservable} from './validators';
@@ -415,8 +414,8 @@ export abstract class AbstractControl {
     if (this.asyncValidator) {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription =
-          obs.subscribe((res: {[key: string]: any}) => this.setErrors(res, {emitEvent}));
+      this._asyncValidationSubscription = obs.subscribe(
+          (res: {[key: string]: any}) => this.setErrors(merge(this._errors, res), {emitEvent}));
     }
   }
 
