@@ -89,6 +89,8 @@ interface ViewBuilderFactory {
 
 interface UpdateExpression {
   context: o.Expression;
+  nodeIndex: number;
+  bindingIndex: number;
   sourceSpan: ParseSourceSpan;
   value: AST;
 }
@@ -253,8 +255,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const inter = <Interpolation>astWithSource.ast;
 
     const updateRendererExpressions = inter.expressions.map(
-        (expr) => this._preprocessUpdateExpression(
-            {sourceSpan: ast.sourceSpan, context: COMP_VAR, value: expr}));
+        (expr, bindingIndex) => this._preprocessUpdateExpression(
+            {nodeIndex, bindingIndex, sourceSpan: ast.sourceSpan, context: COMP_VAR, value: expr}));
 
     // textDef(ngContentIndex: number, constants: string[]): NodeDef;
     this.nodes[nodeIndex] = () => ({
@@ -323,8 +325,10 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                                .concat(dirHostBindings);
       if (hostBindings.length) {
         updateRendererExpressions =
-            hostBindings.map((hostBinding) => this._preprocessUpdateExpression({
+            hostBindings.map((hostBinding, bindingIndex) => this._preprocessUpdateExpression({
               context: hostBinding.context,
+              nodeIndex,
+              bindingIndex,
               sourceSpan: hostBinding.inputAst.sourceSpan,
               value: hostBinding.inputAst.value
             }));
@@ -545,9 +549,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     });
     let updateDirectiveExpressions: UpdateExpression[] = [];
     if (dirAst.inputs.length || (flags & (NodeFlags.DoCheck | NodeFlags.OnInit)) > 0) {
-      updateDirectiveExpressions = dirAst.inputs.map(
-          (input) => this._preprocessUpdateExpression(
-              {sourceSpan: input.sourceSpan, context: COMP_VAR, value: input.value}));
+      updateDirectiveExpressions =
+          dirAst.inputs.map((input, bindingIndex) => this._preprocessUpdateExpression({
+            nodeIndex,
+            bindingIndex,
+            sourceSpan: input.sourceSpan,
+            context: COMP_VAR,
+            value: input.value
+          }));
     }
 
     const dirContextExpr = o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
@@ -694,14 +703,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
-  createPipeConverter(sourceSpan: ParseSourceSpan, name: string, argCount: number):
+  createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
     const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name);
     if (pipe.pure) {
       const nodeIndex = this.nodes.length;
       // function purePipeDef(argCount: number): NodeDef;
       this.nodes.push(() => ({
-                        sourceSpan,
+                        sourceSpan: expression.sourceSpan,
                         nodeDef: o.importExpr(createIdentifier(Identifiers.purePipeDef))
                                      .callFn([o.literal(argCount)])
                       }));
@@ -719,15 +728,18 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             compViewExpr, o.literal(pipeNodeIndex)
           ]);
 
-      return (args: o.Expression[]) =>
-                 callUnwrapValue(callCheckStmt(nodeIndex, [pipeValueExpr].concat(args)));
+      return (args: o.Expression[]) => callUnwrapValue(
+                 expression.nodeIndex, expression.bindingIndex,
+                 callCheckStmt(nodeIndex, [pipeValueExpr].concat(args)));
     } else {
-      const nodeIndex = this._createPipe(sourceSpan, pipe);
+      const nodeIndex = this._createPipe(expression.sourceSpan, pipe);
       const nodeValueExpr = o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
         VIEW_VAR, o.literal(nodeIndex)
       ]);
 
-      return (args: o.Expression[]) => callUnwrapValue(nodeValueExpr.callMethod('transform', args));
+      return (args: o.Expression[]) => callUnwrapValue(
+                 expression.nodeIndex, expression.bindingIndex,
+                 nodeValueExpr.callMethod('transform', args));
     }
   }
 
@@ -756,6 +768,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   // Attention: This might create new nodeDefs (for pipes and literal arrays and literal maps)!
   private _preprocessUpdateExpression(expression: UpdateExpression): UpdateExpression {
     return {
+      nodeIndex: expression.nodeIndex,
+      bindingIndex: expression.bindingIndex,
       sourceSpan: expression.sourceSpan,
       context: expression.context,
       value: convertPropertyBindingBuiltins(
@@ -765,7 +779,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             createLiteralMapConverter:
                 (keys: string[]) => this.createLiteralMapConverter(expression.sourceSpan, keys),
             createPipeConverter: (name: string, argCount: number) =>
-                                     this.createPipeConverter(expression.sourceSpan, name, argCount)
+                                     this.createPipeConverter(expression, name, argCount)
           },
           expression.value)
     };
@@ -1070,8 +1084,10 @@ function callCheckStmt(nodeIndex: number, exprs: o.Expression[]): o.Expression {
   }
 }
 
-function callUnwrapValue(expr: o.Expression): o.Expression {
-  return o.importExpr(createIdentifier(Identifiers.unwrapValue)).callFn([expr]);
+function callUnwrapValue(nodeIndex: number, bindingIdx: number, expr: o.Expression): o.Expression {
+  return o.importExpr(createIdentifier(Identifiers.unwrapValue)).callFn([
+    VIEW_VAR, o.literal(nodeIndex), o.literal(bindingIdx), expr
+  ]);
 }
 
 interface StaticAndDynamicQueryIds {
