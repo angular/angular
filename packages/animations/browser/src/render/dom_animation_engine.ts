@@ -106,8 +106,8 @@ export class DomAnimationEngine {
       this._elementTriggerStates.set(element, lookupRef = {});
     }
 
-    let oldValue = lookupRef[property] || 'void';
-    if (oldValue != value) {
+    let oldValue = lookupRef.hasOwnProperty(property) ? lookupRef[property] : 'void';
+    if (oldValue !== value) {
       let instruction = trigger.matchTransition(oldValue, value);
       if (!instruction) {
         // we do this to make sure we always have an animation player so
