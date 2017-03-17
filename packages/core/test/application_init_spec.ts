@@ -47,5 +47,11 @@ export function main() {
            });
          })));
     });
+
+    it('should throw when APP_INITIALIZER is not a function', () => {
+      const appInits: any = [true];
+      expect(() => new ApplicationInitStatus(appInits))
+          .toThrowError(`APP_INITIALIZER must be a function, but received 'true'`);
+    });
   });
 }
