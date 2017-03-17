@@ -7,16 +7,16 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, Inject, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
-import {forEach, shallowEqual} from '../src/utils/collection';
+import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -1443,7 +1443,7 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanActivate',
               useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                if (a.params['id'] == '22') {
+                if (a.params['id'] === '22') {
                   return Promise.resolve(true);
                 } else {
                   return Promise.resolve(false);
@@ -1995,7 +1995,7 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'alwaysFalse',
-              useValue: (a: any, b: any) => a.params.id === '22',
+              useValue: (a: any, b: any) => a.paramMap.get('id') === '22',
             }]
           });
         });
@@ -3233,7 +3233,9 @@ class AbsoluteLinkCmp {
 })
 class DummyLinkCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
+  constructor(route: ActivatedRoute) {
+    this.exact = route.snapshot.paramMap.get('exact') === 'true';
+  }
 }
 
 @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
@@ -3326,7 +3328,7 @@ class QueryParamsAndFragmentCmp {
   fragment: Observable<string>;
 
   constructor(route: ActivatedRoute) {
-    this.name = map.call(route.queryParams, (p: any) => p['name']);
+    this.name = map.call(route.queryParamMap, (p: ParamMap) => p.get('name'));
     this.fragment = route.fragment;
   }
 }
