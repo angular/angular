@@ -73,6 +73,7 @@ describe('compiler (unbundled Angular)', () => {
 
   describe('aot source mapping', () => {
     const componentPath = '/app/app.component.ts';
+    const ngComponentPath = 'ng:///app/app.component.ts'
 
     let rootDir: MockDirectory;
     let appDir: MockDirectory;
@@ -133,14 +134,15 @@ describe('compiler (unbundled Angular)', () => {
     }
 
     describe('inline templates', () => {
-      const templateUrl = `${componentPath}#AppComponent.html`;
+      const ngUrl = `${ngComponentPath}.AppComponent.html`;
 
       function templateDecorator(template: string) { return `template: \`${template}\`,`; }
 
-      declareTests({templateUrl, templateDecorator});
+      declareTests({ngUrl, templateDecorator});
     });
 
     describe('external templates', () => {
+      const ngUrl = 'ng:///app/app.component.html';
       const templateUrl = '/app/app.component.html';
 
       function templateDecorator(template: string) {
@@ -148,18 +150,17 @@ describe('compiler (unbundled Angular)', () => {
         return `templateUrl: 'app.component.html',`;
       }
 
-      declareTests({templateUrl, templateDecorator});
+      declareTests({ngUrl, templateDecorator});
     });
 
-    function declareTests(
-        {templateUrl, templateDecorator}:
-            {templateUrl: string, templateDecorator: (template: string) => string}) {
+    function declareTests({ngUrl, templateDecorator}:
+                              {ngUrl: string, templateDecorator: (template: string) => string}) {
       it('should use the right source url in html parse errors', async(() => {
            appDir['app.component.ts'] =
                createComponentSource(templateDecorator('<div>\n  </error>'));
 
            expectPromiseToThrow(
-               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:2`));
+               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:2`));
          }));
 
       it('should use the right source url in template parse errors', async(() => {
@@ -167,7 +168,7 @@ describe('compiler (unbundled Angular)', () => {
                templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>'));
 
            expectPromiseToThrow(
-               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${templateUrl}@1:7`));
+               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:7`));
          }));
 
       it('should create a sourceMap for the template', async(() => {
@@ -181,12 +182,12 @@ describe('compiler (unbundled Angular)', () => {
 
              // the generated file contains code that is not mapped to
              // the template but rather to the original source file (e.g. import statements, ...)
-             const templateIndex = sourceMap.sources.indexOf(templateUrl);
+             const templateIndex = sourceMap.sources.indexOf(ngUrl);
              expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
 
              // for the mapping to the original source file we don't store the source code
              // as we want to keep whatever TypeScript / ... produced for them.
-             const sourceIndex = sourceMap.sources.indexOf(componentPath);
+             const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
              expect(sourceMap.sourcesContent[sourceIndex]).toBe(null);
            });
          }));
@@ -199,7 +200,7 @@ describe('compiler (unbundled Angular)', () => {
            compileApp().then((genFile) => {
              const sourceMap = extractSourceMap(genFile.source);
              expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
-                 .toEqual({line: 2, column: 3, source: templateUrl});
+                 .toEqual({line: 2, column: 3, source: ngUrl});
            });
          }));
 
@@ -212,7 +213,7 @@ describe('compiler (unbundled Angular)', () => {
              const sourceMap = extractSourceMap(genFile.source);
              expect(
                  originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-                 .toEqual({line: 2, column: 9, source: templateUrl});
+                 .toEqual({line: 2, column: 9, source: ngUrl});
            });
          }));
 
@@ -225,7 +226,7 @@ describe('compiler (unbundled Angular)', () => {
              const sourceMap = extractSourceMap(genFile.source);
              expect(
                  originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-                 .toEqual({line: 2, column: 9, source: templateUrl});
+                 .toEqual({line: 2, column: 9, source: ngUrl});
            });
          }));
 
@@ -235,7 +236,7 @@ describe('compiler (unbundled Angular)', () => {
            compileApp().then((genFile) => {
              const sourceMap = extractSourceMap(genFile.source);
              expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
-                 .toEqual({line: 1, column: 0, source: componentPath});
+                 .toEqual({line: 1, column: 0, source: ngComponentPath});
            });
          }));
     }
