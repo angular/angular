@@ -230,12 +230,7 @@ export function rootRenderNodes(view: ViewData): any[] {
   return renderNodes;
 }
 
-export enum RenderNodeAction {
-  Collect,
-  AppendChild,
-  InsertBefore,
-  RemoveChild
-}
+export const enum RenderNodeAction {Collect, AppendChild, InsertBefore, RemoveChild}
 
 export function visitRootRenderNodes(
     view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
@@ -298,7 +293,19 @@ function visitRenderNode(
         view, nodeDef.ngContent.index, action, parentNode, nextSibling, target);
   } else {
     const rn = renderNode(view, nodeDef);
-    execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+    if (action === RenderNodeAction.RemoveChild && (nodeDef.flags & NodeFlags.ComponentView) &&
+        (nodeDef.bindingFlags & BindingFlags.CatSyntheticProperty)) {
+      // Note: we might need to do both actions.
+      if (nodeDef.bindingFlags & (BindingFlags.SyntheticProperty)) {
+        execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+      }
+      if (nodeDef.bindingFlags & (BindingFlags.SyntheticHostProperty)) {
+        const compView = asElementData(view, nodeDef.index).componentView;
+        execRenderNodeAction(compView, rn, action, parentNode, nextSibling, target);
+      }
+    } else {
+      execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+    }
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
       const embeddedViews = asElementData(view, nodeDef.index).viewContainer._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {

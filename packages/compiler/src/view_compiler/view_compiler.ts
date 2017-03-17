@@ -1030,9 +1030,9 @@ function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveA
         o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Animation:
-      const bindingType = dirAst && dirAst.directive.isComponent ?
-          BindingFlags.TypeProperty | BindingFlags.SyntheticComponentHostProperty :
-          BindingFlags.TypeProperty;
+      const bindingType = BindingFlags.TypeProperty |
+          (dirAst && dirAst.directive.isComponent ? BindingFlags.SyntheticHostProperty :
+                                                    BindingFlags.SyntheticProperty);
       return o.literalArr([
         o.literal(bindingType), o.literal('@' + inputAst.name), o.literal(inputAst.securityContext)
       ]);

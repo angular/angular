@@ -238,8 +238,10 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
       setElementStyle(view, binding, renderNode, name, value);
       break;
     case BindingFlags.TypeProperty:
-      const bindView =
-          binding.flags & BindingFlags.SyntheticComponentHostProperty ? elData.componentView : view;
+      const bindView = (def.flags & NodeFlags.ComponentView &&
+                        binding.flags & BindingFlags.SyntheticHostProperty) ?
+          elData.componentView :
+          view;
       setElementProperty(bindView, binding, renderNode, name, value);
       break;
   }
