@@ -188,7 +188,7 @@ describe('compiler (unbundled Angular)', () => {
              // for the mapping to the original source file we don't store the source code
              // as we want to keep whatever TypeScript / ... produced for them.
              const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
-             expect(sourceMap.sourcesContent[sourceIndex]).toBe(null);
+             expect(sourceMap.sourcesContent[sourceIndex]).toBe(' ');
            });
          }));
 
