@@ -1,3 +1,13 @@
+<a name="4.0.0-rc.5"></a>
+# [4.0.0-rc.5](https://github.com/angular/angular/compare/4.0.0-rc.4...4.0.0-rc.5) (2017-03-17)
+
+
+### Bug Fixes
+
+* **compiler-cli:** update the tsc-wrapped dependency version ([#15226](https://github.com/angular/angular/issues/15226)) ([7fb4528](https://github.com/angular/angular/commit/7fb4528))
+
+
+
 <a name="4.0.0-rc.4"></a>
 # [4.0.0-rc.4](https://github.com/angular/angular/compare/4.0.0-rc.3...4.0.0-rc.4) (2017-03-17)
 
