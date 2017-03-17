@@ -10,15 +10,6 @@ export const DIST_COMPONENTS_ROOT = join(DIST_ROOT, '@angular/material');
 
 export const COVERAGE_RESULT_FILE = join(DIST_ROOT, 'coverage', 'coverage-summary.json');
 
-export const SASS_AUTOPREFIXER_OPTIONS = {
-  browsers: [
-    'last 2 versions',
-    'not ie <= 10',
-    'not ie_mob <= 10',
-  ],
-  cascade: false,
-};
-
 export const HTML_MINIFIER_OPTIONS = {
   collapseWhitespace: true,
   removeComments: true,

@@ -1,5 +1,6 @@
 @import '../core/a11y/a11y';
 @import '../core/style/elevation';
+@import '../core/style/vendor-prefixes';
 @import '../core/style/layout-common';
 
 $mat-button-toggle-padding: 0 16px !default;
@@ -44,11 +45,11 @@ $mat-button-toggle-border-radius: 2px !default;
 }
 
 .mat-button-toggle-label-content {
+  @include user-select(none);
   display: inline-block;
   line-height: $mat-button-toggle-line-height;
   padding: $mat-button-toggle-padding;
   cursor: pointer;
-  user-select: none;
 }
 
 .mat-button-toggle-label-content > * {

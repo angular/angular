@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
 @import '../core/style/elevation';
+@import '../core/style/vendor-prefixes';
 @import '../core/a11y/a11y';
 
 $mat-slide-toggle-thumb-size: 20px !default;
@@ -25,7 +26,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
   // Disable user selection to ensure that dragging is smooth without grabbing
   // some elements accidentally.
-  user-select: none;
+  @include user-select(none);
 
   outline: none;
 
@@ -100,7 +101,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   transition: $swift-linear;
   transition-property: transform;
 
-  cursor: grab;
+  @include cursor-grab;
 
   // Once the thumb container is being dragged around, we remove the transition duration to
   // make the drag feeling fast and not delayed.

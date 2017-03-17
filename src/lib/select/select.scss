@@ -2,6 +2,7 @@
 @import '../core/style/list-common';
 @import '../core/style/form-common';
 @import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
 @import '../core/a11y/a11y';
 
 $mat-select-trigger-height: 30px !default;
@@ -28,8 +29,8 @@ $mat-select-trigger-font-size: 16px !default;
   font-size: $mat-select-trigger-font-size;
 
   [aria-disabled='true'] & {
+    @include user-select(none);
     cursor: default;
-    user-select: none;
   }
 }
 

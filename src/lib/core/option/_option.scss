@@ -1,4 +1,5 @@
 @import '../style/menu-common';
+@import '../style/vendor-prefixes';
 @import '../a11y/a11y';
 
 /**
@@ -13,8 +14,8 @@
     outline: none;
 
     &[aria-disabled='true'] {
+      @include user-select(none);
       cursor: default;
-      user-select: none;
     }
   }
 

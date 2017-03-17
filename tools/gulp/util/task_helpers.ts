@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT, SASS_AUTOPREFIXER_OPTIONS} from '../constants';
+import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT} from '../constants';
 
 
 /** Those imports lack typings. */
@@ -11,7 +11,6 @@ const gulpMerge = require('merge2');
 const gulpRunSequence = require('run-sequence');
 const gulpSass = require('gulp-sass');
 const gulpSourcemaps = require('gulp-sourcemaps');
-const gulpAutoprefixer = require('gulp-autoprefixer');
 const gulpConnect = require('gulp-connect');
 const resolveBin = require('resolve-bin');
 
@@ -44,7 +43,6 @@ export function sassBuildTask(dest: string, root: string) {
     return gulp.src(_globify(root, '**/*.scss'))
       .pipe(gulpSourcemaps.init())
       .pipe(gulpSass().on('error', gulpSass.logError))
-      .pipe(gulpAutoprefixer(SASS_AUTOPREFIXER_OPTIONS))
       .pipe(gulpSourcemaps.write('.'))
       .pipe(gulp.dest(dest));
   };

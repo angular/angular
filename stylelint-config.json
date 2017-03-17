@@ -1,5 +1,9 @@
 {
+  "plugins": [
+    "./tools/stylelint/no-prefixes/no-prefixes.js"
+  ],
   "rules": {
+    "material/no-prefixes": [["last 2 versions", "not ie <= 10", "not ie_mob <= 10"]],
     "color-hex-case": "lower",
     "color-no-invalid-hex": true,
 
