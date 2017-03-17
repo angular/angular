@@ -17,7 +17,7 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector} from './refs';
-import {ArgumentType, BindingType, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
 import {NOOP, checkBinding, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 
@@ -225,18 +225,17 @@ function debugCheckAndUpdateNode(
   const changed = (<any>checkAndUpdateNode)(view, nodeDef, argStyle, ...givenValues);
   if (changed) {
     const values = argStyle === ArgumentType.Dynamic ? givenValues[0] : givenValues;
-    if (nodeDef.flags & (NodeFlags.TypeDirective | NodeFlags.TypeElement)) {
+    if (nodeDef.flags & NodeFlags.TypeDirective) {
       const bindingValues: {[key: string]: string} = {};
       for (let i = 0; i < nodeDef.bindings.length; i++) {
         const binding = nodeDef.bindings[i];
         const value = values[i];
-        if ((binding.type === BindingType.ComponentHostProperty ||
-             binding.type === BindingType.DirectiveProperty)) {
+        if (binding.flags & BindingFlags.TypeProperty) {
           bindingValues[normalizeDebugBindingName(binding.nonMinifiedName)] =
               normalizeDebugBindingValue(value);
         }
       }
-      const elDef = nodeDef.flags & NodeFlags.TypeDirective ? nodeDef.parent : nodeDef;
+      const elDef = nodeDef.parent;
       const el = asElementData(view, elDef.index).renderElement;
       if (!elDef.element.name) {
         // a comment.

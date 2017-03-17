@@ -8,7 +8,7 @@
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {ArgumentType, BindingType, DebugContext, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingFlags, DebugContext, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, removeNodes} from './helper';
@@ -80,8 +80,8 @@ export function main() {
                 elementDef(
                     NodeFlags.None, null, null, 0, 'input', null,
                     [
-                      [BindingType.ElementProperty, 'title', SecurityContext.NONE],
-                      [BindingType.ElementProperty, 'value', SecurityContext.NONE]
+                      [BindingFlags.TypeProperty, 'title', SecurityContext.NONE],
+                      [BindingFlags.TypeProperty, 'value', SecurityContext.NONE]
                     ]),
               ],
               null, (check, view) => {
@@ -105,8 +105,8 @@ export function main() {
                 elementDef(
                     NodeFlags.None, null, null, 0, 'div', null,
                     [
-                      [BindingType.ElementAttribute, 'a1', SecurityContext.NONE],
-                      [BindingType.ElementAttribute, 'a2', SecurityContext.NONE]
+                      [BindingFlags.TypeElementAttribute, 'a1', SecurityContext.NONE],
+                      [BindingFlags.TypeElementAttribute, 'a2', SecurityContext.NONE]
                     ]),
               ],
               null, (check, view) => {
@@ -129,7 +129,10 @@ export function main() {
               [
                 elementDef(
                     NodeFlags.None, null, null, 0, 'div', null,
-                    [[BindingType.ElementClass, 'c1'], [BindingType.ElementClass, 'c2']]),
+                    [
+                      [BindingFlags.TypeElementClass, 'c1', null],
+                      [BindingFlags.TypeElementClass, 'c2', null]
+                    ]),
               ],
               (check, view) => {
                 checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, [true, true]);
@@ -152,8 +155,8 @@ export function main() {
                 elementDef(
                     NodeFlags.None, null, null, 0, 'div', null,
                     [
-                      [BindingType.ElementStyle, 'width', 'px'],
-                      [BindingType.ElementStyle, 'color', null]
+                      [BindingFlags.TypeElementStyle, 'width', 'px'],
+                      [BindingFlags.TypeElementStyle, 'color', null]
                     ]),
               ],
               null, (check, view) => {

@@ -19,7 +19,7 @@ import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
 
-import {ArgumentType, BindingType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, TemplateData, ViewContainerData, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {ArgumentType, BindingFlags, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, TemplateData, ViewContainerData, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
 import {isComponentView, markParentViewsForCheck, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 

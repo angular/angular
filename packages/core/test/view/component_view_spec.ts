@@ -7,7 +7,7 @@
  */
 
 import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {ArgumentType, BindingType, NodeCheckFn, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {createRootView, isBrowser, removeNodes} from './helper';
@@ -120,7 +120,7 @@ export function main() {
           compViewDef([
             elementDef(NodeFlags.None, null, null, 1, 'div', null, null, null, null, () => compViewDef(
               [
-                elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
+                elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingFlags.TypeElementAttribute, 'a', SecurityContext.NONE]]),
               ], null, update
             )),
             directiveDef(NodeFlags.Component, null, 0, AComp, []),
@@ -247,7 +247,7 @@ export function main() {
                    const {view, rootNodes} = createAndGetRootNodes(compViewDef([
           elementDef(NodeFlags.None, null, null, 1, 'div', null, null, null, null, () => compViewDef(
                   [
-                    elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingType.ElementAttribute, 'a', SecurityContext.NONE]]),
+                    elementDef(NodeFlags.None, null, null, 0, 'span', null, [[BindingFlags.TypeElementAttribute, 'a', SecurityContext.NONE]]),
                   ],
                   null, update)),
           directiveDef(
