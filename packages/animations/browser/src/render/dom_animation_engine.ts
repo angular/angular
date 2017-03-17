@@ -28,7 +28,8 @@ export interface TriggerListenerTuple {
   callback: (event: any) => any;
 }
 
-const MARKED_FOR_ANIMATION = 'ng-animate';
+const MARKED_FOR_ANIMATION_CLASSNAME = 'ng-animating';
+const MARKED_FOR_ANIMATION_SELECTOR = '.ng-animating';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
 
 export class DomAnimationEngine {
@@ -92,6 +93,7 @@ export class DomAnimationEngine {
       element[MARKED_FOR_REMOVAL] = true;
       this._queuedRemovals.set(element, () => {});
     }
+    this._onRemovalTransition(element).forEach(player => player.destroy());
     domFn();
   }
 
@@ -162,7 +164,7 @@ export class DomAnimationEngine {
     // when a parent animation is set to trigger a removal we want to
     // find all of the children that are currently animating and clear
     // them out by destroying each of them.
-    const elms = element.querySelectorAll(MARKED_FOR_ANIMATION);
+    const elms = element.querySelectorAll(MARKED_FOR_ANIMATION_SELECTOR);
     for (let i = 0; i < elms.length; i++) {
       const elm = elms[i];
       const activePlayers = this._activeElementAnimations.get(elm);
@@ -300,8 +302,8 @@ export class DomAnimationEngine {
     this._queuedTransitionAnimations.push(tuple);
     player.init();
 
-    element.classList.add(MARKED_FOR_ANIMATION);
-    player.onDone(() => { element.classList.remove(MARKED_FOR_ANIMATION); });
+    element.classList.add(MARKED_FOR_ANIMATION_CLASSNAME);
+    player.onDone(() => { element.classList.remove(MARKED_FOR_ANIMATION_CLASSNAME); });
   }
 
   private _flushQueuedAnimations() {
