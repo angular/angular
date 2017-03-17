@@ -81,7 +81,7 @@
     "react": "^0.14.0",
     "rewire": "^2.3.3",
     "rho": "^0.3.0",
-    "rollup": "^0.26.3",
+    "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^5.0.5",
     "selenium-webdriver": "^2.53.3",
     "semver": "^5.1.0",
