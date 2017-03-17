@@ -402,7 +402,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
 
   private _getAnimationClassForCheckStateTransition(
       oldState: TransitionCheckState, newState: TransitionCheckState): string {
-    var animSuffix: string;
+    let animSuffix: string;
 
     switch (oldState) {
     case TransitionCheckState.Init:

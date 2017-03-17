@@ -25,6 +25,7 @@
     "no-shadowed-variable": true,
     "no-unused-expression": true,
     "no-unused-var": [true, {"ignore-pattern": "^(_.*)$"}],
+    "no-var-keyword": true,
     "no-debugger": true,
     "one-line": [
       true,

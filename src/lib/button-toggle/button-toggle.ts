@@ -36,7 +36,7 @@ export const MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-var _uniqueIdCounter = 0;
+let _uniqueIdCounter = 0;
 
 /** Change event object emitted by MdButtonToggle. */
 export class MdButtonToggleChange {

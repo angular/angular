@@ -28,9 +28,7 @@ export class ExampleData {
       }
       this.selectorName = this.indexFilename = `${example}-example`;
 
-      var exampleName = example.replace(/(?:^\w|\b\w)/g, function(letter) {
-        return letter.toUpperCase();
-      });
+      let exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
 
       if (EXAMPLE_COMPONENTS[example].title) {
         this.description = EXAMPLE_COMPONENTS[example].title;

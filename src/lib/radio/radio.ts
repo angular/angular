@@ -39,7 +39,7 @@ export const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-var _uniqueIdCounter = 0;
+let _uniqueIdCounter = 0;
 
 /** Change event object emitted by MdRadio and MdRadioGroup. */
 export class MdRadioChange {
