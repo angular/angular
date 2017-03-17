@@ -128,7 +128,7 @@ export function main() {
            expect(sourceMap.sources).toEqual([
              'ng:///DynamicTestModule/MyComp.ngfactory.js', ngUrl
            ]);
-           expect(sourceMap.sourcesContent).toEqual([null, template]);
+           expect(sourceMap.sourcesContent).toEqual([' ', template]);
          }));
 
 

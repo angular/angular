@@ -98,7 +98,10 @@ export class EmitterVisitorContext {
     let firstOffsetMapped = false;
     const mapFirstOffsetIfNeeded = () => {
       if (!firstOffsetMapped) {
-        map.addSource(sourceFilePath).addMapping(0, sourceFilePath, 0, 0);
+        // Add a single space so that tools won't try to load the file from disk.
+        // Note: We are using virtual urls like `ng:///`, so we have to
+        // provide a content here.
+        map.addSource(sourceFilePath, ' ').addMapping(0, sourceFilePath, 0, 0);
         firstOffsetMapped = true;
       }
     };
