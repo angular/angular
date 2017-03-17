@@ -1,4 +1,5 @@
 {
+  "name": "@angular/router/upgrade",
   "typings": "../upgrade.d.ts",
   "main": "../bundles/router-upgrade.umd.js",
   "module": "../@angular/router/upgrade.es5.js",
