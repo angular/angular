@@ -42,21 +42,42 @@ export function unwrapValue(value: any): any {
   return value;
 }
 
-let _renderCompCount = 0;
+const UNDEFINED_RENDERER_TYPE_ID = '$$undefined';
+const EMPTY_RENDERER_TYPE_ID = '$$empty';
 
+// Attention: this function is called as top level function.
+// Putting any logic in here will destroy closure tree shaking!
 export function createRendererType2(values: {
   styles: (string | any[])[],
   encapsulation: ViewEncapsulation,
   data: {[kind: string]: any[]}
 }): RendererType2 {
-  const isFilled = values && (values.encapsulation !== ViewEncapsulation.None ||
-                              values.styles.length || Object.keys(values.data).length);
-  if (isFilled) {
-    const id = `c${_renderCompCount++}`;
-    return {id: id, styles: values.styles, encapsulation: values.encapsulation, data: values.data};
-  } else {
-    return null;
+  return {
+    id: UNDEFINED_RENDERER_TYPE_ID,
+    styles: values.styles,
+    encapsulation: values.encapsulation,
+    data: values.data
+  };
+}
+
+let _renderCompCount = 0;
+
+export function resolveRendererType2(type: RendererType2): RendererType2 {
+  if (type && type.id === UNDEFINED_RENDERER_TYPE_ID) {
+    // first time we see this RendererType2. Initialize it...
+    const isFilled =
+        ((type.encapsulation != null && type.encapsulation !== ViewEncapsulation.None) ||
+         type.styles.length || Object.keys(type.data).length);
+    if (isFilled) {
+      type.id = `c${_renderCompCount++}`;
+    } else {
+      type.id = EMPTY_RENDERER_TYPE_ID;
+    }
   }
+  if (type && type.id === EMPTY_RENDERER_TYPE_ID) {
+    type = null;
+  }
+  return type;
 }
 
 export function checkBinding(

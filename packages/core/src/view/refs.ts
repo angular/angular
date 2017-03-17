@@ -25,22 +25,14 @@ import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachVi
 
 const EMPTY_CONTEXT = new Object();
 
+// Attention: this function is called as top level function.
+// Putting any logic in here will destroy closure tree shaking!
 export function createComponentFactory(
     selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory,
     inputs: {[propName: string]: string}, outputs: {[propName: string]: string},
     ngContentSelectors: string[]): ComponentFactory<any> {
-  const inputsArr: {propName: string, templateName: string}[] = [];
-  for (let propName in inputs) {
-    const templateName = inputs[propName];
-    inputsArr.push({propName, templateName});
-  }
-  const outputsArr: {propName: string, templateName: string}[] = [];
-  for (let propName in outputs) {
-    const templateName = outputs[propName];
-    outputsArr.push({propName, templateName});
-  }
   return new ComponentFactory_(
-      selector, componentType, viewDefFactory, inputsArr, outputsArr, ngContentSelectors);
+      selector, componentType, viewDefFactory, inputs, outputs, ngContentSelectors);
 }
 
 export function getComponentViewDefinitionFactory(componentFactory: ComponentFactory<any>):
@@ -56,12 +48,30 @@ class ComponentFactory_ extends ComponentFactory<any> {
 
   constructor(
       public selector: string, public componentType: Type<any>,
-      viewDefFactory: ViewDefinitionFactory,
-      public inputs: {propName: string, templateName: string}[],
-      public outputs: {propName: string, templateName: string}[],
-      public ngContentSelectors: string[]) {
+      viewDefFactory: ViewDefinitionFactory, private _inputs: {[propName: string]: string},
+      private _outputs: {[propName: string]: string}, public ngContentSelectors: string[]) {
+    // Attention: this ctor is called as top level function.
+    // Putting any logic in here will destroy closure tree shaking!
     super();
     this.viewDefFactory = viewDefFactory;
+  }
+
+  get inputs() {
+    const inputsArr: {propName: string, templateName: string}[] = [];
+    for (let propName in this._inputs) {
+      const templateName = this._inputs[propName];
+      inputsArr.push({propName, templateName});
+    }
+    return inputsArr;
+  }
+
+  get outputs() {
+    const outputsArr: {propName: string, templateName: string}[] = [];
+    for (let propName in this._outputs) {
+      const templateName = this._outputs[propName];
+      outputsArr.push({propName, templateName});
+    }
+    return outputsArr;
   }
 
   /**

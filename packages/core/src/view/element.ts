@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2, RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
-import {NOOP, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {NOOP, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -112,11 +113,7 @@ export function elementDef(
     const [ns, name] = splitNamespace(namespaceAndName);
     return [ns, name, value];
   });
-  // This is needed as the jit compiler always uses an empty hash as default RendererType2,
-  // which is not filled for host views.
-  if (componentRendererType && componentRendererType.encapsulation == null) {
-    componentRendererType = null;
-  }
+  componentRendererType = resolveRendererType2(componentRendererType);
   if (componentView) {
     flags |= NodeFlags.ComponentView;
   }
