@@ -60,6 +60,10 @@ $mat-mini-fab-padding: 8px !default;
       opacity: 1;
     }
   }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
 }
 
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
