@@ -19,8 +19,8 @@ import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
 
-// import { FileLoaderProviders } from 'app/shared/file-loader-webpack.service';
-import { FileLoaderProviders } from 'app/shared/file-loader-xhr.service';
+import { FileLoaderProviders } from 'app/shared/file-loader-webpack.service';
+// import { FileLoaderProviders } from 'app/shared/file-loader-xhr.service';
 
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';

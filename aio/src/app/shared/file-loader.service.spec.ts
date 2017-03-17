@@ -1,5 +1,5 @@
-// import { WebpackFileLoaderService as FileLoaderService } from './file-loader-webpack.service';
-import { XhrFileLoaderService as FileLoaderService } from './file-loader-xhr.service';
+import { WebpackFileLoaderService as FileLoaderService } from './file-loader-webpack.service';
+// import { XhrFileLoaderService as FileLoaderService } from './file-loader-xhr.service';
 
 import 'rxjs/add/operator/map';
 
