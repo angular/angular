@@ -366,6 +366,51 @@ export function main() {
         assertHasParent(element, false);
       });
 
+      it('should properly cancel all existing animations when a removal occurs', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div *ngIf="exp" [@myAnimation]="exp"></div>
+          `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition(
+                      '* => go', [style({width: '0px'}), animate(1000, style({width: '100px'}))]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp: string;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 'go';
+        fixture.detectChanges();
+        engine.flush();
+        expect(getLog().length).toEqual(1);
+        const [player1] = getLog();
+        resetLog();
+
+        let finished = false;
+        player1.onDone(() => finished = true);
+
+        let destroyed = false;
+        player1.onDestroy(() => destroyed = true);
+
+        cmp.exp = null;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(finished).toBeTruthy();
+        expect(destroyed).toBeTruthy();
+      });
+
       it('should not run inner child animations when a parent is set to be removed', () => {
         @Component({
           selector: 'ani-cmp',
