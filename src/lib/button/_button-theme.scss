@@ -18,6 +18,10 @@
   &.mat-warn .mat-button-focus-overlay {
     background-color: mat-color($warn, 0.12);
   }
+
+  &[disabled] .mat-button-focus-overlay {
+    background-color: transparent;
+  }
 }
 
 // Applies a property to an md-button element for each of the supported palettes.
@@ -54,20 +58,15 @@
   $foreground: map-get($theme, foreground);
 
   .mat-button, .mat-icon-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    &.cdk-keyboard-focused {
-      @include _mat-button-focus-color($theme);
-    }
+    // Appy color to focus overlay.
+    // The focus overlay will be visible when any button type is focused or when
+    // flat buttons or icon buttons are hovered.
+    @include _mat-button-focus-color($theme);
   }
 
   .mat-button, .mat-icon-button {
     @include _mat-button-theme-color($theme, 'color');
     background: transparent;
-
-    // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
-    // Use the same visual treatment for hover as for focus.
-    &:hover {
-      @include _mat-button-focus-color($theme);
-    }
   }
 
   .mat-raised-button, .mat-fab, .mat-mini-fab {

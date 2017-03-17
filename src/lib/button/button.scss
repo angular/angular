@@ -14,12 +14,6 @@
       opacity: 1;
     }
   }
-
-  &[disabled]:hover {
-    &.mat-primary, &.mat-accent, &.mat-warn, .mat-button-focus-overlay {
-      background-color: transparent;
-    }
-  }
 }
 
 .mat-raised-button {
