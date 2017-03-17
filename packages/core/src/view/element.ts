@@ -10,8 +10,8 @@ import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2, RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingType, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
-import {NOOP, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {BindingDef, BindingFlags, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
+import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -37,6 +37,7 @@ export function anchorDef(
     directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: [],
+    bindingFlags: 0,
     outputs: [],
     element: {
       ns: undefined,
@@ -59,15 +60,9 @@ export function elementDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     ngContentIndex: number, childCount: number, namespaceAndName: string,
     fixedAttrs: [string, string][] = [],
-    bindings?:
-        ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
-         [
-           BindingType.ElementAttribute | BindingType.ElementProperty |
-               BindingType.ComponentHostProperty,
-           string, SecurityContext
-         ])[],
-    outputs?: ([string, string])[], handleEvent?: ElementHandleEventFn,
-    componentView?: ViewDefinitionFactory, componentRendererType?: RendererType2): NodeDef {
+    bindings?: [BindingFlags, string, string | SecurityContext][], outputs?: ([string, string])[],
+    handleEvent?: ElementHandleEventFn, componentView?: ViewDefinitionFactory,
+    componentRendererType?: RendererType2): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
   }
@@ -80,23 +75,22 @@ export function elementDef(
   bindings = bindings || [];
   const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
-    const entry = bindings[i];
+    const [bindingFlags, namespaceAndName, suffixOrSecurityContext] = bindings[i];
     let bindingDef: BindingDef;
-    const bindingType = entry[0];
-    const [ns, name] = splitNamespace(entry[1]);
+    const [ns, name] = splitNamespace(namespaceAndName);
     let securityContext: SecurityContext;
     let suffix: string;
-    switch (bindingType) {
-      case BindingType.ElementStyle:
-        suffix = <string>entry[2];
+    switch (bindingFlags & BindingFlags.Types) {
+      case BindingFlags.TypeElementStyle:
+        suffix = <string>suffixOrSecurityContext;
         break;
-      case BindingType.ElementAttribute:
-      case BindingType.ElementProperty:
-      case BindingType.ComponentHostProperty:
-        securityContext = <SecurityContext>entry[2];
+      case BindingFlags.TypeElementAttribute:
+      case BindingFlags.TypeProperty:
+        securityContext = <SecurityContext>suffixOrSecurityContext;
         break;
     }
-    bindingDefs[i] = {type: bindingType, ns, name, nonMinifiedName: name, securityContext, suffix};
+    bindingDefs[i] =
+        {flags: bindingFlags, ns, name, nonMinifiedName: name, securityContext, suffix};
   }
   outputs = outputs || [];
   const outputDefs: OutputDef[] = new Array(outputs.length);
@@ -131,6 +125,7 @@ export function elementDef(
     directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
     bindings: bindingDefs,
+    bindingFlags: calcBindingFlags(bindingDefs),
     outputs: outputDefs,
     element: {
       ns,
@@ -232,21 +227,20 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
   const elData = asElementData(view, def.index);
   const renderNode = elData.renderElement;
   const name = binding.name;
-  switch (binding.type) {
-    case BindingType.ElementAttribute:
+  switch (binding.flags & BindingFlags.Types) {
+    case BindingFlags.TypeElementAttribute:
       setElementAttribute(view, binding, renderNode, binding.ns, name, value);
       break;
-    case BindingType.ElementClass:
+    case BindingFlags.TypeElementClass:
       setElementClass(view, renderNode, name, value);
       break;
-    case BindingType.ElementStyle:
+    case BindingFlags.TypeElementStyle:
       setElementStyle(view, binding, renderNode, name, value);
       break;
-    case BindingType.ElementProperty:
-      setElementProperty(view, binding, renderNode, name, value);
-      break;
-    case BindingType.ComponentHostProperty:
-      setElementProperty(elData.componentView, binding, renderNode, name, value);
+    case BindingFlags.TypeProperty:
+      const bindView =
+          binding.flags & BindingFlags.SyntheticComponentHostProperty ? elData.componentView : view;
+      setElementProperty(bindView, binding, renderNode, name, value);
       break;
   }
   return true;
