@@ -65,6 +65,88 @@ export function main() {
         ]);
       });
 
+      it('should only turn a view removal as into `void` state transition', () => {
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div *ngIf="exp1" [@myAnimation]="exp2"></div>
+        `,
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    'void <=> *', [style({width: '0px'}), animate(1000, style({width: '100px'}))]),
+                transition(
+                    '* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))]),
+              ])]
+        })
+        class Cmp {
+          exp1: any = false;
+          exp2: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp1 = true;
+        cmp.exp2 = null;
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
+        ]);
+
+        cmp.exp2 = false;
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+        ]);
+
+        cmp.exp2 = 0;
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+        ]);
+
+        cmp.exp2 = '';
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+        ]);
+
+        cmp.exp2 = undefined;
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+        ]);
+
+        cmp.exp1 = false;
+        cmp.exp2 = 'abc';
+
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
+        ]);
+      });
+
       it('should not throw an error if a trigger with the same name exists in separate components',
          () => {
            @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
