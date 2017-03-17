@@ -278,6 +278,17 @@ describe('Portals', () => {
       expect(someDomElement.innerHTML)
           .toBe('', 'Expected the DomPortalHost to be empty after detach');
     });
+
+    it('should call the dispose function even if the host has no attached content', () => {
+      let spy = jasmine.createSpy('host dispose spy');
+
+      expect(host.hasAttached()).toBe(false, 'Expected host not to have attached content.');
+
+      host.setDisposeFn(spy);
+      host.dispose();
+
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });
 

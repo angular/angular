@@ -162,12 +162,12 @@ export abstract class BasePortalHost implements PortalHost {
   private _isDisposed: boolean = false;
 
   /** Whether this host has an attached portal. */
-  hasAttached() {
-    return this._attachedPortal != null;
+  hasAttached(): boolean {
+    return !!this._attachedPortal;
   }
 
   attach(portal: Portal<any>): any {
-    if (portal == null) {
+    if (!portal) {
       throw new NullPortalError();
     }
 
@@ -195,13 +195,12 @@ export abstract class BasePortalHost implements PortalHost {
   abstract attachTemplatePortal(portal: TemplatePortal): Map<string, any>;
 
   detach(): void {
-    if (this._attachedPortal) { this._attachedPortal.setAttachedHost(null); }
-
-    this._attachedPortal = null;
-    if (this._disposeFn != null) {
-      this._disposeFn();
-      this._disposeFn = null;
+    if (this._attachedPortal) {
+      this._attachedPortal.setAttachedHost(null);
+      this._attachedPortal = null;
     }
+
+    this._invokeDisposeFn();
   }
 
   dispose() {
@@ -209,10 +208,18 @@ export abstract class BasePortalHost implements PortalHost {
       this.detach();
     }
 
+    this._invokeDisposeFn();
     this._isDisposed = true;
   }
 
   setDisposeFn(fn: () => void) {
     this._disposeFn = fn;
+  }
+
+  private _invokeDisposeFn() {
+    if (this._disposeFn) {
+      this._disposeFn();
+      this._disposeFn = null;
+    }
   }
 }

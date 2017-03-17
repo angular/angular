@@ -345,6 +345,19 @@ describe('MdDialog', () => {
     });
   });
 
+  it('should not keep a reference to the component after the dialog is closed', async(() => {
+    let dialogRef = dialog.open(PizzaMsg);
+
+    expect(dialogRef.componentInstance).toBeTruthy();
+
+    dialogRef.close();
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(dialogRef.componentInstance).toBeFalsy('Expected reference to have been cleared.');
+    });
+  }));
+
   describe('disableClose option', () => {
     it('should prevent closing via clicks on the backdrop', () => {
       dialog.open(PizzaMsg, {

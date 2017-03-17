@@ -31,6 +31,7 @@ export class MdDialogRef<T> {
           this._overlayRef.dispose();
           this._afterClosed.next(this._result);
           this._afterClosed.complete();
+          this.componentInstance = null;
         }
       });
   }
