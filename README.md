@@ -89,6 +89,7 @@ High level items planned for next few months:
 | datepicker       |                         In progress |           -  |   [#675][0675] |
 | data-table       |                  Design in-progress |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
+| tree             |                         Not started |           -  |  [#3175][3175] |
 | layout           |   See [angular/flex-layout][lay_rp] | [Wiki][0]    |              - |
 
  [lay_rp]:  https://github.com/angular/flex-layout
@@ -135,6 +136,7 @@ High level items planned for next few months:
 [0823]: https://github.com/angular/material2/issues/823
 [0675]: https://github.com/angular/material2/issues/675
 [0581]: https://github.com/angular/material2/issues/581
+[3175]: https://github.com/angular/material2/issues/3175
 
 [getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
 [theming]: https://github.com/angular/material2/blob/master/guides/theming.md
