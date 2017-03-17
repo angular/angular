@@ -32,12 +32,15 @@ export function tokenKey(token: any): string {
   return key;
 }
 
-let unwrapCounter = 0;
-
-export function unwrapValue(value: any): any {
+export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
   if (value instanceof WrappedValue) {
     value = value.wrapped;
-    unwrapCounter++;
+    let globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
+    let oldValue = view.oldValues[globalBindingIdx];
+    if (oldValue instanceof WrappedValue) {
+      oldValue = oldValue.wrapped;
+    }
+    view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
   }
   return value;
 }
@@ -83,9 +86,8 @@ export function resolveRendererType2(type: RendererType2): RendererType2 {
 export function checkBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
-  if (unwrapCounter > 0 || !!(view.state & ViewState.FirstCheck) ||
+  if ((view.state & ViewState.FirstCheck) ||
       !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
-    unwrapCounter = 0;
     return true;
   }
   return false;
@@ -103,8 +105,7 @@ export function checkAndUpdateBinding(
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if (unwrapCounter || (view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
-    unwrapCounter = 0;
+  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.index), oldValue, value,
         (view.state & ViewState.FirstCheck) !== 0);

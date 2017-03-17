@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -67,6 +67,43 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('counting pipe value');
         expect(CountingPipe.calls).toBe(1);
       });
+
+      it('should only update the bound property when using asyncPipe - #15205', fakeAsync(() => {
+           @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
+           class MyComp {
+             p = Promise.resolve(1);
+           }
+
+           @Directive({selector: '[myDir]'})
+           class MyDir {
+             setterCalls: {[key: string]: any} = {};
+             changes: SimpleChanges;
+
+             @Input()
+             set a(v: number) { this.setterCalls['a'] = v; }
+             @Input()
+             set b(v: number) { this.setterCalls['b'] = v; }
+
+             ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
+           }
+
+           TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+           const fixture = TestBed.createComponent(MyComp);
+           const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
+
+           fixture.detectChanges();
+           expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
+           expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
+
+           dir.setterCalls = {};
+           dir.changes = {};
+
+           tick();
+           fixture.detectChanges();
+
+           expect(dir.setterCalls).toEqual({'a': 1});
+           expect(Object.keys(dir.changes)).toEqual(['a']);
+         }));
 
       it('should only evaluate methods once - #10639', () => {
         TestBed.configureTestingModule({declarations: [MyCountingComp]});
