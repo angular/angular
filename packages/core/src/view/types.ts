@@ -195,7 +195,9 @@ export const enum BindingFlags {
   TypeElementClass = 1 << 1,
   TypeElementStyle = 1 << 2,
   TypeProperty = 1 << 3,
-  SyntheticComponentHostProperty = 1 << 4,
+  SyntheticProperty = 1 << 4,
+  SyntheticHostProperty = 1 << 5,
+  CatSyntheticProperty = SyntheticProperty | SyntheticHostProperty,
 
   // mutually exclusive values...
   Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
