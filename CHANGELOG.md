@@ -1,3 +1,13 @@
+<a name="2.4.10"></a>
+## [2.4.10](https://github.com/angular/angular/compare/2.4.9...2.4.10) (2017-03-17)
+
+
+### Bug Fixes
+
+* **compiler:** fix decoding surrogate pairs ([#15154](https://github.com/angular/angular/issues/15154)) ([e5c9bbc](https://github.com/angular/angular/commit/e5c9bbc))
+* **router:** do not finish bootstrap until all the routes are resolved ([#15121](https://github.com/angular/angular/issues/15121)) ([34403cd](https://github.com/angular/angular/commit/34403cd))
+
+
 <a name="2.4.9"></a>
 ## [2.4.9](https://github.com/angular/angular/compare/2.4.8...2.4.9) (2017-03-02)
 
