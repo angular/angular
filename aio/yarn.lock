@@ -3,8 +3,8 @@
 
 
 "@angular/animations@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.0.0-rc.2.tgz#b4818712cfb576e831cf9d108754463f00c111b9"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.0.0-rc.4.tgz#e9c56b0b5e4ed0351f3ef14c27e525daa5c2af11"
 
 "@angular/cli@^1.0.0-rc.0":
   version "1.0.0-rc.0"
@@ -74,8 +74,8 @@
     zone.js "^0.7.2"
 
 "@angular/common@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.0.0-rc.2.tgz#69f68639270d71b2e8c552e4fa939975fcb88304"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.0.0-rc.4.tgz#603b397da87b3f57c67aef8b063609099f9a20d8"
 
 "@angular/compiler-cli@>=2.3.1 <5.0.0 || >=4.0.0-beta <5.0.0", "@angular/compiler-cli@next":
   version "4.0.0-rc.2"
@@ -86,47 +86,47 @@
     reflect-metadata "^0.1.2"
 
 "@angular/compiler@>=2.3.1 <5.0.0 || >=4.0.0-beta <5.0.0", "@angular/compiler@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.0.0-rc.2.tgz#643e199e6792413f42cf149a9cf1672284787c11"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.0.0-rc.4.tgz#8ffc413a4c7a6070a3054033988e60e3070cedd2"
 
 "@angular/core@>=2.3.1 <5.0.0 || >=4.0.0-beta <5.0.0", "@angular/core@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.0.0-rc.2.tgz#59535050e5d0e6141417186eee571296f8e9c3d0"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.0.0-rc.4.tgz#e2eb34dcaed9c2929cf5df8853590c4e2809e01c"
 
 "@angular/forms@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.0.0-rc.2.tgz#6d9df97783b6023d652d97369db13d6ad6c7fa9e"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.0.0-rc.4.tgz#407404e50965d3a94216615a898096c5cbca3f1e"
 
 "@angular/http@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.0.0-rc.2.tgz#145ecd17f483b97e7750bb9e00b60e48ff82b67a"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.0.0-rc.4.tgz#5dc307d8bf10d89c604a76addbcf71e017e685af"
 
 "@angular/material@https://github.com/angular/material2-builds":
   version "2.0.0-beta.2"
   resolved "https://github.com/angular/material2-builds#d7f549850cfd94b31bb624e2702b61305fd6337d"
 
 "@angular/platform-browser-dynamic@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.0.0-rc.2.tgz#f2bbab322706dc6361d46647e1e2b7c26f036a1c"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.0.0-rc.4.tgz#0dae36b9758cf1c131c4076cfd33bc11813870e1"
 
 "@angular/platform-browser@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.0.0-rc.2.tgz#bcca05ce85d320ee0b257640f15479b59fed20f0"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.0.0-rc.4.tgz#abb5eba57fe29dcf8bd8acc037a1709ce7281f1d"
 
 "@angular/platform-server@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-4.0.0-rc.2.tgz#3b09f4e2f2dc1b7d723fbbdc6b99117019c0f9de"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-4.0.0-rc.4.tgz#ca96dc1e7fb8023d0e8b3f8bbd855d53fbf90c69"
   dependencies:
     parse5 "^3.0.1"
     xhr2 "^0.1.4"
 
 "@angular/router@next":
-  version "4.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0-rc.2.tgz#66fc5be012caa38441314d0a0b9c9b6a723c471a"
+  version "4.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0-rc.4.tgz#d1f9700ac68ae16c4ba410b5f9651448213b867e"
 
-"@angular/service-worker@^1.0.0-beta.6":
-  version "1.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.6.tgz#ae3ca0b43ab1cbd572a191b2ef3e1b787f71ed1e"
+"@angular/service-worker@^1.0.0-beta.7":
+  version "1.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.7.tgz#e8edd2e993948caffc2d45d6935667f9b5a3c221"
   dependencies:
     base64-js "^1.1.2"
     jshashes "^1.0.5"
