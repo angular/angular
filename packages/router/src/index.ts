@@ -20,7 +20,7 @@ export {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule, pr
 export {RouterOutletMap} from './router_outlet_map';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
-export {PRIMARY_OUTLET, Params} from './shared';
+export {PRIMARY_OUTLET, ParamMap, Params} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 export {VERSION} from './version';

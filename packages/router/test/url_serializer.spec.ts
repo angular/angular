@@ -163,6 +163,8 @@ describe('url serializer', () => {
   it('should handle multiple query params of the same name into an array', () => {
     const tree = url.parse('/one?a=foo&a=bar&a=swaz');
     expect(tree.queryParams).toEqual({a: ['foo', 'bar', 'swaz']});
+    expect(tree.queryParamMap.get('a')).toEqual('foo');
+    expect(tree.queryParamMap.getAll('a')).toEqual(['foo', 'bar', 'swaz']);
     expect(url.serialize(tree)).toEqual('/one?a=foo&a=bar&a=swaz');
   });
 
@@ -199,8 +201,11 @@ describe('url serializer', () => {
     it('should encode/decode "slash" in path segments and parameters', () => {
       const u = `/${encode("one/two")};${encode("p/1")}=${encode("v/1")}/three`;
       const tree = url.parse(u);
-      expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one/two');
-      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({['p/1']: 'v/1'});
+      const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
+      expect(segment.path).toEqual('one/two');
+      expect(segment.parameters).toEqual({'p/1': 'v/1'});
+      expect(segment.parameterMap.get('p/1')).toEqual('v/1');
+      expect(segment.parameterMap.getAll('p/1')).toEqual(['v/1']);
       expect(url.serialize(tree)).toEqual(u);
     });
 
@@ -208,7 +213,9 @@ describe('url serializer', () => {
       const u = `/one?${encode("p 1")}=${encode("v 1")}&${encode("p 2")}=${encode("v 2")}`;
       const tree = url.parse(u);
 
-      expect(tree.queryParams).toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
+      expect(tree.queryParams).toEqual({'p 1': 'v 1', 'p 2': 'v 2'});
+      expect(tree.queryParamMap.get('p 1')).toEqual('v 1');
+      expect(tree.queryParamMap.get('p 2')).toEqual('v 2');
       expect(url.serialize(tree)).toEqual(u);
     });
 

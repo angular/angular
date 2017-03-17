@@ -9,12 +9,14 @@
 import {Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
+import {map} from 'rxjs/operator/map';
 
 import {Data, ResolveData, Route} from './config';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {merge, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
+
 
 /**
  * @whatItDoes Represents the state of the router.
@@ -110,6 +112,10 @@ export class ActivatedRoute {
   _futureSnapshot: ActivatedRouteSnapshot;
   /** @internal */
   _routerState: RouterState;
+  /** @internal */
+  _paramMap: Observable<ParamMap>;
+  /** @internal */
+  _queryParamMap: Observable<ParamMap>;
 
   /** @internal */
   constructor(
@@ -148,6 +154,21 @@ export class ActivatedRoute {
 
   /** The path from the root of the router state tree to this route */
   get pathFromRoot(): ActivatedRoute[] { return this._routerState.pathFromRoot(this); }
+
+  get paramMap(): Observable<ParamMap> {
+    if (!this._paramMap) {
+      this._paramMap = map.call(this.params, (p: Params): ParamMap => convertToParamMap(p));
+    }
+    return this._paramMap;
+  }
+
+  get queryParamMap(): Observable<ParamMap> {
+    if (!this._queryParamMap) {
+      this._queryParamMap =
+          map.call(this.queryParams, (p: Params): ParamMap => convertToParamMap(p));
+    }
+    return this._queryParamMap;
+  }
 
   toString(): string {
     return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
@@ -225,6 +246,10 @@ export class ActivatedRouteSnapshot {
   _resolvedData: Data;
   /** @internal */
   _routerState: RouterStateSnapshot;
+  /** @internal */
+  _paramMap: ParamMap;
+  /** @internal */
+  _queryParamMap: ParamMap;
 
   /** @internal */
   constructor(
@@ -266,6 +291,20 @@ export class ActivatedRouteSnapshot {
 
   /** The path from the root of the router state tree to this route */
   get pathFromRoot(): ActivatedRouteSnapshot[] { return this._routerState.pathFromRoot(this); }
+
+  get paramMap(): ParamMap {
+    if (!this._paramMap) {
+      this._paramMap = convertToParamMap(this.params);
+    }
+    return this._paramMap;
+  }
+
+  get queryParamMap(): ParamMap {
+    if (!this._queryParamMap) {
+      this._queryParamMap = convertToParamMap(this.queryParams);
+    }
+    return this._queryParamMap;
+  }
 
   toString(): string {
     const url = this.url.map(segment => segment.toString()).join('/');

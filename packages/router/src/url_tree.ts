@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET} from './shared';
+import {PRIMARY_OUTLET, ParamMap, convertToParamMap} from './shared';
 import {forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
@@ -104,6 +104,9 @@ function containsSegmentGroupHelper(
  */
 export class UrlTree {
   /** @internal */
+  _queryParamMap: ParamMap;
+
+  /** @internal */
   constructor(
       /** The root segment group of the URL tree */
       public root: UrlSegmentGroup,
@@ -111,6 +114,13 @@ export class UrlTree {
       public queryParams: {[key: string]: string},
       /** The fragment of the URL */
       public fragment: string) {}
+
+  get queryParamMap() {
+    if (!this._queryParamMap) {
+      this._queryParamMap = convertToParamMap(this.queryParams);
+    }
+    return this._queryParamMap;
+  }
 
   /** @docsNotRequired */
   toString(): string { return new DefaultUrlSerializer().serialize(this); }
@@ -176,12 +186,22 @@ export class UrlSegmentGroup {
  * @stable
  */
 export class UrlSegment {
+  /** @internal */
+  _parameterMap: ParamMap;
+
   constructor(
       /** The path part of a URL segment */
       public path: string,
 
       /** The matrix parameters associated with a segment */
       public parameters: {[name: string]: string}) {}
+
+  get parameterMap() {
+    if (!this._parameterMap) {
+      this._parameterMap = convertToParamMap(this.parameters);
+    }
+    return this._parameterMap;
+  }
 
   /** @docsNotRequired */
   toString(): string { return serializePath(this); }

@@ -6,9 +6,11 @@ export declare class ActivatedRoute {
     readonly firstChild: ActivatedRoute;
     fragment: Observable<string>;
     outlet: string;
+    readonly paramMap: Observable<ParamMap>;
     params: Observable<Params>;
     readonly parent: ActivatedRoute;
     readonly pathFromRoot: ActivatedRoute[];
+    readonly queryParamMap: Observable<ParamMap>;
     queryParams: Observable<Params>;
     readonly root: ActivatedRoute;
     readonly routeConfig: Route;
@@ -25,9 +27,11 @@ export declare class ActivatedRouteSnapshot {
     readonly firstChild: ActivatedRouteSnapshot;
     fragment: string;
     outlet: string;
+    readonly paramMap: ParamMap;
     params: Params;
     readonly parent: ActivatedRouteSnapshot;
     readonly pathFromRoot: ActivatedRouteSnapshot[];
+    readonly queryParamMap: ParamMap;
     queryParams: Params;
     readonly root: ActivatedRouteSnapshot;
     readonly routeConfig: Route;
@@ -148,6 +152,13 @@ export declare class NavigationStart {
 /** @experimental */
 export declare class NoPreloading implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+}
+
+/** @stable */
+export interface ParamMap {
+    get(name: string): string | null;
+    getAll(name: string): string[];
+    has(name: string): boolean;
 }
 
 /** @stable */
@@ -390,6 +401,7 @@ export declare abstract class UrlHandlingStrategy {
 
 /** @stable */
 export declare class UrlSegment {
+    readonly parameterMap: ParamMap;
     parameters: {
         [name: string]: string;
     };
@@ -428,6 +440,7 @@ export declare abstract class UrlSerializer {
 /** @stable */
 export declare class UrlTree {
     fragment: string;
+    readonly queryParamMap: ParamMap;
     queryParams: {
         [key: string]: string;
     };

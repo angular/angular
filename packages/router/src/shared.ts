@@ -27,6 +27,65 @@ export type Params = {
   [key: string]: any
 };
 
+/**
+ * Matrix and Query parameters.
+ *
+ * `ParamMap` makes it easier to work with parameters as they could have either a single value or
+ * multiple value. Because this should be know by the user calling `get` or `getAll` returns the
+ * correct type (either `string` or `string[]`).
+ *
+ * The API is inspired by the URLSearchParams interface.
+ * see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+ *
+ * @stable
+ */
+export interface ParamMap {
+  has(name: string): boolean;
+  /**
+   * Return a single value for the given parameter name:
+   * - the value when the parameter has a single value,
+   * - the first value if the parameter has multiple values,
+   * - `null` when there is no such parameter.
+   */
+  get(name: string): string|null;
+  /**
+   * Return an array of values for the given parameter name.
+   *
+   * If there is no such parameter, an empty array is returned.
+   */
+  getAll(name: string): string[];
+}
+
+class ParamsAsMap implements ParamMap {
+  private params: Params;
+
+  constructor(params: Params) { this.params = params || {}; }
+
+  has(name: string): boolean { return this.params.hasOwnProperty(name); }
+
+  get(name: string): string|null {
+    if (this.has(name)) {
+      const v = this.params[name];
+      return Array.isArray(v) ? v[0] : v;
+    }
+
+    return null;
+  }
+
+  getAll(name: string): string[] {
+    if (this.has(name)) {
+      const v = this.params[name];
+      return Array.isArray(v) ? v : [v];
+    }
+
+    return [];
+  }
+}
+
+export function convertToParamMap(params: Params): ParamMap {
+  return new ParamsAsMap(params);
+}
+
 const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
 
 export function navigationCancelingError(message: string) {
