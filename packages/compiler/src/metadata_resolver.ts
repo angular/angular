@@ -136,30 +136,23 @@ export class CompileMetadataResolver {
     }
   }
 
-  private getComponentFactory(selector: string, dirType: any): StaticSymbol|ComponentFactory<any> {
+  private getComponentFactory(
+      selector: string, dirType: any, inputs: {[key: string]: string},
+      outputs: {[key: string]: string}): StaticSymbol|ComponentFactory<any> {
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(
           ngfactoryFilePath(dirType.filePath), cpl.componentFactoryName(dirType));
     } else {
       const hostView = this.getHostComponentViewClass(dirType);
-      // Note: inputs / outputs / ngContentSelectors will be filled later once the template is
+      // Note: ngContentSelectors will be filled later once the template is
       // loaded.
-      return createComponentFactory(selector, dirType, <any>hostView, {}, {}, []);
+      return createComponentFactory(selector, dirType, <any>hostView, inputs, outputs, []);
     }
   }
 
   private initComponentFactory(
-      factory: StaticSymbol|ComponentFactory<any>, inputs: {[key: string]: string},
-      outputs: {[key: string]: string}, ngContentSelectors: string[]) {
+      factory: StaticSymbol|ComponentFactory<any>, ngContentSelectors: string[]) {
     if (!(factory instanceof StaticSymbol)) {
-      for (let propName in inputs) {
-        const templateName = inputs[propName];
-        factory.inputs.push({propName, templateName});
-      }
-      for (let propName in outputs) {
-        const templateName = outputs[propName];
-        factory.outputs.push({propName, templateName});
-      }
       factory.ngContentSelectors.push(...ngContentSelectors);
     }
   }
@@ -205,9 +198,7 @@ export class CompileMetadataResolver {
         template: templateMetadata
       });
       if (templateMetadata) {
-        this.initComponentFactory(
-            metadata.componentFactory, metadata.inputs, metadata.outputs,
-            templateMetadata.ngContentSelectors);
+        this.initComponentFactory(metadata.componentFactory, templateMetadata.ngContentSelectors);
       }
       this._directiveCache.set(directiveType, normalizedDirMeta);
       this._summaryCache.set(directiveType, normalizedDirMeta.toSummary());
@@ -343,10 +334,12 @@ export class CompileMetadataResolver {
       componentViewType: nonNormalizedTemplateMetadata ? this.getComponentViewClass(directiveType) :
                                                          undefined,
       rendererType: nonNormalizedTemplateMetadata ? this.getRendererType(directiveType) : undefined,
-      componentFactory: nonNormalizedTemplateMetadata ?
-          this.getComponentFactory(selector, directiveType) :
-          undefined
+      componentFactory: undefined
     });
+    if (nonNormalizedTemplateMetadata) {
+      metadata.componentFactory =
+          this.getComponentFactory(selector, directiveType, metadata.inputs, metadata.outputs);
+    }
     cacheEntry = {metadata, annotation: dirMeta};
     this._nonNormalizedDirectiveCache.set(directiveType, cacheEntry);
     return cacheEntry;
