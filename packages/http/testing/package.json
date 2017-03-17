@@ -1,4 +1,5 @@
 {
+  "name": "@angular/http/testing",
   "typings": "../testing.d.ts",
   "main": "../bundles/http-testing.umd.js",
   "module": "../@angular/http/testing.es5.js",
