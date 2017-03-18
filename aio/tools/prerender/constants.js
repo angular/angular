@@ -4,7 +4,7 @@
 const path = require('path');
 
 // Constants
-const BROWSER_INSTANCES = 7;
+const BROWSER_INSTANCES = 3;
 
 const PORT = 4201;
 const BASE_URL = `http://localhost:${PORT}`;
