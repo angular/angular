@@ -7,8 +7,7 @@
  */
 
 import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef, isDevMode} from '@angular/core';
-
-import {getTypeNameForDebugging} from '../facade/lang';
+import {getSymbolIterator, getTypeNameForDebugging} from '../facade/lang';
 
 export class NgForRow {
   constructor(public $implicit: any, public index: number, public count: number) {}
@@ -88,7 +87,9 @@ export class NgForRow {
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgFor implements DoCheck, OnChanges {
-  @Input() ngForOf: any;
+  @Input()
+  set ngForOf(v: any) { this._ngForOf = isIterator(v) ? Array.from(v) : v; }
+
   @Input()
   set ngForTrackBy(fn: TrackByFn) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
@@ -105,6 +106,7 @@ export class NgFor implements DoCheck, OnChanges {
   get ngForTrackBy(): TrackByFn { return this._trackByFn; }
 
   private _differ: IterableDiffer = null;
+  private _ngForOf: any;
   private _trackByFn: TrackByFn;
 
   constructor(
@@ -121,13 +123,12 @@ export class NgFor implements DoCheck, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ('ngForOf' in changes) {
       // React on ngForOf changes only once all inputs have been initialized
-      const value = changes['ngForOf'].currentValue;
-      if (!this._differ && value) {
+      if (!this._differ && this._ngForOf) {
         try {
-          this._differ = this._differs.find(value).create(this._cdr, this.ngForTrackBy);
+          this._differ = this._differs.find(this._ngForOf).create(this._cdr, this.ngForTrackBy);
         } catch (e) {
           throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+              `Cannot find a differ supporting object '${this._ngForOf}' of type '${getTypeNameForDebugging(this._ngForOf)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }
@@ -135,7 +136,7 @@ export class NgFor implements DoCheck, OnChanges {
 
   ngDoCheck(): void {
     if (this._differ) {
-      const changes = this._differ.diff(this.ngForOf);
+      const changes = this._differ.diff(this._ngForOf);
       if (changes) this._applyChanges(changes);
     }
   }
@@ -182,4 +183,8 @@ export class NgFor implements DoCheck, OnChanges {
 
 class RecordViewTuple {
   constructor(public record: any, public view: EmbeddedViewRef<NgForRow>) {}
+}
+
+function isIterator(obj: any): boolean {
+  return !!obj && obj === obj[getSymbolIterator()]();
 }
