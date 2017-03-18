@@ -19,7 +19,9 @@ import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
 
-import { FileLoaderProviders } from 'app/shared/file-loader-webpack.service';
+import { HttpModule } from '@angular/http';
+import { FileLoaderProviders } from 'app/shared/file-loader-http.service';
+// import { FileLoaderProviders } from 'app/shared/file-loader-webpack.service';
 // import { FileLoaderProviders } from 'app/shared/file-loader-xhr.service';
 
 import { GaService } from 'app/shared/ga.service';
@@ -38,6 +40,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 @NgModule({
   imports: [
     BrowserModule,
+    HttpModule,  // <- Delete if we use a non-Http FileLoaderService
     MdButtonModule,
     MdIconModule,
     MdInputModule,

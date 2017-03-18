@@ -48,15 +48,13 @@ class Response_ implements Response {
     };
 }
 
-const fileRoot = 'content/';
-
 @Injectable()
 export class XhrFileLoaderService {
-  load(url: string) {
+  load(path: string) {
     return new Observable<Response>(observer => {
-      if (!url) {
+      if (!path) {
         observer.error(
-          new Response_({url, status: 400, statusText: 'Bad Request', body: 'No url'})
+          new Response_({url: path, status: 400, statusText: 'Bad Request', body: 'No url'})
         );
         return;
       }
@@ -64,7 +62,7 @@ export class XhrFileLoaderService {
       let xhr = new XMLHttpRequest();
       xhr.onload = complete;
       xhr.onerror = failed;
-      xhr.open('GET', fileRoot + url);
+      xhr.open('GET', 'content/' + path);
       xhr.send();
 
       function complete (evt) {
