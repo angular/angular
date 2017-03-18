@@ -21,6 +21,7 @@
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 # wardbell - Ward Bell
+# tinayuangao - Tina Gao
 
 version: 2
 
@@ -155,7 +156,7 @@ groups:
         - "packages/forms/*"
     users:
       - kara #primary
-      # needs secondary
+      - tinayuangao #secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
