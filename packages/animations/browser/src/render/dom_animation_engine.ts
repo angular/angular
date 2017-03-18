@@ -67,11 +67,18 @@ export class DomAnimationEngine {
   }
 
   onInsert(element: any, domFn: () => any): void {
-    this._flaggedInserts.add(element);
+    if (element['nodeType'] == 1) {
+      this._flaggedInserts.add(element);
+    }
     domFn();
   }
 
   onRemove(element: any, domFn: () => any): void {
+    if (element['nodeType'] != 1) {
+      domFn();
+      return;
+    }
+
     let lookupRef = this._elementTriggerStates.get(element);
     if (lookupRef) {
       const possibleTriggers = Object.keys(lookupRef);

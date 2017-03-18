@@ -328,6 +328,29 @@ export function main() {
       });
     });
 
+    describe('removals / insertions', () => {
+      it('should allow text nodes to be removed through the engine', () => {
+        const engine = makeEngine();
+        const node = document.createTextNode('hello');
+        element.appendChild(node);
+
+        let called = false;
+        engine.onRemove(node, () => called = true);
+
+        expect(called).toBeTruthy();
+      });
+
+      it('should allow text nodes to be inserted through the engine', () => {
+        const engine = makeEngine();
+        const node = document.createTextNode('hello');
+
+        let called = false;
+        engine.onInsert(node, () => called = true);
+
+        expect(called).toBeTruthy();
+      });
+    });
+
     describe('transition operations', () => {
       it('should persist the styles on the element as actual styles once the animation is complete',
          () => {
