@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const globby = require('globby');
 const path = require('path');
-const rimraf = require('rimraf');
+const shell = require('shelljs');
 
 const EXAMPLES_PATH = path.join(__dirname + '/../content/examples');
 const OLD_AIO_PATH = path.join(__dirname + '/../../../angular.io/public/docs/_examples');
@@ -20,7 +20,7 @@ const EXAMPLES_TO_IGNORE = [
 .map(e => `!${e}`);
 
 console.log('Deleting examples...');
-rimraf.sync(EXAMPLES_PATH);
+shell.rm('-rf', EXAMPLES_PATH);
 
 let examplesPath = globby.sync([OLD_AIO_PATH + '/*', ...EXAMPLES_TO_IGNORE], { dot: true });
 

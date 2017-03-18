@@ -76,7 +76,6 @@
     "protractor": "~5.1.0",
     "rho": "^0.3.0",
     "shelljs": "^0.7.7",
-    "rimraf": "^2.6.1",
     "ts-node": "~2.0.0",
     "tslint": "~4.4.2",
     "typescript": "2.1.6"
