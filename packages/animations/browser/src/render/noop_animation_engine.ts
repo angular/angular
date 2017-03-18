@@ -54,7 +54,9 @@ export class NoopAnimationEngine extends AnimationEngine {
 
   onRemove(element: any, domFn: () => any): void {
     domFn();
-    this._flaggedRemovals.add(element);
+    if (element['nodeType'] == 1) {
+      this._flaggedRemovals.add(element);
+    }
   }
 
   setProperty(element: any, property: string, value: any): void {
