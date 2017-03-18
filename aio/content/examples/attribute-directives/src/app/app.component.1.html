@@ -1,0 +1,14 @@
+<!-- #docregion -->
+<h1>My First Attribute Directive</h1>
+<!-- #docregion applied -->
+<p myHighlight>Highlight me!</p>
+<!-- #enddocregion applied,  -->
+
+<!-- #docregion color-1 -->
+<p myHighlight highlightColor="yellow">Highlighted in yellow</p>
+<p myHighlight [highlightColor]="'orange'">Highlighted in orange</p>
+<!-- #enddocregion color-1 -->
+
+<!-- #docregion color-2 -->
+<p myHighlight [highlightColor]="color">Highlighted with parent component's color</p>
+<!-- #enddocregion color-2 -->
