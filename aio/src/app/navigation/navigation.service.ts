@@ -75,7 +75,7 @@ export class NavigationService {
    */
   private computeUrlToNodesMap(navigation: NavigationViews) {
     const navMap = {};
-    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
+    Object.keys(navigation).forEach(key => Array.isArray(navigation[key]) && navigation[key].forEach(node => walkNodes(node)));
     return navMap;
 
     function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {
