@@ -47,6 +47,7 @@ module.exports =
         .processor(require('./processors/filterMemberDocs'))
         .processor(require('./processors/convertToJson'))
         .processor(require('./processors/markBarredODocsAsPrivate'))
+        .processor(require('./processors/filterPrivateDocs'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
