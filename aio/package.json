@@ -45,6 +45,7 @@
     "@angular/router": "next",
     "@angular/service-worker": "^1.0.0-beta.7",
     "core-js": "^2.4.1",
+    "rho": "https://github.com/petebacondarwin/rho#heading-fix",
     "rxjs": "^5.1.0",
     "ts-helpers": "^1.1.1",
     "zone.js": "0.7.8"
@@ -72,7 +73,6 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "lodash": "^4.17.4",
     "protractor": "~5.1.0",
-    "rho": "^0.3.0",
     "shelljs": "^0.7.7",
     "ts-node": "~2.0.0",
     "tslint": "~4.4.2",
