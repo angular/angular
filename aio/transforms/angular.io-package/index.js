@@ -48,6 +48,7 @@ module.exports =
         .processor(require('./processors/convertToJson'))
         .processor(require('./processors/markBarredODocsAsPrivate'))
         .processor(require('./processors/filterPrivateDocs'))
+        .processor(require('./processors/filterIgnoredDocs'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
@@ -123,7 +124,12 @@ module.exports =
           generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
         })
 
-
+        // Ignore certain problematic files
+        .config(function(filterIgnoredDocs) {
+          filterIgnoredDocs.ignore = [
+            /\/VERSION$/  // Ignore the `VERSION` const, since it would be written to the same file as the `Version` class
+          ];
+        })
 
         // Where do we write the output files?
         .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = OUTPUT_PATH; })
