@@ -63,6 +63,7 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 2017-03-01    | 2.4.9                               | 4.0.0-rc.2                         |
 2017-03-08    | 2.4.10                              | 4.0.0-rc.3                         |
 2017-03-15    | 2.4.11                              | 4.0.0-rc.4                         |
+*2017-03-17*  |                                     | *4.0.0-rc.5*                       | *Unplanned release to fix compiler-cli dependency version*
 2017-03-22    | 4.0.0 + 2.4.12                      | -                                  | Major Version Release
 
 
