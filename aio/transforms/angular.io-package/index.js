@@ -16,7 +16,7 @@ const gitPackage = require('dgeni-packages/git');
 const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
-const cheatsheetPackage = require('../cheatsheet-package');
+const contentPackage = require('../content-package');
 const rhoPackage = require('../rho-package');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
@@ -31,7 +31,7 @@ module.exports =
         'angular.io',
         [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
-          gitPackage, targetPackage, cheatsheetPackage, rhoPackage
+          gitPackage, targetPackage, contentPackage, rhoPackage
         ])
 
         // Register the processors
@@ -110,7 +110,6 @@ module.exports =
               include: CONTENTS_PATH + '/file-not-found.md',
               fileReader: 'contentFileReader'
             },
-            {basePath: CONTENTS_PATH, include: CONTENTS_PATH + '/cheatsheet/*.md'},
             {
               basePath: API_SOURCE_PATH,
               include: API_SOURCE_PATH + '/examples/**/*',
@@ -244,11 +243,6 @@ module.exports =
               docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe']),
               pathTemplate: '${moduleDoc.moduleFolder}/${name}',
               outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
-            },
-            {
-              docTypes: ['cheatsheet-data'],
-              pathTemplate: GUIDE_SEGMENT + '/cheatsheet.json',
-              outputPathTemplate: '${path}'
             },
             {docTypes: ['example-region'], getOutputPath: function() {}},
             {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'},
