@@ -1,8 +1,13 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { ApiListComponent } from './api/api-list.component';
 import { CodeExampleComponent } from './code-example.component';
 import { DocTitleComponent } from './doc-title.component';
 
-/** Components that can be embedded in docs such as CodeExampleComponent, LiveExampleComponent,... */
+/** Components that can be embedded in docs
+ * such as CodeExampleComponent, LiveExampleComponent,...
+ */
 export const embeddedComponents: any[] = [
   ApiListComponent, CodeExampleComponent, DocTitleComponent
 ];
@@ -11,3 +16,13 @@ export const embeddedComponents: any[] = [
 export class EmbeddedComponents {
   components = embeddedComponents;
 }
+
+@NgModule({
+  imports: [ CommonModule ],
+  declarations: [
+    embeddedComponents
+  ],
+  providers: [ EmbeddedComponents ],
+  entryComponents: [ embeddedComponents ]
+})
+export class EmbeddedModule { }
