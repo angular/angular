@@ -108,6 +108,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private nodes: (() => {
     sourceSpan: ParseSourceSpan,
     nodeDef: o.Expression,
+    directive?: CompileTypeMetadata,
     updateDirectives?: UpdateExpression[],
     updateRenderer?: UpdateExpression[]
   })[] = [];
@@ -582,6 +583,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR
       ]),
       updateDirectives: updateDirectiveExpressions,
+      directive: dirAst.directive.type,
     });
 
     return {hostBindings, hostEvents};
@@ -790,13 +792,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const updateRendererStmts: o.Statement[] = [];
     const updateDirectivesStmts: o.Statement[] = [];
     const nodeDefExprs = this.nodes.map((factory, nodeIndex) => {
-      const {nodeDef, updateDirectives, updateRenderer, sourceSpan} = factory();
+      const {nodeDef, directive, updateDirectives, updateRenderer, sourceSpan} = factory();
       if (updateRenderer) {
-        updateRendererStmts.push(...createUpdateStatements(nodeIndex, sourceSpan, updateRenderer));
+        updateRendererStmts.push(
+            ...createUpdateStatements(nodeIndex, sourceSpan, updateRenderer, null));
       }
       if (updateDirectives) {
         updateDirectivesStmts.push(
-            ...createUpdateStatements(nodeIndex, sourceSpan, updateDirectives));
+            ...createUpdateStatements(nodeIndex, sourceSpan, updateDirectives, directive));
       }
       // We use a comma expression to call the log function before
       // the nodeDef function, but still use the result of the nodeDef function
@@ -807,8 +810,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return {updateRendererStmts, updateDirectivesStmts, nodeDefExprs};
 
     function createUpdateStatements(
-        nodeIndex: number, sourceSpan: ParseSourceSpan,
-        expressions: UpdateExpression[]): o.Statement[] {
+        nodeIndex: number, sourceSpan: ParseSourceSpan, expressions: UpdateExpression[],
+        directive: CompileTypeMetadata): o.Statement[] {
       const updateStmts: o.Statement[] = [];
       const exprs = expressions.map(({sourceSpan, context, value}) => {
         const bindingId = `${updateBindingCount++}`;
@@ -819,8 +822,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             ...stmts.map(stmt => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
         return o.applySourceSpanToExpressionIfNeeded(currValExpr, sourceSpan);
       });
-      updateStmts.push(o.applySourceSpanToStatementIfNeeded(
-          callCheckStmt(nodeIndex, exprs).toStmt(), sourceSpan));
+      if (expressions.length ||
+          (directive && (directive.lifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1 ||
+                         directive.lifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1))) {
+        updateStmts.push(o.applySourceSpanToStatementIfNeeded(
+            callCheckStmt(nodeIndex, exprs).toStmt(), sourceSpan));
+      }
       return updateStmts;
     }
   }
