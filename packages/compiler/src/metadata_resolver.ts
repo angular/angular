@@ -1099,7 +1099,6 @@ function stringifyType(type: any): string {
  * Indicates that a component is still being loaded in a synchronous compile.
  */
 function componentStillLoadingError(compType: Type<any>) {
-  debugger;
   const error =
       Error(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
   (error as any)[ɵERROR_COMPONENT_TYPE] = compType;
