@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {AUTO_STYLE, AnimationEvent, animate, group, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
@@ -404,8 +404,9 @@ export function main() {
            }));
       });
 
-      it('should cancel and merge in mid-animation styles into the follow-up animation', () => {
-        @Component({
+      it('should cancel and merge in mid-animation styles into the follow-up animation, but only for animation keyframes that start right away',
+         () => {
+           @Component({
           selector: 'ani-cmp',
           template: `
           <div [@myAnimation]="exp"></div>
@@ -422,41 +423,50 @@ export function main() {
                 transition(
                     'b => c',
                     [
-                      style({'width': '0'}),
-                      animate(500, style({'width': '100px'})),
+                      group([
+                        animate(500, style({'width': '100px'})),
+                        animate(500, style({'height': '100px'})),
+                      ]),
+                      animate(500, keyframes([
+                        style({'opacity': '0'}),
+                        style({'opacity': '1'})
+                      ]))
                     ]),
               ])],
         })
         class Cmp {
-          exp: any = false;
-        }
+             exp: any = false;
+           }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-        cmp.exp = 'a';
-        fixture.detectChanges();
-        engine.flush();
-        expect(getLog().length).toEqual(0);
-        resetLog();
+           cmp.exp = 'a';
+           fixture.detectChanges();
+           engine.flush();
+           expect(getLog().length).toEqual(0);
+           resetLog();
 
-        cmp.exp = 'b';
-        fixture.detectChanges();
-        engine.flush();
-        expect(getLog().length).toEqual(1);
-        resetLog();
+           cmp.exp = 'b';
+           fixture.detectChanges();
+           engine.flush();
+           expect(getLog().length).toEqual(1);
+           resetLog();
 
-        cmp.exp = 'c';
-        fixture.detectChanges();
-        engine.flush();
-        expect(getLog().length).toEqual(1);
+           cmp.exp = 'c';
+           fixture.detectChanges();
+           engine.flush();
 
-        const data = getLog().pop();
-        expect(data.previousStyles).toEqual({opacity: AUTO_STYLE});
-      });
+           const players = getLog();
+           expect(players.length).toEqual(3);
+           const [p1, p2, p3] = players;
+           expect(p1.previousStyles).toEqual({opacity: AUTO_STYLE});
+           expect(p2.previousStyles).toEqual({});
+           expect(p3.previousStyles).toEqual({});
+         });
 
       it('should invoke an animation trigger that is state-less', () => {
         @Component({

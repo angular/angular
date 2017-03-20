@@ -217,9 +217,9 @@ export class DomAnimationEngine {
     // we first run this so that the previous animation player
     // data can be passed into the successive animation players
     let totalTime = 0;
-    const players = instruction.timelines.map(timelineInstruction => {
+    const players = instruction.timelines.map((timelineInstruction, i) => {
       totalTime = Math.max(totalTime, timelineInstruction.totalTime);
-      return this._buildPlayer(element, timelineInstruction, previousPlayers);
+      return this._buildPlayer(element, timelineInstruction, previousPlayers, i);
     });
 
     previousPlayers.forEach(previousPlayer => previousPlayer.destroy());
@@ -253,8 +253,8 @@ export class DomAnimationEngine {
   public animateTimeline(
       element: any, instructions: AnimationTimelineInstruction[],
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    const players = instructions.map(instruction => {
-      const player = this._buildPlayer(element, instruction, previousPlayers);
+    const players = instructions.map((instruction, i) => {
+      const player = this._buildPlayer(element, instruction, previousPlayers, i);
       player.onDestroy(
           () => { deleteFromArrayMap(this._activeElementAnimations, element, player); });
       player.init();
@@ -266,8 +266,14 @@ export class DomAnimationEngine {
   }
 
   private _buildPlayer(
-      element: any, instruction: AnimationTimelineInstruction,
-      previousPlayers: AnimationPlayer[]): AnimationPlayer {
+      element: any, instruction: AnimationTimelineInstruction, previousPlayers: AnimationPlayer[],
+      index: number = 0): AnimationPlayer {
+    // only the very first animation can absorb the previous styles. This
+    // is here to prevent the an overlap situation where a group animation
+    // absorbs previous styles multiple times for the same element.
+    if (index && previousPlayers.length) {
+      previousPlayers = [];
+    }
     return this._driver.animate(
         element, this._normalizeKeyframes(instruction.keyframes), instruction.duration,
         instruction.delay, instruction.easing, previousPlayers);
