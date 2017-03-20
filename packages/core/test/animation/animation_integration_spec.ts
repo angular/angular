@@ -147,6 +147,46 @@ export function main() {
         ]);
       });
 
+      it('should stringify boolean triggers to `1` and `0`', () => {
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition('void => 1', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
+                transition('1 => 0', [style({opacity: 1}), animate(1000, style({opacity: 0}))])
+              ])]
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = true;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
+        ]);
+
+        cmp.exp = false;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().pop().keyframes).toEqual([
+          {offset: 0, opacity: '1'}, {offset: 1, opacity: '0'}
+        ]);
+      });
+
       it('should not throw an error if a trigger with the same name exists in separate components',
          () => {
            @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
