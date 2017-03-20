@@ -20,6 +20,7 @@ export interface PlatformReflectionCapabilities {
   setter(name: string): SetterFn;
   method(name: string): MethodFn;
   importUri(type: Type<any>): string;
+  resourceUri(type: Type<any>): string;
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any;
   resolveEnum(enumIdentifier: any, name: string): any;
 }

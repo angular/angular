@@ -58,6 +58,7 @@ export class StaticSymbolResolver {
   private resolvedFilePaths = new Set<string>();
   // Note: this will only contain StaticSymbols without members!
   private importAs = new Map<StaticSymbol, StaticSymbol>();
+  private symbolResourcePaths = new Map<StaticSymbol, string>();
 
   constructor(
       private host: StaticSymbolResolverHost, private staticSymbolCache: StaticSymbolCache,
@@ -106,6 +107,15 @@ export class StaticSymbolResolver {
       result = this.importAs.get(staticSymbol);
     }
     return result;
+  }
+
+  /**
+   * getResourcePath produces the path to the original location of the symbol and should
+   * be used to determine the relative location of resource references recorded in
+   * symbol metadata.
+   */
+  getResourcePath(staticSymbol: StaticSymbol): string {
+    return this.symbolResourcePaths.get(staticSymbol) || staticSymbol.filePath;
   }
 
   /**
@@ -200,18 +210,35 @@ export class StaticSymbolResolver {
       // handle direct declarations of the symbol
       const topLevelSymbolNames =
           new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
+      const origins: {[index: string]: string} = metadata['origins'] || {};
       Object.keys(metadata['metadata']).forEach((metadataKey) => {
         const symbolMeta = metadata['metadata'][metadataKey];
         const name = unescapeIdentifier(metadataKey);
-        const canonicalSymbol = this.getStaticSymbol(filePath, name);
+
+        const symbol = this.getStaticSymbol(filePath, name);
+        let importSymbol: StaticSymbol|undefined = undefined;
         if (metadata['importAs']) {
           // Index bundle indexes should use the importAs module name instead of a reference
           // to the .d.ts file directly.
-          const importSymbol = this.getStaticSymbol(metadata['importAs'], name);
-          this.recordImportAs(canonicalSymbol, importSymbol);
+          importSymbol = this.getStaticSymbol(metadata['importAs'], name);
+          this.recordImportAs(symbol, importSymbol);
+        }
+
+        const origin = origins[metadataKey];
+        if (origin) {
+          // If the symbol is from a bundled index, use the declaration location of the
+          // symbol so relative references (such as './my.html') will be calculated
+          // correctly.
+          const originFilePath = this.resolveModule(origin, filePath);
+          if (!originFilePath) {
+            this.reportError(
+                new Error(`Couldn't resolve original symbol for ${origin} from ${filePath}`), null);
+          } else {
+            this.symbolResourcePaths.set(symbol, originFilePath);
+          }
         }
         resolvedSymbols.push(
-            this.createResolvedSymbol(canonicalSymbol, topLevelSymbolNames, symbolMeta));
+            this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta));
       });
     }
 
@@ -257,7 +284,7 @@ export class StaticSymbolResolver {
   }
 
   private createResolvedSymbol(
-      sourceSymbol: StaticSymbol, topLevelSymbolNames: Set<string>,
+      sourceSymbol: StaticSymbol, topLevelPath: string, topLevelSymbolNames: Set<string>,
       metadata: any): ResolvedStaticSymbol {
     const self = this;
 
@@ -291,7 +318,7 @@ export class StaticSymbolResolver {
             return {__symbolic: 'reference', name: name};
           } else {
             if (topLevelSymbolNames.has(name)) {
-              return self.getStaticSymbol(sourceSymbol.filePath, name);
+              return self.getStaticSymbol(topLevelPath, name);
             }
             // ambient value
             null;
