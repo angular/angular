@@ -10,6 +10,7 @@ import {ApplicationRef, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
+import {FlatModule} from 'flat_module';
 // Note: don't refer to third_party_src as we want to test that
 // we can compile components from node_modules!
 import {ThirdpartyModule} from 'third_party/module';
@@ -18,6 +19,7 @@ import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {ComponentUsingThirdParty} from './comp_using_3rdp';
+import {ComponentUsingFlatModule} from './comp_using_flat_module';
 import {CUSTOM} from './custom_token';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {BindingErrorComp} from './errors';
@@ -48,6 +50,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     ProjectingComp,
     SomeDirectiveInRootModule,
     SomePipeInRootModule,
+    ComponentUsingFlatModule,
     ComponentUsingThirdParty,
     BindingErrorComp,
   ],
@@ -58,6 +61,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     ModuleUsingCustomElements,
     SomeLibModule.withProviders(),
     ThirdpartyModule,
+    FlatModule,
   ],
   providers: [
     SomeService,
@@ -73,6 +77,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     CompWithReferences,
     ProjectingComp,
     ComponentUsingThirdParty,
+    ComponentUsingFlatModule,
     BindingErrorComp,
   ]
 })
