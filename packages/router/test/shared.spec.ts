@@ -16,6 +16,11 @@ describe('ParamsMap', () => {
     expect(map.has('not here')).toEqual(false);
   });
 
+  it('should returns the name of the parameters', () => {
+    const map = convertToParamMap({single: 's', multiple: ['m1', 'm2']});
+    expect(map.keys).toEqual(['single', 'multiple']);
+  });
+
   it('should support single valued parameters', () => {
     const map = convertToParamMap({single: 's', multiple: ['m1', 'm2']});
     expect(map.get('single')).toEqual('s');
