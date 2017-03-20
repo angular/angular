@@ -92,7 +92,7 @@ export class MetadataBundler {
     const exportedSymbols = this.exportAll(this.rootModule);
     this.canonicalizeSymbols(exportedSymbols);
     // TODO: exports? e.g. a module re-exports a symbol from another bundle
-    const entries = this.getEntries(exportedSymbols);
+    const metadata = this.getEntries(exportedSymbols);
     const privates = Array.from(this.symbolMap.values())
                          .filter(s => s.referenced && s.isPrivate)
                          .map(s => ({
@@ -100,9 +100,15 @@ export class MetadataBundler {
                                 name: s.declaration.name,
                                 module: s.declaration.module
                               }));
+    const origins = Array.from(this.symbolMap.values())
+                        .filter(s => s.referenced)
+                        .reduce<{[name: string]: string}>((p, s) => {
+                          p[s.isPrivate ? s.privateName : s.name] = s.declaration.module;
+                          return p;
+                        }, {});
     return {
       metadata:
-          {__symbolic: 'module', version: VERSION, metadata: entries, importAs: this.importAs},
+          {__symbolic: 'module', version: VERSION, metadata, origins, importAs: this.importAs},
       privates
     };
   }
@@ -235,7 +241,6 @@ export class MetadataBundler {
         let name = symbol.name;
         if (symbol.isPrivate && !symbol.privateName) {
           name = newPrivateName();
-          ;
           symbol.privateName = name;
         }
         result[name] = symbol.value;

@@ -25,6 +25,7 @@ export interface ModuleMetadata {
   exports?: ModuleExportMetadata[];
   importAs?: string;
   metadata: {[name: string]: MetadataEntry};
+  origins?: {[name: string]: string};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {
   return value && value.__symbolic === 'module';
