@@ -22,6 +22,7 @@ const tsconfigPath = path.join(COMPONENTS_DIR, 'tsconfig.json');
 /** Asset files to be added to the components output. */
 const assetFiles = [
   path.join(COMPONENTS_DIR, '**/*.html'),
+  path.join(COMPONENTS_DIR, '**/*.scss'),
   path.join(COMPONENTS_DIR, 'package.json'),
   path.join(PROJECT_ROOT, 'README.md'),
   path.join(PROJECT_ROOT, 'LICENSE'),
