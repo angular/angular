@@ -7,7 +7,6 @@ import {
   PortalModule,
   OverlayModule,
   A11yModule,
-  ProjectionModule,
   CompatibilityModule,
 } from './core/index';
 
@@ -68,7 +67,6 @@ const MATERIAL_MODULES = [
   StyleModule,
   A11yModule,
   PlatformModule,
-  ProjectionModule,
   CompatibilityModule,
   ObserveContentModule
 ];
@@ -91,7 +89,6 @@ const MATERIAL_MODULES = [
     MdTabsModule.forRoot(),
     MdToolbarModule.forRoot(),
     PortalModule.forRoot(),
-    ProjectionModule.forRoot(),
     RtlModule.forRoot(),
     ObserveContentModule.forRoot(),
 

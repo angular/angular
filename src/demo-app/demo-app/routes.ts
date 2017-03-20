@@ -27,7 +27,6 @@ import {RippleDemo} from '../ripple/ripple-demo';
 import {DialogDemo} from '../dialog/dialog-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
 import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
-import {ProjectionDemo} from '../projection/projection-demo';
 import {TABS_DEMO_ROUTES} from '../tabs/routes';
 import {PlatformDemo} from '../platform/platform-demo';
 import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
@@ -48,7 +47,6 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'progress-spinner', component: ProgressSpinnerDemo},
   {path: 'progress-bar', component: ProgressBarDemo},
   {path: 'portal', component: PortalDemo},
-  {path: 'projection', component: ProjectionDemo},
   {path: 'overlay', component: OverlayDemo},
   {path: 'checkbox', component: CheckboxDemo},
   {path: 'input', component: InputDemo},

@@ -33,9 +33,6 @@ export {
 } from './portal/portal-directives';
 export {DomPortalHost} from './portal/dom-portal-host';
 
-// Projection
-export * from './projection/projection';
-
 // Platform
 export * from './platform/index';
 

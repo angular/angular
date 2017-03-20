@@ -38,7 +38,6 @@ import {SnackBarDemo} from './snack-bar/snack-bar-demo';
 import {PortalDemo, ScienceJoke} from './portal/portal-demo';
 import {MenuDemo} from './menu/menu-demo';
 import {TabsDemo, SunnyTabContent, RainyTabContent, FoggyTabContent} from './tabs/tabs-demo';
-import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-demo';
 import {PlatformDemo} from './platform/platform-demo';
 import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
 import {InputDemo} from './input/input-demo';
@@ -81,8 +80,6 @@ import {StyleDemo} from './style/style-demo';
     PortalDemo,
     ProgressBarDemo,
     ProgressSpinnerDemo,
-    ProjectionDemo,
-    ProjectionTestComponent,
     RadioDemo,
     RippleDemo,
     RotiniPanel,
