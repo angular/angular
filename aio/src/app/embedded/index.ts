@@ -1,5 +1,5 @@
 import { ApiListComponent } from './api/api-list.component';
-import { CodeExampleComponent } from './code-example.component';
+import { CodeExampleComponent } from './code/code-example.component';
 import { DocTitleComponent } from './doc-title.component';
 
 /** Components that can be embedded in docs such as CodeExampleComponent, LiveExampleComponent,... */
