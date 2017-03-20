@@ -430,6 +430,11 @@ export function main() {
         expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
       });
 
+      it('should merge attributes with ids', () => {
+        const HTML = `<p i18n-title="@@id" title="foo"></p>`;
+        expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
+      });
+
       it('should merge nested attributes', () => {
         const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
         expect(fakeTranslate(HTML))

@@ -347,12 +347,13 @@ class _Visitor implements html.Visitor {
   // translate the attributes of an element and remove i18n specific attributes
   private _translateAttributes(el: html.Element): html.Attribute[] {
     const attributes = el.attrs;
-    const i18nAttributeMeanings: {[name: string]: string} = {};
+    const i18nParsedMessageMeta:
+        {[name: string]: {meaning: string, description: string, id: string}} = {};
 
     attributes.forEach(attr => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
-        i18nAttributeMeanings[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-            _parseMessageMeta(attr.value).meaning;
+        i18nParsedMessageMeta[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
+            _parseMessageMeta(attr.value);
       }
     });
 
@@ -364,9 +365,9 @@ class _Visitor implements html.Visitor {
         return;
       }
 
-      if (attr.value && attr.value != '' && i18nAttributeMeanings.hasOwnProperty(attr.name)) {
-        const meaning = i18nAttributeMeanings[attr.name];
-        const message: i18n.Message = this._createI18nMessage([attr], meaning, '', '');
+      if (attr.value && attr.value != '' && i18nParsedMessageMeta.hasOwnProperty(attr.name)) {
+        const {meaning, description, id} = i18nParsedMessageMeta[attr.name];
+        const message: i18n.Message = this._createI18nMessage([attr], meaning, description, id);
         const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes.length == 0) {
@@ -377,12 +378,12 @@ class _Visitor implements html.Visitor {
           } else {
             this._reportError(
                 el,
-                `Unexpected translation for attribute "${attr.name}" (id="${this._translations.digest(message)}")`);
+                `Unexpected translation for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
           }
         } else {
           this._reportError(
               el,
-              `Translation unavailable for attribute "${attr.name}" (id="${this._translations.digest(message)}")`);
+              `Translation unavailable for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
         }
       } else {
         translatedAttributes.push(attr);
