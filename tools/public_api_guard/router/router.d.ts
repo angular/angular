@@ -60,6 +60,9 @@ export interface CanLoad {
 }
 
 /** @stable */
+export declare function convertToParamMap(params: Params): ParamMap;
+
+/** @stable */
 export declare type Data = {
     [name: string]: any;
 };
@@ -156,6 +159,7 @@ export declare class NoPreloading implements PreloadingStrategy {
 
 /** @stable */
 export interface ParamMap {
+    readonly keys: string[];
     get(name: string): string | null;
     getAll(name: string): string[];
     has(name: string): boolean;
