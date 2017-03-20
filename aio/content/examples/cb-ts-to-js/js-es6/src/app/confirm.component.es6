@@ -16,7 +16,6 @@ export class ConfirmComponent {
 
 ConfirmComponent.annotations = [
   new Component({
-    moduleId: module.id,
     selector: 'app-confirm',
     templateUrl: './confirm.component.html',
     inputs: [
