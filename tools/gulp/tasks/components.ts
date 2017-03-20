@@ -39,7 +39,7 @@ task(':build:components:release', sequenceTask(
 
 /** Builds components typescript in ES5, ES6 target. For specs Karma needs CJS output. */
 task(':build:components:ts:es5', tsBuildTask(tsconfigPath, { target: ScriptTarget.ES5 }));
-task(':build:components:ts:es6', tsBuildTask(tsconfigPath, { target: ScriptTarget.ES6 }));
+task(':build:components:ts:es6', tsBuildTask(tsconfigPath, { target: ScriptTarget.ES2015 }));
 task(':build:components:ts:spec', tsBuildTask(tsconfigPath, {
   target: ScriptTarget.ES5, module: ModuleKind.CommonJS
 }));
