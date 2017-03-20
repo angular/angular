@@ -339,6 +339,35 @@ describe('compiler (unbundled Angular)', () => {
          });
        }));
   });
+
+  describe('generated templates', () => {
+    it('should not call `check` for directives without bindings nor ngDoCheck/ngOnInit',
+       async(() => {
+         const FILES: MockData = {
+           app: {
+             'app.ts': `
+                import { NgModule, Component } from '@angular/core';
+
+                @Component({ template: '' })
+                export class AppComponent {}
+
+                @NgModule({ declarations: [ AppComponent ] })
+                export class AppModule { }
+              `
+           }
+         };
+         const host = new MockCompilerHost(['/app/app.ts'], FILES, angularFiles);
+         const aotHost = new MockAotCompilerHost(host);
+         const genFilePreamble = '/* Hello world! */';
+         compile(host, aotHost, expectNoDiagnostics, expectNoDiagnostics, {genFilePreamble})
+             .then((generatedFiles) => {
+               const genFile = generatedFiles.find(
+                   gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+               expect(genFile.source).not.toContain('check(');
+             });
+
+       }));
+  });
 });
 
 describe('compiler (bundled Angular)', () => {
