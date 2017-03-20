@@ -1,7 +1,3 @@
-<div class="code-example">
-{% marked %}
-```
-{$ doc.contents $}
-```
-{% endmarked %}
-</div>
+<code-example>
+{$ doc.contents | escape $}
+</code-example>
