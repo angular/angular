@@ -63,14 +63,21 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
     return this._portal;
   }
 
-  set portal(p: Portal<any>) {
-    if (p) {
-      this._replaceAttachedPortal(p);
+  set portal(portal: Portal<any>) {
+    if (this.hasAttached()) {
+      super.detach();
     }
+
+    if (portal) {
+      super.attach(portal);
+    }
+
+    this._portal = portal;
   }
 
   ngOnDestroy() {
     super.dispose();
+    this._portal = null;
   }
 
   /**
@@ -94,6 +101,8 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
         portal.injector || viewContainerRef.parentInjector);
 
     super.setDisposeFn(() => ref.destroy());
+    this._portal = portal;
+
     return ref;
   }
 
@@ -107,20 +116,10 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
     this._viewContainerRef.createEmbeddedView(portal.templateRef);
     super.setDisposeFn(() => this._viewContainerRef.clear());
 
+    this._portal = portal;
+
     // TODO(jelbourn): return locals from view
     return new Map<string, any>();
-  }
-
-  /** Detaches the currently attached Portal (if there is one) and attaches the given Portal. */
-  private _replaceAttachedPortal(p: Portal<any>): void {
-    if (this.hasAttached()) {
-      super.detach();
-    }
-
-    if (p) {
-      super.attach(p);
-      this._portal = p;
-    }
   }
 }
 
