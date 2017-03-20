@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Inject, Input} from '@angular/core';
+import {Component, Directive, Input} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -38,31 +38,6 @@ export function main() {
          }));
     });
 
-    it('should not throw when Symbol is used as DI token', async(() => {
-         const SOME_SYMBOL = Symbol('Symbol');
-         const ANOTHER_SYMBOL = Symbol('Symbol');
-
-         @Component({selector: 'symbol', template: ''})
-         class CmpWithSymbol {
-           constructor(
-               @Inject(SOME_SYMBOL) public symbol: string,
-               @Inject(ANOTHER_SYMBOL) public anotherSymbol: string) {}
-         }
-
-         TestBed.configureTestingModule({
-           declarations: [CmpWithSymbol],
-           providers: [
-             {provide: SOME_SYMBOL, useValue: 'value'},
-             {provide: SOME_SYMBOL, useValue: 'override'},
-             {provide: ANOTHER_SYMBOL, useValue: 'another value'}
-           ]
-         });
-
-         const fixture = TestBed.createComponent(CmpWithSymbol);
-         fixture.detectChanges();
-         expect(fixture.componentInstance.symbol).toEqual('override');
-         expect(fixture.componentInstance.anotherSymbol).toEqual('another value');
-       }));
   });
 }
 
