@@ -41,7 +41,10 @@ export const settings: ts.CompilerOptions = {
   types: []
 };
 
-export interface EmitterOptions { emitMetadata: boolean; }
+export interface EmitterOptions {
+  emitMetadata: boolean;
+  mockData?: MockData;
+}
 
 export class EmittingCompilerHost implements ts.CompilerHost {
   private angularSourcePath: string|undefined;
@@ -100,12 +103,14 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   // ts.ModuleResolutionHost
   fileExists(fileName: string): boolean {
-    return this.addedFiles.has(fileName) || fs.existsSync(fileName);
+    return this.addedFiles.has(fileName) || open(fileName, this.options.mockData) != null ||
+        fs.existsSync(fileName);
   }
 
   readFile(fileName: string): string {
-    const result = this.addedFiles.get(fileName);
+    const result = this.addedFiles.get(fileName) || open(fileName, this.options.mockData);
     if (result) return result;
+
     let basename = path.basename(fileName);
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(settings);
@@ -115,12 +120,17 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   }
 
   directoryExists(directoryName: string): boolean {
-    return fs.existsSync(directoryName) && fs.statSync(directoryName).isDirectory();
+    return directoryExists(directoryName, this.options.mockData) ||
+        (fs.existsSync(directoryName) && fs.statSync(directoryName).isDirectory());
   }
 
   getCurrentDirectory(): string { return this.root; }
 
   getDirectories(dir: string): string[] {
+    const result = open(dir, this.options.mockData);
+    if (result && typeof result !== 'string') {
+      return Object.keys(result);
+    }
     return fs.readdirSync(dir).filter(p => {
       const name = path.join(dir, p);
       const stat = fs.statSync(name);
@@ -160,6 +170,8 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   getNewLine(): string { return '\n'; }
 }
 
+const MOCK_NODEMODULES_PREFIX = '/node_modules/';
+
 export class MockCompilerHost implements ts.CompilerHost {
   scriptNames: string[];
 
@@ -171,7 +183,9 @@ export class MockCompilerHost implements ts.CompilerHost {
   private assumeExists = new Set<string>();
   private traces: string[] = [];
 
-  constructor(scriptNames: string[], private data: MockData, private angular: Map<string, string>) {
+  constructor(
+      scriptNames: string[], private data: MockData, private angular: Map<string, string>,
+      private libraries?: Map<string, string>[]) {
     this.scriptNames = scriptNames.slice(0);
     const moduleFilename = module.filename.replace(/\\/g, '/');
     let angularIndex = moduleFilename.indexOf('@angular');
@@ -219,13 +233,21 @@ export class MockCompilerHost implements ts.CompilerHost {
     const effectiveName = this.getEffectiveName(fileName);
     if (effectiveName == fileName) {
       let result = open(fileName, this.data) != null;
+      if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
+        const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
+        for (const library of this.libraries) {
+          if (library.has(libraryPath)) {
+            return true;
+          }
+        }
+      }
       return result;
     } else {
       if (fileName.match(rxjs)) {
         let result = fs.existsSync(effectiveName);
         return result;
       }
-      let result = this.angular.has(effectiveName);
+      const result = this.angular.has(effectiveName);
       return result;
     }
   }
@@ -292,9 +314,16 @@ export class MockCompilerHost implements ts.CompilerHost {
       return fs.readFileSync(path.join(path.dirname(libPath), basename), 'utf8');
     } else {
       let effectiveName = this.getEffectiveName(fileName);
-      if (effectiveName === fileName)
-        return open(fileName, this.data);
-      else {
+      if (effectiveName === fileName) {
+        const result = open(fileName, this.data);
+        if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
+          const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
+          for (const library of this.libraries) {
+            if (library.has(libraryPath)) return library.get(libraryPath);
+          }
+        }
+        return result;
+      } else {
         if (fileName.match(rxjs)) {
           if (fs.existsSync(fileName)) {
             return fs.readFileSync(fileName, 'utf8');
@@ -391,7 +420,11 @@ export class MockAotCompilerHost implements AotCompilerHost {
   }
 
   loadResource(path: string): Promise<string> {
-    return Promise.resolve(this.tsHost.readFile(path));
+    if (this.tsHost.fileExists(path)) {
+      return Promise.resolve(this.tsHost.readFile(path));
+    } else {
+      return Promise.reject(new Error(`Resource ${path} not found.`))
+    }
   }
 }
 
@@ -407,6 +440,7 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
 }
 
 function find(fileName: string, data: MockData): MockData|undefined {
+  if (!data) return undefined;
   let names = fileName.split('/');
   if (names.length && !names[0].length) names.shift();
   let current = data;

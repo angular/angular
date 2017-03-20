@@ -49,6 +49,8 @@ export class Reflector extends ReflectorReader {
 
   importUri(type: any): string { return this.reflectionCapabilities.importUri(type); }
 
+  resourceUri(type: any): string { return this.reflectionCapabilities.resourceUri(type); }
+
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any {
     return this.reflectionCapabilities.resolveIdentifier(name, moduleUrl, members, runtime);
   }

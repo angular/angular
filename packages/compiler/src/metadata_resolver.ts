@@ -1060,7 +1060,7 @@ function isValidType(value: any): boolean {
 export function componentModuleUrl(
     reflector: ɵReflectorReader, type: Type<any>, cmpMetadata: Component): string {
   if (type instanceof StaticSymbol) {
-    return type.filePath;
+    return reflector.resourceUri(type);
   }
 
   const moduleId = cmpMetadata.moduleId;
