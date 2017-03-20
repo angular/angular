@@ -71,7 +71,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       let startingKeyframe = keyframes[0];
       let missingStyleProps: string[] = [];
       previousStyleProps.forEach(prop => {
-        if (startingKeyframe[prop] != null) {
+        if (!startingKeyframe.hasOwnProperty(prop)) {
           missingStyleProps.push(prop);
         }
         startingKeyframe[prop] = this.previousStyles[prop];
@@ -102,7 +102,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   _triggerWebAnimation(element: any, keyframes: any[], options: any): DOMAnimation {
     // jscompiler doesn't seem to know animate is a native property because it's not fully
     // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
-    return <DOMAnimation>element['animate'](keyframes, options);
+    return element['animate'](keyframes, options) as DOMAnimation;
   }
 
   get domPlayer() { return this._player; }
