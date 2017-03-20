@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -123,6 +123,25 @@ describe('NavigationService', () => {
     it('should be an empty array if no navigation node matches the current location', () => {
       location.urlSubject.next('g');
       expect(currentNodes).toEqual([]);
+    });
+  });
+
+  describe('versionInfo', () => {
+    let service: NavigationService, versionInfo: VersionInfo;
+
+    beforeEach(() => {
+      service = injector.get(NavigationService);
+      service.versionInfo.subscribe(info => versionInfo = info);
+
+      const backend = injector.get(ConnectionBackend);
+      backend.connectionsArray[0].mockRespond(createResponse({
+        ['__versionInfo']: { raw: '4.0.0' }
+      }));
+    });
+
+    it('should extract the version info', () => {
+      const backend = injector.get(ConnectionBackend);
+      expect(versionInfo).toEqual({ raw: '4.0.0' });
     });
   });
 });
