@@ -31,6 +31,7 @@ export interface TriggerListenerTuple {
 const MARKED_FOR_ANIMATION_CLASSNAME = 'ng-animating';
 const MARKED_FOR_ANIMATION_SELECTOR = '.ng-animating';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
+const VOID_STATE = 'void';
 
 export class DomAnimationEngine {
   private _flaggedInserts = new Set<any>();
@@ -84,7 +85,7 @@ export class DomAnimationEngine {
       const possibleTriggers = Object.keys(lookupRef);
       const hasRemoval = possibleTriggers.some(triggerName => {
         const oldValue = lookupRef[triggerName];
-        const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+        const instruction = this._triggers[triggerName].matchTransition(oldValue, VOID_STATE);
         return !!instruction;
       });
       if (hasRemoval) {
@@ -115,8 +116,9 @@ export class DomAnimationEngine {
       this._elementTriggerStates.set(element, lookupRef = {});
     }
 
-    let oldValue = lookupRef.hasOwnProperty(property) ? lookupRef[property] : 'void';
+    let oldValue = lookupRef.hasOwnProperty(property) ? lookupRef[property] : VOID_STATE;
     if (oldValue !== value) {
+      value = normalizeTriggerValue(value);
       let instruction = trigger.matchTransition(oldValue, value);
       if (!instruction) {
         // we do this to make sure we always have an animation player so
@@ -407,11 +409,11 @@ export class DomAnimationEngine {
           Object.keys(stateDetails).forEach(triggerName => {
             flushAgain = true;
             const oldValue = stateDetails[triggerName];
-            const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+            const instruction = this._triggers[triggerName].matchTransition(oldValue, VOID_STATE);
             if (instruction) {
               players.push(this.animateTransition(element, instruction));
             } else {
-              const event = makeAnimationEvent(element, triggerName, oldValue, 'void', '', 0);
+              const event = makeAnimationEvent(element, triggerName, oldValue, VOID_STATE, '', 0);
               const player = new NoopAnimationPlayer();
               this._queuePlayer(element, triggerName, player, event);
             }
@@ -514,4 +516,13 @@ function makeAnimationEvent(
     element: any, triggerName: string, fromState: string, toState: string, phaseName: string,
     totalTime: number): AnimationEvent {
   return <AnimationEvent>{element, triggerName, fromState, toState, phaseName, totalTime};
+}
+
+function normalizeTriggerValue(value: any): string {
+  switch (typeof value) {
+    case 'boolean':
+      return value ? '1' : '0';
+    default:
+      return value ? value.toString() : null;
+  }
 }
