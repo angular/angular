@@ -75,13 +75,16 @@ gulp.task('test', [':test:deps'], () => {
   });
 
   // Refreshes Karma's file list and schedules a test run.
-  let runTests = () => {
-    server.refreshFiles().then(() => server._injector.get('executor').schedule());
+  // Tests will only run if TypeScript compilation was successful.
+  let runTests = (err?: Error) => {
+    if (!err) {
+      server.refreshFiles().then(() => server._injector.get('executor').schedule());
+    }
   };
 
   // Boot up the test server and run the tests whenever a new browser connects.
   server.start();
-  server.on('browser_register', runTests);
+  server.on('browser_register', () => runTests());
 
   // Watch for file changes, rebuild and run the tests.
   gulp.watch(patternRoot + '.ts', () => runSequence(':build:components:ts:spec', runTests));

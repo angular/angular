@@ -6,13 +6,14 @@ import * as chalk from 'chalk';
 export function compileProject(project: string, options: ts.CompilerOptions) {
   let parsed = parseProjectConfig(project, options);
   let program = ts.createProgram(parsed.fileNames, parsed.options);
+  let baseDir = program.getCurrentDirectory();
 
   // Report any invalid TypeScript options for the project.
-  checkDiagnostics(program.getOptionsDiagnostics());
+  reportDiagnostics(program.getOptionsDiagnostics(), baseDir);
 
   let emitResult = program.emit();
 
-  checkDiagnostics(emitResult.diagnostics);
+  reportDiagnostics(emitResult.diagnostics, baseDir);
 }
 
 /** Parses a TypeScript project configuration. */
@@ -31,26 +32,26 @@ function parseProjectConfig(project: string, options: ts.CompilerOptions) {
 }
 
 /** Formats the TypeScript diagnostics into a error string. */
-export function formatDiagnostics(diagnostics: ts.Diagnostic[]): string {
+export function formatDiagnostics(diagnostics: ts.Diagnostic[], baseDir: string): string {
   return diagnostics.map(diagnostic => {
-    let res = ts.DiagnosticCategory[diagnostic.category];
+    let res = `• ${chalk.red(`TS${diagnostic.code}`)} - `;
 
     if (diagnostic.file) {
       let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+      let filePath = path.relative(baseDir, diagnostic.file.fileName);
 
-      res += ` at ${diagnostic.file.fileName}(${line + 1},${character + 1}):`;
+      res += `${filePath}(${line + 1},${character + 1}): `;
     }
-    res += ` ${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`;
+    res += `${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`;
 
     return res;
   }).join('\n');
 }
 
-/** Checks diagnostics and throws errors if present. */
-export function checkDiagnostics(diagnostics: ts.Diagnostic[]) {
+/** Checks and reports diagnostics if present. */
+export function reportDiagnostics(diagnostics: ts.Diagnostic[], baseDir?: string) {
   if (diagnostics && diagnostics.length && diagnostics[0]) {
-    console.error(formatDiagnostics(diagnostics));
-    console.error(chalk.red('TypeScript compilation failed. Exiting process.'));
-    process.exit(1);
+    console.error(formatDiagnostics(diagnostics, baseDir));
+    throw new Error('TypeScript compilation failed.');
   }
 }

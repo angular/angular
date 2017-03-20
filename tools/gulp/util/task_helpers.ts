@@ -35,9 +35,7 @@ function _globify(maybeGlob: string, suffix = '**/*') {
 
 /** Creates a task that runs the TypeScript compiler */
 export function tsBuildTask(tsConfigPath: string, extraOptions?: CompilerOptions) {
-  return () => {
-    compileProject(tsConfigPath, extraOptions);
-  };
+  return () => compileProject(tsConfigPath, extraOptions);
 }
 
 
