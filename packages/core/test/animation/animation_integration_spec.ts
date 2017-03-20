@@ -508,6 +508,81 @@ export function main() {
            expect(p3.previousStyles).toEqual({});
          });
 
+      it('should properly balance styles between states even if there are no destination state styles',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div @myAnimation *ngIf="exp"></div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [
+                   state('void', style({opacity: 0, width: '0px', height: '0px'})),
+                   transition(':enter', animate(1000))
+                 ])]
+           })
+           class Cmp {
+             exp: boolean = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = true;
+
+           fixture.detectChanges();
+           engine.flush();
+
+           const [p1] = getLog();
+           expect(p1.keyframes).toEqual([
+             {opacity: '0', width: '0px', height: '0px', offset: 0},
+             {opacity: AUTO_STYLE, width: AUTO_STYLE, height: AUTO_STYLE, offset: 1}
+           ]);
+         });
+
+      it('should not apply the destination styles if the final animate step already contains styles',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div @myAnimation *ngIf="exp"></div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [
+                   state('void', style({color: 'red'})), state('*', style({color: 'blue'})),
+                   transition(
+                       ':enter',
+                       [style({fontSize: '0px '}), animate(1000, style({fontSize: '100px'}))])
+                 ])]
+           })
+           class Cmp {
+             exp: boolean = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = true;
+
+           fixture.detectChanges();
+           engine.flush();
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+
+           // notice how the final color is NOT blue
+           expect(players[0].keyframes).toEqual([
+             {fontSize: '0px', color: 'red', offset: 0},
+             {fontSize: '100px', color: 'red', offset: 1}
+           ]);
+         });
+
       it('should invoke an animation trigger that is state-less', () => {
         @Component({
           selector: 'ani-cmp',
