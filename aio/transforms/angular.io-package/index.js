@@ -118,6 +118,27 @@ module.exports =
             {
               basePath: CONTENTS_PATH,
               include: CONTENTS_PATH + '/examples/**/*',
+              exclude: [
+                '**/*plnkr.no-link.html',
+                '**/node_modules/**',
+                // _boilerplate files
+                '**/_boilerplate/**',
+                '**/*/src/styles.css',
+                '**/*/src/systemjs-angular-loader.js',
+                '**/*/src/systemjs.config.js',
+                '**/*/src/tsconfig.json',
+                '**/*/bs-config.e2e.json',
+                '**/*/bs-config.json',
+                '**/*/package.json',
+                '**/*/tslint.json',
+                // example files
+                '**/_test-output',
+                '**/protractor-helpers.js',
+                '**/e2e-spec.js',
+                '**/ts/**/*.js',
+                '**/js-es6*/**/*.js',
+                '**/ts-snippets/**/*.js',
+              ],
               fileReader: 'exampleFileReader'
             },
             {
