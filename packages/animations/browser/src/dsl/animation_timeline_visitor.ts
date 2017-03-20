@@ -150,34 +150,18 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
     context.currentTimeline.setStyles(startingStyles);
 
     visitAnimationNode(this, ast, context);
-    const normalizedFinalStyles = copyStyles(finalStyles, true);
 
-    // this is a special case for when animate(TIME) is used (without any styles)
-    // thus indicating to create an animation arc between the final keyframe and
-    // the destination styles. When this occurs we need to ensure that the styles
-    // that are missing on the finalStyles map are set to AUTO
-    if (Object.keys(context.currentTimeline.getFinalKeyframe()).length == 0) {
-      context.currentTimeline.properties.forEach(prop => {
-        const val = normalizedFinalStyles[prop];
-        if (val == null) {
-          normalizedFinalStyles[prop] = AUTO_STYLE;
-        }
-      });
-    }
-
-    context.currentTimeline.setStyles(normalizedFinalStyles);
-    const timelineInstructions: AnimationTimelineInstruction[] = [];
-    context.timelines.forEach(timeline => {
-      // this checks to see if an actual animation happened
-      if (timeline.hasStyling()) {
-        timelineInstructions.push(timeline.buildKeyframes());
+    // this checks to see if an actual animation happened
+    const timelines = context.timelines.filter(timeline => timeline.hasStyling());
+    if (timelines.length && Object.keys(finalStyles).length) {
+      const tl = timelines[timelines.length - 1];
+      if (!tl.allowOnlyTimelineStyles()) {
+        tl.setStyles(finalStyles);
       }
-    });
-
-    if (timelineInstructions.length == 0) {
-      timelineInstructions.push(createTimelineInstruction([], 0, 0, ''));
     }
-    return timelineInstructions;
+
+    return timelines.length ? timelines.map(timeline => timeline.buildKeyframes()) :
+                              [createTimelineInstruction([], 0, 0, '')];
   }
 
   visitState(ast: AnimationStateMetadata, context: any): any {
@@ -242,8 +226,13 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
       this.visitKeyframeSequence(<AnimationKeyframesSequenceMetadata>ast.styles, context);
     } else {
       let styleAst = ast.styles as AnimationStyleMetadata;
-      if (!styleAst && timings.easing) {
-        styleAst = style({easing: timings.easing});
+      if (!styleAst) {
+        const newStyleData: {[prop: string]: string | number} = {};
+        if (timings.easing) {
+          newStyleData['easing'] = timings.easing;
+        }
+        styleAst = style(newStyleData);
+        (styleAst as any)['treatAsEmptyStep'] = true;
       }
       context.incrementTime(timings.duration);
       if (styleAst) {
@@ -267,16 +256,19 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
     const normalizedStyles = normalizeStyles(ast.styles);
     const easing = context.currentAnimateTimings && context.currentAnimateTimings.easing;
-    this._applyStyles(normalizedStyles, easing, context);
+    this._applyStyles(
+        normalizedStyles, easing, (ast as any)['treatAsEmptyStep'] ? true : false, context);
     context.previousNode = ast;
   }
 
-  private _applyStyles(styles: ɵStyleData, easing: string, context: AnimationTimelineContext) {
+  private _applyStyles(
+      styles: ɵStyleData, easing: string, treatAsEmptyStep: boolean,
+      context: AnimationTimelineContext) {
     if (styles.hasOwnProperty('easing')) {
       easing = easing || styles['easing'] as string;
       delete styles['easing'];
     }
-    context.currentTimeline.setStyles(styles, easing);
+    context.currentTimeline.setStyles(styles, easing, treatAsEmptyStep);
   }
 
   visitKeyframeSequence(
@@ -303,7 +295,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
           (step.offset != null ? step.offset : parseFloat(normalizedStyles['offset'] as string)) :
           (i == limit ? MAX_KEYFRAME_OFFSET : i * offsetGap);
       innerTimeline.forwardTime(offset * duration);
-      this._applyStyles(normalizedStyles, null, innerContext);
+      this._applyStyles(normalizedStyles, null, false, innerContext);
     });
 
     // this will ensure that the parent timeline gets all the styles from
@@ -320,12 +312,14 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 export class TimelineBuilder {
   public duration: number = 0;
   public easing: string = '';
+
   private _previousKeyframe: ɵStyleData = {};
   private _currentKeyframe: ɵStyleData;
   private _keyframes = new Map<number, ɵStyleData>();
   private _styleSummary: {[prop: string]: StyleAtTime} = {};
   private _localTimelineStyles: ɵStyleData;
   private _backFill: ɵStyleData = {};
+  private _currentEmptyStepKeyframe: ɵStyleData = null;
 
   constructor(public startTime: number, private _globalTimelineStyles: ɵStyleData = null) {
     this._localTimelineStyles = Object.create(this._backFill, {});
@@ -370,25 +364,43 @@ export class TimelineBuilder {
     this._styleSummary[prop] = {time: this.currentTime, value};
   }
 
-  setStyles(styles: ɵStyleData, easing: string = null) {
+  allowOnlyTimelineStyles() { return this._currentEmptyStepKeyframe !== this._currentKeyframe; }
+
+  setStyles(styles: ɵStyleData, easing: string = null, treatAsEmptyStep: boolean = false) {
     if (easing) {
       this._previousKeyframe['easing'] = easing;
     }
-    Object.keys(styles).forEach(prop => {
-      if (prop !== 'offset') {
-        const val = styles[prop];
-        this._currentKeyframe[prop] = val;
-        if (!this._localTimelineStyles[prop]) {
-          this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;
+
+    if (treatAsEmptyStep) {
+      // special case for animate(duration):
+      // all missing styles are filled with a `*` value then
+      // if any destination styles are filled in later on the same
+      // keyframe then they will override the overridden styles
+      // We use `_globalTimelineStyles` here because there may be
+      // styles in previous keyframes that are not present in this timeline
+      Object.keys(this._globalTimelineStyles).forEach(prop => {
+        this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;
+        this._currentKeyframe[prop] = AUTO_STYLE;
+      });
+      this._currentEmptyStepKeyframe = this._currentKeyframe;
+    } else {
+      Object.keys(styles).forEach(prop => {
+        if (prop !== 'offset') {
+          const val = styles[prop];
+          this._currentKeyframe[prop] = val;
+          if (!this._localTimelineStyles[prop]) {
+            this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;
+          }
+          this._updateStyle(prop, val);
         }
-        this._updateStyle(prop, val);
-      }
-    });
-    Object.keys(this._localTimelineStyles).forEach(prop => {
-      if (!this._currentKeyframe.hasOwnProperty(prop)) {
-        this._currentKeyframe[prop] = this._localTimelineStyles[prop];
-      }
-    });
+      });
+
+      Object.keys(this._localTimelineStyles).forEach(prop => {
+        if (!this._currentKeyframe.hasOwnProperty(prop)) {
+          this._currentKeyframe[prop] = this._localTimelineStyles[prop];
+        }
+      });
+    }
   }
 
   snapshotCurrentStyles() { copyStyles(this._localTimelineStyles, false, this._currentKeyframe); }
