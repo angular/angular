@@ -8,6 +8,7 @@
 import './init';
 
 import {ComponentUsingThirdParty} from '../src/comp_using_3rdp';
+import {ComponentUsingFlatModule} from '../src/comp_using_flat_module';
 import {MainModule} from '../src/module';
 import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, SOME_TOKEN, ServiceUsingLibModule, SomeLibModule, SomeService} from '../src/module_fixtures';
 
@@ -42,6 +43,15 @@ describe('NgModule', () => {
          {a: 'b', component: CompUsingLibModuleDirectiveAndPipe}
        ]);
      });
+
+  describe('flat modules', () => {
+    it('should support flat module entryComponents components', () => {
+      // https://github.com/angular/angular/issues/15221
+      const fixture = createComponent(ComponentUsingFlatModule);
+      const bundleComp = fixture.nativeElement.children;
+      expect(bundleComp[0].children[0].children[0].data).toEqual('flat module component');
+    });
+  });
 
   describe('third-party modules', () => {
     // https://github.com/angular/angular/issues/11889

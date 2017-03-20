@@ -54,6 +54,11 @@ export class StaticReflector implements ɵReflectorReader {
     return staticSymbol ? staticSymbol.filePath : null;
   }
 
+  resourceUri(typeOrFunc: StaticSymbol): string {
+    const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
+    return this.symbolResolver.getResourcePath(staticSymbol);
+  }
+
   resolveIdentifier(name: string, moduleUrl: string, members: string[]): StaticSymbol {
     const importSymbol = this.getStaticSymbol(moduleUrl, name);
     const rootSymbol = this.findDeclaration(moduleUrl, name);

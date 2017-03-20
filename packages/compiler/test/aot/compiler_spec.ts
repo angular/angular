@@ -415,6 +415,49 @@ describe('compiler (bundled Angular)', () => {
              .toBeDefined();
        })));
   });
+
+  describe('Bundled libary', () => {
+    let host: MockCompilerHost;
+    let aotHost: MockAotCompilerHost;
+    let libraryFiles: Map<string, string>;
+
+    beforeAll(() => {
+      // Emit the library bundle
+      const emittingHost =
+          new EmittingCompilerHost(['/bolder/index.ts'], {emitMetadata: false, mockData: LIBRARY});
+
+      // Create the metadata bundled
+      const indexModule = '/bolder/public-api';
+      const bundler =
+          new MetadataBundler(indexModule, 'bolder', new MockMetadataBundlerHost(emittingHost));
+      const bundle = bundler.getMetadataBundle();
+      const metadata = JSON.stringify(bundle.metadata, null, ' ');
+      const bundleIndexSource = privateEntriesToIndex('./public-api', bundle.privates);
+      emittingHost.override('/bolder/index.ts', bundleIndexSource);
+      emittingHost.addWrittenFile('/bolder/index.metadata.json', metadata);
+
+      // Emit the sources
+      const emittingProgram = ts.createProgram(['/bolder/index.ts'], settings, emittingHost);
+      emittingProgram.emit();
+      libraryFiles = emittingHost.written;
+
+      // Copy the .html file
+      const htmlFileName = '/bolder/src/bolder.component.html';
+      libraryFiles.set(htmlFileName, emittingHost.readFile(htmlFileName));
+    });
+
+    beforeEach(() => {
+      host = new MockCompilerHost(
+          LIBRARY_USING_APP_MODULE, LIBRARY_USING_APP, angularFiles, [libraryFiles]);
+      aotHost = new MockAotCompilerHost(host);
+    });
+
+    it('should compile',
+       async(() => compile(host, aotHost, expectNoDiagnostics, expectNoDiagnostics)));
+
+    // Restore reflector since AoT compiler will update it with a new static reflector
+    afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
+  });
 });
 
 function expectNoDiagnostics(program: ts.Program) {
@@ -540,6 +583,72 @@ const FILES: MockData = {
         @NgModule({
           declarations: [ AppComponent ],
           bootstrap:    [ AppComponent ]
+        })
+        export class AppModule { }
+      `
+    }
+  }
+};
+
+const LIBRARY: MockData = {
+  bolder: {
+    'public-api.ts': `
+      export * from './src/bolder.component';
+      export * from './src/bolder.module';
+    `,
+    src: {
+      'bolder.component.ts': `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'bolder',
+          templateUrl: './bolder.component.html'
+        })
+        export class BolderComponent {
+          @Input() data: string;
+        }
+      `,
+      'bolder.component.html': `
+        <b>{{data}}</b>
+      `,
+      'bolder.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {BolderComponent} from './bolder.component';
+
+        @NgModule({
+          declarations: [BolderComponent],
+          exports: [BolderComponent]
+        })
+        export class BolderModule {}
+      `
+    }
+  }
+};
+
+const LIBRARY_USING_APP_MODULE = ['/lib-user/app/app.module.ts'];
+const LIBRARY_USING_APP: MockData = {
+  'lib-user': {
+    app: {
+      'app.component.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<h1>Hello <bolder [data]="name"></bolder></h1>'
+        })
+        export class AppComponent {
+          name = 'Angular';
+        }
+      `,
+      'app.module.ts': `
+        import { NgModule }      from '@angular/core';
+        import { BolderModule }  from 'bolder';
+
+        import { AppComponent }  from './app.component';
+
+        @NgModule({
+          declarations: [ AppComponent ],
+          bootstrap:    [ AppComponent ],
+          imports:      [ BolderModule ]
         })
         export class AppModule { }
       `
