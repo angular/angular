@@ -54,6 +54,9 @@ export interface ParamMap {
    * If there is no such parameter, an empty array is returned.
    */
   getAll(name: string): string[];
+
+  /** Name of the parameters */
+  readonly keys: string[];
 }
 
 class ParamsAsMap implements ParamMap {
@@ -80,8 +83,15 @@ class ParamsAsMap implements ParamMap {
 
     return [];
   }
+
+  get keys(): string[] { return Object.keys(this.params); }
 }
 
+/**
+ * Convert a {@link Params} instance to a {@link ParamMap}.
+ *
+ * @stable
+ */
 export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
