@@ -162,3 +162,7 @@
 .level-1:not(.expanded) .material-icons, .level-2:not(.expanded) .material-icons {
   @include rotate(0deg);
 }
+
+.version-info {
+  border: 3px $blue solid;
+}

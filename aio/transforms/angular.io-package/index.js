@@ -50,9 +50,12 @@ module.exports =
         .processor(require('./processors/filterPrivateDocs'))
         .processor(require('./processors/filterIgnoredDocs'))
         .processor(require('./processors/fixInternalDocumentLinks'))
+        .processor(require('./processors/processNavigationMap'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
+
+        .factory(require('./readers/navigation'))
 
         .config(function(checkAnchorLinksProcessor, log) {
           // TODO: re-enable
@@ -61,12 +64,13 @@ module.exports =
 
         // Where do we get the source files?
         .config(function(
-            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor) {
+            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor, navigationFileReader) {
 
           // API files are typescript
           readTypeScriptModules.basePath = API_SOURCE_PATH;
           readTypeScriptModules.ignoreExportsMatching = [/^_/];
           readTypeScriptModules.hidePrivateMembers = true;
+          readFilesProcessor.fileReaders.push(navigationFileReader)
           readTypeScriptModules.sourceFiles = [
             'common/index.ts',
             'common/testing/index.ts',
@@ -116,6 +120,11 @@ module.exports =
               basePath: CONTENTS_PATH,
               include: CONTENTS_PATH + '/examples/**/*',
               fileReader: 'exampleFileReader'
+            },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/navigation.json',
+              fileReader: 'navigationFileReader'
             },
           ];
 
@@ -242,7 +251,8 @@ module.exports =
               outputPathTemplate: '${path}'
             },
             {docTypes: ['example-region'], getOutputPath: function() {}},
-            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'}
+            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'},
+            {docTypes: ['navigation-map'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 

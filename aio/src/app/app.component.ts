@@ -5,7 +5,7 @@ import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   currentDocument: Observable<DocumentContents>;
   navigationViews: Observable<NavigationViews>;
   selectedNodes: Observable<NavigationNode[]>;
+  versionInfo: Observable<VersionInfo>;
 
   @ViewChildren('searchBox, searchResults', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit {
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     this.navigationViews = navigationService.navigationViews;
     this.selectedNodes = navigationService.selectedNodes;
+    this.versionInfo = navigationService.versionInfo;
   }
 
   ngOnInit() {

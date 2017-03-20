@@ -12,11 +12,33 @@ import { LocationService } from 'app/shared/location.service';
 import { NavigationNode } from './navigation-node';
 export { NavigationNode } from './navigation-node';
 
+export type NavigationResponse = {'__versionInfo': VersionInfo } & { [name: string]: NavigationNode[] };
+
 export interface NavigationViews {
   [name: string]: NavigationNode[];
 }
 
+export interface NavigationMap {
+  [url: string]: NavigationNode;
+}
+
+export interface VersionInfo {
+  raw: string;
+  major: number;
+  minor: number;
+  patch: number;
+  prerelease: string[];
+  build: string;
+  version: string;
+  codeName: string;
+  isSnapshot: boolean;
+  full: string;
+  branch: string;
+  commitSHA: string;
+}
+
 const navigationPath = 'content/navigation.json';
+
 
 @Injectable()
 export class NavigationService {
@@ -24,16 +46,28 @@ export class NavigationService {
   /**
    * An observable collection of NavigationNode trees, which can be used to render navigational menus
    */
-  navigationViews = this.fetchNavigationViews();
+  navigationViews: Observable<NavigationViews>;
+
+  /**
+   * The current version of doc-app that we are running
+   */
+  versionInfo: Observable<VersionInfo>;
+
   /**
    * An observable array of nodes that indicate which nodes in the `navigationViews` match the current URL location
    */
-  selectedNodes = this.getSelectedNodes();
+  selectedNodes: Observable<NavigationNode[]>;
 
-  constructor(private http: Http, private location: LocationService, private logger: Logger) { }
+  constructor(private http: Http, private location: LocationService, private logger: Logger) {
+    const navigationInfo = this.fetchNavigationInfo();
+    // The version information is packaged inside the navigation response to save us an extra request.
+    this.versionInfo = this.getVersionInfo(navigationInfo);
+    this.navigationViews = this.getNavigationViews(navigationInfo);
+    this.selectedNodes = this.getSelectedNodes(this.navigationViews);
+  }
 
   /**
-   * Get an observable that fetches the `NavigationViews` from the server.
+   * Get an observable that fetches the `NavigationResponse` from the server.
    * We create an observable by calling `http.get` but then publish it to share the result
    * among multiple subscribers, without triggering new requests.
    * We use `publishLast` because once the http request is complete the request observable completes.
@@ -43,10 +77,22 @@ export class NavigationService {
    * another request to the server.
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
-  private fetchNavigationViews(): Observable<NavigationViews> {
-    const navigationViews = this.http.get(navigationPath)
-             .map(res => res.json() as NavigationViews)
+  private fetchNavigationInfo(): Observable<NavigationResponse> {
+    const navigationInfo = this.http.get(navigationPath)
+             .map(res => res.json() as NavigationResponse)
              .publishLast();
+    navigationInfo.connect();
+    return navigationInfo;
+  }
+
+  private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
+    const versionInfo = navigationInfo.map(response => response['__versionInfo']).publishReplay(1);
+    versionInfo.connect();
+    return versionInfo;
+  }
+
+  private getNavigationViews(navigationInfo: Observable<NavigationResponse>) {
+    const navigationViews = navigationInfo.map(response => unpluck(response, '__versionInfo')).publishReplay(1);
     navigationViews.connect();
     return navigationViews;
   }
@@ -57,9 +103,9 @@ export class NavigationService {
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getSelectedNodes() {
+  private getSelectedNodes(navigationViews: Observable<NavigationViews>) {
     const selectedNodes = combineLatest(
-      this.navigationViews.map(this.computeUrlToNodesMap),
+      navigationViews.map(this.computeUrlToNodesMap),
       this.location.currentUrl,
       (navMap, url) => navMap[url] || [])
       .publishReplay(1);
@@ -74,7 +120,7 @@ export class NavigationService {
    * @param navigation A collection of navigation nodes that are to be mapped
    */
   private computeUrlToNodesMap(navigation: NavigationViews) {
-    const navMap = {};
+    const navMap: NavigationMap = {};
     Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
     return navMap;
 
@@ -89,4 +135,10 @@ export class NavigationService {
       }
     }
   }
+}
+
+function unpluck(obj: any, property: string) {
+  const result = Object.assign({}, obj);
+  delete result[property];
+  return result;
 }

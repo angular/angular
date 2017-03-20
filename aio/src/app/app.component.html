@@ -8,6 +8,7 @@
 <md-sidenav-container class="sidenav-container">
 
   <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "isSideBySide ? 'side' : 'over'">
+    <div class="version-info vertical-menu-item">{{ (versionInfo | async)?.full }}</div>
     <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
     <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav" [selectedNodes]="selectedNodes | async"></aio-nav-menu>
   </md-sidenav>
@@ -16,5 +17,4 @@
     <aio-search-results #searchResults></aio-search-results>
     <aio-doc-viewer [doc]="currentDocument | async" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
   </section>
-
 </md-sidenav-container>
