@@ -623,26 +623,29 @@ function declareTests({useJit}: {useJit: boolean}) {
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(1);
 
-          cmpEl.children[0].triggerEventHandler('click', <Event>{});
-
           // regular element
+          cmpEl.children[0].triggerEventHandler('click', <Event>{});
           fixture.detectChanges();
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(2);
 
           // element inside of an *ngIf
           cmpEl.children[1].triggerEventHandler('click', <Event>{});
-
           fixture.detectChanges();
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(3);
 
           // element inside a nested component
           cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
-
           fixture.detectChanges();
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(4);
+
+          // host element
+          cmpEl.triggerEventHandler('click', <Event>{});
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(5);
         });
 
         it('should not affect updating properties on the component', () => {
@@ -1870,6 +1873,7 @@ class EventCmp {
 @Component({
   selector: 'push-cmp',
   inputs: ['prop'],
+  host: {'(click)': 'true'},
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:
       '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>'
