@@ -3,7 +3,7 @@ import { ComponentFactoryResolver, ElementRef, Injector, NgModule, OnInit, ViewC
 import { By } from '@angular/platform-browser';
 import { DocViewerComponent } from './doc-viewer.component';
 import { DocumentContents } from 'app/documents/document.service';
-import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { embeddedComponents, EmbeddedComponents } from 'app/embedded/embedded.module';
 
 
 /// Embedded Test Components ///

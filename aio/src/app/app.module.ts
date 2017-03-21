@@ -18,7 +18,7 @@ import 'rxjs/add/operator/first';
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { EmbeddedModule } from 'app/embedded/embedded.module';
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
@@ -35,6 +35,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 @NgModule({
   imports: [
     BrowserModule,
+    EmbeddedModule,
     HttpModule,
     MdButtonModule,
     MdIconModule,
@@ -44,7 +45,6 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   ],
   declarations: [
     AppComponent,
-    embeddedComponents,
     DocViewerComponent,
     TopMenuComponent,
     NavMenuComponent,
@@ -54,7 +54,6 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   ],
   providers: [
     ApiService,
-    EmbeddedComponents,
     GaService,
     Logger,
     Location,
@@ -66,7 +65,6 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
     Platform,
     AutoScrollService,
   ],
-  entryComponents: [ embeddedComponents ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

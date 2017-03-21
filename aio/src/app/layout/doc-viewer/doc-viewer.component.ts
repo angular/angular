@@ -4,7 +4,7 @@ import {
   Output, ViewEncapsulation
 } from '@angular/core';
 
-import { EmbeddedComponents } from 'app/embedded';
+import { EmbeddedComponents } from 'app/embedded/embedded.module';
 import { DocumentContents } from 'app/documents/document.service';
 
 interface EmbeddedComponentFactory {
