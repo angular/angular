@@ -12,7 +12,8 @@ import { LocationService } from 'app/shared/location.service';
 import { NavigationNode } from './navigation-node';
 export { NavigationNode } from './navigation-node';
 
-export type NavigationResponse = {'__versionInfo': VersionInfo } & { [name: string]: NavigationNode[] };
+
+export type NavigationResponse = {__versionInfo: VersionInfo } & { [name: string]: NavigationNode[]|VersionInfo };
 
 export interface NavigationViews {
   [name: string]: NavigationNode[];
@@ -86,12 +87,12 @@ export class NavigationService {
   }
 
   private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
-    const versionInfo = navigationInfo.map(response => response['__versionInfo']).publishReplay(1);
+    const versionInfo = navigationInfo.map(response => response.__versionInfo).publishReplay(1);
     versionInfo.connect();
     return versionInfo;
   }
 
-  private getNavigationViews(navigationInfo: Observable<NavigationResponse>) {
+  private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
     const navigationViews = navigationInfo.map(response => unpluck(response, '__versionInfo')).publishReplay(1);
     navigationViews.connect();
     return navigationViews;

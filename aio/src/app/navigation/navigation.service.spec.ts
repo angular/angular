@@ -135,12 +135,11 @@ describe('NavigationService', () => {
 
       const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse({
-        ['__versionInfo']: { raw: '4.0.0' }
+        __versionInfo: { raw: '4.0.0' }
       }));
     });
 
     it('should extract the version info', () => {
-      const backend = injector.get(ConnectionBackend);
       expect(versionInfo).toEqual({ raw: '4.0.0' });
     });
   });
