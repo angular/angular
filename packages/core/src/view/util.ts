@@ -124,7 +124,10 @@ export function markParentViewsForCheck(view: ViewData) {
 
 export function dispatchEvent(
     view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
-  markParentViewsForCheck(view);
+  const nodeDef = view.def.nodes[nodeIndex];
+  const startView =
+      nodeDef.flags & NodeFlags.ComponentView ? asElementData(view, nodeIndex).componentView : view;
+  markParentViewsForCheck(startView);
   return Services.handleEvent(view, nodeIndex, eventName, event);
 }
 
