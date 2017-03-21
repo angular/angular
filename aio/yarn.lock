@@ -5423,7 +5423,7 @@ rx@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
-rxjs@^5.0.1, rxjs@^5.1.0:
+rxjs@^5.0.1, rxjs@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.2.0.tgz#db537de8767c05fa73721587a29e0085307d318b"
   dependencies:
@@ -6292,13 +6292,9 @@ underscore-contrib@~0.3.0:
   dependencies:
     underscore "1.6.0"
 
-underscore@1.6.0, underscore@~1.6.0:
+underscore@1.6.0, underscore@1.x, underscore@~1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.6.0.tgz#8b38b10cacdef63337b8b24e4ff86d45aea529a8"
-
-underscore@1.x:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
 
 uniq@^1.0.1:
   version "1.0.1"
