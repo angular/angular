@@ -83,7 +83,6 @@ export function main() {
 
         expect(debugCtx.renderNode).toBe(asElementData(compView, 0).renderElement);
       });
-
     });
   });
 }
