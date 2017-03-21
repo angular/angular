@@ -16,7 +16,7 @@ describe('fixInternalDocumentLinks processor', () => {
     expect(processor.$runBefore).toEqual(['writeFilesProcessor'])
   });
 
-  it('should run before the correct processor', () => {
+  it('should run after the correct processor', () => {
     const processor = processorFactory();
     expect(processor.$runAfter).toEqual(['inlineTagProcessor']);
   });
