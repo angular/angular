@@ -7,17 +7,12 @@
  */
 
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
-import {SimpleChange} from '../change_detection/change_detection_util';
-import {Injector} from '../di';
-import {TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef} from '../linker/view_container_ref';
-import {ViewRef} from '../linker/view_ref';
 import {ViewEncapsulation} from '../metadata/view';
-import {Renderer, RendererType2} from '../render/api';
+import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
-import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {BindingDef, BindingFlags, DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {expressionChangedAfterItHasBeenCheckedError} from './errors';
+import {BindingDef, BindingFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
