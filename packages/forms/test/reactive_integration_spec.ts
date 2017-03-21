@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, Output, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -1907,6 +1907,87 @@ export function main() {
             .toThrowError(new RegExp('If you define both a name and a formControlName'));
       });
 
+    });
+
+    describe('IME events', () => {
+
+      it('should determine IME event handling depending on platform by default', () => {
+        const fixture = initTest(FormControlComp);
+        fixture.componentInstance.control = new FormControl('oldValue');
+        fixture.detectChanges();
+
+        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputNativeEl = inputEl.nativeElement;
+        expect(inputNativeEl.value).toEqual('oldValue');
+
+        inputEl.triggerEventHandler('compositionstart', null);
+
+        inputNativeEl.value = 'updatedValue';
+        dispatchEvent(inputNativeEl, 'input');
+        const isAndroid = /android (\d+)/.test(getDOM().getUserAgent().toLowerCase());
+
+        if (isAndroid) {
+          // On Android, values should update immediately
+          expect(fixture.componentInstance.control.value).toEqual('updatedValue');
+        } else {
+          // On other platforms, values should wait for compositionend
+          expect(fixture.componentInstance.control.value).toEqual('oldValue');
+
+          inputEl.triggerEventHandler('compositionend', {target: {value: 'updatedValue'}});
+          fixture.detectChanges();
+          expect(fixture.componentInstance.control.value).toEqual('updatedValue');
+        }
+      });
+
+      it('should hold IME events until compositionend if composition mode', () => {
+        TestBed.overrideComponent(
+            FormControlComp,
+            {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: true}]}});
+        const fixture = initTest(FormControlComp);
+        fixture.componentInstance.control = new FormControl('oldValue');
+        fixture.detectChanges();
+
+        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputNativeEl = inputEl.nativeElement;
+        expect(inputNativeEl.value).toEqual('oldValue');
+
+        inputEl.triggerEventHandler('compositionstart', null);
+
+        inputNativeEl.value = 'updatedValue';
+        dispatchEvent(inputNativeEl, 'input');
+
+        // should not update when compositionstart
+        expect(fixture.componentInstance.control.value).toEqual('oldValue');
+
+        inputEl.triggerEventHandler('compositionend', {target: {value: 'updatedValue'}});
+
+        fixture.detectChanges();
+
+        // should update when compositionend
+        expect(fixture.componentInstance.control.value).toEqual('updatedValue');
+      });
+
+      it('should work normally with composition events if composition mode is off', () => {
+        TestBed.overrideComponent(
+            FormControlComp,
+            {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: false}]}});
+        const fixture = initTest(FormControlComp);
+        fixture.componentInstance.control = new FormControl('oldValue');
+        fixture.detectChanges();
+
+        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputNativeEl = inputEl.nativeElement;
+        expect(inputNativeEl.value).toEqual('oldValue');
+
+        inputEl.triggerEventHandler('compositionstart', null);
+
+        inputNativeEl.value = 'updatedValue';
+        dispatchEvent(inputNativeEl, 'input');
+        fixture.detectChanges();
+
+        // formControl should update normally
+        expect(fixture.componentInstance.control.value).toEqual('updatedValue');
+      });
     });
   });
 }

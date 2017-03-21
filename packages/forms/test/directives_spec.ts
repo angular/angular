@@ -44,7 +44,7 @@ export function main() {
   describe('Form Directives', () => {
     let defaultAccessor: DefaultValueAccessor;
 
-    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null); });
+    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null, null); });
 
     describe('shared', () => {
       describe('selectValueAccessor', () => {

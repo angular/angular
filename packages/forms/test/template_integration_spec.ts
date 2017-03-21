@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -39,39 +39,6 @@ export function main() {
            tick();
 
            // view -> model
-           expect(fixture.componentInstance.name).toEqual('updatedValue');
-         }));
-
-      it('should ngModel hold ime events until compositionend', fakeAsync(() => {
-           const fixture = initTest(StandaloneNgModel);
-           // model -> view
-           const inputEl = fixture.debugElement.query(By.css('input'));
-           const inputNativeEl = inputEl.nativeElement;
-
-           fixture.componentInstance.name = 'oldValue';
-
-           fixture.detectChanges();
-           tick();
-
-           expect(inputNativeEl.value).toEqual('oldValue');
-           // view -> model
-           inputEl.triggerEventHandler('compositionstart', null);
-
-           inputNativeEl.value = 'updatedValue';
-           dispatchEvent(inputNativeEl, 'input');
-           tick();
-
-           // should ngModel not update when compositionstart
-
-           expect(fixture.componentInstance.name).toEqual('oldValue');
-
-           inputEl.triggerEventHandler('compositionend', null);
-
-           fixture.detectChanges();
-           tick();
-
-           // should ngModel update when compositionend
-
            expect(fixture.componentInstance.name).toEqual('updatedValue');
          }));
 
@@ -1162,6 +1129,95 @@ export function main() {
            expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
            expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
            expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+         }));
+
+    });
+
+    describe('IME events', () => {
+      it('should determine IME event handling depending on platform by default', fakeAsync(() => {
+           const fixture = initTest(StandaloneNgModel);
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+           fixture.componentInstance.name = 'oldValue';
+           fixture.detectChanges();
+           tick();
+           expect(inputNativeEl.value).toEqual('oldValue');
+
+           inputEl.triggerEventHandler('compositionstart', null);
+
+           inputNativeEl.value = 'updatedValue';
+           dispatchEvent(inputNativeEl, 'input');
+           tick();
+
+           const isAndroid = /android (\d+)/.test(getDOM().getUserAgent().toLowerCase());
+           if (isAndroid) {
+             // On Android, values should update immediately
+             expect(fixture.componentInstance.name).toEqual('updatedValue');
+           } else {
+             // On other platforms, values should wait until compositionend
+             expect(fixture.componentInstance.name).toEqual('oldValue');
+
+             inputEl.triggerEventHandler('compositionend', {target: {value: 'updatedValue'}});
+
+             fixture.detectChanges();
+             tick();
+
+             expect(fixture.componentInstance.name).toEqual('updatedValue');
+           }
+         }));
+
+      it('should hold IME events until compositionend if composition mode', fakeAsync(() => {
+           TestBed.overrideComponent(
+               StandaloneNgModel,
+               {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: true}]}});
+           const fixture = initTest(StandaloneNgModel);
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+           fixture.componentInstance.name = 'oldValue';
+           fixture.detectChanges();
+           tick();
+           expect(inputNativeEl.value).toEqual('oldValue');
+
+           inputEl.triggerEventHandler('compositionstart', null);
+
+           inputNativeEl.value = 'updatedValue';
+           dispatchEvent(inputNativeEl, 'input');
+           tick();
+
+           // ngModel should not update when compositionstart
+           expect(fixture.componentInstance.name).toEqual('oldValue');
+
+           inputEl.triggerEventHandler('compositionend', {target: {value: 'updatedValue'}});
+
+           fixture.detectChanges();
+           tick();
+
+           // ngModel should update when compositionend
+           expect(fixture.componentInstance.name).toEqual('updatedValue');
+         }));
+
+      it('should work normally with composition events if composition mode is off',
+         fakeAsync(() => {
+           TestBed.overrideComponent(
+               StandaloneNgModel,
+               {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: false}]}});
+           const fixture = initTest(StandaloneNgModel);
+
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+           fixture.componentInstance.name = 'oldValue';
+           fixture.detectChanges();
+           tick();
+           expect(inputNativeEl.value).toEqual('oldValue');
+
+           inputEl.triggerEventHandler('compositionstart', null);
+
+           inputNativeEl.value = 'updatedValue';
+           dispatchEvent(inputNativeEl, 'input');
+           tick();
+
+           // ngModel should update normally
+           expect(fixture.componentInstance.name).toEqual('updatedValue');
          }));
 
     });

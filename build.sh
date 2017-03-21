@@ -12,9 +12,9 @@ PACKAGES=(core
   compiler
   common
   animations
-  forms
   platform-browser
   platform-browser-dynamic
+  forms
   http
   platform-server
   platform-webworker
