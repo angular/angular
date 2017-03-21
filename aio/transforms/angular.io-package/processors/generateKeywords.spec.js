@@ -16,12 +16,12 @@ describe('generateKeywords processor', () => {
     expect(processor.$process).toBeDefined();
   });
 
-  it('should run after "paths-computed"', () => {
+  it('should run after the correct processor', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     expect(processor.$runAfter).toEqual(['paths-computed']);
   });
 
-  it('should run before "rendering-docs"', () => {
+  it('should run before the correct processor', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     expect(processor.$runBefore).toEqual(['rendering-docs']);
   });
