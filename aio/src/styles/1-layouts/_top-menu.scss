@@ -3,10 +3,6 @@ aio-top-menu {
   flex-direction: row;
   align-items: center;
   width: 80%;
-
-  @include bp(small) {
-      // background-color: red;
-  }
 }
 
 aio-top-menu ul {
