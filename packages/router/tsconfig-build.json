@@ -15,12 +15,14 @@
       "@angular/core": ["../../dist/packages/core"],
       "@angular/common": ["../../dist/packages/common"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"]
+
+
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es2015", "dom"],
     "target": "es2015",
+    "lib": ["es2015", "dom"],
     "skipLibCheck": true
   },
   "files": [

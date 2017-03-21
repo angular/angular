@@ -12,18 +12,9 @@ PACKAGES=(core
   compiler
   common
   animations
-  forms
   platform-browser
   platform-browser-dynamic
-  http
-  platform-server
-  platform-webworker
-  platform-webworker-dynamic
-  upgrade
-  router
-  compiler-cli
-  language-service
-  benchpress)
+  upgrade)
 
 NODE_PACKAGES=(compiler-cli
   benchpress)
@@ -126,6 +117,7 @@ downlevelES2015() {
 
       echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib"
       ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap) > /dev/null 2>&1 || true
+      echo "!!!!! mapSources ${BASH_REMATCH[1]}.es5.js"
       mapSources "${BASH_REMATCH[1]}${2:-".es5.js"}"
       rm -f ${ts_file}
     fi
@@ -324,7 +316,12 @@ addNgcPackageJson() {
 #######################################
 mapSources() {
   if [[ -f "${1}.map" ]]; then
+    echo "!!!!! MAPPING ${1}.map"
+    echo "$MAP_SOURCES -f ${1}"
     $MAP_SOURCES -f "${1}"
+    echo "$(ls $(dirname ${1}))"
+  else
+    echo "!!!!! FILE DOES NOT EXIST! !!!!!"
   fi
 }
 
