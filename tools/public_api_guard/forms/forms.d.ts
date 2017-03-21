@@ -121,6 +121,9 @@ export declare class CheckboxRequiredValidator extends RequiredValidator {
     validate(c: AbstractControl): ValidationErrors | null;
 }
 
+/** @experimental */
+export declare const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
+
 /** @stable */
 export declare class ControlContainer extends AbstractControlDirective {
     readonly formDirective: Form;
@@ -140,7 +143,10 @@ export interface ControlValueAccessor {
 export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
+    constructor(_renderer: Renderer, _elementRef: ElementRef, _compositionMode: boolean);
+    _compositionEnd(value: any): void;
+    _compositionStart(): void;
+    _handleInput(value: any): void;
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
@@ -426,8 +432,6 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     readonly validator: ValidatorFn;
     viewModel: any;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
-    compositionEnd(): void;
-    compositionStart(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;

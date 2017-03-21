@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Host, HostListener, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -114,7 +114,6 @@ export class NgModel extends NgControl implements OnChanges,
   _control = new FormControl();
   /** @internal */
   _registered = false;
-  private _composing = false;
   viewModel: any;
 
   @Input() name: string;
@@ -123,15 +122,6 @@ export class NgModel extends NgControl implements OnChanges,
   @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
 
   @Output('ngModelChange') update = new EventEmitter();
-
-  @HostListener('compositionstart')
-  compositionStart(): void { this._composing = true; }
-
-  @HostListener('compositionend')
-  compositionEnd(): void {
-    this._composing = false;
-    this.update.emit(this.viewModel);
-  }
 
   constructor(@Optional() @Host() parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
@@ -176,7 +166,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                !this._composing && this.update.emit(newValue);
+                this.update.emit(newValue);
               }
 
               private _setUpControl(): void {

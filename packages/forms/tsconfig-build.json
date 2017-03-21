@@ -13,7 +13,8 @@
       "@angular/common": ["../../dist/packages/common"],
       "@angular/common/testing": ["../../dist/packages/common/testing"],
       "@angular/compiler": ["../../dist/packages/compiler"],
-      "@angular/compiler/testing": ["../../dist/packages/compiler/testing"]
+      "@angular/compiler/testing": ["../../dist/packages/compiler/testing"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"]
     },
     "rootDir": ".",
     "sourceMap": true,
