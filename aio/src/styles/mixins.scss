@@ -1,0 +1,9 @@
+@mixin rotate($degrees) {
+  -moz-transform: rotate($degrees);
+  -webkit-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  transform: rotate($degrees);
+  transition: transform 150ms;
+  transition-timing-function: ease-in-out;
+}
