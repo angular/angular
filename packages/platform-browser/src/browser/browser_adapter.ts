@@ -290,13 +290,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getTitle(doc: Document): string { return document.title; }
   setTitle(doc: Document, newTitle: string) { document.title = newTitle || ''; }
   elementMatches(n: any, selector: string): boolean {
-    if (n instanceof HTMLElement) {
-      return n.matches && n.matches(selector) ||
-          n.msMatchesSelector && n.msMatchesSelector(selector) ||
-          n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
-    }
-
-    return false;
+    return n.matches && n.matches(selector) ||
+        n.msMatchesSelector && n.msMatchesSelector(selector) ||
+        n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
   }
   isTemplateElement(el: Node): boolean {
     return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
