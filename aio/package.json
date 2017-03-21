@@ -48,7 +48,7 @@
     "rho": "https://github.com/petebacondarwin/rho#heading-fix",
     "rxjs": "^5.1.0",
     "ts-helpers": "^1.1.1",
-    "zone.js": "0.7.8"
+    "zone.js": "^0.8.4"
   },
   "devDependencies": {
     "@angular/cli": "^1.0.0-rc.0",
