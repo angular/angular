@@ -15,6 +15,14 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {Subscription} from 'rxjs/Subscription';
 
+const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
+
+function validateRequestUrl(url: string): void {
+  if (!isAbsoluteUrl.test(url)) {
+    throw new Error(`URLs requested via Http on the server must be absolute. URL: ${url}`);
+  }
+}
+
 @Injectable()
 export class ServerXhr implements BrowserXhr {
   build(): XMLHttpRequest { return new xhr2.XMLHttpRequest(); }
@@ -30,6 +38,7 @@ export class ZoneMacroTaskConnection implements Connection {
   lastConnection: Connection;
 
   constructor(public request: Request, backend: XHRBackend) {
+    validateRequestUrl(request.url);
     this.response = new Observable((observer: Observer<Response>) => {
       let task: Task = null;
       let scheduled: boolean = false;
