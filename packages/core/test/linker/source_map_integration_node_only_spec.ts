@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {extractSourceMap, originalPositionFor} from '@angular/compiler/test/output/source_map_util';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {Component, Directive, ɵglobal} from '@angular/core';
+import {Attribute, Component, Directive, ɵglobal} from '@angular/core';
 import {getErrorLogger} from '@angular/core/src/errors';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 
@@ -155,6 +155,37 @@ export function main() {
            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
              line: 2,
              column: 4,
+             source: ngUrl,
+           });
+         }));
+
+      it('should report di errors with multiple elements and directives', fakeAsync(() => {
+           const template = `<div someDir></div><div someDir="throw"></div>`;
+
+           @Component({...templateDecorator(template)})
+           class MyComp {
+           }
+
+           @Directive({selector: '[someDir]'})
+           class SomeDir {
+             constructor(@Attribute('someDir') someDir: string) {
+               if (someDir === 'throw') {
+                 throw new Error('Test');
+               }
+             }
+           }
+
+           TestBed.configureTestingModule({declarations: [SomeDir]});
+           let error: any;
+           try {
+             compileAndCreateComponent(MyComp);
+           } catch (e) {
+             error = e;
+           }
+           // The error should be logged from the 2nd-element
+           expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
+             line: 1,
+             column: 19,
              source: ngUrl,
            });
          }));
