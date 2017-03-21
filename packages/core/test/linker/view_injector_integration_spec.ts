@@ -564,6 +564,24 @@ export function main() {
             .toThrowError(
                 /Template parse errors:\nNo provider for SimpleDirective \("\[ERROR ->\]<div needsDirectiveFromHost><\/div>"\): .*SimpleComponent.html@0:0/);
       });
+
+      it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
+         () => {
+           @Component({template: ''})
+           class MyComp {
+             constructor(public vc: ViewContainerRef) {}
+           }
+
+           const compFixture = TestBed
+                                   .configureTestingModule({
+                                     declarations: [MyComp],
+                                     providers: [{provide: 'someToken', useValue: 'someValue'}]
+                                   })
+                                   .createComponent(MyComp);
+
+           expect(compFixture.componentInstance.vc.parentInjector.get('someToken'))
+               .toBe('someValue');
+         });
     });
 
     describe('static attributes', () => {
@@ -655,13 +673,16 @@ export function main() {
         class TestModule {
         }
 
-        const testInjector = {};
+        const testInjector = <Injector>{
+          get: (token: any, notFoundValue: any) =>
+                   token === 'someToken' ? 'someNewValue' : notFoundValue
+        };
 
         const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
                                 .get(ComponentFactoryResolver)
                                 .resolveComponentFactory(TestComp);
-        const component = compFactory.create(<Injector>testInjector);
-        expect(component.instance.vcr.parentInjector).toBe(testInjector);
+        const component = compFactory.create(testInjector);
+        expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
       });
 
       it('should inject TemplateRef', () => {
