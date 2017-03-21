@@ -202,10 +202,6 @@ describe('CompilerHost', () => {
       {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
     ]);
   });
-
-  it('should follow metadata aliases', () => {
-    expect(hostNestedGenDir.getMetadataFor('alias/file.d.ts')).toEqual([dummyMetadata]);
-  });
 });
 
 const dummyModule = 'export let foo: any[];';
@@ -240,11 +236,6 @@ const FILES: Entry = {
           'empty.d.ts': 'export declare var a: string;',
           'empty.metadata.json': '[]',
         }
-      },
-      'alias': {
-        'file.d.ts': dummyModule,
-        'file.metadata.json': '{ "alias": "sub/index.metadata.json"}',
-        'sub': {'index.metadata.json': JSON.stringify(dummyMetadata)}
       },
       'metadata_versions': {
         'v1.d.ts': `

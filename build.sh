@@ -267,7 +267,9 @@ compilePackage() {
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for Closure"
     echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
-    echo "{\"alias\": \"./${package_name}/index.metadata.json\"}" > ${2}/../${package_name}.metadata.json
+    if [[ ${4:-} ]]; then
+      mv ${2}/index.metadata.json ${2}/../${package_name}.metadata.json
+    fi
   fi
 
   for DIR in ${1}/* ; do
@@ -284,12 +286,11 @@ compilePackage() {
 # Arguments:
 #   param1 - Source of typings & metadata files
 #   param2 - Root of destination directory
-#   param3 - Package name (needed to correspond to name of d.ts and metadata.json files)
 # Returns:
 #   None
 #######################################
 moveTypings() {
-  if [[ -f ${1}/index.d.ts && -f ${1}/index.metadata.json ]]; then
+  if [[ -f ${1}/index.d.ts ]]; then
     mv ${1}/index.d.ts ${1}/${2}.d.ts
     mv ${1}/index.metadata.json ${1}/${2}.metadata.json
   fi
@@ -447,11 +448,7 @@ do
 
       echo "======        Copy ${PACKAGE} typings"
       rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}
-#      echo "$(cat ${LICENSE_BANNER}) ${N} export * from './index'" > ${NPM_DIR}/${PACKAGE}.d.ts
-#      echo "{\"alias\": \"./index.metadata.json\"}" > ${NPM_DIR}/${PACKAGE}.metadata.json
-#      exit 0
       moveTypings ${NPM_DIR} ${PACKAGE}
-#      addNgcPackageJson ${NPM_DIR}/typings
 
       (
         cd  ${SRC_DIR}
