@@ -155,5 +155,12 @@ describe('DocumentService', () => {
 
       expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'index.json');
     });
+
+    it('should map the "folder" locations to the correct document request', () => {
+      const { service, backend, location } = getServices('guide/');
+      service.currentDocument.subscribe();
+
+      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'guide.json');
+    });
   });
 });

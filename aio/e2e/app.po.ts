@@ -10,10 +10,15 @@ export class SitePage {
     .all(by.css('a'))
     .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
     .first();
-  featureLink = element(by.css('md-toolbar a[href="features"]'));
   gaReady: promise.Promise<any>;
-  ga = () => browser.executeScript('return window["gaCalls"]') as promise.Promise<any[][]>;
-  locationPath = () => browser.executeScript('return document.location.pathname') as promise.Promise<string>;
+  getNavHeading(pattern: RegExp) {
+    return element.all(by.css('aio-nav-item a'))
+                  .filter(element => element.getText().then(text => pattern.test(text)))
+                  .first();
+  }
+  getLink(path) { return element(by.css(`a[href="${path}"]`)); }
+  ga() { return browser.executeScript('return window["gaCalls"]') as promise.Promise<any[][]>; }
+  locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
   navigateTo(pageUrl = '') {
     return browser.get('/' + pageUrl).then(_ => this.replaceGa(_));
