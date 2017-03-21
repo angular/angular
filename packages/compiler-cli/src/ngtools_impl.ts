@@ -182,7 +182,11 @@ function _collectRoutes(
     providers: any[], reflector: StaticReflector, ROUTES: StaticSymbol): Route[] {
   return providers.reduce((routeList: Route[], p: any) => {
     if (p.provide === ROUTES) {
-      return routeList.concat(p.useValue);
+      if (p.useFactory != null) {
+        return routeList.concat(p.useFactory);
+      } else {
+        return routeList.concat(p.useValue);
+      }
     } else if (Array.isArray(p)) {
       return routeList.concat(_collectRoutes(p, reflector, ROUTES));
     } else {
