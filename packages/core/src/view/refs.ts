@@ -10,6 +10,7 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
+import {ComponentFactoryBoundToModule} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
@@ -137,7 +138,7 @@ class ViewContainerRef_ implements ViewContainerData {
       view = view.parent;
     }
 
-    return view ? new Injector_(view, elDef) : this._view.root.injector;
+    return view ? new Injector_(view, elDef) : new Injector_(this._view, null);
   }
 
   clear(): void {
@@ -169,9 +170,13 @@ class ViewContainerRef_ implements ViewContainerData {
 
   createComponent<C>(
       componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
-      projectableNodes?: any[][]): ComponentRef<C> {
+      projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C> {
     const contextInjector = injector || this.parentInjector;
-    const componentRef = componentFactory.create(contextInjector, projectableNodes);
+    if (!ngModuleRef && !(componentFactory instanceof ComponentFactoryBoundToModule)) {
+      ngModuleRef = contextInjector.get(NgModuleRef);
+    }
+    const componentRef =
+        componentFactory.create(contextInjector, projectableNodes, undefined, ngModuleRef);
     this.insert(componentRef.hostView, index);
     return componentRef;
   }
@@ -298,9 +303,10 @@ export function createInjector(view: ViewData, elDef: NodeDef): Injector {
 }
 
 class Injector_ implements Injector {
-  constructor(private view: ViewData, private elDef: NodeDef) {}
+  constructor(private view: ViewData, private elDef: NodeDef|null) {}
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
-    const allowPrivateServices = (this.elDef.flags & NodeFlags.ComponentView) !== 0;
+    const allowPrivateServices =
+        this.elDef ? (this.elDef.flags & NodeFlags.ComponentView) !== 0 : false;
     return Services.resolveDep(
         this.view, this.elDef, allowPrivateServices,
         {flags: DepFlags.None, token, tokenKey: tokenKey(token)}, notFoundValue);
