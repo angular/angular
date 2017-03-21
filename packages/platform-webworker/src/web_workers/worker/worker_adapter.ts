@@ -150,7 +150,7 @@ export class WorkerDomAdapter extends DomAdapter {
   getLocation(): Location { throw 'not implemented'; }
   getBaseHref(doc: Document): string { throw 'not implemented'; }
   resetBaseElement(): void { throw 'not implemented'; }
-  getUserAgent(): string { throw 'not implemented'; }
+  getUserAgent(): string { return 'Fake user agent'; }
   setData(element: any, name: string, value: string) { throw 'not implemented'; }
   getComputedStyle(element: any): any { throw 'not implemented'; }
   getData(element: any, name: string): string { throw 'not implemented'; }
