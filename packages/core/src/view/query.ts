@@ -8,11 +8,9 @@
 
 import {ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
-import {TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef} from '../linker/view_container_ref';
 
-import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, Services, ViewData, asElementData, asProviderData, asQueryList} from './types';
-import {declaredViewContainer, filterQueryId, isEmbeddedView, viewParentEl} from './util';
+import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, ViewData, asElementData, asProviderData, asQueryList} from './types';
+import {declaredViewContainer, filterQueryId, isEmbeddedView} from './util';
 
 export function queryDef(
     flags: NodeFlags, id: number, bindings: {[propName: string]: QueryBindingType}): NodeDef {

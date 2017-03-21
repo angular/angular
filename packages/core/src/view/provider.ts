@@ -11,12 +11,11 @@ import {Injector} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {ViewEncapsulation} from '../metadata/view';
-import {Renderer as RendererV1, Renderer2, RendererFactory2, RendererType2} from '../render/api';
+import {Renderer as RendererV1, Renderer2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
-import {BindingDef, BindingFlags, DepDef, DepFlags, DisposableFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryBindingType, QueryDef, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {calcBindingFlags, checkBinding, dispatchEvent, filterQueryId, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
+import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
 const RendererV1TokenKey = tokenKey(RendererV1);
 const Renderer2TokenKey = tokenKey(Renderer2);

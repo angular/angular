@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PipeTransform} from '../change_detection/change_detection';
 import {Injector} from '../di';
-import {ComponentRef} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {ViewRef} from '../linker/view_ref';
-import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 

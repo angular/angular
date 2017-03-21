@@ -11,14 +11,14 @@ import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, re
 import {Injector} from '../di';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer, SecurityContext} from '../security';
+import {Sanitizer} from '../security';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
-import {NOOP, checkBinding, isComponentView, renderNode, viewParentEl} from './util';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
+import {NOOP, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 
 
@@ -193,7 +193,7 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
     return (nodeDef.flags & NodeFlags.CatPureExpression) ?
         asPureExpressionData(view, nodeDef.index).value :
         undefined;
-  };
+  }
 }
 
 function debugUpdateRenderer(view: ViewData, checkType: CheckType) {

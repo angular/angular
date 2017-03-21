@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingDef, BindingFlags, DepDef, DepFlags, NodeData, NodeDef, NodeFlags, ProviderData, PureExpressionData, Services, ViewData, asPureExpressionData} from './types';
-import {calcBindingFlags, checkAndUpdateBinding, tokenKey} from './util';
+import {BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData, asPureExpressionData} from './types';
+import {calcBindingFlags, checkAndUpdateBinding} from './util';
 
 export function purePipeDef(argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
