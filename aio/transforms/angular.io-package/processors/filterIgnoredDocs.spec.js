@@ -11,12 +11,12 @@ describe('filterIgnoredDocs processor', () => {
     expect(processor.$process).toBeDefined();
   });
 
-  it('should run before computing-paths', () => {
+  it('should run before the correct processor', () => {
     const processor = processorFactory();
     expect(processor.$runBefore).toEqual(['computing-paths'])
   });
 
-  it('should run before computing-paths', () => {
+  it('should run after the correct processor', () => {
     const processor = processorFactory();
     expect(processor.$runAfter).toEqual(['ids-computed']);
   });
