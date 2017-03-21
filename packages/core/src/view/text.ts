@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical} from '../util';
-
-import {BindingDef, BindingFlags, DebugContext, NodeData, NodeDef, NodeFlags, RootData, Services, TextData, ViewData, ViewFlags, asElementData, asTextData} from './types';
+import {BindingDef, BindingFlags, NodeDef, NodeFlags, TextData, ViewData, asTextData} from './types';
 import {calcBindingFlags, checkAndUpdateBinding, getParentRenderElement} from './util';
 
 export function textDef(ngContentIndex: number, constants: string[]): NodeDef {

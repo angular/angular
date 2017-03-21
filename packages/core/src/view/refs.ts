@@ -20,8 +20,8 @@ import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {Type} from '../type';
 import {VERSION} from '../version';
 
-import {ArgumentType, BindingFlags, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, RootData, Services, TemplateData, ViewContainerData, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
-import {isComponentView, markParentViewsForCheck, renderNode, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
+import {DepFlags, ElementData, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {markParentViewsForCheck, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
 const EMPTY_CONTEXT = new Object();
