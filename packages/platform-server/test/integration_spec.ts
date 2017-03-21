@@ -426,10 +426,10 @@ export function main() {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
                  NgZone.assertInAngularZone();
-                 expect(mc.request.url).toBe('/testing');
+                 expect(mc.request.url).toBe('http://localhost/testing');
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-               http.get('/testing').subscribe(resp => {
+               http.get('http://localhost/testing').subscribe(resp => {
                  NgZone.assertInAngularZone();
                  expect(resp.text()).toBe('success!');
                });
@@ -449,7 +449,9 @@ export function main() {
                  expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-               http.get('/testing').subscribe(resp => { expect(resp.text()).toBe('success!'); });
+               http.get('http://localhost/testing').subscribe(resp => {
+                 expect(resp.text()).toBe('success!');
+               });
              });
            });
          }));
@@ -466,7 +468,9 @@ export function main() {
                  expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-               http.get('/testing').subscribe(resp => { expect(resp.text()).toBe('success!'); });
+               http.get('http://localhost/testing').subscribe(resp => {
+                 expect(resp.text()).toBe('success!');
+               });
              });
            });
          }));
@@ -483,8 +487,20 @@ export function main() {
                  expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-               http.get('/testing').subscribe(resp => { expect(resp.text()).toBe('success!'); });
+               http.get('http://localhost/testing').subscribe(resp => {
+                 expect(resp.text()).toBe('success!');
+               });
              });
+           });
+         }));
+      it('throws when given a relative URL', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(ExampleModule).then(ref => {
+             const http = ref.injector.get(Http);
+             expect(() => http.get('/testing'))
+                 .toThrowError(
+                     'URLs requested via Http on the server must be absolute. URL: /testing');
            });
          }));
     });
