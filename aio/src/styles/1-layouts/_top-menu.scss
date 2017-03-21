@@ -3,6 +3,10 @@ aio-top-menu {
   flex-direction: row;
   align-items: center;
   width: 80%;
+
+  @include bp(small) {
+      // background-color: red;
+  }
 }
 
 aio-top-menu ul {
@@ -20,7 +24,9 @@ aio-top-menu li {
 }
 
 md-toolbar.mat-toolbar {
-  box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+  position: relative;
+  z-index: 10;
+  box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.30);
   padding: 0 16px 0px 0px;
 }
 

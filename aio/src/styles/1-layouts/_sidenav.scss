@@ -131,8 +131,9 @@
 }
 
 .level-1 {
-  font-family: $support-font;
-  font-weight: 500;
+  font-family: $main-font;
+  font-size: 14px;
+  font-weight: 400;
   text-transform: uppercase;
   padding-left: 10px;
   transition: background-color 0.2s;
@@ -148,20 +149,10 @@
 }
 
 .level-3 {
-  font-family: $support-font;
+  font-family: $main-font;
   font-size: 14px;
   color: $mediumgray;
   padding-left: 30px;
-}
-
-@mixin rotate($degrees) {
-  -moz-transform: rotate($degrees);
-  -webkit-transform: rotate($degrees);
-  -o-transform: rotate($degrees);
-  -ms-transform: rotate($degrees);
-  transform: rotate($degrees);
-  transition: transform 150ms;
-  transition-timing-function: ease-in-out;
 }
 
 .level-1.expanded .material-icons, .level-2.expanded .material-icons {
