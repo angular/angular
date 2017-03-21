@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeDef, NodeFlags, ViewData, asElementData} from './types';
+import {NodeDef, NodeFlags, ViewData} from './types';
 import {RenderNodeAction, getParentRenderElement, visitProjectedRenderNodes} from './util';
 
 export function ngContentDef(ngContentIndex: number, index: number): NodeDef {

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../metadata/view';
-import {Renderer2, RendererType2} from '../render/api';
+import {RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
-import {BindingDef, BindingFlags, DebugContext, DisposableFn, ElementData, ElementHandleEventFn, NodeData, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, asElementData, asProviderData} from './types';
-import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, filterQueryId, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory, asElementData} from './types';
+import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -76,7 +75,7 @@ export function elementDef(
   const bindingDefs: BindingDef[] = new Array(bindings.length);
   for (let i = 0; i < bindings.length; i++) {
     const [bindingFlags, namespaceAndName, suffixOrSecurityContext] = bindings[i];
-    let bindingDef: BindingDef;
+
     const [ns, name] = splitNamespace(namespaceAndName);
     let securityContext: SecurityContext;
     let suffix: string;

@@ -6,25 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../metadata/view';
-import {Renderer2, RendererType2} from '../render/api';
+import {Renderer2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement, listenToElementOutputs} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
 import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAndUpdateDirectiveInline, createDirectiveInstance, createPipeInstance, createProviderInstance} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
-import {checkAndUpdateQuery, createQuery, queryDef} from './query';
+import {checkAndUpdateQuery, createQuery} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ArgumentType, CheckType, ElementData, ElementDef, NodeData, NodeDef, NodeFlags, ProviderData, ProviderDef, RootData, Services, TextDef, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asProviderData, asPureExpressionData, asQueryList, asTextData} from './types';
-import {NOOP, checkBindingNoChanges, isComponentView, resolveViewDefinition, viewParentEl} from './util';
+import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData} from './types';
+import {NOOP, checkBindingNoChanges, isComponentView, resolveViewDefinition} from './util';
 
 export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
     updateRenderer?: ViewUpdateFn): ViewDefinition {
   // clone nodes and set auto calculated values
-  const reverseChildNodes: NodeDef[] = new Array(nodes.length);
   let viewBindingCount = 0;
   let viewDisposableCount = 0;
   let viewNodeFlags = 0;
@@ -95,7 +93,7 @@ export function viewDef(
     if (node.flags & NodeFlags.CatProvider) {
       if (!currentElementHasPublicProviders) {
         currentElementHasPublicProviders = true;
-        // Use protoypical inheritance to not get O(n^2) complexity...
+        // Use prototypical inheritance to not get O(n^2) complexity...
         currentParent.element.publicProviders =
             Object.create(currentParent.element.publicProviders);
         currentParent.element.allProviders = currentParent.element.publicProviders;
@@ -107,7 +105,7 @@ export function viewDef(
       } else {
         if (!currentElementHasPrivateProviders) {
           currentElementHasPrivateProviders = true;
-          // Use protoypical inheritance to not get O(n^2) complexity...
+          // Use protoyypical inheritance to not get O(n^2) complexity...
           currentParent.element.allProviders = Object.create(currentParent.element.publicProviders);
         }
         currentParent.element.allProviders[node.provider.tokenKey] = node;
