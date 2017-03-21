@@ -1732,7 +1732,7 @@ export function main() {
     });
 
     describe('injection', () => {
-      function SomeToken() {}
+      class SomeToken {}
 
       it('should export ng2 instance to ng1', async(() => {
            const MyNg2Module = NgModule({

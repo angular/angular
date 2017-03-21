@@ -177,7 +177,7 @@ export declare type ClassDefinition = {
 /** @stable */
 export interface ClassProvider {
     multi?: boolean;
-    provide: any;
+    provide: string | Type<any> | InjectionToken<any> | Function;
     useClass: Type<any>;
 }
 
@@ -408,7 +408,7 @@ export declare class EventEmitter<T> extends Subject<T> {
 /** @stable */
 export interface ExistingProvider {
     multi?: boolean;
-    provide: any;
+    provide: string | Type<any> | InjectionToken<any> | Function;
     useExisting: any;
 }
 
@@ -416,7 +416,7 @@ export interface ExistingProvider {
 export interface FactoryProvider {
     deps?: any[];
     multi?: boolean;
-    provide: any;
+    provide: string | Type<any> | InjectionToken<any> | Function;
     useFactory: Function;
 }
 
@@ -1037,7 +1037,7 @@ export interface TypeProvider extends Type<any> {
 /** @stable */
 export interface ValueProvider {
     multi?: boolean;
-    provide: any;
+    provide: string | Type<any> | InjectionToken<any> | Function;
     useValue: any;
 }
 
