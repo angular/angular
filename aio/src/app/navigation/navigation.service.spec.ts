@@ -95,34 +95,53 @@ describe('NavigationService', () => {
 
       service = injector.get(NavigationService);
       service.selectedNodes.subscribe(nodes => currentNodes = nodes);
-
-      const backend = injector.get(ConnectionBackend);
-      backend.connectionsArray[0].mockRespond(createResponse({ nav: nodeTree }));
     });
 
-    it('should list the navigation node that matches the current location, and all its ancestors', () => {
-      location.urlSubject.next('b');
-      expect(currentNodes).toEqual([
-        nodeTree[0].children[0],
-        nodeTree[0]
-      ]);
+    describe('normal use', () => {
+      beforeEach(() => {
+        const backend = injector.get(ConnectionBackend);
+        backend.connectionsArray[0].mockRespond(createResponse({ nav: nodeTree }));
+      });
 
-      location.urlSubject.next('d');
-      expect(currentNodes).toEqual([
-        nodeTree[0].children[0].children[1],
-        nodeTree[0].children[0],
-        nodeTree[0]
-      ]);
+      it('should list the navigation node that matches the current location, and all its ancestors', () => {
+        location.urlSubject.next('b');
+        expect(currentNodes).toEqual([
+          nodeTree[0].children[0],
+          nodeTree[0]
+        ]);
 
-      location.urlSubject.next('f');
-      expect(currentNodes).toEqual([
-        nodeTree[1]
-      ]);
+        location.urlSubject.next('d');
+        expect(currentNodes).toEqual([
+          nodeTree[0].children[0].children[1],
+          nodeTree[0].children[0],
+          nodeTree[0]
+        ]);
+
+        location.urlSubject.next('f');
+        expect(currentNodes).toEqual([
+          nodeTree[1]
+        ]);
+      });
+
+      it('should be an empty array if no navigation node matches the current location', () => {
+        location.urlSubject.next('g');
+        expect(currentNodes).toEqual([]);
+      });
     });
 
-    it('should be an empty array if no navigation node matches the current location', () => {
-      location.urlSubject.next('g');
-      expect(currentNodes).toEqual([]);
+    describe('non-standard', () => {
+      it('should be resilient to "non-standard" nodes', () => {
+        const backend = injector.get(ConnectionBackend);
+        backend.connectionsArray[0].mockRespond(createResponse({
+          nav: nodeTree,
+          'version-info': { raw: '4.0.0' }
+        }));
+        location.urlSubject.next('b');
+        expect(currentNodes).toEqual([
+          nodeTree[0].children[0],
+          nodeTree[0]
+        ]);
+      });
     });
   });
 });

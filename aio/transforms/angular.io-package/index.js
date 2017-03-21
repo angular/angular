@@ -16,7 +16,7 @@ const gitPackage = require('dgeni-packages/git');
 const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
-const cheatsheetPackage = require('../cheatsheet-package');
+const contentPackage = require('../content-package');
 const rhoPackage = require('../rho-package');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
@@ -31,7 +31,7 @@ module.exports =
         'angular.io',
         [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
-          gitPackage, targetPackage, cheatsheetPackage, rhoPackage
+          gitPackage, targetPackage, contentPackage, rhoPackage
         ])
 
         // Register the processors
@@ -47,9 +47,15 @@ module.exports =
         .processor(require('./processors/filterMemberDocs'))
         .processor(require('./processors/convertToJson'))
         .processor(require('./processors/markBarredODocsAsPrivate'))
+        .processor(require('./processors/filterPrivateDocs'))
+        .processor(require('./processors/filterIgnoredDocs'))
+        .processor(require('./processors/fixInternalDocumentLinks'))
+        .processor(require('./processors/processNavigationMap'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
+
+        .factory(require('./readers/navigation'))
 
         .config(function(checkAnchorLinksProcessor, log) {
           // TODO: re-enable
@@ -58,12 +64,13 @@ module.exports =
 
         // Where do we get the source files?
         .config(function(
-            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor) {
+            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor, navigationFileReader) {
 
           // API files are typescript
           readTypeScriptModules.basePath = API_SOURCE_PATH;
           readTypeScriptModules.ignoreExportsMatching = [/^_/];
           readTypeScriptModules.hidePrivateMembers = true;
+          readFilesProcessor.fileReaders.push(navigationFileReader)
           readTypeScriptModules.sourceFiles = [
             'common/index.ts',
             'common/testing/index.ts',
@@ -103,7 +110,6 @@ module.exports =
               include: CONTENTS_PATH + '/file-not-found.md',
               fileReader: 'contentFileReader'
             },
-            {basePath: CONTENTS_PATH, include: CONTENTS_PATH + '/cheatsheet/*.md'},
             {
               basePath: API_SOURCE_PATH,
               include: API_SOURCE_PATH + '/examples/**/*',
@@ -112,7 +118,33 @@ module.exports =
             {
               basePath: CONTENTS_PATH,
               include: CONTENTS_PATH + '/examples/**/*',
+              exclude: [
+                '**/*plnkr.no-link.html',
+                '**/node_modules/**',
+                // _boilerplate files
+                '**/_boilerplate/**',
+                '**/*/src/styles.css',
+                '**/*/src/systemjs-angular-loader.js',
+                '**/*/src/systemjs.config.js',
+                '**/*/src/tsconfig.json',
+                '**/*/bs-config.e2e.json',
+                '**/*/bs-config.json',
+                '**/*/package.json',
+                '**/*/tslint.json',
+                // example files
+                '**/_test-output',
+                '**/protractor-helpers.js',
+                '**/e2e-spec.js',
+                '**/ts/**/*.js',
+                '**/js-es6*/**/*.js',
+                '**/ts-snippets/**/*.js',
+              ],
               fileReader: 'exampleFileReader'
+            },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/navigation.json',
+              fileReader: 'navigationFileReader'
             },
           ];
 
@@ -122,7 +154,12 @@ module.exports =
           generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
         })
 
-
+        // Ignore certain problematic files
+        .config(function(filterIgnoredDocs) {
+          filterIgnoredDocs.ignore = [
+            /\/VERSION$/  // Ignore the `VERSION` const, since it would be written to the same file as the `Version` class
+          ];
+        })
 
         // Where do we write the output files?
         .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = OUTPUT_PATH; })
@@ -228,13 +265,9 @@ module.exports =
               pathTemplate: '${moduleDoc.moduleFolder}/${name}',
               outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
             },
-            {
-              docTypes: ['cheatsheet-data'],
-              pathTemplate: GUIDE_SEGMENT + '/cheatsheet.json',
-              outputPathTemplate: '${path}'
-            },
             {docTypes: ['example-region'], getOutputPath: function() {}},
-            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'}
+            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'},
+            {docTypes: ['navigation-map'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 
