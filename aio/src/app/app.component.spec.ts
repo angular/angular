@@ -11,6 +11,8 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { MockSearchService } from 'testing/search.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
+import { Logger } from 'app/shared/logger.service';
+import { MockLogger } from 'testing/logger.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -24,7 +26,8 @@ describe('AppComponent', () => {
         { provide: APP_BASE_HREF, useValue: '/' },
         { provide: SearchService, useClass: MockSearchService },
         { provide: GaService, useClass: TestGaService },
-        { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) }
+        { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
     TestBed.compileComponents();
