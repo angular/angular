@@ -63,8 +63,11 @@ export class DocumentService {
 
   private computePath(url: string) {
     url = url.match(/[^#?]*/)[0]; // strip off fragment and query
-    url = '/' + url;
-    url = url.endsWith('/') ? url + 'index' : url;
-    return 'content/docs' + url + '.json';
+    url = url.replace(/\/$/, ''); // strip off trailing slash
+    if (url === '') {
+      // deal with root url
+      url = 'index';
+    }
+    return 'content/docs/' + url + '.json';
   }
 }

@@ -10,9 +10,25 @@ describe('site App', function() {
   });
 
   it('should show features text after clicking "Features"', () => {
-    page.featureLink.click().then(() => {
+    page.getLink('features').click().then(() => {
       expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
     });
+  });
+
+  it('should show the tutorial index page at `/tutorial/`', () => {
+    // check that we can navigate directly to the tutorial page
+    page.navigateTo('tutorial/');
+    expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
+
+    // navigate to a different page
+    page.getLink('features').click();
+
+    // check that we can navigate to the tutorial page via a link in the navigation
+    const heading = page.getNavHeading(/tutorial/i);
+    expect(heading.getText()).toMatch(/tutorial/i);
+    heading.click();
+    page.getLink('tutorial/').click();
+    expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
   });
 
   it('should convert a doc with a code-example');
