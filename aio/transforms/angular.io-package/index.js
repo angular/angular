@@ -266,7 +266,11 @@ module.exports =
               outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
             },
             {docTypes: ['example-region'], getOutputPath: function() {}},
-            {docTypes: ['content'], pathTemplate: '${id}', outputPathTemplate: '${path}.json'},
+            {
+              docTypes: ['content'],
+              getPath: (doc) => `${doc.id.replace(/\/index$/, '')}`,
+              outputPathTemplate: '${path}.json'
+            },
             {docTypes: ['navigation-map'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
