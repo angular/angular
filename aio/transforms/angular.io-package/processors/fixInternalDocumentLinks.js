@@ -8,7 +8,7 @@
  */
 module.exports = function fixInternalDocumentLinks() {
 
-  var INTERNAL_LINK = /(<a [^>]*href=")(#[^"]*)/gm;
+  var INTERNAL_LINK = /(<a [^>]*href=")(#[^"]*)/g;
 
   return {
     $runAfter: ['inlineTagProcessor'],
