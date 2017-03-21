@@ -586,14 +586,28 @@ class DebugRenderer2 implements Renderer2 {
   listen(
       target: 'document'|'windows'|'body'|any, eventName: string,
       callback: (event: any) => boolean): () => void {
+    let unregister: Function = NOOP;
+
     if (typeof target !== 'string') {
       const debugEl = getDebugNode(target);
       if (debugEl) {
-        debugEl.listeners.push(new EventListener(eventName, callback));
+        const listener = new EventListener(eventName, callback);
+        debugEl.listeners.push(listener);
+        unregister = () => {
+          const index = debugEl.listeners.indexOf(listener);
+          if (index > -1) {
+            debugEl.listeners.splice(index, 1);
+          }
+        }
       }
     }
 
-    return this.delegate.listen(target, eventName, callback);
+    const unlisten: Function = this.delegate.listen(target, eventName, callback);
+
+    return () => {
+      unlisten();
+      unregister();
+    }
   }
 
   parentNode(node: any): any { return this.delegate.parentNode(node); }
