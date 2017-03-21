@@ -7,3 +7,11 @@
   transition: transform 150ms;
   transition-timing-function: ease-in-out;
 }
+
+@mixin codeblock($bgcolor) {
+    background-color: $bgcolor;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 24px auto;
+    border: 0.5px solid $lightgray;
+}

@@ -1,13 +1,14 @@
 .code-example {
-    background-color: $backgroundgray;
-    border-radius: 5px;
+    @include codeblock($backgroundgray);
     color: $darkgray;
-    padding: 20px;
-    margin: 24px auto;
-    border: 0.5px solid $lightgray;
 }
 
-.code-example pre {
+.code-shell code {
+    @include codeblock($darkgray);
+    color: $codegreen;
+}
+
+.code-example pre, code-example pre {
     margin: 0px;
     padding: 0px;
     white-space: pre-wrap;
