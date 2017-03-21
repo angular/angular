@@ -207,11 +207,7 @@ export class CompilerHost implements AotCompilerHost {
       return metadatas;
     }
     try {
-      let metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
-      while (metadataOrMetadatas && metadataOrMetadatas.alias) {
-        filePath = path.join(path.dirname(filePath), metadataOrMetadatas.alias);
-        metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
-      }
+      const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
       const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
