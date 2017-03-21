@@ -16,6 +16,6 @@ export declare class MockConnection implements Connection {
     response: ReplaySubject<Response>;
     constructor(req: Request);
     mockDownload(res: Response): void;
-    mockError(err?: Error): void;
+    mockError(err?: Error | Response): void;
     mockRespond(res: Response): void;
 }
