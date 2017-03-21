@@ -356,7 +356,7 @@ export function resolveDep(
   }
   const tokenKey = depDef.tokenKey;
 
-  if (depDef.flags & DepFlags.SkipSelf) {
+  if (elDef && (depDef.flags & DepFlags.SkipSelf)) {
     allowPrivateServices = false;
     elDef = elDef.parent;
   }

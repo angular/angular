@@ -9,6 +9,7 @@
 import {Injector} from '../di/injector';
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
+import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
@@ -83,7 +84,7 @@ export abstract class ViewContainerRef {
    */
   abstract createComponent<C>(
       componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
-      projectableNodes?: any[][]): ComponentRef<C>;
+      projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
