@@ -31,7 +31,12 @@ describe('site App', function() {
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
   });
 
-  it('should convert a doc with a code-example');
+  it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {
+    page.navigateTo('guide/component-styles');
+    const codeExample = element.all(by.css('code-example')).first();
+    expect(page.getInnerHtml(codeExample))
+        .toContain('@Component({\n  selector: \'hero-app\',\n  template: `\n    &lt;h1&gt;Tour of Heroes&lt;/h1&gt;');
+  });
 
   describe('api-docs', () => {
     it('should show a link to github', () => {
