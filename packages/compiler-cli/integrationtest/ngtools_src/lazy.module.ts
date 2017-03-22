@@ -17,8 +17,10 @@ export class LazyComponent {
   imports: [RouterModule.forChild([
     {path: '', component: LazyComponent, pathMatch: 'full'},
     {path: 'feature', loadChildren: './feature/feature.module#FeatureModule'},
-    {path: 'lazy-feature', loadChildren: './feature/lazy-feature.module#LazyFeatureModule'},
-    {path: 'recursive-feature', loadChildren: './feature3/recursive-feature.module#RecursiveFeatureModule'}
+    {path: 'lazy-feature', loadChildren: './feature/lazy-feature.module#LazyFeatureModule'}, {
+      path: 'recursive-feature',
+      loadChildren: './feature3/recursive-feature.module#RecursiveFeatureModule'
+    }
   ])],
   declarations: [LazyComponent]
 })

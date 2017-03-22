@@ -73,7 +73,7 @@ export function listLazyRoutesOfModule(
             _assertRoute(allRoutes, lazyRoute);
 
             if (route in allRoutes) {
-                return allRoutes;
+              return allRoutes;
             }
 
             allRoutes[route] = lazyRoute;
