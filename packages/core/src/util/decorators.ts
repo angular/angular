@@ -96,7 +96,7 @@ function extractAnnotation(annotation: any): any {
   return annotation;
 }
 
-function applyParams(fnOrArray: (Function | any[]), key: string): Function {
+function applyParams(fnOrArray: Function | any[] | undefined, key: string): Function {
   if (fnOrArray === Object || fnOrArray === String || fnOrArray === Function ||
       fnOrArray === Number || fnOrArray === Array) {
     throw new Error(`Can not use native ${stringify(fnOrArray)} as constructor`);
@@ -107,7 +107,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
   }
 
   if (Array.isArray(fnOrArray)) {
-    const annotations: any[] = fnOrArray;
+    const annotations: any[] = fnOrArray as any[];
     const annoLength = annotations.length - 1;
     const fn: Function = fnOrArray[annoLength];
     if (typeof fn !== 'function') {
@@ -263,7 +263,7 @@ export function Class(clsDef: ClassDefinition): Type<any> {
  */
 export function makeDecorator(
     name: string, props: {[name: string]: any}, parentClass?: any,
-    chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
+    chainFn?: (fn: Function) => void): (...args: any[]) => (cls: any) => any {
   const metaCtor = makeMetadataCtor([props]);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
@@ -332,7 +332,7 @@ export function makeParamDecorator(
     return ParamDecorator;
 
     function ParamDecorator(cls: any, unusedKey: any, index: number): any {
-      const parameters: any[][] = Reflect.getOwnMetadata('parameters', cls) || [];
+      const parameters: (any[] | null)[] = Reflect.getOwnMetadata('parameters', cls) || [];
 
       // there might be gaps if some in between parameters do not have annotations.
       // we pad with nulls.
@@ -341,7 +341,7 @@ export function makeParamDecorator(
       }
 
       parameters[index] = parameters[index] || [];
-      parameters[index].push(annotationInstance);
+      parameters[index] !.push(annotationInstance);
 
       Reflect.defineMetadata('parameters', parameters, cls);
       return cls;

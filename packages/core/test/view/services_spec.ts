@@ -36,12 +36,12 @@ export function main() {
       function createViewWithData() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(
-              NodeFlags.None, null, null, 1, 'div', null, null, null, null,
+              NodeFlags.None, null !, null !, 1, 'div', null !, null !, null !, null !,
               () => compViewDef([
-                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null, 2, 'span'),
-                directiveDef(NodeFlags.None, null, 0, AService, []), textDef(null, ['a'])
+                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null !, 2, 'span'),
+                directiveDef(NodeFlags.None, null !, 0, AService, []), textDef(null !, ['a'])
               ])),
-          directiveDef(NodeFlags.Component, null, 0, AComp, []),
+          directiveDef(NodeFlags.Component, null !, 0, AComp, []),
         ]));
         return view;
       }

@@ -159,9 +159,9 @@ enum DebugAction {
 
 let _currentAction: DebugAction;
 let _currentView: ViewData;
-let _currentNodeIndex: number;
+let _currentNodeIndex: number|null;
 
-function debugSetCurrentNode(view: ViewData, nodeIndex: number) {
+function debugSetCurrentNode(view: ViewData, nodeIndex: number | null) {
   _currentView = view;
   _currentNodeIndex = nodeIndex;
 }
@@ -231,13 +231,13 @@ function debugCheckAndUpdateNode(
         const binding = nodeDef.bindings[i];
         const value = values[i];
         if (binding.flags & BindingFlags.TypeProperty) {
-          bindingValues[normalizeDebugBindingName(binding.nonMinifiedName)] =
+          bindingValues[normalizeDebugBindingName(binding.nonMinifiedName !)] =
               normalizeDebugBindingValue(value);
         }
       }
-      const elDef = nodeDef.parent;
+      const elDef = nodeDef.parent !;
       const el = asElementData(view, elDef.index).renderElement;
-      if (!elDef.element.name) {
+      if (!elDef.element !.name) {
         // a comment.
         view.renderer.setValue(el, `bindings=${JSON.stringify(bindingValues, null, 2)}`);
       } else {
@@ -281,31 +281,31 @@ function normalizeDebugBindingValue(value: any): string {
   }
 }
 
-function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number {
+function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number|null {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & NodeFlags.TypeDirective && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
-  return undefined;
+  return null;
 }
 
-function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number {
+function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number|null {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
     if ((nodeDef.flags & NodeFlags.CatRenderNode) && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
-  return undefined;
+  return null;
 }
 
 class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
-  constructor(public view: ViewData, public nodeIndex: number) {
+  constructor(public view: ViewData, public nodeIndex: number|null) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
     }
@@ -313,12 +313,12 @@ class DebugContext_ implements DebugContext {
     let elDef = this.nodeDef;
     let elView = view;
     while (elDef && (elDef.flags & NodeFlags.TypeElement) === 0) {
-      elDef = elDef.parent;
+      elDef = elDef.parent !;
     }
     if (!elDef) {
       while (!elDef && elView) {
-        elDef = viewParentEl(elView);
-        elView = elView.parent;
+        elDef = viewParentEl(elView) !;
+        elView = elView.parent !;
       }
     }
     this.elDef = elDef;
@@ -337,7 +337,7 @@ class DebugContext_ implements DebugContext {
       for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
         const childDef = this.elView.def.nodes[i];
         if (childDef.flags & NodeFlags.CatProvider) {
-          tokens.push(childDef.provider.token);
+          tokens.push(childDef.provider !.token);
         }
         i += childDef.childCount;
       }
@@ -389,7 +389,7 @@ class DebugContext_ implements DebugContext {
         return NOOP;
       }
     };
-    logViewDef.factory(nodeLogger);
+    logViewDef.factory !(nodeLogger);
     if (currRenderNodeIndex < renderNodeIndex) {
       console.error('Illegal state: the ViewDefinitionFactory did not call the logger!');
       (<any>console.error)(...values);
@@ -408,14 +408,14 @@ function getRenderNodeIndex(viewDef: ViewDefinition, nodeIndex: number): number 
   return renderNodeIndex;
 }
 
-function findHostElement(view: ViewData): ElementData {
+function findHostElement(view: ViewData): ElementData|null {
   while (view && !isComponentView(view)) {
-    view = view.parent;
+    view = view.parent !;
   }
   if (view.parent) {
-    return asElementData(view.parent, viewParentEl(view).index);
+    return asElementData(view.parent, viewParentEl(view) !.index);
   }
-  return undefined;
+  return null;
 }
 
 function collectReferences(view: ViewData, nodeDef: NodeDef, references: {[key: string]: any}) {
@@ -440,11 +440,11 @@ function callWithDebugContext(action: DebugAction, fn: any, self: any, args: any
       throw e;
     }
     _currentView.state |= ViewState.Errored;
-    throw viewWrappedDebugError(e, getCurrentDebugContext());
+    throw viewWrappedDebugError(e, getCurrentDebugContext() !);
   }
 }
 
-export function getCurrentDebugContext(): DebugContext {
+export function getCurrentDebugContext(): DebugContext|null {
   return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
@@ -452,7 +452,7 @@ export function getCurrentDebugContext(): DebugContext {
 class DebugRendererFactory2 implements RendererFactory2 {
   constructor(private delegate: RendererFactory2) {}
 
-  createRenderer(element: any, renderData: RendererType2): Renderer2 {
+  createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
     return new DebugRenderer2(this.delegate.createRenderer(element, renderData));
   }
 }
@@ -464,7 +464,7 @@ class DebugRenderer2 implements Renderer2 {
   get data() { return this.delegate.data; }
 
   destroyNode(node: any) {
-    removeDebugNodeFromIndex(getDebugNode(node));
+    removeDebugNodeFromIndex(getDebugNode(node) !);
     if (this.delegate.destroyNode) {
       this.delegate.destroyNode(node);
     }
@@ -513,7 +513,7 @@ class DebugRenderer2 implements Renderer2 {
   insertBefore(parent: any, newChild: any, refChild: any): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);
-    const debugRefEl = getDebugNode(refChild);
+    const debugRefEl = getDebugNode(refChild) !;
     if (debugEl && debugChildEl && debugEl instanceof DebugElement) {
       debugEl.insertBefore(debugRefEl, debugChildEl);
     }

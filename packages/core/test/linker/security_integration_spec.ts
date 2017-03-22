@@ -75,7 +75,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
         // should not throw for inputs starting with "on"
-        let cmp: ComponentFixture<SecuredComponent>;
+        let cmp: ComponentFixture<SecuredComponent> = undefined !;
         expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
 
         // must bind to the directive not to the property of the div

@@ -38,8 +38,8 @@ export function main() {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, null, null, 2, 'span'), pureArrayDef(2),
-                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                elementDef(NodeFlags.None, null !, null !, 2, 'span'), pureArrayDef(2),
+                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
                 const pureValue = checkNodeInlineOrDynamic(check, view, 1, inlineDynamic, values);
@@ -75,8 +75,8 @@ export function main() {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, null, null, 2, 'span'), pureObjectDef(['a', 'b']),
-                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                elementDef(NodeFlags.None, null !, null !, 2, 'span'), pureObjectDef(['a', 'b']),
+                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
                 const pureValue = checkNodeInlineOrDynamic(check, view, 1, inlineDynamic, values);
@@ -115,9 +115,9 @@ export function main() {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, null, null, 3, 'span'),
+                elementDef(NodeFlags.None, null !, null !, 3, 'span'),
                 pipeDef(NodeFlags.None, SomePipe, []), purePipeDef(2),
-                directiveDef(NodeFlags.None, null, 0, Service, [], {data: [0, 'data']})
+                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
                 const pureValue = checkNodeInlineOrDynamic(
