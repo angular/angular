@@ -341,7 +341,7 @@ function callFactory(
 // - el2.injector.get(token, default)
 // - el1.injector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) -> do not check the module
 // - mod2.injector.get(token, default)
-const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
+export const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
 export function resolveDep(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
