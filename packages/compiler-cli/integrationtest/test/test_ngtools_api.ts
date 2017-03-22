@@ -199,7 +199,9 @@ function lazyRoutesTest() {
     './default.module': 'feature2/default.module.ts',
     'feature/feature.module#FeatureModule': 'feature/feature.module.ts',
     './feature3/recursive-feature.module#RecursiveFeatureModule':
-        'feature3/recursive-feature.module.ts'
+        'feature3/recursive-feature.module.ts',
+    './recursive-feature.module#RecursiveFeatureModule':
+        './recursive-feature.module.ts'
   };
 
   Object.keys(lazyRoutes).forEach((route: string) => {
