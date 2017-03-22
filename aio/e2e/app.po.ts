@@ -28,6 +28,12 @@ export class SitePage {
     return this.docViewer.getText();
   }
 
+  getInnerHtml(element) {
+    // `getInnerHtml` was removed from webDriver and this is the workaround.
+    // See https://github.com/angular/protractor/blob/master/CHANGELOG.md#breaking-changes
+    return browser.executeScript('return arguments[0].innerHTML;', element);
+  }
+
   /**
    * Replace the ambient Google Analytics tracker with homebrew spy
    * don't send commands to GA during e2e testing!
