@@ -26,3 +26,4 @@ export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo
 export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise, merge as ɵmerge} from './util/lang';
+export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';

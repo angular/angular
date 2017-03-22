@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, NgModule, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -360,6 +360,56 @@ export function main() {
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
            expect(multiTrim(document.body.textContent)).toBe('parent(child)');
          });
+       }));
+
+    it('should work with ng2 lazy loaded components', async(() => {
+
+         let componentInjector: Injector;
+
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+           constructor(injector: Injector) { componentInjector = injector; }
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         @Component({template: ''})
+         class LazyLoadedComponent {
+           constructor(public module: NgModuleRef<any>){};
+         }
+
+         @NgModule({
+           declarations: [LazyLoadedComponent],
+           entryComponents: [LazyLoadedComponent],
+         })
+         class LazyLoadedModule {
+         }
+
+         const ng1Module = angular.module('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component}));
+
+         const element = html('<ng2></ng2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const modInjector = upgrade.injector;
+           // Emulate the router lazy loading a module and creating a component
+           const compiler = modInjector.get(Compiler);
+           const modFactory = compiler.compileModuleSync(LazyLoadedModule);
+           const childMod = modFactory.create(modInjector);
+           const cmpFactory =
+               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent);
+           const lazyCmp = cmpFactory.create(componentInjector);
+
+           expect(lazyCmp.instance.module).toBe(childMod.injector);
+         });
+
        }));
   });
 }
