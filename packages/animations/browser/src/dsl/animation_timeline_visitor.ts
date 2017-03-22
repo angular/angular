@@ -51,7 +51,7 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  * [TimelineBuilder]
  * This class is responsible for tracking the styles and building a series of keyframe objects for a
  * timeline between a start and end time. The builder starts off with an initial timeline and each
- * time the AST comes across a `group()`, `keyframes()` or a combination of the two wihtin a
+ * time the AST comes across a `group()`, `keyframes()` or a combination of the two within a
  * `sequence()` then it will generate a sub timeline for each step as well as a new one after
  * they are complete.
  *
@@ -83,7 +83,7 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  * from all previous keyframes up until where it is first used. For the timeline keyframe generation
  * to properly fill in the style it will place the previous value (the value from the parent
  * timeline) or a default value of `*` into the backFill object. Given that each of the keyframe
- * styles are objects that prototypically inhert from the backFill object, this means that if a
+ * styles are objects that prototypically inherited from the backFill object, this means that if a
  * value is added into the backFill then it will automatically propagate any missing values to all
  * keyframes. Therefore the missing `height` value will be properly filled into the already
  * processed keyframes.
@@ -92,7 +92,7 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
  * styles present within the sub-timeline do not accidentally seep into the previous/future timeline
  * keyframes
  *
- * (For prototypically-inherited contents to be detected a `for(i in obj)` loop must be used.)
+ * (For prototypically inherited contents to be detected a `for(i in obj)` loop must be used.)
  *
  * [Validation]
  * The code in this file is not responsible for validation. That functionality happens with within
