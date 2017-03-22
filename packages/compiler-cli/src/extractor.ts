@@ -67,7 +67,7 @@ export class Extractor {
     const format = (formatName || 'xlf').toLowerCase();
 
     if (format === 'xmb') return 'xmb';
-    if (format === 'xlf' || format === 'xlif') return 'xlf';
+    if (format === 'xlf' || format === 'xlif' || format === 'xliff') return 'xlf';
 
     throw new Error('Unsupported format "${formatName}"');
   }
