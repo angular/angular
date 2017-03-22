@@ -125,18 +125,19 @@ function declareTests({useJit}: {useJit: boolean}) {
       injector = _injector;
     }));
 
-    function createModule<T>(moduleType: Type<T>, parentInjector: Injector = null): NgModuleRef<T> {
+    function createModule<T>(
+        moduleType: Type<T>, parentInjector?: Injector | null): NgModuleRef<T> {
       return compiler.compileModuleSync(moduleType).create(parentInjector);
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
       const ngModule = createModule(moduleType, injector);
 
-      const cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType);
+      const cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType) !;
 
       const comp = cf.create(Injector.NULL);
 
-      return new ComponentFixture(comp, null, false);
+      return new ComponentFixture(comp, null !, false);
     }
 
     describe('errors', () => {
@@ -291,7 +292,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         const ngModule = createModule(SomeModule);
-        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
             .toBe(SomeComp);
         expect(ngModule.injector.get(ComponentFactoryResolver)
                    .resolveComponentFactory(SomeComp)
@@ -341,7 +342,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         const ngModule = createModule(SomeModule);
-        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
             .toBe(SomeComp);
         expect(ngModule.injector.get(ComponentFactoryResolver)
                    .resolveComponentFactory(SomeComp)
@@ -359,7 +360,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         const ngModule = createModule(SomeModule);
-        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
             .toBe(SomeComp);
         expect(ngModule.injector.get(ComponentFactoryResolver)
                    .resolveComponentFactory(SomeComp)
@@ -377,7 +378,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         const ngModule = createModule(SomeModule);
-        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
             .toBe(SomeComp);
         expect(ngModule.injector.get(ComponentFactoryResolver)
                    .resolveComponentFactory(SomeComp)
@@ -394,7 +395,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         const ngModule = createModule(SomeModule);
-        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
             .toBe(SomeComp);
       });
 
@@ -605,7 +606,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       let moduleType: any = null;
 
 
-      function createInjector(providers: Provider[], parent: Injector = null): Injector {
+      function createInjector(providers: Provider[], parent?: Injector | null): Injector {
         @NgModule({providers: providers})
         class SomeModule {
         }

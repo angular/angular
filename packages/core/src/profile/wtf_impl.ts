@@ -55,7 +55,7 @@ export function createScope(signature: string, flags: any = null): any {
 
 export function leave<T>(scope: Scope, returnValue?: T): T {
   trace.leaveScope(scope, returnValue);
-  return returnValue;
+  return returnValue !;
 }
 
 export function startTimeRange(rangeType: string, action: string): Range {

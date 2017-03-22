@@ -87,12 +87,12 @@ export interface KeyValueChangeRecord<K, V> {
   /**
    * Current value for the key or `undefined` if removed.
    */
-  /* readonly */ currentValue: V;
+  /* readonly */ currentValue: V|undefined;
 
   /**
    * Previous value for the key or `undefined` if added.
    */
-  /* readonly */ previousValue: V;
+  /* readonly */ previousValue: V|undefined;
 }
 
 /**

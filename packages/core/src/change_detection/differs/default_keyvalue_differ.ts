@@ -29,14 +29,14 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
   private _records: Map<K, V> = new Map<K, V>();
-  private _mapHead: KeyValueChangeRecord_<K, V> = null;
-  private _previousMapHead: KeyValueChangeRecord_<K, V> = null;
-  private _changesHead: KeyValueChangeRecord_<K, V> = null;
-  private _changesTail: KeyValueChangeRecord_<K, V> = null;
-  private _additionsHead: KeyValueChangeRecord_<K, V> = null;
-  private _additionsTail: KeyValueChangeRecord_<K, V> = null;
-  private _removalsHead: KeyValueChangeRecord_<K, V> = null;
-  private _removalsTail: KeyValueChangeRecord_<K, V> = null;
+  private _mapHead: KeyValueChangeRecord_<K, V>|null = null;
+  private _previousMapHead: KeyValueChangeRecord_<K, V>|null = null;
+  private _changesHead: KeyValueChangeRecord_<K, V>|null = null;
+  private _changesTail: KeyValueChangeRecord_<K, V>|null = null;
+  private _additionsHead: KeyValueChangeRecord_<K, V>|null = null;
+  private _additionsTail: KeyValueChangeRecord_<K, V>|null = null;
+  private _removalsHead: KeyValueChangeRecord_<K, V>|null = null;
+  private _removalsTail: KeyValueChangeRecord_<K, V>|null = null;
 
   get isDirty(): boolean {
     return this._additionsHead !== null || this._changesHead !== null ||
@@ -44,41 +44,41 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
   }
 
   forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void) {
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
     for (record = this._mapHead; record !== null; record = record._next) {
       fn(record);
     }
   }
 
   forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void) {
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
     for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
       fn(record);
     }
   }
 
   forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void) {
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
     for (record = this._changesHead; record !== null; record = record._nextChanged) {
       fn(record);
     }
   }
 
   forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void) {
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
       fn(record);
     }
   }
 
   forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void) {
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
     }
   }
 
-  diff(map: Map<any, any>|{[k: string]: any}): any {
+  diff(map?: Map<any, any>|{[k: string]: any}|null): any {
     if (!map) {
       map = new Map();
     } else if (!(map instanceof Map || isJsObject(map))) {
@@ -93,9 +93,9 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
   check(map: Map<any, any>|{[k: string]: any}): boolean {
     this._reset();
     const records = this._records;
-    let oldSeqRecord: KeyValueChangeRecord_<K, V> = this._mapHead;
-    let lastOldSeqRecord: KeyValueChangeRecord_<K, V> = null;
-    let lastNewSeqRecord: KeyValueChangeRecord_<K, V> = null;
+    let oldSeqRecord: KeyValueChangeRecord_<K, V>|null = this._mapHead;
+    let lastOldSeqRecord: KeyValueChangeRecord_<K, V>|null = null;
+    let lastNewSeqRecord: KeyValueChangeRecord_<K, V>|null = null;
     let seqChanged: boolean = false;
 
     this._forEach(map, (value: any, key: any) => {
@@ -106,7 +106,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
       } else {
         seqChanged = true;
         if (oldSeqRecord !== null) {
-          this._removeFromSeq(lastOldSeqRecord, oldSeqRecord);
+          this._removeFromSeq(lastOldSeqRecord !, oldSeqRecord);
           this._addToRemovals(oldSeqRecord);
         }
         if (records.has(key)) {
@@ -134,14 +134,14 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
       lastNewSeqRecord = newSeqRecord;
       oldSeqRecord = oldSeqRecord && oldSeqRecord._next;
     });
-    this._truncate(lastOldSeqRecord, oldSeqRecord);
+    this._truncate(lastOldSeqRecord !, oldSeqRecord);
     return this.isDirty;
   }
 
   /** @internal */
   _reset() {
     if (this.isDirty) {
-      let record: KeyValueChangeRecord_<K, V>;
+      let record: KeyValueChangeRecord_<K, V>|null;
       // Record the state of the mapping
       for (record = this._previousMapHead = this._mapHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
@@ -161,7 +161,8 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     }
   }
 
-  private _truncate(lastRecord: KeyValueChangeRecord_<K, V>, record: KeyValueChangeRecord_<K, V>) {
+  private _truncate(
+      lastRecord: KeyValueChangeRecord_<K, V>, record: KeyValueChangeRecord_<K, V>|null) {
     while (record !== null) {
       if (lastRecord === null) {
         this._mapHead = null;
@@ -174,10 +175,10 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
       record = nextRecord;
     }
 
-    for (let rec: KeyValueChangeRecord_<K, V> = this._removalsHead; rec !== null;
+    for (let rec: KeyValueChangeRecord_<K, V>|null = this._removalsHead; rec !== null;
          rec = rec._nextRemoved) {
       rec.previousValue = rec.currentValue;
-      rec.currentValue = null;
+      rec.currentValue = undefined;
       this._records.delete(rec.key);
     }
   }
@@ -199,7 +200,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (this._removalsHead === null) {
       this._removalsHead = this._removalsTail = record;
     } else {
-      this._removalsTail._nextRemoved = record;
+      this._removalsTail !._nextRemoved = record;
       record._prevRemoved = this._removalsTail;
       this._removalsTail = record;
     }
@@ -235,7 +236,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (this._additionsHead === null) {
       this._additionsHead = this._additionsTail = record;
     } else {
-      this._additionsTail._nextAdded = record;
+      this._additionsTail !._nextAdded = record;
       this._additionsTail = record;
     }
   }
@@ -244,7 +245,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (this._changesHead === null) {
       this._changesHead = this._changesTail = record;
     } else {
-      this._changesTail._nextChanged = record;
+      this._changesTail !._nextChanged = record;
       this._changesTail = record;
     }
   }
@@ -255,7 +256,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     const changes: any[] = [];
     const additions: any[] = [];
     const removals: any[] = [];
-    let record: KeyValueChangeRecord_<K, V>;
+    let record: KeyValueChangeRecord_<K, V>|null;
 
     for (record = this._mapHead; record !== null; record = record._next) {
       items.push(stringify(record));
@@ -295,21 +296,21 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
  * @stable
  */
 class KeyValueChangeRecord_<K, V> implements KeyValueChangeRecord<K, V> {
-  previousValue: V = null;
-  currentValue: V = null;
+  previousValue: V|undefined = undefined;
+  currentValue: V|undefined = undefined;
 
   /** @internal */
-  _nextPrevious: KeyValueChangeRecord_<K, V> = null;
+  _nextPrevious: KeyValueChangeRecord_<K, V>|null = null;
   /** @internal */
-  _next: KeyValueChangeRecord_<K, V> = null;
+  _next: KeyValueChangeRecord_<K, V>|null = null;
   /** @internal */
-  _nextAdded: KeyValueChangeRecord_<K, V> = null;
+  _nextAdded: KeyValueChangeRecord_<K, V>|null = null;
   /** @internal */
-  _nextRemoved: KeyValueChangeRecord_<K, V> = null;
+  _nextRemoved: KeyValueChangeRecord_<K, V>|null = null;
   /** @internal */
-  _prevRemoved: KeyValueChangeRecord_<K, V> = null;
+  _prevRemoved: KeyValueChangeRecord_<K, V>|null = null;
   /** @internal */
-  _nextChanged: KeyValueChangeRecord_<K, V> = null;
+  _nextChanged: KeyValueChangeRecord_<K, V>|null = null;
 
   constructor(public key: K) {}
 

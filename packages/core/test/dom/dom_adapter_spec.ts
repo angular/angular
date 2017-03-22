@@ -100,7 +100,7 @@ export function main() {
           const headEl = defaultDoc.head;
           getDOM().appendChild(headEl, baseEl);
 
-          const baseHref = getDOM().getBaseHref(defaultDoc);
+          const baseHref = getDOM().getBaseHref(defaultDoc) !;
           getDOM().removeChild(headEl, baseEl);
           getDOM().resetBaseElement();
 

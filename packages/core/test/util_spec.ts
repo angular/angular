@@ -11,9 +11,9 @@ import {stringify} from '../src/util';
 export function main() {
   describe('stringify', () => {
     it('should return string undefined when toString returns undefined',
-       () => expect(stringify({toString: (): string => undefined})).toBe('undefined'));
+       () => expect(stringify({toString: () => undefined})).toBe('undefined'));
 
     it('should return string null when toString returns null',
-       () => expect(stringify({toString: (): string => null})).toBe('null'));
+       () => expect(stringify({toString: () => null})).toBe('null'));
   });
 }

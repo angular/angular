@@ -42,8 +42,8 @@ export class ComponentFixture<T> {
 
   private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
-  private _resolve: (result: any) => void;
-  private _promise: Promise<any> = null;
+  private _resolve: ((result: any) => void)|null = null;
+  private _promise: Promise<any>|null = null;
   private _onUnstableSubscription: any /** TODO #9100 */ = null;
   private _onStableSubscription: any /** TODO #9100 */ = null;
   private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
@@ -82,7 +82,7 @@ export class ComponentFixture<T> {
             scheduleMicroTask(() => {
               if (!this.ngZone.hasPendingMacrotasks) {
                 if (this._promise !== null) {
-                  this._resolve(true);
+                  this._resolve !(true);
                   this._resolve = null;
                   this._promise = null;
                 }

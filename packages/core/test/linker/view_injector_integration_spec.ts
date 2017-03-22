@@ -184,19 +184,19 @@ class TestComp {
 
 export function main() {
   function createComponentFixture<T>(
-      template: string, providers: Provider[] = null, comp: Type<T> = null): ComponentFixture<T> {
+      template: string, providers?: Provider[] | null, comp?: Type<T>): ComponentFixture<T> {
     if (!comp) {
       comp = <any>TestComp;
     }
-    TestBed.overrideComponent(comp, {set: {template}});
+    TestBed.overrideComponent(comp !, {set: {template}});
     if (providers && providers.length) {
-      TestBed.overrideComponent(comp, {add: {providers: providers}});
+      TestBed.overrideComponent(comp !, {add: {providers: providers}});
     }
-    return TestBed.createComponent(comp);
+    return TestBed.createComponent(comp !);
   }
 
   function createComponent(
-      template: string, providers: Provider[] = null, comp: Type<any> = null): DebugElement {
+      template: string, providers?: Provider[], comp?: Type<any>): DebugElement {
     const fixture = createComponentFixture(template, providers, comp);
     fixture.detectChanges();
     return fixture.debugElement;
@@ -655,8 +655,9 @@ export function main() {
       it('should inject ViewContainerRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef]});
         const el = createComponent('<div needsViewContainerRef></div>');
-        expect(
-            el.children[0].injector.get(NeedsViewContainerRef).viewContainer.element.nativeElement)
+        expect(el.children[0]
+                   .injector.get(NeedsViewContainerRef)
+                   .viewContainer.element.nativeElement)
             .toBe(el.children[0].nativeElement);
       });
 
@@ -721,7 +722,8 @@ export function main() {
         TestBed.configureTestingModule(
             {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
         const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
-        expect(el.children[0].injector.get(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+        expect(el.children[0].injector.get(SimpleDirective).value)
+            .toBeAnInstanceOf(DuplicatePipe2);
       });
 
       it('should inject ChangeDetectorRef into pipes', () => {
@@ -733,7 +735,8 @@ export function main() {
             '<div [simpleDirective]="true | pipeNeedsChangeDetectorRef" directiveNeedsChangeDetectorRef></div>');
         const cdRef =
             el.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef;
-        expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toEqual(cdRef);
+        expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef)
+            .toEqual(cdRef);
       });
 
       it('should cache pure pipes', () => {
