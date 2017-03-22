@@ -55,6 +55,6 @@ export const COMMON_DIRECTIVES: Provider[] = [
 ];
 
 /**
- * A colletion of deprecated directives that are no longer part of the core module.
+ * A collection of deprecated directives that are no longer part of the core module.
  */
 export const COMMON_DEPRECATED_DIRECTIVES: Provider[] = [NgFor];
