@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability} from '@angular/core';
+import {Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
 import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-
 
 
 /**
@@ -135,12 +134,16 @@ export class UpgradeModule {
    * The AngularJS `$injector` for the upgrade application.
    */
   public $injector: any /*angular.IInjectorService*/;
+  /** The Angular Injector **/
+  public injector: Injector;
 
   constructor(
       /** The root {@link Injector} for the upgrade application. */
-      public injector: Injector,
+      injector: Injector,
       /** The bootstrap zone for the upgrade application */
-      public ngZone: NgZone) {}
+      public ngZone: NgZone) {
+    this.injector = new NgAdapterInjector(injector);
+  }
 
   /**
    * Bootstrap an AngularJS application from this NgModule
@@ -232,5 +235,21 @@ export class UpgradeModule {
         ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
       };
     }
+  }
+}
+
+class NgAdapterInjector implements Injector {
+  constructor(private modInjector: Injector) {}
+
+  // When Angular locate a service in the component injector tree, the not found value is set to
+  // `NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR`. In such a case we should not walk up to the module
+  // injector.
+  // AngularJS only supports a single tree and should always check the module injector.
+  get(token: any, notFoundValue?: any): any {
+    if (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+      return notFoundValue;
+    }
+
+    return this.modInjector.get(token, notFoundValue);
   }
 }
