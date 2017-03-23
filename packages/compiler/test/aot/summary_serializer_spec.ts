@@ -137,7 +137,7 @@ export function main() {
              .toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalPipe'));
        });
 
-    it('should automatically add the metadata of referenced symbols that are not in the soure files',
+    it('should automatically add the metadata of referenced symbols that are not in the source files',
        () => {
          init();
          const externalSerialized = serializeSummaries(
@@ -196,7 +196,7 @@ export function main() {
          // been serialized as well.
          expect(summaries[2].symbol).toBe(symbolCache.get('/tmp/non_summary.d.ts', 'external'));
          expect(summaries[2].metadata).toEqual('b');
-         // SomService is a transitive dep, but sould have been serialized as well.
+         // SomService is a transitive dep, but should have been serialized as well.
          expect(summaries[3].symbol).toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
          expect(summaries[3].type.type.reference)
              .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
