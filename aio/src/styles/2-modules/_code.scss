@@ -1,6 +1,7 @@
-.code-example {
+code-example code {
     @include codeblock($backgroundgray);
     color: $darkgray;
+    width: 100%;
 }
 
 code-example[language=bash] code {
