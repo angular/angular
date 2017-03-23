@@ -15,9 +15,8 @@
 import {NgModule} from '@angular/core';
 
 import {BrowserJsonp} from './backends/browser_jsonp';
-import {BrowserXhr} from './backends/browser_xhr';
 import {JSONPBackend, JSONPBackend_} from './backends/jsonp_backend';
-import {CookieXSRFStrategy, XHRBackend} from './backends/xhr_backend';
+import {BrowserXhr, CookieXSRFStrategy, XHRBackend} from './backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {BaseResponseOptions, ResponseOptions} from './base_response_options';
 import {Http, Jsonp} from './http';

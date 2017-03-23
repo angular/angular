@@ -21,10 +21,11 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
   }
   return map;
 }
+
 /**
  * @experimental
  **/
-export class QueryEncoder {
+export class HttpQueryEncoder {
   encodeKey(k: string): string { return standardEncoding(k); }
 
   encodeValue(v: string): string { return standardEncoding(v); }
@@ -51,7 +52,7 @@ function standardEncoding(v: string): string {
  *   - appendAll()
  *   - replaceAll()
  *
- * This class accepts an optional second parameter of ${@link QueryEncoder},
+ * This class accepts an optional second parameter of ${@link ɵHttpQueryEncoder},
  * which is used to serialize parameters before making a request. By default,
  * `QueryEncoder` encodes keys and values of parameters using `encodeURIComponent`,
  * and then un-encodes certain characters that are allowed to be part of the query
@@ -78,15 +79,14 @@ function standardEncoding(v: string): string {
  * ```
  * @experimental
  */
-export class URLSearchParams {
+export class HttpUrlParams {
   paramsMap: Map<string, string[]>;
-  constructor(
-      public rawParams: string = '', private queryEncoder: QueryEncoder = new QueryEncoder()) {
+  constructor(public rawParams: string = '', private queryEncoder = new HttpQueryEncoder() as any) {
     this.paramsMap = paramParser(rawParams);
   }
 
-  clone(): URLSearchParams {
-    const clone = new URLSearchParams('', this.queryEncoder);
+  clone(): HttpUrlParams {
+    const clone = new HttpUrlParams('', this.queryEncoder);
     clone.appendAll(this);
     return clone;
   }
@@ -118,7 +118,7 @@ export class URLSearchParams {
   // E.g: "a=[1,2,3], c=[8]" + "a=[4,5,6], b=[7]" = "a=[4], c=[8], b=[7]"
   //
   // TODO(@caitp): document this better
-  setAll(searchParams: URLSearchParams) {
+  setAll(searchParams: HttpUrlParams) {
     searchParams.paramsMap.forEach((value, param) => {
       const list = this.paramsMap.get(param) || [];
       list.length = 0;
@@ -141,7 +141,7 @@ export class URLSearchParams {
   // E.g: "a=[1,2], c=[8]" + "a=[3,4], b=[7]" = "a=[1,2,3,4], c=[8], b=[7]"
   //
   // TODO(@caitp): document this better
-  appendAll(searchParams: URLSearchParams) {
+  appendAll(searchParams: HttpUrlParams) {
     searchParams.paramsMap.forEach((value, param) => {
       const list = this.paramsMap.get(param) || [];
       for (let i = 0; i < value.length; ++i) {
@@ -159,7 +159,7 @@ export class URLSearchParams {
   // E.g: "a=[1,2,3], c=[8]" + "a=[4,5,6], b=[7]" = "a=[4,5,6], c=[8], b=[7]"
   //
   // TODO(@caitp): document this better
-  replaceAll(searchParams: URLSearchParams) {
+  replaceAll(searchParams: HttpUrlParams) {
     searchParams.paramsMap.forEach((value, param) => {
       const list = this.paramsMap.get(param) || [];
       list.length = 0;

@@ -33,25 +33,7 @@ export declare class CookieXSRFStrategy implements XSRFStrategy {
 }
 
 /** @experimental */
-export declare class Headers {
-    constructor(headers?: Headers | {
-        [name: string]: any;
-    } | null);
-    append(name: string, value: string): void;
-    delete(name: string): void;
-    entries(): void;
-    forEach(fn: (values: string[], name: string | undefined, headers: Map<string, string[]>) => void): void;
-    get(name: string): string | null;
-    getAll(name: string): string[] | null;
-    has(name: string): boolean;
-    keys(): string[];
-    set(name: string, value: string | string[]): void;
-    toJSON(): {
-        [name: string]: any;
-    };
-    values(): string[][];
-    static fromResponseHeaderString(headersString: string): Headers;
-}
+export declare const Headers: typeof HttpHeaders;
 
 /** @experimental */
 export declare class Http {
@@ -95,10 +77,7 @@ export declare class JsonpModule {
 }
 
 /** @experimental */
-export declare class QueryEncoder {
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
-}
+export declare const QueryEncoder: typeof HttpQueryEncoder;
 
 /** @experimental */
 export declare enum ReadyState {
@@ -216,22 +195,7 @@ export declare enum ResponseType {
 }
 
 /** @experimental */
-export declare class URLSearchParams {
-    paramsMap: Map<string, string[]>;
-    rawParams: string;
-    constructor(rawParams?: string, queryEncoder?: QueryEncoder);
-    append(param: string, val: string): void;
-    appendAll(searchParams: URLSearchParams): void;
-    clone(): URLSearchParams;
-    delete(param: string): void;
-    get(param: string): string | null;
-    getAll(param: string): string[];
-    has(param: string): boolean;
-    replaceAll(searchParams: URLSearchParams): void;
-    set(param: string, val: string): void;
-    setAll(searchParams: URLSearchParams): void;
-    toString(): string;
-}
+export declare const URLSearchParams: typeof HttpUrlParams;
 
 /** @stable */
 export declare const VERSION: Version;
