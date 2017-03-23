@@ -15,16 +15,16 @@
   Open menu
 </button>
 
-<template cdk-connected-overlay [origin]="trigger" [width]="500" hasBackdrop [open]="isMenuOpen"
+<ng-template cdk-connected-overlay [origin]="trigger" [width]="500" hasBackdrop [open]="isMenuOpen"
   (backdropClick)="isMenuOpen=false">
   <div style="background-color: mediumpurple" >
     This is the menu panel.
   </div>
-</template>
+</ng-template>
 
 <!-- Template to load into an overlay. -->
-<template cdk-portal>
+<ng-template cdk-portal>
   <p class="demo-fusilli"> Fusilli </p>
-</template>
+</ng-template>
 
 <button (click)="openPanelWithBackdrop()">Backdrop panel</button>

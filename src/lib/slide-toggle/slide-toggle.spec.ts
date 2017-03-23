@@ -680,7 +680,7 @@ class SlideToggleTestApp {
 @Component({
   selector: 'slide-toggle-forms-test-app',
   template: `
-    <form (ngSubmit)="isSubmitted = true">
+    <form ngNativeValidate (ngSubmit)="isSubmitted = true">
       <md-slide-toggle name="slide" ngModel [required]="isRequired">Required</md-slide-toggle>
       <button type="submit"></button>
     </form>`

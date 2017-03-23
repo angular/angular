@@ -13,7 +13,7 @@ import {MdTabLabel} from './tab-label';
   templateUrl: 'tab.html',
 })
 export class MdTab implements OnInit {
-  /** Content for the tab label given by <template md-tab-label>. */
+  /** Content for the tab label given by <ng-template md-tab-label>. */
   @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
 
   /** Template inside the MdTab view that contains an <ng-content>. */

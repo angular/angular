@@ -1,9 +1,9 @@
-<template>
+<ng-template>
   <div class="mat-menu-panel" [ngClass]="_classList" (keydown)="_keyManager.onKeydown($event)"
     (click)="_emitCloseEvent()" [@transformMenu]="'showing'">
     <div class="mat-menu-content" [@fadeInItems]="'showing'">
       <ng-content></ng-content>
     </div>
   </div>
-</template>
+</ng-template>
 

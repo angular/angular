@@ -8,7 +8,12 @@ import {MdRippleModule} from '../core/ripple/index';
 
 
 @NgModule({
-  imports: [OverlayModule, CommonModule, MdRippleModule, CompatibilityModule],
+  imports: [
+    OverlayModule,
+    CommonModule,
+    MdRippleModule,
+    CompatibilityModule,
+  ],
   exports: [MdMenu, MdMenuItem, MdMenuTrigger, CompatibilityModule],
   declarations: [MdMenu, MdMenuItem, MdMenuTrigger],
 })

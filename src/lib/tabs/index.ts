@@ -16,7 +16,12 @@ import {SCROLL_DISPATCHER_PROVIDER} from '../core/overlay/scroll/scroll-dispatch
 
 
 @NgModule({
-  imports: [CommonModule, PortalModule, MdRippleModule, ObserveContentModule],
+  imports: [
+    CommonModule,
+    PortalModule,
+    MdRippleModule,
+    ObserveContentModule,
+  ],
   // Don't export all components because some are only to be used internally.
   exports: [
     MdTabGroup,

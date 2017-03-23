@@ -7,14 +7,16 @@ import {
   OnDestroy,
   Renderer,
   ElementRef,
+  EventEmitter,
+} from '@angular/core';
+import {
   animate,
+  trigger,
   state,
   style,
   transition,
-  trigger,
-  AnimationTransitionEvent,
-  EventEmitter,
-} from '@angular/core';
+  AnimationEvent,
+} from '@angular/animations';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
@@ -139,7 +141,7 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
    * Callback, invoked whenever an animation on the host completes.
    * @docs-private
    */
-  _onAnimationDone(event: AnimationTransitionEvent) {
+  _onAnimationDone(event: AnimationEvent) {
     this._onAnimationStateChange.emit(event.toState as MdDialogContainerAnimationState);
   }
 

@@ -7,7 +7,12 @@ import {SimpleSnackBar} from './simple-snack-bar';
 
 
 @NgModule({
-  imports: [OverlayModule, PortalModule, CommonModule, CompatibilityModule],
+  imports: [
+    OverlayModule,
+    PortalModule,
+    CommonModule,
+    CompatibilityModule,
+  ],
   exports: [MdSnackBarContainer, CompatibilityModule],
   declarations: [MdSnackBarContainer, SimpleSnackBar],
   entryComponents: [MdSnackBarContainer, SimpleSnackBar],

@@ -1,11 +1,11 @@
 import{
-  AnimationEntryMetadata,
   trigger,
   state,
   style,
   animate,
-  transition
-} from '@angular/core';
+  transition,
+  AnimationTriggerMetadata,
+} from '@angular/animations';
 
 /**
  * Below are all the animations for the md-menu component.
@@ -23,7 +23,7 @@ import{
  */
 
 // TODO(kara): switch to :enter and :leave once Mobile Safari is sorted out.
-export const transformMenu: AnimationEntryMetadata = trigger('transformMenu', [
+export const transformMenu: AnimationTriggerMetadata = trigger('transformMenu', [
   state('showing', style({
     opacity: 1,
     transform: `scale(1)`
@@ -44,7 +44,7 @@ export const transformMenu: AnimationEntryMetadata = trigger('transformMenu', [
  * This animation fades in the background color and content of the menu panel
  * after its containing element is scaled in.
  */
-export const fadeInItems: AnimationEntryMetadata = trigger('fadeInItems', [
+export const fadeInItems: AnimationTriggerMetadata = trigger('fadeInItems', [
   state('showing', style({opacity: 1})),
   transition('void => *', [
     style({opacity: 0}),

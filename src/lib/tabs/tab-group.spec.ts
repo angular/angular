@@ -3,6 +3,7 @@ import {
 } from '@angular/core/testing';
 import {MdTabGroup, MdTabsModule, MdTabHeaderPosition} from './index';
 import {Component, ViewChild} from '@angular/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {MdTab} from './tab';
@@ -13,7 +14,7 @@ import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 describe('MdTabGroup', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule.forRoot()],
+      imports: [MdTabsModule.forRoot(), NoopAnimationsModule],
       declarations: [
         SimpleTabsTestApp,
         SimpleDynamicTabsTestApp,
@@ -297,15 +298,15 @@ describe('MdTabGroup', () => {
         (focusChange)="handleFocus($event)"
         (selectChange)="handleSelection($event)">
       <md-tab>
-        <template md-tab-label>Tab One</template>
+        <ng-template md-tab-label>Tab One</ng-template>
         Tab one content
       </md-tab>
       <md-tab>
-        <template md-tab-label>Tab Two</template>
+        <ng-template md-tab-label>Tab Two</ng-template>
         Tab two content
       </md-tab>
       <md-tab>
-        <template md-tab-label>Tab Three</template>
+        <ng-template md-tab-label>Tab Three</ng-template>
         Tab three content
       </md-tab>
     </md-tab-group>
@@ -331,7 +332,7 @@ class SimpleTabsTestApp {
         (focusChange)="handleFocus($event)"
         (selectChange)="handleSelection($event)">
       <md-tab *ngFor="let tab of tabs">
-        <template md-tab-label>{{tab.label}}</template>
+        <ng-template md-tab-label>{{tab.label}}</ng-template>
         {{tab.content}}
       </md-tab>
     </md-tab-group>
@@ -384,15 +385,15 @@ class BindedTabsTestApp {
   template: `
     <md-tab-group class="tab-group">
       <md-tab>
-        <template md-tab-label>Tab One</template>
+        <ng-template md-tab-label>Tab One</ng-template>
         Tab one content
       </md-tab>
       <md-tab disabled>
-        <template md-tab-label>Tab Two</template>
+        <ng-template md-tab-label>Tab Two</ng-template>
         Tab two content
       </md-tab>
       <md-tab>
-        <template md-tab-label>Tab Three</template>
+        <ng-template md-tab-label>Tab Three</ng-template>
         Tab three content
       </md-tab>
     </md-tab-group>
@@ -404,7 +405,7 @@ class DisabledTabsTestApp {}
   template: `
     <md-tab-group class="tab-group">
       <md-tab *ngFor="let tab of tabs | async">
-        <template md-tab-label>{{ tab.label }}</template>
+        <ng-template md-tab-label>{{ tab.label }}</ng-template>
         {{ tab.content }}
       </md-tab>
    </md-tab-group>

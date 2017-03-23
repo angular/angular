@@ -225,8 +225,10 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
   set checked(checked: boolean) {
     if (checked != this.checked) {
       if (this._indeterminate) {
-        this._indeterminate = false;
-        this.indeterminateChange.emit(this._indeterminate);
+        Promise.resolve().then(() => {
+          this._indeterminate = false;
+          this.indeterminateChange.emit(this._indeterminate);
+        });
       }
       this._checked = checked;
       this._changeDetectorRef.markForCheck();

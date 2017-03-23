@@ -12,12 +12,12 @@
        (click)="tabHeader.focusIndex = selectedIndex = i">
 
     <!-- If there is a label template, use it. -->
-    <template [ngIf]="tab.templateLabel">
-      <template [cdkPortalHost]="tab.templateLabel"></template>
-    </template>
+    <ng-template [ngIf]="tab.templateLabel">
+      <ng-template [cdkPortalHost]="tab.templateLabel"></ng-template>
+    </ng-template>
 
     <!-- If there is not a label template, fall back to the text label. -->
-    <template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</template>
+    <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
   </div>
 </md-tab-header>
 

@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
-import {BrowserModule, AnimationDriver} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {SimpleCheckboxes} from './checkbox/checkbox-e2e';
 import {E2EApp, Home} from './e2e-app/e2e-app';
@@ -23,6 +24,7 @@ import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
     BrowserModule,
     RouterModule.forRoot(E2E_APP_ROUTES),
     MaterialModule.forRoot(),
+    NoopAnimationsModule,
   ],
   declarations: [
     E2EApp,
@@ -45,7 +47,6 @@ import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
   ],
   bootstrap: [E2EApp],
   providers: [
-    {provide: AnimationDriver, useValue: AnimationDriver.NOOP},
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer}
   ],
   entryComponents: [TestDialog, TestDialogFullScreen]

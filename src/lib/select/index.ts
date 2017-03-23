@@ -6,7 +6,12 @@ import {CompatibilityModule, OverlayModule} from '../core';
 
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, MdOptionModule, CompatibilityModule],
+  imports: [
+    CommonModule,
+    OverlayModule,
+    MdOptionModule,
+    CompatibilityModule,
+  ],
   exports: [MdSelect, MdOptionModule, CompatibilityModule],
   declarations: [MdSelect],
 })

@@ -6,6 +6,7 @@ import {MdInputModule} from './index';
 import {MdInputContainer, MdInputDirective} from './input-container';
 import {Platform} from '../core/platform/platform';
 import {PlatformModule} from '../core/platform/index';
+import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 import {
   MdInputContainerMissingMdInputError,
   MdInputContainerPlaceholderConflictError,
@@ -227,28 +228,28 @@ describe('MdInputContainer', function () {
     let fixture = TestBed.createComponent(MdInputContainerInvalidHintTestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
-        angularWrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
+        wrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
   });
 
   it('validates there\'s only one hint label per side (attribute)', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidHint2TestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
-        angularWrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
+        wrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
   });
 
   it('validates there\'s only one placeholder', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidPlaceholderTestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
-        angularWrappedErrorMessage(new MdInputContainerPlaceholderConflictError()));
+        wrappedErrorMessage(new MdInputContainerPlaceholderConflictError()));
   });
 
   it('validates that mdInput child is present', () => {
     let fixture = TestBed.createComponent(MdInputContainerMissingMdInputTestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
-        angularWrappedErrorMessage(new MdInputContainerMissingMdInputError()));
+        wrappedErrorMessage(new MdInputContainerMissingMdInputError()));
   });
 
   it('validates the type', () => {
@@ -774,16 +775,3 @@ class MdTextareaWithBindings {
   template: `<md-input-container><input></md-input-container>`
 })
 class MdInputContainerMissingMdInputTestController {}
-
-/**
- * Gets a RegExp used to detect an angular wrapped error message.
- * See https://github.com/angular/angular/issues/8348
- */
-const angularWrappedErrorMessage = (e: Error) =>
-    new RegExp(`.*caused by: ${regexpEscape(e.message)}$`);
-
-/**
- * Escape a string for use inside a RegExp.
- * Based on https://github.com/sindresorhus/escape-string-regex
- */
-const regexpEscape = (s: string) => s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');

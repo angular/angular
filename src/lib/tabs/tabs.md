@@ -10,10 +10,10 @@ tab labels in the header.
 
 ### Events
 
-The `selectChange` output event is emitted when the active tab changes.  
+The `selectChange` output event is emitted when the active tab changes.
 
 The `focusChange` output event is emitted when the user puts focus on any of the tab labels in
-the header, usually through keyboard navigation. 
+the header, usually through keyboard navigation.
 
 ### Labels
 
@@ -37,16 +37,16 @@ For more complex labels, add a template with the `md-tab-label` directive inside
 ```html
 <md-tab-group>
   <md-tab>
-    <template md-tab-label>
+    <ng-template md-tab-label>
       The <em>best</em> pasta
-    </template>
+    </ng-template>
     <h1>Best pasta restaurants</h1>
     <p>...</p>
   </md-tab>
   <md-tab>
-    <template md-tab-label>
+    <ng-template md-tab-label>
       <md-icon>thumb_down</md-icon> The worst sushi
-    </template>
+    </ng-template>
     <h1>Terrible sushi restaurants</h1>
     <p>...</p>
   </md-tab>
@@ -58,7 +58,7 @@ For more complex labels, add a template with the `md-tab-label` directive inside
 By default, the tab group will not change its height to the height of the currently active tab. To
 change this, set the `dynamicHeight` input to true. The tab body will animate its height according
  to the height of the active tab.
- 
+
 ### Tabs and navigation
 While `<md-tab-group>` is used to switch between views within a single route, `<nav md-tab-nav-bar>`
 provides a tab-like UI for navigating between routes.
@@ -77,5 +77,5 @@ provides a tab-like UI for navigating between routes.
 ```
 
 The tab-nav-bar is not tied to any particular router; it works with normal `<a>` elements and uses
-the `active` property to determine which tab is currently active. The corresponding 
-`<router-outlet>` can be placed anywhere in the view. 
+the `active` property to determine which tab is currently active. The corresponding
+`<router-outlet>` can be placed anywhere in the view.

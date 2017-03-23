@@ -25,22 +25,23 @@
     "node": ">= 5.4.1 < 7"
   },
   "dependencies": {
-    "@angular/common": "^2.3.0",
-    "@angular/compiler": "^2.3.0",
-    "@angular/core": "^2.3.0",
-    "@angular/forms": "^2.3.0",
-    "@angular/http": "^2.3.0",
-    "@angular/platform-browser": "^2.3.0",
+    "@angular/animations": "^4.0.0-rc.5",
+    "@angular/common": "^4.0.0-rc.5",
+    "@angular/compiler": "^4.0.0-rc.5",
+    "@angular/core": "^4.0.0-rc.5",
+    "@angular/forms": "^4.0.0-rc.5",
+    "@angular/http": "^4.0.0-rc.5",
+    "@angular/platform-browser": "^4.0.0-rc.5",
     "core-js": "^2.4.1",
     "rxjs": "^5.0.1",
     "systemjs": "0.19.43",
-    "zone.js": "^0.7.2"
+    "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^2.3.0",
-    "@angular/platform-browser-dynamic": "^2.3.0",
-    "@angular/platform-server": "^2.3.0",
-    "@angular/router": "^3.3.0",
+    "@angular/compiler-cli": "^4.0.0-rc.5",
+    "@angular/platform-browser-dynamic": "^4.0.0-rc.5",
+    "@angular/platform-server": "^4.0.0-rc.5",
+    "@angular/router": "^4.0.0-rc.5",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "0.0.37",
     "@types/glob": "^5.0.30",
@@ -106,7 +107,7 @@
     "ts-node": "^2.1.0",
     "tslint": "^4.4.2",
     "tslint-no-unused-var": "0.0.6",
-    "typescript": "~2.0.10",
+    "typescript": "~2.1.6",
     "uglify-js": "^2.8.7",
     "web-animations-js": "^2.2.2"
   }

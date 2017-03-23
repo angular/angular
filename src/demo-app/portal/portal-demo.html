@@ -1,6 +1,6 @@
 <h2> The portal host is here: </h2>
 <div class="demo-portal-host">
-  <template [cdkPortalHost]="selectedPortal"></template>
+  <ng-template [cdkPortalHost]="selectedPortal"></ng-template>
 </div>
 
 <button type="button" (click)="selectedPortal = programmingJoke">
@@ -15,15 +15,15 @@
   Science joke
 </button>
 
-<!-- Template vars on <template> elements can't be accessed _in_ the template because Angular
+<!-- Template vars on <ng-template> elements can't be accessed _in_ the template because Angular
     doesn't support grabbing the instance / TemplateRef this way because the variable may be
     referring to something *in* the template (such as #item in ngFor). As such, the component
     has to use @ViewChild / @ViewChildren to get these references.
     See https://github.com/angular/angular/issues/7158 -->
-<template cdk-portal>
+<ng-template cdk-portal>
   <p> - Why don't jokes work in octal?</p>
   <p> - Because 7 10 11.</p>
-</template>
+</ng-template>
 
 <div *cdk-portal>
  <p> - Did you hear about this year's Fibonacci Conference? </p>

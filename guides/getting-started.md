@@ -1,20 +1,55 @@
-For help getting started with a new Angular app, check out the [Angular CLI](https://cli.angular.io/).
+For help getting started with a new Angular app, check out the
+[Angular CLI](https://cli.angular.io/).
 
 For existing apps, follow these steps to begin using Angular Material.
 
-## Step 1: Install Angular Material 
+## Step 1: Install Angular Material
 
 ```bash
 npm install --save @angular/material
 ```
 
-## Step 2: Import the Module
-  
-Add MaterialModule as an import in your app's root NgModule.  
-  
+## Step 2: Animations
+
+Some Material components depend on the Angular animations module in order to be able to do
+more advanced transitions. If you want these animations to work in your app, you have to
+install the `@angular/animations` module and include the `BrowserAnimationsModule` in your app.
+
+```bash
+npm install --save @angular/animations
+```
+
 ```ts
-import { MaterialModule } from '@angular/material';
- 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+@NgModule({
+  ...
+  imports: [BrowserAnimationsModule],
+  ...
+})
+export class PizzaPartyAppModule { }
+```
+
+If you don't want to add another dependency to your project, you can use the `NoopAnimationsModule`.
+
+```ts
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
+@NgModule({
+  ...
+  imports: [NoopAnimationsModule],
+  ...
+})
+export class PizzaPartyAppModule { }
+```
+
+## Step 3: Import the Module
+
+Add MaterialModule as an import in your app's root NgModule.
+
+```ts
+import {MaterialModule} from '@angular/material';
+
 @NgModule({
   ...
   imports: [MaterialModule],
@@ -23,9 +58,9 @@ import { MaterialModule } from '@angular/material';
 export class PizzaPartyAppModule { }
 ```
 
-## Step 3: Include Theming
+## Step 4: Include Theming
 
-Including a theme is **required** to apply all of the core and theme styles to your application. 
+Including a theme is **required** to apply all of the core and theme styles to your application.
 
 To get started with a prebuilt theme, include the following in your app's index.html:
 
@@ -35,16 +70,17 @@ To get started with a prebuilt theme, include the following in your app's index.
 
 Note that your app's project structure may have a different relative location for your node_modules.
 
-For more information on theming and instructions on how to create a custom theme, see the [theming guide](./theming.md).
+For more information on theming and instructions on how to create a custom theme, see the
+[theming guide](./theming.md).
 
-## Step 4: Gesture Support
+## Step 5: Gesture Support
 
-Some components (`md-slide-toggle`, `md-slider`, `mdTooltip`) rely on 
+Some components (`md-slide-toggle`, `md-slider`, `mdTooltip`) rely on
 [HammerJS](http://hammerjs.github.io/) for gestures. In order to get the full feature-set of these
 components, HammerJS must be loaded into the application.
 
-You can add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN 
-(such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served 
+You can add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN
+(such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served
 directly from your app.
 
 To install via npm, use the following command:
@@ -57,22 +93,25 @@ After installing, import it on your app's root module.
 import 'hammerjs';
 ```
 
-## Step 5 (Optional): Add Material Icons
+## Step 6 (Optional): Add Material Icons
 
-If you want your `md-icon` components to use [Material Icons](https://material.io/icons/), load the font in your `index.html`.
-  
+If you want your `md-icon` components to use [Material Icons](https://material.io/icons/),
+load the font in your `index.html`.
+
 ```html
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 ```
 
-For more information on using Material Icons, check out the [Material Icons Guide](https://google.github.io/material-design-icons/).
+For more information on using Material Icons, check out the
+[Material Icons Guide](https://google.github.io/material-design-icons/).
 
-Note that `md-icon` has support for any font or svg icons, so using Material Icons is just one option.
-       
+Note that `md-icon` has support for any font or svg icons, so using Material Icons is
+just one option.
+
 
 ## Configuring SystemJS
 
-If your project is using SystemJS for module loading, you will need to add `@angular/material` 
+If your project is using SystemJS for module loading, you will need to add `@angular/material`
 to the SystemJS configuration:
 
 ```js

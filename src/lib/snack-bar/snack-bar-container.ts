@@ -2,17 +2,19 @@ import {
   Component,
   ComponentRef,
   ViewChild,
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-  AnimationTransitionEvent,
   NgZone,
   OnDestroy,
   Renderer,
   ElementRef,
 } from '@angular/core';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+  AnimationEvent,
+} from '@angular/animations';
 import {
   BasePortalHost,
   ComponentPortal,
@@ -103,7 +105,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   }
 
   /** Handle end of animations, updating the state of the snackbar. */
-  onAnimationEnd(event: AnimationTransitionEvent) {
+  onAnimationEnd(event: AnimationEvent) {
     if (event.toState === 'void' || event.toState === 'complete') {
       this._completeExit();
     }

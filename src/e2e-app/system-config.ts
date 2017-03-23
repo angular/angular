@@ -14,6 +14,10 @@ System.config({
     '@angular/http': 'vendor/@angular/http/bundles/http.umd.js',
     '@angular/forms': 'vendor/@angular/forms/bundles/forms.umd.js',
     '@angular/router': 'vendor/@angular/router/bundles/router.umd.js',
+    '@angular/animations': 'vendor/@angular/animations/bundles/animations.umd.js',
+    '@angular/animations/browser': 'vendor/@angular/animations/bundles/animations-browser.umd.js',
+    '@angular/platform-browser/animations':
+      'vendor/@angular/platform-browser/bundles/platform-browser-animations.umd.js',
     '@angular/platform-browser': 'vendor/@angular/platform-browser/bundles/platform-browser.umd.js',
     '@angular/platform-browser/testing':
       'vendor/@angular/platform-browser/bundles/platform-browser-testing.umd.js',

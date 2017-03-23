@@ -1,5 +1,6 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   Component,
   ElementRef,
@@ -28,7 +29,7 @@ describe('MdMenu', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [MdMenuModule.forRoot()],
+      imports: [MdMenuModule.forRoot(), NoopAnimationsModule],
       declarations: [SimpleMenu, PositionedMenu, OverlapMenu, CustomMenuPanel, CustomMenu],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -70,7 +71,7 @@ describe('MdMenu', () => {
     }).not.toThrowError();
   });
 
-  it('should close the menu when a click occurs outside the menu', async(() => {
+  it('should close the menu when a click occurs outside the menu', () => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
@@ -79,10 +80,8 @@ describe('MdMenu', () => {
     backdrop.click();
     fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(overlayContainerElement.textContent).toBe('');
-    });
-  }));
+    expect(overlayContainerElement.textContent).toBe('');
+  });
 
   it('should open a custom menu', () => {
     const fixture = TestBed.createComponent(CustomMenu);
@@ -469,10 +468,10 @@ class OverlapMenu implements TestableMenu {
 @Component({
   selector: 'custom-menu',
   template: `
-    <template>
+    <ng-template>
       Custom Menu header
       <ng-content></ng-content>
-    </template>
+    </ng-template>
   `,
   exportAs: 'mdCustomMenu'
 })

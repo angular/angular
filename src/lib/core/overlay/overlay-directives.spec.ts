@@ -268,14 +268,14 @@ describe('Overlay directives', () => {
 @Component({
   template: `
   <button cdk-overlay-origin #trigger="cdkOverlayOrigin">Toggle menu</button>
-  <template cdk-connected-overlay [open]="isOpen" [width]="width" [height]="height"
+  <ng-template cdk-connected-overlay [open]="isOpen" [width]="width" [height]="height"
             [origin]="trigger"
             [hasBackdrop]="hasBackdrop" backdropClass="mat-test-class"
             (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
             (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
             (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight">
     <p>Menu content</p>
-  </template>`,
+  </ng-template>`,
 })
 class ConnectedOverlayDirectiveTest {
   isOpen = false;

@@ -34,13 +34,13 @@ be built upon.
 
 
 ##### `TemplatePortalDirective`
-Used to get a portal from a `<template>`. `TemplatePortalDirectives` *is* a `Portal`.
+Used to get a portal from a `<ng-template>`. `TemplatePortalDirectives` *is* a `Portal`.
 
 Usage:
 ```html
-<template cdk-portal>
+<ng-template cdk-portal>
   <p>The content of this template is captured by the portal.</p>
-</template>
+</ng-template>
 
 <!-- OR -->
 
@@ -68,5 +68,5 @@ Used to add a portal host to a template. `PortalHostDirective` *is* a `PortalHos
 Usage:
 ```html
 <!-- Attaches the `userSettingsPortal` from the previous example. -->
-<template [cdk-portalHost]="userSettingsPortal"></template>
+<ng-template [cdk-portalHost]="userSettingsPortal"></ng-template>
 ```
