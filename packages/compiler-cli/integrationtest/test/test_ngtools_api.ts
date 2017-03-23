@@ -197,8 +197,7 @@ function lazyRoutesTest() {
     './lazy-feature-nested.module#LazyFeatureNestedModule': 'feature/lazy-feature-nested.module.ts',
     './feature3/recursive-feature.module#RecursiveFeatureModule':
         'feature3/recursive-feature.module.ts',
-    './recursive-feature.module#RecursiveFeatureModule':
-        'feature3/recursive-feature.module.ts',
+    './recursive-feature.module#RecursiveFeatureModule': 'feature3/recursive-feature.module.ts',
     'feature2/feature2.module#Feature2Module': 'feature2/feature2.module.ts',
     './default.module': 'feature2/default.module.ts',
     'feature/feature.module#FeatureModule': 'feature/feature.module.ts'
