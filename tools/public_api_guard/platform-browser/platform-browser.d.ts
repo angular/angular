@@ -16,7 +16,7 @@ export declare class By {
 /** @experimental */
 export declare function disableDebugTools(): void;
 
-/** @stable */
+/** @deprecated */
 export declare const DOCUMENT: InjectionToken<Document>;
 
 /** @stable */
