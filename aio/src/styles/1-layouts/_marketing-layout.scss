@@ -1,0 +1,12 @@
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    h1:after {
+        display: none;
+    }
+    img {
+        max-width: 200px;
+    }
+}
