@@ -14,7 +14,7 @@ var entities = require('entities');
  * @kind function
  */
 module.exports = function exampleInlineTagDef(
-    parseArgString, exampleMap, createDocMessage, log, collectExamples) {
+    parseArgString, exampleMap, createDocMessage, log, collectExamples, getExampleRegion) {
   return {
     name: 'example',
     description:
@@ -22,8 +22,6 @@ module.exports = function exampleInlineTagDef(
 
 
     handler: function(doc, tagName, tagDescription) {
-      const EXAMPLES_FOLDERS = collectExamples.exampleFolders;
-
       var tagArgs = parseArgString(entities.decodeHTML(tagDescription));
       var unnamedArgs = tagArgs._;
       var relativePath = unnamedArgs[0];
@@ -33,42 +31,13 @@ module.exports = function exampleInlineTagDef(
       var linenums = tagArgs.linenums;
       var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
 
-      const sourceCode = getExampleRegion();
+      const sourceCode = getExampleRegion(doc, relativePath, regionName);
 
       const attributes = [];
       if (title) attributes.push(` title="${title}"`);
       if (linenums !== undefined) attributes.push(` linenums="${linenums}"`);
 
       return '<code-example' + attributes.join('') + '>\n' + sourceCode + '\n</code-example>';
-
-
-      function getExampleRegion() {
-        // Find the example in the folders
-        var exampleFile;
-        // Try an "annotated" version first
-        EXAMPLES_FOLDERS.some(EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath + '.annotated']; });
-
-        // If no annotated version is available then try the actual file
-        if (!exampleFile) {
-          EXAMPLES_FOLDERS.some(EXAMPLES_FOLDER => { return exampleFile = exampleMap[EXAMPLES_FOLDER][relativePath]; });
-        }
-
-        // If still no file then we error
-        if (!exampleFile) {
-          log.error(createDocMessage('Missing example file... relativePath: "' + relativePath + '".', doc));
-          log.error('Example files can be found in: ' + EXAMPLES_FOLDERS.join(', '));
-          return '';
-        }
-
-        var sourceCodeDoc = exampleFile.regions[regionName];
-        if (!sourceCodeDoc) {
-          log.error(createDocMessage('Missing example region... relativePath: "' + relativePath + '", region: "' + regionName + '".', doc));
-          log.error('Regions available are:', Object.keys[exampleFile.regions]);
-          return '';
-        }
-
-        return sourceCodeDoc.renderedContent;
-      }
     }
   };
 };
