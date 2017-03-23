@@ -26,7 +26,7 @@ export abstract class ImportResolver {
   abstract getImportAs(symbol: StaticSymbol): StaticSymbol /*|null*/;
 
   /**
-   * Determine the airty of a type.
+   * Determine the arity of a type.
    */
   abstract getTypeArity(symbol: StaticSymbol): number /*|null*/;
 }
