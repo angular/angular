@@ -40,6 +40,8 @@ System.config({
     '@angular/compiler/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/common/http/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/common/http': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common': {main: 'index.js', defaultExtension: 'js'},
     '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
     // remove after all tests imports are fixed

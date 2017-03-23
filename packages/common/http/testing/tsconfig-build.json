@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../../dist/packages/common/http/testing",
+    "paths": {
+      "@angular/core": ["../../../../dist/packages/core"],
+      "@angular/common": ["../../../../dist/packages/common"],
+      "@angular/common/http": ["../../../../dist/packages/common/http"],
+      "@angular/platform-browser": ["../../../../dist/packages/platform-browser"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es2015",
+    "skipLibCheck": true,
+    "lib": ["es2015", "dom"]
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/common/http/testing"
+  }
+}
