@@ -1,4 +1,7 @@
 footer .footer {
+    width: 100%;
+    padding: 20px;
+    z-index: 10;
     background-color: $blue;
     color: $offwhite;
     text-align: center;
@@ -7,11 +10,13 @@ footer .footer {
         color: $offwhite;
         text-decoration: none;
         &:hover {
-            color: $darkgray;
-            font-weight: 500;
+            text-decoration: underline;
         }
         &:visited {
         text-decoration: none;
         }
+    }
+    p {
+        margin: 0px 0px 5px;
     }
 }
