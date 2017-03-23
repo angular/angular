@@ -34,7 +34,7 @@ export const FormErrorExamples = {
   formArrayName: `
     <div [formGroup]="myGroup">
       <div formArrayName="cities">
-        <div *ngFor="let city of cityArray.controls; let i=index">
+        <div *ngFor="let city of cityArray.controls; index as i">
           <input [formControlName]="i">
         </div>
       </div>
@@ -61,4 +61,3 @@ export const FormErrorExamples = {
     </div>
   `
 };
- 
