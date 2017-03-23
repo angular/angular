@@ -9,7 +9,8 @@
     "target": "es5",
     "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"],
     "types": [],
-    "strictNullChecks": true
+    // TODO(i): strictNullChecks should turned on but are temporarily disabled due to #15432
+    "strictNullChecks": false
   },
   "files": [
     "include-all.ts",
