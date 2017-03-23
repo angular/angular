@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ContentChild, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -335,6 +335,35 @@ function declareTests({useJit}: {useJit: boolean}) {
         // 1 comment for the empty embedded template.
         expect(fixture.debugElement.childNodes.length).toBe(2);
       });
+    });
+
+    it('should support @ContentChild and @Input on the same property for static queries', () => {
+      @Directive({selector: 'test'})
+      class Test {
+        @Input() @ContentChild(TemplateRef) tpl: TemplateRef<any>;
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <test></test><br>
+          <test><ng-template>Custom as a child</ng-template></test><br>
+          <ng-template #custom>Custom as a binding</ng-template>
+          <test [tpl]="custom"></test><br>
+        `
+      })
+      class App {
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
+      fixture.detectChanges();
+
+      const testDirs =
+          fixture.debugElement.queryAll(By.directive(Test)).map(el => el.injector.get(Test));
+      expect(testDirs[0].tpl).toBeUndefined();
+      expect(testDirs[1].tpl).toBeDefined();
+      expect(testDirs[2].tpl).toBeDefined();
     });
   });
 }
