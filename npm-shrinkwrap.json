@@ -7679,9 +7679,9 @@
       "resolved": "https://registry.npmjs.org/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz"
     },
     "ts-api-guardian": {
-      "version": "0.2.1",
-      "from": "ts-api-guardian@0.2.1",
-      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.2.1.tgz",
+      "version": "0.2.2",
+      "from": "ts-api-guardian@0.2.2",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.2.2.tgz",
       "dependencies": {
         "diff": {
           "version": "2.2.3",
