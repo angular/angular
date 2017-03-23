@@ -63,6 +63,9 @@ const CLASS_ATTR = 'class';
 
 const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
+// prevent template deprecation warnings from logging repeatedly.
+let TEMPLATE_DEPRECATION_LOGGED = false;
+
 /**
  * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
  * parsed templates before compilation is invoked, allowing custom expression syntax
@@ -283,7 +286,8 @@ class TemplateParseVisitor implements html.Visitor {
       let prefixToken: string|undefined;
       let normalizedName = this._normalizeAttributeName(attr.name);
 
-      if (this.config.enableLegacyTemplate && normalizedName == TEMPLATE_ATTR) {
+      if (this.config.enableLegacyTemplate && normalizedName == TEMPLATE_ATTR && !TEMPLATE_DEPRECATION_LOGGED) {
+        TEMPLATE_DEPRECATION_LOGGED = true;
         this._reportError(
             `The template attribute is deprecated. Use an ng-template element instead.`,
             attr.sourceSpan, ParseErrorLevel.WARNING);
