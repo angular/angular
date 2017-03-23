@@ -163,10 +163,6 @@
   @include rotate(0deg);
 }
 
-.version-info {
-  border: 3px $blue solid;
-}
-
 .promo-img-container img {
   max-width: 90%;
   @include bp(small) {
