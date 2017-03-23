@@ -31,6 +31,7 @@ md-toolbar.mat-toolbar {
   justify-content: flex-end;
   align-items: center;
   width: 100%;
+  min-width: 150px;
   height: 100%;
 }
 
@@ -41,7 +42,12 @@ aio-search-box input {
   background-color: $offwhite;
   padding: 5px 10px;
   margin-left: 8px;
-  min-width:200px;
-  width: 50%;
+  width:150px;
   height: 40%;
+   @include bp(big){
+    transition: width 0.4s ease-in-out;
+    &:focus {
+      width: 50%;
+    }  
+  }
 }
