@@ -1,0 +1,17 @@
+footer .footer {
+    background-color: $blue;
+    color: $offwhite;
+    text-align: center;
+    font-weight: 300;
+    a {
+        color: $offwhite;
+        text-decoration: none;
+        &:hover {
+            color: $darkgray;
+            font-weight: 500;
+        }
+        &:visited {
+        text-decoration: none;
+        }
+    }
+}
