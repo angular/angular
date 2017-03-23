@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, isDevMode} from '@angular/core';
 
 /**
  * @stable
@@ -78,8 +78,27 @@ export class NgForOfContext<T> {
  *
  * ### Syntax
  *
- * - `<li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>`
- * - `<li template="ngFor let item of items; let i = index; trackBy: trackByFn">...</li>`
+ * ```
+ * <li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>
+ *
+ * // Method in component class. Track by object property
+ * trackByFn(index: number, item: Item): any {
+ *     return item != null ? item.id : item;
+ * }
+ * ```
+ *
+ * With `<ng-container>` element:
+ *
+ * ```
+ * <ng-container *ngFor="let item of items; let i = index; trackBy: trackByFn">
+ *   <li>...</li>
+ * </ng-container>
+ *
+ * // Track by index
+ * trackByFn(index: number, item: Item): any {
+ *     return index;
+ * }
+ * ```
  *
  * With `<ng-template>` element:
  *
@@ -87,12 +106,12 @@ export class NgForOfContext<T> {
  * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
  *   <li>...</li>
  * </ng-template>
+ *
+ * // Track by identity (default)
+ * trackByFn(index: number, item: Item): any {
+ *     return item;
+ * }
  * ```
- *
- * ### Example
- *
- * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
- * example.
  *
  * @stable
  */
@@ -153,7 +172,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
     }
   }
 
-  private _applyChanges(changes: IterableChanges<T>) {
+  private _applyChanges(changes: IterableChanges<T>): void {
     const insertTuples: RecordViewTuple<T>[] = [];
     changes.forEachOperation(
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
