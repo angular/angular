@@ -102,7 +102,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
 
-// ICU messages (excluding plural form) are expanded to `NgSwitch`  and `NgSwitychCase`s
+// ICU messages (excluding plural form) are expanded to `NgSwitch`  and `NgSwitchCase`s
 function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     const expansionResult = expandNodes(c.expression);
