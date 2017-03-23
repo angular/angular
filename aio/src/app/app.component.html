@@ -13,16 +13,17 @@
   </md-sidenav>
 
   <section class="sidenav-content">
-    <aio-search-results #searchResults></aio-search-results>
     <aio-doc-viewer [doc]="currentDocument | async" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
-
-    <footer>
-      <div class="footer">
-        <p>Powered by Google ©2010-2017. Code licensed under an <a href="/license">MIT-style License</a>.</p>
-        <p>Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
-        </p>
-        <p class="version-info">Version Info | {{ (versionInfo | async)?.full }}</p>
-      </div>
-    </footer>
   </section>
 </md-sidenav-container>
+
+<footer>
+  <div class="footer">
+    <p>Powered by Google ©2010-2017. Code licensed under an <a href="/license">MIT-style License</a>.</p>
+    <p>Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+    </p>
+    <p class="version-info">Version Info | {{ (versionInfo | async)?.full }}</p>
+  </div>
+</footer>
+
+<aio-search-results #searchResults></aio-search-results>
