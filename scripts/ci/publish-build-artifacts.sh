@@ -129,7 +129,7 @@ function publishPackages {
   echo "Finished publishing build artifacts"
 }
 
-# See DEVELOPER.md for help
+# See docs/DEVELOPER.md for help
 CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
