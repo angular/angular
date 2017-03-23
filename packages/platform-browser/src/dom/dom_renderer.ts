@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
-  'xlink': 'http://www.w3.org/1999/xlink',
   'svg': 'http://www.w3.org/2000/svg',
   'xhtml': 'http://www.w3.org/1999/xhtml',
-  'xml': 'http://www.w3.org/XML/1998/namespace'
+  'xlink': 'http://www.w3.org/1999/xlink',
+  'xml': 'http://www.w3.org/XML/1998/namespace',
+  'xmlns': 'http://www.w3.org/2000/xmlns/',
 };
 
 const COMPONENT_REGEX = /%COMP%/g;
@@ -146,7 +147,13 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      el.setAttributeNS(NAMESPACE_URIS[namespace], namespace + ':' + name, value);
+      name = `${namespace}:${name}`;
+      const namespaceUri = NAMESPACE_URIS[namespace];
+      if (namespaceUri) {
+        el.setAttributeNS(namespaceUri, name, value);
+      } else {
+        el.setAttribute(name, value);
+      }
     } else {
       el.setAttribute(name, value);
     }
@@ -154,7 +161,12 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      el.removeAttributeNS(NAMESPACE_URIS[namespace], name);
+      const namespaceUri = NAMESPACE_URIS[namespace];
+      if (namespaceUri) {
+        el.removeAttributeNS(namespaceUri, name);
+      } else {
+        el.removeAttribute(`${namespace}:${name}`);
+      }
     } else {
       el.removeAttribute(name);
     }
