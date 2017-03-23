@@ -19,7 +19,7 @@ addons:
     - secure: "L7nrZwkAtFtYrP2DykPXgZvEKjkv0J/TwQ/r2QGxFTaBq4VZn+2Dw0YS7uCxoMqYzDwH0aAOqxoutibVpk8Z/16nE3tNmU5RzltMd6Xmt3qU2f/JDQLMo6PSlBodnjOUsDHJgmtrcbjhqrx/znA237BkNUu6UZRT7mxhXIZpn0U="
 branches:
   except:
-    - g3_v2_0
+    - g3
 
 cache:
   yarn: true
