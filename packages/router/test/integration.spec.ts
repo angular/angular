@@ -2075,107 +2075,104 @@ describe('Integration', () => {
     });
 
     describe('CanLoad', () => {
-      describe('should not load children when CanLoad returns false', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: 'alwaysFalse', useValue: (a: any) => false},
-              {
-                provide: 'returnFalseAndNavigate',
-                useFactory: (router: any) => (a: any) => {
-                  router.navigate(['blank']);
-                  return false;
-                },
-                deps: [Router],
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: 'alwaysFalse', useValue: (a: any) => false},
+            {
+              provide: 'returnFalseAndNavigate',
+              useFactory: (router: any) => (a: any) => {
+                router.navigate(['blank']);
+                return false;
               },
-              {provide: 'alwaysTrue', useValue: (a: any) => true},
-            ]
-          });
+              deps: [Router],
+            },
+            {provide: 'alwaysTrue', useValue: (a: any) => true},
+          ]
         });
-
-        it('works',
-           fakeAsync(inject(
-               [Router, Location, NgModuleFactoryLoader],
-               (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-
-                 @Component({selector: 'lazy', template: 'lazy-loaded'})
-                 class LazyLoadedComponent {
-                 }
-
-                 @NgModule({
-                   declarations: [LazyLoadedComponent],
-                   imports:
-                       [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
-                 })
-                 class LoadedModule {
-                 }
-
-                 loader.stubbedModules = {lazyFalse: LoadedModule, lazyTrue: LoadedModule};
-                 const fixture = createRoot(router, RootCmp);
-
-                 router.resetConfig([
-                   {path: 'lazyFalse', canLoad: ['alwaysFalse'], loadChildren: 'lazyFalse'},
-                   {path: 'lazyTrue', canLoad: ['alwaysTrue'], loadChildren: 'lazyTrue'}
-                 ]);
-
-                 const recordedEvents: any[] = [];
-                 router.events.forEach(e => recordedEvents.push(e));
-
-
-                 // failed navigation
-                 router.navigateByUrl('/lazyFalse/loaded');
-                 advance(fixture);
-
-                 expect(location.path()).toEqual('/');
-
-                 expectEvents(recordedEvents, [
-                   [NavigationStart, '/lazyFalse/loaded'],
-                   [NavigationCancel, '/lazyFalse/loaded'],
-                 ]);
-
-                 recordedEvents.splice(0);
-
-                 // successful navigation
-                 router.navigateByUrl('/lazyTrue/loaded');
-                 advance(fixture);
-
-                 expect(location.path()).toEqual('/lazyTrue/loaded');
-
-                 expectEvents(recordedEvents, [
-                   [NavigationStart, '/lazyTrue/loaded'],
-                   [RouteConfigLoadStart],
-                   [RouteConfigLoadEnd],
-                   [RoutesRecognized, '/lazyTrue/loaded'],
-                   [NavigationEnd, '/lazyTrue/loaded'],
-                 ]);
-               })));
-
-        it('should support navigating from within the guard',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([
-               {path: 'lazyFalse', canLoad: ['returnFalseAndNavigate'], loadChildren: 'lazyFalse'},
-               {path: 'blank', component: BlankCmp}
-             ]);
-
-             const recordedEvents: any[] = [];
-             router.events.forEach(e => recordedEvents.push(e));
-
-
-             router.navigateByUrl('/lazyFalse/loaded');
-             advance(fixture);
-
-             expect(location.path()).toEqual('/blank');
-
-             expectEvents(recordedEvents, [
-               [NavigationStart, '/lazyFalse/loaded'], [NavigationCancel, '/lazyFalse/loaded'],
-               [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
-               [NavigationEnd, '/blank']
-             ]);
-           })));
       });
+
+      it('should not load children when CanLoad returns false',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [LazyLoadedComponent],
+                 imports:
+                     [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
+               })
+               class LoadedModule {
+               }
+
+               loader.stubbedModules = {lazyFalse: LoadedModule, lazyTrue: LoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([
+                 {path: 'lazyFalse', canLoad: ['alwaysFalse'], loadChildren: 'lazyFalse'},
+                 {path: 'lazyTrue', canLoad: ['alwaysTrue'], loadChildren: 'lazyTrue'}
+               ]);
+
+               const recordedEvents: any[] = [];
+               router.events.forEach(e => recordedEvents.push(e));
+
+
+               // failed navigation
+               router.navigateByUrl('/lazyFalse/loaded');
+               advance(fixture);
+
+               expect(location.path()).toEqual('/');
+
+               expectEvents(recordedEvents, [
+                 [NavigationStart, '/lazyFalse/loaded'],
+                 [NavigationCancel, '/lazyFalse/loaded'],
+               ]);
+
+               recordedEvents.splice(0);
+
+               // successful navigation
+               router.navigateByUrl('/lazyTrue/loaded');
+               advance(fixture);
+
+               expect(location.path()).toEqual('/lazyTrue/loaded');
+
+               expectEvents(recordedEvents, [
+                 [NavigationStart, '/lazyTrue/loaded'],
+                 [RouteConfigLoadStart],
+                 [RouteConfigLoadEnd],
+                 [RoutesRecognized, '/lazyTrue/loaded'],
+                 [NavigationEnd, '/lazyTrue/loaded'],
+               ]);
+             })));
+
+      it('should support navigating from within the guard',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {path: 'lazyFalse', canLoad: ['returnFalseAndNavigate'], loadChildren: 'lazyFalse'},
+             {path: 'blank', component: BlankCmp}
+           ]);
+
+           const recordedEvents: any[] = [];
+           router.events.forEach(e => recordedEvents.push(e));
+
+
+           router.navigateByUrl('/lazyFalse/loaded');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/blank');
+
+           expectEvents(recordedEvents, [
+             [NavigationStart, '/lazyFalse/loaded'], [NavigationCancel, '/lazyFalse/loaded'],
+             [NavigationStart, '/blank'], [RoutesRecognized, '/blank'], [NavigationEnd, '/blank']
+           ]);
+         })));
     });
 
     describe('order', () => {
