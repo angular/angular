@@ -2075,7 +2075,9 @@ describe('Integration', () => {
     });
 
     describe('CanLoad', () => {
+      let canLoadRunCount = 0;
       beforeEach(() => {
+        canLoadRunCount = 0;
         TestBed.configureTestingModule({
           providers: [
             {provide: 'alwaysFalse', useValue: (a: any) => false},
@@ -2087,7 +2089,13 @@ describe('Integration', () => {
               },
               deps: [Router],
             },
-            {provide: 'alwaysTrue', useValue: (a: any) => true},
+            {
+              provide: 'alwaysTrue',
+              useValue: () => {
+                canLoadRunCount++;
+                return true;
+              }
+            },
           ]
         });
       });
@@ -2173,6 +2181,43 @@ describe('Integration', () => {
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'], [NavigationEnd, '/blank']
            ]);
          })));
+
+      it('should execute CanLoad only once',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [LazyLoadedComponent],
+                 imports:
+                     [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{path: 'lazy', canLoad: ['alwaysTrue'], loadChildren: 'lazy'}]);
+
+               router.navigateByUrl('/lazy/loaded');
+               advance(fixture);
+               expect(location.path()).toEqual('/lazy/loaded');
+               expect(canLoadRunCount).toEqual(1);
+
+               router.navigateByUrl('/');
+               advance(fixture);
+               expect(location.path()).toEqual('/');
+
+               router.navigateByUrl('/lazy/loaded');
+               advance(fixture);
+               expect(location.path()).toEqual('/lazy/loaded');
+               expect(canLoadRunCount).toEqual(1);
+             })));
     });
 
     describe('order', () => {
