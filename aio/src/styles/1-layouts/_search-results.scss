@@ -1,15 +1,31 @@
 .search-results {
-    background-color: $lightgray;
     padding: 20px;
+    color: $offwhite;
+    width: 100%;
+    height: auto;
+    position: fixed;
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: $darkgray;
 }
 
-.search-result-item {
-    color: $darkgray;
-    text-decoration: none;
-    &:hover {
-        color: $blue
+.search-area {
+    h2 {
+        font-size: 16px;
+        margin: 10px 0px 5px;
     }
-    &:visited {
+    a {
+        font-size: 14px;
+        color: $lightgray;
         text-decoration: none;
+        &:hover {
+            color: $blue;
+            font-weight: 500;
+        }
+        &:visited {
+        text-decoration: none;
+        }
     }
 }
