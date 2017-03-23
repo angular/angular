@@ -3,13 +3,21 @@
     color: $darkgray;
 }
 
-.code-shell code {
+code-example[language=bash] code {
+    width: 100%;
+}
+
+.prettyprint {
+    margin: 24px auto;
+    display: flex;
+}
+
+.prettyprint.lang-bash code {
     @include codeblock($darkgray);
     color: $codegreen;
 }
 
 .code-example pre, code-example pre {
-    margin: 0px;
     padding: 0px;
     white-space: pre-wrap;
 }
