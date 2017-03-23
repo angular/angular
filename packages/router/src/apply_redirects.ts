@@ -293,16 +293,18 @@ class ApplyRedirects {
     }
 
     if (route.loadChildren) {
+      if ((<any>route)._loadedConfig !== void 0) {
+        return of ((<any>route)._loadedConfig);
+      }
+
       return mergeMap.call(runCanLoadGuard(ngModule.injector, route), (shouldLoad: boolean) => {
 
         if (shouldLoad) {
-          return (<any>route)._loadedConfig ?
-              of ((<any>route)._loadedConfig) :
-              map.call(
-                  this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
-                    (<any>route)._loadedConfig = cfg;
-                    return cfg;
-                  });
+          return map.call(
+              this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
+                (<any>route)._loadedConfig = cfg;
+                return cfg;
+              });
         }
 
         return canLoadFails(route);
