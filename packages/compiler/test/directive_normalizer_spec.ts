@@ -305,7 +305,7 @@ export function main() {
     });
 
     describe('normalizeLoadedTemplate', () => {
-      it('should store the viewEncapsulationin the result',
+      it('should store the viewEncapsulation in the result',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
 
            const viewEncapsulation = ViewEncapsulation.Native;

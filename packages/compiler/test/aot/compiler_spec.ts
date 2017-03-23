@@ -416,7 +416,7 @@ describe('compiler (bundled Angular)', () => {
        })));
   });
 
-  describe('Bundled libary', () => {
+  describe('Bundled library', () => {
     let host: MockCompilerHost;
     let aotHost: MockAotCompilerHost;
     let libraryFiles: Map<string, string>;
