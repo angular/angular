@@ -63,6 +63,23 @@ const CLASS_ATTR = 'class';
 
 const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
+const TEMPLATE_ELEMENT_DEPRECATION_WARNING =
+    'The <template> element is deprecated. Use <ng-template> instead';
+const TEMPLATE_ATTR_DEPRECATION_WARNING =
+    'The template attribute is deprecated. Use an ng-template element instead.';
+
+let warningCounts: {[warning: string]: number} = {};
+
+function warnOnlyOnce(warnings: string[]): (warning: ParseError) => boolean {
+  return (error: ParseError) => {
+    if (warnings.indexOf(error.msg) !== -1) {
+      warningCounts[error.msg] = (warningCounts[error.msg] || 0) + 1;
+      return warningCounts[error.msg] <= 1;
+    }
+    return true;
+  };
+}
+
 /**
  * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
  * parsed templates before compilation is invoked, allowing custom expression syntax
@@ -97,7 +114,11 @@ export class TemplateParser {
       pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
       templateUrl: string): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
     const result = this.tryParse(component, template, directives, pipes, schemas, templateUrl);
-    const warnings = result.errors.filter(error => error.level === ParseErrorLevel.WARNING);
+    const warnings =
+        result.errors.filter(error => error.level === ParseErrorLevel.WARNING).filter(warnOnlyOnce([
+          TEMPLATE_ATTR_DEPRECATION_WARNING, TEMPLATE_ELEMENT_DEPRECATION_WARNING
+        ]));
+
     const errors = result.errors.filter(error => error.level === ParseErrorLevel.ERROR);
 
     if (warnings.length > 0) {
@@ -285,8 +306,7 @@ class TemplateParseVisitor implements html.Visitor {
 
       if (this.config.enableLegacyTemplate && normalizedName == TEMPLATE_ATTR) {
         this._reportError(
-            `The template attribute is deprecated. Use an ng-template element instead.`,
-            attr.sourceSpan, ParseErrorLevel.WARNING);
+            TEMPLATE_ATTR_DEPRECATION_WARNING, attr.sourceSpan, ParseErrorLevel.WARNING);
         templateBindingsSource = attr.value;
       } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
@@ -873,8 +893,7 @@ function isTemplate(
   // `<template>` is HTML and case insensitive
   if (tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
     if (enableLegacyTemplate && tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
-      reportDeprecation(
-          `The <template> element is deprecated. Use <ng-template> instead`, el.sourceSpan);
+      reportDeprecation(TEMPLATE_ELEMENT_DEPRECATION_WARNING, el.sourceSpan);
       return true;
     }
 
