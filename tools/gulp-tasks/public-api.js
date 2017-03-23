@@ -1,6 +1,7 @@
 const entrypoints = [
   'dist/packages-dist/core/core.d.ts', 'dist/packages-dist/core/testing.d.ts',
   'dist/packages-dist/common/common.d.ts', 'dist/packages-dist/common/testing.d.ts',
+  'dist/packages-dist/common/http.d.ts', 'dist/packages-dist/common/http/testing.d.ts',
   // The API surface of the compiler is currently unstable - all of the important APIs are exposed
   // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
   //'dist/packages-dist/compiler/index.d.ts',

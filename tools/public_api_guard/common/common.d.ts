@@ -34,6 +34,9 @@ export declare class DecimalPipe implements PipeTransform {
 }
 
 /** @stable */
+export declare const DOCUMENT: InjectionToken<Document>;
+
+/** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
     back(): void;
