@@ -147,12 +147,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         // Note: queries start with id 1 so we can use the number in a Bloom filter!
         const queryId = queryIndex + 1;
         const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
-        let flags = NodeFlags.TypeViewQuery;
-        if (queryIds.staticQueryIds.has(queryId)) {
-          flags |= NodeFlags.StaticQuery;
-        } else {
-          flags |= NodeFlags.DynamicQuery;
-        }
+        const flags =
+            NodeFlags.TypeViewQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
         this.nodes.push(() => ({
                           sourceSpan: null,
                           nodeFlags: flags,
@@ -491,15 +487,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes.push(null);
 
     dirAst.directive.queries.forEach((query, queryIndex) => {
-      let flags = NodeFlags.TypeContentQuery;
       const queryId = dirAst.contentQueryStartId + queryIndex;
-      // Note: We only make queries static that query for a single item.
-      // This is because of backwards compatibility with the old view compiler...
-      if (queryIds.staticQueryIds.has(queryId) && query.first) {
-        flags |= NodeFlags.StaticQuery;
-      } else {
-        flags |= NodeFlags.DynamicQuery;
-      }
+      const flags =
+          NodeFlags.TypeContentQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
       const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodes.push(() => ({
                         sourceSpan: dirAst.sourceSpan,
@@ -1193,4 +1183,17 @@ function elementEventNameAndTarget(
   } else {
     return eventAst;
   }
+}
+
+function calcStaticDynamicQueryFlags(
+    queryIds: StaticAndDynamicQueryIds, queryId: number, isFirst: boolean) {
+  let flags = NodeFlags.None;
+  // Note: We only make queries static that query for a single item.
+  // This is because of backwards compatibility with the old view compiler...
+  if (isFirst && (queryIds.staticQueryIds.has(queryId) || !queryIds.dynamicQueryIds.has(queryId))) {
+    flags |= NodeFlags.StaticQuery;
+  } else {
+    flags |= NodeFlags.DynamicQuery;
+  }
+  return flags;
 }
