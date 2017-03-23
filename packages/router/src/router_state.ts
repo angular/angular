@@ -381,7 +381,7 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     if (!shallowEqualArrays(currentSnapshot.url, route._futureSnapshot.url)) {
       (<any>route.url).next(route._futureSnapshot.url);
     }
-    if (!equalParamsAndUrlSegments(currentSnapshot, route._futureSnapshot)) {
+    if (!shallowEqual(currentSnapshot.data, route._futureSnapshot.data)) {
       (<any>route.data).next(route._futureSnapshot.data);
     }
   } else {
