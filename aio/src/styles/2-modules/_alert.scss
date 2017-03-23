@@ -1,0 +1,22 @@
+.alert {
+    // box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+    display: flex;
+    padding: 0px 10px;
+    margin-bottom: 20px 0px;
+    font-size: 14px;
+    color: $darkgray;
+    &.is-critical {
+        border-left: 10px solid $brightred;
+        background-color: rgba($brightred, 0.05);
+    }
+
+    &.is-important {
+        border-left: 10px solid $orange;
+        background-color: rgba($orange, 0.05);
+    }
+
+    &.is-helpful {
+        border-left: 10px solid $blue;
+        background-color: rgba($blue, 0.05);
+    }
+}
