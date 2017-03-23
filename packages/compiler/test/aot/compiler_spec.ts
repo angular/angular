@@ -577,6 +577,7 @@ const FILES: MockData = {
       `,
       'app.module.ts': `
         import { NgModule }      from '@angular/core';
+        import { toString }      from './utils';
 
         import { AppComponent }  from './app.component';
 
@@ -585,6 +586,12 @@ const FILES: MockData = {
           bootstrap:    [ AppComponent ]
         })
         export class AppModule { }
+      `,
+      // #15420
+      'utils.ts': `
+        export function toString(value: any): string {
+          return  '';
+        }
       `
     }
   }
