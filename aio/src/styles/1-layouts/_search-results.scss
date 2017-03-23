@@ -1,12 +1,16 @@
 aio-search-results {
     z-index: 10;
+    padding: 20px;
 }
 
 .search-results {
+    display: flex;
+    flex-direction: row;
+    overflow: scroll;
     padding: 80px 20px 20px;
     color: $offwhite;
     width: 100%;
-    height: auto;
+    max-height: 40%;
     position: fixed;
     display: flex;
     top: 0;
@@ -16,6 +20,9 @@ aio-search-results {
 }
 
 .search-area {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 10px;
     h2 {
         font-size: 16px;
         margin: 10px 0px 5px;
@@ -24,6 +31,7 @@ aio-search-results {
         font-size: 14px;
         color: $lightgray;
         text-decoration: none;
+        font-weight: 300;
         &:hover {
             color: $blue;
             font-weight: 500;
