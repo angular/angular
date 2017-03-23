@@ -224,7 +224,7 @@ export class StaticSymbolResolver {
           this.recordImportAs(symbol, importSymbol);
         }
 
-        const origin = origins[metadataKey];
+        const origin = origins.hasOwnProperty(metadataKey) && origins[metadataKey];
         if (origin) {
           // If the symbol is from a bundled index, use the declaration location of the
           // symbol so relative references (such as './my.html') will be calculated
