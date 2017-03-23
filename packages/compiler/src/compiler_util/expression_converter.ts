@@ -473,7 +473,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // once but is safer if the conversion is changed to traverse the nodes more than once.
     this._nodeMap.delete(leftMostSafe);
 
-    // If we allcoated a temporary, release it.
+    // If we allocated a temporary, release it.
     if (temporary) {
       this.releaseTemporary(temporary);
     }
