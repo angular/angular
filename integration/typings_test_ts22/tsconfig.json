@@ -15,7 +15,8 @@
       "es2015.promise"
     ],
     "types": [],
-    "strictNullChecks": true
+    // TODO(i): strictNullChecks should turned on but are temporarily disabled due to #15432
+    "strictNullChecks": false
   },
   "files": [
     "include-all.ts",
