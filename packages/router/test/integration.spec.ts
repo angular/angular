@@ -1704,6 +1704,13 @@ describe('Integration', () => {
                   log.push('called');
                   return false;
                 }
+              },
+              {
+                provide: 'canActivate_alwaysTrueAndLogging',
+                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  log.push('canActivate called');
+                  return true;
+                }
               }
             ]
           });
@@ -1853,6 +1860,29 @@ describe('Integration', () => {
              expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
              expect(location.path()).toEqual('/main/component1');
            })));
+
+        it('should not run CanActivate when CanDeactivate returns false',
+          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+            const fixture = createRoot(router, RootCmp);
+
+            router.resetConfig([{
+              path: 'main',
+              component: TeamCmp,
+              children: [
+                {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalseAndLogging']},
+                {path: 'component2', component: SimpleCmp, canActivate: ['canActivate_alwaysTrueAndLogging']},
+              ]
+            }]);
+
+            router.navigateByUrl('/main/component1');
+            advance(fixture);
+            expect(location.path()).toEqual('/main/component1');
+
+            router.navigateByUrl('/main/component2');
+            advance(fixture);
+            expect(location.path()).toEqual('/main/component1');
+            expect(log).toEqual(['called']);
+          })));
 
         it('should call guards every time when navigating to the same url over and over again',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -2243,25 +2273,6 @@ describe('Integration', () => {
                  'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
                ]);
              })));
-
-      it('should not call CanActivate when CanDeactivate returns false',
-         fakeAsync(inject([Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
-           const fixture = createRoot(router, RootCmp);
-
-           router.resetConfig([
-             {path: '', component: SimpleCmp, canDeactivate: ['canDeactivate_false']},
-             {path: 'a', component: SimpleCmp}
-           ]);
-
-           router.navigateByUrl('/');
-           advance(fixture);
-           expect(location.path()).toEqual('/');
-
-           router.navigateByUrl('/a');
-           advance(fixture);
-           expect(location.path()).toEqual('/');
-           expect(logger.logs).toEqual(['canDeactivate_false']);
-         })));
     });
   });
 
