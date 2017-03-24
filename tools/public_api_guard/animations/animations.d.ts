@@ -5,7 +5,7 @@ export declare function animate(timings: string | number, styles?: AnimationStyl
 export declare type AnimateTimings = {
     duration: number;
     delay: number;
-    easing: string;
+    easing: string | null;
 };
 
 /** @experimental */
@@ -52,7 +52,7 @@ export declare const enum AnimationMetadataType {
 
 /** @experimental */
 export declare abstract class AnimationPlayer {
-    parentPlayer: AnimationPlayer;
+    parentPlayer: AnimationPlayer | null;
     abstract destroy(): void;
     abstract finish(): void;
     abstract getPosition(): number;
@@ -112,7 +112,7 @@ export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKey
 
 /** @experimental */
 export declare class NoopAnimationPlayer implements AnimationPlayer {
-    parentPlayer: AnimationPlayer;
+    parentPlayer: AnimationPlayer | null;
     constructor();
     destroy(): void;
     finish(): void;

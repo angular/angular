@@ -13,7 +13,7 @@ export function parseTimeExpression(exp: string | number, errors: string[]): Ani
   const regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
-  let easing: string = null;
+  let easing: string|null = null;
   if (typeof exp === 'string') {
     const matches = exp.match(regex);
     if (matches === null) {
