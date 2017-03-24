@@ -125,6 +125,12 @@ export function main() {
             .toEqual([
               [['[before, <ph name="TEST"> exp //i18n(ph="teSt") </ph>, after]'], 'm', 'd'],
             ]);
+
+        expect(
+            _humanizeMessages('<div i18n=\'m|d\'>before{{ exp //i18n(ph=\'teSt\') }}after</div>'))
+            .toEqual([
+              [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd'],
+            ]);
       });
     });
 
