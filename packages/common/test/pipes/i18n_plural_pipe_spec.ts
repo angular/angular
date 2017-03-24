@@ -52,7 +52,7 @@ export function main() {
       });
 
       it('should use "" if value is undefined', () => {
-        const val = pipe.transform(void(0), mapping);
+        const val = pipe.transform(void(0) as any, mapping);
         expect(val).toEqual('');
       });
 
