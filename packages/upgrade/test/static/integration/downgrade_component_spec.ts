@@ -263,7 +263,7 @@ export function main() {
                              // an ng2 injector so it should use the `moduleInjector` instead.
                              const compiled = $compile('<ng2></ng2>');
                              const template = compiled($scope);
-                             $element.append(template);
+                             $element.append !(template);
                            }
                          };
                        }
@@ -404,7 +404,7 @@ export function main() {
            const modFactory = compiler.compileModuleSync(LazyLoadedModule);
            const childMod = modFactory.create(modInjector);
            const cmpFactory =
-               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent);
+               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
            const lazyCmp = cmpFactory.create(componentInjector);
 
            expect(lazyCmp.instance.module).toBe(childMod.injector);
