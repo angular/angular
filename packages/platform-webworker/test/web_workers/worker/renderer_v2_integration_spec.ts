@@ -51,7 +51,7 @@ export function main() {
       const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
-      lastCreatedRenderer = null;
+      lastCreatedRenderer = null !;
 
       wwRenderStore = new RenderStore();
 
@@ -72,7 +72,7 @@ export function main() {
     });
 
     function getRenderElement(workerEl: any): any {
-      const id = wwRenderStore.serialize(workerEl);
+      const id = wwRenderStore.serialize(workerEl) !;
       return uiRenderStore.deserialize(id);
     }
 
@@ -205,7 +205,7 @@ function createWebWorkerRendererFactory2(
 }
 
 class RenderFactory extends WebWorkerRendererFactory2 {
-  createRenderer(element: any, type: RendererType2): Renderer2 {
+  createRenderer(element: any, type: RendererType2|null): Renderer2 {
     lastCreatedRenderer = super.createRenderer(element, type);
     return lastCreatedRenderer;
   }

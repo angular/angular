@@ -30,7 +30,7 @@ export function main() {
     });
 
     it('should reset title to empty string if title not provided', () => {
-      titleService.setTitle(null);
+      titleService.setTitle(null !);
       expect(getDOM().getTitle(doc)).toEqual('');
     });
   });
