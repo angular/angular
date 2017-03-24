@@ -53,7 +53,7 @@ export class JitCompiler implements Compiler {
   }
 
   compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
-    return this._compileModuleAndComponents(moduleType, false).asyncResult;
+    return this._compileModuleAndComponents(moduleType, false).asyncResult!;
   }
 
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
@@ -62,7 +62,7 @@ export class JitCompiler implements Compiler {
 
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
-    return this._compileModuleAndAllComponents(moduleType, false).asyncResult;
+    return this._compileModuleAndAllComponents(moduleType, false).asyncResult!;
   }
 
   getNgContentSelectors(component: Type<any>): string[] {
@@ -106,7 +106,7 @@ export class JitCompiler implements Compiler {
 
   private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
     const loadingPromises: Promise<any>[] = [];
-    const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule);
+    const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule)!;
     // Note: the loadingPromise for a module only includes the loading of the exported directives
     // of imported modules.
     // However, for runtime compilation, we want to transitively compile all modules,
@@ -119,9 +119,9 @@ export class JitCompiler implements Compiler {
   }
 
   private _compileModule<T>(moduleType: Type<T>): NgModuleFactory<T> {
-    let ngModuleFactory = this._compiledNgModuleCache.get(moduleType);
+    let ngModuleFactory = this._compiledNgModuleCache.get(moduleType)!;
     if (!ngModuleFactory) {
-      const moduleMeta = this._metadataResolver.getNgModuleMetadata(moduleType);
+      const moduleMeta = this._metadataResolver.getNgModuleMetadata(moduleType)!;
       // Always provide a bound Compiler
       const extraProviders = [this._metadataResolver.getProviderMetadata(new ProviderMeta(
           Compiler, {useFactory: () => new ModuleBoundCompiler(this, moduleMeta.type.reference)}))];
@@ -142,14 +142,14 @@ export class JitCompiler implements Compiler {
   /**
    * @internal
    */
-  _compileComponents(mainModule: Type<any>, allComponentFactories: ComponentFactory<any>[]) {
-    const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule);
+  _compileComponents(mainModule: Type<any>, allComponentFactories: ComponentFactory<any>[]|null) {
+    const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule)!;
     const moduleByDirective = new Map<any, CompileNgModuleMetadata>();
     const templates = new Set<CompiledTemplate>();
 
     ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
       const localModuleMeta =
-          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference);
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference)!;
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         moduleByDirective.set(dirIdentifier.reference, localModuleMeta);
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
@@ -166,19 +166,19 @@ export class JitCompiler implements Compiler {
     });
     ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
       const localModuleMeta =
-          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference);
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference)!;
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
         if (dirMeta.isComponent) {
           dirMeta.entryComponents.forEach((entryComponentType) => {
-            const moduleMeta = moduleByDirective.get(entryComponentType.componentType);
+            const moduleMeta = moduleByDirective.get(entryComponentType.componentType)!;
             templates.add(
                 this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta));
           });
         }
       });
       localModuleMeta.entryComponents.forEach((entryComponentType) => {
-        const moduleMeta = moduleByDirective.get(entryComponentType.componentType);
+        const moduleMeta = moduleByDirective.get(entryComponentType.componentType)!;
         templates.add(
             this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta));
       });
@@ -278,7 +278,7 @@ export class JitCompiler implements Compiler {
   private _resolveStylesCompileResult(
       result: CompiledStylesheet, externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>) {
     result.dependencies.forEach((dep, i) => {
-      const nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl);
+      const nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl)!;
       const nestedStylesArr = this._resolveAndEvalStylesCompileResult(
           nestedCompileResult, externalStylesheetsByModuleUrl);
       dep.valuePlaceholder.reference = nestedStylesArr;
@@ -300,7 +300,7 @@ export class JitCompiler implements Compiler {
 }
 
 class CompiledTemplate {
-  private _viewClass: Function = null;
+  private _viewClass: Function = null!;
   isCompiled = false;
 
   constructor(

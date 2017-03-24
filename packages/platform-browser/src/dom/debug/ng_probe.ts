@@ -22,7 +22,7 @@ const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
  * null if the given native element does not have an Angular view associated
  * with it.
  */
-export function inspectNativeElement(element: any): core.DebugNode {
+export function inspectNativeElement(element: any): core.DebugNode|null {
   return core.getDebugNode(element);
 }
 

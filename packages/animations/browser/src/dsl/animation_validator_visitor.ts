@@ -175,13 +175,13 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
 
     const limit = length - 1;
     const currentTime = context.currentTime;
-    const animateDuration = context.currentAnimateTimings.duration;
+    const animateDuration = context.currentAnimateTimings !.duration;
     ast.steps.forEach((step, i) => {
       const offset = generatedOffset > 0 ? (i == limit ? 1 : (generatedOffset * i)) : offsets[i];
       const durationUpToThisFrame = offset * animateDuration;
       context.currentTime =
-          currentTime + context.currentAnimateTimings.delay + durationUpToThisFrame;
-      context.currentAnimateTimings.duration = durationUpToThisFrame;
+          currentTime + context.currentAnimateTimings !.delay + durationUpToThisFrame;
+      context.currentAnimateTimings !.duration = durationUpToThisFrame;
       this.visitStyle(step, context);
     });
   }
@@ -190,6 +190,6 @@ export class AnimationValidatorVisitor implements AnimationDslVisitor {
 export class AnimationValidatorContext {
   public errors: string[] = [];
   public currentTime: number = 0;
-  public currentAnimateTimings: AnimateTimings;
+  public currentAnimateTimings: AnimateTimings|null;
   public collectedStyles: {[propName: string]: StyleTimeTuple} = {};
 }

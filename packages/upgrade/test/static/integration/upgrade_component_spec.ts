@@ -316,7 +316,7 @@ export function main() {
                         '$httpBackend',
                         (method: string, url: string, post?: any, callback?: Function) =>
                             setTimeout(
-                                () => callback(200, `${method}:${url}`.toLowerCase()), 1000));
+                                () => callback !(200, `${method}:${url}`.toLowerCase()), 1000));
 
             // Define `Ng2Module`
             @NgModule({
@@ -367,7 +367,7 @@ export function main() {
                         '$httpBackend',
                         (method: string, url: string, post?: any, callback?: Function) =>
                             setTimeout(
-                                () => callback(200, `${method}:${url}`.toLowerCase()), 1000));
+                                () => callback !(200, `${method}:${url}`.toLowerCase()), 1000));
 
             // Define `Ng2Module`
             @NgModule({
@@ -518,8 +518,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1');
-             const ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('ng1') !;
+             const ng1Controller = angular.element(ng1).controller !('ng1');
 
              expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
@@ -593,8 +593,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1');
-             const ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('ng1') !;
+             const ng1Controller = angular.element(ng1).controller !('ng1');
 
              expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
@@ -670,8 +670,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1');
-             const ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('ng1') !;
+             const ng1Controller = angular.element(ng1).controller !('ng1');
 
              expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
@@ -741,8 +741,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-             const ng1 = element.querySelector('ng1');
-             const ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('ng1') !;
+             const ng1Controller = angular.element(ng1).controller !('ng1');
 
              expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: foo, bar');
 
@@ -911,10 +911,10 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1s = element.querySelectorAll('ng1');
-             const ng1Controller0 = angular.element(ng1s[0]).controller('ng1');
-             const ng1Controller1 = angular.element(ng1s[1]).controller('ng1');
-             const ng1Controller2 = angular.element(ng1s[2]).controller('ng1');
+             const ng1s = element.querySelectorAll('ng1') !;
+             const ng1Controller0 = angular.element(ng1s[0]).controller !('ng1');
+             const ng1Controller1 = angular.element(ng1s[1]).controller !('ng1');
+             const ng1Controller2 = angular.element(ng1s[2]).controller !('ng1');
 
              expect(multiTrim(element.textContent))
                  .toBe(
@@ -998,8 +998,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('[ng1]');
-             const ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('[ng1]') !;
+             const ng1Controller = angular.element(ng1).controller !('ng1');
 
              expect(multiTrim(element.textContent))
                  .toBe('ng1 - Data: [1,2,3] - Length: 3 | ng2 - Data: 1,2,3 - Length: 3');
@@ -1028,7 +1028,7 @@ export function main() {
            // Define `ng1Component`
            const ng1ComponentA: angular.IComponent = {template: 'ng1A(<ng1-b></ng1-b>)'};
            const ng1DirectiveB: angular.IDirective = {
-             compile: tElem => grandParentNodeName = tElem.parent().parent()[0].nodeName
+             compile: tElem => grandParentNodeName = tElem.parent !().parent !()[0].nodeName
            };
 
            // Define `Ng1ComponentAFacade`
@@ -1088,7 +1088,7 @@ export function main() {
                }
 
                isPublished() {
-                 return this.$element.controller('ng1') === this ? 'published' : 'not-published';
+                 return this.$element.controller !('ng1') === this ? 'published' : 'not-published';
                }
 
                verifyIAmAClass() { this.isClass = 'isClass'; }
@@ -1314,7 +1314,7 @@ export function main() {
                name = 'world';
 
                constructor($element: angular.IAugmentedJQuery) {
-                 getCurrentContent = () => $element.text();
+                 getCurrentContent = () => $element.text !();
                  compiledContent = getCurrentContent();
                }
              }

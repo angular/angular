@@ -35,7 +35,7 @@ export class RegressionSlopeValidator extends Validator {
     return {'sampleSize': this._sampleSize, 'regressionSlopeMetric': this._metric};
   }
 
-  validate(completeSample: MeasureValues[]): MeasureValues[] {
+  validate(completeSample: MeasureValues[]): MeasureValues[]|null {
     if (completeSample.length >= this._sampleSize) {
       const latestSample =
           completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);

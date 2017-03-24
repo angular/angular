@@ -48,7 +48,7 @@ describe('completions', () => {
     const fileName = '/app/test.ng';
     mockHost.override(fileName, ' > {{tle<\n  {{retl  ><bel/beled}}di>\n   la</b  </d    &a  ');
     expect(() => ngService.getCompletionsAt(fileName, 31)).not.toThrow();
-    mockHost.override(fileName, undefined);
+    mockHost.override(fileName, undefined !);
   });
 
   it('should be able to infer the type of a ngForOf', () => {
@@ -101,7 +101,7 @@ describe('completions', () => {
         }
       }
       try {
-        const originalContent = mockHost.getFileContent(fileName);
+        const originalContent = mockHost.getFileContent(fileName) !;
 
         // For each character in the file, add it to the file and request a completion after it.
         for (let index = 0, len = originalContent.length; index < len; index++) {
@@ -133,7 +133,7 @@ describe('completions', () => {
           tryCompletionsAt(position);
         });
       } finally {
-        mockHost.override(fileName, undefined);
+        mockHost.override(fileName, undefined !);
       }
     }).not.toThrow();
   });
@@ -169,12 +169,12 @@ export class MyComponent {
     try {
       cb(fileName, newContent);
     } finally {
-      mockHost.override(fileName, undefined);
+      mockHost.override(fileName, undefined !);
     }
   }
 
   function contains(fileName: string, locationMarker: string, ...names: string[]) {
-    let location = mockHost.getMarkerLocations(fileName)[locationMarker];
+    let location = mockHost.getMarkerLocations(fileName) ![locationMarker];
     if (location == null) {
       throw new Error(`No marker ${locationMarker} found.`);
     }

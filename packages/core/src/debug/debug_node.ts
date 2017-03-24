@@ -17,9 +17,9 @@ export class EventListener { constructor(public name: string, public callback: F
 export class DebugNode {
   nativeNode: any;
   listeners: EventListener[];
-  parent: DebugElement;
+  parent: DebugElement|null;
 
-  constructor(nativeNode: any, parent: DebugNode, private _debugContext: DebugContext) {
+  constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     this.nativeNode = nativeNode;
     if (parent && parent instanceof DebugElement) {
       parent.addChild(this);
@@ -29,18 +29,18 @@ export class DebugNode {
     this.listeners = [];
   }
 
-  get injector(): Injector { return this._debugContext ? this._debugContext.injector : null; }
+  get injector(): Injector { return this._debugContext.injector; }
 
-  get componentInstance(): any { return this._debugContext ? this._debugContext.component : null; }
+  get componentInstance(): any { return this._debugContext.component; }
 
-  get context(): any { return this._debugContext ? this._debugContext.context : null; }
+  get context(): any { return this._debugContext.context; }
 
   get references(): {[key: string]: any} {
-    return this._debugContext ? this._debugContext.references : null;
+    return this._debugContext.references;
   }
 
   get providerTokens(): any[] {
-    return this._debugContext ? this._debugContext.providerTokens : null;
+    return this._debugContext.providerTokens;
   }
 
   /**
@@ -55,9 +55,9 @@ export class DebugNode {
 export class DebugElement extends DebugNode {
   name: string;
   properties: {[key: string]: any};
-  attributes: {[key: string]: string};
+  attributes: {[key: string]: string | null | undefined};
   classes: {[key: string]: boolean};
-  styles: {[key: string]: string};
+  styles: {[key: string]: string | null | undefined};
   childNodes: DebugNode[];
   nativeElement: any;
 
@@ -153,7 +153,7 @@ function _queryElementChildren(
     element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
   element.childNodes.forEach(node => {
     if (node instanceof DebugElement) {
-      if (predicate(node)) {
+      if (predicate(node, -1, null !)) {
         matches.push(node);
       }
       _queryElementChildren(node, predicate, matches);
@@ -165,7 +165,7 @@ function _queryNodeChildren(
     parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
   if (parentNode instanceof DebugElement) {
     parentNode.childNodes.forEach(node => {
-      if (predicate(node)) {
+      if (predicate(node, -1, null !)) {
         matches.push(node);
       }
       if (node instanceof DebugElement) {
@@ -181,8 +181,8 @@ const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 /**
  * @experimental
  */
-export function getDebugNode(nativeNode: any): DebugNode {
-  return _nativeNodeToDebugNode.get(nativeNode);
+export function getDebugNode(nativeNode: any): DebugNode|null {
+  return _nativeNodeToDebugNode.get(nativeNode) || null;
 }
 
 export function getAllDebugNodes(): DebugNode[] {
@@ -203,4 +203,4 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  *
  * @experimental All debugging apis are currently experimental.
  */
-export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
+export interface Predicate<T> { (value: T, index: number, array: T[]): boolean; }

@@ -62,7 +62,7 @@ jsmBeforeEach(() => { testBed.resetTestingModule(); });
 
 function _describe(jsmFn: Function, ...args: any[]) {
   const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
-  const runner = new BeforeEachRunner(parentRunner);
+  const runner = new BeforeEachRunner(parentRunner !);
   runnerStack.push(runner);
   const suite = jsmFn(...args);
   runnerStack.pop();

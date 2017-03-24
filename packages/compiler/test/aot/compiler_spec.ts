@@ -109,7 +109,7 @@ describe('compiler (unbundled Angular)', () => {
       });
     }
 
-    function findLineAndColumn(file: string, token: string): {line: number, column: number} {
+    function findLineAndColumn(file: string, token: string): {line: number|null, column: number|null} {
       const index = file.indexOf(token);
       if (index === -1) {
         return {line: null, column: null};
@@ -177,7 +177,7 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source);
+             const sourceMap = extractSourceMap(genFile.source)!;
              expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
              // the generated file contains code that is not mapped to
@@ -198,7 +198,7 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source);
+             const sourceMap = extractSourceMap(genFile.source)!;
              expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
                  .toEqual({line: 2, column: 3, source: ngUrl});
            });
@@ -210,7 +210,7 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source);
+             const sourceMap = extractSourceMap(genFile.source)!;
              expect(
                  originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
                  .toEqual({line: 2, column: 9, source: ngUrl});
@@ -223,7 +223,7 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source);
+             const sourceMap = extractSourceMap(genFile.source)!;
              expect(
                  originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
                  .toEqual({line: 2, column: 9, source: ngUrl});
@@ -234,7 +234,7 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source);
+             const sourceMap = extractSourceMap(genFile.source)!;
              expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
                  .toEqual({line: 1, column: 0, source: ngComponentPath});
            });
@@ -327,7 +327,7 @@ describe('compiler (unbundled Angular)', () => {
          compile(host, aotHost, expectNoDiagnostics).then((generatedFiles) => {
            const genFile = generatedFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
            const createComponentFactoryCall =
-               /ɵccf\([^)]*\)/m.exec(genFile.source)[0].replace(/\s*/g, '');
+               /ɵccf\([^)]*\)/m.exec(genFile.source)![0].replace(/\s*/g, '');
            // selector
            expect(createComponentFactoryCall).toContain('my-comp');
            // inputs

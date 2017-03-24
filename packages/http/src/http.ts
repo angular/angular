@@ -8,9 +8,10 @@
 
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
-import {ConnectionBackend, RequestOptionsArgs} from './interfaces';
+import {ConnectionBackend, RequestArgs, RequestOptionsArgs} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
 
@@ -19,8 +20,8 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
 }
 
 function mergeOptions(
-    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs, method: RequestMethod,
-    url: string): RequestOptions {
+    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs | undefined,
+    method: RequestMethod, url: string): RequestArgs {
   const newOptions = defaultOpts;
   if (providedOpts) {
     // Hack so Dart can used named parameters
@@ -33,10 +34,10 @@ function mergeOptions(
       body: providedOpts.body,
       withCredentials: providedOpts.withCredentials,
       responseType: providedOpts.responseType
-    }));
+    })) as RequestArgs;
   }
 
-  return newOptions.merge(new RequestOptions({method, url}));
+  return newOptions.merge(new RequestOptions({method, url})) as RequestArgs;
 }
 
 /**

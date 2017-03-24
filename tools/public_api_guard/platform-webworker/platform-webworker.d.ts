@@ -3,7 +3,7 @@ export declare function bootstrapWorkerUi(workerScriptUri: string, customProvide
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes): Promise<any>;
+    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes | null): Promise<any> | null;
 }
 
 /** @experimental */
@@ -66,7 +66,7 @@ export declare const enum SerializerTypes {
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes>, method: Function, returnType?: Type<any> | SerializerTypes): void;
+    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes> | null, method: Function, returnType?: Type<any> | SerializerTypes): void;
 }
 
 /** @experimental */

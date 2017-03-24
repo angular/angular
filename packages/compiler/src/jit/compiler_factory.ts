@@ -123,7 +123,7 @@ export class JitCompilerFactory implements CompilerFactory {
         },
         deps: []
       },
-      opts.providers
+      opts.providers!
     ]);
     return injector.get(Compiler);
   }
@@ -148,12 +148,12 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {
     useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
-    providers: _mergeArrays(optionsArr.map(options => options.providers)),
+    providers: _mergeArrays(optionsArr.map(options => options.providers!)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
   };
 }
 
-function _lastDefined<T>(args: T[]): T {
+function _lastDefined<T>(args: T[]): T|undefined {
   for (let i = args.length - 1; i >= 0; i--) {
     if (args[i] !== undefined) {
       return args[i];

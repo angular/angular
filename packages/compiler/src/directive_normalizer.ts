@@ -54,7 +54,7 @@ export class DirectiveNormalizer {
   private _fetch(url: string): Promise<string> {
     let result = this._resourceLoaderCache.get(url);
     if (!result) {
-      result = this._resourceLoader.get(url);
+      result = this._resourceLoader.get(url)!;
       this._resourceLoaderCache.set(url, result);
     }
     return result;
@@ -62,15 +62,15 @@ export class DirectiveNormalizer {
 
   normalizeTemplate(prenormData: PrenormalizedTemplateMetadata):
       SyncAsyncResult<CompileTemplateMetadata> {
-    let normalizedTemplateSync: CompileTemplateMetadata = null;
-    let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
+    let normalizedTemplateSync: CompileTemplateMetadata = null!;
+    let normalizedTemplateAsync: Promise<CompileTemplateMetadata> = undefined!;
     if (prenormData.template != null) {
       if (typeof prenormData.template !== 'string') {
         throw syntaxError(
             `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
       }
       normalizedTemplateSync = this.normalizeTemplateSync(prenormData);
-      normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
+      normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync!);
     } else if (prenormData.templateUrl) {
       if (typeof prenormData.templateUrl !== 'string') {
         throw syntaxError(
@@ -94,12 +94,12 @@ export class DirectiveNormalizer {
   }
 
   normalizeTemplateSync(prenomData: PrenormalizedTemplateMetadata): CompileTemplateMetadata {
-    return this.normalizeLoadedTemplate(prenomData, prenomData.template, prenomData.moduleUrl);
+    return this.normalizeLoadedTemplate(prenomData, prenomData.template!, prenomData.moduleUrl);
   }
 
   normalizeTemplateAsync(prenomData: PrenormalizedTemplateMetadata):
       Promise<CompileTemplateMetadata> {
-    const templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl);
+    const templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl!);
     return this._fetch(templateUrl)
         .then((value) => this.normalizeLoadedTemplate(prenomData, value, templateUrl));
   }
@@ -108,7 +108,7 @@ export class DirectiveNormalizer {
       prenormData: PrenormalizedTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
     const isInline = !!prenormData.template;
-    const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation);
+    const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation!);
     const rootNodesAndErrors = this._htmlParser.parse(
         template,
         templateSourceUrl(

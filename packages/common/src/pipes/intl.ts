@@ -20,7 +20,7 @@ export class NumberFormatter {
         minimumIntegerDigits?: number,
         minimumFractionDigits?: number,
         maximumFractionDigits?: number,
-        currency?: string,
+        currency?: string|null,
         currencyAsSymbol?: boolean
       } = {}): string {
     const options: Intl.NumberFormatOptions = {
@@ -31,7 +31,7 @@ export class NumberFormatter {
     };
 
     if (style == NumberFormatStyle.Currency) {
-      options.currency = currency;
+      options.currency = currency !;
       options.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
     return new Intl.NumberFormat(locale, options).format(num);
@@ -192,17 +192,17 @@ function dateFormatter(format: string, date: Date, locale: string): string {
 
   if (!parts) {
     parts = [];
-    let match: RegExpExecArray;
+    let match: RegExpExecArray|null;
     DATE_FORMATS_SPLIT.exec(format);
 
     while (format) {
       match = DATE_FORMATS_SPLIT.exec(format);
       if (match) {
         parts = parts.concat(match.slice(1));
-        format = parts.pop();
+        format = parts.pop() !;
       } else {
         parts.push(format);
-        format = null;
+        format = null !;
       }
     }
 

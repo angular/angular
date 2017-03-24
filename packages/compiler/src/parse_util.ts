@@ -9,9 +9,18 @@ import * as chars from './chars';
 import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 
 export class ParseLocation {
+  public file: ParseSourceFile;
+   public offset: number;
+   public line: number;
+  public col: number;
   constructor(
-      public file: ParseSourceFile, public offset: number, public line: number,
-      public col: number) {}
+      file: ParseSourceFile, offset: number|null, line: number|null,
+      col: number|null) {
+        this.file = file;
+        this.offset = offset!;
+        this.line = line!;
+        this.col = col!;
+      }
 
   toString(): string {
     return this.offset != null ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
@@ -20,9 +29,9 @@ export class ParseLocation {
   moveBy(delta: number): ParseLocation {
     const source = this.file.content;
     const len = source.length;
-    let offset = this.offset;
-    let line = this.line;
-    let col = this.col;
+    let offset = this.offset!;
+    let line = this.line!;
+    let col = this.col!;
     while (offset > 0 && delta < 0) {
       offset--;
       delta++;
@@ -51,7 +60,7 @@ export class ParseLocation {
 
   // Return the source around the location
   // Up to `maxChars` or `maxLines` on each side of the location
-  getContext(maxChars: number, maxLines: number): {before: string, after: string} {
+  getContext(maxChars: number, maxLines: number): {before: string, after: string}|null {
     const content = this.file.content;
     let startOffset = this.offset;
 
@@ -86,8 +95,8 @@ export class ParseLocation {
       }
 
       return {
-        before: content.substring(startOffset, this.offset),
-        after: content.substring(this.offset, endOffset + 1),
+        before: content.substring(startOffset, this.offset!),
+        after: content.substring(this.offset!, endOffset + 1),
       };
     }
 
@@ -101,10 +110,10 @@ export class ParseSourceFile {
 
 export class ParseSourceSpan {
   constructor(
-      public start: ParseLocation, public end: ParseLocation, public details: string = null) {}
+      public start: ParseLocation, public end: ParseLocation, public details: string|null = null) {}
 
   toString(): string {
-    return this.start.file.content.substring(this.start.offset, this.end.offset);
+    return this.start.file.content.substring(this.start.offset!, this.end.offset!);
   }
 }
 

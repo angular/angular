@@ -176,12 +176,12 @@ export class CompilerHost implements AotCompilerHost {
     return sf;
   }
 
-  getMetadataFor(filePath: string): ModuleMetadata[] {
+  getMetadataFor(filePath: string): ModuleMetadata[]|null {
     if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
       // This will occur if the user refernced a declared module for which no file
       // exists for the module (i.e. jQuery or angularjs).
-      return;
+      return null;
     }
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
@@ -256,6 +256,7 @@ export class CompilerHost implements AotCompilerHost {
     if (this.context.fileExists(filePath)) {
       return this.context.readFile(filePath);
     }
+    return null;
   }
 
   getOutputFileName(sourceFilePath: string): string {
@@ -280,7 +281,7 @@ export class CompilerHost implements AotCompilerHost {
 
   calculateEmitPath(filePath: string): string {
     // Write codegen in a directory structure matching the sources.
-    let root = this.options.basePath;
+    let root = this.options.basePath!;
     for (const eachRootDir of this.options.rootDirs || []) {
       if (this.options.trace) {
         console.error(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
@@ -366,7 +367,7 @@ export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter impl
   constructor(private host: ts.ModuleResolutionHost) {
     super();
     if (host.directoryExists) {
-      this.directoryExists = (directoryName: string) => host.directoryExists(directoryName);
+      this.directoryExists = (directoryName: string) => host.directoryExists!(directoryName);
     }
   }
 

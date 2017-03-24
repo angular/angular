@@ -23,10 +23,10 @@ export class ControlContainer extends AbstractControlDirective {
   /**
    * Get the form to which this container belongs.
    */
-  get formDirective(): Form { return null; }
+  get formDirective(): Form|null { return null; }
 
   /**
    * Get the path to this container.
    */
-  get path(): string[] { return null; }
+  get path(): string[]|null { return null; }
 }

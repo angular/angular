@@ -113,7 +113,7 @@ export class UrlTree {
       /** The query params of the URL */
       public queryParams: {[key: string]: string},
       /** The fragment of the URL */
-      public fragment: string) {}
+      public fragment: string|null) {}
 
   get queryParamMap() {
     if (!this._queryParamMap) {
@@ -139,7 +139,7 @@ export class UrlSegmentGroup {
   /** @internal */
   _segmentIndexShift: number;
   /** The parent node in the url tree */
-  parent: UrlSegmentGroup = null;
+  parent: UrlSegmentGroup|null = null;
 
   constructor(
       /** The URL segments of this group. See {@link UrlSegment} for more information */
@@ -482,7 +482,7 @@ class UrlParser {
     return params;
   }
 
-  parseFragment(): string {
+  parseFragment(): string|null {
     if (this.peekStartsWith('#')) {
       return decodeURI(this.remaining.substring(1));
     }
@@ -566,7 +566,7 @@ class UrlParser {
         throw new Error(`Cannot parse url '${this.url}'`);
       }
 
-      let outletName: string;
+      let outletName: string = undefined !;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);

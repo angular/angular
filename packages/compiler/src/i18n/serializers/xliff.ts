@@ -92,7 +92,7 @@ export class Xliff extends Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale, i18nNodesByMsgId};
+    return {locale: locale!, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return digest(message); }
@@ -181,7 +181,7 @@ class XliffParser implements ml.Visitor {
   visitElement(element: ml.Element, context: any): any {
     switch (element.name) {
       case _UNIT_TAG:
-        this._unitMlNodes = null;
+        this._unitMlNodes = null!;
         const idAttr = element.attrs.find((attr) => attr.name === 'id');
         if (!idAttr) {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
@@ -234,7 +234,7 @@ class XliffParser implements ml.Visitor {
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new I18nError(node.sourceSpan!, message));
   }
 }
 
@@ -252,17 +252,18 @@ class XmlToI18n implements ml.Visitor {
 
   visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
 
-  visitElement(el: ml.Element, context: any): i18n.Placeholder {
+  visitElement(el: ml.Element, context: any): i18n.Placeholder|null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'id');
       if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan);
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan!);
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
     } else {
       this._addError(el, `Unexpected tag`);
     }
+    return null;
   }
 
   visitExpansion(icu: ml.Expansion, context: any) {}
@@ -274,7 +275,7 @@ class XmlToI18n implements ml.Visitor {
   visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new I18nError(node.sourceSpan!, message));
   }
 }
 

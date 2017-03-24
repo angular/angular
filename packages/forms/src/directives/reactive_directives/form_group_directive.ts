@@ -69,7 +69,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   private _oldForm: FormGroup;
   directives: FormControlName[] = [];
 
-  @Input('formGroup') form: FormGroup = null;
+  @Input('formGroup') form: FormGroup|null = null;
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
@@ -91,44 +91,44 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   get formDirective(): Form { return this; }
 
-  get control(): FormGroup { return this.form; }
+  get control(): FormGroup|null { return this.form; }
 
   get path(): string[] { return []; }
 
   addControl(dir: FormControlName): FormControl {
-    const ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form !.get(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
     return ctrl;
   }
 
-  getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
+  getControl(dir: FormControlName): FormControl { return <FormControl>this.form !.get(dir.path); }
 
   removeControl(dir: FormControlName): void { remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
-    const ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form !.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   removeFormGroup(dir: FormGroupName): void {}
 
-  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
+  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form !.get(dir.path); }
 
   addFormArray(dir: FormArrayName): void {
-    const ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form !.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   removeFormArray(dir: FormArrayName): void {}
 
-  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
+  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form !.get(dir.path); }
 
   updateModel(dir: FormControlName, value: any): void {
-    const ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl  = <FormControl>this.form !.get(dir.path);
     ctrl.setValue(value);
   }
 
@@ -141,14 +141,14 @@ export class FormGroupDirective extends ControlContainer implements Form,
   onReset(): void { this.resetForm(); }
 
   resetForm(value: any = undefined): void {
-    this.form.reset(value);
+    this.form !.reset(value);
     this._submitted = false;
   }
 
   /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
-      const newCtrl: any = this.form.get(dir.path);
+      const newCtrl: any = this.form !.get(dir.path);
       if (dir._control !== newCtrl) {
         cleanUpControl(dir._control, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
@@ -156,21 +156,21 @@ export class FormGroupDirective extends ControlContainer implements Form,
       }
     });
 
-    this.form._updateTreeValidity({emitEvent: false});
+    this.form !._updateTreeValidity({emitEvent: false});
   }
 
   private _updateRegistrations() {
-    this.form._registerOnCollectionChange(() => this._updateDomValue());
+    this.form !._registerOnCollectionChange(() => this._updateDomValue());
     if (this._oldForm) this._oldForm._registerOnCollectionChange(() => {});
-    this._oldForm = this.form;
+    this._oldForm = this.form !;
   }
 
   private _updateValidators() {
     const sync = composeValidators(this._validators);
-    this.form.validator = Validators.compose([this.form.validator, sync]);
+    this.form !.validator = Validators.compose([this.form !.validator !, sync !]);
 
     const async = composeAsyncValidators(this._asyncValidators);
-    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
+    this.form !.asyncValidator = Validators.composeAsync([this.form !.asyncValidator !, async !]);
   }
 
   private _checkFormPresent() {

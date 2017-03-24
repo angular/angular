@@ -234,7 +234,7 @@ export function main() {
     });
 
     it('should support moving non projected light dom around', () => {
-      let sourceDirective: ManualViewportDirective;
+      let sourceDirective: ManualViewportDirective = undefined !;
 
       @Directive({selector: '[manual]'})
       class ManualViewportDirective {
@@ -357,8 +357,9 @@ export function main() {
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
 
       const tree2 = main.debugElement.query(By.directive(Tree2));
-      manualDirective = tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-          ManualViewportDirective);
+      manualDirective =
+          tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+              ManualViewportDirective);
       manualDirective.show();
       main.detectChanges();
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');

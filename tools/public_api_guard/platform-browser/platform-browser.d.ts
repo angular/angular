@@ -26,7 +26,7 @@ export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustScript(value: string): SafeScript;
     abstract bypassSecurityTrustStyle(value: string): SafeStyle;
     abstract bypassSecurityTrustUrl(value: string): SafeUrl;
-    abstract sanitize(context: SecurityContext, value: any): string;
+    abstract sanitize(context: SecurityContext, value: any): string | null;
 }
 
 /** @experimental */
@@ -58,13 +58,13 @@ export declare class HammerGestureConfig {
 /** @experimental */
 export declare class Meta {
     constructor(_doc: any);
-    addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement;
+    addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
     addTags(tags: MetaDefinition[], forceCreation?: boolean): HTMLMetaElement[];
-    getTag(attrSelector: string): HTMLMetaElement;
+    getTag(attrSelector: string): HTMLMetaElement | null;
     getTags(attrSelector: string): HTMLMetaElement[];
     removeTag(attrSelector: string): void;
     removeTagElement(meta: HTMLMetaElement): void;
-    updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement;
+    updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null;
 }
 
 /** @experimental */

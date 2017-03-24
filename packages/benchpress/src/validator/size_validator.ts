@@ -23,7 +23,7 @@ export class SizeValidator extends Validator {
 
   describe(): {[key: string]: any} { return {'sampleSize': this._sampleSize}; }
 
-  validate(completeSample: MeasureValues[]): MeasureValues[] {
+  validate(completeSample: MeasureValues[]): MeasureValues[]|null {
     if (completeSample.length >= this._sampleSize) {
       return completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
     } else {

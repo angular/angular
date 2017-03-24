@@ -240,7 +240,7 @@ export class ShadowCss {
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     let r = '';
-    let m: RegExpExecArray;
+    let m: RegExpExecArray|null;
     _cssContentUnscopedRuleRe.lastIndex = 0;
     while ((m = _cssContentUnscopedRuleRe.exec(cssText)) !== null) {
       const rule = m[0].replace(m[2], '').replace(m[1], m[4]);
@@ -433,7 +433,7 @@ export class ShadowCss {
 
     let scopedSelector = '';
     let startIndex = 0;
-    let res: RegExpExecArray;
+    let res: RegExpExecArray|null;
     const sep = /( |>|\+|~(?!=))\s*/g;
     const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
 

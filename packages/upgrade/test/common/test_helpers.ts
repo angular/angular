@@ -20,8 +20,12 @@ export function html(html: string): Element {
   return div;
 }
 
-export function multiTrim(text: string): string {
-  return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+export function multiTrim(text: string | null): string {
+  if (text) {
+    return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+  } else {
+    throw new Error('Text must be string');
+  }
 }
 
 export function nodes(html: string) {

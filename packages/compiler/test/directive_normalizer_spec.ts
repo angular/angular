@@ -60,9 +60,9 @@ export function main() {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
-             encapsulation: null,
+             encapsulation: undefined,
              template: 'a',
-             templateUrl: null,
+             templateUrl: undefined,
              styles: [],
              styleUrls: []
            });
@@ -77,9 +77,9 @@ export function main() {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
-             encapsulation: null,
+             encapsulation: undefined,
              template: '',
-             templateUrl: null,
+             templateUrl: undefined,
              styles: [],
              styleUrls: ['test.css']
            });
@@ -92,9 +92,9 @@ export function main() {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
-             encapsulation: null,
+             encapsulation: undefined,
              template: '<style>@import test.css</style>',
-             templateUrl: null,
+             templateUrl: undefined,
              styles: [],
              styleUrls: []
            });
@@ -107,9 +107,9 @@ export function main() {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
-             encapsulation: null,
+             encapsulation: undefined,
              template: '',
-             templateUrl: null,
+             templateUrl: undefined,
              styles: [],
              styleUrls: ['test.css']
            });
@@ -125,9 +125,9 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  template: '',
-                 templateUrl: null,
+                 templateUrl: undefined,
                  styles: [],
                  styleUrls: ['test.css']
                });
@@ -148,8 +148,8 @@ export function main() {
                      ngModuleType: null,
                      componentType: SomeComp,
                      moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
+                     encapsulation: undefined,
+                     template: undefined,
                      templateUrl: 'sometplurl.html',
                      styles: [],
                      styleUrls: ['test.css']
@@ -174,8 +174,8 @@ export function main() {
                      ngModuleType: null,
                      componentType: SomeComp,
                      moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
+                     encapsulation: undefined,
+                     template: undefined,
                      templateUrl: 'tpl/sometplurl.html',
                      styles: [],
                      styleUrls: ['test.css']
@@ -199,8 +199,8 @@ export function main() {
                      ngModuleType: null,
                      componentType: SomeComp,
                      moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
+                     encapsulation: undefined,
+                     template: undefined,
                      templateUrl: 'tpl/sometplurl.html',
                      styles: [],
                      styleUrls: []
@@ -329,7 +329,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -344,7 +344,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -359,7 +359,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -375,7 +375,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -390,7 +390,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -405,7 +405,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -420,7 +420,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -435,7 +435,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -450,7 +450,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -465,7 +465,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: ['@import "test.css";'],
                  styleUrls: []
                },
@@ -481,7 +481,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: ['.foo{background-image: url(\'double.jpg\');'],
                  styleUrls: []
                },
@@ -496,7 +496,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: ['test.css']
                },
@@ -512,7 +512,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_HTTP_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: ['test.css']
                },
@@ -543,7 +543,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },
@@ -559,7 +559,7 @@ export function main() {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  styles: [],
                  styleUrls: []
                },

@@ -71,7 +71,7 @@ export class ValueTransformer implements ValueVisitor {
 }
 
 export class SyncAsyncResult<T> {
-  constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
+  constructor(public syncResult: T|null, public asyncResult: Promise<T>|null = null) {
     if (!asyncResult) {
       this.asyncResult = Promise.resolve(syncResult);
     }

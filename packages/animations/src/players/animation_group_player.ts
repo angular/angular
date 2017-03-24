@@ -17,7 +17,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _onDestroyFns: Function[] = [];
 
-  public parentPlayer: AnimationPlayer = null;
+  public parentPlayer: AnimationPlayer|null = null;
 
   constructor(private _players: AnimationPlayer[]) {
     let count = 0;

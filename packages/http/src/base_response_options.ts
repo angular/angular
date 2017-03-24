@@ -46,32 +46,32 @@ export class ResponseOptions {
   /**
    * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body: string|Object|ArrayBuffer|Blob;
+  body: string|Object|ArrayBuffer|Blob|null;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
    */
-  status: number;
+  status: number|null;
   /**
    * Response {@link Headers headers}
    */
-  headers: Headers;
+  headers: Headers|null;
   /**
    * @internal
    */
-  statusText: string;
+  statusText: string|null;
   /**
    * @internal
    */
-  type: ResponseType;
-  url: string;
+  type: ResponseType|null;
+  url: string|null;
   constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
-    this.body = body != null ? body : null;
-    this.status = status != null ? status : null;
-    this.headers = headers != null ? headers : null;
-    this.statusText = statusText != null ? statusText : null;
-    this.type = type != null ? type : null;
-    this.url = url != null ? url : null;
+    this.body = body ? body : null;
+    this.status = status ? status : null;
+    this.headers = headers ? headers : null;
+    this.statusText = statusText ? statusText : null;
+    this.type = type ? type : null;
+    this.url = url ? url : null;
   }
 
   /**

@@ -72,7 +72,7 @@ export function main() {
 
       parse =
           (template: string, directives: CompileDirectiveSummary[],
-           pipes: CompilePipeSummary[] = null, schemas: SchemaMetadata[] = []): TemplateAst[] => {
+           pipes: CompilePipeSummary[]|null = null, schemas: SchemaMetadata[] = []): TemplateAst[] => {
             if (pipes === null) {
               pipes = [];
             }
@@ -91,7 +91,7 @@ export function main() {
       expectVisitedNode(
           new class extends
           NullVisitor{visitNgContent(ast: NgContentAst, context: any): any{return ast;}},
-          new NgContentAst(0, 0, null));
+          new NgContentAst(0, 0, null!));
     });
 
     it('should visit EmbeddedTemplateAst', () => {
@@ -99,35 +99,35 @@ export function main() {
           new class extends NullVisitor{
             visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any) { return ast; }
           },
-          new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null));
+          new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null!));
     });
 
     it('should visit ElementAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitElement(ast: ElementAst, context: any) { return ast; }},
-          new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null, null));
+          new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null!, null!));
     });
 
     it('should visit RefererenceAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitReference(ast: ReferenceAst, context: any): any{return ast;}},
-          new ReferenceAst('foo', null, null));
+          new ReferenceAst('foo', null!, null!));
     });
 
     it('should visit VariableAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitVariable(ast: VariableAst, context: any): any{return ast;}},
-          new VariableAst('foo', 'bar', null));
+          new VariableAst('foo', 'bar', null!));
     });
 
     it('should visit BoundEventAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitEvent(ast: BoundEventAst, context: any): any{return ast;}},
-          new BoundEventAst('foo', 'bar', 'goo', null, null));
+          new BoundEventAst('foo', 'bar', 'goo', null!, null!));
     });
 
     it('should visit BoundElementPropertyAst', () => {
@@ -135,33 +135,33 @@ export function main() {
           new class extends NullVisitor{
             visitElementProperty(ast: BoundElementPropertyAst, context: any): any{return ast;}
           },
-          new BoundElementPropertyAst('foo', null, null, null, 'bar', null));
+          new BoundElementPropertyAst('foo', null!, null!, null!, 'bar', null!));
     });
 
     it('should visit AttrAst', () => {
       expectVisitedNode(
           new class extends NullVisitor{visitAttr(ast: AttrAst, context: any): any{return ast;}},
-          new AttrAst('foo', 'bar', null));
+          new AttrAst('foo', 'bar', null!));
     });
 
     it('should visit BoundTextAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitBoundText(ast: BoundTextAst, context: any): any{return ast;}},
-          new BoundTextAst(null, 0, null));
+          new BoundTextAst(null!, 0, null!));
     });
 
     it('should visit TextAst', () => {
       expectVisitedNode(
           new class extends NullVisitor{visitText(ast: TextAst, context: any): any{return ast;}},
-          new TextAst('foo', 0, null));
+          new TextAst('foo', 0, null!));
     });
 
     it('should visit DirectiveAst', () => {
       expectVisitedNode(
           new class extends
           NullVisitor{visitDirective(ast: DirectiveAst, context: any): any{return ast;}},
-          new DirectiveAst(null, [], [], [], 0, null));
+          new DirectiveAst(null!, [], [], [], 0, null!));
     });
 
     it('should visit DirectiveAst', () => {
@@ -169,7 +169,7 @@ export function main() {
           new class extends NullVisitor{
             visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any{return ast;}
           },
-          new BoundDirectivePropertyAst('foo', 'bar', null, null));
+          new BoundDirectivePropertyAst('foo', 'bar', null!, null!));
     });
 
     it('should skip the typed call of a visitor if visit() returns a truthy value', () => {
@@ -177,15 +177,15 @@ export function main() {
         visit(ast: TemplateAst, context: any): any { return true; }
       };
       const nodes: TemplateAst[] = [
-        new NgContentAst(0, 0, null),
-        new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null),
-        new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null, null),
-        new ReferenceAst('foo', null, null), new VariableAst('foo', 'bar', null),
-        new BoundEventAst('foo', 'bar', 'goo', null, null),
-        new BoundElementPropertyAst('foo', null, null, null, 'bar', null),
-        new AttrAst('foo', 'bar', null), new BoundTextAst(null, 0, null),
-        new TextAst('foo', 0, null), new DirectiveAst(null, [], [], [], 0, null),
-        new BoundDirectivePropertyAst('foo', 'bar', null, null)
+        new NgContentAst(0, 0, null!),
+        new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null!),
+        new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null!, null!),
+        new ReferenceAst('foo', null!, null!), new VariableAst('foo', 'bar', null!),
+        new BoundEventAst('foo', 'bar', 'goo', null!, null!),
+        new BoundElementPropertyAst('foo', null!, null!, null!, 'bar', null!),
+        new AttrAst('foo', 'bar', null!), new BoundTextAst(null!, 0, null!),
+        new TextAst('foo', 0, null!), new DirectiveAst(null!, [], [], [], 0, null!),
+        new BoundDirectivePropertyAst('foo', 'bar', null!, null!)
       ];
       const result = templateVisitAll(visitor, nodes, null);
       expect(result).toEqual(new Array(nodes.length).fill(true));
@@ -489,7 +489,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                   .create({
                     selector: 'broken',
                     type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                    host: {'[class.foo]': null}
+                    host: {'[class.foo]': null!}
                   })
                   .toSummary();
 
@@ -504,7 +504,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                   .create({
                     selector: 'broken',
                     type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                    host: {'(click)': null}
+                    host: {'(click)': null!}
                   })
                   .toSummary();
 
@@ -887,15 +887,15 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                 }),
                 isComponent: isComponent,
                 template: new CompileTemplateMetadata({ngContentSelectors: []}),
-                providers: providers,
-                viewProviders: viewProviders,
+                providers: providers!,
+                viewProviders: viewProviders!,
                 queries: queries.map((value) => {
                   return {
                     selectors: [createToken(value)],
                     descendants: false,
                     first: false,
                     propertyName: 'test',
-                    read: undefined
+                    read: undefined!
                   };
                 })
               })
@@ -1096,8 +1096,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         it('should change missing @Self() that are optional to nulls', () => {
           const dirA = createDir('[dirA]', {deps: ['optional:self:provider0']});
           const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
-          expect(elAst.providers[0].providers[0].deps[0].isValue).toBe(true);
-          expect(elAst.providers[0].providers[0].deps[0].value).toBe(null);
+          expect(elAst.providers[0].providers[0].deps![0].isValue).toBe(true);
+          expect(elAst.providers[0].providers[0].deps![0].value).toBe(null);
         });
 
         it('should report missing @Host() deps as errors', () => {
@@ -1110,8 +1110,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         it('should change missing @Host() that are optional to nulls', () => {
           const dirA = createDir('[dirA]', {deps: ['optional:host:provider0']});
           const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
-          expect(elAst.providers[0].providers[0].deps[0].isValue).toBe(true);
-          expect(elAst.providers[0].providers[0].deps[0].value).toBe(null);
+          expect(elAst.providers[0].providers[0].deps![0].isValue).toBe(true);
+          expect(elAst.providers[0].providers[0].deps![0].value).toBe(null);
         });
       });
 

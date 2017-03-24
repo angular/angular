@@ -87,7 +87,7 @@ export class StyleCompiler {
   }
 }
 
-function getStylesVarName(component: CompileDirectiveMetadata): string {
+function getStylesVarName(component: CompileDirectiveMetadata|null): string {
   let result = `styles`;
   if (component) {
     result += `_${identifierName(component.type)}`;

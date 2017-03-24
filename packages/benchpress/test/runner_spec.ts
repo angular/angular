@@ -15,7 +15,7 @@ export function main() {
     let injector: ReflectiveInjector;
     let runner: Runner;
 
-    function createRunner(defaultProviders: any[] = null): Runner {
+    function createRunner(defaultProviders?: any[]): Runner {
       if (!defaultProviders) {
         defaultProviders = [];
       }
@@ -121,7 +121,7 @@ export function main() {
 
 class MockWebDriverAdapter extends WebDriverAdapter {
   executeScript(script: string): Promise<string> { return Promise.resolve('someUserAgent'); }
-  capabilities(): Promise<Map<string, any>> { return null; }
+  capabilities(): Promise<Map<string, any>> { return null !; }
 }
 
 class MockValidator extends Validator {
@@ -135,6 +135,6 @@ class MockMetric extends Metric {
 }
 
 class MockSampler extends Sampler {
-  constructor() { super(null, null, null, null, null, null, null); }
+  constructor() { super(null !, null !, null !, null !, null !, null !, null !); }
   sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
 }

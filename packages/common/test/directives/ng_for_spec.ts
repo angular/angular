@@ -25,7 +25,7 @@ export function main() {
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null as any; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -103,7 +103,7 @@ export function main() {
 
          detectChangesAndExpectText('1;2;');
 
-         getComponent().items = null;
+         getComponent().items = null !;
          detectChangesAndExpectText('');
 
          getComponent().items = [1, 2, 3];

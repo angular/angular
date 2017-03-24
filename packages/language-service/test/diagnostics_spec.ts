@@ -32,9 +32,9 @@ describe('diagnostics', () => {
     function diagnostics(template: string): Diagnostics {
       try {
         mockHost.override(fileName, template);
-        return ngService.getDiagnostics(fileName);
+        return ngService.getDiagnostics(fileName) !;
       } finally {
-        mockHost.override(fileName, undefined);
+        mockHost.override(fileName, undefined !);
       }
     }
 
@@ -75,10 +75,10 @@ describe('diagnostics', () => {
       const code = '\n@Component({template: \'<div></div>\'}) export class MyComponent {}';
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        const offset = content.lastIndexOf('@Component') + 1;
+        const offset = content !.lastIndexOf('@Component') + 1;
         const len = 'Component'.length;
         includeDiagnostic(
-            diagnostics, 'Component \'MyComponent\' is not included in a module', offset, len);
+            diagnostics !, 'Component \'MyComponent\' is not included in a module', offset, len);
       });
     });
 
@@ -86,7 +86,7 @@ describe('diagnostics', () => {
       const code = '\n@Component({template: \'<form></form>\'}) export class MyComponent {}';
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics);
+        onlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -110,7 +110,7 @@ describe('diagnostics', () => {
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
         includeDiagnostic(
-            diagnostics, 'Function calls are not supported.', '() => \'foo\'', content);
+            diagnostics !, 'Function calls are not supported.', '() => \'foo\'', content);
       });
     });
 
@@ -125,7 +125,7 @@ describe('diagnostics', () => {
           ` @Component({template: \`<div *ngIf="something === 'foo'"></div>\`}) export class MyComponent { something: 'foo' | 'bar'; }`;
       addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics);
+        onlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -135,7 +135,7 @@ describe('diagnostics', () => {
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
         includeDiagnostic(
-            diagnostics, 'Unexpected callable expression. Expected a method call', 'onClick',
+            diagnostics !, 'Unexpected callable expression. Expected a method call', 'onClick',
             content);
       });
     });
@@ -146,7 +146,7 @@ describe('diagnostics', () => {
           ` @Component({template: \`<div *ngIf="something === undefined"></div>\`}) export class MyComponent { something = 'foo'; }})`;
       addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics);
+        onlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -156,7 +156,7 @@ describe('diagnostics', () => {
           ` @Component({template: '<p> Using an invalid pipe {{data | dat}} </p>'}) export class MyComponent { data = 'some data'; }`;
       addCode(code, fileName => {
         const diagnostic =
-            ngService.getDiagnostics(fileName).filter(d => d.message.indexOf('pipe') > 0)[0];
+            ngService.getDiagnostics(fileName) !.filter(d => d.message.indexOf('pipe') > 0)[0];
         expect(diagnostic).not.toBeUndefined();
         expect(diagnostic.span.end - diagnostic.span.start).toBeLessThan(11);
       });
@@ -171,7 +171,7 @@ describe('diagnostics', () => {
       try {
         cb(fileName, newContent);
       } finally {
-        mockHost.override(fileName, undefined);
+        mockHost.override(fileName, undefined !);
       }
     }
 
