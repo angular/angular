@@ -121,7 +121,7 @@ _global.beforeEach(function() {
         }
       };
 
-      function compareMap(actual: any, expected: any) {
+      function compareMap(actual: any, expected: any): boolean|undefined {
         if (actual instanceof Map) {
           let pass = actual.size === expected.size;
           if (pass) {
@@ -270,5 +270,5 @@ function elementText(n: any): string {
     return elementText(getDOM().childNodesAsList(n));
   }
 
-  return getDOM().getText(n);
+  return getDOM().getText(n) !;
 }

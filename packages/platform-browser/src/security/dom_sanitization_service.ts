@@ -100,7 +100,9 @@ export abstract class DomSanitizer implements Sanitizer {
    * by replacing URLs that have an unsafe protocol part (such as `javascript:`). The implementation
    * is responsible to make sure that the value can definitely be safely used in the given context.
    */
-  abstract sanitize(context: SecurityContext, value: any): string;
+  abstract sanitize(context: SecurityContext, value: null): null;
+  abstract sanitize(context: SecurityContext, value: SafeValue|string): string;
+  abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
 
   /**
    * Bypass security and trust the given value to be safe HTML. Only use this when the bound HTML
@@ -152,7 +154,10 @@ export abstract class DomSanitizer implements Sanitizer {
 export class DomSanitizerImpl extends DomSanitizer {
   constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
 
-  sanitize(ctx: SecurityContext, value: any): string {
+  sanitize(context: SecurityContext, value: null): null;
+  sanitize(context: SecurityContext, value: SafeValue|string): string;
+  sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
+  sanitize(ctx: SecurityContext, value: any): string|null {
     if (value == null) return null;
     switch (ctx) {
       case SecurityContext.NONE:

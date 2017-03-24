@@ -185,7 +185,7 @@ export function main() {
 
           it('should allow the use of fakeAsync',
              fakeAsync(inject([FancyService], (service: FancyService) => {
-               let value: string;
+               let value: string = undefined !;
                service.getAsyncValue().then((val) => value = val);
                tick();
                expect(value).toEqual('async value');
@@ -449,7 +449,7 @@ export function main() {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void) => {
+        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void): any => {
           const done = <DoneFn>(() => resolve(null));
           done.fail = (err) => reject(err);
           fn(done);
@@ -497,7 +497,7 @@ export function main() {
         const itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(inject([], () => {
-             let reject: (error: any) => void;
+             let reject: (error: any) => void = undefined !;
              const promise = new Promise((_, rej) => reject = rej);
              const p = promise.then(() => expect(1).toEqual(2));
 
