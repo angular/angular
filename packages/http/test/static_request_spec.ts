@@ -17,7 +17,8 @@ export function main() {
   describe('Request', () => {
     describe('detectContentType', () => {
       it('should return ContentType.NONE', () => {
-        const req = new Request(new RequestOptions({url: 'test', method: 'GET', body: null}));
+        const req =
+            new Request(new RequestOptions({url: 'test', method: 'GET', body: null}) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.NONE);
       });
@@ -28,7 +29,7 @@ export function main() {
           method: 'GET',
           body: null,
           headers: new Headers({'content-type': 'application/json'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.JSON);
       });
@@ -39,7 +40,7 @@ export function main() {
           method: 'GET',
           body: null,
           headers: new Headers({'content-type': 'application/x-www-form-urlencoded'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.FORM);
       });
@@ -50,7 +51,7 @@ export function main() {
           method: 'GET',
           body: null,
           headers: new Headers({'content-type': 'multipart/form-data'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.FORM_DATA);
       });
@@ -61,7 +62,7 @@ export function main() {
           method: 'GET',
           body: null,
           headers: new Headers({'content-type': 'text/plain'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.TEXT);
       });
@@ -72,7 +73,7 @@ export function main() {
           method: 'GET',
           body: null,
           headers: new Headers({'content-type': 'application/octet-stream'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.BLOB);
       });
@@ -83,7 +84,7 @@ export function main() {
           method: 'GET',
           body: new ArrayBuffer(1),
           headers: new Headers({'content-type': 'application/octet-stream'})
-        }));
+        }) as any);
 
         expect(req.detectContentType()).toEqual(ContentType.ARRAY_BUFFER);
       });
@@ -95,7 +96,7 @@ export function main() {
         method: 'GET',
         body: null,
         headers: new Headers({'content-type': 'application/json'})
-      }));
+      }) as any);
 
       expect(req.text()).toEqual('');
     });
@@ -104,7 +105,7 @@ export function main() {
       const reqOptions = new RequestOptions(
           {url: 'test', method: 'GET', headers: new Headers({'content-type': 'application/json'})});
       delete reqOptions.body;
-      const req = new Request(reqOptions);
+      const req = new Request(reqOptions as any);
 
       expect(req.text()).toEqual('');
     });

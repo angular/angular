@@ -175,7 +175,7 @@ export function main() {
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
+                     (res: Response) => { expect(res.text()).toBe('base response'); }, null !,
                      () => { async.done(); });
            }));
 
@@ -188,7 +188,7 @@ export function main() {
              });
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
+                     (res: Response) => { expect(res.text()).toBe('base response'); }, null !,
                      () => { async.done(); });
            }));
 
