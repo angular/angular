@@ -71,7 +71,7 @@ describe('hover', () => {
   function hover(code: string, hoverText: string) {
     addCode(code, fileName => {
       let tests = 0;
-      const markers = mockHost.getReferenceMarkers(fileName);
+      const markers = mockHost.getReferenceMarkers(fileName) !;
       const keys = Object.keys(markers.references).concat(Object.keys(markers.definitions));
       for (const referenceName of keys) {
         const references = (markers.references[referenceName] ||
@@ -96,7 +96,7 @@ describe('hover', () => {
     try {
       cb(fileName, newContent);
     } finally {
-      mockHost.override(fileName, undefined);
+      mockHost.override(fileName, undefined !);
     }
   }
 

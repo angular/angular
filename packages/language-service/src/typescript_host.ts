@@ -126,14 +126,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return this.templateReferences;
   }
 
-  getTemplateAt(fileName: string, position: number): TemplateSource|undefined {
+  getTemplateAt(fileName: string, position: number): TemplateSource {
     let sourceFile = this.getSourceFile(fileName);
     if (sourceFile) {
       this.context = sourceFile.fileName;
       let node = this.findNode(sourceFile, position);
       if (node) {
         return this.getSourceFromNode(
-            fileName, this.host.getScriptVersion(sourceFile.fileName), node);
+            fileName, this.host.getScriptVersion(sourceFile.fileName), node) !;
       }
     } else {
       this.ensureTemplateMap();
@@ -141,9 +141,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const componentType = this.fileToComponent.get(fileName);
       if (componentType) {
         return this.getSourceFromType(
-            fileName, this.host.getScriptVersion(fileName), componentType);
+            fileName, this.host.getScriptVersion(fileName), componentType) !;
       }
     }
+    return null !;
   }
 
   getAnalyzedModules(): NgAnalyzedModules {
@@ -220,11 +221,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   updateAnalyzedModules() {
     this.validate();
     if (this.modulesOutOfDate) {
-      this.analyzedModules = null;
-      this._reflector = null;
-      this._staticSymbolResolver = null;
-      this.templateReferences = null;
-      this.fileToComponent = null;
+      this.analyzedModules = null !;
+      this._reflector = null !;
+      this._staticSymbolResolver = null !;
+      this.templateReferences = null !;
+      this.fileToComponent = null !;
       this.ensureAnalyzedModules();
       this.modulesOutOfDate = false;
     }
@@ -249,10 +250,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private clearCaches() {
-    this._checker = null;
+    this._checker = null !;
     this._typeCache = [];
-    this._resolver = null;
-    this.collectedErrors = null;
+    this._resolver = null !;
+    this.collectedErrors = null !;
     this.modulesOutOfDate = true;
   }
 
@@ -265,7 +266,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       for (const module of ngModuleSummary.ngModules) {
         for (const directive of module.declaredDirectives) {
           const {metadata, annotation} =
-              this.resolver.getNonNormalizedDirectiveMetadata(directive.reference);
+              this.resolver.getNonNormalizedDirectiveMetadata(directive.reference)!;
           if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
             const templateName = urlResolver.resolve(
                 componentModuleUrl(this.reflector, directive.reference, annotation),
@@ -322,7 +323,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
           return this.getSourceFromDeclaration(
-              fileName, version, this.stringOf(node), shrink(spanOf(node)),
+              fileName, version, this.stringOf(node) !, shrink(spanOf(node)),
               this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
               declaration, node, sourceFile);
         }
@@ -336,7 +337,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     let result: TemplateSource|undefined = undefined;
     const declaration = this.getTemplateClassFromStaticSymbol(type);
     if (declaration) {
-      const snapshot = this.host.getScriptSnapshot(fileName);
+      const snapshot = this.host.getScriptSnapshot(fileName) !;
       const source = snapshot.getText(0, snapshot.getLength());
       result = this.getSourceFromDeclaration(
           fileName, version, source, {start: 0, end: source.length}, type, declaration, declaration,
@@ -389,14 +390,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       const summaryResolver = new AotSummaryResolver(
           {
-            loadSummary(filePath: string) { return null; },
-            isSourceFile(sourceFilePath: string) { return true; },
-            getOutputFileName(sourceFilePath: string) { return null; }
+            loadSummary(filePath: string) { return null !; },
+            isSourceFile(sourceFilePath: string) { return true !; },
+            getOutputFileName(sourceFilePath: string) { return null !; }
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(
-          this.reflectorHost, this._staticSymbolCache, summaryResolver,
-          (e, filePath) => this.collectError(e, filePath));
+          this.reflectorHost as any, this._staticSymbolCache, summaryResolver,
+          (e, filePath) => this.collectError(e, filePath!));
     }
     return result;
   }
@@ -405,7 +406,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     let result = this._reflector;
     if (!result) {
       result = this._reflector = new StaticReflector(
-          this.staticSymbolResolver, [], [], (e, filePath) => this.collectError(e, filePath));
+          this.staticSymbolResolver, [], [], (e, filePath) => this.collectError(e, filePath!));
     }
     return result;
   }
@@ -416,7 +417,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const declarationNode = ts.forEachChild(source, child => {
         if (child.kind === ts.SyntaxKind.ClassDeclaration) {
           const classDeclaration = child as ts.ClassDeclaration;
-          if (classDeclaration.name.text === type.name) {
+          if (classDeclaration.name !.text === type.name) {
             return classDeclaration;
           }
         }
@@ -427,14 +428,15 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return undefined;
   }
 
-  private static missingTemplate = <[ts.ClassDeclaration, ts.Expression]>[];
+  private static missingTemplate: [ts.ClassDeclaration | undefined, ts.Expression|undefined] =
+      [undefined, undefined];
 
   /**
    * Given a template string node, see if it is an Angular template string, and if so return the
    * containing class.
    */
   private getTemplateClassDeclFromNode(currentToken: ts.Node):
-      [ts.ClassDeclaration, ts.Expression] {
+      [ts.ClassDeclaration | undefined, ts.Expression|undefined] {
     // Verify we are in a 'template' property assignment, in an object literal, which is an call
     // arg, in a decorator
     let parentNode = currentToken.parent;  // PropertyAssignment
@@ -496,7 +498,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
               try {
                 if (this.resolver.isDirective(staticSymbol as any)) {
                   const {metadata} =
-                      this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any);
+                      this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any)!;
                   const declarationSpan = spanOf(target);
                   return {
                     type: staticSymbol,
@@ -586,7 +588,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       private program: ts.Program, private checker: ts.TypeChecker, private source: ts.SourceFile,
       private fetchPipes: () => SymbolTable) {}
 
-  getTypeKind(symbol: Symbol): BuiltinType { return typeKindOf(this.getTsTypeOf(symbol)); }
+  getTypeKind(symbol: Symbol): BuiltinType { return typeKindOf(this.getTsTypeOf(symbol) !); }
 
   getBuiltinType(kind: BuiltinType): Symbol {
     // TODO: Replace with typeChecker API when available.
@@ -614,7 +616,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return this.getBuiltinType(BuiltinType.Any);
   }
 
-  getElementType(type: Symbol): Symbol {
+  getElementType(type: Symbol): Symbol|undefined {
     if (type instanceof TypeWrapper) {
       const elementType = getTypeParameterOf(type.tsType, 'Array');
       if (elementType) {
@@ -636,7 +638,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return result;
   }
 
-  getTemplateContext(type: StaticSymbol): SymbolTable {
+  getTemplateContext(type: StaticSymbol): SymbolTable|undefined {
     const context: TypeContext = {node: this.source, program: this.program, checker: this.checker};
     const typeSymbol = findClassSymbolInContext(type, context);
     if (typeSymbol) {
@@ -647,7 +649,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
 
   getTypeSymbol(type: StaticSymbol): Symbol {
     const context: TypeContext = {node: this.source, program: this.program, checker: this.checker};
-    const typeSymbol = findClassSymbolInContext(type, context);
+    const typeSymbol = findClassSymbolInContext(type, context) !;
     return new SymbolWrapper(typeSymbol, context);
   }
 
@@ -665,15 +667,17 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return result;
   }
 
-  getSpanAt(line: number, column: number): Span { return spanAt(this.source, line, column); }
+  getSpanAt(line: number, column: number): Span|undefined {
+    return spanAt(this.source, line, column);
+  }
 
-  private getTemplateRefContextType(type: ts.Symbol): ts.Symbol {
-    const constructor = type.members['__constructor'];
+  private getTemplateRefContextType(type: ts.Symbol): ts.Symbol|undefined {
+    const constructor = type.members !['__constructor'];
     if (constructor) {
-      const constructorDeclaration = constructor.declarations[0] as ts.ConstructorTypeNode;
+      const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
-        const type = this.checker.getTypeAtLocation(parameter.type);
-        if (type.symbol.name == 'TemplateRef' && isReferenceType(type)) {
+        const type = this.checker.getTypeAtLocation(parameter.type !);
+        if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
           if (typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
@@ -683,7 +687,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     }
   }
 
-  private getTsTypeOf(symbol: Symbol): ts.Type {
+  private getTsTypeOf(symbol: Symbol): ts.Type|undefined {
     const type = this.getTypeWrapper(symbol);
     return type && type.tsType;
   }
@@ -805,7 +809,7 @@ class SymbolWrapper implements Symbol {
 
   get definition(): Definition { return definitionFromTsSymbol(this.symbol); }
 
-  members(): SymbolTable { return new SymbolTableWrapper(this.symbol.members, this.context); }
+  members(): SymbolTable { return new SymbolTableWrapper(this.symbol.members !, this.context); }
 
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
@@ -911,7 +915,7 @@ class MapSymbolTable implements SymbolTable {
 
   add(symbol: Symbol) {
     if (this.map.has(symbol.name)) {
-      const previous = this.map.get(symbol.name);
+      const previous = this.map.get(symbol.name) !;
       this._values[this._values.indexOf(previous)] = symbol;
     }
     this.map.set(symbol.name, symbol);
@@ -935,18 +939,18 @@ class MapSymbolTable implements SymbolTable {
 class PipesTable implements SymbolTable {
   constructor(private pipes: Pipes, private context: TypeContext) {}
 
-  get size() { return this.pipes.length; }
+  get size() { return this.pipes !.length; }
 
-  get(key: string): Symbol {
-    const pipe = this.pipes.find(pipe => pipe.name == key);
+  get(key: string): Symbol|undefined {
+    const pipe = this.pipes !.find(pipe => pipe.name == key);
     if (pipe) {
       return new PipeSymbol(pipe, this.context);
     }
   }
 
-  has(key: string): boolean { return this.pipes.find(pipe => pipe.name == key) != null; }
+  has(key: string): boolean { return this.pipes !.find(pipe => pipe.name == key) != null; }
 
-  values(): Symbol[] { return this.pipes.map(pipe => new PipeSymbol(pipe, this.context)); }
+  values(): Symbol[] { return this.pipes !.map(pipe => new PipeSymbol(pipe, this.context)); }
 }
 
 class PipeSymbol implements Symbol {
@@ -975,11 +979,11 @@ class PipeSymbol implements Symbol {
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
   selectSignature(types: Symbol[]): Signature|undefined {
-    let signature = selectSignature(this.tsType, this.context, types);
+    let signature = selectSignature(this.tsType, this.context, types) !;
     if (types.length == 1) {
       const parameterType = types[0];
       if (parameterType instanceof TypeWrapper) {
-        let resultType: ts.Type = undefined;
+        let resultType: ts.Type|undefined = undefined;
         switch (this.name) {
           case 'async':
             switch (parameterType.name) {
@@ -1010,7 +1014,7 @@ class PipeSymbol implements Symbol {
     if (!type) {
       const classSymbol = this.findClassSymbol(this.pipe.symbol);
       if (classSymbol) {
-        type = this._tsType = this.findTransformMethodType(classSymbol);
+        type = this._tsType = this.findTransformMethodType(classSymbol) !;
       }
       if (!type) {
         type = this._tsType = getBuiltinTypeFromTs(BuiltinType.Any, this.context);
@@ -1019,19 +1023,19 @@ class PipeSymbol implements Symbol {
     return type;
   }
 
-  private findClassSymbol(type: StaticSymbol): ts.Symbol {
+  private findClassSymbol(type: StaticSymbol): ts.Symbol|undefined {
     return findClassSymbolInContext(type, this.context);
   }
 
-  private findTransformMethodType(classSymbol: ts.Symbol): ts.Type {
-    const transform = classSymbol.members['transform'];
+  private findTransformMethodType(classSymbol: ts.Symbol): ts.Type|undefined {
+    const transform = classSymbol.members !['transform'];
     if (transform) {
       return this.context.checker.getTypeOfSymbolAtLocation(transform, this.context.node);
     }
   }
 }
 
-function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.Symbol {
+function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.Symbol|undefined {
   const sourceFile = context.program.getSourceFile(type.filePath);
   if (sourceFile) {
     const moduleSymbol = (sourceFile as any).module || (sourceFile as any).symbol;
@@ -1048,7 +1052,7 @@ class EmptyTable implements SymbolTable {
   static instance = new EmptyTable();
 }
 
-function findTsConfig(fileName: string): string {
+function findTsConfig(fileName: string): string|undefined {
   let dir = path.dirname(fileName);
   while (fs.existsSync(dir)) {
     const candidate = path.join(dir, 'tsconfig.json');
@@ -1064,7 +1068,7 @@ function isBindingPattern(node: ts.Node): node is ts.BindingPattern {
 
 function walkUpBindingElementsAndPatterns(node: ts.Node): ts.Node {
   while (node && (node.kind === ts.SyntaxKind.BindingElement || isBindingPattern(node))) {
-    node = node.parent;
+    node = node.parent !;
   }
 
   return node;
@@ -1075,12 +1079,12 @@ function getCombinedNodeFlags(node: ts.Node): ts.NodeFlags {
 
   let flags = node.flags;
   if (node.kind === ts.SyntaxKind.VariableDeclaration) {
-    node = node.parent;
+    node = node.parent !;
   }
 
   if (node && node.kind === ts.SyntaxKind.VariableDeclarationList) {
     flags |= node.flags;
-    node = node.parent;
+    node = node.parent !;
   }
 
   if (node && node.kind === ts.SyntaxKind.VariableStatement) {
@@ -1091,7 +1095,7 @@ function getCombinedNodeFlags(node: ts.Node): ts.NodeFlags {
 }
 
 function isSymbolPrivate(s: ts.Symbol): boolean {
-  return s.valueDeclaration && isPrivate(s.valueDeclaration);
+  return !!s.valueDeclaration && isPrivate(s.valueDeclaration);
 }
 
 function getBuiltinTypeFromTs(kind: BuiltinType, context: TypeContext): ts.Type {
@@ -1154,10 +1158,10 @@ function shrink(span: Span, offset?: number) {
   return {start: span.start + offset, end: span.end - offset};
 }
 
-function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span {
+function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|undefined {
   if (line != null && column != null) {
     const position = ts.getPositionOfLineAndCharacter(sourceFile, line, column);
-    const findChild = function findChild(node: ts.Node): ts.Node {
+    const findChild = function findChild(node: ts.Node): ts.Node | undefined {
       if (node.kind > ts.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
         const betterNode = ts.forEachChild(node, findChild);
         return betterNode || node;
@@ -1184,20 +1188,20 @@ function definitionFromTsSymbol(symbol: ts.Symbol): Definition {
   }
 }
 
-function parentDeclarationOf(node: ts.Node): ts.Node {
+function parentDeclarationOf(node: ts.Node): ts.Node|undefined {
   while (node) {
     switch (node.kind) {
       case ts.SyntaxKind.ClassDeclaration:
       case ts.SyntaxKind.InterfaceDeclaration:
         return node;
       case ts.SyntaxKind.SourceFile:
-        return null;
+        return undefined;
     }
-    node = node.parent;
+    node = node.parent !;
   }
 }
 
-function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol {
+function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol|undefined {
   if (symbol.getFlags() & ts.SymbolFlags.ClassMember && symbol.declarations) {
     for (const declaration of symbol.declarations) {
       const parent = parentDeclarationOf(declaration);
@@ -1211,7 +1215,7 @@ function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol {
   }
 }
 
-function getTypeParameterOf(type: ts.Type, name: string): ts.Type {
+function getTypeParameterOf(type: ts.Type, name: string): ts.Type|undefined {
   if (type && type.symbol && type.symbol.name == name) {
     const typeArguments: ts.Type[] = (type as any).typeArguments;
     if (typeArguments && typeArguments.length <= 1) {
@@ -1235,10 +1239,10 @@ function typeKindOf(type: ts.Type): BuiltinType {
       return BuiltinType.Null;
     } else if (type.flags & ts.TypeFlags.Union) {
       // If all the constituent types of a union are the same kind, it is also that kind.
-      let candidate: BuiltinType;
+      let candidate: BuiltinType = undefined !;
       const unionType = type as ts.UnionType;
       if (unionType.types.length > 0) {
-        candidate = typeKindOf(unionType.types[0]);
+        candidate = typeKindOf(unionType.types[0]) !;
         for (const subType of unionType.types) {
           if (candidate != typeKindOf(subType)) {
             return BuiltinType.Other;
