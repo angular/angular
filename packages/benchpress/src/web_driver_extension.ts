@@ -43,7 +43,7 @@ export abstract class WebDriverExtension {
       {
         provide: WebDriverExtension,
         useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
-          let delegate: WebDriverExtension;
+          let delegate: WebDriverExtension = undefined !;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {
               delegate = extension;
@@ -64,7 +64,7 @@ export abstract class WebDriverExtension {
 
   timeBegin(name: string): Promise<any> { throw new Error('NYI'); }
 
-  timeEnd(name: string, restartName: string): Promise<any> { throw new Error('NYI'); }
+  timeEnd(name: string, restartName: string|null): Promise<any> { throw new Error('NYI'); }
 
   /**
    * Format:
