@@ -16,7 +16,7 @@ export function main() {
     let fixture: ComponentFixture<TestComponent>;
 
 
-    describe('directives', () => {
+    describe('directiv  es', () => {
       it('should support dotted selectors', async(() => {
            @Directive({selector: '[dot.name]'})
            class MyDir {

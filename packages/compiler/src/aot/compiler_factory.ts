@@ -70,15 +70,16 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       console, symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
   const importResolver = {
-    getImportAs: (symbol: StaticSymbol) => symbolResolver.getImportAs(symbol),
+    getImportAs: (symbol: StaticSymbol) => symbolResolver.getImportAs(symbol) !,
     fileNameToModuleName: (fileName: string, containingFilePath: string) =>
                               compilerHost.fileNameToModuleName(fileName, containingFilePath),
-    getTypeArity: (symbol: StaticSymbol) => symbolResolver.getTypeArity(symbol)
+    getTypeArity: (symbol: StaticSymbol) => symbolResolver.getTypeArity(symbol) !
   };
   const viewCompiler = new ViewCompiler(config, elementSchemaRegistry);
   const compiler = new AotCompiler(
       config, compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver), viewCompiler,
       new NgModuleCompiler(), new TypeScriptEmitter(importResolver), summaryResolver,
-      options.locale, options.i18nFormat, options.genFilePreamble, symbolResolver);
+      options.locale || null, options.i18nFormat || null, options.genFilePreamble || null,
+      symbolResolver);
   return {compiler, reflector: staticReflector};
 }

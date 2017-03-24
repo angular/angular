@@ -112,7 +112,7 @@ export class Identifiers {
   static createComponentFactory: IdentifierSpec = {name: 'ɵccf', moduleUrl: CORE, runtime: ɵccf};
 }
 
-export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
+export function assetUrl(pkg: string, path: string | null = null, type: string = 'src'): string {
   if (path == null) {
     return `@angular/${pkg}`;
   } else {

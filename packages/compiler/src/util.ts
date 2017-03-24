@@ -50,6 +50,14 @@ export function visitValue(value: any, visitor: ValueVisitor, context: any): any
   return visitor.visitOther(value, context);
 }
 
+export function isDefined(val: any): boolean {
+  return val !== null && val !== undefined;
+}
+
+export function noUndefined<T>(val: T | undefined): T {
+  return val === undefined ? null ! : val;
+}
+
 export interface ValueVisitor {
   visitArray(arr: any[], context: any): any;
   visitStringMap(map: {[key: string]: any}, context: any): any;
@@ -71,7 +79,7 @@ export class ValueTransformer implements ValueVisitor {
 }
 
 export class SyncAsyncResult<T> {
-  constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
+  constructor(public syncResult: T|null, public asyncResult: Promise<T>|null = null) {
     if (!asyncResult) {
       this.asyncResult = Promise.resolve(syncResult);
     }

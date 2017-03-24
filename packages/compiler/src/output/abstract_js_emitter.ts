@@ -70,7 +70,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `};`);
   }
 
-  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string {
+  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');
     } else if (ast.builtin === o.BuiltinVar.Super) {
@@ -91,10 +91,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ast.value.visitExpression(this, ctx);
     return null;
   }
-  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string {
+  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string|null {
     const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.currentClass.parent.visitExpression(this, ctx);
+      ctx.currentClass !.parent !.visitExpression(this, ctx);
       ctx.print(expr, `.call(this`);
       if (expr.args.length > 0) {
         ctx.print(expr, `, `);

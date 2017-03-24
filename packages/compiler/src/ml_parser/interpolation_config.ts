@@ -9,7 +9,7 @@
 import {assertInterpolationSymbols} from '../assertions';
 
 export class InterpolationConfig {
-  static fromArray(markers: [string, string]): InterpolationConfig {
+  static fromArray(markers: [string, string]|null): InterpolationConfig {
     if (!markers) {
       return DEFAULT_INTERPOLATION_CONFIG;
     }

@@ -360,7 +360,7 @@ describe('StaticReflector', () => {
   it('should record data about the error in the exception', () => {
     let threw = false;
     try {
-      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts');
+      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts') !;
       expect(metadata).toBeDefined();
       const moduleMetadata: any = metadata[0]['metadata'];
       expect(moduleMetadata).toBeDefined();

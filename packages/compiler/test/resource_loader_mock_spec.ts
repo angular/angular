@@ -16,7 +16,7 @@ export function main() {
     beforeEach(() => { resourceLoader = new MockResourceLoader(); });
 
     function expectResponse(
-        request: Promise<string>, url: string, response: string, done: () => void = null) {
+        request: Promise<string>, url: string, response: string, done: () => void = null !) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -52,7 +52,7 @@ export function main() {
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const url = '/foo';
-         const response: string = null;
+         const response: string = null !;
          resourceLoader.when(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -70,7 +70,7 @@ export function main() {
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const url = '/foo';
-         const response: string = null;
+         const response: string = null !;
          resourceLoader.expect(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();

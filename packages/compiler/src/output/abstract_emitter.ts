@@ -14,18 +14,18 @@ import {SourceMapGenerator} from './source_map';
 const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
 const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const _INDENT_WITH = '  ';
-export const CATCH_ERROR_VAR = o.variable('error');
-export const CATCH_STACK_VAR = o.variable('stack');
+export const CATCH_ERROR_VAR = o.variable('error', null, null);
+export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 export abstract class OutputEmitter {
   abstract emitStatements(
       srcFilePath: string, genFilePath: string, stmts: o.Statement[], exportedVars: string[],
-      preamble?: string): string;
+      preamble?: string|null): string;
 }
 
 class _EmittedLine {
   parts: string[] = [];
-  srcSpans: ParseSourceSpan[] = [];
+  srcSpans: (ParseSourceSpan|null)[] = [];
   constructor(public indent: number) {}
 }
 
@@ -45,13 +45,13 @@ export class EmitterVisitorContext {
 
   isExportedVar(varName: string): boolean { return this._exportedVars.indexOf(varName) !== -1; }
 
-  println(from?: {sourceSpan?: ParseSourceSpan}|null, lastPart: string = ''): void {
-    this.print(from, lastPart, true);
+  println(from?: {sourceSpan: ParseSourceSpan | null}|null, lastPart: string = ''): void {
+    this.print(from || null, lastPart, true);
   }
 
   lineIsEmpty(): boolean { return this._currentLine.parts.length === 0; }
 
-  print(from: {sourceSpan?: ParseSourceSpan}|null, part: string, newLine: boolean = false) {
+  print(from: {sourceSpan: ParseSourceSpan | null}|null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
       this._currentLine.srcSpans.push(from && from.sourceSpan || null);
@@ -79,9 +79,9 @@ export class EmitterVisitorContext {
 
   pushClass(clazz: o.ClassStmt) { this._classes.push(clazz); }
 
-  popClass(): o.ClassStmt { return this._classes.pop(); }
+  popClass(): o.ClassStmt { return this._classes.pop() !; }
 
-  get currentClass(): o.ClassStmt {
+  get currentClass(): o.ClassStmt|null {
     return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
   }
 
@@ -130,7 +130,7 @@ export class EmitterVisitorContext {
       }
 
       while (spanIdx < spans.length) {
-        const span = spans[spanIdx];
+        const span = spans[spanIdx] !;
         const source = span.start.file;
         const sourceLine = span.start.line;
         const sourceCol = span.start.col;
@@ -286,7 +286,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
-    let varName = ast.name;
+    let varName = ast.name !;
     if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
@@ -296,10 +296,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           varName = 'this';
           break;
         case o.BuiltinVar.CatchError:
-          varName = CATCH_ERROR_VAR.name;
+          varName = CATCH_ERROR_VAR.name !;
           break;
         case o.BuiltinVar.CatchStack:
-          varName = CATCH_STACK_VAR.name;
+          varName = CATCH_STACK_VAR.name !;
           break;
         default:
           throw new Error(`Unknown builtin variable ${ast.builtin}`);
@@ -335,7 +335,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, '? ');
     ast.trueCase.visitExpression(this, ctx);
     ctx.print(ast, ': ');
-    ast.falseCase.visitExpression(this, ctx);
+    ast.falseCase !.visitExpression(this, ctx);
     ctx.print(ast, `)`);
     return null;
   }

@@ -31,16 +31,16 @@ export function createClassStmt(config: {
       new o.ClassMethod(null, config.ctorParams || [], superCtorStmts.concat(builder.ctorStmts));
 
   return new o.ClassStmt(
-      config.name, config.parent, builder.fields, builder.getters, ctor, builder.methods,
+      config.name, config.parent || null, builder.fields, builder.getters, ctor, builder.methods,
       config.modifiers || [], config.sourceSpan);
 }
 
 function concatClassBuilderParts(builders: ClassBuilderPart[]) {
   return {
-    fields: [].concat(...builders.map(builder => builder.fields || [])),
-    methods: [].concat(...builders.map(builder => builder.methods || [])),
-    getters: [].concat(...builders.map(builder => builder.getters || [])),
-    ctorStmts: [].concat(...builders.map(builder => builder.ctorStmts || [])),
+    fields: [].concat(...(builders.map((builder => builder.fields || [])) as any)),
+    methods: [].concat(...(builders.map(builder => builder.methods || []) as any)),
+    getters: [].concat(...(builders.map(builder => builder.getters || []) as any)),
+    ctorStmts: [].concat(...(builders.map(builder => builder.ctorStmts || []) as any)),
   };
 }
 

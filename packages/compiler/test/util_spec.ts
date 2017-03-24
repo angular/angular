@@ -15,7 +15,7 @@ export function main() {
       it('async value should default to Promise.resolve(syncValue)', fakeAsync(() => {
            const syncValue = {};
            const sar = new SyncAsyncResult(syncValue);
-           sar.asyncResult.then((v: any) => expect(v).toBe(syncValue));
+           sar.asyncResult !.then((v: any) => expect(v).toBe(syncValue));
          }));
     });
 

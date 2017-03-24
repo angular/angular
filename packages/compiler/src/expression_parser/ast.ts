@@ -185,7 +185,7 @@ export class SafeMethodCall extends AST {
 }
 
 export class FunctionCall extends AST {
-  constructor(span: ParseSpan, public target: AST, public args: any[]) { super(span); }
+  constructor(span: ParseSpan, public target: AST|null, public args: any[]) { super(span); }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitFunctionCall(this, context);
   }
@@ -193,7 +193,7 @@ export class FunctionCall extends AST {
 
 export class ASTWithSource extends AST {
   constructor(
-      public ast: AST, public source: string, public location: string,
+      public ast: AST, public source: string|null, public location: string,
       public errors: ParserError[]) {
     super(new ParseSpan(0, source == null ? 0 : source.length));
   }
@@ -248,7 +248,7 @@ export class RecursiveAstVisitor implements AstVisitor {
     return null;
   }
   visitFunctionCall(ast: FunctionCall, context: any): any {
-    ast.target.visit(this);
+    ast.target !.visit(this);
     this.visitAll(ast.args, context);
     return null;
   }
@@ -337,7 +337,7 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitFunctionCall(ast: FunctionCall, context: any): AST {
-    return new FunctionCall(ast.span, ast.target.visit(this), this.visitAll(ast.args));
+    return new FunctionCall(ast.span, ast.target !.visit(this), this.visitAll(ast.args));
   }
 
   visitLiteralArray(ast: LiteralArray, context: any): AST {

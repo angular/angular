@@ -133,7 +133,7 @@ class Serializer extends ValueTransformer {
       summaries: this.processedSummaries,
       symbols: this.symbols.map((symbol, index) => {
         symbol.assertNoMembers();
-        let importAs: string;
+        let importAs: string = undefined !;
         if (this.summaryResolver.isLibraryFile(symbol.filePath)) {
           importAs = `${symbol.name}_${index}`;
           exportAs.push({symbol, exportAs: importAs});

@@ -28,18 +28,18 @@ export function main() {
 
   function parseTemplateBindingsResult(
       text: string, location: any = null, prefix?: string): TemplateBindingParseResult {
-    return createParser().parseTemplateBindings(prefix, text, location);
+    return createParser().parseTemplateBindings(prefix || null, text, location);
   }
   function parseTemplateBindings(
       text: string, location: any = null, prefix?: string): TemplateBinding[] {
     return parseTemplateBindingsResult(text, location, prefix).templateBindings;
   }
 
-  function parseInterpolation(text: string, location: any = null): ASTWithSource {
+  function parseInterpolation(text: string, location: any = null): ASTWithSource|null {
     return createParser().parseInterpolation(text, location);
   }
 
-  function splitInterpolation(text: string, location: any = null): SplitInterpolation {
+  function splitInterpolation(text: string, location: any = null): SplitInterpolation|null {
     return createParser().splitInterpolation(text, location);
   }
 
@@ -48,7 +48,7 @@ export function main() {
   }
 
   function checkInterpolation(exp: string, expected?: string) {
-    const ast = parseInterpolation(exp);
+    const ast = parseInterpolation(exp) !;
     if (expected == null) expected = exp;
     expect(unparse(ast)).toEqual(expected);
     validate(ast);
@@ -475,7 +475,7 @@ export function main() {
          () => { expect(parseInterpolation('nothing')).toBe(null); });
 
       it('should parse no prefix/suffix interpolation', () => {
-        const ast = parseInterpolation('{{a}}').ast as Interpolation;
+        const ast = parseInterpolation('{{a}}') !.ast as Interpolation;
         expect(ast.strings).toEqual(['', '']);
         expect(ast.expressions.length).toEqual(1);
         expect(ast.expressions[0].name).toEqual('a');
@@ -483,18 +483,18 @@ export function main() {
 
       it('should parse prefix/suffix with multiple interpolation', () => {
         const originalExp = 'before {{ a }} middle {{ b }} after';
-        const ast = parseInterpolation(originalExp).ast;
+        const ast = parseInterpolation(originalExp) !.ast;
         expect(unparse(ast)).toEqual(originalExp);
         validate(ast);
       });
 
       it('should report empty interpolation expressions', () => {
         expectError(
-            parseInterpolation('{{}}'),
+            parseInterpolation('{{}}') !,
             'Blank expressions are not allowed in interpolated strings');
 
         expectError(
-            parseInterpolation('foo {{  }}'),
+            parseInterpolation('foo {{  }}') !,
             'Parser Error: Blank expressions are not allowed in interpolated strings');
       });
 
@@ -507,7 +507,8 @@ export function main() {
 
       it('should support custom interpolation', () => {
         const parser = new Parser(new Lexer());
-        const ast = parser.parseInterpolation('{% a %}', null, {start: '{%', end: '%}'}).ast as any;
+        const ast =
+            parser.parseInterpolation('{% a %}', null, {start: '{%', end: '%}'}) !.ast as any;
         expect(ast.strings).toEqual(['', '']);
         expect(ast.expressions.length).toEqual(1);
         expect(ast.expressions[0].name).toEqual('a');
@@ -586,12 +587,12 @@ export function main() {
 
     describe('offsets', () => {
       it('should retain the offsets of an interpolation', () => {
-        const interpolations = splitInterpolation('{{a}}  {{b}}  {{c}}');
+        const interpolations = splitInterpolation('{{a}}  {{b}}  {{c}}') !;
         expect(interpolations.offsets).toEqual([2, 9, 16]);
       });
 
       it('should retain the offsets into the expression AST of interpolations', () => {
-        const source = parseInterpolation('{{a}}  {{b}}  {{c}}');
+        const source = parseInterpolation('{{a}}  {{b}}  {{c}}') !;
         const interpolation = source.ast as Interpolation;
         expect(interpolation.expressions.map(e => e.span.start)).toEqual([2, 9, 16]);
       });

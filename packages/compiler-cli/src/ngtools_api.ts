@@ -92,9 +92,9 @@ export class NgTools_InternalApi_NG_2 {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
     const cliOptions: NgcCliOptions = {
-      i18nFormat: options.i18nFormat,
-      i18nFile: options.i18nFile,
-      locale: options.locale,
+      i18nFormat: options.i18nFormat !,
+      i18nFile: options.i18nFile !,
+      locale: options.locale !,
       basePath: options.basePath
     };
 
@@ -148,6 +148,6 @@ export class NgTools_InternalApi_NG_2 {
     const extractor = Extractor.create(
         options.angularCompilerOptions, options.program, options.host, locale, hostContext);
 
-    return extractor.extract(options.i18nFormat, options.outFile || null);
+    return extractor.extract(options.i18nFormat !, options.outFile || null);
   }
 }

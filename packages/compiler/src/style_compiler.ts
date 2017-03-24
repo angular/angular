@@ -44,15 +44,16 @@ export class StyleCompiler {
   constructor(private _urlResolver: UrlResolver) {}
 
   compileComponent(comp: CompileDirectiveMetadata): StylesCompileResult {
+    const template = comp.template !;
     const externalStylesheets: CompiledStylesheet[] = [];
     const componentStylesheet: CompiledStylesheet = this._compileStyles(
         comp, new CompileStylesheetMetadata({
-          styles: comp.template.styles,
-          styleUrls: comp.template.styleUrls,
+          styles: template.styles,
+          styleUrls: template.styleUrls,
           moduleUrl: identifierModuleUrl(comp.type)
         }),
         true);
-    comp.template.externalStylesheets.forEach((stylesheetMeta) => {
+    template.externalStylesheets.forEach((stylesheetMeta) => {
       const compiledStylesheet = this._compileStyles(comp, stylesheetMeta, false);
       externalStylesheets.push(compiledStylesheet);
     });
@@ -62,7 +63,7 @@ export class StyleCompiler {
   private _compileStyles(
       comp: CompileDirectiveMetadata, stylesheet: CompileStylesheetMetadata,
       isComponentStylesheet: boolean): CompiledStylesheet {
-    const shim = comp.template.encapsulation === ViewEncapsulation.Emulated;
+    const shim = comp.template !.encapsulation === ViewEncapsulation.Emulated;
     const styleExpressions =
         stylesheet.styles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
     const dependencies: StylesCompileDependency[] = [];
@@ -87,7 +88,7 @@ export class StyleCompiler {
   }
 }
 
-function getStylesVarName(component: CompileDirectiveMetadata): string {
+function getStylesVarName(component: CompileDirectiveMetadata | null): string {
   let result = `styles`;
   if (component) {
     result += `_${identifierName(component.type)}`;
