@@ -46,11 +46,11 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod|string;
+  method: RequestMethod|string|null;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
-  headers: Headers;
+  headers: Headers|null;
   /**
    * Body to be used when creating a {@link Request}.
    */
@@ -58,7 +58,7 @@ export class RequestOptions {
   /**
    * Url with which to perform a {@link Request}.
    */
-  url: string;
+  url: string|null;
   /**
    * Search parameters to be included in a {@link Request}.
    */
@@ -74,23 +74,23 @@ export class RequestOptions {
   /**
    * Enable use credentials for a {@link Request}.
    */
-  withCredentials: boolean;
+  withCredentials: boolean|null;
   /*
    * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
    */
-  responseType: ResponseContentType;
+  responseType: ResponseContentType|null;
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(
       {method, headers, body, url, search, params, withCredentials,
        responseType}: RequestOptionsArgs = {}) {
-    this.method = method != null ? normalizeMethodName(method) : null;
-    this.headers = headers != null ? headers : null;
-    this.body = body != null ? body : null;
-    this.url = url != null ? url : null;
+    this.method = method ? normalizeMethodName(method) : null;
+    this.headers = headers ? headers : null;
+    this.body = body ? body : null;
+    this.url = url ? url : null;
     this.params = this._mergeSearchParams(params || search);
-    this.withCredentials = withCredentials != null ? withCredentials : null;
-    this.responseType = responseType != null ? responseType : null;
+    this.withCredentials = withCredentials ? withCredentials : null;
+    this.responseType = responseType ? responseType : null;
   }
 
   /**
@@ -132,8 +132,8 @@ export class RequestOptions {
     });
   }
 
-  private _mergeSearchParams(params: string|URLSearchParams|
-                             {[key: string]: any | any[]}): URLSearchParams {
+  private _mergeSearchParams(params?: string|URLSearchParams|{[key: string]: any | any[]}|
+                             null): URLSearchParams {
     if (!params) return this.params;
 
     if (params instanceof URLSearchParams) {
