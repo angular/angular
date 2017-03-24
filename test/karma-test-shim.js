@@ -4,12 +4,12 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 
 __karma__.loaded = function () {};
 
-var baseDir = '/base/dist/';
-var configFile = baseDir + '@angular/material/system-config-spec.js';
+var baseDir = '/base';
+var configFile = baseDir + '/dist/packages/material/system-config-spec.js';
 var specFiles = Object.keys(window.__karma__.files).filter(isMaterialSpecFile);
 
 // Configure the base path for dist/
-System.config({baseURL: baseDir});
+System.config({ baseURL: baseDir });
 
 // Load the spec SystemJS configuration file.
 System.import(configFile)
@@ -28,7 +28,7 @@ function runMaterialSpecs() {
 
 /** Whether the specified file is part of Angular Material. */
 function isMaterialSpecFile(path) {
-  return path.slice(-8) === '.spec.js' && path.indexOf('vendor') === -1;
+  return path.slice(-8) === '.spec.js' && path.indexOf('node_modules') === -1;
 }
 
 /** Configures Angular's TestBed. */

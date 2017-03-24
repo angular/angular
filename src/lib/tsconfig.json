@@ -1,31 +1,30 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "declaration": true,
-    "emitDecoratorMetadata": true,
+    "stripInternal": false,
     "experimentalDecorators": true,
-    "lib": ["es6", "es2015", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noImplicitAny": true,
-    "outDir": "../../dist/@angular/material",
+    "outDir": "../../dist/packages/material",
+    "paths": {},
     "rootDir": ".",
     "sourceMap": true,
-    "target": "es6",
     "inlineSources": true,
-    "stripInternal": false,
-    "baseUrl": "",
-    "typeRoots": [
-      "../../node_modules/@types/!(node)"
-    ],
-    "types": [
-      "jasmine",
-      "rx/rx.all"
-    ]
+    "target": "es2015",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    "types": []
   },
+  "files": [
+    "public_api.ts",
+    "typings.d.ts"
+  ],
   "angularCompilerOptions": {
-    "genDir": "../../dist",
-    "skipTemplateCodegen": true,
-    "debug": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/material",
+    "skipTemplateCodegen": true
   }
 }

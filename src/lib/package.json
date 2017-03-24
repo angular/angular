@@ -3,8 +3,9 @@
   "version": "2.0.0-beta.2",
   "description": "Angular Material",
   "main": "./bundles/material.umd.js",
-  "module": "./index.js",
-  "typings": "./index.d.ts",
+  "module": "./@angular/material.es5.js",
+  "es2015": "./@angular/material.js",
+  "typings": "./material.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"

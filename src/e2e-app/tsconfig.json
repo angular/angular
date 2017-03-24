@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "outDir": "../../dist/",
+    "outDir": "../../dist/packages/e2e-app",
     "sourceMap": true,
     "target": "es5",
     "stripInternal": false,
@@ -18,7 +18,7 @@
     ],
     "paths": {
       "@angular/material": [
-        "../../dist/@angular/material"
+        "../../dist/packages/material"
       ]
     }
   },

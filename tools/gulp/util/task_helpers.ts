@@ -3,8 +3,6 @@ import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
 import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT} from '../constants';
-import {CompilerOptions} from 'typescript';
-import {compileProject} from './ts-compiler';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
@@ -16,7 +14,9 @@ const gulpConnect = require('gulp-connect');
 const gulpIf = require('gulp-if');
 const gulpCleanCss = require('gulp-clean-css');
 
+// There are no type definitions available for these imports.
 const resolveBin = require('resolve-bin');
+const httpRewrite = require('http-rewrite-middleware');
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
@@ -34,8 +34,8 @@ function _globify(maybeGlob: string, suffix = '**/*') {
 
 
 /** Creates a task that runs the TypeScript compiler */
-export function tsBuildTask(tsConfigPath: string, extraOptions?: CompilerOptions) {
-  return () => compileProject(tsConfigPath, extraOptions);
+export function tsBuildTask(tsConfigPath: string) {
+  return execNodeTask('typescript', 'tsc', ['-p', tsConfigPath]);
 }
 
 
@@ -134,14 +134,14 @@ export function cleanTask(glob: string) {
 
 /** Build an task that depends on all application build tasks. */
 export function buildAppTask(appName: string) {
-  const buildTasks = ['vendor', 'ts', 'scss', 'assets']
+  const buildTasks = ['ts', 'scss', 'assets']
     .map(taskName => `:build:${appName}:${taskName}`)
     .filter(taskName => gulp.hasTask(taskName));
 
   return (done: () => void) => {
     gulpRunSequence(
       'clean',
-      'build:components',
+      'library:build',
       [...buildTasks],
       done
     );
@@ -150,22 +150,35 @@ export function buildAppTask(appName: string) {
 
 
 /** Create a task that copies vendor files in the proper destination. */
-export function vendorTask() {
+export function vendorTask(outDir = path.join(DIST_ROOT, 'vendor')) {
   return () => gulpMerge(
-    NPM_VENDOR_FILES.map(root => {
-      const glob = path.join(PROJECT_ROOT, 'node_modules', root, '**/*.+(js|js.map)');
-      return gulp.src(glob).pipe(gulp.dest(path.join(DIST_ROOT, 'vendor', root)));
+    NPM_VENDOR_FILES.map(pkg => {
+      const glob = path.join(PROJECT_ROOT, 'node_modules', pkg, '**/*.+(js|js.map)');
+      return gulp.src(glob).pipe(gulp.dest(path.join(outDir, pkg)));
     }));
 }
 
-/** Create a task that serves the dist folder. */
-export function serverTask(livereload = true) {
+/**
+ * Create a task that serves a given directory in the project.
+ * The server rewrites all node_module/ or dist/ requests to the correct directory.
+ */
+export function serverTask(packagePath: string, livereload = true) {
+  // The http-rewrite-middlware only supports relative paths as rewrite destinations.
+  let relativePath = path.relative(PROJECT_ROOT, packagePath);
+
   return () => {
     gulpConnect.server({
-      root: 'dist/',
+      root: PROJECT_ROOT,
       livereload: livereload,
       port: 4200,
-      fallback: 'dist/index.html'
+      fallback: path.join(packagePath, 'index.html'),
+      middleware: () => {
+        return [httpRewrite.getMiddleware([
+          { from: '^/node_modules/(.*)$', to: '/node_modules/$1' },
+          { from: '^/dist/(.*)$', to: '/dist/$1' },
+          { from: '^(.*)$', to: `/${relativePath}/$1` }
+        ])];
+      }
     });
   };
 }

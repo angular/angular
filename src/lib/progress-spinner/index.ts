@@ -36,7 +36,3 @@ class MdProgressSpinnerModule {
 
 export {MdProgressSpinnerModule};
 export * from './progress-spinner';
-
-/** @deprecated */
-export {MdProgressSpinnerModule as MdProgressCircleModule};
-export {MdProgressSpinner as MdProgressCircle};

@@ -1,30 +1,84 @@
 import {spawn} from 'child_process';
-import {existsSync, statSync} from 'fs';
-import {task} from 'gulp';
-import gulpRunSequence = require('run-sequence');
-import path = require('path');
-import minimist = require('minimist');
+import {existsSync, statSync, writeFileSync, readFileSync} from 'fs-extra';
+import {join, basename} from 'path';
+import {task, src, dest} from 'gulp';
+import {execTask, sequenceTask} from '../util/task_helpers';
+import {
+  DIST_RELEASE, DIST_BUNDLES, DIST_MATERIAL, COMPONENTS_DIR, LICENSE_BANNER, DIST_ROOT
+} from '../constants';
+import * as minimist from 'minimist';
 
-import {execTask, cleanTask} from '../util/task_helpers';
-import {DIST_COMPONENTS_ROOT} from '../constants';
+// There are no type definitions available for these imports.
+const glob = require('glob');
 
+/** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
 
-/** Removes redundant spec files from the release. TypeScript creates definition files for specs. */
-// TODO(devversion): tsconfig files should share code and don't generate spec files for releases.
-task(':build:release:clean-spec', cleanTask('dist/**/*+(-|.)spec.*'));
+// Matches all Typescript definition files for Material.
+const typingsGlob = join(DIST_MATERIAL, '**/*.+(d.ts|metadata.json)');
+// Matches the "package.json" and "README.md" file that needs to be shipped.
+const assetsGlob = join(COMPONENTS_DIR, '+(package.json|README.md)');
+// Matches all UMD bundles inside of the bundles distribution.
+const umdGlob = join(DIST_BUNDLES, '*.umd.*');
+// Matches all flat ESM bundles (e.g material.js and material.es5.js)
+const fesmGlob = [join(DIST_BUNDLES, '*.js'), `!${umdGlob}`];
 
+task('build:release', sequenceTask(
+  'library:build',
+  ':package:release',
+));
 
-task('build:release', function(done: () => void) {
-  // Synchronously run those tasks.
-  gulpRunSequence(
-    'clean',
-    ':build:components:release',
-    ':build:release:clean-spec',
-    done
-  );
+/** Task that combines intermediate build artifacts into the release package structure. */
+task(':package:release', sequenceTask(
+  [':package:typings', ':package:umd', ':package:fesm', ':package:assets'],
+  ':inline-metadata-resources',
+  ':package:metadata',
+));
+
+/** Writes a re-export metadata */
+task(':package:metadata', () => {
+  const metadataReExport =
+      `{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./typings/index"}]}`;
+  writeFileSync(join(DIST_RELEASE, 'material.metadata.json'), metadataReExport, 'utf-8');
 });
 
+/** Inlines the html and css resources into all metadata.json files in dist/ */
+task(':inline-metadata-resources', () => {
+  // Create a map of fileName -> fullFilePath. This is needed because the templateUrl and
+  // styleUrls for each component use just the filename because, in the source, the component
+  // and the resources live in the same directory.
+  const componentResources = new Map<string, string>();
+  glob(join(DIST_ROOT, '**/*.+(html|css)'), (err: any, resourceFilePaths: any) => {
+    for (const path of resourceFilePaths) {
+      componentResources.set(basename(path), path);
+    }
+  });
+
+  // Find all metadata files. For each one, parse the JSON content, inline the resources, and
+  // reserialize and rewrite back to the original location.
+  glob(join(DIST_ROOT, '**/*.metadata.json'), (err: any, metadataFilePaths: any) => {
+    for (const path of metadataFilePaths) {
+      let metadata = JSON.parse(readFileSync(path, 'utf-8'));
+      inlineMetadataResources(metadata, componentResources);
+      writeFileSync(path , JSON.stringify(metadata), 'utf-8');
+    }
+  });
+});
+
+task(':package:assets', () => src(assetsGlob).pipe(dest(DIST_RELEASE)));
+
+/** Copy all d.ts except the special flat typings from ngc to typings/ in the release package. */
+task(':package:typings', () => {
+  return src(typingsGlob)
+    .pipe(dest(join(DIST_RELEASE, 'typings')))
+    .on('end', () => createTypingFile());
+});
+
+/** Copy umd bundles to the root of the release package. */
+task(':package:umd', () => src(umdGlob).pipe((dest(join(DIST_RELEASE, 'bundles')))));
+
+/** Copy primary entry-point FESM bundles to the @angular/ directory. */
+task(':package:fesm', () => src(fesmGlob).pipe(dest(join(DIST_RELEASE, '@angular'))));
 
 /** Make sure we're logged in. */
 task(':publish:whoami', execTask('npm', ['whoami'], {
@@ -32,17 +86,28 @@ task(':publish:whoami', execTask('npm', ['whoami'], {
   errMessage: 'You must be logged in to publish.'
 }));
 
+/** Create a typing file that links to the bundled definitions of NGC. */
+function createTypingFile() {
+  writeFileSync(join(DIST_RELEASE, 'material.d.ts'),
+    LICENSE_BANNER + '\nexport * from "./typings/index";'
+  );
+}
+
 task(':publish:logout', execTask('npm', ['logout']));
 
 
 function _execNpmPublish(label: string): Promise<{}> {
-  const packageDir = DIST_COMPONENTS_ROOT;
+  const packageDir = DIST_RELEASE;
   if (!statSync(packageDir).isDirectory()) {
     return;
   }
 
-  if (!existsSync(path.join(packageDir, 'package.json'))) {
+  if (!existsSync(join(packageDir, 'package.json'))) {
     throw new Error(`"${packageDir}" does not have a package.json.`);
+  }
+
+  if (!existsSync(join(packageDir, 'LICENSE'))) {
+    throw new Error(`"${packageDir}" does not have a LICENSE file`);
   }
 
   process.chdir(packageDir);
@@ -94,12 +159,42 @@ task(':publish', function(done: (err?: any) => void) {
     .then(() => process.chdir(currentDir));
 });
 
-task('publish', function(done: () => void) {
-  gulpRunSequence(
-    ':publish:whoami',
-    'build:release',
-    ':publish',
-    ':publish:logout',
-    done
-  );
-});
+task('publish', sequenceTask(
+  ':publish:whoami',
+  'build:release',
+  ':publish',
+  ':publish:logout',
+));
+
+
+/**
+ * Recurse through a parsed metadata.json file and inline all html and css.
+ * Note: this assumes that all html and css files have a unique name.
+ */
+function inlineMetadataResources(metadata: any, componentResources: Map<string, string>) {
+  // Convert `templateUrl` to `template`
+  if (metadata.templateUrl) {
+    const fullResourcePath = componentResources.get(metadata.templateUrl);
+    metadata.template = readFileSync(fullResourcePath, 'utf-8');
+    delete metadata.templateUrl;
+  }
+
+  // Convert `styleUrls` to `styles`
+  if (metadata.styleUrls && metadata.styleUrls.length) {
+    metadata.styles = [];
+    for (const styleUrl of metadata.styleUrls) {
+      const fullResourcePath = componentResources.get(styleUrl);
+      metadata.styles.push(readFileSync(fullResourcePath, 'utf-8'));
+    }
+    delete metadata.styleUrls;
+  }
+
+  // We we did nothing at this node, go deeper.
+  if (!metadata.template && !metadata.styles) {
+    for (const property in metadata) {
+      if (typeof metadata[property] == 'object' && metadata[property]) {
+        inlineMetadataResources(metadata[property], componentResources);
+      }
+    }
+  }
+}

@@ -1,50 +1,35 @@
-import gulp = require('gulp');
-import path = require('path');
-import gulpMerge = require('merge2');
-
+import {join} from 'path';
+import {task, watch} from 'gulp';
+import {main as ngc} from '@angular/compiler-cli';
 import {PROJECT_ROOT, COMPONENTS_DIR} from '../constants';
 import {sequenceTask} from '../util/task_helpers';
 
-const karma = require('karma');
+// There are no type definitions available for these imports.
 const runSequence = require('run-sequence');
 
-/** Copies deps for unit tests to the build output. */
-gulp.task(':build:test:vendor', function() {
-  const npmVendorFiles = [
-    '@angular', 'core-js/client', 'hammerjs', 'rxjs', 'systemjs/dist', 'zone.js/dist'
-  ];
+const tsconfigFile = join(COMPONENTS_DIR, 'tsconfig-specs.json');
 
-  return gulpMerge(
-    npmVendorFiles.map(function(root) {
-      const glob = path.join(root, '**/*.+(js|js.map)');
-      return gulp.src(path.join('node_modules', glob))
-        .pipe(gulp.dest(path.join('dist/vendor', root)));
-    }));
-});
+/** Builds the library with a tsconfig file that includes spec files. */
+task(':test:build:library-specs', () => ngc(tsconfigFile, {basePath: COMPONENTS_DIR}));
 
-/** Builds dependencies for unit tests. */
-gulp.task(':test:deps', sequenceTask(
+/** Builds everything that is necessary for karma. */
+task(':test:build', sequenceTask(
   'clean',
-  [
-    ':build:test:vendor',
-    ':build:components:assets',
-    ':build:components:scss',
-    ':build:components:ts:spec',
-  ]
+  ':test:build:library-specs',
+  'library:assets',
+  'library:assets:inline',
 ));
 
-
-/** Build unit test dependencies and then inlines resources (html, css) into the JS output. */
-gulp.task(':test:deps:inline', sequenceTask(':test:deps', ':inline-resources'));
-
 /**
- * Runs the unit tests once with inlined resources (html, css). Does not watch for changes.
- *
+ * Runs the unit tests. Does not watch for changes.
  * This task should be used when running tests on the CI server.
  */
-gulp.task('test:single-run', [':test:deps:inline'], (done: () => void) => {
+task('test:single-run', [':test:build'], (done: () => void) => {
+  // Load karma not outside. Karma pollutes Promise with a different implementation.
+  let karma = require('karma');
+
   new karma.Server({
-    configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
+    configFile: join(PROJECT_ROOT, 'test/karma.conf.js'),
     singleRun: true
   }, (exitCode: number) => {
     // Immediately exit the process if Karma reported errors, because due to
@@ -64,12 +49,14 @@ gulp.task('test:single-run', [':test:deps:inline'], (done: () => void) => {
  *
  * This task should be used when running unit tests locally.
  */
-gulp.task('test', [':test:deps'], () => {
-  let patternRoot = path.join(COMPONENTS_DIR, '**/*');
+task('test', [':test:build'], () => {
+  let patternRoot = join(COMPONENTS_DIR, '**/*');
+  // Load karma not outside. Karma pollutes Promise with a different implementation.
+  let karma = require('karma');
 
   // Configure the Karma server and override the autoWatch and singleRun just in case.
   let server = new karma.Server({
-    configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
+    configFile: join(PROJECT_ROOT, 'test/karma.conf.js'),
     autoWatch: false,
     singleRun: false
   });
@@ -86,8 +73,6 @@ gulp.task('test', [':test:deps'], () => {
   server.start();
   server.on('browser_register', () => runTests());
 
-  // Watch for file changes, rebuild and run the tests.
-  gulp.watch(patternRoot + '.ts', () => runSequence(':build:components:ts:spec', runTests));
-  gulp.watch(patternRoot + '.scss', () => runSequence(':build:components:scss', runTests));
-  gulp.watch(patternRoot + '.html', () => runSequence(':build:components:assets', runTests));
+  // Whenever a file change has been recognized, rebuild and re-run the tests.
+  watch(patternRoot + '.+(ts|scss|html)', () => runSequence(':test:build', runTests));
 });
