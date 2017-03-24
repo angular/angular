@@ -3,8 +3,8 @@
 
 
 "@angular/animations@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.0.0-rc.6.tgz#a19d7512dd769102453c68b949d2478f69d3520f"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.0.0.tgz#f6efb67ca3f3816d2dbf19b8f570371f2d205edc"
 
 "@angular/cli@^1.0.0-rc.4":
   version "1.0.0-rc.4"
@@ -71,55 +71,55 @@
     node-sass "^4.3.0"
 
 "@angular/common@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.0.0-rc.6.tgz#f6855c36e1c8e1b7ce94c0739a1fa277a9d29584"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.0.0.tgz#ca18983222fdab4ecaa7a8b99eda6ff661e6dc92"
 
 "@angular/compiler-cli@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-4.0.0-rc.6.tgz#3d4ed77ea7a37703d1f5bb974619509885f1084b"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-4.0.0.tgz#35b2d40cd35135aecec4be659532148f5ac67da6"
   dependencies:
-    "@angular/tsc-wrapped" "4.0.0-rc.6"
+    "@angular/tsc-wrapped" "4.0.0"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
 
 "@angular/compiler@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.0.0-rc.6.tgz#b46cd4c0c732eafac5a8658ca2d5d9b953906e99"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.0.0.tgz#e1aa061a6f8ef269f9748af1a7bc290f9d37ed6c"
 
 "@angular/core@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.0.0-rc.6.tgz#ba70534bd45f3bda3ac39fb0a90d552510436dec"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.0.0.tgz#fd877e074b29dfa9c63b96a21995fc7556d423a3"
 
 "@angular/forms@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.0.0-rc.6.tgz#b075ca2bf0f0a37c84d1dcb67ac59ae334c1a392"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.0.0.tgz#03163047a2e84af42106270da2e1f47ab0fafc37"
 
 "@angular/http@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.0.0-rc.6.tgz#ebeb95a92725d6481b418b4a7beafd9281cc0e5c"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.0.0.tgz#45a538eac42a0b13f3744c7e8bafeb17d58da31c"
 
 "@angular/material@https://github.com/angular/material2-builds":
   version "2.0.0-beta.2"
   resolved "https://github.com/angular/material2-builds#d7f549850cfd94b31bb624e2702b61305fd6337d"
 
 "@angular/platform-browser-dynamic@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.0.0-rc.6.tgz#89dfce31283fb3fc1b484ffa620cd2b5f292ecdd"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.0.0.tgz#d1d9de80fe1e02735be89f512e0faf5a80d57fa5"
 
 "@angular/platform-browser@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.0.0-rc.6.tgz#bce3be3ee8a62b91a591f4b3cb894a1bc39c6da7"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.0.0.tgz#512ae9ab19ccc25fa79027f44e291bcee236cd2b"
 
 "@angular/platform-server@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-4.0.0-rc.6.tgz#89bbbae2806252a350b46e18e0d8933618370e47"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-4.0.0.tgz#d76d61787cd3be3ce8ed46043d6a8c82572f567d"
   dependencies:
     parse5 "^3.0.1"
     xhr2 "^0.1.4"
 
 "@angular/router@next":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0-rc.6.tgz#3a02bb095f73e9db180576f38c73ab2a3a5bf0a0"
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0.tgz#f4a2dc83b44e023db1d6f2c12ca5a37a22c66afc"
 
 "@angular/service-worker@^1.0.0-beta.7":
   version "1.0.0-beta.7"
@@ -128,9 +128,9 @@
     base64-js "^1.1.2"
     jshashes "^1.0.5"
 
-"@angular/tsc-wrapped@4.0.0-rc.6":
-  version "4.0.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/tsc-wrapped/-/tsc-wrapped-4.0.0-rc.6.tgz#95a82148ece7d3ebd9606e9fba2cb7758e3ea8ae"
+"@angular/tsc-wrapped@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/tsc-wrapped/-/tsc-wrapped-4.0.0.tgz#ea91eeda98029cdb0a4ac37d5e25d9d12a4333c1"
   dependencies:
     tsickle "^0.21.0"
 
@@ -5318,13 +5318,7 @@ right-align@^0.1.1:
   dependencies:
     align-text "^0.1.1"
 
-rimraf@2, rimraf@^2.2.8, rimraf@^2.3.3, rimraf@^2.4.3, rimraf@^2.4.4, rimraf@^2.5.2, rimraf@^2.5.3, rimraf@^2.5.4:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.0.tgz#89b8a0fe432b9ff9ec9a925a00b6cdb3a91bbada"
-  dependencies:
-    glob "^7.0.5"
-
-rimraf@^2.6.1:
+rimraf@2, rimraf@^2.2.8, rimraf@^2.3.3, rimraf@^2.4.3, rimraf@^2.4.4, rimraf@^2.5.2, rimraf@^2.5.3, rimraf@^2.5.4, rimraf@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
   dependencies:
