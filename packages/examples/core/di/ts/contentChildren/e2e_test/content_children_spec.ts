@@ -12,19 +12,29 @@ import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 describe('contentChildren example', () => {
   afterEach(verifyNoBrowserErrors);
   let button: ElementFinder;
-  let result: ElementFinder;
+  let resultTopLevel: ElementFinder;
+  let resultNested: ElementFinder;
 
   beforeEach(() => {
     browser.get('/core/di/ts/contentChildren/index.html');
     button = element(by.css('button'));
-    result = element(by.css('div'));
+    resultTopLevel = element(by.css('.top-level'));
+    resultNested = element(by.css('.nested'));
   });
 
   it('should query content children', () => {
-    expect(result.getText()).toEqual('panes: 1, 2');
+    expect(resultTopLevel.getText()).toEqual('Top level panes: 1, 2');
 
     button.click();
 
-    expect(result.getText()).toEqual('panes: 1, 2, 3');
+    expect(resultTopLevel.getText()).toEqual('Top level panes: 1, 2, 3');
+  });
+
+  it('should query nested content children', () => {
+    expect(resultNested.getText()).toEqual('Arbitrary nested panes: 1, 2');
+
+    button.click();
+
+    expect(resultNested.getText()).toEqual('Arbitrary nested panes: 1, 2, 3, 3_1, 3_2');
   });
 });
