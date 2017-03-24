@@ -25,5 +25,5 @@ export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} 
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
 export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
-export {isObservable as ɵisObservable, isPromise as ɵisPromise, merge as ɵmerge} from './util/lang';
+export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';

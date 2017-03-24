@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵmerge as merge} from '@angular/core';
+import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 import {fromPromise} from 'rxjs/observable/fromPromise';
@@ -188,7 +188,7 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
   const res: {[key: string]: any} =
       arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? merge(res, errors) : res;
+        return errors != null ? {...res, ...errors} : res;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
 }
