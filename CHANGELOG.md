@@ -1,5 +1,5 @@
 <a name="4.0.0"></a>
-# [4.0.0](https://github.com/angular/angular/compare/4.0.0-rc.6...4.0.0) (2017-03-23)
+# [4.0.0](https://github.com/angular/angular/compare/4.0.0-rc.6...4.0.0) invisible-makeover (2017-03-23)
 
 
 ### Bug Fixes
