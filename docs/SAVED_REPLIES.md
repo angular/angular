@@ -26,9 +26,9 @@ Thanks for reporting this issue. However this issue is a duplicate of an existin
 ```
 
 
-## Angular: Insufficient Information Provided (v2)
+## Angular: Insufficient Information Provided (v1)
 ```
-Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/docs/CONTRIBUTING.md#-submitting-an-issue) to understand why we can't act on issues that are lacking important information.
+Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) to understand why we can't act on issues that are lacking important information.
 
 If the problem still persists, please file a new issue and ensure you provide all of the required information when filling out the issue template.
 ```
@@ -39,11 +39,11 @@ I'm sorry but this issue is not caused by Angular. Please contact the author(s) 
 ```
 
 
-## Angular: Non-reproducible (v2)
+## Angular: Non-reproducible (v1)
 ```
 I'm sorry but we can't reproduce the problem following the instructions you provided.
 
-If the problem still exists please open a new issue following [our submission guidelines](https://github.com/angular/angular/blob/master/docs/CONTRIBUTING.md#-submitting-an-issue).
+If the problem still exists please open a new issue following [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue).
 ```
 
 ## Angular: Obsolete (v1)
@@ -54,9 +54,9 @@ If the problem still persists, please file a new issue and ensure you provide th
 ```
 
 
-## Angular: Support Request (v2)
+## Angular: Support Request (v1)
 ```
 Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](http://stackoverflow.com/) using tag `angular`.
 
-If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/docs/CONTRIBUTING.md#-got-a-question-or-problem).
+If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-got-a-question-or-problem).
 ```
