@@ -20,6 +20,7 @@ import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
+import {mergeAll} from 'rxjs/operator/mergeAll';
 
 import {applyRedirects} from './apply_redirects';
 import {QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
@@ -37,6 +38,7 @@ import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_st
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
+import {concat} from 'rxjs/observable/concat';
 
 declare let Zone: any;
 
@@ -788,35 +790,8 @@ export class PreActivation {
 
   checkGuards(): Observable<boolean> {
     if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) return of (true);
-    // let result$ = of (true);
-    // if (this.canDeactivateChecks.length > 0) {
-    //   const deactivateChecks$ = from(this.canDeactivateChecks);
-    //   const runningDeactivateChecks$ = mergeMap.call(deactivateChecks$, (check: CanDeactivate) =>
-    //     this.runCanDeactivate(check.component, check.route));
-    //   result$ = every.call(runningDeactivateChecks$, (result: boolean) => result === true);
-    // }
-    //
-    // if (this.canActivateChecks.length > 0) {
-    //   const activateChecks$ = from(this.canActivateChecks);
-    //   const runningActivateChecks$ = mergeMap.call(activateChecks$, (check: CanActivate) =>
-    //     andObservables(from([this.runCanActivateChild(check.path), this.runCanActivate(check.route)])));
-    //   const t$ = every.call(runningActivateChecks$, (result: boolean) => result === true);
-    // }
-
-
-
-    const checks$ = from([...this.canDeactivateChecks, ...this.canActivateChecks]);
-    const runningChecks$ = mergeMap.call(checks$, (s: any) => {
-      if (s instanceof CanActivate) {
-        return andObservables(
-            from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
-      } else if (s instanceof CanDeactivate) {
-        return this.runCanDeactivate(s.component, s.route);
-      } else {
-        throw new Error('Cannot be reached');
-      }
-    });
-    return every.call(runningChecks$, (result: boolean) => result === true);
+    const checks$ = mergeAll.call(concat(this.canDeactivateChecks, this.canActivateChecks));
+    return every.call(checks$, (result: boolean) => result === true);
   }
 
   resolveData(): Observable<any> {
