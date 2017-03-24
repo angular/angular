@@ -1,0 +1,43 @@
+table {
+  margin: 24px 0px;
+  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+  border-radius: 2px;
+  background: $offwhite;
+
+  &.is-full-width {
+    width: 100%;
+  }
+
+  thead {
+    th {
+      background: $offwhite;
+      border-bottom: 1px solid $lightgray;
+      color: $darkgray;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 0px 24px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+  }
+
+  tbody {
+    th,
+    td {
+      border-bottom: 1px solid $lightgray;
+      padding: 16px 24px;
+      text-align: left;
+    }
+
+    th {
+      background: $offwhite;
+      border-right: 1px solid $lightgray;
+      font-weight: 600;
+      max-width: 100px;
+    }
+
+    tr:last-child td {
+      border: none;
+    }
+  }
+}
