@@ -1710,7 +1710,7 @@ describe('Integration', () => {
                 provide: 'alwaysFalseWithDelayAndLogging',
                 useValue: () => {
                   log.push('called');
-                  return delay.call(of (false));
+                  return delay.call(of (false), 5);
                 }
               },
               {
