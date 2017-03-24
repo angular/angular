@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵmerge as merge, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵreflector, ɵstringify as stringify} from '@angular/core';
 import {CompilerInjectable} from './injectable';
 import {splitAtColon} from './util';
 
@@ -124,8 +124,8 @@ export class DirectiveResolver {
         this._dedupeBindings(directive.inputs ? directive.inputs.concat(inputs) : inputs);
     const mergedOutputs =
         this._dedupeBindings(directive.outputs ? directive.outputs.concat(outputs) : outputs);
-    const mergedHost = directive.host ? merge(directive.host, host) : host;
-    const mergedQueries = directive.queries ? merge(directive.queries, queries) : queries;
+    const mergedHost = directive.host ? {...directive.host, ...host} : host;
+    const mergedQueries = directive.queries ? {...directive.queries, ...queries} : queries;
 
     if (directive instanceof Component) {
       return new Component({
