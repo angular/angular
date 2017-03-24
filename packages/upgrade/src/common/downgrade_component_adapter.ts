@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
@@ -53,11 +53,9 @@ export class DowngradeComponentAdapter {
   }
 
   createComponent(projectableNodes: Node[][]) {
-    const childInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
+    const injector = new AdapterInjector(this.parentInjector, this.componentScope);
 
-    this.componentRef =
-        this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
+    this.componentRef = this.componentFactory.create(injector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
 
@@ -239,4 +237,25 @@ function matchesSelector(el: any, selector: string): boolean {
         elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
   }
   return el.nodeType === Node.ELEMENT_NODE ? _matches.call(el, selector) : false;
+}
+
+class AdapterInjector implements Injector {
+  constructor(private injector: Injector, private scope: angular.IScope) {}
+
+  get(token: any, notFoundValue?: any): any {
+    if (token === $SCOPE) {
+      return this.scope;
+    }
+
+    // Angular has 2 injector trees (component and module) and might ask to locate services in
+    // the component tree only by setting the default value to
+    // `NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR`.
+    // Angularjs has a single injector tree and we will fallback to the given module injector as
+    // the special default value will never be passed.
+    if (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+      return notFoundValue;
+    }
+
+    return this.injector.get(token, notFoundValue);
+  }
 }
