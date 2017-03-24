@@ -28,7 +28,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  */
 @Pipe({name: 'i18nSelect', pure: true})
 export class I18nSelectPipe implements PipeTransform {
-  transform(value: string, mapping: {[key: string]: string}): string {
+  transform(value: string|null|undefined, mapping: {[key: string]: string}): string {
     if (value == null) return '';
 
     if (typeof mapping !== 'object' || typeof value !== 'string') {
