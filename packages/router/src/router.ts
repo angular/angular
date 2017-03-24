@@ -773,7 +773,8 @@ class CanDeactivate {
 
 
 export class PreActivation {
-  private checks: Array<CanActivate|CanDeactivate> = [];
+  private canActivateChecks: CanActivate[] = [];
+  private canDeactivateChecks: CanDeactivate[] = [];
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
       private moduleInjector: Injector) {}
@@ -785,33 +786,20 @@ export class PreActivation {
   }
 
   checkGuards(): Observable<boolean> {
-    if (this.checks.length === 0) return of (true);
-    const checks$ = from(this.checks);
-    const runningChecks$ = mergeMap.call(checks$, (s: any) => {
-      if (s instanceof CanActivate) {
-        return andObservables(
-            from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
-      } else if (s instanceof CanDeactivate) {
-        // workaround https://github.com/Microsoft/TypeScript/issues/7271
-        const s2 = s as CanDeactivate;
-        return this.runCanDeactivate(s2.component, s2.route);
-      } else {
-        throw new Error('Cannot be reached');
-      }
-    });
-    return every.call(runningChecks$, (result: any) => result === true);
+    if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) {
+      return of (true);
+    }
+    const canDeactivate$ = this.runCanDeactivateChecks();
+    return mergeMap.call(
+        canDeactivate$,
+        (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
   }
 
   resolveData(): Observable<any> {
-    if (this.checks.length === 0) return of (null);
-    const checks$ = from(this.checks);
-    const runningChecks$ = concatMap.call(checks$, (s: any) => {
-      if (s instanceof CanActivate) {
-        return this.runResolve(s.route);
-      } else {
-        return of (null);
-      }
-    });
+    if (this.canActivateChecks.length === 0) return of (null);
+    const checks$ = from(this.canActivateChecks);
+    const runningChecks$ =
+        concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
     return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
 
@@ -829,7 +817,7 @@ export class PreActivation {
         (v: any, k: string) => this.deactiveRouteAndItsChildren(v, outletMap._outlets[k]));
   }
 
-  traverseRoutes(
+  private traverseRoutes(
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
       parentOutletMap: RouterOutletMap, futurePath: ActivatedRouteSnapshot[]): void {
     const future = futureNode.value;
@@ -840,7 +828,8 @@ export class PreActivation {
     if (curr && future._routeConfig === curr._routeConfig) {
       if (this.shouldRunGuardsAndResolvers(
               curr, future, future._routeConfig.runGuardsAndResolvers)) {
-        this.checks.push(new CanDeactivate(outlet.component, curr), new CanActivate(futurePath));
+        this.canActivateChecks.push(new CanActivate(futurePath));
+        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       } else {
         // we need to set the data
         future.data = curr.data;
@@ -861,7 +850,7 @@ export class PreActivation {
         this.deactiveRouteAndItsChildren(currNode, outlet);
       }
 
-      this.checks.push(new CanActivate(futurePath));
+      this.canActivateChecks.push(new CanActivate(futurePath));
       // If we have a component, we need to go through an outlet.
       if (future.component) {
         this.traverseChildRoutes(futureNode, null, outlet ? outlet.outletMap : null, futurePath);
@@ -906,12 +895,27 @@ export class PreActivation {
     });
 
     if (!r.component) {
-      this.checks.push(new CanDeactivate(null, r));
+      this.canDeactivateChecks.push(new CanDeactivate(null, r));
     } else if (outlet && outlet.isActivated) {
-      this.checks.push(new CanDeactivate(outlet.component, r));
+      this.canDeactivateChecks.push(new CanDeactivate(outlet.component, r));
     } else {
-      this.checks.push(new CanDeactivate(null, r));
+      this.canDeactivateChecks.push(new CanDeactivate(null, r));
     }
+  }
+
+  private runCanDeactivateChecks(): Observable<boolean> {
+    const checks$ = from(this.canDeactivateChecks);
+    const runningChecks$ = mergeMap.call(
+        checks$, (check: CanDeactivate) => this.runCanDeactivate(check.component, check.route));
+    return every.call(runningChecks$, (result: boolean) => result === true);
+  }
+
+  private runCanActivateChecks(): Observable<boolean> {
+    const checks$ = from(this.canActivateChecks);
+    const runningChecks$ = mergeMap.call(
+        checks$, (check: CanActivate) => andObservables(from(
+                     [this.runCanActivateChild(check.path), this.runCanActivate(check.route)])));
+    return every.call(runningChecks$, (result: boolean) => result === true);
   }
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
