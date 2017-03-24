@@ -32,7 +32,7 @@ export class RouterConfigLoader {
       this.onLoadStartListener(route);
     }
 
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren);
+    const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
 
     return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
       if (this.onLoadEndListener) {
