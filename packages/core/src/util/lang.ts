@@ -24,18 +24,3 @@ export function isObservable(obj: any | Observable<any>): obj is Observable<any>
   // TODO use Symbol.observable when https://github.com/ReactiveX/rxjs/issues/2415 will be resolved
   return !!obj && typeof obj.subscribe === 'function';
 }
-
-// TODO(misko): replace with Object.assign once we require ES6.
-export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
-  const m: {[key: string]: V} = {};
-
-  for (const k of Object.keys(m1)) {
-    m[k] = m1[k];
-  }
-
-  for (const k of Object.keys(m2)) {
-    m[k] = m2[k];
-  }
-
-  return m;
-}
