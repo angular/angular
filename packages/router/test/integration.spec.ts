@@ -2242,7 +2242,7 @@ describe('Integration', () => {
              })));
 
       it('should not call CanActivate when CanDeactivate returns false',
-         fakeAsync(inject([Router, Logger], (router: Router, logger: Logger) => {
+         fakeAsync(inject([Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
            const fixture = createRoot(router, RootCmp);
 
            router.resetConfig([
@@ -2252,10 +2252,11 @@ describe('Integration', () => {
 
            router.navigateByUrl('/');
            advance(fixture);
+           expect(location.path()).toEqual('/');
 
            router.navigateByUrl('/a');
            advance(fixture);
-
+           expect(location.path()).toEqual('/');
            expect(logger.logs).toEqual(['canDeactivate_false']);
          })));
     });
