@@ -21,14 +21,14 @@ import {TreeNode} from './utils/tree';
 class NoMatch {}
 
 export function recognize(
-    rootComponentType: Type<any>, config: Routes, urlTree: UrlTree,
+    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree,
     url: string): Observable<RouterStateSnapshot> {
   return new Recognizer(rootComponentType, config, urlTree, url).recognize();
 }
 
 class Recognizer {
   constructor(
-      private rootComponentType: Type<any>, private config: Routes, private urlTree: UrlTree,
+      private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
       private url: string) {}
 
   recognize(): Observable<RouterStateSnapshot> {
@@ -38,8 +38,8 @@ class Recognizer {
       const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
 
       const root = new ActivatedRouteSnapshot(
-          [], Object.freeze({}), Object.freeze(this.urlTree.queryParams), this.urlTree.fragment, {},
-          PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
+          [], Object.freeze({}), Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
+          {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
 
       const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
       const routeState = new RouterStateSnapshot(this.url, rootNode);
@@ -110,10 +110,10 @@ class Recognizer {
     if ((route.outlet || PRIMARY_OUTLET) !== outlet) throw new NoMatch();
 
     if (route.path === '**') {
-      const params = segments.length > 0 ? last(segments).parameters : {};
+      const params = segments.length > 0 ? last(segments) !.parameters : {};
       const snapshot = new ActivatedRouteSnapshot(
-          segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment,
-          getData(route), outlet, route.component, route, getSourceSegmentGroup(rawSegment),
+          segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
+          getData(route), outlet, route.component !, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
     }
@@ -127,7 +127,7 @@ class Recognizer {
 
     const snapshot = new ActivatedRouteSnapshot(
         consumedSegments, parameters, Object.freeze(this.urlTree.queryParams),
-        this.urlTree.fragment, getData(route), outlet, route.component, route,
+        this.urlTree.fragment !, getData(route), outlet, route.component !, route,
         getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + consumedSegments.length,
         getResolve(route));
 
@@ -160,7 +160,7 @@ function getChildConfig(route: Route): Route[] {
   }
 
   if (route.loadChildren) {
-    return route._loadedConfig.routes;
+    return route._loadedConfig !.routes;
   }
 
   return [];
@@ -180,7 +180,7 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
   if (!res) throw new NoMatch();
 
   const posParams: {[n: string]: string} = {};
-  forEach(res.posParams, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
+  forEach(res.posParams !, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
   const parameters = {...posParams, ...res.consumed[res.consumed.length - 1].parameters};
 
   return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};
