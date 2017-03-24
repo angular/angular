@@ -1898,12 +1898,10 @@ describe('Integration', () => {
 
            router.navigateByUrl('/main/component1');
            advance(fixture);
-           tick(5);
            expect(location.path()).toEqual('/main/component1');
 
            router.navigateByUrl('/main/component2');
            advance(fixture);
-           tick(5);
            expect(location.path()).toEqual('/main/component1');
            expect(log).toEqual(['called']);
          })));
