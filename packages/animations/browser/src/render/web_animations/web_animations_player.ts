@@ -22,7 +22,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finalKeyframe: {[key: string]: string | number};
   public time = 0;
 
-  public parentPlayer: AnimationPlayer = null;
+  public parentPlayer: AnimationPlayer|null = null;
   public previousStyles: {[styleName: string]: string | number};
 
   constructor(

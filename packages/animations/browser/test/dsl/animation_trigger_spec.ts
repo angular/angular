@@ -64,7 +64,7 @@ export function main() {
         const result = makeTrigger(
             'name', [transition('a => b', animate(1234)), transition('b => c', animate(5678))]);
 
-        const trans = result.matchTransition('b', 'c');
+        const trans = result.matchTransition('b', 'c') !;
         expect(trans.timelines.length).toEqual(1);
         const timeline = trans.timelines[0];
         expect(timeline.duration).toEqual(5678);
@@ -76,13 +76,13 @@ export function main() {
           transition('* => *', animate(9999))
         ]);
 
-        let trans = result.matchTransition('b', 'c');
+        let trans = result.matchTransition('b', 'c') !;
         expect(trans.timelines[0].duration).toEqual(5678);
 
-        trans = result.matchTransition('a', 'b');
+        trans = result.matchTransition('a', 'b') !;
         expect(trans.timelines[0].duration).toEqual(1234);
 
-        trans = result.matchTransition('c', 'c');
+        trans = result.matchTransition('c', 'c') !;
         expect(trans.timelines[0].duration).toEqual(9999);
       });
 
@@ -125,7 +125,7 @@ export function main() {
              transition(countAndReturn(true), animate(3333))
            ]);
 
-           const trans = result.matchTransition('a', 'b');
+           const trans = result.matchTransition('a', 'b') !;
            expect(trans.timelines[0].duration).toEqual(3333);
 
            expect(count).toEqual(3);
@@ -134,23 +134,23 @@ export function main() {
       it('should support bi-directional transition expressions', () => {
         const result = makeTrigger('name', [transition('a <=> b', animate(2222))]);
 
-        const t1 = result.matchTransition('a', 'b');
+        const t1 = result.matchTransition('a', 'b') !;
         expect(t1.timelines[0].duration).toEqual(2222);
 
-        const t2 = result.matchTransition('b', 'a');
+        const t2 = result.matchTransition('b', 'a') !;
         expect(t2.timelines[0].duration).toEqual(2222);
       });
 
       it('should support multiple transition statements in one string', () => {
         const result = makeTrigger('name', [transition('a => b, b => a, c => *', animate(1234))]);
 
-        const t1 = result.matchTransition('a', 'b');
+        const t1 = result.matchTransition('a', 'b') !;
         expect(t1.timelines[0].duration).toEqual(1234);
 
-        const t2 = result.matchTransition('b', 'a');
+        const t2 = result.matchTransition('b', 'a') !;
         expect(t2.timelines[0].duration).toEqual(1234);
 
-        const t3 = result.matchTransition('c', 'a');
+        const t3 = result.matchTransition('c', 'a') !;
         expect(t3.timelines[0].duration).toEqual(1234);
       });
 
@@ -158,14 +158,14 @@ export function main() {
         it('should alias the :enter transition as void => *', () => {
           const result = makeTrigger('name', [transition(':enter', animate(3333))]);
 
-          const trans = result.matchTransition('void', 'something');
+          const trans = result.matchTransition('void', 'something') !;
           expect(trans.timelines[0].duration).toEqual(3333);
         });
 
         it('should alias the :leave transition as * => void', () => {
           const result = makeTrigger('name', [transition(':leave', animate(3333))]);
 
-          const trans = result.matchTransition('something', 'void');
+          const trans = result.matchTransition('something', 'void') !;
           expect(trans.timelines[0].duration).toEqual(3333);
         });
       });

@@ -64,11 +64,12 @@ export class AnimationTrigger {
         nextStateStyles, []);
   }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionInstruction {
+  matchTransition(currentState: any, nextState: any): AnimationTransitionInstruction|null {
     for (let i = 0; i < this.transitionFactories.length; i++) {
       let result = this.transitionFactories[i].match(currentState, nextState);
       if (result) return result;
     }
+    return null;
   }
 }
 
