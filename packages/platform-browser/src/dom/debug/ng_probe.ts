@@ -38,7 +38,7 @@ export function _createNgProbe(extraTokens: NgProbeToken[], coreTokens: core.NgP
   const tokens = (extraTokens || []).concat(coreTokens || []);
   getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   getDOM().setGlobalVar(
-      CORE_TOKENS_GLOBAL_NAME, core.ɵmerge(CORE_TOKENS, _ngProbeTokensToMap(tokens || [])));
+      CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(tokens || [])});
   return () => inspectNativeElement;
 }
 
