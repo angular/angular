@@ -55,7 +55,7 @@ export class MockResourceLoader extends ResourceLoader {
     }
 
     do {
-      this._processRequest(this._requests.shift());
+      this._processRequest(this._requests.shift() !);
     } while (this._requests.length > 0);
 
     this.verifyNoOutstandingExpectations();
@@ -110,7 +110,7 @@ class _PendingRequest {
     });
   }
 
-  complete(response: string) {
+  complete(response: string|null) {
     if (response == null) {
       this.reject(`Failed to load ${this.url}`);
     } else {

@@ -40,7 +40,7 @@ export class StaticReflector implements ɵReflectorReader {
       private symbolResolver: StaticSymbolResolver,
       knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
       knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = [],
-      private errorRecorder?: (error: any, fileName: string) => void) {
+      private errorRecorder?: (error: any, fileName: string|undefined) => void) {
     this.initializeConversionMap();
     knownMetadataClasses.forEach(
         (kc) => this._registerDecoratorOrConstructor(
@@ -49,7 +49,7 @@ export class StaticReflector implements ɵReflectorReader {
         (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
   }
 
-  importUri(typeOrFunc: StaticSymbol): string {
+  importUri(typeOrFunc: StaticSymbol): string|null {
     const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
     return staticSymbol ? staticSymbol.filePath : null;
   }
@@ -122,7 +122,7 @@ export class StaticReflector implements ɵReflectorReader {
         if (parentType instanceof StaticSymbol) {
           const parentPropMetadata = this.propMetadata(parentType);
           Object.keys(parentPropMetadata).forEach((parentProp) => {
-            propMetadata[parentProp] = parentPropMetadata[parentProp];
+            propMetadata![parentProp] = parentPropMetadata[parentProp];
           });
         }
       }
@@ -133,10 +133,10 @@ export class StaticReflector implements ɵReflectorReader {
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         const decorators: any[] = [];
-        if (propMetadata[propName]) {
-          decorators.push(...propMetadata[propName]);
+        if (propMetadata![propName]) {
+          decorators.push(...propMetadata![propName]);
         }
-        propMetadata[propName] = decorators;
+        propMetadata![propName] = decorators;
         if (prop && prop['decorators']) {
           decorators.push(...this.simplify(type, prop['decorators']));
         }
@@ -173,7 +173,7 @@ export class StaticReflector implements ɵReflectorReader {
             if (decorators) {
               nestedResult.push(...decorators);
             }
-            parameters.push(nestedResult);
+            parameters!.push(nestedResult);
           });
         } else if (classMetadata['extends']) {
           const parentType = this.simplify(type, classMetadata['extends']);
@@ -203,7 +203,7 @@ export class StaticReflector implements ɵReflectorReader {
         if (parentType instanceof StaticSymbol) {
           const parentMethodNames = this._methodNames(parentType);
           Object.keys(parentMethodNames).forEach((parentProp) => {
-            methodNames[parentProp] = parentMethodNames[parentProp];
+            methodNames![parentProp] = parentMethodNames[parentProp];
           });
         }
       }
@@ -212,7 +212,7 @@ export class StaticReflector implements ɵReflectorReader {
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
         const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
-        methodNames[propName] = methodNames[propName] || isMethod;
+        methodNames![propName] = methodNames![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
     }

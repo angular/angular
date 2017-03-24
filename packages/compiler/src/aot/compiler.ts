@@ -32,8 +32,8 @@ export class AotCompiler {
       private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
-      private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
-      private _translationFormat: string, private _genFilePreamble: string,
+      private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
+      private _translationFormat: string|null, private _genFilePreamble: string|null,
       private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
@@ -187,7 +187,7 @@ export class AotCompiler {
             ]))
             .toDeclStmt(
                 o.importType(
-                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type)],
+                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type)!],
                     [o.TypeModifier.Const]),
                 [o.StmtModifier.Final]));
     return compFactoryVar;
@@ -195,7 +195,7 @@ export class AotCompiler {
 
   private _compileComponent(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
-      directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet,
+      directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet|null,
       fileSuffix: string,
       targetStatements: o.Statement[]): {viewClassVar: string, compRenderTypeVar: string} {
     const directives =

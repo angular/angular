@@ -17,7 +17,7 @@ export interface TagDefinition {
   closedByParent: boolean;
   requiredParents: {[key: string]: boolean};
   parentToAdd: string;
-  implicitNamespacePrefix: string;
+  implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
@@ -28,7 +28,7 @@ export interface TagDefinition {
   isClosedByChild(name: string): boolean;
 }
 
-export function splitNsName(elementName: string): [string, string] {
+export function splitNsName(elementName: string): [string|null, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
@@ -42,7 +42,9 @@ export function splitNsName(elementName: string): [string, string] {
   return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
 }
 
-export function getNsPrefix(fullName: string): string {
+export function getNsPrefix(fullName: string): string
+export function getNsPrefix(fullName: null): null;
+export function getNsPrefix(fullName: string|null): string|null {
   return fullName === null ? null : splitNsName(fullName)[0];
 }
 

@@ -62,7 +62,7 @@ export class AttrAst implements TemplateAst {
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(
       public name: string, public type: PropertyBindingType,
-      public securityContext: SecurityContext, public value: AST, public unit: string,
+      public securityContext: SecurityContext, public value: AST, public unit: string|null,
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
@@ -75,7 +75,7 @@ export class BoundElementPropertyAst implements TemplateAst {
  * `(@trigger.phase)="callback($event)"`).
  */
 export class BoundEventAst implements TemplateAst {
-  static calcFullName(name: string, target: string, phase: string): string {
+  static calcFullName(name: string, target: string|null, phase: string|null): string {
     if (target) {
       return `${target}:${name}`;
     } else if (phase) {
@@ -86,7 +86,7 @@ export class BoundEventAst implements TemplateAst {
   }
 
   constructor(
-      public name: string, public target: string, public phase: string, public handler: AST,
+      public name: string, public target: string|null, public phase: string|null, public handler: AST,
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
@@ -126,7 +126,7 @@ export class ElementAst implements TemplateAst {
       public outputs: BoundEventAst[], public references: ReferenceAst[],
       public directives: DirectiveAst[], public providers: ProviderAst[],
       public hasViewContainer: boolean, public queryMatches: QueryMatch[],
-      public children: TemplateAst[], public ngContentIndex: number,
+      public children: TemplateAst[], public ngContentIndex: number|null,
       public sourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
@@ -275,7 +275,7 @@ export function templateVisitAll(
     visitor: TemplateAstVisitor, asts: TemplateAst[], context: any = null): any[] {
   const result: any[] = [];
   const visit = visitor.visit ?
-      (ast: TemplateAst) => visitor.visit(ast, context) || ast.visit(visitor, context) :
+      (ast: TemplateAst) => visitor.visit!(ast, context) || ast.visit(visitor, context) :
       (ast: TemplateAst) => ast.visit(visitor, context);
   asts.forEach(ast => {
     const astResult = visit(ast);
