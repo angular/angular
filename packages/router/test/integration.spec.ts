@@ -13,11 +13,12 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-
+import {delay} from 'rxjs/operator/delay';
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
+import {of} from 'rxjs/observable/of';
 
 describe('Integration', () => {
   beforeEach(() => {
@@ -1706,12 +1707,19 @@ describe('Integration', () => {
                 }
               },
               {
+                provide: 'alwaysFalseWithDelayAndLogging',
+                useValue: () => {
+                  log.push('called');
+                  return delay.call(of (false));
+                }
+              },
+              {
                 provide: 'canActivate_alwaysTrueAndLogging',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                useValue: () => {
                   log.push('canActivate called');
                   return true;
                 }
-              }
+              },
             ]
           });
         });
@@ -1869,7 +1877,7 @@ describe('Integration', () => {
               path: 'main',
               component: TeamCmp,
               children: [
-                {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalseAndLogging']},
+                {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalseWithDelayAndLogging']},
                 {path: 'component2', component: SimpleCmp, canActivate: ['canActivate_alwaysTrueAndLogging']},
               ]
             }]);
@@ -2232,15 +2240,7 @@ describe('Integration', () => {
               provide: 'canDeactivate_team',
               useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
               deps: [Logger]
-            },
-            {
-              provide: 'canDeactivate_false',
-              useFactory: (logger: Logger) => () => {
-                logger.add('canDeactivate_false');
-                return false;
-              },
-              deps: [Logger]
-            },
+            }
           ]
         });
       });
