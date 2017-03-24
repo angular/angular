@@ -202,7 +202,7 @@ export class UpgradeModule {
                 this.injector.get($INJECTOR);
 
                 // Put the injector on the DOM, so that it can be "required"
-                angular.element(element).data(controllerKey(INJECTOR_KEY), this.injector);
+                angular.element(element).data !(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
                 // We need to do this in the next tick so that we don't prevent the bootup
