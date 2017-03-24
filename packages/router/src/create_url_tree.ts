@@ -164,7 +164,7 @@ function createPositionApplyingDoubleDots(
   let dd = numberOfDoubleDots;
   while (dd > ci) {
     dd -= ci;
-    g = g.parent;
+    g = g.parent !;
     if (!g) {
       throw new Error('Invalid number of \'../\'');
     }

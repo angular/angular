@@ -45,7 +45,7 @@ export function flatten<T>(arr: T[][]): T[] {
   return Array.prototype.concat.apply([], arr);
 }
 
-export function last<T>(a: T[]): T {
+export function last<T>(a: T[]): T|null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 

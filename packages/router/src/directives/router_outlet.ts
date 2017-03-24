@@ -71,8 +71,8 @@ export class RouterOutlet implements OnDestroy {
     if (!this.activated) throw new Error('Outlet is not activated');
     this.location.detach();
     const r = this.activated;
-    this.activated = null;
-    this._activatedRoute = null;
+    this.activated = null !;
+    this._activatedRoute = null !;
     return r;
   }
 
@@ -86,8 +86,8 @@ export class RouterOutlet implements OnDestroy {
     if (this.activated) {
       const c = this.component;
       this.activated.destroy();
-      this.activated = null;
-      this._activatedRoute = null;
+      this.activated = null !;
+      this._activatedRoute = null !;
       this.deactivateEvents.emit(c);
     }
   }
@@ -104,8 +104,8 @@ export class RouterOutlet implements OnDestroy {
     this._activatedRoute = activatedRoute;
 
     const snapshot = activatedRoute._futureSnapshot;
-    const component: any = <any>snapshot._routeConfig.component;
-    const factory = resolver.resolveComponentFactory(component);
+    const component: any = <any>snapshot._routeConfig !.component;
+    const factory = resolver.resolveComponentFactory(component) !;
 
     const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
 
@@ -126,10 +126,10 @@ export class RouterOutlet implements OnDestroy {
     this._activatedRoute = activatedRoute;
 
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot._routeConfig.component;
+    const component = <any>snapshot._routeConfig !.component;
 
     resolver = resolver || this.resolver;
-    const factory = resolver.resolveComponentFactory(component);
+    const factory = resolver.resolveComponentFactory(component) !;
 
     const injector = new OutletInjector(activatedRoute, outletMap, this.location.injector);
 
