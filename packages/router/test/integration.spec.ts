@@ -2202,7 +2202,12 @@ describe('Integration', () => {
               provide: 'canDeactivate_team',
               useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
               deps: [Logger]
-            }
+            },
+            {
+              provide: 'canDeactivate_false',
+              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_false'), false),
+              deps: [Logger]
+            },
           ]
         });
       });
@@ -2235,6 +2240,24 @@ describe('Integration', () => {
                  'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
                ]);
              })));
+
+      it('should not call CanActivate when CanDeactivate returns false',
+         fakeAsync(inject([Router, Logger], (router: Router, logger: Logger) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {path: '', component: SimpleCmp, canDeactivate: ['canDeactivate_false']},
+             {path: 'a', component: SimpleCmp, canActivate: ['canActivate_team']}
+           ]);
+
+           router.navigateByUrl('/');
+           advance(fixture);
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+
+           expect(logger.logs).toEqual(['canDeactivate_false']);
+         })));
     });
   });
 
