@@ -87,7 +87,7 @@ export function main() {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
+        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */): any => {
           const done = () => { resolve(null); };
           (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
           fn(done);
