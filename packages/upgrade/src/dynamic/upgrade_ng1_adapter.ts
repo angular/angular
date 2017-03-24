@@ -44,30 +44,32 @@ export class UpgradeNg1ComponentAdapterBuilder {
   propertyOutputs: string[] = [];
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
-  linkFn: angular.ILinkFn = null;
-  directive: angular.IDirective = null;
-  $controller: angular.IControllerService = null;
+  linkFn: angular.ILinkFn|null = null;
+  directive: angular.IDirective|null = null;
+  $controller: angular.IControllerService|null = null;
 
   constructor(public name: string) {
     const selector = name.replace(
         CAMEL_CASE, (all: any /** TODO #9100 */, next: string) => '-' + next.toLowerCase());
     const self = this;
-    this.type =
-        Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
-            .Class({
-              constructor: [
-                new Inject($SCOPE), ElementRef,
-                function(scope: angular.IScope, elementRef: ElementRef) {
-                  return new UpgradeNg1ComponentAdapter(
-                      self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs,
-                      self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
-                }
-              ],
-              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnDestroy: function() { /* needs to be here for ng2 to properly detect it */ },
-            });
+    this.type = Directive({
+                  selector: selector,
+                  inputs: this.inputsRename,
+                  outputs: this.outputsRename
+                }).Class({
+      constructor: [
+        new Inject($SCOPE), ElementRef,
+        function(scope: angular.IScope, elementRef: ElementRef) {
+          return new UpgradeNg1ComponentAdapter(
+              self.linkFn !, scope, self.directive !, elementRef, self.$controller !, self.inputs,
+              self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
+        }
+      ],
+      ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
+      ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
+      ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ },
+      ngOnDestroy: function() { /* needs to be here for ng2 to properly detect it */ },
+    });
   }
 
   extractDirective(injector: angular.IInjectorService): angular.IDirective {
@@ -90,13 +92,13 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   extractBindings() {
-    const btcIsObject = typeof this.directive.bindToController === 'object';
-    if (btcIsObject && Object.keys(this.directive.scope).length) {
+    const btcIsObject = typeof this.directive !.bindToController === 'object';
+    if (btcIsObject && Object.keys(this.directive !.scope).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time are not supported.`);
     }
 
-    const context = (btcIsObject) ? this.directive.bindToController : this.directive.scope;
+    const context = (btcIsObject) ? this.directive !.bindToController : this.directive !.scope;
 
     if (typeof context == 'object') {
       for (const name in context) {
@@ -147,14 +149,15 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
   compileTemplate(
       compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
-      httpBackend: angular.IHttpBackendService): Promise<angular.ILinkFn> {
-    if (this.directive.template !== undefined) {
+      httpBackend: angular.IHttpBackendService): Promise<angular.ILinkFn>|null {
+    if (this.directive !.template !== undefined) {
       this.linkFn = compileHtml(
-          isFunction(this.directive.template) ? this.directive.template() :
-                                                this.directive.template);
-    } else if (this.directive.templateUrl) {
-      const url = isFunction(this.directive.templateUrl) ? this.directive.templateUrl() :
-                                                           this.directive.templateUrl;
+          isFunction(this.directive !.template) ? (this.directive !.template as Function)() :
+                                                  this.directive !.template);
+    } else if (this.directive !.templateUrl) {
+      const url = isFunction(this.directive !.templateUrl) ?
+          (this.directive !.templateUrl as Function)() :
+          this.directive !.templateUrl;
       const html = templateCache.get(url);
       if (html !== undefined) {
         this.linkFn = compileHtml(html);
@@ -200,7 +203,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         exportedComponent.$controller = $controller;
         exportedComponent.extractBindings();
         const promise: Promise<angular.ILinkFn> =
-            exportedComponent.compileTemplate(compile, templateCache, httpBackend);
+            exportedComponent.compileTemplate(compile, templateCache, httpBackend) !;
         if (promise) promises.push(promise);
       }
     }
@@ -209,8 +212,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
 }
 
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
-  private controllerInstance: IControllerInstance = null;
-  destinationObj: IBindingDestination = null;
+  private controllerInstance: IControllerInstance|null = null;
+  destinationObj: IBindingDestination|null = null;
   checkLastValues: any[] = [];
   componentScope: angular.IScope;
   element: Element;
@@ -261,7 +264,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     if (link) {
       const attrs: angular.IAttributes = NOT_SUPPORTED;
       const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
-      const linkController = this.resolveRequired(this.$element, this.directive.require);
+      const linkController = this.resolveRequired(this.$element, this.directive.require !);
       (<angular.IDirectiveLinkFn>this.directive.link)(
           this.componentScope, this.$element, attrs, linkController, transcludeFn);
     }
@@ -273,8 +276,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       childNodes.push(childNode);
     }
     this.linkFn(this.componentScope, (clonedElement, scope) => {
-      for (let i = 0, ii = clonedElement.length; i < ii; i++) {
-        this.element.appendChild(clonedElement[i]);
+      for (let i = 0, ii = clonedElement !.length; i < ii; i++) {
+        this.element.appendChild(clonedElement ![i]);
       }
     }, {
       parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
@@ -294,8 +297,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       ng1Changes[this.propertyMap[name]] = change;
     });
 
-    if (isFunction(this.destinationObj.$onChanges)) {
-      this.destinationObj.$onChanges(ng1Changes);
+    if (isFunction(this.destinationObj !.$onChanges)) {
+      this.destinationObj !.$onChanges !(ng1Changes);
     }
   }
 
@@ -304,7 +307,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     const lastValues = this.checkLastValues;
     const checkProperties = this.checkProperties;
     for (let i = 0; i < checkProperties.length; i++) {
-      const value = destinationObj[checkProperties[i]];
+      const value = destinationObj ![checkProperties[i]];
       const last = lastValues[i];
       if (value !== last) {
         if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {
@@ -328,14 +331,14 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   }
 
   setComponentProperty(name: string, value: any) {
-    this.destinationObj[this.propertyMap[name]] = value;
+    this.destinationObj ![this.propertyMap[name]] = value;
   }
 
   private buildController(controllerType: any /** TODO #9100 */) {
     const locals = {$scope: this.componentScope, $element: this.$element};
     const controller: any =
         this.$controller(controllerType, locals, null, this.directive.controllerAs);
-    this.$element.data(controllerKey(this.directive.name), controller);
+    this.$element.data(controllerKey(this.directive.name !), controller);
     return controller;
   }
 
@@ -362,8 +365,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       }
 
       const key = controllerKey(name);
-      if (startParent) $element = $element.parent();
-      const dep = searchParents ? $element.inheritedData(key) : $element.data(key);
+      if (startParent) $element = $element.parent !();
+      const dep = searchParents ? $element.inheritedData !(key) : $element.data !(key);
       if (!dep && !isOptional) {
         throw new Error(`Can not locate '${require}' in '${this.directive.name}'.`);
       }

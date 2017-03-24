@@ -19,11 +19,11 @@ const INITIAL_VALUE = {
 
 export class DowngradeComponentAdapter {
   private inputChangeCount: number = 0;
-  private inputChanges: SimpleChanges = null;
+  private inputChanges: SimpleChanges|null = null;
   private componentScope: angular.IScope;
-  private componentRef: ComponentRef<any> = null;
+  private componentRef: ComponentRef<any>|null = null;
   private component: any = null;
-  private changeDetector: ChangeDetectorRef = null;
+  private changeDetector: ChangeDetectorRef|null = null;
 
   constructor(
       private id: string, private element: angular.IAugmentedJQuery,
@@ -40,12 +40,12 @@ export class DowngradeComponentAdapter {
     const projectableNodes: Node[][] = this.groupProjectableNodes();
     const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
-    this.element.empty();
+    this.element.empty !();
 
     linkFns.forEach(linkFn => {
       linkFn(this.scope, (clone: Node[]) => {
         compiledProjectableNodes.push(clone);
-        this.element.append(clone);
+        this.element.append !(clone);
       });
     });
 
@@ -109,7 +109,7 @@ export class DowngradeComponentAdapter {
       this.componentScope.$watch(() => this.inputChangeCount, () => {
         const inputChanges = this.inputChanges;
         this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges);
+        (<OnChanges>this.component).ngOnChanges(inputChanges !);
       });
     }
     this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
@@ -133,11 +133,11 @@ export class DowngradeComponentAdapter {
         expr = (attrs as any /** TODO #9100 */)[output.onAttr];
       } else if (attrs.hasOwnProperty(output.parenAttr)) {
         expr = (attrs as any /** TODO #9100 */)[output.parenAttr];
-      } else if (attrs.hasOwnProperty(bindonAttr)) {
-        expr = (attrs as any /** TODO #9100 */)[bindonAttr];
+      } else if (attrs.hasOwnProperty(bindonAttr !)) {
+        expr = (attrs as any /** TODO #9100 */)[bindonAttr !];
         assignExpr = true;
-      } else if (attrs.hasOwnProperty(bracketParenAttr)) {
-        expr = (attrs as any /** TODO #9100 */)[bracketParenAttr];
+      } else if (attrs.hasOwnProperty(bracketParenAttr !)) {
+        expr = (attrs as any /** TODO #9100 */)[bracketParenAttr !];
         assignExpr = true;
       }
 
@@ -164,13 +164,13 @@ export class DowngradeComponentAdapter {
   }
 
   registerCleanup() {
-    this.element.bind('$destroy', () => {
+    this.element.bind !('$destroy', () => {
       this.componentScope.$destroy();
-      this.componentRef.destroy();
+      this.componentRef !.destroy();
     });
   }
 
-  getInjector(): Injector { return this.componentRef && this.componentRef.injector; }
+  getInjector(): Injector { return this.componentRef ! && this.componentRef !.injector; }
 
   private updateInput(prop: string, prevValue: any, currValue: any) {
     if (this.inputChanges) {
@@ -183,7 +183,7 @@ export class DowngradeComponentAdapter {
 
   groupProjectableNodes() {
     let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents());
+    return groupNodesBySelector(ngContentSelectors, this.element.contents !());
   }
 }
 
@@ -209,9 +209,9 @@ export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]
   return projectableNodes;
 }
 
-function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number {
+function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number|null {
   const ngContentIndices: number[] = [];
-  let wildcardNgContentIndex: number;
+  let wildcardNgContentIndex: number = -1;
   for (let i = 0; i < ngContentSelectors.length; i++) {
     const selector = ngContentSelectors[i];
     if (selector === '*') {
@@ -224,7 +224,7 @@ function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]):
   }
   ngContentIndices.sort();
 
-  if (wildcardNgContentIndex !== undefined) {
+  if (wildcardNgContentIndex !== -1) {
     ngContentIndices.push(wildcardNgContentIndex);
   }
   return ngContentIndices.length ? ngContentIndices[0] : null;
