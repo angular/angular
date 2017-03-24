@@ -147,7 +147,7 @@ export function main() {
     it('should call the validator for every execution and store the valid sample',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const log: any[] = [];
-         const validSample = [mv(null, null, {})];
+         const validSample = [mv(null !, null !, {})];
 
          createSampler({
            metric: createCountingMetric(),
@@ -174,7 +174,7 @@ export function main() {
     it('should report the metric values',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const log: any[] = [];
-         const validSample = [mv(null, null, {})];
+         const validSample = [mv(null !, null !, {})];
          createSampler({
            validator: createCountingValidator(2, validSample),
            metric: createCountingMetric(),
@@ -206,8 +206,7 @@ function mv(runIndex: number, time: number, values: {[key: string]: number}) {
   return new MeasureValues(runIndex, new Date(time), values);
 }
 
-function createCountingValidator(
-    count: number, validSample: MeasureValues[] = null, log: any[] = []) {
+function createCountingValidator(count: number, validSample?: MeasureValues[], log: any[] = []) {
   return new MockValidator(log, (completeSample: MeasureValues[]) => {
     count--;
     if (count === 0) {
@@ -224,7 +223,7 @@ function createCountingMetric(log: any[] = []) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  constructor(private _log: any[] = [], private _waitFor: Function = null) { super(); }
+  constructor(private _log: any[] = [], private _waitFor: Function|null = null) { super(); }
   waitFor(callback: Function): Promise<any> {
     if (this._waitFor != null) {
       return this._waitFor(callback);
@@ -236,7 +235,7 @@ class MockDriverAdapter extends WebDriverAdapter {
 
 
 class MockValidator extends Validator {
-  constructor(private _log: any[] = [], private _validate: Function = null) { super(); }
+  constructor(private _log: any[] = [], private _validate: Function|null = null) { super(); }
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     const stableSample = this._validate != null ? this._validate(completeSample) : completeSample;
     this._log.push(['validate', completeSample, stableSample]);
@@ -245,7 +244,7 @@ class MockValidator extends Validator {
 }
 
 class MockMetric extends Metric {
-  constructor(private _log: any[] = [], private _endMeasure: Function = null) { super(); }
+  constructor(private _log: any[] = [], private _endMeasure: Function|null = null) { super(); }
   beginMeasure() {
     this._log.push(['beginMeasure']);
     return Promise.resolve(null);

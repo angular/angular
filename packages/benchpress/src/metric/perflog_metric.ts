@@ -140,11 +140,11 @@ export class PerflogMetric extends Metric {
     const markName = this._markName(this._measureCount - 1);
     const nextMarkName = restart ? this._markName(this._measureCount++) : null;
     return this._driverExtension.timeEnd(markName, nextMarkName)
-        .then((_) => this._readUntilEndMark(markName));
+        .then((_: any) => this._readUntilEndMark(markName));
   }
 
   private _readUntilEndMark(
-      markName: string, loopCount: number = 0, startEvent: PerfLogEvent = null) {
+      markName: string, loopCount: number = 0, startEvent: PerfLogEvent|null = null) {
     if (loopCount > _MAX_RETRY_COUNT) {
       throw new Error(`Tried too often to get the ending mark: ${loopCount}`);
     }
@@ -175,7 +175,7 @@ export class PerflogMetric extends Metric {
         }
         startEvent['ph'] = 'B';
         endEvent['ph'] = 'E';
-        endEvent['ts'] = startEvent['ts'] + startEvent['dur'];
+        endEvent['ts'] = startEvent['ts'] ! + startEvent['dur'] !;
         this._remainingEvents.push(startEvent);
         this._remainingEvents.push(endEvent);
       } else {
@@ -185,13 +185,13 @@ export class PerflogMetric extends Metric {
     if (needSort) {
       // Need to sort because of the ph==='X' events
       this._remainingEvents.sort((a, b) => {
-        const diff = a['ts'] - b['ts'];
+        const diff = a['ts'] ! - b['ts'] !;
         return diff > 0 ? 1 : diff < 0 ? -1 : 0;
       });
     }
   }
 
-  private _aggregateEvents(events: PerfLogEvent[], markName: string): {[key: string]: number} {
+  private _aggregateEvents(events: PerfLogEvent[], markName: string): {[key: string]: number}|null {
     const result: {[key: string]: number} = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;
@@ -217,8 +217,8 @@ export class PerflogMetric extends Metric {
       result['requestCount'] = 0;
     }
 
-    let markStartEvent: PerfLogEvent = null;
-    let markEndEvent: PerfLogEvent = null;
+    let markStartEvent: PerfLogEvent = null !;
+    let markEndEvent: PerfLogEvent = null !;
     events.forEach((event) => {
       const ph = event['ph'];
       const name = event['name'];
@@ -242,8 +242,8 @@ export class PerflogMetric extends Metric {
 
     const frameTimestamps: number[] = [];
     const frameTimes: number[] = [];
-    let frameCaptureStartEvent: PerfLogEvent = null;
-    let frameCaptureEndEvent: PerfLogEvent = null;
+    let frameCaptureStartEvent: PerfLogEvent|null = null;
+    let frameCaptureEndEvent: PerfLogEvent|null = null;
 
     const intervalStarts: {[key: string]: PerfLogEvent} = {};
     const intervalStartCount: {[key: string]: number} = {};
@@ -251,7 +251,7 @@ export class PerflogMetric extends Metric {
     let inMeasureRange = false;
     events.forEach((event) => {
       const ph = event['ph'];
-      let name = event['name'];
+      let name = event['name'] !;
       let microIterations = 1;
       const microIterationsMatch = name.match(_MICRO_ITERATIONS_REGEX);
       if (microIterationsMatch) {
@@ -270,7 +270,7 @@ export class PerflogMetric extends Metric {
       if (this._requestCount && name === 'sendRequest') {
         result['requestCount'] += 1;
       } else if (this._receivedData && name === 'receivedData' && ph === 'I') {
-        result['receivedData'] += event['args']['encodedDataLength'];
+        result['receivedData'] += event['args'] !['encodedDataLength'] !;
       }
       if (ph === 'B' && name === _MARK_NAME_FRAME_CAPTURE) {
         if (frameCaptureStartEvent) {
@@ -289,7 +289,7 @@ export class PerflogMetric extends Metric {
       }
 
       if (ph === 'I' && frameCaptureStartEvent && !frameCaptureEndEvent && name === 'frame') {
-        frameTimestamps.push(event['ts']);
+        frameTimestamps.push(event['ts'] !);
         if (frameTimestamps.length >= 2) {
           frameTimes.push(
               frameTimestamps[frameTimestamps.length - 1] -
@@ -308,14 +308,14 @@ export class PerflogMetric extends Metric {
         intervalStartCount[name]--;
         if (intervalStartCount[name] === 0) {
           const startEvent = intervalStarts[name];
-          const duration = (event['ts'] - startEvent['ts']);
-          intervalStarts[name] = null;
+          const duration = (event['ts'] ! - startEvent['ts'] !);
+          intervalStarts[name] = null !;
           if (name === 'gc') {
             result['gcTime'] += duration;
             const amount =
-                (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
+                (startEvent['args'] !['usedHeapSize'] ! - event['args'] !['usedHeapSize'] !) / 1000;
             result['gcAmount'] += amount;
-            const majorGc = event['args']['majorGc'];
+            const majorGc = event['args'] !['majorGc'];
             if (majorGc && majorGc) {
               result['majorGcTime'] += duration;
             }

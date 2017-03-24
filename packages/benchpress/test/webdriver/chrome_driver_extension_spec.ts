@@ -32,7 +32,7 @@ export function main() {
     const normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(
-        perfRecords: any[] = null, userAgent: string = null,
+        perfRecords: any[] | null = null, userAgent: string | null = null,
         messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (!perfRecords) {
         perfRecords = [];
@@ -392,7 +392,7 @@ class MockDriverAdapter extends WebDriverAdapter {
     return Promise.resolve(null);
   }
 
-  logs(type: string) {
+  logs(type: string): Promise<any[]> {
     this._log.push(['logs', type]);
     if (type === 'performance') {
       return Promise.resolve(this._events.map(
@@ -401,7 +401,7 @@ class MockDriverAdapter extends WebDriverAdapter {
                 {'message': {'method': this._messageMethod, 'params': event}}, null, 2)
           })));
     } else {
-      return null;
+      return null !;
     }
   }
 }

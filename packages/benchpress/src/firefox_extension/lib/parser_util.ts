@@ -16,7 +16,7 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
   const finishedEvents: {[key: string]: any}[] = [];  // Event[] finished events
   const addFinishedEvent = function(eventName: string, startTime: number, endTime: number) {
     const categorizedEventName = categorizeEvent(eventName);
-    let args: {[key: string]: any} = undefined;
+    let args: {[key: string]: any}|undefined = undefined;
     if (categorizedEventName == 'gc') {
       // TODO: We cannot measure heap size at the moment
       args = {usedHeapSize: 0};

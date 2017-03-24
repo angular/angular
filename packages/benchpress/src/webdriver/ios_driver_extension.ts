@@ -23,7 +23,7 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(`console.time('${name}');`);
   }
 
-  timeEnd(name: string, restartName: string = null): Promise<any> {
+  timeEnd(name: string, restartName: string|null = null): Promise<any> {
     let script = `console.timeEnd('${name}');`;
     if (restartName != null) {
       script += `console.time('${restartName}');`;
@@ -50,28 +50,28 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   /** @internal */
-  private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[] = null) {
+  private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[]|null = null) {
     if (!events) {
       events = [];
     }
     records.forEach((record) => {
-      let endEvent: PerfLogEvent = null;
+      let endEvent: PerfLogEvent|null = null;
       const type = record['type'];
       const data = record['data'];
       const startTime = record['startTime'];
       const endTime = record['endTime'];
 
       if (type === 'FunctionCall' && (data == null || data['scriptName'] !== 'InjectedScript')) {
-        events.push(createStartEvent('script', startTime));
+        events !.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
       } else if (type === 'Time') {
-        events.push(createMarkStartEvent(data['message'], startTime));
+        events !.push(createMarkStartEvent(data['message'], startTime));
       } else if (type === 'TimeEnd') {
-        events.push(createMarkEndEvent(data['message'], startTime));
+        events !.push(createMarkEndEvent(data['message'], startTime));
       } else if (
           type === 'RecalculateStyles' || type === 'Layout' || type === 'UpdateLayerTree' ||
           type === 'Paint' || type === 'Rasterize' || type === 'CompositeLayers') {
-        events.push(createStartEvent('render', startTime));
+        events !.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
       // Note: ios used to support GCEvent up until iOS 6 :-(
@@ -79,7 +79,7 @@ export class IOsDriverExtension extends WebDriverExtension {
         this._convertPerfRecordsToEvents(record['children'], events);
       }
       if (endEvent != null) {
-        events.push(endEvent);
+        events !.push(endEvent);
       }
     });
     return events;
