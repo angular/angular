@@ -24,7 +24,7 @@ export class AnimationTransitionFactory {
     this._animationAst = normalizedAst;
   }
 
-  match(currentState: any, nextState: any): AnimationTransitionInstruction {
+  match(currentState: any, nextState: any): AnimationTransitionInstruction|undefined {
     if (!oneOrMoreTransitionsMatch(this.matchFns, currentState, nextState)) return;
 
     const backupStateStyles = this._stateStyles['*'] || {};
