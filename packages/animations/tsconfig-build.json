@@ -15,6 +15,7 @@
     "target": "es2015",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
+    "strictNullChecks": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": []
   },

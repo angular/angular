@@ -13,12 +13,12 @@ export interface AnimationTimelineInstruction extends AnimationEngineInstruction
   duration: number;
   delay: number;
   totalTime: number;
-  easing: string;
+  easing: string|null|undefined;
 }
 
 export function createTimelineInstruction(
     keyframes: ɵStyleData[], duration: number, delay: number,
-    easing: string): AnimationTimelineInstruction {
+    easing: string | null | undefined): AnimationTimelineInstruction {
   return {
     type: AnimationTransitionInstructionType.TimelineAnimation,
     keyframes,

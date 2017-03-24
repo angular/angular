@@ -59,7 +59,7 @@ export class DomAnimationEngine {
     return players;
   }
 
-  registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
+  registerTrigger(trigger: AnimationTriggerMetadata, name?: string): void {
     name = name || trigger.name;
     if (this._triggers[name]) {
       return;
@@ -84,7 +84,7 @@ export class DomAnimationEngine {
     if (lookupRef) {
       const possibleTriggers = Object.keys(lookupRef);
       const hasRemoval = possibleTriggers.some(triggerName => {
-        const oldValue = lookupRef[triggerName];
+        const oldValue = lookupRef ![triggerName];
         const instruction = this._triggers[triggerName].matchTransition(oldValue, VOID_STATE);
         return !!instruction;
       });
@@ -194,7 +194,7 @@ export class DomAnimationEngine {
 
     // we make a copy of the array because the actual source array is modified
     // each time a player is finished/destroyed (the forEach loop would fail otherwise)
-    return copyArray(this._activeElementAnimations.get(element));
+    return copyArray(this._activeElementAnimations.get(element) !);
   }
 
   animateTransition(element: any, instruction: AnimationTransitionInstruction): AnimationPlayer {
@@ -321,7 +321,7 @@ export class DomAnimationEngine {
 
   private _flushQueuedAnimations() {
     parentLoop: while (this._queuedTransitionAnimations.length) {
-      const {player, element, triggerName, event} = this._queuedTransitionAnimations.shift();
+      const {player, element, triggerName, event} = this._queuedTransitionAnimations.shift() !;
 
       let parent = element;
       while (parent = parent.parentNode) {
@@ -512,7 +512,7 @@ function copyAnimationEvent(e: AnimationEvent): AnimationEvent {
 }
 
 function makeAnimationEvent(
-    element: any, triggerName: string, fromState: string, toState: string, phaseName: string,
+    element: any, triggerName: string, fromState: string, toState: string, phaseName: string | null,
     totalTime: number): AnimationEvent {
   return <AnimationEvent>{element, triggerName, fromState, toState, phaseName, totalTime};
 }
