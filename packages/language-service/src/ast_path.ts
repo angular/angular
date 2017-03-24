@@ -25,5 +25,5 @@ export class AstPath<T> {
 
   push(node: T) { this.path.push(node); }
 
-  pop(): T { return this.path.pop(); }
+  pop(): T { return this.path.pop() !; }
 }

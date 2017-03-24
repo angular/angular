@@ -10,7 +10,7 @@ import {TemplateInfo} from './common';
 import {locateSymbol} from './locate_symbol';
 import {Hover, HoverTextSection, Symbol} from './types';
 
-export function getHover(info: TemplateInfo): Hover {
+export function getHover(info: TemplateInfo): Hover|undefined {
   const result = locateSymbol(info);
   if (result) {
     return {text: hoverTextOf(result.symbol), span: result.span};

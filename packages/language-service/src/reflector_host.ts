@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
   constructor(private host: ts.LanguageServiceHost) {
     if (host.directoryExists)
-      this.directoryExists = directoryName => this.host.directoryExists(directoryName);
+      this.directoryExists = directoryName => this.host.directoryExists !(directoryName);
   }
 
   fileExists(fileName: string): boolean { return !!this.host.getScriptSnapshot(fileName); }
@@ -22,6 +22,7 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
     if (snapshot) {
       return snapshot.getText(0, snapshot.getLength());
     }
+    return undefined !;
   }
 
   directoryExists: (directoryName: string) => boolean;
@@ -32,7 +33,7 @@ export class ReflectorHost extends CompilerHost {
       private getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
       options: AngularCompilerOptions) {
     super(
-        null, options,
+        null !, options,
         new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)),
         {verboseInvalidExpression: true});
   }

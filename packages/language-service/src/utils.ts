@@ -13,7 +13,7 @@ import {Span} from './types';
 
 export interface SpanHolder {
   sourceSpan: ParseSourceSpan;
-  endSourceSpan?: ParseSourceSpan;
+  endSourceSpan?: ParseSourceSpan|null;
   children?: SpanHolder[];
 }
 
@@ -21,7 +21,7 @@ export function isParseSourceSpan(value: any): value is ParseSourceSpan {
   return value && !!value.start;
 }
 
-export function spanOf(span?: SpanHolder | ParseSourceSpan): Span {
+export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
   if (!span) return undefined;
   if (isParseSourceSpan(span)) {
     return {start: span.start.offset, end: span.end.offset};
@@ -31,7 +31,7 @@ export function spanOf(span?: SpanHolder | ParseSourceSpan): Span {
     } else if (span.children && span.children.length) {
       return {
         start: span.sourceSpan.start.offset,
-        end: spanOf(span.children[span.children.length - 1]).end
+        end: spanOf(span.children[span.children.length - 1]) !.end
       };
     }
     return {start: span.sourceSpan.start.offset, end: span.sourceSpan.end.offset};
@@ -40,7 +40,7 @@ export function spanOf(span?: SpanHolder | ParseSourceSpan): Span {
 
 export function inSpan(position: number, span?: Span, exclusive?: boolean): boolean {
   return span && exclusive ? position >= span.start && position < span.end :
-                             position >= span.start && position <= span.end;
+                             position >= span !.start && position <= span !.end;
 }
 
 export function offsetSpan(span: Span, amount: number): Span {
@@ -54,7 +54,7 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
 export function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
-      if (diDep.token.identifier && identifierName(diDep.token.identifier) == 'TemplateRef')
+      if (diDep.token !.identifier && identifierName(diDep.token !.identifier !) == 'TemplateRef')
         return true;
     }
   }
@@ -63,8 +63,8 @@ export function hasTemplateReference(type: CompileTypeMetadata): boolean {
 
 export function getSelectors(info: TemplateInfo): SelectorInfo {
   const map = new Map<CssSelector, CompileDirectiveSummary>();
-  const selectors = flatten(info.directives.map(directive => {
-    const selectors = CssSelector.parse(directive.selector);
+  const selectors: CssSelector[] = flatten(info.directives.map(directive => {
+    const selectors: CssSelector[] = CssSelector.parse(directive.selector !);
     selectors.forEach(selector => map.set(selector, directive));
     return selectors;
   }));

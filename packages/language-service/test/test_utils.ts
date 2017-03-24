@@ -63,7 +63,7 @@ missingCache.set(
 missingCache.set('/node_modules/@angular/forms/src/directives/form_interface.metadata.json', true);
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
-  private angularPath: string;
+  private angularPath: string|undefined;
   private nodeModulesPath: string;
   private scriptVersion = new Map<string, number>();
   private overrides = new Map<string, string>();
@@ -120,7 +120,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return (this.scriptVersion.get(fileName) || 0).toString();
   }
 
-  getScriptSnapshot(fileName: string): ts.IScriptSnapshot {
+  getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
     const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
     return undefined;
@@ -145,19 +145,19 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
   }
 
-  getReferenceMarkers(fileName: string): ReferenceResult {
+  getReferenceMarkers(fileName: string): ReferenceResult|undefined {
     let content = this.getRawFileContent(fileName);
     if (content) {
       return getReferenceMarkers(content);
     }
   }
 
-  getFileContent(fileName: string): string {
+  getFileContent(fileName: string): string|undefined {
     const content = this.getRawFileContent(fileName);
     if (content) return removeReferenceMarkers(removeLocationMarkers(content));
   }
 
-  private getRawFileContent(fileName: string): string {
+  private getRawFileContent(fileName: string): string|undefined {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
@@ -225,7 +225,7 @@ function find(fileName: string, data: MockData): MockData|undefined {
     if (typeof current === 'string')
       return undefined;
     else
-      current = (<MockDirectory>current)[name];
+      current = (<MockDirectory>current)[name] !;
     if (!current) return undefined;
   }
   return current;
@@ -241,7 +241,7 @@ function open(fileName: string, data: MockData): string|undefined {
 
 function directoryExists(dirname: string, data: MockData): boolean {
   let result = find(dirname, data);
-  return result && typeof result !== 'string';
+  return !!result && typeof result !== 'string';
 }
 
 const locationMarker = /\~\{(\w+(-\w+)*)\}/g;

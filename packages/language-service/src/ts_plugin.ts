@@ -45,7 +45,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, info.languageService);
-  const ls = createLanguageService(serviceHost);
+  const ls = createLanguageService(serviceHost as any);
   serviceHost.setSite(ls);
 
   proxy.getCompletionsAtPosition = function(fileName: string, position: number) {
@@ -76,7 +76,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       if (ours) {
         const displayParts: typeof base.displayParts = [];
         for (const part of ours.text) {
-          displayParts.push({kind: part.language, text: part.text});
+          displayParts.push({kind: part.language !, text: part.text});
         }
         base = {
           displayParts,

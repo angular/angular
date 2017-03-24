@@ -104,10 +104,10 @@ class TemplateAstPathBuilder extends TemplateAstChildVisitor {
   constructor(private position: number, private allowWidening: boolean) { super(); }
 
   visit(ast: TemplateAst, context: any): any {
-    let span = spanOf(ast);
+    let span = spanOf(ast) !;
     if (inSpan(this.position, span)) {
       const len = this.path.length;
-      if (!len || this.allowWidening || isNarrower(span, spanOf(this.path[len - 1]))) {
+      if (!len || this.allowWidening || isNarrower(span, spanOf(this.path[len - 1]) !)) {
         this.path.push(ast);
       }
     } else {

@@ -22,7 +22,7 @@ describe('service without angular', () => {
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
   const fileName = '/app/test.ng';
-  let position = mockHost.getMarkerLocations(fileName)['h1-content'];
+  let position = mockHost.getMarkerLocations(fileName) !['h1-content'];
 
   it('should not crash a get template references',
      () => expect(() => ngService.getTemplateReferences()));

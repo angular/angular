@@ -84,7 +84,7 @@ export interface TemplateSource {
  *
  * @experimental
  */
-export type TemplateSources = TemplateSource[] /* | undefined */;
+export type TemplateSources = TemplateSource[] | undefined;
 
 /**
  * Error information found getting declaration information
@@ -227,7 +227,7 @@ export interface Symbol {
   /**
    * A symbol representing type of the symbol.
    */
-  readonly type: Symbol /* | undefined */;
+  readonly type: Symbol|undefined;
 
 
   /**
@@ -235,7 +235,7 @@ export interface Symbol {
    * is the class or interface of the method. If no container is appropriate, undefined is
    * returned.
    */
-  readonly container: Symbol /* | undefined */;
+  readonly container: Symbol|undefined;
 
   /**
    * The symbol is public in the container.
@@ -250,7 +250,7 @@ export interface Symbol {
   /**
    * The location of the definition of the symbol
    */
-  readonly definition: Definition;
+  readonly definition: Definition|undefined;
   /**
 
    * A table of the members of the symbol; that is, the members that can appear
@@ -270,13 +270,13 @@ export interface Symbol {
    * given the `types` supplied. If no signature would match, this method should
    * return `undefined`.
    */
-  selectSignature(types: Symbol[]): Signature /* | undefined */;
+  selectSignature(types: Symbol[]): Signature|undefined;
 
   /**
    * Return the type of the expression if this symbol is indexed by `argument`.
    * If the symbol cannot be indexed, this method should return `undefined`.
    */
-  indexed(argument: Symbol): Symbol /* | undefined */;
+  indexed(argument: Symbol): Symbol|undefined;
 }
 
 /**
@@ -296,7 +296,7 @@ export interface SymbolTable {
    * Get the symbol corresponding to `key` or `undefined` if there is no symbol in the
    * table by the name `key`.
    */
-  get(key: string): Symbol /* | undefined */;
+  get(key: string): Symbol|undefined;
 
   /**
    * Returns `true` if the table contains a `Symbol` with the name `key`.
@@ -364,7 +364,7 @@ export interface SymbolQuery {
    * Return element type symbol for an array type if the `type` is an array type. Otherwise return
    * undefined.
    */
-  getElementType(type: Symbol): Symbol /* | undefined */;
+  getElementType(type: Symbol): Symbol|undefined;
 
   /**
    * Return a type that is the non-nullable version of the given type. If `type` is already
@@ -385,7 +385,7 @@ export interface SymbolQuery {
   /**
    * Return the members that are in the context of a type's template reference.
    */
-  getTemplateContext(type: StaticSymbol): SymbolTable;
+  getTemplateContext(type: StaticSymbol): SymbolTable|undefined;
 
   /**
    * Produce a symbol table with the given symbols. Used to produce a symbol table
@@ -406,7 +406,7 @@ export interface SymbolQuery {
   /**
    * Return the span of the narrowest non-token node at the given location.
    */
-  getSpanAt(line: number, column: number): Span /* | undefined */;
+  getSpanAt(line: number, column: number): Span|undefined;
 }
 
 /**
@@ -519,7 +519,7 @@ export interface Completion {
  *
  * @experimental
  */
-export type Completions = Completion[] /* | undefined */;
+export type Completions = Completion[] | undefined;
 
 /**
  * A file and span.
@@ -532,7 +532,7 @@ export interface Location {
 /**
  * A defnition location(s).
  */
-export type Definition = Location[] /* | undefined */;
+export type Definition = Location[] | undefined;
 
 /**
  * The kind of diagnostic message.
@@ -597,7 +597,7 @@ export interface PipeInfo {
  *
  * @experimental
  */
-export type Pipes = PipeInfo[] /* | undefined */;
+export type Pipes = PipeInfo[] | undefined;
 
 /**
  * Describes a symbol to type binding used to build a symbol table.
@@ -699,30 +699,30 @@ export interface LanguageService {
   /**
    * Returns a list of all the external templates referenced by the project.
    */
-  getTemplateReferences(): string[] /* | undefined */;
+  getTemplateReferences(): string[]|undefined;
 
   /**
    * Returns a list of all error for all templates in the given file.
    */
-  getDiagnostics(fileName: string): Diagnostics /* | undefined */;
+  getDiagnostics(fileName: string): Diagnostics|undefined;
 
   /**
    * Return the completions at the given position.
    */
-  getCompletionsAt(fileName: string, position: number): Completions /* | undefined */;
+  getCompletionsAt(fileName: string, position: number): Completions|undefined;
 
   /**
    * Return the definition location for the symbol at position.
    */
-  getDefinitionAt(fileName: string, position: number): Definition /* | undefined */;
+  getDefinitionAt(fileName: string, position: number): Definition|undefined;
 
   /**
    * Return the hover information for the symbol at position.
    */
-  getHoverAt(fileName: string, position: number): Hover /* | undefined */;
+  getHoverAt(fileName: string, position: number): Hover|undefined;
 
   /**
    * Return the pipes that are available at the given position.
    */
-  getPipesAt(fileName: string, position: number): Pipes /* | undefined */;
+  getPipesAt(fileName: string, position: number): Pipes|undefined;
 }
