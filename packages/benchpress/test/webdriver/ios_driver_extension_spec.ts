@@ -18,7 +18,7 @@ export function main() {
 
     const normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords: any[] = null): WebDriverExtension {
+    function createExtension(perfRecords: any[] | null = null): WebDriverExtension {
       if (!perfRecords) {
         perfRecords = [];
       }
@@ -154,7 +154,8 @@ function timeEndRecord(name: string, time: number) {
   return {'type': 'TimeEnd', 'startTime': time, 'data': {'message': name}};
 }
 
-function durationRecord(type: string, startTime: number, endTime: number, children: any[] = null) {
+function durationRecord(
+    type: string, startTime: number, endTime: number, children: any[] | null = null) {
   if (!children) {
     children = [];
   }
@@ -178,7 +179,7 @@ class MockDriverAdapter extends WebDriverAdapter {
     return Promise.resolve(null);
   }
 
-  logs(type: string) {
+  logs(type: string): Promise<any[]> {
     this._log.push(['logs', type]);
     if (type === 'performance') {
       return Promise.resolve(this._perfRecords.map(function(record) {
@@ -189,7 +190,7 @@ class MockDriverAdapter extends WebDriverAdapter {
         };
       }));
     } else {
-      return null;
+      return null !;
     }
   }
 }

@@ -51,7 +51,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(`console.time('${name}');`);
   }
 
-  timeEnd(name: string, restartName: string = null): Promise<any> {
+  timeEnd(name: string, restartName: string|null = null): Promise<any> {
     let script = `console.timeEnd('${name}');`;
     if (restartName) {
       script += `console.time('${restartName}');`;
@@ -82,14 +82,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   private _convertPerfRecordsToEvents(
-      chromeEvents: Array<{[key: string]: any}>, normalizedEvents: PerfLogEvent[] = null) {
+      chromeEvents: Array<{[key: string]: any}>, normalizedEvents: PerfLogEvent[]|null = null) {
     if (!normalizedEvents) {
       normalizedEvents = [];
     }
     chromeEvents.forEach((event) => {
       const categories = this._parseCategories(event['cat']);
       const normalizedEvent = this._convertEvent(event, categories);
-      if (normalizedEvent != null) normalizedEvents.push(normalizedEvent);
+      if (normalizedEvent != null) normalizedEvents !.push(normalizedEvent);
     });
     return normalizedEvents;
   }
@@ -167,7 +167,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   private _isEvent(
       eventCategories: string[], eventName: string, expectedCategories: string[],
-      expectedName: string = null): boolean {
+      expectedName: string|null = null): boolean {
     const hasCategories = expectedCategories.reduce(
         (value, cat) => value && eventCategories.indexOf(cat) !== -1, true);
     return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
