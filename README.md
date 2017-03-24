@@ -25,6 +25,6 @@ Want to file a bug, contribute some code, or improve documentation? Excellent! R
 guidelines for [contributing][contributing] and then check out one of our issues in the [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
 
 [browserstack]: https://www.browserstack.com/
-[contributing]: http://github.com/angular/angular/blob/master/docs/CONTRIBUTING.md
+[contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [quickstart]: https://angular.io/docs/ts/latest/quickstart.html
 [ng]: http://angular.io
