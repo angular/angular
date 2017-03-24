@@ -2250,7 +2250,7 @@ describe('Integration', () => {
 
            router.resetConfig([
              {path: '', component: SimpleCmp, canDeactivate: ['canDeactivate_false']},
-             {path: 'a', component: SimpleCmp, canActivate: ['canActivate_team']}
+             {path: 'a', component: SimpleCmp}
            ]);
 
            router.navigateByUrl('/');
