@@ -37,13 +37,13 @@ export abstract class RouteReuseStrategy {
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
 
   /** Stores the detached route */
-  abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void;
+  abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle|null): void;
 
   /** Determines if this route (and its subtree) should be reattached */
   abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
 
   /** Retrieves the previously stored route */
-  abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle;
+  abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null;
 
   /** Determines if a route should be reused */
   abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;

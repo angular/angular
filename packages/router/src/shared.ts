@@ -109,8 +109,8 @@ export function isNavigationCancelingError(error: Error) {
 }
 
 export function defaultUrlMatcher(
-    segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult {
-  const path = route.path;
+    segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
+  const path = route.path !;
   const parts = path.split('/');
   const posParams: {[key: string]: UrlSegment} = {};
   const consumed: UrlSegment[] = [];
