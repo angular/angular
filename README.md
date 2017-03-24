@@ -22,9 +22,9 @@ Angular is a development platform for building mobile and desktop web applicatio
 ## Want to help?
 
 Want to file a bug, contribute some code, or improve documentation? Excellent! Read up on our
-guidelines for [contributing][docs/contributing] and then check out one of our issues in the [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
+guidelines for [contributing][contributing] and then check out one of our issues in the [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
 
 [browserstack]: https://www.browserstack.com/
-[contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
+[contributing]: http://github.com/angular/angular/blob/master/docs/CONTRIBUTING.md
 [quickstart]: https://angular.io/docs/ts/latest/quickstart.html
 [ng]: http://angular.io
