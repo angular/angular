@@ -25,10 +25,10 @@ export function getExpressionDiagnostics(
 }
 
 export function getExpressionCompletions(
-    scope: SymbolTable, ast: AST, position: number, query: SymbolQuery): Symbol[] {
+    scope: SymbolTable, ast: AST, position: number, query: SymbolQuery): Symbol[]|undefined {
   const path = new AstPath(ast, position);
   if (path.empty) return undefined;
-  const tail = path.tail;
+  const tail = path.tail !;
   let result: SymbolTable|undefined = scope;
 
   function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
@@ -84,15 +84,15 @@ export function getExpressionCompletions(
 
 export function getExpressionSymbol(
     scope: SymbolTable, ast: AST, position: number,
-    query: SymbolQuery): {symbol: Symbol, span: Span} {
+    query: SymbolQuery): {symbol: Symbol, span: Span}|undefined {
   const path = new AstPath(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
-  const tail = path.tail;
+  const tail = path.tail !;
 
   function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
 
-  let symbol: Symbol = undefined;
-  let span: Span = undefined;
+  let symbol: Symbol|undefined = undefined;
+  let span: Span|undefined = undefined;
 
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
@@ -340,7 +340,7 @@ class AstType implements ExpressionVisitor {
     // support contextual typing of arguments so this is simpler than TypeScript's
     // version.
     const args = ast.args.map(arg => this.getType(arg));
-    const target = this.getType(ast.target);
+    const target = this.getType(ast.target !);
     if (!target || !target.callable) return this.reportError('Call target is not callable', ast);
     const signature = target.selectSignature(args);
     if (signature) return signature.result;
@@ -434,7 +434,7 @@ class AstType implements ExpressionVisitor {
     // The type of a pipe node is the return type of the pipe's transform method. The table returned
     // by getPipes() is expected to contain symbols with the corresponding transform method type.
     const pipe = this.query.getPipes().get(ast.name);
-    if (!pipe) return this.reportError(`No pipe by the name ${pipe.name} found`, ast);
+    if (!pipe) return this.reportError(`No pipe by the name ${ast.name} found`, ast);
     const expType = this.getType(ast.exp);
     const signature =
         pipe.selectSignature([expType].concat(ast.args.map(arg => this.getType(arg))));
@@ -495,8 +495,8 @@ class AstType implements ExpressionVisitor {
     // The type of a method is the selected methods result type.
     const method = receiverType.members().get(ast.name);
     if (!method) return this.reportError(`Unknown method ${ast.name}`, ast);
-    if (!method.type.callable) return this.reportError(`Member ${ast.name} is not callable`, ast);
-    const signature = method.type.selectSignature(ast.args.map(arg => this.getType(arg)));
+    if (!method.type !.callable) return this.reportError(`Member ${ast.name} is not callable`, ast);
+    const signature = method.type !.selectSignature(ast.args.map(arg => this.getType(arg)));
     if (!signature)
       return this.reportError(`Unable to resolve signature for call of method ${ast.name}`, ast);
     return signature.result;
@@ -550,7 +550,7 @@ class AstType implements ExpressionVisitor {
 
   private isAny(symbol: Symbol): boolean {
     return !symbol || this.query.getTypeKind(symbol) == BuiltinType.Any ||
-        (symbol.type && this.isAny(symbol.type));
+        (!!symbol.type && this.isAny(symbol.type));
   }
 }
 
@@ -601,7 +601,7 @@ function visitChildren(ast: AST, visitor: ExpressionVisitor) {
       visit(ast.falseExp);
     },
     visitFunctionCall(ast) {
-      visit(ast.target);
+      visit(ast.target !);
       visitAll(ast.args);
     },
     visitImplicitReceiver(ast) {},
@@ -676,7 +676,7 @@ function getReferences(info: TemplateInfo): SymbolDeclaration[] {
 
   function processReferences(references: ReferenceAst[]) {
     for (const reference of references) {
-      let type: Symbol;
+      let type: Symbol = undefined !;
       if (reference.value) {
         type = info.template.query.getTypeSymbol(tokenReference(reference.value));
       }
@@ -721,11 +721,11 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
                 .find(c => !!c);
 
         // Determine the type of the context field referenced by variable.value.
-        let type: Symbol;
+        let type: Symbol = undefined !;
         if (context) {
           const value = context.get(variable.value);
           if (value) {
-            type = value.type;
+            type = value.type !;
             let kind = info.template.query.getTypeKind(type);
             if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
@@ -762,7 +762,7 @@ function refinedVariableType(
       const bindingType =
           new AstType(info.template.members, info.template.query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
-        return info.template.query.getElementType(bindingType);
+        return info.template.query.getElementType(bindingType) !;
       }
     }
   }
@@ -771,7 +771,7 @@ function refinedVariableType(
   return type;
 }
 
-function getDefintionOf(info: TemplateInfo, ast: TemplateAst): Definition {
+function getDefintionOf(info: TemplateInfo, ast: TemplateAst): Definition|undefined {
   if (info.fileName) {
     const templateOffset = info.template.span.start;
     return [{

@@ -70,7 +70,7 @@ describe('definitions', () => {
 
   function localReference(code: string) {
     addCode(code, fileName => {
-      const refResult = mockHost.getReferenceMarkers(fileName);
+      const refResult = mockHost.getReferenceMarkers(fileName) !;
       for (const name in refResult.references) {
         const references = refResult.references[name];
         const definitions = refResult.definitions[name];
@@ -100,14 +100,14 @@ describe('definitions', () => {
     const definition: string = p2 ? p1 : undefined;
     let span: Span = p2 && p1.start != null ? p1 : undefined;
     if (definition && !span) {
-      const referencedFileMarkers = mockHost.getReferenceMarkers(referencedFile);
+      const referencedFileMarkers = mockHost.getReferenceMarkers(referencedFile) !;
       expect(referencedFileMarkers).toBeDefined();  // If this fails the test data is wrong.
       const spans = referencedFileMarkers.definitions[definition];
       expect(spans).toBeDefined();  // If this fails the test data is wrong.
       span = spans[0];
     }
     addCode(code, fileName => {
-      const refResult = mockHost.getReferenceMarkers(fileName);
+      const refResult = mockHost.getReferenceMarkers(fileName) !;
       let tests = 0;
       for (const name in refResult.references) {
         const references = refResult.references[name];
@@ -144,12 +144,12 @@ describe('definitions', () => {
     try {
       cb(fileName, newContent);
     } finally {
-      mockHost.override(fileName, undefined);
+      mockHost.override(fileName, undefined !);
     }
   }
 });
 
-function matchingSpan(aSpans: Span[], bSpans: Span[]): Span {
+function matchingSpan(aSpans: Span[], bSpans: Span[]): Span|undefined {
   for (const a of aSpans) {
     for (const b of bSpans) {
       if (a.start == b.start && a.end == b.end) {

@@ -29,7 +29,7 @@ export function getTemplateDiagnostics(
         results.push(...ast.parseErrors.map<Diagnostic>(
             e => ({
               kind: DiagnosticKind.Error,
-              span: offsetSpan(spanOf(e.span), template.span.start),
+              span: offsetSpan(spanOf(e.span) !, template.span.start),
               message: e.msg
             })));
       } else if (ast.templateAst) {
@@ -66,7 +66,8 @@ export function getDeclarationDiagnostics(
           report(
               `Component '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
         }
-        if (!declaration.metadata.template.template && !declaration.metadata.template.templateUrl) {
+        if (!declaration.metadata.template !.template &&
+            !declaration.metadata.template !.templateUrl) {
           report(`Component ${declaration.type.name} must have a template or templateUrl`);
         }
       } else {
@@ -74,7 +75,7 @@ export function getDeclarationDiagnostics(
           directives = new Set();
           modules.ngModules.forEach(module => {
             module.declaredDirectives.forEach(
-                directive => { directives.add(directive.reference); });
+                directive => { directives !.add(directive.reference); });
           });
         }
         if (!directives.has(declaration.type)) {
@@ -92,17 +93,17 @@ function getTemplateExpressionDiagnostics(
     template: TemplateSource, astResult: AstResult): Diagnostics {
   const info: TemplateInfo = {
     template,
-    htmlAst: astResult.htmlAst,
-    directive: astResult.directive,
-    directives: astResult.directives,
-    pipes: astResult.pipes,
-    templateAst: astResult.templateAst,
-    expressionParser: astResult.expressionParser
+    htmlAst: astResult.htmlAst !,
+    directive: astResult.directive !,
+    directives: astResult.directives !,
+    pipes: astResult.pipes !,
+    templateAst: astResult.templateAst !,
+    expressionParser: astResult.expressionParser !
   };
   const visitor = new ExpressionDiagnosticsVisitor(
       info, (path: TemplateAstPath, includeEvent: boolean) =>
                 getExpressionScope(info, path, includeEvent));
-  templateVisitAll(visitor, astResult.templateAst);
+  templateVisitAll(visitor, astResult.templateAst !);
   return visitor.diagnostics;
 }
 
@@ -153,15 +154,15 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
   visitVariable(ast: VariableAst): void {
     const directive = this.directiveSummary;
     if (directive && ast.value) {
-      const context = this.info.template.query.getTemplateContext(directive.type.reference);
+      const context = this.info.template.query.getTemplateContext(directive.type.reference) !;
       if (context && !context.has(ast.value)) {
         if (ast.value === '$implicit') {
           this.reportError(
-              'The template context does not have an implicit value', spanOf(ast.sourceSpan));
+              'The template context does not have an implicit value', spanOf(ast.sourceSpan) !);
         } else {
           this.reportError(
               `The template context does not defined a member called '${ast.value}'`,
-              spanOf(ast.sourceSpan));
+              spanOf(ast.sourceSpan) !);
         }
       }
     }
@@ -180,7 +181,7 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
 
     // Find directive that refernces this template
     this.directiveSummary =
-        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type));
+        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type)) !;
 
     // Process children
     super.visitEmbeddedTemplate(ast, context);
@@ -225,7 +226,7 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
     return result;
   }
 
-  private findElement(position: number): Element {
+  private findElement(position: number): Element|undefined {
     const htmlPath = new HtmlAstPath(this.info.htmlAst, position);
     if (htmlPath.tail instanceof Element) {
       return htmlPath.tail;

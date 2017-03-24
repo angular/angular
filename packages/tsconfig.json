@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "strictNullChecks": false,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
