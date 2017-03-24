@@ -113,7 +113,7 @@ export function main() {
            }
 
            resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
-           let ngModuleFactory: NgModuleFactory<any>;
+           let ngModuleFactory: NgModuleFactory<any> = undefined !;
            compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
            expect(ngModuleFactory.moduleType).toBe(SomeModule);

@@ -103,7 +103,7 @@ export function main() {
        () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
 
     it('should not resolve empty urls', () => {
-      expect(isStyleUrlResolvable(null)).toBe(false);
+      expect(isStyleUrlResolvable(null !)).toBe(false);
       expect(isStyleUrlResolvable('')).toBe(false);
     });
 

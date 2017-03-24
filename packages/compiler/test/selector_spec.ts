@@ -21,7 +21,7 @@ export function main() {
 
     beforeEach(() => {
       reset();
-      s1 = s2 = s3 = s4 = null;
+      s1 = s2 = s3 = s4 = null !;
       selectableCollector =
           (selector: CssSelector, context: any) => { matched.push(selector, context); };
       matcher = new SelectorMatcher();
@@ -128,7 +128,7 @@ export function main() {
 
       const elementSelector = new CssSelector();
       const element = el('<div attr></div>');
-      const empty = getDOM().getAttribute(element, 'attr');
+      const empty = getDOM().getAttribute(element, 'attr') !;
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);

@@ -26,9 +26,9 @@ class SomeMetadata implements SomeMetadataType {
   arrayProp: any[];
 
   constructor(options: SomeMetadataType) {
-    this.plainProp = options.plainProp;
-    this._getterProp = options.getterProp;
-    this.arrayProp = options.arrayProp;
+    this.plainProp = options.plainProp !;
+    this._getterProp = options.getterProp !;
+    this.arrayProp = options.arrayProp !;
   }
 }
 
@@ -42,7 +42,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
       arrayProp: options.arrayProp
     });
 
-    this.otherPlainProp = options.otherPlainProp;
+    this.otherPlainProp = options.otherPlainProp !;
   }
 }
 

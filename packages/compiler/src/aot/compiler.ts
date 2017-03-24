@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -32,8 +32,8 @@ export class AotCompiler {
       private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
-      private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
-      private _translationFormat: string, private _genFilePreamble: string,
+      private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
+      private _translationFormat: string|null, private _genFilePreamble: string|null,
       private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
@@ -113,11 +113,11 @@ export class AotCompiler {
       targetExportedVars: string[]): GeneratedFile {
     const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
                                 .map(symbol => this._symbolResolver.resolveSymbol(symbol));
-    const typeSummaries = [
-      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref)),
-      ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref)),
-      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref)),
-      ...injectables.map(ref => this._metadataResolver.getInjectableSummary(ref))
+    const typeSummaries: CompileTypeSummary[] = [
+      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref) !),
+      ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref) !),
+      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref) !),
+      ...injectables.map(ref => this._metadataResolver.getInjectableSummary(ref) !)
     ];
     const {json, exportAs} = serializeSummaries(
         this._summaryResolver, this._symbolResolver, symbolSummaries, typeSummaries);
@@ -130,7 +130,7 @@ export class AotCompiler {
   }
 
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
-    const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType);
+    const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType) !;
     const providers: CompileProviderMetadata[] = [];
 
     if (this._localeId) {
@@ -183,11 +183,11 @@ export class AotCompiler {
               o.variable(hostViewFactoryVar), new o.LiteralMapExpr(inputsExprs),
               new o.LiteralMapExpr(outputsExprs),
               o.literalArr(
-                  compMeta.template.ngContentSelectors.map(selector => o.literal(selector)))
+                  compMeta.template !.ngContentSelectors.map(selector => o.literal(selector)))
             ]))
             .toDeclStmt(
                 o.importType(
-                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type)],
+                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type) !],
                     [o.TypeModifier.Const]),
                 [o.StmtModifier.Final]));
     return compFactoryVar;
@@ -195,7 +195,7 @@ export class AotCompiler {
 
   private _compileComponent(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
-      directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet,
+      directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet|null,
       fileSuffix: string,
       targetStatements: o.Statement[]): {viewClassVar: string, compRenderTypeVar: string} {
     const directives =
@@ -204,8 +204,8 @@ export class AotCompiler {
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
 
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
-        compMeta, compMeta.template.template, directives, pipes, ngModule.schemas,
-        templateSourceUrl(ngModule.type, compMeta, compMeta.template));
+        compMeta, compMeta.template !.template !, directives, pipes, ngModule.schemas,
+        templateSourceUrl(ngModule.type, compMeta, compMeta.template !));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult =
         this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes);
@@ -221,8 +221,9 @@ export class AotCompiler {
       fileUrl: string, stylesCompileResult: CompiledStylesheet, fileSuffix: string): GeneratedFile {
     _resolveStyleStatements(this._symbolResolver, stylesCompileResult, fileSuffix);
     return this._codegenSourceModule(
-        fileUrl, _stylesModuleUrl(
-                     stylesCompileResult.meta.moduleUrl, stylesCompileResult.isShimmed, fileSuffix),
+        fileUrl,
+        _stylesModuleUrl(
+            stylesCompileResult.meta.moduleUrl !, stylesCompileResult.isShimmed, fileSuffix),
         stylesCompileResult.statements, [stylesCompileResult.stylesVar]);
   }
 

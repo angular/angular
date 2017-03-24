@@ -21,7 +21,7 @@ export abstract class Serializer {
 
   // Creates a name mapper, see `PlaceholderMapper`
   // Returning `null` means that no name mapping is used.
-  createNameMapper(message: i18n.Message): PlaceholderMapper { return null; }
+  createNameMapper(message: i18n.Message): PlaceholderMapper|null { return null; }
 }
 
 /**
@@ -31,9 +31,9 @@ export abstract class Serializer {
  * It should be used for serialization format that put constraints on the placeholder names.
  */
 export interface PlaceholderMapper {
-  toPublicName(internalName: string): string;
+  toPublicName(internalName: string): string|null;
 
-  toInternalName(publicName: string): string;
+  toInternalName(publicName: string): string|null;
 }
 
 /**
@@ -50,13 +50,13 @@ export class SimplePlaceholderMapper extends i18n.RecurseVisitor implements Plac
     message.nodes.forEach(node => node.visit(this));
   }
 
-  toPublicName(internalName: string): string {
+  toPublicName(internalName: string): string|null {
     return this.internalToPublic.hasOwnProperty(internalName) ?
         this.internalToPublic[internalName] :
         null;
   }
 
-  toInternalName(publicName: string): string {
+  toInternalName(publicName: string): string|null {
     return this.publicToInternal.hasOwnProperty(publicName) ? this.publicToInternal[publicName] :
                                                               null;
   }

@@ -382,7 +382,7 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol {
     const entry = this.importAs.find(entry => entry.symbol === symbol);
-    return entry ? entry.importAs : undefined;
+    return entry ? entry.importAs : undefined !;
   }
 
   isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
@@ -429,7 +429,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
     }
 
     if (modulePath.indexOf('.') === 0) {
-      const baseName = pathTo(containingFile, modulePath);
+      const baseName = pathTo(containingFile !, modulePath);
       const tsName = baseName + '.ts';
       if (this._getMetadataFor(tsName)) {
         return tsName;

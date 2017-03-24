@@ -386,7 +386,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       {error: string, value: string} {
     let unit: string = '';
     const strVal = val.toString().trim();
-    let errorMsg: string = null;
+    let errorMsg: string = null !;
 
     if (_isPixelDimensionStyle(camelCaseProp) && val !== 0 && val !== '0') {
       if (typeof val === 'number') {

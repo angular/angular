@@ -257,7 +257,7 @@ export function main() {
       expect(captures.length).toEqual(1);
 
       const keyframe1 = <CssKeyframeRuleAst>_getCaptureAst(captures, 0);
-      expect(keyframe1.name.strValue).toEqual('rotate');
+      expect(keyframe1.name !.strValue).toEqual('rotate');
       expect(keyframe1.block.entries.length).toEqual(2);
     });
 

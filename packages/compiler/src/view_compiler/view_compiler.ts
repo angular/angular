@@ -44,22 +44,22 @@ export class ViewCompiler {
 
     const statements: o.Statement[] = [];
 
-    let renderComponentVarName: string;
+    let renderComponentVarName: string = undefined !;
     if (!component.isHost) {
+      const template = component.template !;
       const customRenderData: o.LiteralMapEntry[] = [];
-      if (component.template.animations && component.template.animations.length) {
-        customRenderData.push(new o.LiteralMapEntry(
-            'animation', convertValueToOutputAst(component.template.animations), true));
+      if (template.animations && template.animations.length) {
+        customRenderData.push(
+            new o.LiteralMapEntry('animation', convertValueToOutputAst(template.animations), true));
       }
 
       const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
-      renderComponentVarName = renderComponentVar.name;
+      renderComponentVarName = renderComponentVar.name !;
       statements.push(
           renderComponentVar
               .set(o.importExpr(createIdentifier(Identifiers.createRendererType2))
                        .callFn([new o.LiteralMapExpr([
-                         new o.LiteralMapEntry(
-                             'encapsulation', o.literal(component.template.encapsulation)),
+                         new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation)),
                          new o.LiteralMapEntry('styles', styles),
                          new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
                        ])]))
@@ -68,7 +68,7 @@ export class ViewCompiler {
                   [o.StmtModifier.Final]));
     }
 
-    const viewBuilderFactory = (parent: ViewBuilder): ViewBuilder => {
+    const viewBuilderFactory = (parent: ViewBuilder | null): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
       return new ViewBuilder(
           parent, component, embeddedViewIndex, usedPipes, staticQueryIds, viewBuilderFactory);
@@ -105,7 +105,7 @@ const ALLOW_DEFAULT_VAR = o.variable(`ad`);
 class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private compType: o.Type;
   private nodes: (() => {
-    sourceSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan | null,
     nodeDef: o.Expression,
     nodeFlags: NodeFlags, updateDirectives?: UpdateExpression[], updateRenderer?: UpdateExpression[]
   })[] = [];
@@ -116,14 +116,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private children: ViewBuilder[] = [];
 
   constructor(
-      private parent: ViewBuilder, private component: CompileDirectiveMetadata,
+      private parent: ViewBuilder|null, private component: CompileDirectiveMetadata,
       private embeddedViewIndex: number, private usedPipes: CompilePipeSummary[],
       private staticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>,
       private viewBuilderFactory: ViewBuilderFactory) {
     // TODO(tbosch): The old view compiler used to use an `any` type
     // for the context in any embedded view. We keep this behaivor for now
     // to be able to introduce the new view compiler without too many errors.
-    this.compType = this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type);
+    this.compType =
+        this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type) !;
   }
 
   get viewName(): string {
@@ -188,7 +189,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       viewFlags |= ViewFlags.OnPush;
     }
     const viewFactory = new o.DeclareFunctionStmt(
-        this.viewName, [new o.FnParam(LOG_VAR.name)],
+        this.viewName, [new o.FnParam(LOG_VAR.name !)],
         [new o.ReturnStatement(o.importExpr(createIdentifier(Identifiers.viewDef)).callFn([
           o.literal(viewFlags),
           o.literalArr(nodeDefExprs),
@@ -205,13 +206,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     let updateFn: o.Expression;
     if (updateStmts.length > 0) {
       const preStmts: o.Statement[] = [];
-      if (!this.component.isHost && o.findReadVarNames(updateStmts).has(COMP_VAR.name)) {
+      if (!this.component.isHost && o.findReadVarNames(updateStmts).has(COMP_VAR.name !)) {
         preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
       }
       updateFn = o.fn(
           [
-            new o.FnParam(CHECK_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE)
+            new o.FnParam(CHECK_VAR.name !, o.INFERRED_TYPE),
+            new o.FnParam(VIEW_VAR.name !, o.INFERRED_TYPE)
           ],
           [...preStmts, ...updateStmts], o.INFERRED_TYPE);
     } else {
@@ -245,7 +246,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   visitBoundText(ast: BoundTextAst, context: any): any {
     const nodeIndex = this.nodes.length;
     // reserve the space in the nodeDefs array
-    this.nodes.push(null);
+    this.nodes.push(null !);
 
     const astWithSource = <ASTWithSource>ast.value;
     const inter = <Interpolation>astWithSource.ast;
@@ -268,7 +269,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     const nodeIndex = this.nodes.length;
     // reserve the space in the nodeDefs array
-    this.nodes.push(null);
+    this.nodes.push(null !);
 
     const {flags, queryMatchesExpr, hostEvents} = this._visitElementOrTemplate(nodeIndex, ast);
 
@@ -299,9 +300,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   visitElement(ast: ElementAst, context: any): any {
     const nodeIndex = this.nodes.length;
     // reserve the space in the nodeDefs array so we can add children
-    this.nodes.push(null);
+    this.nodes.push(null !);
 
-    let elName = ast.name;
+    let elName: string|null = ast.name;
     if (ast.name === NG_CONTAINER_TAG) {
       // Using a null element name creates an anchor.
       elName = null;
@@ -314,13 +315,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     let updateRendererExpressions: UpdateExpression[] = [];
     let outputDefs: o.Expression[] = [];
     if (elName) {
-      const hostBindings = ast.inputs
-                               .map((inputAst) => ({
-                                      context: COMP_VAR as o.Expression,
-                                      inputAst,
-                                      dirAst: null,
-                                    }))
-                               .concat(dirHostBindings);
+      const hostBindings: any[] = ast.inputs
+                                      .map((inputAst) => ({
+                                             context: COMP_VAR as o.Expression,
+                                             inputAst,
+                                             dirAst: null as any,
+                                           }))
+                                      .concat(dirHostBindings);
       if (hostBindings.length) {
         updateRendererExpressions =
             hostBindings.map((hostBinding, bindingIndex) => this._preprocessUpdateExpression({
@@ -386,7 +387,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     queryMatches: QueryMatch[]
   }): {
     flags: NodeFlags,
-    usedEvents: [string, string][],
+    usedEvents: [string | null, string][],
     queryMatchesExpr: o.Expression,
     hostBindings:
         {context: o.Expression, inputAst: BoundElementPropertyAst, dirAst: DirectiveAst}[],
@@ -396,7 +397,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     if (ast.hasViewContainer) {
       flags |= NodeFlags.EmbeddedViews;
     }
-    const usedEvents = new Map<string, [string, string]>();
+    const usedEvents = new Map<string, [string | null, string]>();
     ast.outputs.forEach((event) => {
       const {name, target} = elementEventNameAndTarget(event, null);
       usedEvents.set(elementEventFullName(target, name), [target, name]);
@@ -416,8 +417,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     ast.providers.forEach((providerAst, providerIndex) => {
-      let dirAst: DirectiveAst;
-      let dirIndex: number;
+      let dirAst: DirectiveAst = undefined !;
+      let dirIndex: number = undefined !;
       ast.directives.forEach((localDirAst, i) => {
         if (localDirAst.directive.type.reference === tokenReference(providerAst.token)) {
           dirAst = localDirAst;
@@ -427,7 +428,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       if (dirAst) {
         const {hostBindings: dirHostBindings, hostEvents: dirHostEvents} = this._visitDirective(
             providerAst, dirAst, dirIndex, nodeIndex, ast.references, ast.queryMatches, usedEvents,
-            this.staticQueryIds.get(<any>ast));
+            this.staticQueryIds.get(<any>ast) !);
         hostBindings.push(...dirHostBindings);
         hostEvents.push(...dirHostEvents);
       } else {
@@ -437,7 +438,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
     let queryMatchExprs: o.Expression[] = [];
     ast.queryMatches.forEach((match) => {
-      let valueType: QueryValueType;
+      let valueType: QueryValueType = undefined !;
       if (tokenReference(match.value) === resolveIdentifier(Identifiers.ElementRef)) {
         valueType = QueryValueType.ElementRef;
       } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.ViewContainerRef)) {
@@ -450,7 +451,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       }
     });
     ast.references.forEach((ref) => {
-      let valueType: QueryValueType;
+      let valueType: QueryValueType = undefined !;
       if (!ref.value) {
         valueType = QueryValueType.RenderElement;
       } else if (tokenReference(ref.value) === resolveIdentifier(Identifiers.TemplateRef)) {
@@ -462,7 +463,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       }
     });
     ast.outputs.forEach((outputAst) => {
-      hostEvents.push({context: COMP_VAR, eventAst: outputAst, dirAst: null});
+      hostEvents.push({context: COMP_VAR, eventAst: outputAst, dirAst: null !});
     });
 
     return {
@@ -470,7 +471,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       usedEvents: Array.from(usedEvents.values()),
       queryMatchesExpr: queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
       hostBindings,
-      hostEvents
+      hostEvents: hostEvents
     };
   }
 
@@ -484,7 +485,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   } {
     const nodeIndex = this.nodes.length;
     // reserve the space in the nodeDefs array so we can add children
-    this.nodes.push(null);
+    this.nodes.push(null !);
 
     dirAst.directive.queries.forEach((query, queryIndex) => {
       const queryId = dirAst.contentQueryStartId + queryIndex;
@@ -588,7 +589,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private _visitProvider(providerAst: ProviderAst, queryMatches: QueryMatch[]): void {
     const nodeIndex = this.nodes.length;
     // reserve the space in the nodeDefs array so we can add children
-    this.nodes.push(null);
+    this.nodes.push(null !);
 
     const {flags, queryMatchExprs, providerExpr, depsExpr} =
         this._visitProviderOrDirective(providerAst, queryMatches);
@@ -639,12 +640,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return {flags: flags | providerType, queryMatchExprs, providerExpr, depsExpr};
   }
 
-  getLocal(name: string): o.Expression {
+  getLocal(name: string): o.Expression|null {
     if (name == EventHandlerVars.event.name) {
       return EventHandlerVars.event;
     }
     let currViewExpr: o.Expression = VIEW_VAR;
-    for (let currBuilder: ViewBuilder = this; currBuilder; currBuilder = currBuilder.parent,
+    for (let currBuilder: ViewBuilder|null = this; currBuilder; currBuilder = currBuilder.parent,
                           currViewExpr = currViewExpr.prop('parent').cast(o.DYNAMIC_TYPE)) {
       // check references
       const refNodeIndex = currBuilder.refNodeIndices[name];
@@ -701,7 +702,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
   createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
-    const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name);
+    const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name) !;
     if (pipe.pure) {
       const nodeIndex = this.nodes.length;
       // function purePipeDef(argCount: number): NodeDef;
@@ -740,7 +741,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     }
   }
 
-  private _createPipe(sourceSpan: ParseSourceSpan, pipe: CompilePipeSummary): number {
+  private _createPipe(sourceSpan: ParseSourceSpan|null, pipe: CompilePipeSummary): number {
     const nodeIndex = this.nodes.length;
     let flags = NodeFlags.None;
     pipe.type.lifecycleHooks.forEach((lifecycleHook) => {
@@ -816,7 +817,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return {updateRendererStmts, updateDirectivesStmts, nodeDefExprs};
 
     function createUpdateStatements(
-        nodeIndex: number, sourceSpan: ParseSourceSpan, expressions: UpdateExpression[],
+        nodeIndex: number, sourceSpan: ParseSourceSpan | null, expressions: UpdateExpression[],
         allowEmptyExprs: boolean): o.Statement[] {
       const updateStmts: o.Statement[] = [];
       const exprs = expressions.map(({sourceSpan, context, value}) => {
@@ -824,8 +825,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const nameResolver = context === COMP_VAR ? self : null;
         const {stmts, currValExpr} =
             convertPropertyBinding(nameResolver, context, value, bindingId);
-        updateStmts.push(
-            ...stmts.map(stmt => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
+        updateStmts.push(...stmts.map(
+            (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
         return o.applySourceSpanToExpressionIfNeeded(currValExpr, sourceSpan);
       });
       if (expressions.length || allowEmptyExprs) {
@@ -860,14 +861,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     if (handleEventStmts.length > 0) {
       const preStmts: o.Statement[] =
           [ALLOW_DEFAULT_VAR.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
-      if (!this.component.isHost && o.findReadVarNames(handleEventStmts).has(COMP_VAR.name)) {
+      if (!this.component.isHost && o.findReadVarNames(handleEventStmts).has(COMP_VAR.name !)) {
         preStmts.push(COMP_VAR.set(VIEW_VAR.prop('component')).toDeclStmt(this.compType));
       }
       handleEventFn = o.fn(
           [
-            new o.FnParam(VIEW_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(EVENT_NAME_VAR.name, o.INFERRED_TYPE),
-            new o.FnParam(EventHandlerVars.event.name, o.INFERRED_TYPE)
+            new o.FnParam(VIEW_VAR.name !, o.INFERRED_TYPE),
+            new o.FnParam(EVENT_NAME_VAR.name !, o.INFERRED_TYPE),
+            new o.FnParam(EventHandlerVars.event.name !, o.INFERRED_TYPE)
           ],
           [...preStmts, ...handleEventStmts, new o.ReturnStatement(ALLOW_DEFAULT_VAR)],
           o.INFERRED_TYPE);
@@ -933,9 +934,9 @@ function singleProviderDef(providerType: ProviderAstType, providerMeta: CompileP
   let flags: NodeFlags;
   let deps: CompileDiDependencyMetadata[];
   if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
-    providerExpr = o.importExpr(providerMeta.useClass);
+    providerExpr = o.importExpr(providerMeta.useClass !);
     flags = NodeFlags.TypeDirective;
-    deps = providerMeta.deps || providerMeta.useClass.diDeps;
+    deps = providerMeta.deps || providerMeta.useClass !.diDeps;
   } else {
     if (providerMeta.useClass) {
       providerExpr = o.importExpr(providerMeta.useClass);
@@ -966,7 +967,7 @@ function tokenExpr(tokenMeta: CompileTokenMetadata): o.Expression {
 function depDef(dep: CompileDiDependencyMetadata): o.Expression {
   // Note: the following fields have already been normalized out by provider_analyzer:
   // - isAttribute, isSelf, isHost
-  const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token);
+  const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token !);
   let flags = DepFlags.None;
   if (dep.isSkipSelf) {
     flags |= DepFlags.SkipSelf;
@@ -1110,11 +1111,11 @@ function findStaticQueryIds(
   nodes.forEach((node) => {
     const staticQueryIds = new Set<number>();
     const dynamicQueryIds = new Set<number>();
-    let queryMatches: QueryMatch[];
+    let queryMatches: QueryMatch[] = undefined !;
     if (node instanceof ElementAst) {
       findStaticQueryIds(node.children, result);
       node.children.forEach((child) => {
-        const childData = result.get(child);
+        const childData = result.get(child) !;
         childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
         childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
       });
@@ -1122,7 +1123,7 @@ function findStaticQueryIds(
     } else if (node instanceof EmbeddedTemplateAst) {
       findStaticQueryIds(node.children, result);
       node.children.forEach((child) => {
-        const childData = result.get(child);
+        const childData = result.get(child) !;
         childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
         childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
       });
@@ -1149,7 +1150,7 @@ function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynami
   return {staticQueryIds, dynamicQueryIds};
 }
 
-function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst {
+function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst|null {
   const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
   if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
     const entryComponentFactories = componentDirMeta.directive.entryComponents.map(
@@ -1174,7 +1175,7 @@ function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst
 }
 
 function elementEventNameAndTarget(
-    eventAst: BoundEventAst, dirAst: DirectiveAst): {name: string, target: string} {
+    eventAst: BoundEventAst, dirAst: DirectiveAst | null): {name: string, target: string | null} {
   if (eventAst.isAnimation) {
     return {
       name: `@${eventAst.name}.${eventAst.phase}`,

@@ -443,7 +443,7 @@ export function main() {
       });
 
       it('should parse interpolation with custom markers', () => {
-        expect(tokenizeAndHumanizeParts('{% a %}', null, {start: '{%', end: '%}'})).toEqual([
+        expect(tokenizeAndHumanizeParts('{% a %}', null !, {start: '{%', end: '%}'})).toEqual([
           [lex.TokenType.TEXT, '{% a %}'],
           [lex.TokenType.EOF],
         ]);
@@ -769,7 +769,7 @@ export function main() {
         const file = new ParseSourceFile(src, 'file://');
         const location = new ParseLocation(file, 12, 123, 456);
         const span = new ParseSourceSpan(location, location);
-        const error = new lex.TokenError('**ERROR**', null, span);
+        const error = new lex.TokenError('**ERROR**', null !, span);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });

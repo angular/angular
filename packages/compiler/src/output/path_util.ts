@@ -16,17 +16,16 @@ export abstract class ImportResolver {
    * Converts a file path to a module name that can be used as an `import.
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
    */
-  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string
-      /*|null*/;
+  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
 
   /**
    * Converts the given StaticSymbol into another StaticSymbol that should be used
    * to generate the import from.
    */
-  abstract getImportAs(symbol: StaticSymbol): StaticSymbol /*|null*/;
+  abstract getImportAs(symbol: StaticSymbol): StaticSymbol|null;
 
   /**
    * Determine the arity of a type.
    */
-  abstract getTypeArity(symbol: StaticSymbol): number /*|null*/;
+  abstract getTypeArity(symbol: StaticSymbol): number|null;
 }

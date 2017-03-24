@@ -70,11 +70,11 @@ export class Extractor {
               }
             });
             compMetas.forEach(compMeta => {
-              const html = compMeta.template.template;
+              const html = compMeta.template !.template !;
               const interpolationConfig =
-                  InterpolationConfig.fromArray(compMeta.template.interpolation);
-              errors.push(
-                  ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
+                  InterpolationConfig.fromArray(compMeta.template !.interpolation);
+              errors.push(...this.messageBundle.updateFromTemplate(
+                  html, file.srcUrl, interpolationConfig) !);
             });
           });
 

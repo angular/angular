@@ -47,7 +47,7 @@ export class StaticReflector implements ɵReflectorReader {
       private symbolResolver: StaticSymbolResolver,
       knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
       knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = [],
-      private errorRecorder?: (error: any, fileName: string) => void) {
+      private errorRecorder?: (error: any, fileName?: string) => void) {
     this.initializeConversionMap();
     knownMetadataClasses.forEach(
         (kc) => this._registerDecoratorOrConstructor(
@@ -67,7 +67,7 @@ export class StaticReflector implements ɵReflectorReader {
     this.annotationNames.set(Injectable, 'Injectable');
   }
 
-  importUri(typeOrFunc: StaticSymbol): string {
+  importUri(typeOrFunc: StaticSymbol): string|null {
     const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
     return staticSymbol ? staticSymbol.filePath : null;
   }
@@ -129,14 +129,14 @@ export class StaticReflector implements ɵReflectorReader {
         const summary = this.summaryResolver.resolveSummary(parentType);
         if (summary && summary.type) {
           const requiredAnnotationTypes =
-              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind);
+              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind !) !;
           const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
-              requiredType => ownAnnotations.some(ann => ann instanceof requiredType));
+              (requiredType: any) => ownAnnotations.some(ann => ann instanceof requiredType));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
                 syntaxError(
-                    `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind]} in another compilation unit without duplicating the decorator. ` +
-                    `Please add a ${requiredAnnotationTypes.map(type => this.annotationNames.get(type)).join(' or ')} decorator to the class.`),
+                    `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator. ` +
+                    `Please add a ${requiredAnnotationTypes.map((type: any) => this.annotationNames.get(type)).join(' or ')} decorator to the class.`),
                 type);
           }
         }
@@ -155,7 +155,7 @@ export class StaticReflector implements ɵReflectorReader {
       if (parentType) {
         const parentPropMetadata = this.propMetadata(parentType);
         Object.keys(parentPropMetadata).forEach((parentProp) => {
-          propMetadata[parentProp] = parentPropMetadata[parentProp];
+          propMetadata ![parentProp] = parentPropMetadata[parentProp];
         });
       }
 
@@ -165,10 +165,10 @@ export class StaticReflector implements ɵReflectorReader {
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         const decorators: any[] = [];
-        if (propMetadata[propName]) {
-          decorators.push(...propMetadata[propName]);
+        if (propMetadata ![propName]) {
+          decorators.push(...propMetadata ![propName]);
         }
-        propMetadata[propName] = decorators;
+        propMetadata ![propName] = decorators;
         if (prop && prop['decorators']) {
           decorators.push(...this.simplify(type, prop['decorators']));
         }
@@ -206,7 +206,7 @@ export class StaticReflector implements ɵReflectorReader {
             if (decorators) {
               nestedResult.push(...decorators);
             }
-            parameters.push(nestedResult);
+            parameters !.push(nestedResult);
           });
         } else if (parentType) {
           parameters = this.parameters(parentType);
@@ -232,7 +232,7 @@ export class StaticReflector implements ɵReflectorReader {
       if (parentType) {
         const parentMethodNames = this._methodNames(parentType);
         Object.keys(parentMethodNames).forEach((parentProp) => {
-          methodNames[parentProp] = parentMethodNames[parentProp];
+          methodNames ![parentProp] = parentMethodNames[parentProp];
         });
       }
 
@@ -240,14 +240,14 @@ export class StaticReflector implements ɵReflectorReader {
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
         const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
-        methodNames[propName] = methodNames[propName] || isMethod;
+        methodNames ![propName] = methodNames ![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
     }
     return methodNames;
   }
 
-  private findParentType(type: StaticSymbol, classMetadata: any): StaticSymbol|null {
+  private findParentType(type: StaticSymbol, classMetadata: any): StaticSymbol|undefined {
     const parentType = this.trySimplify(type, classMetadata['extends']);
     if (parentType instanceof StaticSymbol) {
       return parentType;

@@ -215,7 +215,7 @@ export function main() {
 
     it('should throw with descriptive error message when null is passed to declarations',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({declarations: [null]})
+         @NgModule({declarations: [null !]})
          class ModuleWithNullDeclared {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullDeclared, true))
@@ -225,7 +225,7 @@ export function main() {
 
     it('should throw with descriptive error message when null is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({imports: [null]})
+         @NgModule({imports: [null !]})
          class ModuleWithNullImported {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullImported, true))
@@ -246,7 +246,7 @@ export function main() {
 
     it('should throw with descriptive error message when encounter invalid provider',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({providers: [{provide: SimpleService, useClass: undefined}]})
+         @NgModule({providers: [{provide: SimpleService, useClass: undefined !}]})
          class SomeModule {
          }
 
@@ -256,7 +256,7 @@ export function main() {
 
     it('should throw with descriptive error message when provider is undefined',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({providers: [undefined]})
+         @NgModule({providers: [undefined !]})
          class SomeModule {
          }
 
@@ -288,10 +288,10 @@ export function main() {
 
     it('should throw with descriptive error message when null or undefined is passed to module bootstrap',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({bootstrap: [null]})
+         @NgModule({bootstrap: [null !]})
          class ModuleWithNullBootstrap {
          }
-         @NgModule({bootstrap: [undefined]})
+         @NgModule({bootstrap: [undefined !]})
          class ModuleWithUndefinedBootstrap {
          }
 
@@ -410,7 +410,7 @@ export function main() {
        class MyModule {
        }
 
-       const modMeta = resolver.getNgModuleMetadata(MyModule);
+       const modMeta = resolver.getNgModuleMetadata(MyModule) !;
        expect(modMeta.declaredDirectives.length).toBe(1);
        expect(modMeta.declaredDirectives[0].reference).toBe(MyComp);
      }));
@@ -480,11 +480,12 @@ class MyBrokenComp2 {
 class SimpleService {
 }
 
-@Component({selector: 'my-broken-comp', template: '', providers: [SimpleService, null, [null]]})
+@Component({selector: 'my-broken-comp', template: '', providers: [SimpleService, null !, [null]]})
 class MyBrokenComp3 {
 }
 
-@Component({selector: 'my-broken-comp', template: '', viewProviders: [null, SimpleService, [null]]})
+@Component(
+    {selector: 'my-broken-comp', template: '', viewProviders: [null !, SimpleService, [null]]})
 class MyBrokenComp4 {
 }
 

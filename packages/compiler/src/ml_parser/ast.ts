@@ -9,12 +9,12 @@
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
-  sourceSpan: ParseSourceSpan;
+  sourceSpan: ParseSourceSpan|null;
   visit(visitor: Visitor, context: any): any;
 }
 
 export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(public value: string, public sourceSpan: ParseSourceSpan|null) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
 }
 
@@ -43,13 +43,14 @@ export class Attribute implements Node {
 export class Element implements Node {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan|null = null,
+      public startSourceSpan: ParseSourceSpan|null = null,
+      public endSourceSpan: ParseSourceSpan|null = null) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
 }
 
 export class Comment implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(public value: string|null, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitComment(this, context); }
 }
 
@@ -70,7 +71,7 @@ export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): 
   const result: any[] = [];
 
   const visit = visitor.visit ?
-      (ast: Node) => visitor.visit(ast, context) || ast.visit(visitor, context) :
+      (ast: Node) => visitor.visit !(ast, context) || ast.visit(visitor, context) :
       (ast: Node) => ast.visit(visitor, context);
   nodes.forEach(ast => {
     const astResult = visit(ast);

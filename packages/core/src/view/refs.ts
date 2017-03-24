@@ -30,7 +30,7 @@ const EMPTY_CONTEXT = new Object();
 // Putting any logic in here will destroy closure tree shaking!
 export function createComponentFactory(
     selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory,
-    inputs: {[propName: string]: string}, outputs: {[propName: string]: string},
+    inputs: {[propName: string]: string} | null, outputs: {[propName: string]: string},
     ngContentSelectors: string[]): ComponentFactory<any> {
   return new ComponentFactory_(
       selector, componentType, viewDefFactory, inputs, outputs, ngContentSelectors);
@@ -49,7 +49,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
 
   constructor(
       public selector: string, public componentType: Type<any>,
-      viewDefFactory: ViewDefinitionFactory, private _inputs: {[propName: string]: string},
+      viewDefFactory: ViewDefinitionFactory, private _inputs: {[propName: string]: string}|null,
       private _outputs: {[propName: string]: string}, public ngContentSelectors: string[]) {
     // Attention: this ctor is called as top level function.
     // Putting any logic in here will destroy closure tree shaking!
@@ -59,8 +59,9 @@ class ComponentFactory_ extends ComponentFactory<any> {
 
   get inputs() {
     const inputsArr: {propName: string, templateName: string}[] = [];
-    for (let propName in this._inputs) {
-      const templateName = this._inputs[propName];
+    const inputs = this._inputs !;
+    for (let propName in inputs) {
+      const templateName = inputs[propName];
       inputsArr.push({propName, templateName});
     }
     return inputsArr;

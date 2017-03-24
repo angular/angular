@@ -13,7 +13,7 @@ import * as o from './output_ast';
 
 export const QUOTED_KEYS = '$quoted$';
 
-export function convertValueToOutputAst(value: any, type: o.Type = null): o.Expression {
+export function convertValueToOutputAst(value: any, type: o.Type | null = null): o.Expression {
   return visitValue(value, new _ValueOutputAstTransformer(), type);
 }
 

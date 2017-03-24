@@ -40,7 +40,7 @@ export class PathMappedCompilerHost extends CompilerHost {
     return fileName;
   }
 
-  moduleNameToFileName(m: string, containingFile: string) {
+  moduleNameToFileName(m: string, containingFile: string): string|null {
     if (!containingFile || !containingFile.length) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -59,6 +59,7 @@ export class PathMappedCompilerHost extends CompilerHost {
         return this.getCanonicalFileName(resolved.resolvedFileName);
       }
     }
+    return null;
   }
 
   /**
@@ -90,7 +91,7 @@ export class PathMappedCompilerHost extends CompilerHost {
 
     const importModuleName = importedFile.replace(EXT, '');
     const parts = importModuleName.split(path.sep).filter(p => !!p);
-    let foundRelativeImport: string;
+    let foundRelativeImport: string = undefined !;
     for (let index = parts.length - 1; index >= 0; index--) {
       let candidate = parts.slice(index, parts.length).join(path.sep);
       if (resolvable(candidate)) {
@@ -135,5 +136,6 @@ export class PathMappedCompilerHost extends CompilerHost {
         return metadata ? [metadata] : [];
       }
     }
+    return null !;
   }
 }

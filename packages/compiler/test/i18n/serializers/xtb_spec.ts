@@ -117,7 +117,7 @@ export function main(): void {
 </translationbundle>`;
 
         // Invalid messages should not cause the parser to throw
-        let i18nNodesByMsgId: {[id: string]: i18n.Node[]};
+        let i18nNodesByMsgId: {[id: string]: i18n.Node[]} = undefined !;
         expect(() => {
           i18nNodesByMsgId = serializer.load(XTB, 'url').i18nNodesByMsgId;
         }).not.toThrow();

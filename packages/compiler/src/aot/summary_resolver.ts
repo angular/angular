@@ -16,7 +16,7 @@ export interface AotSummaryResolverHost {
   /**
    * Loads an NgModule/Directive/Pipe summary file
    */
-  loadSummary(filePath: string): string /*|null*/;
+  loadSummary(filePath: string): string|null;
 
   /**
    * Returns whether a file is a source file or not.
@@ -53,7 +53,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     let summary = this.summaryCache.get(staticSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
-      summary = this.summaryCache.get(staticSymbol);
+      summary = this.summaryCache.get(staticSymbol) !;
     }
     return summary;
   }
@@ -65,7 +65,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
 
   getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
     staticSymbol.assertNoMembers();
-    return this.importAs.get(staticSymbol);
+    return this.importAs.get(staticSymbol) !;
   }
 
   private _loadSummaryFile(filePath: string) {
@@ -75,7 +75,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     this.loadedFilePaths.add(filePath);
     if (this.isLibraryFile(filePath)) {
       const summaryFilePath = summaryFileName(filePath);
-      let json: string;
+      let json: string|null;
       try {
         json = this.host.loadSummary(summaryFilePath);
       } catch (e) {

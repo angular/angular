@@ -51,7 +51,7 @@ export class ParseLocation {
 
   // Return the source around the location
   // Up to `maxChars` or `maxLines` on each side of the location
-  getContext(maxChars: number, maxLines: number): {before: string, after: string} {
+  getContext(maxChars: number, maxLines: number): {before: string, after: string}|null {
     const content = this.file.content;
     let startOffset = this.offset;
 
@@ -101,7 +101,7 @@ export class ParseSourceFile {
 
 export class ParseSourceSpan {
   constructor(
-      public start: ParseLocation, public end: ParseLocation, public details: string = null) {}
+      public start: ParseLocation, public end: ParseLocation, public details: string|null = null) {}
 
   toString(): string {
     return this.start.file.content.substring(this.start.offset, this.end.offset);
@@ -133,6 +133,5 @@ export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): P
                                              `in ${kind} ${identifierName(type)}`;
   const sourceFile = new ParseSourceFile('', sourceFileName);
   return new ParseSourceSpan(
-      new ParseLocation(sourceFile, null, null, null),
-      new ParseLocation(sourceFile, null, null, null));
+      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
 }

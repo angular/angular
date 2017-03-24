@@ -33,7 +33,7 @@ export class PipeResolver {
   /**
    * Return {@link Pipe} for a given `Type`.
    */
-  resolve(type: Type<any>, throwIfNotFound = true): Pipe {
+  resolve(type: Type<any>, throwIfNotFound = true): Pipe|null {
     const metas = this._reflector.annotations(resolveForwardRef(type));
     if (metas) {
       const annotation = findLast(metas, _isPipeMetadata);

@@ -59,7 +59,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
     useFactory: (parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
                  console: Console) =>
                     new i18n.I18NHtmlParser(
-                        parser, translations, format, config.missingTranslation, console),
+                        parser, translations, format, config.missingTranslation !, console),
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
@@ -123,7 +123,7 @@ export class JitCompilerFactory implements CompilerFactory {
         },
         deps: []
       },
-      opts.providers
+      opts.providers !
     ]);
     return injector.get(Compiler);
   }
@@ -148,12 +148,12 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {
     useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
-    providers: _mergeArrays(optionsArr.map(options => options.providers)),
+    providers: _mergeArrays(optionsArr.map(options => options.providers !)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
   };
 }
 
-function _lastDefined<T>(args: T[]): T {
+function _lastDefined<T>(args: T[]): T|undefined {
   for (let i = args.length - 1; i >= 0; i--) {
     if (args[i] !== undefined) {
       return args[i];

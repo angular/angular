@@ -65,7 +65,7 @@ export abstract class CssRuleAst extends CssAst {
 export class CssBlockRuleAst extends CssRuleAst {
   constructor(
       public location: ParseSourceSpan, public type: BlockType, public block: CssBlockAst,
-      public name: CssToken = null) {
+      public name: CssToken|null = null) {
     super(location);
   }
   visit(visitor: CssAstVisitor, context?: any): any {

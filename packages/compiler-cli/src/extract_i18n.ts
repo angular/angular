@@ -23,7 +23,7 @@ function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost): Promise<void> {
   return Extractor.create(ngOptions, program, host, cliOptions.locale)
-      .extract(cliOptions.i18nFormat, cliOptions.outFile);
+      .extract(cliOptions.i18nFormat !, cliOptions.outFile);
 }
 
 // Entry point

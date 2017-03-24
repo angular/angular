@@ -81,12 +81,12 @@ export class TestingCompilerImpl implements TestingCompiler {
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
     const oldMetadata = this._directiveResolver.resolve(directive, false);
     this._directiveResolver.setDirective(
-        directive, this._overrider.overrideMetadata(Directive, oldMetadata, override));
+        directive, this._overrider.overrideMetadata(Directive, oldMetadata !, override));
   }
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
     const oldMetadata = this._directiveResolver.resolve(component, false);
     this._directiveResolver.setDirective(
-        component, this._overrider.overrideMetadata(Component, oldMetadata, override));
+        component, this._overrider.overrideMetadata(Component, oldMetadata !, override));
   }
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
     const oldMetadata = this._pipeResolver.resolve(pipe, false);

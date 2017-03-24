@@ -52,7 +52,7 @@ export function main() {
                         .addMapping(3, 'a.js', 5, 2);
 
         // Generated with https://sokra.github.io/source-map-visualization using a TS source map
-        expect(map.toJSON().mappings)
+        expect(map.toJSON() !.mappings)
             .toEqual(
                 'AAAA,IAAM,CAAC,GAAe,CAAC,CAAC;AACxB,IAAM,CAAC,GAAG,CAAC,CAAC;AAEZ,EAAE,CAAC,OAAO,CAAC,UAAA,CAAC;IACR,OAAO,CAAC,GAAG,CAAC,KAAK,CAAC,CAAC;AACvB,CAAC,CAAC,CAAA');
       });
@@ -64,7 +64,7 @@ export function main() {
                         .addSource('url.ts', null)
                         .addLine()
                         .addMapping(0, 'inline.ts', 0, 0)
-                        .toJSON();
+                        .toJSON() !;
 
         expect(map.file).toEqual('out.js');
         expect(map.sources).toEqual(['inline.ts', 'url.ts']);
@@ -113,7 +113,7 @@ export function main() {
 
       it('should throw when adding segments without column', () => {
         expect(() => {
-          new SourceMapGenerator('out.js').addSource('in.js').addLine().addMapping(null);
+          new SourceMapGenerator('out.js').addSource('in.js').addLine().addMapping(null !);
         }).toThrowError('The column in the generated code must be provided');
       });
 

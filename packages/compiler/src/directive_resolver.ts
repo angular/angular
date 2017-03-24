@@ -30,7 +30,10 @@ export class DirectiveResolver {
   /**
    * Return {@link Directive} for a given `Type`.
    */
-  resolve(type: Type<any>, throwIfNotFound = true): Directive {
+  resolve(type: Type<any>): Directive;
+  resolve(type: Type<any>, throwIfNotFound: true): Directive;
+  resolve(type: Type<any>, throwIfNotFound: boolean): Directive|null;
+  resolve(type: Type<any>, throwIfNotFound = true): Directive|null {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
     if (typeMetadata) {
       const metadata = findLast(typeMetadata, isDirectiveMetadata);
@@ -100,7 +103,7 @@ export class DirectiveResolver {
     return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
-  private _extractPublicName(def: string) { return splitAtColon(def, [null, def])[1].trim(); }
+  private _extractPublicName(def: string) { return splitAtColon(def, [null !, def])[1].trim(); }
 
   private _dedupeBindings(bindings: string[]): string[] {
     const names = new Set<string>();
@@ -166,7 +169,7 @@ function isDirectiveMetadata(type: any): type is Directive {
   return type instanceof Directive;
 }
 
-export function findLast<T>(arr: T[], condition: (value: T) => boolean): T {
+export function findLast<T>(arr: T[], condition: (value: T) => boolean): T|null {
   for (let i = arr.length - 1; i >= 0; i--) {
     if (condition(arr[i])) {
       return arr[i];

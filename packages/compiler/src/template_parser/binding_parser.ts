@@ -64,7 +64,7 @@ export class BindingParser {
 
   createDirectiveHostPropertyAsts(
       dirMeta: CompileDirectiveSummary, elementSelector: string,
-      sourceSpan: ParseSourceSpan): BoundElementPropertyAst[] {
+      sourceSpan: ParseSourceSpan): BoundElementPropertyAst[]|null {
     if (dirMeta.hostProperties) {
       const boundProps: BoundProperty[] = [];
       Object.keys(dirMeta.hostProperties).forEach(propName => {
@@ -79,10 +79,11 @@ export class BindingParser {
       });
       return boundProps.map((prop) => this.createElementPropertyAst(elementSelector, prop));
     }
+    return null;
   }
 
   createDirectiveHostEventAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
-      BoundEventAst[] {
+      BoundEventAst[]|null {
     if (dirMeta.hostListeners) {
       const targetEventAsts: BoundEventAst[] = [];
       Object.keys(dirMeta.hostListeners).forEach(propName => {
@@ -97,13 +98,15 @@ export class BindingParser {
       });
       return targetEventAsts;
     }
+    return null;
   }
 
   parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const ast = this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig);
+      const ast =
+          this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig) !;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -153,8 +156,8 @@ export class BindingParser {
   }
 
   parseLiteralAttr(
-      name: string, value: string, sourceSpan: ParseSourceSpan, targetMatchableAttrs: string[][],
-      targetProps: BoundProperty[]) {
+      name: string, value: string|null, sourceSpan: ParseSourceSpan,
+      targetMatchableAttrs: string[][], targetProps: BoundProperty[]) {
     if (_isAnimationLabel(name)) {
       name = name.substring(1);
       if (value) {
@@ -206,18 +209,18 @@ export class BindingParser {
   private _parsePropertyAst(
       name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[]) {
-    targetMatchableAttrs.push([name, ast.source]);
+    targetMatchableAttrs.push([name, ast.source !]);
     targetProps.push(new BoundProperty(name, ast, BoundPropertyType.DEFAULT, sourceSpan));
   }
 
   private _parseAnimation(
-      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      name: string, expression: string|null, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[]) {
     // This will occur when a @trigger is not paired with an expression.
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
     const ast = this._parseBinding(expression || 'null', false, sourceSpan);
-    targetMatchableAttrs.push([name, ast.source]);
+    targetMatchableAttrs.push([name, ast.source !]);
     targetProps.push(new BoundProperty(name, ast, BoundPropertyType.ANIMATION, sourceSpan));
   }
 
@@ -246,11 +249,11 @@ export class BindingParser {
           null, boundProp.sourceSpan);
     }
 
-    let unit: string = null;
-    let bindingType: PropertyBindingType;
-    let boundPropertyName: string = null;
+    let unit: string|null = null;
+    let bindingType: PropertyBindingType = undefined !;
+    let boundPropertyName: string|null = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
-    let securityContexts: SecurityContext[];
+    let securityContexts: SecurityContext[] = undefined !;
 
     // Check check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
@@ -336,9 +339,9 @@ export class BindingParser {
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
     // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null, name]);
+    const [target, eventName] = splitAtColon(name, [null !, name]);
     const ast = this._parseAction(expression, sourceSpan);
-    targetMatchableAttrs.push([name, ast.source]);
+    targetMatchableAttrs.push([name !, ast.source !]);
     targetEvents.push(new BoundEventAst(eventName, target, null, ast, sourceSpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
@@ -405,7 +408,7 @@ export class BindingParser {
     const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
                             this._schemaRegistry.validateProperty(propName);
     if (report.error) {
-      this._reportError(report.msg, sourceSpan, ParseErrorLevel.ERROR);
+      this._reportError(report.msg !, sourceSpan, ParseErrorLevel.ERROR);
     }
   }
 }

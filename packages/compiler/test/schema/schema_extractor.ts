@@ -39,7 +39,7 @@ const MISSING_FROM_CHROME: {[el: string]: string[]} = {
 const _G: any = global;
 const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
 
-export function extractSchema(): Map<string, string[]> {
+export function extractSchema(): Map<string, string[]>|null {
   if (!document) return null;
   const SVGGraphicsElement = _G['SVGGraphicsElement'];
   if (!SVGGraphicsElement) return null;
@@ -120,7 +120,7 @@ function assertNoMissingTags(descMap: Map<string, string[]>): void {
 
 function extractRecursiveProperties(
     visited: {[name: string]: boolean}, descMap: Map<string, string[]>, type: Function): string {
-  const name = extractName(type);
+  const name = extractName(type) !;
 
   if (visited[name]) {
     return name;
@@ -140,7 +140,7 @@ function extractRecursiveProperties(
           extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
   }
 
-  let instance: HTMLElement = null;
+  let instance: HTMLElement|null = null;
   name.split(',').forEach(tagName => {
     instance = type['name'].startsWith('SVG') ?
         document.createElementNS('http://www.w3.org/2000/svg', tagName.replace(SVG_PREFIX, '')) :
@@ -176,7 +176,7 @@ function extractProperties(
 
   const fullName = name + (superName ? '^' + superName : '');
 
-  const props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
+  const props: string[] = descMap.has(fullName) ? descMap.get(fullName) ! : [];
 
   const prototype = type.prototype;
   const keys = Object.getOwnPropertyNames(prototype);
@@ -199,7 +199,7 @@ function extractProperties(
   descMap.set(fullName, type === Node ? props.filter(p => p != '%nodeValue') : props);
 }
 
-function extractName(type: Function): string {
+function extractName(type: Function): string|null {
   let name = type['name'];
 
   switch (name) {

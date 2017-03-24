@@ -30,7 +30,7 @@ export class MockNgModuleResolver extends NgModuleResolver {
    * `NgModuleResolver`, see `setNgModule`.
    */
   resolve(type: Type<any>, throwIfNotFound = true): NgModule {
-    return this._ngModules.get(type) || super.resolve(type, throwIfNotFound);
+    return this._ngModules.get(type) || super.resolve(type, throwIfNotFound) !;
   }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }

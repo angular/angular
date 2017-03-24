@@ -41,7 +41,7 @@ export class StaticAndDynamicReflectionCapabilities {
   getter(name: string): ɵGetterFn { return this.dynamicDelegate.getter(name); }
   setter(name: string): ɵSetterFn { return this.dynamicDelegate.setter(name); }
   method(name: string): ɵMethodFn { return this.dynamicDelegate.method(name); }
-  importUri(type: any): string { return this.staticDelegate.importUri(type); }
+  importUri(type: any): string { return this.staticDelegate.importUri(type) !; }
   resourceUri(type: any): string { return this.staticDelegate.resourceUri(type); }
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any) {
     return this.staticDelegate.resolveIdentifier(name, moduleUrl, members);
