@@ -44,7 +44,8 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
  * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBroker {
-  abstract runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any>;
+  abstract runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes|null):
+      Promise<any>|null;
 }
 
 interface PromiseCompleter {
@@ -78,7 +79,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any> {
+  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any>|null {
     const fnArgs: any[] = [];
     if (args.args) {
       args.args.forEach(argument => {
@@ -90,10 +91,10 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
       });
     }
 
-    let promise: Promise<any>;
-    let id: string = null;
+    let promise: Promise<any>|null;
+    let id: string|null = null;
     if (returnType != null) {
-      let completer: PromiseCompleter;
+      let completer: PromiseCompleter = undefined !;
       promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
       id = this._generateMessageId(args.method);
       this._pending.set(id, completer);
@@ -127,12 +128,12 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
 
   private _handleMessage(message: ResponseMessageData): void {
     if (message.type === 'result' || message.type === 'error') {
-      const id = message.id;
+      const id = message.id !;
       if (this._pending.has(id)) {
         if (message.type === 'result') {
-          this._pending.get(id).resolve(message.value);
+          this._pending.get(id) !.resolve(message.value);
         } else {
-          this._pending.get(id).reject(message.value);
+          this._pending.get(id) !.reject(message.value);
         }
         this._pending.delete(id);
       }

@@ -28,13 +28,13 @@ export class AnimationRendererFactory implements RendererFactory2 {
 }
 
 export class AnimationRenderer implements Renderer2 {
-  public destroyNode: (node: any) => (void|any) = null;
-  private _flushPromise: Promise<any> = null;
+  public destroyNode: ((node: any) => any)|null = null;
+  private _flushPromise: Promise<any>|null = null;
 
   constructor(
       public delegate: Renderer2, private _engine: AnimationEngine, private _zone: NgZone,
       private _namespaceId: string) {
-    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode(n) : null;
+    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
   }
 
   get data() { return this.delegate.data; }
@@ -132,7 +132,7 @@ export class AnimationRenderer implements Renderer2 {
     if (!this._flushPromise) {
       this._zone.runOutsideAngular(() => {
         this._flushPromise = Promise.resolve(null).then(() => {
-          this._flushPromise = null;
+          this._flushPromise = null !;
           this._engine.flush();
         });
       });
