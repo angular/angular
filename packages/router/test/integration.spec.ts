@@ -1703,7 +1703,24 @@ describe('Integration', () => {
                 log.push('called');
                 return false;
               }
-            }
+            },
+            {
+              provide: 'alwaysFalseWithDelayAndLogging',
+              useValue: () => {
+                log.push('called');
+                let resolve: (result: boolean) => void;
+                const promise = new Promise(res => resolve = res);
+                setTimeout(() => resolve(false), 0);
+                return promise;
+              }
+            },
+            {
+              provide: 'canActivate_alwaysTrueAndLogging',
+              useValue: () => {
+                log.push('canActivate called');
+                return true;
+              }
+            },
           ]
         });
       });
@@ -1853,6 +1870,37 @@ describe('Integration', () => {
            const teamCmp = fixture.debugElement.children[1].componentInstance;
            expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
            expect(location.path()).toEqual('/main/component1');
+         })));
+
+      it('should not run CanActivate when CanDeactivate returns false',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'main',
+             component: TeamCmp,
+             children: [
+               {
+                 path: 'component1',
+                 component: SimpleCmp,
+                 canDeactivate: ['alwaysFalseWithDelayAndLogging']
+               },
+               {
+                 path: 'component2',
+                 component: SimpleCmp,
+                 canActivate: ['canActivate_alwaysTrueAndLogging']
+               },
+             ]
+           }]);
+
+           router.navigateByUrl('/main/component1');
+           advance(fixture);
+           expect(location.path()).toEqual('/main/component1');
+
+           router.navigateByUrl('/main/component2');
+           advance(fixture);
+           expect(location.path()).toEqual('/main/component1');
+           expect(log).toEqual(['called']);
          })));
 
       it('should call guards every time when navigating to the same url over and over again',
