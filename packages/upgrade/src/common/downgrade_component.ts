@@ -84,7 +84,7 @@ export function downgradeComponent(info: {
           const componentFactoryResolver: ComponentFactoryResolver =
               injector.get(ComponentFactoryResolver);
           const componentFactory: ComponentFactory<any> =
-              componentFactoryResolver.resolveComponentFactory(info.component);
+              componentFactoryResolver.resolveComponentFactory(info.component) !;
 
           if (!componentFactory) {
             throw new Error('Expecting ComponentFactory for: ' + getComponentName(info.component));
@@ -130,7 +130,7 @@ class ParentInjectorPromise {
 
   constructor(private element: angular.IAugmentedJQuery) {
     // Store the promise on the element.
-    element.data(this.injectorKey, this);
+    element.data !(this.injectorKey, this);
   }
 
   then(callback: (injector: Injector) => any) {
@@ -145,10 +145,10 @@ class ParentInjectorPromise {
     this.injector = injector;
 
     // Store the real injector on the element.
-    this.element.data(this.injectorKey, injector);
+    this.element.data !(this.injectorKey, injector);
 
     // Release the element to prevent memory leaks.
-    this.element = null;
+    this.element = null !;
 
     // Run the queued callbacks.
     this.callbacks.forEach(callback => callback(injector));

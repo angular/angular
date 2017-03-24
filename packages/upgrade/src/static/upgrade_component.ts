@@ -99,7 +99,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   // We will be instantiating the controller in the `ngOnInit` hook, when the first `ngOnChanges`
   // will have been already triggered. We store the `SimpleChanges` and "play them back" later.
-  private pendingChanges: SimpleChanges;
+  private pendingChanges: SimpleChanges|null;
 
   private unregisterDoCheckWatcher: Function;
 
@@ -152,7 +152,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     const bindToController = this.directive.bindToController;
     if (controllerType) {
       this.controllerInstance = this.buildController(
-          controllerType, this.$componentScope, this.$element, this.directive.controllerAs);
+          controllerType, this.$componentScope, this.$element, this.directive.controllerAs !);
     } else if (bindToController) {
       throw new Error(
           `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
@@ -165,7 +165,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     // Require other controllers
     const directiveRequire = this.getDirectiveRequire(this.directive);
     const requiredControllers =
-        this.resolveRequire(this.directive.name, this.$element, directiveRequire);
+        this.resolveRequire(this.directive.name !, this.$element, directiveRequire);
 
     if (this.directive.bindToController && isMap(directiveRequire)) {
       const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
@@ -187,7 +187,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.controllerInstance.$doCheck();
+      const callDoCheck = () => this.controllerInstance.$doCheck !();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -204,8 +204,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
 
     const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) =>
-        cloneAttach(contentChildNodes);
-    linkFn(this.$componentScope, null, {parentBoundTranscludeFn: attachChildNodes});
+        cloneAttach !(contentChildNodes);
+    linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
@@ -272,12 +272,12 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   private getDirectiveRequire(directive: angular.IDirective): angular.DirectiveRequireProperty {
-    const require = directive.require || (directive.controller && directive.name);
+    const require = directive.require || (directive.controller && directive.name) !;
 
     if (isMap(require)) {
       Object.keys(require).forEach(key => {
         const value = require[key];
-        const match = value.match(REQUIRE_PREFIX_RE);
+        const match = value.match(REQUIRE_PREFIX_RE) !;
         const name = value.substring(match[0].length);
 
         if (!name) {
@@ -335,7 +335,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private extractChildNodes(element: Element): Node[] {
     const childNodes: Node[] = [];
-    let childNode: Node;
+    let childNode: Node|null;
 
     while (childNode = element.firstChild) {
       element.removeChild(childNode);
@@ -377,13 +377,14 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     // Quoted properties below so that this code can be optimized with Closure Compiler.
     const locals = {'$scope': $scope, '$element': $element};
     const controller = this.$controller(controllerType, locals, null, controllerAs);
-    $element.data(controllerKey(this.directive.name), controller);
+    $element.data !(controllerKey(this.directive.name !), controller);
     return controller;
   }
 
   private resolveRequire(
       directiveName: string, $element: angular.IAugmentedJQuery,
-      require: angular.DirectiveRequireProperty): angular.SingleOrListOrMap<IControllerInstance> {
+      require: angular.DirectiveRequireProperty):
+      angular.SingleOrListOrMap<IControllerInstance>|null {
     if (!require) {
       return null;
     } else if (Array.isArray(require)) {
@@ -392,11 +393,11 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       const value: {[key: string]: IControllerInstance} = {};
 
       Object.keys(require).forEach(
-          key => value[key] = this.resolveRequire(directiveName, $element, require[key]));
+          key => value[key] = this.resolveRequire(directiveName, $element, require[key]) !);
 
       return value;
     } else if (typeof require === 'string') {
-      const match = require.match(REQUIRE_PREFIX_RE);
+      const match = require.match(REQUIRE_PREFIX_RE) !;
       const inheritType = match[1] || match[3];
 
       const name = require.substring(match[0].length);
@@ -407,10 +408,10 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       const ctrlKey = controllerKey(name);
 
       if (startOnParent) {
-        $element = $element.parent();
+        $element = $element.parent !();
       }
 
-      const value = searchParents ? $element.inheritedData(ctrlKey) : $element.data(ctrlKey);
+      const value = searchParents ? $element.inheritedData !(ctrlKey) : $element.data !(ctrlKey);
 
       if (!value && !isOptional) {
         throw new Error(

@@ -29,7 +29,7 @@ export function main() {
 
     it('should handle deferred bootstrap', fakeAsync(() => {
          let applicationRunning = false;
-         let stayedInTheZone: boolean;
+         let stayedInTheZone: boolean = undefined !;
          const ng1Module = angular.module('ng1', []).run(() => {
            applicationRunning = true;
            stayedInTheZone = NgZone.isInAngularZone();

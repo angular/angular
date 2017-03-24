@@ -284,7 +284,7 @@ export function main() {
 
            const element = html('<ng2></ng2>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(multiTrim(document.body.textContent)).toBe('It works');
+             expect(multiTrim(document.body.textContent !)).toBe('It works');
            });
          }));
 
@@ -390,7 +390,7 @@ export function main() {
               | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
               </div>`);
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(multiTrim(document.body.textContent))
+             expect(multiTrim(document.body.textContent !))
                  .toEqual(
                      'ignore: -; ' +
                      'literal: Text; interpolate: Hello world; ' +
@@ -398,7 +398,7 @@ export function main() {
                      'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
 
              ref.ng1RootScope.$apply('name = "everyone"');
-             expect(multiTrim(document.body.textContent))
+             expect(multiTrim(document.body.textContent !))
                  .toEqual(
                      'ignore: -; ' +
                      'literal: Text; interpolate: Hello everyone; ' +
@@ -599,7 +599,7 @@ export function main() {
            ng1Module.directive('rootComponent', adapter.downgradeNg2Component(RootComponent));
 
            document.body.innerHTML = '<root-component></root-component>';
-           adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
+           adapter.bootstrap(document.body.firstElementChild !, ['myExample']).ready((ref) => {
              expect(multiTrim(document.body.textContent)).toEqual('It works!');
              ref.dispose();
            });
@@ -1873,7 +1873,7 @@ export function main() {
 
            document.body.innerHTML = '<ng2 name="World">project</ng2>';
 
-           adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
+           adapter.bootstrap(document.body.firstElementChild !, ['myExample']).ready((ref) => {
              expect(multiTrim(document.body.textContent))
                  .toEqual('ng2[ng1[Hello World!](transclude)](project)');
              ref.dispose();

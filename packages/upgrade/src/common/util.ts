@@ -26,12 +26,12 @@ export function controllerKey(name: string): string {
 
 export function getAttributesAsArray(node: Node): [string, string][] {
   const attributes = node.attributes;
-  let asArray: [string, string][];
+  let asArray: [string, string][] = undefined !;
   if (attributes) {
     let attrLen = attributes.length;
     asArray = new Array(attrLen);
     for (let i = 0; i < attrLen; i++) {
-      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue];
+      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue !];
     }
   }
   return asArray || [];
