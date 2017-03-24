@@ -195,7 +195,7 @@ describe('plugin', () => {
   });
 
   function getMarkerLocation(fileName: string, locationMarker: string): number {
-    const location = mockHost.getMarkerLocations(fileName)[locationMarker];
+    const location = mockHost.getMarkerLocations(fileName) ![locationMarker];
     if (location == null) {
       throw new Error(`No marker ${locationMarker} found.`);
     }
