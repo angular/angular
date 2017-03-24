@@ -33,7 +33,8 @@ export type LazyRouteMap = {
 // A route definition. Normally the short form 'path/to/module#ModuleClassName' is used by
 // the user, and this is a helper class to extract information from it.
 export class RouteDef {
-  private constructor(public readonly path: string, public readonly className: string = null) {}
+  private constructor(public readonly path: string, public readonly className: string|null = null) {
+  }
 
   toString() {
     return (this.className === null || this.className == 'default') ?
@@ -58,7 +59,7 @@ export function listLazyRoutesOfModule(
   const entryRouteDef = RouteDef.fromString(entryModule);
   const containingFile = _resolveModule(entryRouteDef.path, entryRouteDef.path, host);
   const modulePath = `./${containingFile.replace(/^(.*)\//, '')}`;
-  const className = entryRouteDef.className;
+  const className = entryRouteDef.className !;
 
   // List loadChildren of this single module.
   const appStaticSymbol = reflector.findDeclaration(modulePath, className, containingFile);

@@ -13,7 +13,7 @@ import * as o from '../output/output_ast';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
-export interface LocalResolver { getLocal(name: string): o.Expression; }
+export interface LocalResolver { getLocal(name: string): o.Expression|null; }
 
 export class ConvertActionBindingResult {
   constructor(public stmts: o.Statement[], public allowDefault: o.ReadVarExpr) {}
@@ -24,7 +24,7 @@ export class ConvertActionBindingResult {
  * used in an action binding (e.g. an event handler).
  */
 export function convertActionBinding(
-    localResolver: LocalResolver, implicitReceiver: o.Expression, action: cdAst.AST,
+    localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -51,7 +51,7 @@ export function convertActionBinding(
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
   const lastIndex = actionStmts.length - 1;
-  let preventDefaultVar: o.ReadVarExpr = null;
+  let preventDefaultVar: o.ReadVarExpr = null !;
   if (lastIndex >= 0) {
     const lastStatement = actionStmts[lastIndex];
     const returnExpr = convertStmtIntoExpression(lastStatement);
@@ -90,7 +90,7 @@ export class ConvertPropertyBindingResult {
  * `convertPropertyBindingBuiltins`.
  */
 export function convertPropertyBinding(
-    localResolver: LocalResolver, implicitReceiver: o.Expression,
+    localResolver: LocalResolver | null, implicitReceiver: o.Expression,
     expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -266,7 +266,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (ast instanceof BuiltinFunctionCall) {
       fnResult = ast.converter(convertedArgs);
     } else {
-      fnResult = this.visit(ast.target, _Mode.Expression).callFn(convertedArgs);
+      fnResult = this.visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
     }
     return convertToStatementIfNeeded(mode, fnResult);
   }
@@ -321,7 +321,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, o.literal(ast.value));
   }
 
-  private _getLocal(name: string): o.Expression { return this._localResolver.getLocal(name); }
+  private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
@@ -439,7 +439,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // which comes in as leftMostSafe to this routine.
 
     let guardedExpression = this.visit(leftMostSafe.receiver, _Mode.Expression);
-    let temporary: o.ReadVarExpr;
+    let temporary: o.ReadVarExpr = undefined !;
     if (this.needsTemporary(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
       // temporary variable to avoid calling stateful or impure code more than once.
@@ -577,7 +577,7 @@ function flattenStatements(arg: any, output: o.Statement[]) {
 }
 
 class DefaultLocalResolver implements LocalResolver {
-  getLocal(name: string): o.Expression {
+  getLocal(name: string): o.Expression|null {
     if (name === EventHandlerVars.event.name) {
       return EventHandlerVars.event;
     }
@@ -593,7 +593,7 @@ function createPreventDefaultVar(bindingId: string): o.ReadVarExpr {
   return o.variable(`pd_${bindingId}`);
 }
 
-function convertStmtIntoExpression(stmt: o.Statement): o.Expression {
+function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
   if (stmt instanceof o.ExpressionStatement) {
     return stmt.expr;
   } else if (stmt instanceof o.ReturnStatement) {

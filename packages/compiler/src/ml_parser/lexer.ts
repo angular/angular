@@ -198,8 +198,8 @@ class _Tokenizer {
     const token =
         new Token(this._currentTokenType, parts, new ParseSourceSpan(this._currentTokenStart, end));
     this.tokens.push(token);
-    this._currentTokenStart = null;
-    this._currentTokenType = null;
+    this._currentTokenStart = null !;
+    this._currentTokenType = null !;
     return token;
   }
 
@@ -208,8 +208,8 @@ class _Tokenizer {
       msg += ` (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`;
     }
     const error = new TokenError(msg, this._currentTokenType, span);
-    this._currentTokenStart = null;
-    this._currentTokenType = null;
+    this._currentTokenStart = null !;
+    this._currentTokenType = null !;
     return new _ControlFlowError(error);
   }
 
@@ -402,7 +402,7 @@ class _Tokenizer {
 
   private _consumePrefixAndName(): string[] {
     const nameOrPrefixStart = this._index;
-    let prefix: string = null;
+    let prefix: string = null !;
     while (this._peek !== chars.$COLON && !isPrefixEnd(this._peek)) {
       this._advance();
     }
@@ -473,7 +473,7 @@ class _Tokenizer {
       return this._attemptCharCode(chars.$GT);
     });
     this._beginToken(TokenType.TAG_CLOSE, textToken.sourceSpan.end);
-    this._endToken([null, lowercaseTagName]);
+    this._endToken([null !, lowercaseTagName]);
   }
 
   private _consumeTagOpenStart(start: ParseLocation) {
@@ -697,7 +697,7 @@ function toUpperCaseCharCode(code: number): number {
 
 function mergeTextTokens(srcTokens: Token[]): Token[] {
   const dstTokens: Token[] = [];
-  let lastDstToken: Token;
+  let lastDstToken: Token|undefined = undefined;
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {

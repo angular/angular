@@ -274,7 +274,7 @@ export function main() {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         const cssCode = '.class > tag';
 
-        let capturedMessage: string;
+        let capturedMessage: string = undefined !;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -282,7 +282,7 @@ export function main() {
         }
 
         expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
-        capturedMessage = null;
+        capturedMessage = null !;
 
         try {
           tokenize(cssCode, false, CssLexerMode.SELECTOR);

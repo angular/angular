@@ -26,7 +26,7 @@ export class TranslationBundle {
       missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
       console?: Console) {
     this._i18nToHtml = new I18nToHtmlVisitor(
-        _i18nNodesByMsgId, locale, digest, mapperFactory, missingTranslationStrategy, console);
+        _i18nNodesByMsgId, locale, digest, mapperFactory !, missingTranslationStrategy, console);
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
@@ -36,7 +36,7 @@ export class TranslationBundle {
       console?: Console): TranslationBundle {
     const {locale, i18nNodesByMsgId} = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
-    const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m);
+    const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m) !;
     return new TranslationBundle(
         i18nNodesByMsgId, locale, digestFn, mapperFactory, missingTranslationStrategy, console);
   }
@@ -156,7 +156,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       // When there is a translation use its nodes as the source
       // And create a mapper to convert serialized placeholder names to internal names
       nodes = this._i18nNodesByMsgId[id];
-      this._mapper = (name: string) => mapper ? mapper.toInternalName(name) : name;
+      this._mapper = (name: string) => mapper ? mapper.toInternalName(name) ! : name;
     } else {
       // When no translation has been found
       // - report an error / a warning / nothing,
@@ -175,7 +175,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       this._mapper = (name: string) => name;
     }
     const text = nodes.map(node => node.visit(this)).join('');
-    const context = this._contextStack.pop();
+    const context = this._contextStack.pop() !;
     this._srcMsg = context.msg;
     this._mapper = context.mapper;
     return text;

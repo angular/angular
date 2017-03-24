@@ -66,8 +66,7 @@ export function getDeclarationDiagnostics(
           report(
               `Component '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
         }
-        if (declaration.metadata.template.template == null &&
-            !declaration.metadata.template.templateUrl) {
+        if (!declaration.metadata.template.template && !declaration.metadata.template.templateUrl) {
           report(`Component ${declaration.type.name} must have a template or templateUrl`);
         }
       } else {

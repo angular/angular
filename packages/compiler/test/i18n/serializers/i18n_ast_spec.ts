@@ -36,13 +36,13 @@ export function main(): void {
         const visitor = new RecurseVisitor();
         const container = new i18n.Container(
             [
-              new i18n.Text('', null),
-              new i18n.Placeholder('', '', null),
-              new i18n.IcuPlaceholder(null, '', null),
+              new i18n.Text('', null !),
+              new i18n.Placeholder('', '', null !),
+              new i18n.IcuPlaceholder(null !, '', null !),
             ],
-            null);
-        const tag = new i18n.TagPlaceholder('', {}, '', '', [container], false, null);
-        const icu = new i18n.Icu('', '', {tag}, null);
+            null !);
+        const tag = new i18n.TagPlaceholder('', {}, '', '', [container], false, null !);
+        const icu = new i18n.Icu('', '', {tag}, null !);
 
         icu.visit(visitor);
         expect(visitor.textCount).toEqual(1);

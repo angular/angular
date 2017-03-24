@@ -36,7 +36,7 @@ export class MockPipeResolver extends PipeResolver {
   resolve(type: Type<any>, throwIfNotFound = true): Pipe {
     let metadata = this._pipes.get(type);
     if (!metadata) {
-      metadata = super.resolve(type, throwIfNotFound);
+      metadata = super.resolve(type, throwIfNotFound) !;
     }
     return metadata;
   }

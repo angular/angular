@@ -49,7 +49,7 @@ export class Xtb extends Serializer {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale, i18nNodesByMsgId};
+    return {locale: locale !, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return digest(message); }
@@ -121,10 +121,10 @@ class XtbParser implements ml.Visitor {
           if (this._msgIdToHtml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
-            const innerTextStart = element.startSourceSpan.end.offset;
-            const innerTextEnd = element.endSourceSpan.start.offset;
-            const content = element.startSourceSpan.start.file.content;
-            const innerText = content.slice(innerTextStart, innerTextEnd);
+            const innerTextStart = element.startSourceSpan !.end.offset;
+            const innerTextEnd = element.endSourceSpan !.start.offset;
+            const content = element.startSourceSpan !.start.file.content;
+            const innerText = content.slice(innerTextStart !, innerTextEnd !);
             this._msgIdToHtml[id] = innerText;
           }
         }
@@ -146,7 +146,7 @@ class XtbParser implements ml.Visitor {
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new I18nError(node.sourceSpan !, message));
   }
 }
 
@@ -168,7 +168,7 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
+  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan !); }
 
   visitExpansion(icu: ml.Expansion, context: any) {
     const caseMap: {[value: string]: i18n.Node} = {};
@@ -187,17 +187,18 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitElement(el: ml.Element, context: any): i18n.Placeholder {
+  visitElement(el: ml.Element, context: any): i18n.Placeholder|null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'name');
       if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan);
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan !);
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
     } else {
       this._addError(el, `Unexpected tag`);
     }
+    return null;
   }
 
   visitComment(comment: ml.Comment, context: any) {}
@@ -205,6 +206,6 @@ class XmlToI18n implements ml.Visitor {
   visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new I18nError(node.sourceSpan !, message));
   }
 }

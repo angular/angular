@@ -63,7 +63,7 @@ export class NgModuleCompiler {
                          [o.variable(injectorClass.name), o.importExpr(ngModuleMeta.type)],
                          o.importType(
                              createIdentifier(Identifiers.NgModuleFactory),
-                             [o.importType(ngModuleMeta.type)], [o.TypeModifier.Const])))
+                             [o.importType(ngModuleMeta.type) !], [o.TypeModifier.Const])))
             .toDeclStmt(null, [o.StmtModifier.Final]);
 
     const stmts: o.Statement[] = [injectorClass, ngModuleFactoryStmt];
@@ -106,7 +106,7 @@ class _InjectorBuilder implements ClassBuilder {
     if (resolvedProvider.lifecycleHooks.indexOf(ɵLifecycleHooks.OnDestroy) !== -1) {
       let callNgOnDestroy: o.Expression = instance.callMethod('ngOnDestroy', []);
       if (!resolvedProvider.eager) {
-        callNgOnDestroy = this._lazyProps.get(instance.name).and(callNgOnDestroy);
+        callNgOnDestroy = this._lazyProps.get(instance.name) !.and(callNgOnDestroy);
       }
       this._destroyStmts.push(callNgOnDestroy.toStmt());
     }
@@ -116,7 +116,7 @@ class _InjectorBuilder implements ClassBuilder {
 
   build(): o.ClassStmt {
     const getMethodStmts: o.Statement[] = this._tokens.map((token) => {
-      const providerExpr = this._instances.get(tokenReference(token));
+      const providerExpr = this._instances.get(tokenReference(token)) !;
       return new o.IfStmt(
           InjectMethodVars.token.identical(createDiTokenExpression(token)),
           [new o.ReturnStatement(providerExpr)]);
@@ -124,13 +124,13 @@ class _InjectorBuilder implements ClassBuilder {
     const methods = [
       new o.ClassMethod(
           'createInternal', [], this._createStmts.concat(new o.ReturnStatement(
-                                    this._instances.get(this._ngModuleMeta.type.reference))),
+                                    this._instances.get(this._ngModuleMeta.type.reference) !)),
           o.importType(this._ngModuleMeta.type)),
       new o.ClassMethod(
           'getInternal',
           [
-            new o.FnParam(InjectMethodVars.token.name, o.DYNAMIC_TYPE),
-            new o.FnParam(InjectMethodVars.notFoundResult.name, o.DYNAMIC_TYPE)
+            new o.FnParam(InjectMethodVars.token.name !, o.DYNAMIC_TYPE),
+            new o.FnParam(InjectMethodVars.notFoundResult.name !, o.DYNAMIC_TYPE)
           ],
           getMethodStmts.concat([new o.ReturnStatement(InjectMethodVars.notFoundResult)]),
           o.DYNAMIC_TYPE),
@@ -150,7 +150,8 @@ class _InjectorBuilder implements ClassBuilder {
       ctorParams: [new o.FnParam(
           InjectorProps.parent.name, o.importType(createIdentifier(Identifiers.Injector)))],
       parent: o.importExpr(
-          createIdentifier(Identifiers.NgModuleInjector), [o.importType(this._ngModuleMeta.type)]),
+          createIdentifier(Identifiers.NgModuleInjector),
+          [o.importType(this._ngModuleMeta.type) !]),
       parentArgs: parentArgs,
       builders: [{methods}, this]
     });
@@ -186,7 +187,7 @@ class _InjectorBuilder implements ClassBuilder {
       type = new o.ArrayType(o.DYNAMIC_TYPE);
     } else {
       resolvedProviderValueExpr = providerValueExpressions[0];
-      type = providerValueExpressions[0].type;
+      type = providerValueExpressions[0].type !;
     }
     if (!type) {
       type = o.DYNAMIC_TYPE;
@@ -211,7 +212,7 @@ class _InjectorBuilder implements ClassBuilder {
   }
 
   private _getDependency(dep: CompileDiDependencyMetadata): o.Expression {
-    let result: o.Expression = null;
+    let result: o.Expression = null !;
     if (dep.isValue) {
       result = o.literal(dep.value);
     }
@@ -226,11 +227,11 @@ class _InjectorBuilder implements ClassBuilder {
       }
 
       if (!result) {
-        result = this._instances.get(tokenReference(dep.token));
+        result = this._instances.get(tokenReference(dep.token !)) !;
       }
     }
     if (!result) {
-      const args = [createDiTokenExpression(dep.token)];
+      const args = [createDiTokenExpression(dep.token !)];
       if (dep.isOptional) {
         args.push(o.NULL_EXPR);
       }
@@ -244,7 +245,7 @@ function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
   if (token.value != null) {
     return o.literal(token.value);
   } else {
-    return o.importExpr(token.identifier);
+    return o.importExpr(token.identifier !);
   }
 }
 

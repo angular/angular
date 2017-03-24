@@ -33,7 +33,7 @@ function _executeFunctionStatements(
 
 class _ExecutionContext {
   constructor(
-      public parent: _ExecutionContext, public instance: any, public className: string,
+      public parent: _ExecutionContext|null, public instance: any, public className: string|null,
       public vars: Map<string, any>) {}
 
   createChildWihtLocalVars(): _ExecutionContext {
@@ -62,7 +62,7 @@ function createDynamicClass(
   _classStmt.methods.forEach(function(method: o.ClassMethod) {
     const paramNames = method.params.map(param => param.name);
     // Note: use `function` instead of arrow function to capture `this`
-    propertyDescriptors[method.name] = {
+    propertyDescriptors[method.name !] = {
       writable: false,
       configurable: false,
       value: function(...args: any[]) {
@@ -100,12 +100,12 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
         currCtx.vars.set(expr.name, value);
         return value;
       }
-      currCtx = currCtx.parent;
+      currCtx = currCtx.parent !;
     }
     throw new Error(`Not declared variable ${expr.name}`);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: _ExecutionContext): any {
-    let varName = ast.name;
+    let varName = ast.name !;
     if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
@@ -127,7 +127,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       if (currCtx.vars.has(varName)) {
         return currCtx.vars.get(varName);
       }
-      currCtx = currCtx.parent;
+      currCtx = currCtx.parent !;
     }
     throw new Error(`Not declared variable ${varName}`);
   }
@@ -164,7 +164,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           throw new Error(`Unknown builtin method ${expr.builtin}`);
       }
     } else {
-      result = receiver[expr.name].apply(receiver, args);
+      result = receiver[expr.name !].apply(receiver, args);
     }
     return result;
   }
@@ -312,7 +312,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return expressions.map((expr) => expr.visitExpression(this, ctx));
   }
 
-  visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue {
+  visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue|null {
     for (let i = 0; i < statements.length; i++) {
       const stmt = statements[i];
       const val = stmt.visitStatement(this, ctx);

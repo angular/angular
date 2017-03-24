@@ -26,7 +26,7 @@ export class MessageBundle {
       private _implicitAttrs: {[k: string]: string[]}, private _locale: string|null = null) {}
 
   updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
-      ParseError[] {
+      ParseError[]|null {
     const htmlParserResult = this._htmlParser.parse(html, url, true, interpolationConfig);
 
     if (htmlParserResult.errors.length) {
@@ -41,6 +41,7 @@ export class MessageBundle {
     }
 
     this._messages.push(...i18nParserResult.messages);
+    return null;
   }
 
   // Return the message in the internal format
@@ -78,18 +79,18 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper): i18n.TagPlaceholder {
-    const startName = mapper.toPublicName(ph.startName);
-    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName) : ph.closeName;
+    const startName = mapper.toPublicName(ph.startName) !;
+    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName) ! : ph.closeName;
     const children = ph.children.map(n => n.visit(this, mapper));
     return new i18n.TagPlaceholder(
         ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan);
   }
 
   visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
-    return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name), ph.sourceSpan);
+    return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name) !, ph.sourceSpan);
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, mapper: PlaceholderMapper): i18n.IcuPlaceholder {
-    return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name), ph.sourceSpan);
+    return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name) !, ph.sourceSpan);
   }
 }

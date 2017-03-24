@@ -285,7 +285,7 @@ export function main() {
       });
 
       it('should allow nested implicit elements', () => {
-        let result: any[];
+        let result: any[] = undefined !;
 
         expect(() => {
           result = extract('<div>outer<div>inner</div></div>', ['div']);
@@ -490,7 +490,7 @@ function fakeTranslate(
   messages.forEach(message => {
     const id = digest(message);
     const text = serializeI18nNodes(message.nodes).join('').replace(/</g, '[');
-    i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null)];
+    i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null !)];
   });
 
   const translations = new TranslationBundle(i18nMsgMap, null, digest);

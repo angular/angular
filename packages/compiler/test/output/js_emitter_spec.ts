@@ -29,8 +29,8 @@ class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
     return importedUrlStr;
   }
-  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
-  getTypeArity(symbol: StaticSymbol): number /*|null*/ { return null; }
+  getImportAs(symbol: StaticSymbol): StaticSymbol|null { return null; }
+  getTypeArity(symbol: StaticSymbol): number|null { return null; }
 }
 
 export function main() {
@@ -49,7 +49,8 @@ export function main() {
       someVar = o.variable('someVar');
     });
 
-    function emitStmt(stmt: o.Statement, exportedVars: string[] = null, preamble?: string): string {
+    function emitStmt(
+        stmt: o.Statement, exportedVars: string[] | null = null, preamble?: string): string {
       const source = emitter.emitStatements(
           someSourceFilePath, someGenFilePath, [stmt], exportedVars || [], preamble);
       return stripSourceMapAndNewLine(source);
@@ -224,15 +225,15 @@ export function main() {
       beforeEach(() => { callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt(); });
 
       it('should support declaring classes', () => {
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [
+        expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
         ]))).toEqual(['function SomeClass() {', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, []), ['SomeClass']))
+        expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, []), ['SomeClass']))
             .toEqual([
               'function SomeClass() {', '}',
               `Object.defineProperty(exports, 'SomeClass', { get: function() { return SomeClass; }});`
             ].join('\n'));
-        expect(
-            emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null, [])))
+        expect(emitStmt(
+                   new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null !, [])))
             .toEqual([
               'function SomeClass() {', '}',
               'SomeClass.prototype = Object.create(SomeSuperClass.prototype);'
@@ -241,23 +242,24 @@ export function main() {
 
       it('should support declaring constructors', () => {
         const superCall = o.SUPER_EXPR.callFn([o.variable('someParam')]).toStmt();
-        expect(emitStmt(
-                   new o.ClassStmt('SomeClass', null, [], [], new o.ClassMethod(null, [], []), [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null !, [], [], new o.ClassMethod(null !, [], []), [])))
             .toEqual(['function SomeClass() {', '}'].join('\n'));
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [],
-                   new o.ClassMethod(null, [new o.FnParam('someParam')], []), [])))
+                   'SomeClass', null !, [], [],
+                   new o.ClassMethod(null !, [new o.FnParam('someParam')], []), [])))
             .toEqual(['function SomeClass(someParam) {', '}'].join('\n'));
         expect(emitStmt(new o.ClassStmt(
                    'SomeClass', o.variable('SomeSuperClass'), [], [],
-                   new o.ClassMethod(null, [], [superCall]), [])))
+                   new o.ClassMethod(null !, [], [superCall]), [])))
             .toEqual([
               'function SomeClass() {', '  var self = this;',
               '  SomeSuperClass.call(this, someParam);', '}',
               'SomeClass.prototype = Object.create(SomeSuperClass.prototype);'
             ].join('\n'));
-        expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [], new o.ClassMethod(null, [], [callSomeMethod]), [])))
+        expect(
+            emitStmt(new o.ClassStmt(
+                'SomeClass', null !, [], [], new o.ClassMethod(null !, [], [callSomeMethod]), [])))
             .toEqual([
               'function SomeClass() {', '  var self = this;', '  self.someMethod();', '}'
             ].join('\n'));
@@ -265,14 +267,14 @@ export function main() {
 
       it('should support declaring getters', () => {
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [new o.ClassGetter('someGetter', [])], null, [])))
+                   'SomeClass', null !, [], [new o.ClassGetter('someGetter', [])], null !, [])))
             .toEqual([
               'function SomeClass() {', '}',
               `Object.defineProperty(SomeClass.prototype, 'someGetter', { get: function() {`, `}});`
             ].join('\n'));
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [new o.ClassGetter('someGetter', [callSomeMethod])], null,
-                   [])))
+                   'SomeClass', null !, [], [new o.ClassGetter('someGetter', [callSomeMethod])],
+                   null !, [])))
             .toEqual([
               'function SomeClass() {', '}',
               `Object.defineProperty(SomeClass.prototype, 'someGetter', { get: function() {`,
@@ -282,19 +284,19 @@ export function main() {
 
       it('should support methods', () => {
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [], null, [new o.ClassMethod('someMethod', [], [])])))
+                   'SomeClass', null !, [], [], null !, [new o.ClassMethod('someMethod', [], [])])))
             .toEqual([
               'function SomeClass() {', '}', 'SomeClass.prototype.someMethod = function() {', '};'
             ].join('\n'));
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [], null,
+                   'SomeClass', null !, [], [], null !,
                    [new o.ClassMethod('someMethod', [new o.FnParam('someParam')], [])])))
             .toEqual([
               'function SomeClass() {', '}',
               'SomeClass.prototype.someMethod = function(someParam) {', '};'
             ].join('\n'));
         expect(emitStmt(new o.ClassStmt(
-                   'SomeClass', null, [], [], null,
+                   'SomeClass', null !, [], [], null !,
                    [new o.ClassMethod('someMethod', [], [callSomeMethod])])))
             .toEqual([
               'function SomeClass() {', '}', 'SomeClass.prototype.someMethod = function() {',
