@@ -8,7 +8,7 @@ set -e -o pipefail
 # Go to the project root directory
 cd $(dirname $0)/../..
 
-buildDir="dist/@angular/material"
+buildDir="dist/release"
 buildVersion=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 
 commitSha=$(git rev-parse --short HEAD)
