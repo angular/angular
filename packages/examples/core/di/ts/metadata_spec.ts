@@ -171,7 +171,7 @@ export function main() {
           declarations: [App, ParentCmp, ChildDirective],
         });
 
-        let cmp: ComponentFixture<App>;
+        let cmp: ComponentFixture<App> = undefined !;
         expect(() => cmp = TestBed.createComponent(App)).not.toThrow();
 
         expect(cmp.debugElement.children[0].children[0].injector.get(ChildDirective).logs).toEqual([

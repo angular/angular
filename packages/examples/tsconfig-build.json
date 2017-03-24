@@ -5,6 +5,7 @@
     "stripInternal": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
