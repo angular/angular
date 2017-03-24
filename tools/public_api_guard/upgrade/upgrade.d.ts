@@ -18,7 +18,7 @@ export declare class UpgradeAdapterRef {
     ng2Injector: Injector;
     ng2ModuleRef: NgModuleRef<any>;
     dispose(): void;
-    ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void): void;
+    ready(fn: (upgradeAdapterRef: UpgradeAdapterRef) => void): void;
 }
 
 /** @stable */
