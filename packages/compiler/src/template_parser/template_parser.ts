@@ -391,7 +391,7 @@ class TemplateParseVisitor implements html.Visitor {
           nodeName, attrs, elementProps, events, references,
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
           providerContext.transformedHasViewContainer, providerContext.queryMatches, children,
-          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan || null,
+          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan,
           element.endSourceSpan || null);
     }
 

@@ -19,7 +19,7 @@ export interface TemplateAst {
   /**
    * The source span from which this node was parsed.
    */
-  sourceSpan: ParseSourceSpan|null;
+  sourceSpan: ParseSourceSpan;
 
   /**
    * Visit this node and possibly transform it.
@@ -127,7 +127,7 @@ export class ElementAst implements TemplateAst {
       public directives: DirectiveAst[], public providers: ProviderAst[],
       public hasViewContainer: boolean, public queryMatches: QueryMatch[],
       public children: TemplateAst[], public ngContentIndex: number|null,
-      public sourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null) {}
+      public sourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);

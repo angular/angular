@@ -59,7 +59,7 @@ class HtmlAstPathBuilder extends ChildVisitor {
   constructor(private position: number) { super(); }
 
   visit(ast: Node, context: any): any {
-    let span = spanOf(ast);
+    let span = spanOf(ast as any);
     if (inSpan(this.position, span)) {
       this.path.push(ast);
     } else {

@@ -21,7 +21,7 @@ describe('references', () => {
   let service: ts.LanguageService;
   let program: ts.Program;
   let ngHost: TypeScriptServiceHost;
-  let ngService: LanguageService = createLanguageService(ngHost);
+  let ngService: LanguageService = createLanguageService(undefined !);
 
   beforeEach(() => {
     mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);

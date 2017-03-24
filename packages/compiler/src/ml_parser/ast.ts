@@ -9,12 +9,12 @@
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
-  sourceSpan: ParseSourceSpan|null;
+  sourceSpan: ParseSourceSpan;
   visit(visitor: Visitor, context: any): any;
 }
 
 export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan|null) {}
+  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
 }
 
@@ -43,8 +43,7 @@ export class Attribute implements Node {
 export class Element implements Node {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
-      public sourceSpan: ParseSourceSpan|null = null,
-      public startSourceSpan: ParseSourceSpan|null = null,
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
       public endSourceSpan: ParseSourceSpan|null = null) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
 }
