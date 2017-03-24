@@ -38,8 +38,8 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
  */
 @Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck {
-  private _iterableDiffer: IterableDiffer<string>;
-  private _keyValueDiffer: KeyValueDiffer<string, any>;
+  private _iterableDiffer: IterableDiffer<string>|null;
+  private _keyValueDiffer: KeyValueDiffer<string, any>|null;
   private _initialClasses: string[] = [];
   private _rawClass: string[]|Set<string>|{[klass: string]: any};
 

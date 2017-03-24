@@ -14,7 +14,8 @@ const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 
 function formatNumber(
     pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
-    digits: string, currency: string = null, currencyAsSymbol: boolean = false): string {
+    digits?: string | null, currency: string | null = null,
+    currencyAsSymbol: boolean = false): string|null {
   if (value == null) return null;
 
   // Convert strings to numbers
@@ -23,9 +24,9 @@ function formatNumber(
     throw invalidPipeArgumentError(pipe, value);
   }
 
-  let minInt: number;
-  let minFraction: number;
-  let maxFraction: number;
+  let minInt: number|undefined = undefined;
+  let minFraction: number|undefined = undefined;
+  let maxFraction: number|undefined = undefined;
   if (style !== NumberFormatStyle.Currency) {
     // rely on Intl default for currency
     minInt = 1;
@@ -89,7 +90,7 @@ function formatNumber(
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits: string = null): string {
+  transform(value: any, digits?: string): string|null {
     return formatNumber(DecimalPipe, this._locale, value, NumberFormatStyle.Decimal, digits);
   }
 }
@@ -118,7 +119,7 @@ export class DecimalPipe implements PipeTransform {
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits: string = null): string {
+  transform(value: any, digits?: string): string|null {
     return formatNumber(PercentPipe, this._locale, value, NumberFormatStyle.Percent, digits);
   }
 }
@@ -153,7 +154,7 @@ export class CurrencyPipe implements PipeTransform {
 
   transform(
       value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
-      digits: string = null): string {
+      digits?: string): string|null {
     return formatNumber(
         CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
         symbolDisplay);
