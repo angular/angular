@@ -24,8 +24,8 @@ export abstract class AnimationPlayer {
   abstract reset(): void;
   abstract setPosition(p: any /** TODO #9100 */): void;
   abstract getPosition(): number;
-  get parentPlayer(): AnimationPlayer { throw new Error('NOT IMPLEMENTED: Base Class'); }
-  set parentPlayer(player: AnimationPlayer) { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  get parentPlayer(): AnimationPlayer|null { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  set parentPlayer(player: AnimationPlayer|null) { throw new Error('NOT IMPLEMENTED: Base Class'); }
 }
 
 /**
@@ -38,7 +38,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   private _finished = false;
-  public parentPlayer: AnimationPlayer = null;
+  public parentPlayer: AnimationPlayer|null = null;
   constructor() {}
   private _onFinish() {
     if (!this._finished) {

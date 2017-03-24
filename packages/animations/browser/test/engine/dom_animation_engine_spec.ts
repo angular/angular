@@ -34,7 +34,7 @@ export function main() {
       element = el('<div></div>');
     });
 
-    function makeEngine(normalizer: AnimationStyleNormalizer = null) {
+    function makeEngine(normalizer?: AnimationStyleNormalizer) {
       return new DomAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
     }
 
@@ -163,7 +163,7 @@ export function main() {
         engine.flush();
         expect(count).toEqual(0);
 
-        const player = engine.activePlayers.pop();
+        const player = engine.activePlayers.pop() !;
         player.finish();
 
         expect(count).toEqual(1);
@@ -275,7 +275,7 @@ export function main() {
         engine.setProperty(element, 'myTrigger', '123');
         engine.flush();
 
-        let capture: AnimationEvent = null;
+        let capture: AnimationEvent = null !;
         engine.listen(element, 'myTrigger', 'start', (e) => capture = e);
         engine.listen(element, 'myTrigger', 'done', (e) => capture = e);
         engine.setProperty(element, 'myTrigger', '456');
@@ -290,8 +290,8 @@ export function main() {
           totalTime: 1234
         });
 
-        capture = null;
-        const player = engine.activePlayers.pop();
+        capture = null !;
+        const player = engine.activePlayers.pop() !;
         player.finish();
 
         expect(capture).toEqual({
@@ -314,7 +314,7 @@ export function main() {
           transition('on => off', animate(9876))
         ]);
 
-        const instruction = trig.matchTransition('on', 'off');
+        const instruction = trig.matchTransition('on', 'off') !;
 
         expect(MockAnimationDriver.log.length).toEqual(0);
         engine.animateTransition(element, instruction);
@@ -376,7 +376,7 @@ export function main() {
              transition('on => off', animate(9876))
            ]);
 
-           const instruction = trig.matchTransition('on', 'off');
+           const instruction = trig.matchTransition('on', 'off') !;
            const player = engine.animateTransition(element, instruction);
 
            expect(element.style.height).not.toEqual('0px');
@@ -392,13 +392,13 @@ export function main() {
              state('c', style({width: '200px'})), transition('* => *', animate(9876))
            ]);
 
-           const instruction1 = trig.matchTransition('a', 'b');
+           const instruction1 = trig.matchTransition('a', 'b') !;
            const player1 = engine.animateTransition(element, instruction1);
 
            player1.finish();
            expect(element.style.height).toEqual('500px');
 
-           const instruction2 = trig.matchTransition('b', 'c');
+           const instruction2 = trig.matchTransition('b', 'c') !;
            const player2 = engine.animateTransition(element, instruction2);
 
            expect(element.style.height).not.toEqual('500px');
@@ -423,8 +423,8 @@ export function main() {
            let doneCount = 0;
            function doneCallback() { doneCount++; }
 
-           const instruction1 = trig1.matchTransition('a', 'b');
-           const instruction2 = trig2.matchTransition('x', 'y');
+           const instruction1 = trig1.matchTransition('a', 'b') !;
+           const instruction2 = trig2.matchTransition('x', 'y') !;
            const player1 = engine.animateTransition(element, instruction1);
            player1.onDone(doneCallback);
            expect(doneCount).toEqual(0);
@@ -451,8 +451,8 @@ export function main() {
              state('z', style({opacity: 1})), transition('* => *', animate(1000))
            ]);
 
-           const instruction1 = trig.matchTransition('x', 'y');
-           const instruction2 = trig.matchTransition('y', 'z');
+           const instruction1 = trig.matchTransition('x', 'y') !;
+           const instruction2 = trig.matchTransition('y', 'z') !;
 
            expect(parseFloat(element.style.opacity)).not.toEqual(.5);
 
@@ -476,9 +476,9 @@ export function main() {
              state('z', style({opacity: 1})), transition('* => *', animate(1000))
            ]);
 
-           const instruction1 = trig.matchTransition('x', 'y');
-           const instruction2 = trig.matchTransition('y', 'z');
-           const instruction3 = trig.matchTransition('z', 'x');
+           const instruction1 = trig.matchTransition('x', 'y') !;
+           const instruction2 = trig.matchTransition('y', 'z') !;
+           const instruction3 = trig.matchTransition('z', 'x') !;
 
            const player1 = engine.animateTransition(element, instruction1);
            engine.flush();
@@ -502,10 +502,10 @@ export function main() {
         let doneCount = 0;
         function doneCallback() { doneCount++; }
 
-        const instruction1 = trig.matchTransition('m', 'n');
+        const instruction1 = trig.matchTransition('m', 'n') !;
         const instructions2 =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 100}))]);
-        const instruction3 = trig.matchTransition('n', 'void');
+            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 100}))]) !;
+        const instruction3 = trig.matchTransition('n', 'void') !;
 
         const player1 = engine.animateTransition(element, instruction1);
         player1.onDone(doneCallback);
@@ -528,7 +528,7 @@ export function main() {
              transition('* => *', [animate(1000, style({height: '200px'}))])
            ]);
 
-           const instruction = trig.matchTransition('0', '1');
+           const instruction = trig.matchTransition('0', '1') !;
            const player = engine.animateTransition(element, instruction);
            expect(element.style.width).not.toEqual('100px');
 
@@ -545,7 +545,7 @@ export function main() {
              transition('* => *', animate(1000))
            ]);
 
-           const instruction = trig.matchTransition('a', 'z');
+           const instruction = trig.matchTransition('a', 'z') !;
            engine.animateTransition(element, instruction).finish();
 
            expect(parseFloat(element.style.opacity)).toEqual(.5);
@@ -558,7 +558,7 @@ export function main() {
           transition('* => *', animate(1000))
         ]);
 
-        const instruction = trig.matchTransition('a', 'void');
+        const instruction = trig.matchTransition('a', 'void') !;
         engine.animateTransition(element, instruction).finish();
 
         expect(parseFloat(element.style.opacity)).toEqual(.8);
@@ -600,7 +600,7 @@ export function main() {
              transition('on => off', animate(9876))
            ]);
 
-           const instruction = trig.matchTransition('on', 'off');
+           const instruction = trig.matchTransition('on', 'off') !;
            const player = <MockAnimationPlayer>engine.animateTransition(element, instruction);
 
            expect(player.keyframes).toEqual([
@@ -633,7 +633,7 @@ export function main() {
           state('b', style({left: '100px', width: '100px'})), transition('a => b', animate(9876))
         ]);
 
-        const instruction = trig.matchTransition('a', 'b');
+        const instruction = trig.matchTransition('a', 'b') !;
 
         let errorMessage = '';
         try {

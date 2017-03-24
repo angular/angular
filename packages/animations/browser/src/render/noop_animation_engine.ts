@@ -35,7 +35,7 @@ export class NoopAnimationEngine extends AnimationEngine {
   private _triggerStyles: {[triggerName: string]: {[stateName: string]: ɵStyleData}} =
       Object.create(null);
 
-  registerTrigger(trigger: AnimationTriggerMetadata, name: string = null): void {
+  registerTrigger(trigger: AnimationTriggerMetadata, name?: string): void {
     name = name || trigger.name;
     if (this._triggerStyles[name]) {
       return;
@@ -139,7 +139,7 @@ export class NoopAnimationEngine extends AnimationEngine {
 
     // remove all the listeners after everything is complete
     Array.from(this._listeners.keys()).forEach(element => {
-      const listenersToKeep = this._listeners.get(element).filter(l => !l.doRemove);
+      const listenersToKeep = this._listeners.get(element) !.filter(l => !l.doRemove);
       if (listenersToKeep.length) {
         this._listeners.set(element, listenersToKeep);
       } else {

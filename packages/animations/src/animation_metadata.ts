@@ -13,7 +13,7 @@ export interface ɵStyleData { [key: string]: string|number; }
 export declare type AnimateTimings = {
   duration: number,
   delay: number,
-  easing: string
+  easing: string | null
 };
 
 /**

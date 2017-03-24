@@ -112,13 +112,13 @@ export declare type StyleAtTime = {
 
 export class AnimationTimelineContext {
   currentTimeline: TimelineBuilder;
-  currentAnimateTimings: AnimateTimings;
+  currentAnimateTimings: AnimateTimings|null;
   previousNode: AnimationMetadata = <AnimationMetadata>{};
   subContextCount = 0;
 
   constructor(
       public errors: any[], public timelines: TimelineBuilder[],
-      initialTimeline: TimelineBuilder = null) {
+      initialTimeline?: TimelineBuilder) {
     this.currentTimeline = initialTimeline || new TimelineBuilder(0);
     timelines.push(this.currentTimeline);
   }
@@ -262,7 +262,7 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
   }
 
   private _applyStyles(
-      styles: ɵStyleData, easing: string, treatAsEmptyStep: boolean,
+      styles: ɵStyleData, easing: string|null, treatAsEmptyStep: boolean,
       context: AnimationTimelineContext) {
     if (styles.hasOwnProperty('easing')) {
       easing = easing || styles['easing'] as string;
@@ -284,10 +284,10 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
     }
 
     const startTime = context.currentTimeline.duration;
-    const duration = context.currentAnimateTimings.duration;
+    const duration = context.currentAnimateTimings !.duration;
     const innerContext = context.createSubContext();
     const innerTimeline = innerContext.currentTimeline;
-    innerTimeline.easing = context.currentAnimateTimings.easing;
+    innerTimeline.easing = context.currentAnimateTimings !.easing;
 
     ast.steps.forEach((step: AnimationStyleMetadata, i: number) => {
       const normalizedStyles = normalizeStyles(step.styles);
@@ -311,21 +311,20 @@ export class AnimationTimelineVisitor implements AnimationDslVisitor {
 
 export class TimelineBuilder {
   public duration: number = 0;
-  public easing: string = '';
-
+  public easing: string|null = '';
   private _previousKeyframe: ɵStyleData = {};
   private _currentKeyframe: ɵStyleData;
   private _keyframes = new Map<number, ɵStyleData>();
   private _styleSummary: {[prop: string]: StyleAtTime} = {};
   private _localTimelineStyles: ɵStyleData;
   private _backFill: ɵStyleData = {};
-  private _currentEmptyStepKeyframe: ɵStyleData = null;
+  private _currentEmptyStepKeyframe: ɵStyleData|null = null;
+  private _globalTimelineStyles: ɵStyleData;
 
-  constructor(public startTime: number, private _globalTimelineStyles: ɵStyleData = null) {
+  constructor(public startTime: number, globalTimelineStyles?: ɵStyleData) {
     this._localTimelineStyles = Object.create(this._backFill, {});
-    if (!this._globalTimelineStyles) {
-      this._globalTimelineStyles = this._localTimelineStyles;
-    }
+    this._globalTimelineStyles =
+        globalTimelineStyles ? globalTimelineStyles : this._localTimelineStyles;
     this._loadKeyframe();
   }
 
@@ -341,7 +340,7 @@ export class TimelineBuilder {
     if (this._currentKeyframe) {
       this._previousKeyframe = this._currentKeyframe;
     }
-    this._currentKeyframe = this._keyframes.get(this.duration);
+    this._currentKeyframe = this._keyframes.get(this.duration) !;
     if (!this._currentKeyframe) {
       this._currentKeyframe = Object.create(this._backFill, {});
       this._keyframes.set(this.duration, this._currentKeyframe);
@@ -360,15 +359,15 @@ export class TimelineBuilder {
 
   private _updateStyle(prop: string, value: string|number) {
     this._localTimelineStyles[prop] = value;
-    this._globalTimelineStyles[prop] = value;
+    this._globalTimelineStyles ![prop] = value;
     this._styleSummary[prop] = {time: this.currentTime, value};
   }
 
   allowOnlyTimelineStyles() { return this._currentEmptyStepKeyframe !== this._currentKeyframe; }
 
-  setStyles(styles: ɵStyleData, easing: string = null, treatAsEmptyStep: boolean = false) {
+  setStyles(styles: ɵStyleData, easing: string|null = null, treatAsEmptyStep: boolean = false) {
     if (easing) {
-      this._previousKeyframe['easing'] = easing;
+      this._previousKeyframe !['easing'] = easing;
     }
 
     if (treatAsEmptyStep) {
@@ -405,7 +404,7 @@ export class TimelineBuilder {
 
   snapshotCurrentStyles() { copyStyles(this._localTimelineStyles, false, this._currentKeyframe); }
 
-  getFinalKeyframe() { return this._keyframes.get(this.duration); }
+  getFinalKeyframe(): ɵStyleData { return this._keyframes.get(this.duration) !; }
 
   get properties() {
     const properties: string[] = [];
@@ -467,5 +466,5 @@ function getOffset(ast: AnimationStyleMetadata): number {
       offset = styles['offset'] as number;
     }
   }
-  return offset;
+  return offset !;
 }
