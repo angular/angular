@@ -1710,7 +1710,12 @@ describe('Integration', () => {
               provide: 'alwaysFalseWithDelayAndLogging',
               useValue: () => {
                 log.push('called');
-                return delay.call(of (false), 5);
+                let resolve: (result: boolean) => void;
+                const promise = new Promise(res => resolve = res);
+
+                setTimeout(() => resolve(false), 0);
+
+                return promise;
               }
             },
             {
