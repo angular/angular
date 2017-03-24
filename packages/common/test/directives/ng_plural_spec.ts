@@ -22,7 +22,7 @@ export function main() {
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null !; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -153,7 +153,7 @@ class TestLocalization extends NgLocalization {
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
-  switchValue: number = null;
+  switchValue: number|null = null;
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

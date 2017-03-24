@@ -11,19 +11,19 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
 export function main() {
   describe('binding to CSS class list', () => {
-    let fixture: ComponentFixture<any>;
+    let fixture: ComponentFixture<any>|null;
 
     function normalizeClassNames(classes: string) {
       return classes.trim().split(' ').sort().join(' ');
     }
 
     function detectChangesAndExpectClassName(classes: string): void {
-      fixture.detectChanges();
-      let nonNormalizedClassName = fixture.debugElement.children[0].nativeElement.className;
+      fixture !.detectChanges();
+      let nonNormalizedClassName = fixture !.debugElement.children[0].nativeElement.className;
       expect(normalizeClassNames(nonNormalizedClassName)).toEqual(normalizeClassNames(classes));
     }
 
-    function getComponent(): TestComponent { return fixture.debugElement.componentInstance; }
+    function getComponent(): TestComponent { return fixture !.debugElement.componentInstance; }
 
     afterEach(() => { fixture = null; });
 
@@ -74,13 +74,13 @@ export function main() {
 
            detectChangesAndExpectClassName('foo');
 
-           objExpr['bar'] = true;
+           objExpr !['bar'] = true;
            detectChangesAndExpectClassName('foo bar');
 
-           objExpr['baz'] = true;
+           objExpr !['baz'] = true;
            detectChangesAndExpectClassName('foo bar baz');
 
-           delete (objExpr['bar']);
+           delete (objExpr !['bar']);
            detectChangesAndExpectClassName('foo baz');
          }));
 
@@ -194,7 +194,7 @@ export function main() {
 
       it('should throw with descriptive error message when CSS class is not a string', () => {
         fixture = createTestComponent(`<div [ngClass]="['foo', {}]"></div>`);
-        expect(() => fixture.detectChanges())
+        expect(() => fixture !.detectChanges())
             .toThrowError(
                 /NgClass can only toggle CSS classes expressed as strings, got \[object Object\]/);
       });
@@ -266,10 +266,10 @@ export function main() {
            fixture = createTestComponent('<div [ngClass]="objExpr" class="init foo"></div>');
            const objExpr = getComponent().objExpr;
 
-           objExpr['bar'] = true;
+           objExpr !['bar'] = true;
            detectChangesAndExpectClassName('init foo bar');
 
-           objExpr['foo'] = false;
+           objExpr !['foo'] = false;
            detectChangesAndExpectClassName('init bar');
 
            getComponent().objExpr = null;
@@ -280,10 +280,10 @@ export function main() {
            fixture = createTestComponent(`<div [ngClass]="objExpr" class="{{'init foo'}}"></div>`);
            const objExpr = getComponent().objExpr;
 
-           objExpr['bar'] = true;
+           objExpr !['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
 
-           objExpr['foo'] = false;
+           objExpr !['foo'] = false;
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
@@ -295,10 +295,10 @@ export function main() {
                createTestComponent(`<div [ngClass]="objExpr" class="init" [class]="'foo'"></div>`);
            const objExpr = getComponent().objExpr;
 
-           objExpr['bar'] = true;
+           objExpr !['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
 
-           objExpr['foo'] = false;
+           objExpr !['foo'] = false;
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
@@ -313,10 +313,10 @@ export function main() {
 
            detectChangesAndExpectClassName('init foo baz');
 
-           objExpr['bar'] = true;
+           objExpr !['bar'] = true;
            detectChangesAndExpectClassName('init foo baz bar');
 
-           objExpr['foo'] = false;
+           objExpr !['foo'] = false;
            detectChangesAndExpectClassName('init baz bar');
 
            getComponent().condition = false;
@@ -331,7 +331,7 @@ export function main() {
 
            detectChangesAndExpectClassName('init foo');
 
-           cmp.objExpr['bar'] = true;
+           cmp.objExpr !['bar'] = true;
            detectChangesAndExpectClassName('init foo bar');
 
            cmp.strExpr = 'baz';
@@ -350,8 +350,8 @@ class TestComponent {
   items: any[];
   arrExpr: string[] = ['foo'];
   setExpr: Set<string> = new Set<string>();
-  objExpr: {[klass: string]: any} = {'foo': true, 'bar': false};
-  strExpr = 'foo';
+  objExpr: {[klass: string]: any}|null = {'foo': true, 'bar': false};
+  strExpr: string|null = 'foo';
 
   constructor() { this.setExpr.add('foo'); }
 }

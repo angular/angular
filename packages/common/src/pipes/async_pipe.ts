@@ -67,12 +67,12 @@ const _observableStrategy = new ObservableStrategy();
  */
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
-  private _latestValue: Object = null;
-  private _latestReturnedValue: Object = null;
+  private _latestValue: Object|null = null;
+  private _latestReturnedValue: Object|null = null;
 
-  private _subscription: Object = null;
-  private _obj: Observable<any>|Promise<any>|EventEmitter<any> = null;
-  private _strategy: SubscriptionStrategy = null;
+  private _subscription: Object|null = null;
+  private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
+  private _strategy: SubscriptionStrategy|null = null;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -82,10 +82,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: Observable<T>): T|null;
-  transform<T>(obj: Promise<T>): T|null;
-  transform<T>(obj: EventEmitter<T>): T|null;
-  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
+  transform<T>(obj: Observable<T>|null|undefined): T|null|undefined;
+  transform<T>(obj: Promise<T>|null|undefined): T|null|undefined;
+  transform<T>(obj: EventEmitter<T>|null|undefined): T|null|undefined;
+  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>|null|undefined): any {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
@@ -110,7 +110,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription = this._strategy.createSubscription(
+    this._subscription = this._strategy !.createSubscription(
         obj, (value: Object) => this._updateLatestValue(obj, value));
   }
 
@@ -127,7 +127,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _dispose(): void {
-    this._strategy.dispose(this._subscription);
+    this._strategy !.dispose(this._subscription);
     this._latestValue = null;
     this._latestReturnedValue = null;
     this._subscription = null;

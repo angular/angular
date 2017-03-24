@@ -61,7 +61,7 @@ export class NgStyle implements DoCheck {
     changes.forEachChangedItem((record) => this._setStyle(record.key, record.currentValue));
   }
 
-  private _setStyle(nameAndUnit: string, value: string|number): void {
+  private _setStyle(nameAndUnit: string, value: string|number|null|undefined): void {
     const [name, unit] = nameAndUnit.split('.');
     value = value != null && unit ? `${value}${unit}` : value;
 

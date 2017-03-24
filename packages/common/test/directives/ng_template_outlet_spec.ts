@@ -22,7 +22,7 @@ export function main() {
       expect(fixture.debugElement.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null as any; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -61,7 +61,7 @@ export function main() {
              `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
-         const refs = fixture.debugElement.children[0].references['refs'];
+         const refs = fixture.debugElement.children[0].references !['refs'];
 
          setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');
@@ -77,7 +77,7 @@ export function main() {
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
-         const refs = fixture.debugElement.children[0].references['refs'];
+         const refs = fixture.debugElement.children[0].references !['refs'];
 
          setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');

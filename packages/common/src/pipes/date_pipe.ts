@@ -100,7 +100,7 @@ export class DatePipe implements PipeTransform {
 
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, pattern: string = 'mediumDate'): string {
+  transform(value: any, pattern: string = 'mediumDate'): string|null {
     let date: Date;
 
     if (isBlank(value) || value !== value) return null;
@@ -131,7 +131,7 @@ export class DatePipe implements PipeTransform {
 
     if (!isDate(date)) {
       let match: RegExpMatchArray;
-      if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX))) {
+      if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX) !)) {
         date = isoStringToDate(match);
       } else {
         throw invalidPipeArgumentError(DatePipe, value);

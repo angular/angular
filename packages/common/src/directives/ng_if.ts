@@ -102,10 +102,10 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
 @Directive({selector: '[ngIf]'})
 export class NgIf {
   private _context: NgIfContext = new NgIfContext();
-  private _thenTemplateRef: TemplateRef<NgIfContext> = null;
-  private _elseTemplateRef: TemplateRef<NgIfContext> = null;
-  private _thenViewRef: EmbeddedViewRef<NgIfContext> = null;
-  private _elseViewRef: EmbeddedViewRef<NgIfContext> = null;
+  private _thenTemplateRef: TemplateRef<NgIfContext>|null = null;
+  private _elseTemplateRef: TemplateRef<NgIfContext>|null = null;
+  private _thenViewRef: EmbeddedViewRef<NgIfContext>|null = null;
+  private _elseViewRef: EmbeddedViewRef<NgIfContext>|null = null;
 
   constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>) {
     this._thenTemplateRef = templateRef;
