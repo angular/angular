@@ -2205,7 +2205,10 @@ describe('Integration', () => {
             },
             {
               provide: 'canDeactivate_false',
-              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_false'), false),
+              useFactory: (logger: Logger) => () => {
+                logger.add('canDeactivate_false');
+                return false;
+              },
               deps: [Logger]
             },
           ]
