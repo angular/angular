@@ -17,13 +17,16 @@ export class Pane {
 @Component({
   selector: 'tab',
   template: `
-    <div>panes: {{serializedPanes}}</div> 
+    <div>panes: {{serializedPanes}}</div>
+    <div>allPanes: {{serializedAllPanes}}</div>
   `
 })
 export class Tab {
   @ContentChildren(Pane) panes: QueryList<Pane>;
+  @ContentChildren(Pane, { descendants: true }) allPanes: QueryList<Pane>;
 
   get serializedPanes(): string { return this.panes ? this.panes.map(p => p.id).join(', ') : ''; }
+  get serializedAllPanes(): string { return this.allPanes ? this.allPanes.map(p => p.id).join(', ') : ''; }
 }
 
 @Component({
@@ -32,7 +35,12 @@ export class Tab {
     <tab>
       <pane id="1"></pane>
       <pane id="2"></pane>
-      <pane id="3" *ngIf="shouldShow"></pane>
+      <pane id="3" *ngIf="shouldShow">
+        <tab>
+          <pane id="3_1"></pane>
+          <pane id="3_2"></pane>
+        </tab>
+      </pane>
     </tab>
     
     <button (click)="show()">Show 3</button>
