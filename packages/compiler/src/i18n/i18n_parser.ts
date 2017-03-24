@@ -161,8 +161,9 @@ class _I18nVisitor implements html.Visitor {
   }
 }
 
-const _CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
+const _CUSTOM_PH_EXP =
+    /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
 
 function _extractPlaceholderName(input: string): string {
-  return input.split(_CUSTOM_PH_EXP)[1];
+  return input.split(_CUSTOM_PH_EXP)[2];
 }
