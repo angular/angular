@@ -26,16 +26,16 @@ function unimplemented(): any {
  */
 export abstract class NgControl extends AbstractControlDirective {
   /** @internal */
-  _parent: ControlContainer = null;
-  name: string = null;
-  valueAccessor: ControlValueAccessor = null;
+  _parent: ControlContainer|null = null;
+  name: string|null = null;
+  valueAccessor: ControlValueAccessor|null = null;
   /** @internal */
   _rawValidators: Array<Validator|ValidatorFn> = [];
   /** @internal */
   _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
 
-  get validator(): ValidatorFn { return <ValidatorFn>unimplemented(); }
-  get asyncValidator(): AsyncValidatorFn { return <AsyncValidatorFn>unimplemented(); }
+  get validator(): ValidatorFn|null { return <ValidatorFn>unimplemented(); }
+  get asyncValidator(): AsyncValidatorFn|null { return <AsyncValidatorFn>unimplemented(); }
 
   abstract viewToModelUpdate(newValue: any): void;
 }
