@@ -20,10 +20,10 @@ import {Subscriber} from 'rxjs/Subscriber';
   </div>`
 })
 export class AsyncPromisePipeComponent {
-  greeting: Promise<string> = null;
+  greeting: Promise<string>|null = null;
   arrived: boolean = false;
 
-  private resolve: Function = null;
+  private resolve: Function|null = null;
 
   constructor() { this.reset(); }
 
@@ -36,7 +36,7 @@ export class AsyncPromisePipeComponent {
     if (this.arrived) {
       this.reset();
     } else {
-      this.resolve('hi there!');
+      this.resolve !('hi there!');
       this.arrived = true;
     }
   }

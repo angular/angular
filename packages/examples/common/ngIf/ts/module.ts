@@ -57,13 +57,13 @@ class NgIfElse {
 `
 })
 class NgIfThenElse implements OnInit {
-  thenBlock: TemplateRef<any> = null;
+  thenBlock: TemplateRef<any>|null = null;
   show: boolean = true;
 
   @ViewChild('primaryBlock')
-  primaryBlock: TemplateRef<any> = null;
+  primaryBlock: TemplateRef<any>|null = null;
   @ViewChild('secondaryBlock')
-  secondaryBlock: TemplateRef<any> = null;
+  secondaryBlock: TemplateRef<any>|null = null;
 
   switchPrimary() {
     this.thenBlock = this.thenBlock === this.primaryBlock ? this.secondaryBlock : this.primaryBlock;
