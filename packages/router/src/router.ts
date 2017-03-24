@@ -790,8 +790,8 @@ export class PreActivation {
 
   checkGuards(): Observable<boolean> {
     if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) return of (true);
-    const checks$ = concatAll.call(concat(this.canDeactivateChecks, this.canActivateChecks));
-    return every.call(checks$, (result: boolean) => result === true);
+    const canDeactivate$ = this.runCanDeactivateChecks();
+    return mergeMap.call(canDeactivate$, (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
   }
 
   resolveData(): Observable<any> {
@@ -904,6 +904,18 @@ export class PreActivation {
       // this.checks.push(new CanDeactivate(null, r));
       this.canDeactivateChecks.push(new CanDeactivate(null, r));
     }
+  }
+
+  private runCanDeactivateChecks(): Observable<boolean> {
+    const checks$ = from(this.canDeactivateChecks);
+    const runningChecks$ = mergeMap.call(checks$, (check: CanDeactivate) => this.runCanDeactivate(check.component, check.route));
+    return every.call(runningChecks$, (result: boolean) => result === true);
+  }
+
+  private runCanActivateChecks(): Observable<boolean> {
+    const checks$ = from(this.canActivateChecks);
+    const runningChecks$ = mergeMap.call(checks$, (check: CanActivate) => andObservables(from([this.runCanActivateChild(check.path), this.runCanActivate(check.route)])));
+    return every.call(runningChecks$, (result: boolean) => result === true);
   }
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
