@@ -52,7 +52,7 @@ export function main() {
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('foo');
          expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-         expect(fixture.componentInstance.cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+         expect(fixture.componentInstance.cmpRef !.instance).toBeAnInstanceOf(InjectedComponent);
        }));
 
 
@@ -100,7 +100,7 @@ export function main() {
              [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
          fixture.detectChanges();
-         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef;
+         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
          expect(cmpRef).toBeAnInstanceOf(ComponentRef);
          expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
          expect(cmpRef.instance.testToken).toBe(uniqueValue);
@@ -113,7 +113,7 @@ export function main() {
          fixture.componentInstance.cmpRef = null;
          fixture.componentInstance.currentComponent = InjectedComponent;
          fixture.detectChanges();
-         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef;
+         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
          expect(cmpRef).toBeAnInstanceOf(ComponentRef);
          expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
          expect(cmpRef.instance.testToken).toBeNull();
@@ -169,9 +169,9 @@ export function main() {
          const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
          spyOn(moduleRef, 'destroy').and.callThrough();
 
-         expect(moduleRef.destroy).not.toHaveBeenCalled();
+         expect(moduleRef !.destroy).not.toHaveBeenCalled();
          fixture.destroy();
-         expect(moduleRef.destroy).toHaveBeenCalled();
+         expect(moduleRef !.destroy).toHaveBeenCalled();
        }));
 
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {
@@ -224,13 +224,13 @@ const TEST_CMP_TEMPLATE =
     `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
-  currentComponent: Type<any>;
+  currentComponent: Type<any>|null;
   injector: Injector;
   projectables: any[][];
   module: NgModuleFactory<any>;
 
-  get cmpRef(): ComponentRef<any> { return this.ngComponentOutlet['_componentRef']; }
-  set cmpRef(value: ComponentRef<any>) { this.ngComponentOutlet['_componentRef'] = value; }
+  get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
+  set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
 
   @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
   @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;

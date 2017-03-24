@@ -128,8 +128,8 @@ export class Location {
    * Subscribe to the platform's `popState` events.
    */
   subscribe(
-      onNext: (value: PopStateEvent) => void, onThrow: (exception: any) => void = null,
-      onReturn: () => void = null): Object {
+      onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
+      onReturn?: (() => void)|null): Object {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 

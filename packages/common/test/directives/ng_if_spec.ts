@@ -19,7 +19,7 @@ export function main() {
 
     function getComponent(): TestComponent { return fixture.componentInstance; }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null !; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({

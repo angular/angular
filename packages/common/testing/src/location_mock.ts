@@ -25,7 +25,7 @@ export class SpyLocation implements Location {
   /** @internal */
   _baseHref: string = '';
   /** @internal */
-  _platformStrategy: LocationStrategy = null;
+  _platformStrategy: LocationStrategy = null !;
 
   setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
 
@@ -106,12 +106,12 @@ export class SpyLocation implements Location {
   }
 
   subscribe(
-      onNext: (value: any) => void, onThrow: (error: any) => void = null,
-      onReturn: () => void = null): Object {
+      onNext: (value: any) => void, onThrow?: ((error: any) => void)|null,
+      onReturn?: (() => void)|null): Object {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
-  normalize(url: string): string { return null; }
+  normalize(url: string): string { return null !; }
 }
 
 class LocationState {

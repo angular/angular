@@ -114,7 +114,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  private _differ: IterableDiffer<T> = null;
+  private _differ: IterableDiffer<T>|null = null;
   private _trackByFn: TrackByFunction<T>;
 
   constructor(
@@ -159,13 +159,13 @@ export class NgForOf<T> implements DoCheck, OnChanges {
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext(null, this.ngForOf, null, null), currentIndex);
-            const tuple = new RecordViewTuple(item, view);
+                this._template, new NgForOfContext<T>(null !, this.ngForOf, -1, -1), currentIndex);
+            const tuple = new RecordViewTuple<T>(item, view);
             insertTuples.push(tuple);
           } else if (currentIndex == null) {
             this._viewContainer.remove(adjustedPreviousIndex);
           } else {
-            const view = this._viewContainer.get(adjustedPreviousIndex);
+            const view = this._viewContainer.get(adjustedPreviousIndex) !;
             this._viewContainer.move(view, currentIndex);
             const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T>>>view);
             insertTuples.push(tuple);

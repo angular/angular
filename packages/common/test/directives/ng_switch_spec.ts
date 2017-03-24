@@ -22,7 +22,7 @@ export function main() {
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null !; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({

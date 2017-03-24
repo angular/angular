@@ -20,7 +20,7 @@ export function main() {
       return expect(fixture.debugElement.children[0].nativeElement);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => { fixture = null !; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});

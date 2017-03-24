@@ -5,9 +5,10 @@ export declare const APP_BASE_HREF: InjectionToken<string>;
 export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
-    transform<T>(obj: EventEmitter<T>): T | null;
     transform<T>(obj: Promise<T>): T | null;
     transform<T>(obj: Observable<T>): T | null;
+    transform<T>(obj: undefined): undefined;
+    transform<T>(obj: null): null;
 }
 
 /** @stable */
@@ -17,19 +18,19 @@ export declare class CommonModule {
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string;
+    transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string | null;
 }
 
 /** @stable */
 export declare class DatePipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, pattern?: string): string;
+    transform(value: any, pattern?: string): string | null;
 }
 
 /** @stable */
 export declare class DecimalPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digits?: string): string;
+    transform(value: any, digits?: string): string | null;
 }
 
 /** @stable */
@@ -55,7 +56,7 @@ export declare class I18nPluralPipe implements PipeTransform {
 
 /** @experimental */
 export declare class I18nSelectPipe implements PipeTransform {
-    transform(value: string, mapping: {
+    transform(value: string | null | undefined, mapping: {
         [key: string]: string;
     }): string;
 }
@@ -88,7 +89,7 @@ export declare class Location {
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string): void;
-    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
+    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): Object;
     static joinWithSlash(start: string, end: string): string;
     static normalizeQueryParams(params: string): string;
     static stripTrailingSlash(url: string): string;
@@ -261,14 +262,14 @@ export declare class PathLocationStrategy extends LocationStrategy {
 /** @stable */
 export declare class PercentPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digits?: string): string;
+    transform(value: any, digits?: string): string | null;
 }
 
 /** @stable */
 export declare abstract class PlatformLocation {
-    readonly hash: string;
-    readonly pathname: string;
-    readonly search: string;
+    readonly abstract hash: string;
+    readonly abstract pathname: string;
+    readonly abstract search: string;
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;

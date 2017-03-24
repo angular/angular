@@ -197,7 +197,7 @@ export function main() {
          () => expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual('Jan 20, 2017'));
 
       it('should remove bidi control characters',
-         () => expect(pipe.transform(date, 'MM/dd/yyyy').length).toEqual(10));
+         () => expect(pipe.transform(date, 'MM/dd/yyyy') !.length).toEqual(10));
     });
   });
 }

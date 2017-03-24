@@ -51,8 +51,8 @@ export function main() {
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          expect(normalize(pipe.transform(1.23))).toEqual('123%');
-          expect(normalize(pipe.transform(1.2, '.2'))).toEqual('120.00%');
+          expect(normalize(pipe.transform(1.23) !)).toEqual('123%');
+          expect(normalize(pipe.transform(1.2, '.2') !)).toEqual('120.00%');
         });
 
         it('should not support other objects',
@@ -69,12 +69,12 @@ export function main() {
         it('should return correct value for numbers', () => {
           // In old Chrome, default formatiing for USD is different
           if (browserDetection.isOldChrome) {
-            expect(normalize(pipe.transform(123))).toEqual('USD123');
+            expect(normalize(pipe.transform(123) !)).toEqual('USD123');
           } else {
-            expect(normalize(pipe.transform(123))).toEqual('USD123.00');
+            expect(normalize(pipe.transform(123) !)).toEqual('USD123.00');
           }
-          expect(normalize(pipe.transform(12, 'EUR', false, '.1'))).toEqual('EUR12.0');
-          expect(normalize(pipe.transform(5.1234, 'USD', false, '.0-3'))).toEqual('USD5.123');
+          expect(normalize(pipe.transform(12, 'EUR', false, '.1') !)).toEqual('EUR12.0');
+          expect(normalize(pipe.transform(5.1234, 'USD', false, '.0-3') !)).toEqual('USD5.123');
         });
 
         it('should not support other objects',

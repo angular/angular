@@ -73,8 +73,8 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
   @Input() ngComponentOutletContent: any[][];
   @Input() ngComponentOutletNgModuleFactory: NgModuleFactory<any>;
 
-  private _componentRef: ComponentRef<any> = null;
-  private _moduleRef: NgModuleRef<any> = null;
+  private _componentRef: ComponentRef<any>|null = null;
+  private _moduleRef: NgModuleRef<any>|null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
