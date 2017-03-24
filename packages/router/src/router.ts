@@ -20,7 +20,7 @@ import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
-import {mergeAll} from 'rxjs/operator/mergeAll';
+import {concatAll} from 'rxjs/operator/concatAll';
 
 import {applyRedirects} from './apply_redirects';
 import {QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
@@ -790,7 +790,7 @@ export class PreActivation {
 
   checkGuards(): Observable<boolean> {
     if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) return of (true);
-    const checks$ = mergeAll.call(concat(this.canDeactivateChecks, this.canActivateChecks));
+    const checks$ = concatAll.call(concat(this.canDeactivateChecks, this.canActivateChecks));
     return every.call(checks$, (result: boolean) => result === true);
   }
 
