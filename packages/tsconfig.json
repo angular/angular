@@ -9,6 +9,7 @@
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
