@@ -37,7 +37,7 @@
     "@angular/platform-browser-dynamic": "next",
     "@angular/platform-server": "next",
     "@angular/router": "next",
-    "@angular/service-worker": "^1.0.0-beta.7",
+    "@angular/service-worker": "^1.0.0-beta.8",
     "core-js": "^2.4.1",
     "rho": "https://github.com/petebacondarwin/rho#heading-fix",
     "rxjs": "^5.2.0",
