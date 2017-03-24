@@ -891,7 +891,9 @@ export declare abstract class RootRenderer {
 
 /** @stable */
 export declare abstract class Sanitizer {
-    abstract sanitize(context: SecurityContext, value: string): string;
+    abstract sanitize(context: SecurityContext, value: null): null;
+    abstract sanitize(context: SecurityContext, value: {} | string): string;
+    abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
 }
 
 /** @experimental */

@@ -47,7 +47,7 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
  */
 export abstract class ServiceMessageBroker {
   abstract registerMethod(
-      methodName: string, signature: Array<Type<any>|SerializerTypes>, method: Function,
+      methodName: string, signature: Array<Type<any>|SerializerTypes>|null, method: Function,
       returnType?: Type<any>|SerializerTypes): void;
 }
 
@@ -83,7 +83,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method)(message);
+      this._methods.get(message.method) !(message);
     }
   }
 

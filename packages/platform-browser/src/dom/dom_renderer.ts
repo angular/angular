@@ -67,7 +67,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   };
 
-  createRenderer(element: any, type: RendererType2): Renderer2 {
+  createRenderer(element: any, type: RendererType2|null): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }

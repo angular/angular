@@ -45,7 +45,7 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
   }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc); }
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
 
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
