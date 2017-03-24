@@ -40,9 +40,9 @@ export class ZoneMacroTaskConnection implements Connection {
   constructor(public request: Request, backend: XHRBackend) {
     validateRequestUrl(request.url);
     this.response = new Observable((observer: Observer<Response>) => {
-      let task: Task = null;
+      let task: Task = null !;
       let scheduled: boolean = false;
-      let sub: Subscription = null;
+      let sub: Subscription|null = null;
       let savedResult: any = null;
       let savedError: any = null;
 

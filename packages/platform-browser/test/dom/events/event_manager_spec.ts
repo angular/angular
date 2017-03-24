@@ -51,7 +51,7 @@ export function main() {
       const element = el('<div></div>');
       const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
       const manager = new EventManager([plugin], new FakeNgZone());
-      expect(() => manager.addEventListener(element, 'click', null))
+      expect(() => manager.addEventListener(element, 'click', null !))
           .toThrowError('No event manager plugin found for event click');
     });
 

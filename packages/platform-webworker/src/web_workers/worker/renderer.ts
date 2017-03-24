@@ -67,7 +67,7 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
-  createRenderer(element: any, type: RendererType2): Renderer2 {
+  createRenderer(element: any, type: RendererType2|null): Renderer2 {
     const renderer = new WebWorkerRenderer2(this);
 
     const id = this.renderStore.allocateId();
@@ -277,9 +277,9 @@ export class WebWorkerRenderer2 implements Renderer2 {
       listener: (event: any) => boolean): () => void {
     const unlistenId = this._rendererFactory.allocateId();
 
-    const [targetEl, targetName, fullName]: [any, string, string] = typeof target === 'string' ?
-        [null, target, `${target}:${eventName}`] :
-        [target, null, null];
+    const [targetEl, targetName, fullName]: [any, string | null, string | null] =
+        typeof target === 'string' ? [null, target, `${target}:${eventName}`] :
+                                     [target, null, null];
 
     if (fullName) {
       this._rendererFactory.globalEvents.listen(fullName, listener);

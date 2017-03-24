@@ -14,7 +14,7 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
 export function main() {
   describe('HTML sanitizer', () => {
     let defaultDoc: any;
-    let originalLog: (msg: any) => any = null;
+    let originalLog: (msg: any) => any = null !;
     let logMsgs: string[];
 
     beforeEach(() => {

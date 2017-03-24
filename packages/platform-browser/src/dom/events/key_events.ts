@@ -31,7 +31,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    const parsedEvent = KeyEventsPlugin.parseEventName(eventName);
+    const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
 
     const outsideHandler =
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
@@ -41,7 +41,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): {[key: string]: string} {
+  static parseEventName(eventName: string): {[key: string]: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -49,7 +49,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const key = KeyEventsPlugin._normalizeKey(parts.pop());
+    const key = KeyEventsPlugin._normalizeKey(parts.pop() !);
 
     let fullKey = '';
     MODIFIER_KEYS.forEach(modifierName => {

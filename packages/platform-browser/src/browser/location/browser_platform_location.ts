@@ -40,7 +40,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   get location(): Location { return this._location; }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc); }
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
 
   onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);

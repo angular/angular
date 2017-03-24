@@ -12,7 +12,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 export function main() {
   describe('NoopAnimationEngine', () => {
     let captures: string[] = [];
-    function capture(value: string = null) { return (v: any = null) => captures.push(value || v); }
+    function capture(value?: string) { return (v: any = null) => captures.push(value || v); }
 
     beforeEach(() => { captures = []; });
 

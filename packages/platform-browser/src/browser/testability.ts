@@ -49,7 +49,7 @@ export class BrowserGetTestability implements GetTestability {
   }
 
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability {
+      Testability|null {
     if (elem == null) {
       return null;
     }

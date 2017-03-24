@@ -34,5 +34,7 @@ export class RenderStore {
     return this._lookupById.has(id) ? this._lookupById.get(id) : null;
   }
 
-  serialize(obj: any): number { return obj == null ? null : this._lookupByObject.get(obj); }
+  serialize(obj: any): number|null|undefined {
+    return obj == null ? null : this._lookupByObject.get(obj);
+  }
 }

@@ -29,7 +29,7 @@ export function main() {
     function makeRenderer(animationTriggers: any[] = []) {
       const type = <RendererType2>{
         id: 'id',
-        encapsulation: null,
+        encapsulation: null !,
         styles: [],
         data: {'animation': animationTriggers}
       };

@@ -17,8 +17,8 @@ import {DomAdapter} from '../dom/dom_adapter';
  * can introduce XSS risks.
  */
 export abstract class GenericBrowserDomAdapter extends DomAdapter {
-  private _animationPrefix: string = null;
-  private _transitionEnd: string = null;
+  private _animationPrefix: string|null = null;
+  private _transitionEnd: string|null = null;
   constructor() {
     super();
     try {
