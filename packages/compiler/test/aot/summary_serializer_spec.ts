@@ -95,7 +95,7 @@ export function main() {
         members: {aMethod: {__symbolic: 'function'}},
         statics: {aStatic: true}
       });
-      expect(summaries[1].type.type.reference)
+      expect(summaries[1].type !.type.reference)
           .toBe(symbolCache.get('/tmp/some_service.d.ts', 'SomeService'));
     });
 
@@ -203,7 +203,7 @@ export function main() {
          expect(summaries[2].metadata).toEqual('b');
          // SomService is a transitive dep, but should have been serialized as well.
          expect(summaries[3].symbol).toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
-         expect(summaries[3].type.type.reference)
+         expect(summaries[3].type !.type.reference)
              .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
        });
 

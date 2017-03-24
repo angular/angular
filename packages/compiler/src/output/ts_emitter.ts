@@ -20,7 +20,7 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
     string {
   const converter = new _TsEmitterVisitor(_debugFilePath, {
     fileNameToModuleName(filePath: string, containingFilePath: string) { return filePath; },
-    getImportAs(symbol: StaticSymbol) { return null; },
+    getImportAs(symbol: StaticSymbol | null) { return null; },
     getTypeArity: symbol => null
   });
   const ctx = EmitterVisitorContext.createRoot([]);
@@ -89,8 +89,8 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   importsWithPrefixes = new Map<string, string>();
   reexports = new Map<string, {name: string, as: string}[]>();
 
-  visitType(t: o.Type, ctx: EmitterVisitorContext, defaultType: string = 'any') {
-    if (t != null) {
+  visitType(t: o.Type|null, ctx: EmitterVisitorContext, defaultType: string = 'any') {
+    if (t) {
       this.typeExpression++;
       t.visitType(this, ctx);
       this.typeExpression--;
@@ -133,7 +133,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     if (ctx.isExportedVar(stmt.name) && stmt.value instanceof o.ExternalExpr && !stmt.type) {
       // check for a reexport
       const {name, filePath, members} = this._resolveStaticSymbol(stmt.value.value);
-      if (members.length === 0 && filePath !== this._genFilePath) {
+      if (members !.length === 0 && filePath !== this._genFilePath) {
         let reexports = this.reexports.get(filePath);
         if (!reexports) {
           reexports = [];
@@ -161,7 +161,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `(<`);
-    ast.type.visitType(this, ctx);
+    ast.type !.visitType(this, ctx);
     ctx.print(ast, `>`);
     ast.value.visitExpression(this, ctx);
     ctx.print(ast, `)`);
@@ -290,7 +290,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(stmt, `} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
     const catchStmts =
-        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
+        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack', null)).toDeclStmt(null, [
           o.StmtModifier.Final
         ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
@@ -386,7 +386,8 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   private _visitIdentifier(
-      value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
+      value: CompileIdentifierMetadata, typeParams: o.Type[]|null,
+      ctx: EmitterVisitorContext): void {
     const {name, filePath, members, arity} = this._resolveStaticSymbol(value);
     if (filePath != this._genFilePath) {
       let prefix = this.importsWithPrefixes.get(filePath);
@@ -396,10 +397,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       }
       ctx.print(null, `${prefix}.`);
     }
-    if (members.length) {
+    if (members !.length) {
       ctx.print(null, name);
       ctx.print(null, '.');
-      ctx.print(null, members.join('.'));
+      ctx.print(null, members !.join('.'));
     } else {
       ctx.print(null, name);
     }
@@ -415,7 +416,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       if (suppliedParameters > 0 || additionalParameters > 0) {
         ctx.print(null, `<`);
         if (suppliedParameters > 0) {
-          this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
+          this.visitAllObjects(type => type.visitType(this, ctx), typeParams !, ctx, ',');
         }
         if (additionalParameters > 0) {
           for (let i = 0; i < additionalParameters; i++) {
@@ -428,7 +429,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
   }
 
-  private _printColonType(type: o.Type, ctx: EmitterVisitorContext, defaultType?: string) {
+  private _printColonType(type: o.Type|null, ctx: EmitterVisitorContext, defaultType?: string) {
     if (type !== o.INFERRED_TYPE) {
       ctx.print(null, ':');
       this.visitType(type, ctx, defaultType);

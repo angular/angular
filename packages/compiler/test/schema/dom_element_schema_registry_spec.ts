@@ -185,7 +185,8 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
         let schema = '\n';
-        extractSchema().forEach((props, name) => { schema += `'${name}|${props.join(',')}',\n`; });
+        extractSchema() !.forEach(
+            (props, name) => { schema += `'${name}|${props.join(',')}',\n`; });
         // Uncomment this line to see:
         // the generated schema which can then be pasted to the DomElementSchemaRegistry
         // console.log(schema);

@@ -4,6 +4,7 @@
     "declaration": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "module": "commonjs",
     "outDir": "../../dist/packages/compiler-cli",
     "paths": {

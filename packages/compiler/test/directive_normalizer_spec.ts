@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CompileAnimationEntryMetadata} from '@angular/compiler';
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
@@ -15,10 +16,136 @@ import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
+import {SyncAsyncResult, noUndefined} from '../src/util';
+
 import {SpyResourceLoader} from './spies';
 
 const SOME_MODULE_URL = 'package:some/module/a.js';
 const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';
+
+function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
+  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+  templateUrl?: string | null;
+  styles?: string[];
+  styleUrls?: string[];
+  interpolation?: [string, string] | null;
+  encapsulation?: ViewEncapsulation | null;
+  animations?: CompileAnimationEntryMetadata[];
+}) {
+  return normalizer.normalizeTemplate({
+    ngModuleType: noUndefined(o.ngModuleType),
+    componentType: noUndefined(o.componentType),
+    moduleUrl: noUndefined(o.moduleUrl),
+    template: noUndefined(o.template),
+    templateUrl: noUndefined(o.templateUrl),
+    styles: noUndefined(o.styles),
+    styleUrls: noUndefined(o.styleUrls),
+    interpolation: noUndefined(o.interpolation),
+    encapsulation: noUndefined(o.encapsulation),
+    animations: noUndefined(o.animations)
+  });
+}
+
+function normalizeTemplateAsync(normalizer: DirectiveNormalizer, o: {
+  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+  templateUrl?: string | null;
+  styles?: string[];
+  styleUrls?: string[];
+  interpolation?: [string, string] | null;
+  encapsulation?: ViewEncapsulation | null;
+  animations?: CompileAnimationEntryMetadata[];
+}) {
+  return normalizer.normalizeTemplateAsync({
+    ngModuleType: noUndefined(o.ngModuleType),
+    componentType: noUndefined(o.componentType),
+    moduleUrl: noUndefined(o.moduleUrl),
+    template: noUndefined(o.template),
+    templateUrl: noUndefined(o.templateUrl),
+    styles: noUndefined(o.styles),
+    styleUrls: noUndefined(o.styleUrls),
+    interpolation: noUndefined(o.interpolation),
+    encapsulation: noUndefined(o.encapsulation),
+    animations: noUndefined(o.animations)
+  });
+}
+
+function normalizeTemplateSync(normalizer: DirectiveNormalizer, o: {
+  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+  templateUrl?: string | null;
+  styles?: string[];
+  styleUrls?: string[];
+  interpolation?: [string, string] | null;
+  encapsulation?: ViewEncapsulation | null;
+  animations?: CompileAnimationEntryMetadata[];
+}): CompileTemplateMetadata {
+  return normalizer.normalizeTemplateSync({
+    ngModuleType: noUndefined(o.ngModuleType),
+    componentType: noUndefined(o.componentType),
+    moduleUrl: noUndefined(o.moduleUrl),
+    template: noUndefined(o.template),
+    templateUrl: noUndefined(o.templateUrl),
+    styles: noUndefined(o.styles),
+    styleUrls: noUndefined(o.styleUrls),
+    interpolation: noUndefined(o.interpolation),
+    encapsulation: noUndefined(o.encapsulation),
+    animations: noUndefined(o.animations)
+  });
+}
+
+function compileTemplateMetadata({encapsulation, template, templateUrl, styles, styleUrls,
+                                  externalStylesheets, animations, ngContentSelectors,
+                                  interpolation, isInline}: {
+  encapsulation?: ViewEncapsulation | null,
+  template?: string | null,
+  templateUrl?: string | null,
+  styles?: string[],
+  styleUrls?: string[],
+  externalStylesheets?: CompileStylesheetMetadata[],
+  ngContentSelectors?: string[],
+  animations?: any[],
+  interpolation?: [string, string] | null,
+  isInline?: boolean
+}): CompileTemplateMetadata {
+  return new CompileTemplateMetadata({
+    encapsulation: encapsulation || null,
+    template: template || null,
+    templateUrl: templateUrl || null,
+    styles: styles || [],
+    styleUrls: styleUrls || [],
+    externalStylesheets: externalStylesheets || [],
+    ngContentSelectors: ngContentSelectors || [],
+    animations: animations || [],
+    interpolation: interpolation || null,
+    isInline: !!isInline,
+  });
+}
+
+function normalizeLoadedTemplate(
+    normalizer: DirectiveNormalizer, o: {
+      ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+      templateUrl?: string | null;
+      styles?: string[];
+      styleUrls?: string[];
+      interpolation?: [string, string] | null;
+      encapsulation?: ViewEncapsulation | null;
+      animations?: CompileAnimationEntryMetadata[];
+    },
+    template: string, templateAbsUrl: string) {
+  return normalizer.normalizeLoadedTemplate(
+      {
+        ngModuleType: o.ngModuleType || null,
+        componentType: o.componentType || null,
+        moduleUrl: o.moduleUrl || '',
+        template: o.template || null,
+        templateUrl: o.templateUrl || null,
+        styles: o.styles || [],
+        styleUrls: o.styleUrls || [],
+        interpolation: o.interpolation || null,
+        encapsulation: o.encapsulation || null,
+        animations: o.animations || null,
+      },
+      template, templateAbsUrl);
+}
 
 export function main() {
   describe('DirectiveNormalizer', () => {
@@ -27,46 +154,50 @@ export function main() {
     describe('normalizeDirective', () => {
       it('should throw if no template was specified',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizer.normalizeTemplate({
-             ngModuleType: null,
-             componentType: SomeComp,
-             moduleUrl: SOME_MODULE_URL,
-           })).toThrowError('No template specified for component SomeComp');
+           expect(() => normalizeTemplate(normalizer, {
+                    ngModuleType: null,
+                    componentType: SomeComp,
+                    moduleUrl: SOME_MODULE_URL,
+                  }))
+               .toThrowError('No template specified for component SomeComp');
          }));
       it('should throw if template is not a string',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizer.normalizeTemplate({
-             ngModuleType: null,
-             componentType: SomeComp,
-             moduleUrl: SOME_MODULE_URL,
-             template: <any>{}
-           })).toThrowError('The template specified for component SomeComp is not a string');
+           expect(() => normalizeTemplate(normalizer, {
+                    ngModuleType: null,
+                    componentType: SomeComp,
+                    moduleUrl: SOME_MODULE_URL,
+                    template: <any>{}
+                  }))
+               .toThrowError('The template specified for component SomeComp is not a string');
          }));
       it('should throw if templateUrl is not a string',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizer.normalizeTemplate({
-             ngModuleType: null,
-             componentType: SomeComp,
-             moduleUrl: SOME_MODULE_URL,
-             templateUrl: <any>{}
-           })).toThrowError('The templateUrl specified for component SomeComp is not a string');
+           expect(() => normalizeTemplate(normalizer, {
+                    ngModuleType: null,
+                    componentType: SomeComp,
+                    moduleUrl: SOME_MODULE_URL,
+                    templateUrl: <any>{}
+                  }))
+               .toThrowError('The templateUrl specified for component SomeComp is not a string');
          }));
       it('should throw if both template and templateUrl are defined',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizer.normalizeTemplate({
-             ngModuleType: null,
-             componentType: SomeComp,
-             moduleUrl: SOME_MODULE_URL,
-             template: '',
-             templateUrl: '',
-           })).toThrowError(`'SomeComp' component cannot define both template and templateUrl`);
+           expect(() => normalizeTemplate(normalizer, {
+                    ngModuleType: null,
+                    componentType: SomeComp,
+                    moduleUrl: SOME_MODULE_URL,
+                    template: '',
+                    templateUrl: '',
+                  }))
+               .toThrowError(`'SomeComp' component cannot define both template and templateUrl`);
          }));
     });
 
     describe('normalizeTemplateSync', () => {
       it('should store the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeTemplateSync({
+           const template = normalizeTemplateSync(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -83,7 +214,7 @@ export function main() {
 
       it('should resolve styles on the annotation against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeTemplateSync({
+           const template = normalizeTemplateSync(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -98,7 +229,7 @@ export function main() {
 
       it('should resolve styles in the template against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeTemplateSync({
+           const template = normalizeTemplateSync(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -113,7 +244,7 @@ export function main() {
 
       it('should use ViewEncapsulation.Emulated by default',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeTemplateSync({
+           const template = normalizeTemplateSync(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -131,13 +262,13 @@ export function main() {
              [CompilerConfig, DirectiveNormalizer],
              (config: CompilerConfig, normalizer: DirectiveNormalizer) => {
                config.defaultEncapsulation = ViewEncapsulation.None;
-               const template = normalizer.normalizeTemplateSync({
+               const template = normalizeTemplateSync(normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
-                 encapsulation: null,
+                 encapsulation: undefined,
                  template: '',
-                 templateUrl: null,
+                 templateUrl: undefined,
                  styles: [],
                  styleUrls: ['test.css']
                });
@@ -153,23 +284,21 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/sometplurl.html', 'a');
-               normalizer
-                   .normalizeTemplateAsync({
-                     ngModuleType: null,
-                     componentType: SomeComp,
-                     moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
-                     templateUrl: 'sometplurl.html',
-                     styles: [],
-                     styleUrls: ['test.css']
-                   })
-                   .then((template: CompileTemplateMetadata) => {
-                     expect(template.template).toEqual('a');
-                     expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
-                     expect(template.isInline).toBe(false);
-                     async.done();
-                   });
+               normalizeTemplateAsync(normalizer, {
+                 ngModuleType: null,
+                 componentType: SomeComp,
+                 moduleUrl: SOME_MODULE_URL,
+                 encapsulation: null,
+                 template: null,
+                 templateUrl: 'sometplurl.html',
+                 styles: [],
+                 styleUrls: ['test.css']
+               }).then((template: CompileTemplateMetadata) => {
+                 expect(template.template).toEqual('a');
+                 expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
+                 expect(template.isInline).toBe(false);
+                 async.done();
+               });
                resourceLoader.flush();
              }));
 
@@ -179,21 +308,19 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/tpl/sometplurl.html', '');
-               normalizer
-                   .normalizeTemplateAsync({
-                     ngModuleType: null,
-                     componentType: SomeComp,
-                     moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
-                     templateUrl: 'tpl/sometplurl.html',
-                     styles: [],
-                     styleUrls: ['test.css']
-                   })
-                   .then((template: CompileTemplateMetadata) => {
-                     expect(template.styleUrls).toEqual(['package:some/module/test.css']);
-                     async.done();
-                   });
+               normalizeTemplateAsync(normalizer, {
+                 ngModuleType: null,
+                 componentType: SomeComp,
+                 moduleUrl: SOME_MODULE_URL,
+                 encapsulation: null,
+                 template: null,
+                 templateUrl: 'tpl/sometplurl.html',
+                 styles: [],
+                 styleUrls: ['test.css']
+               }).then((template: CompileTemplateMetadata) => {
+                 expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+                 async.done();
+               });
                resourceLoader.flush();
              }));
 
@@ -204,21 +331,19 @@ export function main() {
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect(
                    'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
-               normalizer
-                   .normalizeTemplateAsync({
-                     ngModuleType: null,
-                     componentType: SomeComp,
-                     moduleUrl: SOME_MODULE_URL,
-                     encapsulation: null,
-                     template: null,
-                     templateUrl: 'tpl/sometplurl.html',
-                     styles: [],
-                     styleUrls: []
-                   })
-                   .then((template: CompileTemplateMetadata) => {
-                     expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
-                     async.done();
-                   });
+               normalizeTemplateAsync(normalizer, {
+                 ngModuleType: null,
+                 componentType: SomeComp,
+                 moduleUrl: SOME_MODULE_URL,
+                 encapsulation: null,
+                 template: null,
+                 templateUrl: 'tpl/sometplurl.html',
+                 styles: [],
+                 styleUrls: []
+               }).then((template: CompileTemplateMetadata) => {
+                 expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
+                 async.done();
+               });
                resourceLoader.flush();
              }));
 
@@ -238,7 +363,7 @@ export function main() {
               resourceLoader: SpyResourceLoader) => {
                programResourceLoaderSpy(resourceLoader, {'package:some/module/test.css': 'a'});
                normalizer
-                   .normalizeExternalStylesheets(new CompileTemplateMetadata({
+                   .normalizeExternalStylesheets(compileTemplateMetadata({
                      template: '',
                      templateUrl: '',
                      styleUrls: ['package:some/module/test.css']
@@ -264,7 +389,7 @@ export function main() {
                  'package:some/module/test2.css': 'b'
                });
                normalizer
-                   .normalizeExternalStylesheets(new CompileTemplateMetadata({
+                   .normalizeExternalStylesheets(compileTemplateMetadata({
                      template: '',
                      templateUrl: '',
                      styleUrls: ['package:some/module/test.css']
@@ -301,8 +426,8 @@ export function main() {
                };
                Promise
                    .all([
-                     normalizer.normalizeTemplateAsync(prenormMeta),
-                     normalizer.normalizeTemplateAsync(prenormMeta)
+                     normalizeTemplateAsync(normalizer, prenormMeta),
+                     normalizeTemplateAsync(normalizer, prenormMeta)
                    ])
                    .then((templates: CompileTemplateMetadata[]) => {
                      expect(templates[0].template).toEqual('a');
@@ -319,8 +444,8 @@ export function main() {
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
 
            const viewEncapsulation = ViewEncapsulation.Native;
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -334,8 +459,8 @@ export function main() {
 
       it('should keep the template as html',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -349,8 +474,8 @@ export function main() {
 
       it('should collect ngContent',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -364,8 +489,8 @@ export function main() {
 
       it('should normalize ngContent wildcard selector',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -380,8 +505,8 @@ export function main() {
 
       it('should collect top level styles in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -395,8 +520,8 @@ export function main() {
 
       it('should collect styles inside in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -410,8 +535,8 @@ export function main() {
 
       it('should collect styleUrls in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -425,8 +550,8 @@ export function main() {
 
       it('should collect styleUrls in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -440,8 +565,8 @@ export function main() {
 
       it('should ignore link elements with non stylesheet rel attribute',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -455,8 +580,8 @@ export function main() {
 
       it('should ignore link elements with absolute urls but non package: scheme',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -470,8 +595,8 @@ export function main() {
 
       it('should extract @import style urls into styleAbsUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -486,8 +611,8 @@ export function main() {
 
       it('should not resolve relative urls in inline styles',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -501,8 +626,8 @@ export function main() {
 
       it('should resolve relative style urls in styleUrls',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -517,8 +642,8 @@ export function main() {
 
       it('should resolve relative style urls in styleUrls with http directive url',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_HTTP_MODULE_URL,
@@ -533,8 +658,8 @@ export function main() {
 
       it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no styles nor stylesheets',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -548,8 +673,8 @@ export function main() {
 
       it('should ignore ng-content in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -564,8 +689,8 @@ export function main() {
 
       it('should still collect <style> in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizer.normalizeLoadedTemplate(
-               {
+           const template = normalizeLoadedTemplate(
+               normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,

@@ -395,11 +395,11 @@ export function main() {
         it('should set the start and end source spans', () => {
           const node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 
-          expect(node.startSourceSpan.start.offset).toEqual(0);
-          expect(node.startSourceSpan.end.offset).toEqual(5);
+          expect(node.startSourceSpan !.start.offset).toEqual(0);
+          expect(node.startSourceSpan !.end.offset).toEqual(5);
 
-          expect(node.endSourceSpan.start.offset).toEqual(6);
-          expect(node.endSourceSpan.end.offset).toEqual(12);
+          expect(node.endSourceSpan !.start.offset).toEqual(6);
+          expect(node.endSourceSpan !.end.offset).toEqual(12);
         });
 
         it('should support expansion form', () => {
@@ -420,8 +420,8 @@ export function main() {
         it('should report a value span for an attibute with a value', () => {
           const ast = parser.parse('<div bar="12"></div>', 'TestComp');
           const attr = (ast.rootNodes[0] as html.Element).attrs[0];
-          expect(attr.valueSpan.start.offset).toEqual(9);
-          expect(attr.valueSpan.end.offset).toEqual(13);
+          expect(attr.valueSpan !.start.offset).toEqual(9);
+          expect(attr.valueSpan !.end.offset).toEqual(13);
         });
       });
 

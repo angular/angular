@@ -18,7 +18,7 @@ export type MockDirectory = {
   [name: string]: MockData | undefined;
 };
 
-export function isDirectory(data: MockData): data is MockDirectory {
+export function isDirectory(data: MockData | undefined): data is MockDirectory {
   return typeof data !== 'string';
 }
 
@@ -146,6 +146,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
     if (content) {
       return ts.createSourceFile(fileName, content, languageVersion, /* setParentNodes */ true);
     }
+    throw new Error(`File not found '${fileName}'.`);
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
@@ -235,7 +236,7 @@ export class MockCompilerHost implements ts.CompilerHost {
       let result = open(fileName, this.data) != null;
       if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
         const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
-        for (const library of this.libraries) {
+        for (const library of this.libraries !) {
           if (library.has(libraryPath)) {
             return true;
           }
@@ -252,7 +253,7 @@ export class MockCompilerHost implements ts.CompilerHost {
     }
   }
 
-  readFile(fileName: string): string { return this.getFileContent(fileName); }
+  readFile(fileName: string): string { return this.getFileContent(fileName) !; }
 
   trace(s: string): void { this.traces.push(s); }
 
@@ -265,10 +266,8 @@ export class MockCompilerHost implements ts.CompilerHost {
       if (isDirectory(data)) {
         return Object.keys(data).filter(k => isDirectory(data[k]));
       }
-      return [];
-    } else {
-      return undefined;
     }
+    return [];
   }
 
   // ts.CompilerHost
@@ -283,7 +282,7 @@ export class MockCompilerHost implements ts.CompilerHost {
         this.sourceFiles.set(fileName, result);
       }
     }
-    return result;
+    return result !;
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
@@ -318,7 +317,7 @@ export class MockCompilerHost implements ts.CompilerHost {
         const result = open(fileName, this.data);
         if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
           const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
-          for (const library of this.libraries) {
+          for (const library of this.libraries !) {
             if (library.has(libraryPath)) return library.get(libraryPath);
           }
         }
@@ -367,9 +366,9 @@ export class MockAotCompilerHost implements AotCompilerHost {
   tsFilesOnly() { this.dtsAreSource = false; }
 
   // StaticSymbolResolverHost
-  getMetadataFor(modulePath: string): {[key: string]: any}[] {
+  getMetadataFor(modulePath: string): {[key: string]: any}[]|null {
     if (!this.tsHost.fileExists(modulePath)) {
-      return undefined;
+      return null;
     }
     if (DTS.test(modulePath)) {
       if (this.metadataVisible) {
@@ -384,6 +383,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       const metadata = this.metadataCollector.getMetadata(sf);
       return metadata ? [metadata] : [];
     }
+    return null;
   }
 
   moduleNameToFileName(moduleName: string, containingFile: string): string|null {
@@ -439,11 +439,11 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
   }
 }
 
-function find(fileName: string, data: MockData): MockData|undefined {
+function find(fileName: string, data: MockData | undefined): MockData|undefined {
   if (!data) return undefined;
   let names = fileName.split('/');
   if (names.length && !names[0].length) names.shift();
-  let current = data;
+  let current: MockData|undefined = data;
   for (let name of names) {
     if (typeof current === 'string')
       return undefined;
@@ -454,7 +454,7 @@ function find(fileName: string, data: MockData): MockData|undefined {
   return current;
 }
 
-function open(fileName: string, data: MockData): string|undefined {
+function open(fileName: string, data: MockData | undefined): string|undefined {
   let result = find(fileName, data);
   if (typeof result === 'string') {
     return result;
@@ -462,7 +462,7 @@ function open(fileName: string, data: MockData): string|undefined {
   return undefined;
 }
 
-function directoryExists(dirname: string, data: MockData): boolean {
+function directoryExists(dirname: string, data: MockData | undefined): boolean {
   let result = find(dirname, data);
-  return result && typeof result !== 'string';
+  return !!result && typeof result !== 'string';
 }

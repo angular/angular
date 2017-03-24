@@ -90,7 +90,7 @@ export class Parser {
         .parseChain();
   }
 
-  private _parseQuote(input: string, location: any): AST {
+  private _parseQuote(input: string|null, location: any): AST|null {
     if (input == null) return null;
     const prefixSeparatorIndex = input.indexOf(':');
     if (prefixSeparatorIndex == -1) return null;
@@ -100,7 +100,7 @@ export class Parser {
     return new Quote(new ParseSpan(0, input.length), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(prefixToken: string, input: string, location: any):
+  parseTemplateBindings(prefixToken: string|null, input: string, location: any):
       TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(input);
     if (prefixToken) {
@@ -117,7 +117,7 @@ export class Parser {
 
   parseInterpolation(
       input: string, location: any,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource|null {
     const split = this.splitInterpolation(input, location, interpolationConfig);
     if (split == null) return null;
 
@@ -142,7 +142,8 @@ export class Parser {
 
   splitInterpolation(
       input: string, location: string,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation {
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
+      |null {
     const regexp = _createInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length <= 1) {
@@ -175,7 +176,7 @@ export class Parser {
     return new SplitInterpolation(strings, expressions, offsets);
   }
 
-  wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
+  wrapLiteralPrimitive(input: string|null, location: any): ASTWithSource {
     return new ASTWithSource(
         new LiteralPrimitive(new ParseSpan(0, input == null ? 0 : input.length), input), input,
         location, this.errors);
@@ -186,8 +187,8 @@ export class Parser {
     return i != null ? input.substring(0, i).trim() : input;
   }
 
-  private _commentStart(input: string): number {
-    let outerQuote: number = null;
+  private _commentStart(input: string): number|null {
+    let outerQuote: number|null = null;
     for (let i = 0; i < input.length - 1; i++) {
       const char = input.charCodeAt(i);
       const nextChar = input.charCodeAt(i + 1);
@@ -288,7 +289,7 @@ export class _ParseAST {
     this.error(`Missing expected operator ${operator}`);
   }
 
-  expectIdentifierOrKeyword(): string {
+  expectIdentifierOrKeyword(): string|null {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`);
@@ -298,7 +299,7 @@ export class _ParseAST {
     return n.toString();
   }
 
-  expectIdentifierOrKeywordOrString(): string {
+  expectIdentifierOrKeywordOrString(): string|null {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
@@ -338,7 +339,7 @@ export class _ParseAST {
       }
 
       do {
-        const name = this.expectIdentifierOrKeyword();
+        const name = this.expectIdentifierOrKeyword() !;
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
@@ -607,7 +608,7 @@ export class _ParseAST {
     if (!this.optionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
-        const key = this.expectIdentifierOrKeywordOrString();
+        const key = this.expectIdentifierOrKeywordOrString() !;
         keys.push(key);
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
@@ -620,7 +621,7 @@ export class _ParseAST {
 
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
-    const id = this.expectIdentifierOrKeyword();
+    const id = this.expectIdentifierOrKeyword() !;
 
     if (this.optionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -683,7 +684,7 @@ export class _ParseAST {
 
   parseTemplateBindings(): TemplateBindingParseResult {
     const bindings: TemplateBinding[] = [];
-    let prefix: string = null;
+    let prefix: string = null !;
     const warnings: string[] = [];
     while (this.index < this.tokens.length) {
       const start = this.inputIndex;
@@ -701,8 +702,8 @@ export class _ParseAST {
         }
       }
       this.optionalCharacter(chars.$COLON);
-      let name: string = null;
-      let expression: ASTWithSource = null;
+      let name: string = null !;
+      let expression: ASTWithSource = null !;
       if (keyIsVar) {
         if (this.optionalOperator('=')) {
           name = this.expectTemplateBindingKey();
@@ -726,7 +727,7 @@ export class _ParseAST {
         const letStart = this.inputIndex;
         this.advance();                                   // consume `as`
         const letName = this.expectTemplateBindingKey();  // read local var name
-        bindings.push(new TemplateBinding(this.span(letStart), letName, true, key, null));
+        bindings.push(new TemplateBinding(this.span(letStart), letName, true, key, null !));
       }
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
@@ -735,12 +736,12 @@ export class _ParseAST {
     return new TemplateBindingParseResult(bindings, warnings, this.errors);
   }
 
-  error(message: string, index: number = null) {
+  error(message: string, index: number|null = null) {
     this.errors.push(new ParserError(message, this.input, this.locationText(index), this.location));
     this.skip();
   }
 
-  private locationText(index: number = null) {
+  private locationText(index: number|null = null) {
     if (index == null) index = this.index;
     return (index < this.tokens.length) ? `at column ${this.tokens[index].index + 1} in` :
                                           `at the end of the expression`;
@@ -766,8 +767,8 @@ export class _ParseAST {
            (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
            (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET))) {
       if (this.next.isError()) {
-        this.errors.push(
-            new ParserError(this.next.toString(), this.input, this.locationText(), this.location));
+        this.errors.push(new ParserError(
+            this.next.toString() !, this.input, this.locationText(), this.location));
       }
       this.advance();
       n = this.next;

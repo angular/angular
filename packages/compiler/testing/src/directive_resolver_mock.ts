@@ -28,8 +28,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 
-  resolve(type: Type<any>, throwIfNotFound = true): Directive {
-    let metadata = this._directives.get(type);
+  resolve(type: Type<any>): Directive;
+  resolve(type: Type<any>, throwIfNotFound: true): Directive;
+  resolve(type: Type<any>, throwIfNotFound: boolean): Directive|null;
+  resolve(type: Type<any>, throwIfNotFound = true): Directive|null {
+    let metadata = this._directives.get(type) || null;
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);
     }
@@ -53,17 +56,13 @@ export class MockDirectiveResolver extends DirectiveResolver {
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 
-      let view = this._views.get(type);
-      if (!view) {
-        view = <any>metadata;
-      }
-
+      let view = this._views.get(type) || metadata;
       let animations = view.animations;
-      let templateUrl = view.templateUrl;
+      let templateUrl: string|undefined = view.templateUrl;
 
       let inlineTemplate = this._inlineTemplates.get(type);
-      if (inlineTemplate != null) {
-        templateUrl = null;
+      if (inlineTemplate) {
+        templateUrl = undefined;
       } else {
         inlineTemplate = view.template;
       }

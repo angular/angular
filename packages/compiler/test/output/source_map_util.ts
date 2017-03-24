@@ -17,7 +17,8 @@ export interface SourceLocation {
 }
 
 export function originalPositionFor(
-    sourceMap: SourceMap, genPosition: {line: number, column: number}): SourceLocation {
+    sourceMap: SourceMap,
+    genPosition: {line: number | null, column: number | null}): SourceLocation {
   const smc = new SourceMapConsumer(sourceMap);
   // Note: We don't return the original object as it also contains a `name` property
   // which is always null and we don't want to include that in our assertions...
@@ -25,7 +26,7 @@ export function originalPositionFor(
   return {line, column, source};
 }
 
-export function extractSourceMap(source: string): SourceMap {
+export function extractSourceMap(source: string): SourceMap|null {
   let idx = source.lastIndexOf('\n//#');
   if (idx == -1) return null;
   const smComment = source.slice(idx).trim();

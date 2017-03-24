@@ -40,7 +40,7 @@ export enum CssLexerMode {
 }
 
 export class LexedCssResult {
-  constructor(public error: Error, public token: CssToken) {}
+  constructor(public error: Error|null, public token: CssToken) {}
 }
 
 export function generateErrorMessage(
@@ -126,7 +126,7 @@ export class CssScanner {
   /** @internal */
   _currentMode: CssLexerMode = CssLexerMode.BLOCK;
   /** @internal */
-  _currentError: Error = null;
+  _currentError: Error|null = null;
 
   constructor(public input: string, private _trackComments: boolean = false) {
     this.length = this.input.length;
@@ -188,7 +188,7 @@ export class CssScanner {
     }
   }
 
-  consume(type: CssTokenType, value: string = null): LexedCssResult {
+  consume(type: CssTokenType, value: string|null = null): LexedCssResult {
     const mode = this._currentMode;
 
     this.setMode(_trackWhitespace(mode) ? CssLexerMode.ALL_TRACK_WS : CssLexerMode.ALL);
@@ -197,7 +197,7 @@ export class CssScanner {
     const previousLine = this.line;
     const previousColumn = this.column;
 
-    let next: CssToken;
+    let next: CssToken = undefined !;
     const output = this.scan();
     if (output != null) {
       // just incase the inner scan method returned an error
@@ -225,7 +225,7 @@ export class CssScanner {
     // mode so that the parser can recover...
     this.setMode(mode);
 
-    let error: Error = null;
+    let error: Error|null = null;
     if (!isMatchingType || (value != null && value != next.strValue)) {
       let errorMessage =
           CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
@@ -244,7 +244,7 @@ export class CssScanner {
   }
 
 
-  scan(): LexedCssResult {
+  scan(): LexedCssResult|null {
     const trackWS = _trackWhitespace(this._currentMode);
     if (this.index == 0 && !trackWS) {  // first scan
       this.consumeWhitespace();
@@ -253,7 +253,7 @@ export class CssScanner {
     const token = this._scan();
     if (token == null) return null;
 
-    const error = this._currentError;
+    const error = this._currentError !;
     this._currentError = null;
 
     if (!trackWS) {
@@ -263,7 +263,7 @@ export class CssScanner {
   }
 
   /** @internal */
-  _scan(): CssToken {
+  _scan(): CssToken|null {
     let peek = this.peek;
     let peekPeek = this.peekPeek;
     if (peek == chars.$EOF) return null;
@@ -317,7 +317,7 @@ export class CssScanner {
     return this.error(`Unexpected character [${String.fromCharCode(peek)}]`);
   }
 
-  scanComment(): CssToken {
+  scanComment(): CssToken|null {
     if (this.assertCondition(
             isCommentStart(this.peek, this.peekPeek), 'Expected comment start value')) {
       return null;
@@ -355,7 +355,7 @@ export class CssScanner {
     return new CssToken(start, startingColumn, startingLine, CssTokenType.Whitespace, str);
   }
 
-  scanString(): CssToken {
+  scanString(): CssToken|null {
     if (this.assertCondition(
             isStringStart(this.peek, this.peekPeek), 'Unexpected non-string starting value')) {
       return null;
@@ -405,7 +405,7 @@ export class CssScanner {
     return new CssToken(start, startingColumn, this.line, CssTokenType.Number, strValue);
   }
 
-  scanIdentifier(): CssToken {
+  scanIdentifier(): CssToken|null {
     if (this.assertCondition(
             isIdentifierStart(this.peek, this.peekPeek), 'Expected identifier starting value')) {
       return null;
@@ -436,7 +436,7 @@ export class CssScanner {
     return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);
   }
 
-  scanCharacter(): CssToken {
+  scanCharacter(): CssToken|null {
     const start = this.index;
     const startingColumn = this.column;
     if (this.assertCondition(
@@ -451,7 +451,7 @@ export class CssScanner {
     return new CssToken(start, startingColumn, this.line, CssTokenType.Character, c);
   }
 
-  scanAtExpression(): CssToken {
+  scanAtExpression(): CssToken|null {
     if (this.assertCondition(this.peek == chars.$AT, 'Expected @ value')) {
       return null;
     }
@@ -460,7 +460,7 @@ export class CssScanner {
     const startingColumn = this.column;
     this.advance();
     if (isIdentifierStart(this.peek, this.peekPeek)) {
-      const ident = this.scanIdentifier();
+      const ident = this.scanIdentifier() !;
       const strValue = '@' + ident.strValue;
       return new CssToken(start, startingColumn, this.line, CssTokenType.AtKeyword, strValue);
     } else {
@@ -476,7 +476,8 @@ export class CssScanner {
     return false;
   }
 
-  error(message: string, errorTokenValue: string = null, doNotAdvance: boolean = false): CssToken {
+  error(message: string, errorTokenValue: string|null = null, doNotAdvance: boolean = false):
+      CssToken {
     const index: number = this.index;
     const column: number = this.column;
     const line: number = this.line;

@@ -76,7 +76,7 @@ export class Token {
 
   toNumber(): number { return this.type == TokenType.Number ? this.numValue : -1; }
 
-  toString(): string {
+  toString(): string|null {
     switch (this.type) {
       case TokenType.Character:
       case TokenType.Identifier:
@@ -137,7 +137,7 @@ class _Scanner {
     this.peek = ++this.index >= this.length ? chars.$EOF : this.input.charCodeAt(this.index);
   }
 
-  scanToken(): Token {
+  scanToken(): Token|null {
     const input = this.input, length = this.length;
     let peek = this.peek, index = this.index;
 

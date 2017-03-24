@@ -89,14 +89,14 @@ export function main() {
     describe('packages', () => {
       it('should resolve a url based on the application package', () => {
         resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve(null, 'package:some/dir/file.txt'))
+        expect(resolver.resolve(null !, 'package:some/dir/file.txt'))
             .toEqual('my_packages_dir/some/dir/file.txt');
-        expect(resolver.resolve(null, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
+        expect(resolver.resolve(null !, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
       });
 
       it('should contain a default value of "/" when nothing is provided',
          inject([UrlResolver], (resolver: UrlResolver) => {
-           expect(resolver.resolve(null, 'package:file')).toEqual('/file');
+           expect(resolver.resolve(null !, 'package:file')).toEqual('/file');
          }));
 
       it('should resolve a package value when present within the baseurl', () => {

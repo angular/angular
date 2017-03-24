@@ -67,7 +67,7 @@ class Unparser implements AstVisitor {
   }
 
   visitFunctionCall(ast: FunctionCall, context: any) {
-    this._visit(ast.target);
+    this._visit(ast.target !);
     this._expression += '(';
     let isFirst = true;
     ast.args.forEach(arg => {

@@ -14,7 +14,7 @@ export class HtmlTagDefinition implements TagDefinition {
   closedByParent: boolean = false;
   requiredParents: {[key: string]: boolean};
   parentToAdd: string;
-  implicitNamespacePrefix: string;
+  implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
@@ -43,7 +43,7 @@ export class HtmlTagDefinition implements TagDefinition {
       this.parentToAdd = requiredParents[0];
       requiredParents.forEach(tagName => this.requiredParents[tagName] = true);
     }
-    this.implicitNamespacePrefix = implicitNamespacePrefix;
+    this.implicitNamespacePrefix = implicitNamespacePrefix || null;
     this.contentType = contentType;
     this.ignoreFirstLf = ignoreFirstLf;
   }

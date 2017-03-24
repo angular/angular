@@ -18,11 +18,11 @@ export function main(): void {
   describe('TranslationBundle', () => {
     const file = new ParseSourceFile('content', 'url');
     const location = new ParseLocation(file, 0, 0, 0);
-    const span = new ParseSourceSpan(location, null);
+    const span = new ParseSourceSpan(location, null !);
     const srcNode = new i18n.Text('src', span);
 
     it('should translate a plain message', () => {
-      const msgMap = {foo: [new i18n.Text('bar', null)]};
+      const msgMap = {foo: [new i18n.Text('bar', null !)]};
       const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
       const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar']);
@@ -31,8 +31,8 @@ export function main(): void {
     it('should translate a message with placeholder', () => {
       const msgMap = {
         foo: [
-          new i18n.Text('bar', null),
-          new i18n.Placeholder('', 'ph1', null),
+          new i18n.Text('bar', null !),
+          new i18n.Placeholder('', 'ph1', null !),
         ]
       };
       const phMap = {
@@ -46,12 +46,12 @@ export function main(): void {
     it('should translate a message with placeholder referencing messages', () => {
       const msgMap = {
         foo: [
-          new i18n.Text('--', null),
-          new i18n.Placeholder('', 'ph1', null),
-          new i18n.Text('++', null),
+          new i18n.Text('--', null !),
+          new i18n.Placeholder('', 'ph1', null !),
+          new i18n.Text('++', null !),
         ],
         ref: [
-          new i18n.Text('*refMsg*', null),
+          new i18n.Text('*refMsg*', null !),
         ],
       };
       const refMsg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
@@ -70,13 +70,13 @@ export function main(): void {
 
       const digest = (_: any) => `no matching id`;
       // Empty message map -> use source messages in Ignore mode
-      let tb = new TranslationBundle({}, null, digest, null, MissingTranslationStrategy.Ignore);
+      let tb = new TranslationBundle({}, null, digest, null !, MissingTranslationStrategy.Ignore);
       expect(serializeNodes(tb.get(messages[0])).join('')).toEqual(src);
       // Empty message map -> use source messages in Warning mode
-      tb = new TranslationBundle({}, null, digest, null, MissingTranslationStrategy.Warning);
+      tb = new TranslationBundle({}, null, digest, null !, MissingTranslationStrategy.Warning);
       expect(serializeNodes(tb.get(messages[0])).join('')).toEqual(src);
       // Empty message map -> throw in Error mode
-      tb = new TranslationBundle({}, null, digest, null, MissingTranslationStrategy.Error);
+      tb = new TranslationBundle({}, null, digest, null !, MissingTranslationStrategy.Error);
       expect(() => serializeNodes(tb.get(messages[0])).join('')).toThrow();
     });
 
@@ -84,7 +84,7 @@ export function main(): void {
       it('should report unknown placeholders', () => {
         const msgMap = {
           foo: [
-            new i18n.Text('bar', null),
+            new i18n.Text('bar', null !),
             new i18n.Placeholder('', 'ph1', span),
           ]
         };
@@ -95,7 +95,7 @@ export function main(): void {
 
       it('should report missing translation', () => {
         const tb =
-            new TranslationBundle({}, null, (_) => 'foo', null, MissingTranslationStrategy.Error);
+            new TranslationBundle({}, null, (_) => 'foo', null !, MissingTranslationStrategy.Error);
         const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Missing translation for message "foo"/);
       });
@@ -108,7 +108,7 @@ export function main(): void {
         };
 
         const tb = new TranslationBundle(
-            {}, 'en', (_) => 'foo', null, MissingTranslationStrategy.Warning, console);
+            {}, 'en', (_) => 'foo', null !, MissingTranslationStrategy.Warning, console);
         const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
 
         expect(() => tb.get(msg)).not.toThrowError();
@@ -117,8 +117,8 @@ export function main(): void {
       });
 
       it('should not report missing translation with MissingTranslationStrategy.Ignore', () => {
-        const tb =
-            new TranslationBundle({}, null, (_) => 'foo', null, MissingTranslationStrategy.Ignore);
+        const tb = new TranslationBundle(
+            {}, null, (_) => 'foo', null !, MissingTranslationStrategy.Ignore);
         const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).not.toThrowError();
       });
@@ -132,15 +132,15 @@ export function main(): void {
         let count = 0;
         const digest = (_: any) => count++ ? 'ref' : 'foo';
         const tb =
-            new TranslationBundle(msgMap, null, digest, null, MissingTranslationStrategy.Error);
+            new TranslationBundle(msgMap, null, digest, null !, MissingTranslationStrategy.Error);
         expect(() => tb.get(msg)).toThrowError(/Missing translation for message "ref"/);
       });
 
       it('should report invalid translated html', () => {
         const msgMap = {
           foo: [
-            new i18n.Text('text', null),
-            new i18n.Placeholder('', 'ph1', null),
+            new i18n.Text('text', null !),
+            new i18n.Placeholder('', 'ph1', null !),
           ]
         };
         const phMap = {

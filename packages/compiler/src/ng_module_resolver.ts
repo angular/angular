@@ -23,7 +23,7 @@ export class NgModuleResolver {
 
   isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
 
-  resolve(type: Type<any>, throwIfNotFound = true): NgModule {
+  resolve(type: Type<any>, throwIfNotFound = true): NgModule|null {
     const ngModuleMeta: NgModule = findLast(this._reflector.annotations(type), _isNgModuleMetadata);
 
     if (ngModuleMeta) {
