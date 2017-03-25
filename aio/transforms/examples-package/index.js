@@ -13,6 +13,7 @@ module.exports =
         .factory(require('./services/getExampleRegion'))
 
         .processor(require('./processors/collect-examples'))
+        .processor(require('./processors/render-examples'))
 
         .config(function(readFilesProcessor, exampleFileReader) {
           readFilesProcessor.fileReaders.push(exampleFileReader);
