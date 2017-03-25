@@ -101,6 +101,21 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should show the panel when the first open is after the initial zone stabilization',
+      async(() => {
+        // Note that we're running outside the Angular zone, in order to be able
+        // to test properly without the subscription from `_subscribeToClosingActions`
+        // giving us a false positive.
+        fixture.ngZone.runOutsideAngular(() => {
+          fixture.componentInstance.trigger.openPanel();
+
+          Promise.resolve().then(() => {
+            expect(fixture.componentInstance.panel.showPanel)
+                .toBe(true, `Expected panel to be visible.`);
+          });
+        });
+      }));
+
     it('should close the panel when blurred', async(() => {
       dispatchFakeEvent(input, 'focus');
       fixture.detectChanges();

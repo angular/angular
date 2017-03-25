@@ -131,8 +131,9 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._subscribeToClosingActions();
     }
 
-    this._panelOpen = true;
+    this.autocomplete._setVisibility();
     this._floatPlaceholder();
+    this._panelOpen = true;
   }
 
   /** Closes the autocomplete suggestion panel. */
