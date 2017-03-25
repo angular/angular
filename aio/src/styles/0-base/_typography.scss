@@ -6,6 +6,7 @@
       font-family: $main-font;
       margin: 0;
       color: $darkgray;
+      font-size: 14px;
     }
 
     h1 {
@@ -54,10 +55,14 @@
       margin-top: 0px;
     }
 
-    p, ol, ul, ol, input, a  {
+    p, ol, ul, ol, li, input, a  {
       font-size: 14px;
       line-height: 24px;
       letter-spacing: 0.30px;
+    }
+
+    ol li {
+      margin: 14px 0px;
     }
 
     a {
