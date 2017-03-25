@@ -12,7 +12,6 @@ import { LocationService } from 'app/shared/location.service';
 import { NavigationNode } from './navigation-node';
 export { NavigationNode } from './navigation-node';
 
-
 export type NavigationResponse = {__versionInfo: VersionInfo } & { [name: string]: NavigationNode[]|VersionInfo };
 
 export interface NavigationViews {
@@ -39,7 +38,7 @@ export interface VersionInfo {
 }
 
 const navigationPath = 'content/navigation.json';
-
+const sideNavNode = 'SideNav';
 
 @Injectable()
 export class NavigationService {
@@ -106,7 +105,7 @@ export class NavigationService {
    */
   private getSelectedNodes(navigationViews: Observable<NavigationViews>) {
     const selectedNodes = combineLatest(
-      navigationViews.map(this.computeUrlToNodesMap),
+      navigationViews.map(this.computeUrlToSideNavNodesMap),
       this.location.currentUrl,
       (navMap, url) => navMap[url] || [])
       .publishReplay(1);
@@ -118,11 +117,11 @@ export class NavigationService {
    * Compute a mapping from URL to an array of nodes, where the first node in the array
    * is the one that matches the URL and the rest are the ancestors of that node.
    *
-   * @param navigation A collection of navigation nodes that are to be mapped
+   * @param navigation A collection of SideNav navigation nodes that are to be mapped
    */
-  private computeUrlToNodesMap(navigation: NavigationViews) {
+  private computeUrlToSideNavNodesMap(navigation: NavigationViews) {
     const navMap: NavigationMap = {};
-    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
+    navigation[sideNavNode].forEach(node => walkNodes(node));
     return navMap;
 
     function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {

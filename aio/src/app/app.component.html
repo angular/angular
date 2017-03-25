@@ -1,14 +1,13 @@
 <md-toolbar color="primary" class="app-toolbar">
-  <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
+  <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()" title="Docs menu"><md-icon>menu</md-icon></button>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
 
 <md-sidenav-container class="sidenav-container">
-
-  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "isSideBySide ? 'side' : 'over'">
-    <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu> 
+  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide && isSideNavNode" [mode]="isSideBySide ? 'side' : 'over'">
+    <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
     <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav" [selectedNodes]="selectedNodes | async"></aio-nav-menu>
   </md-sidenav>
 

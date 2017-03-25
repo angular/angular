@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
   readonly homeImageUrl = 'assets/images/logos/standard/logo-nav.png';
 
   isHamburgerVisible = true; // always ... for now
+  isSideNavNode = false;
   isSideBySide = false;
 
   currentDocument: Observable<DocumentContents>;
@@ -59,6 +60,9 @@ export class AppComponent implements OnInit {
     // This subscription is needed when navigating between anchors within a document
     // and the document itself has not changed
     this.locationService.currentUrl.subscribe(url => this.autoScroll.scroll(this.docViewer.nativeElement.offsetParent));
+
+    // The current doc is in side nav if there are selected nodes
+    this.selectedNodes.subscribe(nodes => this.isSideNavNode = !!nodes.length );
   }
 
   onDocRendered(doc: DocumentContents) {

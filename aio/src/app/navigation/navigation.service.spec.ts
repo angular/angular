@@ -79,16 +79,24 @@ describe('NavigationService', () => {
   describe('selectedNodes', () => {
     let service: NavigationService, location: MockLocationService;
     let currentNodes: NavigationNode[];
-    const nodeTree: NavigationNode[] = [
-      { title: 'a', children: [
-        { url: 'b', title: 'b', children: [
-          { url: 'c', title: 'c' },
-          { url: 'd', title: 'd' }
+
+    const sideNavNodes: NavigationNode[] = [
+        { title: 'a', children: [
+          { url: 'b', title: 'b', children: [
+            { url: 'c', title: 'c' },
+            { url: 'd', title: 'd' }
+          ] },
+          { url: 'e', title: 'e' }
         ] },
-        { url: 'e', title: 'e' }
-      ] },
-      { url: 'f', title: 'f' }
-    ];
+        { url: 'f', title: 'f' }
+      ];
+
+    const navJson = {
+      TopMenu: [ { url: 'api/url', title: 'api' }],
+      SideNav: sideNavNodes,
+      __versionInfo: {}
+    };
+
 
     beforeEach(() => {
       location = injector.get(LocationService);
@@ -97,30 +105,35 @@ describe('NavigationService', () => {
       service.selectedNodes.subscribe(nodes => currentNodes = nodes);
 
       const backend = injector.get(ConnectionBackend);
-      backend.connectionsArray[0].mockRespond(createResponse({ nav: nodeTree }));
+      backend.connectionsArray[0].mockRespond(createResponse(navJson));
     });
 
-    it('should list the navigation node that matches the current location, and all its ancestors', () => {
+    it('should list the side navigation node that matches the current location, and all its ancestors', () => {
       location.urlSubject.next('b');
       expect(currentNodes).toEqual([
-        nodeTree[0].children[0],
-        nodeTree[0]
+        sideNavNodes[0].children[0],
+        sideNavNodes[0]
       ]);
 
       location.urlSubject.next('d');
       expect(currentNodes).toEqual([
-        nodeTree[0].children[0].children[1],
-        nodeTree[0].children[0],
-        nodeTree[0]
+        sideNavNodes[0].children[0].children[1],
+        sideNavNodes[0].children[0],
+        sideNavNodes[0]
       ]);
 
       location.urlSubject.next('f');
       expect(currentNodes).toEqual([
-        nodeTree[1]
+        sideNavNodes[1]
       ]);
     });
 
-    it('should be an empty array if no navigation node matches the current location', () => {
+    it('should be an empty array if the current location is a top menu node', () => {
+      location.urlSubject.next('api/url');
+      expect(currentNodes).toEqual([]);
+    });
+
+    it('should be an empty array if no side navigation node matches the current location', () => {
       location.urlSubject.next('g');
       expect(currentNodes).toEqual([]);
     });
