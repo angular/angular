@@ -220,8 +220,7 @@ export function main() {
         });
 
         it('should throw when given an invalid collection', () => {
-          expect(() => differ.diff(<any>'invalid'))
-              .toThrowError('Error trying to diff \'invalid\'');
+          expect(() => differ.diff(<any>'invalid')).toThrowError(/Error trying to diff 'invalid'/);
         });
       });
     });
