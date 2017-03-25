@@ -356,7 +356,7 @@ Angular apps run in development mode by default, as you can see by the following
 console:
 
 <code-example format="nocode">
-  Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.
+  Angular is running in the development mode. Call enableProdMode() to enable the production mode.
 </code-example>
 
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
