@@ -12,6 +12,6 @@
     background-color: $bgcolor;
     border-radius: 5px;
     padding: 20px;
-    margin: 24px auto;
+    margin: 0px auto; // was 24
     border: 0.5px solid $lightgray;
 }
