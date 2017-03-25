@@ -13,8 +13,7 @@ var entities = require('entities');
  * {@example core/application_spec.ts -region=hello-app -title='Sample component' }
  * @kind function
  */
-module.exports = function exampleInlineTagDef(
-    parseArgString, exampleMap, createDocMessage, log, collectExamples, getExampleRegion) {
+module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, getExampleRegion) {
   return {
     name: 'example',
     description:
