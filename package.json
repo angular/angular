@@ -62,6 +62,7 @@
     "dgeni-packages": "^0.16.5",
     "firebase-admin": "^4.1.2",
     "firebase-tools": "^2.2.1",
+    "firebase": "^3.7.2",
     "fs-extra": "^2.0.0",
     "glob": "^7.1.1",
     "google-cloud": "^0.48.0",

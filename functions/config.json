@@ -1,0 +1,9 @@
+{  
+  "firebase": {
+    "apiKey": "AIzaSyBekh5ZSi1vEhaE2qetH4RU91gHmUmpqgg",
+    "authDomain": "material2-screenshots.firebaseapp.com",
+    "databaseURL": "https://material2-screenshots.firebaseio.com",
+    "storageBucket": "material2-screenshots.appspot.com",
+    "messagingSenderId": "975527407245"
+  }
+}

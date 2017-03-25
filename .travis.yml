@@ -4,6 +4,12 @@ sudo: false
 node_js:
   - '6.9.4'
 
+addons:
+  jwt:
+    # SAUCE_ACCESS_KEY<=secret for FIREBASE_ACCESS_TOKEN to work around travis-ci/travis-ci#7223, unencrypted value in valentine as FIREBASE_ACCESS_TOKEN>
+    # we alias FIREBASE_ACCESS_TOKEN to $SAUCE_ACCESS_KEY in env.sh and set the SAUCE_ACCESS_KEY there
+    - secure: "PKts/IbxuJRWWOEeiGbl8Z9zds0M+hIdCH/g/E4WbQ9yzSvSbdwzfmRfFccQFjxjsrY7+SJMVjsURZy+xUyBpzqgWYHUItnSVqjZb8DlyAU2IXyg8TM9BVLkGGe6k5k4PIFVmfMMMzQwWMM0X0W9w3oYmfHL5egxwSHvf9HIqLolLNXg8sqamIdS5d5KoCXf1c+oRjN/IMBktzNBR6N4OFOZQXVoepXNiIvTWAcTtOPBvFWdKP2n7RVioHKdm4a85aCUpDJp+LYGaLqiQZoRzmzfVTnAhTAPdd4ao5w/+jojrfZIHV55bqYF9rLnQMTneKsiyVNVYJzOLuxmARa/EEKfZld+J3rX4/o4cogrU38YSZF+T7J9g/7CTsnIZ3F6W6m+8iJbIBh55nGOQi5PVe458Q/nGb3fgQd2Z4+6lK9k479H4Ssh/Y7hbVQbepqEVIXzZKqWX6/ZE4iWoR/Q2dm0hySFmmB/R2etixX5JxhnHvgobTYIQ+1liJVp/3YFW1ru64Yg6yz/V291Bhh9g31znmTROCJ/usAmZZaLUqW1TDKnLIMP+M74MF9XERqcWKywXRFwxP4E5uDnx/vAyN49gL+SDfrBUxUtXrTkKZAlglwo9SgA7cOYEPWrionvKcGm87gCBYHFUmXZNQVzh212fpuJYXb/vy0sPDj8La4="
+
 branches:
   only:
   - master
@@ -12,11 +18,11 @@ env:
   global:
   - LOGS_DIR=/tmp/angular-material2-build/logs
   - SAUCE_USERNAME=angular-ci
-  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - BROWSER_STACK_USERNAME=angularteam1
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
   - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
+
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=lint
@@ -31,6 +37,9 @@ matrix:
   allow_failures:
   - env: "MODE=saucelabs_optional"
   - env: "MODE=browserstack_optional"
+
+before_install:
+  - source ./scripts/ci/env.sh
 
 install:
   - npm install
