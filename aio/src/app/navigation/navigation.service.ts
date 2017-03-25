@@ -15,6 +15,8 @@ export { NavigationNode } from './navigation-node';
 export type NavigationResponse = {__versionInfo: VersionInfo } & { [name: string]: NavigationNode[]|VersionInfo };
 
 export interface NavigationViews {
+  SideNav?: NavigationNode[];
+  TopBar?: NavigationNode[];
   [name: string]: NavigationNode[];
 }
 
@@ -38,7 +40,6 @@ export interface VersionInfo {
 }
 
 const navigationPath = 'content/navigation.json';
-const sideNavNode = 'SideNav';
 
 @Injectable()
 export class NavigationService {
@@ -121,7 +122,7 @@ export class NavigationService {
    */
   private computeUrlToSideNavNodesMap(navigation: NavigationViews) {
     const navMap: NavigationMap = {};
-    navigation[sideNavNode].forEach(node => walkNodes(node));
+    navigation.SideNav.forEach(node => walkNodes(node));
     return navMap;
 
     function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {

@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed, inject } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { SearchBoxComponent } from './search-box.component';
 import { SearchService } from '../search.service';
@@ -17,8 +16,7 @@ describe('SearchBoxComponent', () => {
       providers: [
         { provide: SearchService, useFactory: () => new MockSearchService() },
         { provide: LocationService, useFactory: () => new MockLocationService('') }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     })
     .compileComponents();
   }));

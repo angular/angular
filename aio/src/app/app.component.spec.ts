@@ -82,7 +82,7 @@ describe('AppComponent', () => {
 
     it('should have sidenav open when doc in the sidenav (guide/pipes)', () => {
       locationService.urlSubject.next('guide/pipes');
-      expect(component.isSideNavNode).toBe(true, 'isSideNavNode');
+      expect(component.isSideNavDoc).toBe(true, 'isSideNavDoc');
 
       fixture.detectChanges();
       const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
@@ -91,7 +91,7 @@ describe('AppComponent', () => {
 
     it('should have sidenav closed when doc not in the sidenav (api)', () => {
       locationService.urlSubject.next('api');
-      expect(component.isSideNavNode).toBe(false, 'isSideNavNode');
+      expect(component.isSideNavDoc).toBe(false, 'isSideNavNode');
 
       fixture.detectChanges();
       const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;

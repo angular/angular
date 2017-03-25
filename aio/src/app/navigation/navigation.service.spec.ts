@@ -92,7 +92,7 @@ describe('NavigationService', () => {
       ];
 
     const navJson = {
-      TopMenu: [ { url: 'api/url', title: 'api' }],
+      TopBar: [ { url: 'api/url', title: 'api' }],
       SideNav: sideNavNodes,
       __versionInfo: {}
     };

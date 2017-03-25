@@ -16,7 +16,11 @@ import { LocationService } from 'app/shared/location.service';
  */
 @Component({
   selector: 'aio-search-box',
-  templateUrl: './search-box.component.html',
+  template: `<input #searchBox
+    placeholder="Search"
+    (keyup)="onSearch($event.target.value, $event.which)"
+    (focus)="onSearch($event.target.value)"
+    (click)="onSearch($event.target.value)">`
 })
 export class SearchBoxComponent implements OnInit {
 
