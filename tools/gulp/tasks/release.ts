@@ -2,7 +2,7 @@ import {spawn} from 'child_process';
 import {existsSync, statSync, writeFileSync, readFileSync} from 'fs-extra';
 import {join, basename} from 'path';
 import {task, src, dest} from 'gulp';
-import {execTask, sequenceTask} from '../util/task_helpers';
+import {execNodeTask, execTask, sequenceTask} from '../util/task_helpers';
 import {
   DIST_RELEASE, DIST_BUNDLES, DIST_MATERIAL, COMPONENTS_DIR, LICENSE_BANNER, DIST_ROOT
 } from '../constants';
@@ -10,6 +10,7 @@ import * as minimist from 'minimist';
 
 // There are no type definitions available for these imports.
 const glob = require('glob');
+const gulpRename = require('gulp-rename');
 
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
@@ -23,6 +24,15 @@ const umdGlob = join(DIST_BUNDLES, '*.umd.*');
 // Matches all flat ESM bundles (e.g material.js and material.es5.js)
 const fesmGlob = [join(DIST_BUNDLES, '*.js'), `!${umdGlob}`];
 
+// The entry-point for the scss theming bundle.
+const themingEntryPointPath = join(COMPONENTS_DIR, 'core', 'theming', '_all-theme.scss');
+
+// Output path for the scss theming bundle.
+const themingBundlePath = join(DIST_RELEASE, '_theming.scss');
+
+// Matches all pre-built theme css files
+const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css');
+
 task('build:release', sequenceTask(
   'library:build',
   ':package:release',
@@ -30,7 +40,7 @@ task('build:release', sequenceTask(
 
 /** Task that combines intermediate build artifacts into the release package structure. */
 task(':package:release', sequenceTask(
-  [':package:typings', ':package:umd', ':package:fesm', ':package:assets'],
+  [':package:typings', ':package:umd', ':package:fesm', ':package:assets', ':package:theming'],
   ':inline-metadata-resources',
   ':package:metadata',
 ));
@@ -79,6 +89,20 @@ task(':package:umd', () => src(umdGlob).pipe((dest(join(DIST_RELEASE, 'bundles')
 
 /** Copy primary entry-point FESM bundles to the @angular/ directory. */
 task(':package:fesm', () => src(fesmGlob).pipe(dest(join(DIST_RELEASE, '@angular'))));
+
+/** Copies all prebuilt themes into the release package under `prebuilt-themes/` */
+task(':package:theming', [':bundle:theming-scss'],
+    () => src(prebuiltThemeGlob)
+        .pipe(gulpRename({dirname: ''}))
+        .pipe(dest(join(DIST_RELEASE, 'prebuilt-themes'))));
+
+/** Bundles all scss requires for theming into a single scss file in the root of the package. */
+task(':bundle:theming-scss', execNodeTask(
+    'scss-bundle',
+    'scss-bundle', [
+    '-e', themingEntryPointPath,
+    '-d', themingBundlePath,
+]));
 
 /** Make sure we're logged in. */
 task(':publish:whoami', execTask('npm', ['whoami'], {

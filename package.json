@@ -102,6 +102,7 @@
     "rollup": "^0.41.6",
     "run-sequence": "^1.2.2",
     "sass": "^0.5.0",
+    "scss-bundle": "^1.0.1",
     "selenium-webdriver": "^3.1.0",
     "stylelint": "^7.8.0",
     "travis-after-modes": "0.0.7",
