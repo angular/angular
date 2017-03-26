@@ -67,8 +67,8 @@ More info on how to set things up on CI can be found [here](misc--integrate-with
 
 ### Serving build artifacts
 - nginx receives a request for an uploaded resource on a subdomain corresponding to the PR and SHA.
-  E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resurce`
-- nginx maps the subdomain to the correct sub-direcory and serves the resource.
+  E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resource`
+- nginx maps the subdomain to the correct sub-directory and serves the resource.
   E.g.: `/<PR>/<SHA>/path/to/resource`
 
 
