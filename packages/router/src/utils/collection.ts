@@ -41,14 +41,8 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   return true;
 }
 
-export function flatten<T>(a: T[][]): T[] {
-  const target: T[] = [];
-  for (let i = 0; i < a.length; ++i) {
-    for (let j = 0; j < a[i].length; ++j) {
-      target.push(a[i][j]);
-    }
-  }
-  return target;
+export function flatten<T>(arr: T[][]): T[] {
+  return Array.prototype.concat.apply([], arr);
 }
 
 export function first<T>(a: T[]): T {
