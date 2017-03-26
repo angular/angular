@@ -34,8 +34,7 @@ describe('site App', function() {
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {
     page.navigateTo('guide/component-styles');
     const codeExample = element.all(by.css('code-example')).first();
-    expect(page.getInnerHtml(codeExample))
-        .toContain('@Component({\n  selector: \'hero-app\',\n  template: `\n    &lt;h1&gt;Tour of Heroes&lt;/h1&gt;');
+    expect(page.getInnerHtml(codeExample)).toContain('&lt;h1&gt;Tour of Heroes&lt;/h1&gt;');
   });
 
   describe('api-docs', () => {
