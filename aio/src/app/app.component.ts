@@ -6,7 +6,6 @@ import { LocationService } from 'app/shared/location.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
-import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 
@@ -40,8 +39,7 @@ export class AppComponent implements OnInit {
               gaService: GaService,
               navigationService: NavigationService,
               private autoScroll: AutoScrollService,
-              private locationService: LocationService,
-              private searchService: SearchService) {
+              private locationService: LocationService) {
     this.currentDocument = documentService.currentDocument;
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     this.navigationViews = navigationService.navigationViews;
@@ -50,9 +48,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.searchService.initWorker('app/search/search-worker.js');
-    this.searchService.loadIndex();
-
     this.onResize(window.innerWidth);
 
     // The url changed, so scroll to the anchor in the hash fragment.

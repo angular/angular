@@ -25,6 +25,9 @@ export class SearchBoxComponent implements OnInit {
   constructor(private searchService: SearchService, private locationService: LocationService) { }
 
   ngOnInit() {
+    this.searchService.initWorker('app/search/search-worker.js');
+    this.searchService.loadIndex();
+
     const query = this.locationService.search()['search'];
     if (query) {
       this.searchBox.nativeElement.value = query;

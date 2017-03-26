@@ -30,6 +30,12 @@ describe('SearchBoxComponent', () => {
   });
 
   describe('initialisation', () => {
+    it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
+      fixture.detectChanges(); // triggers ngOnInit
+      expect(searchService.initWorker).toHaveBeenCalled();
+      expect(searchService.loadIndex).toHaveBeenCalled();
+    }));
+
     it('should get the current search query from the location service', inject([LocationService], (location: MockLocationService) => {
       location.search.and.returnValue({ search: 'initial search' });
       spyOn(component, 'onSearch');
