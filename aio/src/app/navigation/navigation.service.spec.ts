@@ -82,7 +82,7 @@ describe('NavigationService', () => {
     const nodeTree: NavigationNode[] = [
       { title: 'a', children: [
         { url: 'b', title: 'b', children: [
-          { url: 'c', title: 'c' },
+          { url: 'c/', title: 'c' },
           { url: 'd', title: 'd' }
         ] },
         { url: 'e', title: 'e' }
@@ -123,6 +123,21 @@ describe('NavigationService', () => {
     it('should be an empty array if no navigation node matches the current location', () => {
       location.urlSubject.next('g');
       expect(currentNodes).toEqual([]);
+    });
+
+    it('should ignore trailing slashes on URLs in the navmap', () => {
+      location.urlSubject.next('c');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0].children[0],
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
+      location.urlSubject.next('c/');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0].children[0],
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
     });
   });
 
