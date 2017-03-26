@@ -108,7 +108,11 @@ export class NavigationService {
     const selectedNodes = combineLatest(
       navigationViews.map(this.computeUrlToNodesMap),
       this.location.currentUrl,
-      (navMap, url) => navMap[url] || [])
+      (navMap, url) => {
+        // strip trailing slashes from the currentUrl - they are not relevant to matching against the navMap
+        url = url.replace(/\/$/, '');
+        return navMap[url] || [];
+      })
       .publishReplay(1);
     selectedNodes.connect();
     return selectedNodes;
@@ -127,9 +131,10 @@ export class NavigationService {
 
     function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
+      // only map to this node if it has a url associated with it
       if (node.url) {
-        // only map to this node if it has a url associated with it
-        navMap[node.url] = nodes;
+        // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
+        navMap[node.url.replace(/\/$/, '')] = nodes;
       }
       if (node.children) {
         node.children.forEach(child => walkNodes(child, nodes));
