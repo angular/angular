@@ -35,7 +35,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
-import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservables, forEach, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 declare let Zone: any;
@@ -411,7 +411,7 @@ export class Router {
     if (queryParamsHandling) {
       switch (queryParamsHandling) {
         case 'merge':
-          q = merge(this.currentUrlTree.queryParams, queryParams);
+          q = {...this.currentUrlTree.queryParams, ...queryParams};
           break;
         case 'preserve':
           q = this.currentUrlTree.queryParams;
@@ -981,7 +981,7 @@ export class PreActivation {
     const resolve = future._resolve;
     return map.call(this.resolveNode(resolve, future), (resolvedData: any): any => {
       future._resolvedData = resolvedData;
-      future.data = merge(future.data, inheritedParamsDataResolve(future).resolve);
+      future.data = {...future.data, ...inheritedParamsDataResolve(future).resolve};
       return null;
     });
   }

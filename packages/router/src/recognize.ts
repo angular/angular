@@ -15,7 +15,7 @@ import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
-import {forEach, last, merge} from './utils/collection';
+import {forEach, last} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {}
@@ -180,7 +180,7 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 
   const posParams: {[n: string]: string} = {};
   forEach(res.posParams, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
-  const parameters = merge(posParams, res.consumed[res.consumed.length - 1].parameters);
+  const parameters = {...posParams, ...res.consumed[res.consumed.length - 1].parameters};
 
   return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};
 }
@@ -259,7 +259,7 @@ function addEmptyPathsToChildrenIfNeeded(
       res[getOutlet(r)] = s;
     }
   }
-  return merge(children, res);
+  return {...children, ...res};
 }
 
 function createChildrenForEmptyPaths(

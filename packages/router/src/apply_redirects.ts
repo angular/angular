@@ -22,7 +22,7 @@ import {Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservables, forEach, waitForMap, wrapIntoObservable} from './utils/collection';
 
 class NoMatch {
   constructor(public segmentGroup: UrlSegmentGroup = null) {}
@@ -478,7 +478,7 @@ function addEmptySegmentsToChildrenIfNeeded(
       res[getOutlet(r)] = new UrlSegmentGroup([], {});
     }
   }
-  return merge(children, res);
+  return {...children, ...res};
 }
 
 function createChildrenForEmptySegments(
