@@ -7,6 +7,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
+import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 
@@ -15,22 +16,24 @@ import { SearchResultsComponent } from 'app/search/search-results/search-results
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
-  readonly sideBySideWidth = 600;
+  private readonly sideBySideWidth = 600;
 
   isHamburgerVisible = true; // always ... for now
   isSideBySide = false;
-  isSideNavDoc = false;
+
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
-  get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
+  get isOpened() { return this.isSideBySide && this.navMenu.isSideNavDoc; }
 
   currentDocument: Observable<DocumentContents>;
-  version: Observable<string>;
 
   @ViewChildren('searchBox, searchResults', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
 
   @ViewChild(SearchResultsComponent)
   searchResults: SearchResultsComponent;
+
+  @ViewChild(NavMenuComponent)
+  navMenu: NavMenuComponent;
 
   // Need the doc-viewer element for scrolling the contents
   @ViewChild(DocViewerComponent, { read: ElementRef })

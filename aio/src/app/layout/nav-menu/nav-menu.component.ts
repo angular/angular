@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 
 import { Subject } from 'rxjs/Subject';
@@ -13,9 +13,7 @@ import 'rxjs/add/operator/takeUntil';
   </aio-nav-item>`
 })
 export class NavMenuComponent implements OnInit, OnDestroy {
-  @Output()
-  isSideNavDoc = new EventEmitter<boolean>();
-
+  isSideNavDoc = false;
   nodes: Observable<NavigationNode[]>;
   selectedNodes: Observable<NavigationNode[]>;
   onDestroy = new Subject();
@@ -27,7 +25,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // The current doc is in side nav if there are selected nodes
-    this.selectedNodes.subscribe(nodes => this.isSideNavDoc.emit(!!nodes.length));
+    this.selectedNodes.subscribe(nodes => this.isSideNavDoc = !!nodes.length);
   }
 
   // Component never destroyed but future proof it

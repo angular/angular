@@ -12,7 +12,7 @@
 
   <md-sidenav #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
     <aio-top-menu *ngIf="!isSideBySide" class="small"></aio-top-menu>
-    <aio-nav-menu (isSideNavDoc)="isSideNavDoc=$event"></aio-nav-menu>
+    <aio-nav-menu></aio-nav-menu>
   </md-sidenav>
 
   <section class="sidenav-content">
