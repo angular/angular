@@ -4,11 +4,9 @@ import { By } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { GaService } from 'app/shared/ga.service';
-import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
-import { MockSearchService } from 'testing/search.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -24,7 +22,6 @@ describe('AppComponent', () => {
       imports: [ AppModule ],
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' },
-        { provide: SearchService, useClass: MockSearchService },
         { provide: GaService, useClass: TestGaService },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
         { provide: Logger, useClass: MockLogger }
@@ -90,14 +87,6 @@ describe('AppComponent', () => {
       component.onDocRendered(null);
       expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
     });
-  });
-
-  describe('initialisation', () => {
-    it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
-      fixture.detectChanges(); // triggers ngOnInit
-      expect(searchService.initWorker).toHaveBeenCalled();
-      expect(searchService.loadIndex).toHaveBeenCalled();
-    }));
   });
 
   describe('click intercepting', () => {
