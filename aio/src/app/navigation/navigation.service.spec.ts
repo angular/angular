@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import { NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -76,10 +76,11 @@ describe('NavigationService', () => {
     it('should do WHAT(?) if the request fails');
   });
 
-  describe('selectedNodes', () => {
+  describe('currentNode', () => {
     let service: NavigationService, location: MockLocationService;
-    let currentNodes: NavigationNode[];
+    let currentNode: CurrentNode;
 
+    const topBarNodes: NavigationNode[] = [{ url: 'api/url', title: 'api' }];
     const sideNavNodes: NavigationNode[] = [
         { title: 'a', children: [
           { url: 'b', title: 'b', children: [
@@ -92,7 +93,7 @@ describe('NavigationService', () => {
       ];
 
     const navJson = {
-      TopBar: [ { url: 'api/url', title: 'api' }],
+      TopBar: topBarNodes,
       SideNav: sideNavNodes,
       __versionInfo: {}
     };
@@ -102,7 +103,7 @@ describe('NavigationService', () => {
       location = injector.get(LocationService);
 
       service = injector.get(NavigationService);
-      service.selectedNodes.subscribe(nodes => currentNodes = nodes);
+      service.currentNode.subscribe(selected => currentNode = selected);
 
       const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse(navJson));
@@ -110,32 +111,42 @@ describe('NavigationService', () => {
 
     it('should list the side navigation node that matches the current location, and all its ancestors', () => {
       location.urlSubject.next('b');
-      expect(currentNodes).toEqual([
-        sideNavNodes[0].children[0],
-        sideNavNodes[0]
-      ]);
+      expect(currentNode).toEqual({
+        view: 'SideNav',
+        nodes: [
+          sideNavNodes[0].children[0],
+          sideNavNodes[0]
+        ]
+      });
 
       location.urlSubject.next('d');
-      expect(currentNodes).toEqual([
-        sideNavNodes[0].children[0].children[1],
-        sideNavNodes[0].children[0],
-        sideNavNodes[0]
-      ]);
+      expect(currentNode).toEqual({
+        view: 'SideNav',
+        nodes: [
+          sideNavNodes[0].children[0].children[1],
+          sideNavNodes[0].children[0],
+          sideNavNodes[0]
+        ]
+      });
 
       location.urlSubject.next('f');
-      expect(currentNodes).toEqual([
-        sideNavNodes[1]
-      ]);
+      expect(currentNode).toEqual({
+        view: 'SideNav',
+        nodes: [ sideNavNodes[1] ]
+      });
     });
 
-    it('should be an empty array if the current location is a top menu node', () => {
+    it('should be a TopBar selected node if the current location is a top menu node', () => {
       location.urlSubject.next('api/url');
-      expect(currentNodes).toEqual([]);
+      expect(currentNode).toEqual({
+        view: 'TopBar',
+        nodes: [ topBarNodes[0] ]
+      });
     });
 
-    it('should be an empty array if no side navigation node matches the current location', () => {
+    it('should be undefined if no side navigation node matches the current location', () => {
       location.urlSubject.next('g');
-      expect(currentNodes).toEqual([]);
+      expect(currentNode).toBeUndefined();
     });
   });
 

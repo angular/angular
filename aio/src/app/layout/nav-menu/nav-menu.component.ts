@@ -1,10 +1,12 @@
 import { Component, EventEmitter, OnInit, OnDestroy } from '@angular/core';
-import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+import { CurrentNode, NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeUntil';
+
+const sideNav = 'SideNav';
 
 @Component({
   selector: 'aio-nav-menu',
@@ -19,8 +21,13 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   onDestroy = new Subject();
 
   constructor(navigationService: NavigationService) {
-    this.nodes = navigationService.navigationViews.map(views => views.SideNav).takeUntil(this.onDestroy);
-    this.selectedNodes = navigationService.selectedNodes.takeUntil(this.onDestroy);
+    this.nodes = navigationService.navigationViews
+      .map(views => views[sideNav])
+      .takeUntil(this.onDestroy);
+
+    this.selectedNodes = navigationService.currentNode
+      .map(current => current && current.view === sideNav ? current.nodes : [])
+      .takeUntil(this.onDestroy);
   }
 
   ngOnInit() {

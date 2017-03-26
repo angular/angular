@@ -4,7 +4,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { NavMenuComponent } from './nav-menu.component';
-import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+import { CurrentNode, NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
 
 
 describe('NavMenuComponent', () => {
@@ -49,5 +49,5 @@ class TestNavigationService {
   };
 
   navigationViews = new BehaviorSubject<NavigationViews>(this.navJson);
-  selectedNodes = new BehaviorSubject<NavigationNode[]>([]);
+  currentNode = new BehaviorSubject<CurrentNode>(undefined);
 }

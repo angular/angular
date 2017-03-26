@@ -4,6 +4,8 @@ import { NavigationService, NavigationViews, NavigationNode } from 'app/navigati
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/operator/map';
 
+const topBar = 'TopBar';
+
 @Component({
   selector: 'aio-top-menu',
   template: `
@@ -19,6 +21,6 @@ export class TopMenuComponent {
   nodes: Observable<NavigationNode[]>;
 
   constructor(navigationService: NavigationService) {
-    this.nodes = navigationService.navigationViews.map(views => views.TopBar);
+    this.nodes = navigationService.navigationViews.map(views => views[topBar]);
   }
 }
