@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
@@ -9,6 +10,7 @@ import { MdButtonModule} from '@angular/material/button';
 import { MdIconModule} from '@angular/material/icon';
 import { MdInputModule } from '@angular/material/input';
 import { MdSidenavModule } from '@angular/material/sidenav';
+import { MdTabsModule } from '@angular/material';
 import { Platform } from '@angular/material/core';
 
 // Temporary fix for MdSidenavModule issue:
@@ -18,7 +20,7 @@ import 'rxjs/add/operator/first';
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { EmbeddedModule } from 'app/embedded/embedded.module';
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
@@ -35,16 +37,18 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 @NgModule({
   imports: [
     BrowserModule,
+    EmbeddedModule,
     HttpModule,
+    BrowserAnimationsModule,
     MdButtonModule,
     MdIconModule,
     MdInputModule,
     MdToolbarModule,
-    MdSidenavModule
+    MdSidenavModule,
+    MdTabsModule
   ],
   declarations: [
     AppComponent,
-    embeddedComponents,
     DocViewerComponent,
     TopMenuComponent,
     NavMenuComponent,
@@ -54,7 +58,6 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   ],
   providers: [
     ApiService,
-    EmbeddedComponents,
     GaService,
     Logger,
     Location,
@@ -66,7 +69,6 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
     Platform,
     AutoScrollService,
   ],
-  entryComponents: [ embeddedComponents ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
