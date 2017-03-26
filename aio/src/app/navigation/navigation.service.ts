@@ -20,7 +20,7 @@ export interface NavigationViews {
 }
 
 export interface NavigationMap {
-  [url: string]: NavigationNode;
+  [url: string]: { navView: string, nodes: NavigationNode[] };
 }
 
 export interface VersionInfo {
@@ -58,6 +58,11 @@ export class NavigationService {
    * An observable array of nodes that indicate which nodes in the `navigationViews` match the current URL location
    */
   selectedNodes: Observable<NavigationNode[]>;
+
+  /**
+   * The NavigationView key that contains the currently seleted NavigationNode
+   */
+   selectedNavView: Observable<string>;
 
   constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
@@ -110,7 +115,7 @@ export class NavigationService {
       this.location.currentUrl,
       (navMap, url) => {
         url = url.replace(/\/$/, '');
-        return navMap[url] || [];
+        return navMap[url] ? navMap[url].nodes : [];
       })
       .publishReplay(1);
     selectedNodes.connect();
@@ -125,17 +130,17 @@ export class NavigationService {
    */
   private computeUrlToNodesMap(navigation: NavigationViews) {
     const navMap: NavigationMap = {};
-    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
+    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(key, node)));
     return navMap;
 
-    function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {
+    function walkNodes(navView: string, node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
       if (node.url) {
         // only map to this node if it has a url associated with it (strip off trailing slashes)
-        navMap[node.url.replace(/\/$/, '')] = nodes;
+        navMap[node.url.replace(/\/$/, '')] = { navView, nodes };
       }
       if (node.children) {
-        node.children.forEach(child => walkNodes(child, nodes));
+        node.children.forEach(child => walkNodes(navView, child, nodes));
       }
     }
   }
