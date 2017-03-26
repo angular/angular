@@ -7,7 +7,7 @@
 
 <md-sidenav-container class="sidenav-container">
 
-  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "isSideBySide ? 'side' : 'over'">
+  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide && selectedNavView === 'SideNav'" [mode] = "isSideBySide ? 'side' : 'over'">
     <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="navigationViews?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
     <aio-nav-menu [nodes]="navigationViews?.SideNav" [selectedNodes]="selectedNodes"></aio-nav-menu>
   </md-sidenav>

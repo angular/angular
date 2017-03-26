@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   currentDocument: Observable<DocumentContents>;
   navigationViews: NavigationViews;
   selectedNodes: NavigationNode[];
+  selectedNavView: string;
   versionInfo: Observable<VersionInfo>;
 
   @ViewChildren('searchBox, searchResults', { read: ElementRef })
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit {
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
     navigationService.navigationViews.subscribe(views => this.navigationViews = views);
     navigationService.selectedNodes.subscribe(nodes => this.selectedNodes = nodes);
+    navigationService.selectedNavView.subscribe(view => this.selectedNavView = view);
     this.versionInfo = navigationService.versionInfo;
   }
 
