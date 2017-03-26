@@ -22,8 +22,8 @@ export class AppComponent implements OnInit {
   isSideBySide = false;
 
   currentDocument: Observable<DocumentContents>;
-  navigationViews: Observable<NavigationViews>;
-  selectedNodes: Observable<NavigationNode[]>;
+  navigationViews: NavigationViews;
+  selectedNodes: NavigationNode[];
   versionInfo: Observable<VersionInfo>;
 
   @ViewChildren('searchBox, searchResults', { read: ElementRef })
@@ -44,8 +44,8 @@ export class AppComponent implements OnInit {
               private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
     locationService.currentUrl.subscribe(url => gaService.locationChanged(url));
-    this.navigationViews = navigationService.navigationViews;
-    this.selectedNodes = navigationService.selectedNodes;
+    navigationService.navigationViews.subscribe(views => this.navigationViews = views);
+    navigationService.selectedNodes.subscribe(nodes => this.selectedNodes = nodes);
     this.versionInfo = navigationService.versionInfo;
   }
 
