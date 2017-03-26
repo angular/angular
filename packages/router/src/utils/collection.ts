@@ -63,24 +63,6 @@ export function and(bools: boolean[]): boolean {
   return !bools.some(v => !v);
 }
 
-export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
-  const m: {[key: string]: V} = {};
-
-  for (const attr in m1) {
-    if (m1.hasOwnProperty(attr)) {
-      m[attr] = m1[attr];
-    }
-  }
-
-  for (const attr in m2) {
-    if (m2.hasOwnProperty(attr)) {
-      m[attr] = m2[attr];
-    }
-  }
-
-  return m;
-}
-
 export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: string) => void): void {
   for (const prop in map) {
     if (map.hasOwnProperty(prop)) {
