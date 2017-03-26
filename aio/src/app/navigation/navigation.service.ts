@@ -75,6 +75,7 @@ export class NavigationService {
     this.versionInfo = this.getVersionInfo(navigationInfo);
     this.navigationViews = this.getNavigationViews(navigationInfo);
     this.selectedNodes = this.getSelectedNodeInfo(this.navigationViews).map(nodeInfo => nodeInfo.nodes);
+    this.selectedNavView = this.getSelectedNodeInfo(this.navigationViews).map(nodeInfo => nodeInfo.navView);
   }
 
   /**
