@@ -13,6 +13,8 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
 import {forEach} from '../src/utils/collection';
@@ -913,13 +915,12 @@ describe('Integration', () => {
           {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
-          {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length}
+          {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
         ]
       });
     });
 
-    it('should provide resolved data',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+    it('should provide resolved data', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmpWithTwoOutlets);
 
          router.resetConfig([{
@@ -1025,6 +1026,57 @@ describe('Integration', () => {
 
          expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
        })));
+
+    describe('should run resolvers for the same route concurrently', () => {
+      let log: string[];
+      let observer: Observer<any>;
+
+      beforeEach(() => {
+        log = [];
+        TestBed.configureTestingModule({
+          providers: [
+            {
+              provide: 'resolver1',
+              useValue: () => {
+                const obs$ = new Observable((obs: Observer<any>) => {
+                  observer = obs;
+                  return () => {};
+                });
+                return map.call(obs$, () => log.push('resolver1'));
+              }
+            },
+            {
+              provide: 'resolver2',
+              useValue: () => {
+                return map.call(of (null), () => {
+                  log.push('resolver2');
+                  observer.next(null);
+                  observer.complete()
+                });
+              }
+            },
+          ]
+        });
+      });
+
+      it('works', fakeAsync(inject([Router], (router: Router) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'a',
+             resolve: {
+               one: 'resolver1',
+               two: 'resolver2',
+             },
+             component: SimpleCmp
+           }]);
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+
+           expect(log).toEqual(['resolver2', 'resolver1']);
+         })));
+    });
   });
 
   describe('router links', () => {

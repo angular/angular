@@ -17,6 +17,7 @@ import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
 import {first} from 'rxjs/operator/first';
+import {last} from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
@@ -1004,11 +1005,29 @@ export class PreActivation {
   }
 
   private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
-    return waitForMap(resolve, (k, v) => {
-      const resolver = this.getToken(v, future);
-      return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
-                                wrapIntoObservable(resolver(future, this.future));
+    const keys = Object.keys(resolve);
+    if (keys.length === 0) {
+      return of ({});
+    }
+    if (keys.length === 1) {
+      const key = keys[0];
+      return map.call(
+          this.getResolver(resolve[key], future), (value: any) => { return {[key]: value}; });
+    }
+    const data: {[k: string]: any} = {};
+    const runningResolvers$ = mergeMap.call(from(keys), (key: string) => {
+      return map.call(this.getResolver(resolve[key], future), (value: any) => {
+        data[key] = value;
+        return value;
+      });
     });
+    return map.call(last.call(runningResolvers$), () => data);
+  }
+
+  private getResolver(injectionToken: any, future: ActivatedRouteSnapshot): Observable<any> {
+    const resolver = this.getToken(injectionToken, future);
+    return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
+                              wrapIntoObservable(resolver(future, this.future));
   }
 
   private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {
