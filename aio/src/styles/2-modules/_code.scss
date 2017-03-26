@@ -1,24 +1,180 @@
-code-example code {
-    @include codeblock($backgroundgray);
+code-example,
+code-tabs md-tab-body {
+    background-color: $backgroundgray;
+    border: 0.5px solid $lightgray;
+    border-radius: 5px;
     color: $darkgray;
-    width: 100%;
-}
-
-code-example[language=bash] code {
-    width: 100%;
-}
-
-.prettyprint {
+    display: block;
+    padding: 10px;
     margin: 24px auto;
+}
+
+code-example header {
+  background-color: $mediumgray;
+  border: 0.5px solid $mediumgray;
+  border-radius: 5px 5px 0 0;
+  color: $offwhite;
+  font-size: 16px;
+  padding: 10px;
+  margin: -10px;
+}
+
+code-example.is-anti-pattern header {
+  border: 2px solid $anti-pattern;
+  background: $anti-pattern;
+}
+
+code-example.is-anti-pattern,
+code-tabs.is-anti-pattern md-tab-body {
+  border: 0.5px solid $anti-pattern;
+}
+
+aio-code pre {
     display: flex;
-}
+    line-height: 1.5;
 
-.prettyprint.lang-bash code {
-    @include codeblock($darkgray);
-    color: $codegreen;
-}
-
-.code-example pre, code-example pre {
+    margin: 0px;
     padding: 0px;
     white-space: pre-wrap;
+    li {
+      line-height: 60%;
+    }
 }
+
+$blue-grey-50: #ECEFF1;
+$blue-grey-100: #CFD8DC;
+$blue-grey-200: #B0BEC5;
+$blue-grey-300: #90A4AE;
+$blue-grey-400: #78909C;
+$blue-grey-500: #607D8B;
+$blue-grey-600: #546E7A;
+$blue-grey-700: #455A64;
+$blue-grey-800: #37474F;
+$blue-grey-900: #263238;
+
+$pink-50: #FCE4EC;
+$pink-100: #F8BBD0;
+$pink-200: #F48FB1;
+$pink-300: #F06292;
+$pink-400: #EC407A;
+$pink-500: #E91E63;
+$pink-600: #D81B60;
+$pink-700: #C2185B;
+$pink-800: #AD1457;
+$pink-900: #880E4F;
+$pink-A100: #FF80AB;
+$pink-A200: #FF4081;
+$pink-A400: #F50057;
+$pink-A700: #C51162;
+
+$teal-50: #E0F2F1;
+$teal-100: #B2DFDB;
+$teal-200: #80CBC4;
+$teal-300: #4DB6AC;
+$teal-400: #26A69A;
+$teal-500: #009688;
+$teal-600: #00897B;
+$teal-700: #00796B;
+$teal-800: #00695C;
+$teal-900: #004D40;
+$teal-A100: #A7FFEB;
+$teal-A200: #64FFDA;
+$teal-A400: #1DE9B6;
+$teal-A700: #00BFA5;
+
+$white: #FFFFFF;
+
+  /*
+  * Screen Colors
+  *
+  */
+
+  .pnk,
+  .blk {
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+  .pnk {
+    background: $blue-grey-50;
+    color: $blue-grey-900;
+  }
+  .blk {
+    background: $blue-grey-900;
+  }
+  .otl {
+    outline: 1px solid rgba($blue-grey-700, .56);
+  }
+  .kwd {
+    color: $pink-600;
+  }
+  .typ,
+  .tag {
+    color: $pink-600;
+  }
+  .str,
+  .atv {
+    color: $teal-700;
+  }
+  .atn {
+    color: $teal-700;
+  }
+  .com {
+    color: $teal-700;
+  }
+  .lit {
+    color: $teal-700;
+  }
+  .pun {
+    color: $blue-grey-700;
+  }
+  .pln {
+    color: $blue-grey-700;
+  }
+  .dec {
+    color: $teal-700;
+  }
+
+
+  /*
+  * Print Colors
+  *
+  */
+
+  @media print {
+    border: none;
+    box-shadow: none;
+
+    ol {
+      background: $white;
+    }
+
+    .kwd {
+      color: $pink-600;
+    }
+    .typ,
+    .tag {
+      color: $pink-600;
+    }
+    .str,
+    .atv {
+      color: $teal-700;
+    }
+    .atn {
+      color: $teal-700;
+    }
+    .com {
+      color: $teal-700;
+    }
+    .lit {
+      color: $teal-700;
+    }
+    .pun {
+      color: $blue-grey-700;
+    }
+    .pln {
+      color: $blue-grey-700;
+    }
+    .dec {
+      color: $teal-700;
+    }
+  }

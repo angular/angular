@@ -3,7 +3,7 @@ import { ComponentFactoryResolver, ElementRef, Injector, NgModule, OnInit, ViewC
 import { By } from '@angular/platform-browser';
 import { DocViewerComponent } from './doc-viewer.component';
 import { DocumentContents } from 'app/documents/document.service';
-import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { EmbeddedModule, embeddedComponents, EmbeddedComponents } from 'app/embedded/embedded.module';
 
 
 /// Embedded Test Components ///
@@ -65,9 +65,10 @@ class BazComponent implements OnInit {
 }
 ///// Test Module //////
 
-const embeddedTestComponents = [FooComponent, BarComponent, BazComponent, ...embeddedComponents];
+const embeddedTestComponents = [FooComponent, BarComponent, BazComponent];
 
 @NgModule({
+  imports: [ EmbeddedModule ],
   entryComponents: embeddedTestComponents
 })
 class TestModule { }
