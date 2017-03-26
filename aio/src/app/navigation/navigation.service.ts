@@ -19,8 +19,13 @@ export interface NavigationViews {
   [name: string]: NavigationNode[];
 }
 
+export interface SelectedNodeInfo {
+  navView: string;
+  nodes: NavigationNode[];
+}
+
 export interface NavigationMap {
-  [url: string]: { navView: string, nodes: NavigationNode[] };
+  [url: string]: SelectedNodeInfo;
 }
 
 export interface VersionInfo {
@@ -69,7 +74,7 @@ export class NavigationService {
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
     this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.selectedNodes = this.getSelectedNodes(this.navigationViews);
+    this.selectedNodes = this.getSelectedNodeInfo(this.navigationViews).map(nodeInfo => nodeInfo.nodes);
   }
 
   /**
@@ -109,13 +114,13 @@ export class NavigationService {
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getSelectedNodes(navigationViews: Observable<NavigationViews>) {
+  private getSelectedNodeInfo(navigationViews: Observable<NavigationViews>): Observable<SelectedNodeInfo> {
     const selectedNodes = combineLatest(
       navigationViews.map(this.computeUrlToNodesMap),
       this.location.currentUrl,
       (navMap, url) => {
         url = url.replace(/\/$/, '');
-        return navMap[url] ? navMap[url].nodes : [];
+        return navMap[url] ? navMap[url] : { navView: null, nodes: [] };
       })
       .publishReplay(1);
     selectedNodes.connect();
