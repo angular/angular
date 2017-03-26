@@ -14,7 +14,7 @@ import {map} from 'rxjs/operator/map';
 import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
-import {merge, shallowEqual, shallowEqualArrays} from './utils/collection';
+import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 
@@ -205,9 +205,9 @@ export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inher
   }
 
   return pathToRoot.slice(inhertingStartingFrom).reduce((res, curr) => {
-    const params = merge(res.params, curr.params);
-    const data = merge(res.data, curr.data);
-    const resolve = merge(res.resolve, curr._resolvedData);
+    const params = {...res.params, ...curr.params};
+    const data = {...res.data, ...curr.data};
+    const resolve = {...res.resolve, ...curr._resolvedData};
     return {params, data, resolve};
   }, <any>{params: {}, data: {}, resolve: {}});
 }
