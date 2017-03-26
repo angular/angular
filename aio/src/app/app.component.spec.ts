@@ -48,17 +48,6 @@ describe('AppComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('google analytics', () => {
-    it('should call gaService.locationChanged with initial URL', () => {
-      const { locationChanged } = TestBed.get(GaService) as TestGaService;
-      expect(locationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
-      const args = locationChanged.calls.first().args;
-      expect(args[0]).toBe(initialUrl);
-    });
-
-    // Todo: add test to confirm tracking URL when navigate.
-  });
-
   describe('isHamburgerVisible', () => {
     console.log('PENDING: AppComponent isHamburgerVisible');
   });

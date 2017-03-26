@@ -3,14 +3,12 @@ import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, View
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/operator/map';
 
-import { GaService } from 'app/shared/ga.service';
-import { LocationService } from 'app/shared/location.service';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { NavigationService, VersionInfo } from 'app/navigation/navigation.service';
+import { LocationService } from 'app/shared/location.service';
 import { SearchService } from 'app/search/search.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
 
 @Component({
   selector: 'aio-shell',
@@ -40,12 +38,9 @@ export class AppComponent implements OnInit {
 
   constructor(documentService: DocumentService,
               private autoScrollService: AutoScrollService,
-              private gaService: GaService,
               private locationService: LocationService,
-              navigationService: NavigationService,
               private searchService: SearchService) {
     this.currentDocument = documentService.currentDocument;
-    this.version = navigationService.versionInfo.map(info => info.full);
   }
 
   ngOnInit() {
@@ -55,7 +50,6 @@ export class AppComponent implements OnInit {
     this.onResize(window.innerWidth);
 
     this.locationService.currentUrl.subscribe(url => {
-      this.gaService.locationChanged(url);
       this.autoScroll(); // scroll even if only the hash fragment changed
     });
   }
