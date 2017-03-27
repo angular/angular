@@ -639,7 +639,7 @@ export interface Component extends Directive {
    * ### DSL Animation Functions
    *
    * Please visit each of the animation DSL functions listed below to gain a better understanding
-   * of how and why they are used for crafting animations in Angular2:
+   * of how and why they are used for crafting animations in Angular:
    *
    * - {@link trigger trigger()}
    * - {@link state state()}

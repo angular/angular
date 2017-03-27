@@ -10,7 +10,7 @@
 /**
  * Extract i18n messages from source code
  */
-// Must be imported first, because angular2 decorators throws on load.
+// Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
