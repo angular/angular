@@ -399,7 +399,7 @@ AngularJS and Angular approaches. Here's what happens:
 </figure>
 
 What this means in practice is that we do not need to call `$apply()` in
-our code, regardless of whether it is in AngularJS on Angular. The
+our code, regardless of whether it is in AngularJS or in Angular. The
 `UpgradeModule` does it for us. We *can* still call `$apply()` so there
 is no need to remove such calls from existing code. Those calls just don't
 have any effect in a hybrid application.
