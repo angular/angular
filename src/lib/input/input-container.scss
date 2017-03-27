@@ -84,6 +84,9 @@ $mat-input-underline-disabled-background-image:
   padding: 0;
   width: 100%;
 
+  // Needed to make last line of the textarea line up with the baseline.
+  vertical-align: bottom;
+
   .mat-end & {
     text-align: right;
 
