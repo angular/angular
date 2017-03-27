@@ -12,7 +12,7 @@ module.exports = function renderExamples(getExampleRegion) {
       docs.forEach(doc => {
         if (doc.renderedContent) {
           // We match either `code-example` or `code-pane` elements that have a path attribute
-          doc.renderedContent = doc.renderedContent.replace(/<(code-example|code-pane)([^>]*)>[^<]*<\/\1>/, (original, element, attributes) => {
+          doc.renderedContent = doc.renderedContent.replace(/<(code-example|code-pane)([^>]*)>[^<]*<\/\1>/g, (original, element, attributes) => {
             const attrMap = parseAttributes(attributes);
             if (attrMap.path) {
               // We found a path attribute so look up the example and rebuild the HTML
