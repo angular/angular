@@ -35,7 +35,7 @@ class ExternalTemplateComp {
 class BadTemplateUrl {
 }
 
-// Tests for angular2/testing bundle specific to the browser environment.
+// Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
 export function main() {
   describe('test APIs for the browser', () => {
