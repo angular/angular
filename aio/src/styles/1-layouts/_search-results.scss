@@ -7,7 +7,7 @@ aio-search-results {
     display: flex;
     flex-direction: row;
     overflow: scroll;
-    padding: 80px 20px 20px;
+    padding-top: 50px;
     color: $offwhite;
     width: 100%;
     max-height: 40%;
@@ -17,6 +17,7 @@ aio-search-results {
     left: 0;
     right: 0;
     background-color: $darkgray;
+    border: 24px solid $darkgray;
 }
 
 .search-area {
@@ -39,5 +40,9 @@ aio-search-results {
         &:visited {
         text-decoration: none;
         }
+    }
+
+    @include bp(tiny) {
+        width: 100%;
     }
 }
