@@ -222,7 +222,8 @@ export class FocusTrapDeprecatedDirective implements OnDestroy, AfterContentInit
 
 /** Directive for trapping focus within a region. */
 @Directive({
-  selector: '[cdkTrapFocus]'
+  selector: '[cdkTrapFocus]',
+  exportAs: 'cdkTrapFocus',
 })
 export class FocusTrapDirective implements OnDestroy, AfterContentInit {
   focusTrap: FocusTrap;
