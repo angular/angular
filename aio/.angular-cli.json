@@ -58,7 +58,7 @@
   "defaults": {
     "styleExt": "scss",
     "component": {
-      "inlineStype": true
+      "inlineStyle": true
     }
   }
 }
