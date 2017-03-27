@@ -7,6 +7,7 @@ Install the Angular QuickStart seed for faster, more efficient development on yo
 @description
 
 
+
 {@a develop-locally}
 ## Setup a local development environment
 
@@ -111,6 +112,67 @@ Open a terminal window in the project folder and enter the following commands fo
 {@a seed}
 
 ## What's in the QuickStart seed?
+
+The **QuickStart seed** contains the same application as the QuickStart playground.
+But its true purpose is to provide a solid foundation for _local_ development.
+Consequently, there are _many more files_ in the project folder on your machine, 
+most of which you can [learn about later](guide/setup-systemjs-anatomy).
+
+
+
+{@a app-files}
+Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
+
+<aio-filetree>
+
+  <aio-folder>
+    src
+    <aio-folder>
+      app
+      <aio-file>
+        app.component.ts
+      </aio-file>
+
+
+      <aio-file>
+        app.module.ts
+      </aio-file>
+
+
+    </aio-folder>
+
+
+    <aio-file>
+      main.ts
+    </aio-file>
+
+
+  </aio-folder>
+
+
+</aio-filetree>
+
+
+
+<code-tabs>
+
+  <code-pane title="src/app/app.component.ts" path="setup/src/app/app.component.ts">
+
+  </code-pane>
+
+
+  <code-pane title="src/app/app.module.ts" path="setup/src/app/app.module.ts">
+
+  </code-pane>
+
+
+  <code-pane title="src/main.ts" path="setup/src/main.ts">
+
+  </code-pane>
+
+
+</code-tabs>
+
 All guides and cookbooks have _at least these core files_. 
 Each file has a distinct purpose and evolves independently as the application grows.
 
@@ -213,11 +275,32 @@ The following are all in `src/`
 </table>
 
 
+
+~~~ {.l-sub-section}
+
 ### Next Step
 
 If you're new to Angular, we recommend staying on the [learning path](guide/learning-angular).
+
+
+~~~
+
 <br></br><br></br>
 
 {@a install-prerequisites}
 
 ## Appendix: !{_prereq}
+Node.js and npm are essential to modern web development with Angular and other platforms.
+Node powers client development and build tools.
+The _npm_ package manager, itself a _node_ application, installs JavaScript libraries.
+
+<a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
+Get them now</a> if they're not already installed on your machine.
+
+**Verify that you are running node `v4.x.x` or higher and npm `3.x.x` or higher**
+by running the commands `node -v` and `npm -v` in a terminal/console window.
+Older versions produce errors.
+
+We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of node and npm. 
+You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that 
+use other versions of node and npm.

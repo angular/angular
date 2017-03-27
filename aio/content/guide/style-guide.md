@@ -5,13 +5,27 @@ Style Guide
 Write Angular with style.
 
 @description
-Welcome to the Angular Style Guide
-
-## Purpose
-
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
-This style guide presents our preferred conventions and, as importantly, explains why.
+This style guide presents preferred conventions and, as importantly, explains why.
+
+
+
+{@a toc}
+# Contents
+
+  * [Single responsibility](guide/style-guide#single-responsibility)
+  * [Naming](guide/style-guide#naming)
+  * [Coding conventions](guide/style-guide#coding-conventions)
+  * [App structure and Angular modules](guide/style-guide#application-structure-and-angular-modules)
+  * [Components](guide/style-guide#components)
+  * [Directives](guide/style-guide#directives)
+  * [Services](guide/style-guide#services)
+  * [Data services](guide/style-guide#data-services)
+  * [Lifecycle hooks](guide/style-guide#lifecycle-hooks)
+  * [Appendix](guide/style-guide#appendix)
+
+
 ## Style vocabulary
 
 Each guideline describes either a good or bad practice, and all have a consistent presentation.
@@ -45,7 +59,14 @@ If you fully understand the meaning behind the guideline and have a good reason 
 
 **Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
 
+
 ~~~
+
+
+<div class='s-why'>
+  **Why?** gives reasons for following the previous recommendations.  
+    
+</div>
 
 
 ## File structure conventions
@@ -53,32 +74,20 @@ If you fully understand the meaning behind the guideline and have a good reason 
 Some code examples display a file that has one or more similarly named companion files. 
 For example, `hero.component.ts` and `hero.component.html`.
 
-The guideline will use the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
+The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
 
 
 
-{@a toc}
-## Table of contents
-
-  1. [Single responsibility](guide/style-guide#single-responsibility)
-  1. [Naming](guide/style-guide#naming)
-  1. [Coding conventions](guide/style-guide#coding-conventions)
-  1. [App structure and Angular modules](guide/style-guide#application-structure-and-angular-modules)
-  1. [Components](guide/style-guide#components)
-  1. [Directives](guide/style-guide#directives)
-  1. [Services](guide/style-guide#services)
-  1. [Data services](guide/style-guide#data-services)
-  1. [Lifecycle hooks](guide/style-guide#lifecycle-hooks)
-  1. [Appendix](guide/style-guide#appendix)
-
+{@a single-responsibility}
 ## Single responsibility
 
 Apply the 
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle" target="_blank"><i>Single Responsibility Principle</i> (SRP)</a>
+<a href="https://wikipedia.org/wiki/Single_responsibility_principle" target="_blank"><i>single responsibility principle</i> (SRP)</a>
 to all components, services, and other symbols. 
 This helps make the app cleaner, easier to read and maintain, and more testable.
 
-### <a id="01-01"></a>_Rule of One_
+
+### <a id="01-01"></a>Rule of One
 #### <a href="#01-01">Style 01-01</a>
 
 ~~~ {.s-rule.do}
@@ -117,52 +126,57 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 
 The key is to make the code more reusable, easier to read, and less mistake prone.
 
-The following *negative* example defines the `AppComponent`, bootstraps the app, defines the `Hero` model object, and loads heroes from the server ... all in the same file. *Don't do this*.
+The following *negative* example defines the `AppComponent`, bootstraps the app, 
+defines the `Hero` model object, and loads heroes from the server all in the same file. 
+*Don't do this*.
 
 
-{@example 'style-guide/ts/src/01-01/app/heroes/hero.component.avoid.ts'}
+<code-example path="style-guide/src/01-01/app/heroes/hero.component.avoid.ts">
+
+</code-example>
 
 It is a better practice to redistribute the component and its 
 supporting classes into their own, dedicated files.
 
-<md-tab-group>
 
-  <md-tab label="main.ts">
-    {@example 'style-guide/ts/src/01-01/main.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="main.ts" path="style-guide/src/01-01/main.ts">
 
-  <md-tab label="app/app.module.ts">
-    {@example 'style-guide/ts/src/01-01/app/app.module.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/app.component.ts">
-    {@example 'style-guide/ts/src/01-01/app/app.component.ts'}
-  </md-tab>
+  <code-pane title="app/app.module.ts" path="style-guide/src/01-01/app/app.module.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/heroes.component.ts">
-    {@example 'style-guide/ts/src/01-01/app/heroes/heroes.component.ts'}
-  </md-tab>
+  <code-pane title="app/app.component.ts" path="style-guide/src/01-01/app/app.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/shared/hero.service.ts">
-    {@example 'style-guide/ts/src/01-01/app/heroes/shared/hero.service.ts'}
-  </md-tab>
+  <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/01-01/app/heroes/heroes.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/shared/hero.model.ts">
-    {@example 'style-guide/ts/src/01-01/app/heroes/shared/hero.model.ts'}
-  </md-tab>
+  <code-pane title="app/heroes/shared/hero.service.ts" path="style-guide/src/01-01/app/heroes/shared/hero.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/shared/mock-heroes.ts">
-    {@example 'style-guide/ts/src/01-01/app/heroes/shared/mock-heroes.ts'}
-  </md-tab>
+  <code-pane title="app/heroes/shared/hero.model.ts" path="style-guide/src/01-01/app/heroes/shared/hero.model.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/heroes/shared/mock-heroes.ts" path="style-guide/src/01-01/app/heroes/shared/mock-heroes.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 As the app grows, this rule becomes even more important.
 <a href="#toc">Back to top</a>
@@ -593,12 +607,12 @@ Invent additional type names if you must but take care not to create too many.
 
 ~~~ {.s-rule.do}
 
-**Do** suffix a service class name with Service. 
+**Do** suffix a service class name with `Service`. 
 For example, something that gets data or heroes 
 should be called a `DataService` or a `HeroService`.
 
 A few terms are unambiguously services. They typically 
-indicate agency by ending in "er". You may prefer to name 
+indicate agency by ending in "-er". You may prefer to name 
 a service that logs messages `Logger` rather than `LoggerService`. 
 Decide if this exception is agreeable in your project. 
 As always, strive for consistency.
@@ -742,7 +756,7 @@ As always, strive for consistency.
 
 ~~~ {.s-rule.avoid}
 
-**Avoid** putting app logic in the `main.ts`. Instead, consider placing it in a component or service.
+**Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
 
 
 ~~~
@@ -761,7 +775,9 @@ As always, strive for consistency.
 
 
 
-{@example 'style-guide/ts/src/02-05/main.ts'}
+<code-example path="style-guide/src/02-05/main.ts">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="02-06"></a>Directive selectors
@@ -783,7 +799,7 @@ As always, strive for consistency.
 
 
 <div class='s-why' class='s-why-last'>
-  **Why?** The Angular HTML parser is case sensitive and will recognize lower camel case.  
+  **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.  
     
 </div>
 
@@ -839,19 +855,27 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-{@example 'style-guide/ts/src/02-07/app/heroes/hero.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/02-07/app/heroes/hero.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/02-07/app/users/users.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/02-07/app/users/users.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/02-07/app/heroes/hero.component.ts' region='example'}
+<code-example path="style-guide/src/02-07/app/heroes/hero.component.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/02-07/app/users/users.component.ts' region='example'}
+<code-example path="style-guide/src/02-07/app/users/users.component.ts" region="example">
+
+</code-example>
 
 ### <a id="02-08"></a>Custom prefix for directives
 #### <a href="#02-08">Style 02-08</a>
@@ -887,11 +911,15 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-{@example 'style-guide/ts/src/02-08/app/shared/validate.directive.avoid.ts' region='example'}
+<code-example path="style-guide/src/02-08/app/shared/validate.directive.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/02-08/app/shared/validate.directive.ts' region='example'}
+<code-example path="style-guide/src/02-08/app/shared/validate.directive.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="02-09"></a>Pipe names
@@ -1146,7 +1174,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr style=top>
 
     <td>
-      End to End Tests
+      End-to-End Tests
     </td>
 
 
@@ -1370,7 +1398,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 ## Coding conventions
 
-Have consistent set of coding, naming, and whitespace conventions.
+Have a consistent set of coding, naming, and whitespace conventions.
 
 ### <a id="03-01"></a>Classes
 #### <a href="#03-01">Style 03-01</a>
@@ -1398,11 +1426,15 @@ Have consistent set of coding, naming, and whitespace conventions.
 
 
 
-{@example 'style-guide/ts/src/03-01/app/core/exception.service.avoid.ts' region='example'}
+<code-example path="style-guide/src/03-01/app/core/exception.service.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/03-01/app/core/exception.service.ts' region='example'}
+<code-example path="style-guide/src/03-01/app/core/exception.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="03-02"></a>Constants
@@ -1449,7 +1481,7 @@ Have consistent set of coding, naming, and whitespace conventions.
 <div class='s-why' class='s-why-last'>
   **Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects  
     an era before the modern IDEs that quickly reveal the `const` declaration.  
-    TypeScript itself prevents accidental reassignment.   
+    TypeScript prevents accidental reassignment.   
     
 </div>
 
@@ -1472,7 +1504,9 @@ Have consistent set of coding, naming, and whitespace conventions.
 
 
 
-{@example 'style-guide/ts/src/03-02/app/core/data.service.ts'}
+<code-example path="style-guide/src/03-02/app/core/data.service.ts">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="03-03"></a>Interfaces
@@ -1531,11 +1565,15 @@ Have consistent set of coding, naming, and whitespace conventions.
 
 
 
-{@example 'style-guide/ts/src/03-03/app/core/hero-collector.service.avoid.ts' region='example'}
+<code-example path="style-guide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/03-03/app/core/hero-collector.service.ts' region='example'}
+<code-example path="style-guide/src/03-03/app/core/hero-collector.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="03-04"></a>Properties and methods
@@ -1572,17 +1610,21 @@ Have consistent set of coding, naming, and whitespace conventions.
 
 
 <div class='s-why' class='s-why-last'>
-  **Why?** TypeScript tooling makes it easy to identify private vs public properties and methods.  
+  **Why?** TypeScript tooling makes it easy to identify private vs. public properties and methods.  
     
 </div>
 
 
 
-{@example 'style-guide/ts/src/03-04/app/core/toast.service.avoid.ts' region='example'}
+<code-example path="style-guide/src/03-04/app/core/toast.service.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/03-04/app/core/toast.service.ts' region='example'}
+<code-example path="style-guide/src/03-04/app/core/toast.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="03-06"></a>Import line spacing
@@ -1628,11 +1670,15 @@ Have consistent set of coding, naming, and whitespace conventions.
 
 
 
-{@example 'style-guide/ts/src/03-06/app/heroes/shared/hero.service.avoid.ts' region='example'}
+<code-example path="style-guide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/03-06/app/heroes/shared/hero.service.ts' region='example'}
+<code-example path="style-guide/src/03-06/app/heroes/shared/hero.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ## Application structure and Angular modules
@@ -1653,10 +1699,10 @@ Use the naming conventions for files in this guide.
 
 ~~~ {.s-rule.do}
 
-**Do** structure the app such that you can `L`ocate code quickly, 
-`I`dentify the code at a glance, 
-keep the `F`lattest structure you can, and 
-`T`ry to be DRY.
+**Do** structure the app such that you can **L**ocate code quickly, 
+**I**dentify the code at a glance, 
+keep the **F**lattest structure you can, and 
+**T**ry to be DRY.
 
 
 ~~~
@@ -1692,8 +1738,7 @@ keep the `F`lattest structure you can, and
 
 
 <div class='s-why' class='s-why-last'>
-  **Why?**    
-    To work efficiently you must be able to find files quickly,   
+  **Why?** To work efficiently you must be able to find files quickly,   
     especially when you do not know (or do not remember) the file _names_.   
     Keeping related files near each other in an intuitive location saves time.   
     A descriptive folder structure makes a world of difference to you and the people who come after you.  
@@ -1738,9 +1783,16 @@ keep the `F`lattest structure you can, and
 </div>
 
 
+
+~~~ {.l-sub-section}
+
 It may be advantageous to deviate from the _one-thing-per-file_ rule when 
 you have a set of small, closely-related features that are better discovered and understood
 in a single file than as multiple files. Be wary of this loophole.
+
+
+~~~
+
 <a href="#toc">Back to top</a>
 ### <a id="04-04"></a>Flat
 #### <a href="#04-04">Style 04-04</a>
@@ -1793,7 +1845,7 @@ in a single file than as multiple files. Be wary of this loophole.
 
 ~~~ {.s-rule.do}
 
-**Do** be DRY (Don't Repeat Yourself)
+**Do** be DRY (Don't Repeat Yourself).
 
 
 ~~~
@@ -1811,7 +1863,8 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class='s-why' class='s-why-last'>
   **Why?** Being DRY is important, but not crucial if it sacrifices the other elements of LIFT.  
     That's why it's called _T-DRY_.   
-    For example, it's redundant to name a component, `hero-view.component.html` because a component is obviously a view.   
+    For example, it's redundant to name a template `hero-view.component.html` because   
+    with the `.html` extension, it is obviously a view.   
     But if something is not obvious or departs from a convention, then spell it out.  
     
 </div>
@@ -2087,10 +2140,17 @@ Here is a compliant folder and file structure:
 </aio-filetree>
 
 
+
+~~~ {.l-sub-section}
+
 While components in dedicated folders are widely preferred, 
 another option for small apps is to keep components flat (not in a dedicated folder). 
 This adds up to four files to the existing folder, but also reduces the folder nesting. 
 Whatever you choose, be consistent.
+
+
+~~~
+
 <a href="#toc">Back to top</a>
 ### <a id="04-07"></a>_Folders-by-feature_ structure
 #### <a href="#04-07">Style 04-07</a>
@@ -2105,8 +2165,8 @@ Whatever you choose, be consistent.
 
 
 <div class='s-why'>
-  **Why?** A developer can locate the code, identify what each file represents   
-    at a glance, the structure is as flat as it can be, and there are no repetitive or redundant names.  
+  **Why?** A developer can locate the code and identify what each file represents   
+    at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.  
     
 </div>
 
@@ -2118,13 +2178,16 @@ Whatever you choose, be consistent.
 
 
 <div class='s-why'>
-  **Why?** Helps reduce the app from becoming cluttered through organizing the content and keeping them aligned with the LIFT guidelines.  
+  **Why?** Helps reduce the app from becoming cluttered through organizing the   
+    content and keeping them aligned with the LIFT guidelines.  
     
 </div>
 
 
 <div class='s-why'>
-  **Why?** When there are a lot of files (e.g. 10+), locating them is easier with a consistent folder structure and more difficult in a flat structure.  
+  **Why?** When there are a lot of files, for example 10+,   
+    locating them is easier with a consistent folder structure   
+    and more difficult in a flat structure.  
     
 </div>
 
@@ -2161,7 +2224,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** create an Angular module in the app's root folder (e.g., in `/src/app`).
+**Do** create an Angular module in the app's root folder,
+for example, in `/src/app`.
 
 
 ~~~
@@ -2189,7 +2253,9 @@ Whatever you choose, be consistent.
 
 
 
-{@example 'style-guide/ts/src/04-08/app/app.module.ts' region='example'}
+<code-example path="style-guide/src/04-08/app/app.module.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="04-09"></a>Feature modules
@@ -2197,7 +2263,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** create an Angular module for all distinct features in an application (e.g. `Heroes` feature).
+**Do** create an Angular module for all distinct features in an application; 
+for example, a `Heroes` feature.
 
 
 ~~~
@@ -2206,7 +2273,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** place the feature module in the same named folder as the feature area (.e.g `app/heroes`).
+**Do** place the feature module in the same named folder as the feature area;
+for example, in `app/heroes`.
 
 
 ~~~
@@ -2215,7 +2283,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** name the feature module file reflecting the name of the feature area and folder (e.g. `app/heroes/heroes.module.ts`)
+**Do** name the feature module file reflecting the name of the feature area 
+and folder; for example, `app/heroes/heroes.module.ts`.
 
 
 ~~~
@@ -2224,7 +2293,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** name the feature module symbol reflecting the name of the feature area, folder, and file (e.g. `app/heroes/heroes.module.ts` defines `HeroesModule`)
+**Do** name the feature module symbol reflecting the name of the feature 
+area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `HeroesModule`.
 
 
 ~~~
@@ -2272,7 +2342,8 @@ Whatever you choose, be consistent.
 
 ~~~ {.s-rule.do}
 
-**Do** create a feature module named `SharedModule` in a `shared` folder (e.g. `app/shared/shared.module.ts` defines `SharedModule`).
+**Do** create a feature module named `SharedModule` in a `shared` folder; 
+for example, `app/shared/shared.module.ts` defines `SharedModule`.
 
 
 ~~~
@@ -2291,7 +2362,7 @@ items will be re-used and referenced by the components declared in other feature
 
 ~~~ {.s-rule.consider}
 
-**Consider** using the name SharedModule, when the contents of a shared 
+**Consider** using the name SharedModule when the contents of a shared 
 module are referenced across the entire application.
 
 
@@ -2312,14 +2383,17 @@ in a particular feature module.
 
 ~~~ {.s-rule.do}
 
-**Do** import all modules required by the assets in the `SharedModule` (e.g. `CommonModule` and `FormsModule`).
+**Do** import all modules required by the assets in the `SharedModule`;
+for example, `CommonModule` and `FormsModule`.
 
 
 ~~~
 
 
 <div class='s-why'>
-  **Why?** `SharedModule` will contain components, directives and pipes that may need features from another common module (e.g. `ngFor` in `CommonModule`).  
+  **Why?** `SharedModule` will contain components, directives and pipes   
+    that may need features from another common module; for example,   
+    `ngFor` in `CommonModule`.  
     
 </div>
 
@@ -2440,39 +2514,40 @@ in a particular feature module.
 </aio-filetree>
 
 
-<md-tab-group>
 
-  <md-tab label="app/shared/shared.module.ts">
-    {@example 'style-guide/ts/src/04-10/app/shared/shared.module.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/shared/shared.module.ts" path="style-guide/src/04-10/app/shared/shared.module.ts">
 
-  <md-tab label="app/shared/init-caps.pipe.ts">
-    {@example 'style-guide/ts/src/04-10/app/shared/init-caps.pipe.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/shared/filter-text/filter-text.component.ts">
-    {@example 'style-guide/ts/src/04-10/app/shared/filter-text/filter-text.component.ts'}
-  </md-tab>
+  <code-pane title="app/shared/init-caps.pipe.ts" path="style-guide/src/04-10/app/shared/init-caps.pipe.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/shared/filter-text/filter-text.service.ts">
-    {@example 'style-guide/ts/src/04-10/app/shared/filter-text/filter-text.service.ts'}
-  </md-tab>
+  <code-pane title="app/shared/filter-text/filter-text.component.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/heroes.component.ts">
-    {@example 'style-guide/ts/src/04-10/app/heroes/heroes.component.ts'}
-  </md-tab>
+  <code-pane title="app/shared/filter-text/filter-text.service.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/heroes/heroes.component.html">
-    {@example 'style-guide/ts/src/04-10/app/heroes/heroes.component.html'}
-  </md-tab>
+  <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/04-10/app/heroes/heroes.component.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/04-10/app/heroes/heroes.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="04-11"></a>Core feature module
@@ -2511,7 +2586,7 @@ and emphasizes its role as orchestrator of the application as a whole.
 
 ~~~ {.s-rule.do}
 
-**Do** put a singleton service whose instance wil be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
+**Do** put a singleton service whose instance will be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
 
 
 ~~~
@@ -2686,55 +2761,63 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 </aio-filetree>
 
 
-<md-tab-group>
 
-  <md-tab label="app/app.module.ts">
-    {@example 'style-guide/ts/src/04-11/app/app.module.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/app.module.ts" path="style-guide/src/04-11/app/app.module.ts" region="example">
 
-  <md-tab label="app/core/core.module.ts">
-    {@example 'style-guide/ts/src/04-11/app/core/core.module.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/core/logger.service.ts">
-    {@example 'style-guide/ts/src/04-11/app/core/logger.service.ts'}
-  </md-tab>
+  <code-pane title="app/core/core.module.ts" path="style-guide/src/04-11/app/core/core.module.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/core/nav/nav.component.ts">
-    {@example 'style-guide/ts/src/04-11/app/core/nav/nav.component.ts'}
-  </md-tab>
+  <code-pane title="app/core/logger.service.ts" path="style-guide/src/04-11/app/core/logger.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/core/nav/nav.component.html">
-    {@example 'style-guide/ts/src/04-11/app/core/nav/nav.component.html'}
-  </md-tab>
+  <code-pane title="app/core/nav/nav.component.ts" path="style-guide/src/04-11/app/core/nav/nav.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/core/spinner/spinner.component.ts">
-    {@example 'style-guide/ts/src/04-11/app/core/spinner/spinner.component.ts'}
-  </md-tab>
+  <code-pane title="app/core/nav/nav.component.html" path="style-guide/src/04-11/app/core/nav/nav.component.html">
+
+  </code-pane>
 
 
-  <md-tab label="app/core/spinner/spinner.component.html">
-    {@example 'style-guide/ts/src/04-11/app/core/spinner/spinner.component.html'}
-  </md-tab>
+  <code-pane title="app/core/spinner/spinner.component.ts" path="style-guide/src/04-11/app/core/spinner/spinner.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/core/spinner/spinner.service.ts">
-    {@example 'style-guide/ts/src/04-11/app/core/spinner/spinner.service.ts'}
-  </md-tab>
+  <code-pane title="app/core/spinner/spinner.component.html" path="style-guide/src/04-11/app/core/spinner/spinner.component.html">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/core/spinner/spinner.service.ts" path="style-guide/src/04-11/app/core/spinner/spinner.service.ts">
 
+  </code-pane>
+
+
+</code-tabs>
+
+
+
+~~~ {.l-sub-section}
 
 `AppModule` is a little smaller because many app/root classes have moved to other modules. 
 `AppModule` is stable because you will add future components and providers to other modules, not this one. 
 `AppModule` delegates to imported modules rather than doing work. 
 `AppModule` is focused on its main task, orchestrating the app as a whole.
+
+
+~~~
+
 <a href="#toc">Back to top</a>
 ### <a id="04-12"></a>Prevent re-import of the core module
 #### <a href="#04-12">Style 04-12</a>
@@ -2761,19 +2844,20 @@ Only the root `AppModule` should import the `CoreModule`.
 </div>
 
 
-<md-tab-group>
 
-  <md-tab label="app/core/module-import-guard.ts">
-    {@example 'style-guide/ts/src/04-12/app/core/module-import-guard.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/core/module-import-guard.ts" path="style-guide/src/04-12/app/core/module-import-guard.ts">
 
-  <md-tab label="app/core/core.module.ts">
-    {@example 'style-guide/ts/src/04-12/app/core/core.module.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/core/core.module.ts" path="style-guide/src/04-12/app/core/core.module.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="04-13"></a>Lazy Loaded folders
@@ -2835,22 +2919,25 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
+
+</code-example>
 
 
-<md-tab-group>
 
-  <md-tab label="app/heroes/shared/hero-button/hero-button.component.ts">
-    {@example 'style-guide/ts/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
-  <md-tab label="app/app.component.html">
-    {@example 'style-guide/ts/src/05-02/app/app.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/app.component.html" path="style-guide/src/05-02/app/app.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-03"></a>Components as elements
@@ -2868,7 +2955,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class='s-why'>
   **Why?** components have templates containing HTML and optional Angular template syntax.  
     They display content.   
-    Developers place components on the page as they would native HTML elements and WebComponents.  
+    Developers place components on the page as they would native HTML elements and web components.  
     
 </div>
 
@@ -2880,26 +2967,31 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-03/app/app.component.avoid.html'}
+<code-example path="style-guide/src/05-03/app/app.component.avoid.html">
+
+</code-example>
 
 
-<md-tab-group>
 
-  <md-tab label="app/heroes/shared/hero-button/hero-button.component.ts">
-    {@example 'style-guide/ts/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
-  <md-tab label="app/app.component.html">
-    {@example 'style-guide/ts/src/05-03/app/app.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/app.component.html" path="style-guide/src/05-03/app/app.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-04"></a>Extract templates and styles to their own files
@@ -2935,7 +3027,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ~~~ {.s-rule.do}
 
-**Do** specify _component-relative_ URLs, prefixed with `./`, and add `moduleId: module.id` to the component metadata.
+**Do** specify _component-relative_ URLs, prefixed with `./`.
 
 
 ~~~
@@ -2961,13 +3053,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 
-<div class='s-why'>
-  **Why?** The JIT compiler requires the `moduleId` for relative URLs; the AOT compiler,   
-    which doesn't need it, safely ignores this property.  
-    
-</div>
-
-
 <div class='s-why' class='s-why-last'>
   **Why?** The `./` prefix is standard syntax for relative URLs; don't depend on Angular's current ability to do without that prefix.  
       
@@ -2976,27 +3061,30 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-04/app/heroes/heroes.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-04/app/heroes/heroes.component.avoid.ts" region="example">
+
+</code-example>
 
 
-<md-tab-group>
 
-  <md-tab label="app/heroes/heroes.component.ts">
-    {@example 'style-guide/ts/src/05-04/app/heroes/heroes.component.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/05-04/app/heroes/heroes.component.ts" region="example">
 
-  <md-tab label="app/heroes/heroes.component.html">
-    {@example 'style-guide/ts/src/05-04/app/heroes/heroes.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/heroes/heroes.component.css">
-    {@example 'style-guide/ts/src/05-04/app/heroes/heroes.component.css'}
-  </md-tab>
+  <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/05-04/app/heroes/heroes.component.html">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/heroes/heroes.component.css" path="style-guide/src/05-04/app/heroes/heroes.component.css">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-12"></a>Decorate _input_ and _output_ properties
@@ -3005,7 +3093,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ~~~ {.s-rule.do}
 
-**Do** use the `@Input` and `@Output` class decorators instead of the `inputs` and `outputs` properties of the 
+**Do** use the `@Input()` and `@Output()` class decorators instead of the `inputs` and `outputs` properties of the 
 `@Directive` and `@Component` metadata:
 
 
@@ -3048,11 +3136,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-12/app/heroes/shared/hero-button/hero-button.component.ts' region='example'}
+<code-example path="style-guide/src/05-12/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-13"></a>Avoid aliasing _inputs_ and _outputs_
@@ -3081,31 +3173,36 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-13/app/app.component.avoid.html'}
+<code-example path="style-guide/src/05-13/app/app.component.avoid.html">
+
+</code-example>
 
 
-<md-tab-group>
 
-  <md-tab label="app/heroes/shared/hero-button/hero-button.component.ts">
-    {@example 'style-guide/ts/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
-  <md-tab label="app/heroes/shared/hero-button/hero-highlight.directive.ts">
-    {@example 'style-guide/ts/src/05-13/app/heroes/shared/hero-highlight.directive.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/app.component.html">
-    {@example 'style-guide/ts/src/05-13/app/app.component.html'}
-  </md-tab>
+  <code-pane title="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="style-guide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/app.component.html" path="style-guide/src/05-13/app/app.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-14"></a>Member sequence
@@ -3137,11 +3234,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-14/app/shared/toast/toast.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-14/app/shared/toast/toast.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-14/app/shared/toast/toast.component.ts' region='example'}
+<code-example path="style-guide/src/05-14/app/shared/toast/toast.component.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-15"></a>Delegate complex component logic to services
@@ -3190,11 +3291,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-15/app/heroes/hero-list/hero-list.component.avoid.ts'}
+<code-example path="style-guide/src/05-15/app/heroes/hero-list/hero-list.component.avoid.ts">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-15/app/heroes/hero-list/hero-list.component.ts' region='example'}
+<code-example path="style-guide/src/05-15/app/heroes/hero-list/hero-list.component.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-16"></a>Don't prefix _output_ properties
@@ -3231,26 +3336,31 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-16/app/heroes/hero.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-16/app/heroes/hero.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-16/app/app.component.avoid.html'}
+<code-example path="style-guide/src/05-16/app/app.component.avoid.html">
+
+</code-example>
 
 
-<md-tab-group>
 
-  <md-tab label="app/heroes/hero.component.ts">
-    {@example 'style-guide/ts/src/05-16/app/heroes/hero.component.ts' region='example'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/heroes/hero.component.ts" path="style-guide/src/05-16/app/heroes/hero.component.ts" region="example">
 
-  <md-tab label="app/app.component.html">
-    {@example 'style-guide/ts/src/05-16/app/app.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/app.component.html" path="style-guide/src/05-16/app/app.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="05-17"></a>Put presentation logic in the component class
@@ -3278,15 +3388,19 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/05-17/app/heroes/hero-list/hero-list.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/05-17/app/heroes/hero-list/hero-list.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/05-17/app/heroes/hero-list/hero-list.component.ts' region='example'}
+<code-example path="style-guide/src/05-17/app/heroes/hero-list/hero-list.component.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ## Directives
-<a href="#toc">Back to top</a>
+
 ### <a id="06-01"></a>Use directives to enhance an element
 #### <a href="#06-01">Style 06-01</a>
 
@@ -3300,7 +3414,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 <div class='s-why'>
-  **Why?** Attributes directives don't have an associated template.  
+  **Why?** Attribute directives don't have an associated template.  
     
 </div>
 
@@ -3312,11 +3426,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/06-01/app/shared/highlight.directive.ts' region='example'}
+<code-example path="style-guide/src/06-01/app/shared/highlight.directive.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/06-01/app/app.component.html'}
+<code-example path="style-guide/src/06-01/app/app.component.html">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="06-03"></a>_HostListener_/_HostBinding_ decorators versus _host_ metadata
@@ -3343,7 +3461,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <div class='s-why' class='s-why-last'>
   **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`   
-    can be modified only in a single place - in the directive's class.   
+    can be modified only in a single place&mdash;in the directive's class.   
     If you use the `host` metadata property, you must modify both the property declaration inside the controller,   
     and the metadata associated with the directive.  
     
@@ -3351,7 +3469,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-{@example 'style-guide/ts/src/06-03/app/shared/validator.directive.ts'}
+<code-example path="style-guide/src/06-03/app/shared/validator.directive.ts">
+
+</code-example>
 
 Compare with the less preferred `host` metadata alternative.
 
@@ -3362,7 +3482,9 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-{@example 'style-guide/ts/src/06-03/app/shared/validator2.directive.ts'}
+<code-example path="style-guide/src/06-03/app/shared/validator2.directive.ts">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ## Services
@@ -3392,7 +3514,9 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-{@example 'style-guide/ts/src/07-01/app/heroes/shared/hero.service.ts' region='example'}
+<code-example path="style-guide/src/07-01/app/heroes/shared/hero.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ### <a id="07-02"></a>Single responsibility
@@ -3465,19 +3589,20 @@ Compare with the less preferred `host` metadata alternative.
 </div>
 
 
-<md-tab-group>
 
-  <md-tab label="app/app.component.ts">
-    {@example 'style-guide/ts/src/07-03/app/app.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/app.component.ts" path="style-guide/src/07-03/app/app.component.ts">
 
-  <md-tab label="app/heroes/hero-list/hero-list.component.ts">
-    {@example 'style-guide/ts/src/07-03/app/heroes/hero-list/hero-list.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="style-guide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 <a href="#toc">Back to top</a>
 ### <a id="07-04"></a>Use the @Injectable() class decorator
@@ -3486,7 +3611,7 @@ Compare with the less preferred `host` metadata alternative.
 
 ~~~ {.s-rule.do}
 
-**Do** use the `@Injectable` class decorator instead of the `@Inject` parameter decorator when using types as tokens for the dependencies of a service.
+**Do** use the `@Injectable()` class decorator instead of the `@Inject` parameter decorator when using types as tokens for the dependencies of a service.
 
 
 ~~~
@@ -3506,11 +3631,15 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-{@example 'style-guide/ts/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts' region='example'}
+<code-example path="style-guide/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/07-04/app/heroes/shared/hero-arena.service.ts' region='example'}
+<code-example path="style-guide/src/07-04/app/heroes/shared/hero-arena.service.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ## Data Services
@@ -3584,11 +3713,15 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 
-{@example 'style-guide/ts/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts' region='example'}
+<code-example path="style-guide/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
+
+</code-example>
 
 
 
-{@example 'style-guide/ts/src/09-01/app/heroes/shared/hero-button/hero-button.component.ts' region='example'}
+<code-example path="style-guide/src/09-01/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
 ## Appendix

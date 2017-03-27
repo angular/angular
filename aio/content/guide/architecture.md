@@ -5,6 +5,12 @@ Architecture Overview
 The basic building blocks of Angular applications.
 
 @description
+
+
+Angular is a framework for building client applications in HTML and
+either JavaScript or a language like TypeScript that compiles to JavaScript.
+
+The framework consists of several libraries, some of them core and some optional.
 You write Angular applications by composing HTML *templates* with Angularized markup,
 writing *component* classes to manage those templates, adding application logic in *services*,
 and boxing components and services in *modules*.
@@ -34,9 +40,16 @@ The architecture diagram identifies the eight main building blocks of an Angular
 Learn these building blocks, and you're on your way.
 
 
+~~~ {.l-sub-section}
+
+
 <p>
   The code referenced on this page is available as a <live-example></live-example>.
 </p>
+
+
+
+~~~
 
 
 ## Modules
@@ -44,11 +57,142 @@ Learn these building blocks, and you're on your way.
   <img src="assets/images/devguide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
+
+Angular apps are modular and Angular has its own modularity system called _Angular modules_ or _NgModules_.
+
+_Angular modules_ are a big deal. 
+This page introduces modules; the [Angular modules](guide/ngmodule) page covers them in depth.
+<br class="l-clear-both"><br>Every Angular app has at least one Angular module class, [the _root module_](guide/appmodule),  
+conventionally named `AppModule`.
+
+While the _root module_ may be the only module in a small application, most apps have many more 
+_feature modules_, each a cohesive block of code dedicated to an application domain,
+a workflow, or a closely related set of capabilities. 
+
+An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
+
+~~~ {.l-sub-section}
+
+Decorators are functions that modify JavaScript classes.
+Angular has many decorators that attach metadata to classes so that it knows
+what those classes mean and how they should work.
+<a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0" target="_blank">
+Learn more</a> about decorators on the web.
+
+~~~
+
+`NgModule` is a decorator function that takes a single metadata object whose properties describe the module. 
+The most important properties are:
+* `declarations` - the _view classes_ that belong to this module.
+Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).
+
+* `exports` - the subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.
+
+* `imports` - other modules whose exported classes are needed by component templates declared in _this_ module.
+
+* `providers` - creators of [services](guide/architecture#services) that this module contributes to
+the global collection of services; they become accessible in all parts of the app.
+
+* `bootstrap` - the main application view, called the _root component_, 
+that hosts all other app views. Only the _root module_ should set this `bootstrap` property.
+
+Here's a simple root module:
+
+<code-example path="architecture/src/app/mini-app.ts" region="module" linenums="false">
+
+</code-example>
+
+
+
+~~~ {.l-sub-section}
+
+The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module. 
+
+~~~
+
+Launch an application by _bootstrapping_ its root module. 
+During development you're likely to bootstrap the `AppModule` in a `main.ts` file like this one.
+  
+
+<code-example path="architecture/src/main.ts" linenums="false">
+
+</code-example>
+
+### Angular modules vs. JavaScript modules
+
+The Angular module &mdash; a class decorated with `@NgModule` &mdash; is a fundamental feature of Angular.
+
+JavaScript also has its own module system for managing collections of JavaScript objects.
+It's completely different and unrelated to the Angular module system.
+
+In JavaScript each _file_ is a module and all objects defined in the file belong to that module.
+The module declares some objects to be public by marking them with the `export` key word. 
+Other JavaScript modules use *import statements* to access public objects from other modules.
+
+
+<code-example path="architecture/src/app/app.module.ts" region="imports" linenums="false">
+
+</code-example>
+
+
+
+<code-example path="architecture/src/app/app.module.ts" region="export" linenums="false">
+
+</code-example>
+
+
+
+~~~ {.l-sub-section}
+
+<a href="http://exploringjs.com/es6/ch_modules.html" target="_blank">Learn more about the JavaScript module system on the web.</a>
+
+~~~
+
+These are two different and _complementary_ module systems. Use them both to write your apps.
 ### Angular libraries
 
 <figure>
   <img src="assets/images/devguide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
+
+
+Angular ships as a collection of JavaScript modules. You can think of them as library modules. 
+
+Each Angular library name begins with the `!{_at_angular}` prefix.
+
+You install them with the **npm** package manager and import parts of them with JavaScript `import` statements.
+<br class="l-clear-both"><br>
+
+For example, import Angular's `Component` decorator from the `@angular/core` library like this:
+
+<code-example path="architecture/src/app/app.component.ts" region="import" linenums="false">
+
+</code-example>
+
+You also import Angular _modules_ from Angular _libraries_ using JavaScript import statements:
+
+<code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false">
+
+</code-example>
+
+In the example of the simple root module above, the application module needs material from within that `BrowserModule`. To access that material, add it to the `@NgModule` metadata `imports` like this.
+
+<code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports" linenums="false">
+
+</code-example>
+
+In this way you're using both the Angular and JavaScript module systems _together_.
+
+It's easy to confuse the two systems because they share the common vocabulary of "imports" and "exports".
+Hang in there. The confusion yields to clarity with time and experience.
+
+
+~~~ {.l-sub-section}
+
+Learn more from the [Angular modules](guide/ngmodule) page.
+
+
+~~~
 
 
 <div class='l-hr'>
@@ -77,6 +221,12 @@ The class interacts with the view through an API of properties and methods.
 For example, this `HeroListComponent` has a `heroes` property that returns !{_an} !{_array} of heroes
 that it acquires from a service.
 `HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
+
+
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class">
+
+</code-example>
+
 Angular creates, updates, and destroys components as the user moves through the application.
 Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()` declared above.
 
@@ -97,7 +247,9 @@ A template looks like regular HTML, except for a few differences. Here is a
 template for our `HeroListComponent`:
 
 
-{@example 'architecture/ts/src/app/hero-list.component.html'}
+<code-example path="architecture/src/app/hero-list.component.html">
+
+</code-example>
 
 Although this template uses typical HTML elements like `<h2>` and  `<p>`, it also has some differences. Code like `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<hero-detail>` uses Angular's [template syntax](guide/template-syntax).
 
@@ -135,16 +287,26 @@ To tell Angular that `HeroListComponent` is a component, attach **metadata** to 
 
 In !{_Lang}, you attach metadata by using !{_a} **!{_decorator}**.
 Here's some metadata for `HeroListComponent`:
+
+
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (metadata)" region="metadata">
+
+</code-example>
+
 Here is the `@Component` !{_decorator}, which identifies the class
 immediately below it as a component class.
-<ul if-docs="ts"><li>`moduleId`: sets the source of the base address (`module.id`) for module-relative URLs such as the `templateUrl`.</ul>
 
+The `@Component` decorator takes a required configuration object with the
+information Angular needs to create and present the component and its view.
+
+Here are a few of the most useful `@Component` configuration options:
 - `selector`: CSS selector that tells Angular to create and insert an instance of this component
 where it finds a `<hero-list>` tag in *parent* HTML.
 For example, if an app's  HTML contains `<hero-list></hero-list>`, then
 Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 - `templateUrl`: module-relative address of this component's HTML template, shown [above](guide/architecture#templates).
+
 - `providers`: !{_array} of **dependency injection providers** for services that the component requires.
 This is one way to tell Angular that the component's constructor requires a `HeroService`
 so it can get the list of heroes to display. 
@@ -179,6 +341,12 @@ a mechanism for coordinating parts of a template with parts of a component.
 Add binding markup to the template HTML to tell Angular how to connect both sides.
 
 As the diagram shows, there are four forms of data binding syntax. Each form has a direction &mdash; to the DOM, from the DOM, or in both directions.<br class="l-clear-both">The `HeroListComponent` [example](guide/architecture#templates) template has three forms:
+
+
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (binding)" region="binding">
+
+</code-example>
+
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data)
 displays the component's `hero.name` property value within the `<li>` element.
 
@@ -190,6 +358,12 @@ the parent `HeroListComponent` to the `hero` property of the child `HeroDetailCo
 **Two-way data binding** is an important fourth form
 that combines property and event binding in a single notation, using the `ngModel` directive.
 Here's an example from the `HeroDetailComponent` template:
+
+
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel">
+
+</code-example>
+
 In two-way binding, a data property value flows to the input box from the component as with property binding.
 The user's changes also flow back to the component, resetting the property to the latest value,
 as with event binding.
@@ -226,8 +400,15 @@ A component is a *directive-with-a-template*;
 a `@Component` !{_decorator} is actually a `@Directive` !{_decorator} extended with template-oriented features.
 <br class="l-clear-both">
 
+
+~~~ {.l-sub-section}
+
 While **a component is technically a directive**,
-components are so distinctive and central to Angular applications that this architectural overview  separates components from directives.Two *other* kinds of directives exist: _structural_ and _attribute_ directives.
+components are so distinctive and central to Angular applications that this architectural overview  separates components from directives.
+
+~~~
+
+Two *other* kinds of directives exist: _structural_ and _attribute_ directives.
 
 They tend to appear within an element tag as attributes do,
 sometimes by name but more often as the target of an assignment or a binding.
@@ -235,8 +416,15 @@ sometimes by name but more often as the target of an assignment or a binding.
 **Structural** directives alter layout by adding, removing, and replacing elements in DOM.
 
 The [example template](guide/architecture#templates) uses two built-in structural directives:
+
+
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural">
+
+</code-example>
+
 * [`*ngFor`](guide/displaying-data) tells Angular to stamp out one `<li>` per hero in the `heroes` list.
 * [`*ngIf`](guide/displaying-data) includes the `HeroDetail` component only if a selected hero exists.
+
 **Attribute** directives alter the appearance or behavior of an existing element.
 In templates they look like regular HTML attributes, hence the name.
 
@@ -244,6 +432,12 @@ The `ngModel` directive, which implements two-way data binding, is
 an example of an attribute directive. `ngModel` modifies the behavior of
 an existing element (typically an `<input>`)
 by setting its display value property and responding to change events.
+
+
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel">
+
+</code-example>
+
 Angular has a few more directives that either alter the layout structure
 (for example, [ngSwitch](guide/template-syntax))
 or modify aspects of DOM elements and components
@@ -279,8 +473,20 @@ There is no service base class, and no place to register a service.
 Yet services are fundamental to any Angular application. Components are big consumers of services.
 
 Here's an example of a service class that logs to the browser console:
+
+
+<code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class">
+
+</code-example>
+
 Here's a `HeroService` that uses a !{_PromiseLinked} to fetch heroes.
 The `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work.
+
+
+<code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class">
+
+</code-example>
+
 Services are everywhere.
 
 Component classes should be lean. They don't fetch data from the server,
@@ -312,6 +518,12 @@ _Dependency injection_ is a way to supply a new instance of a class
 with the fully-formed dependencies it requires. Most dependencies are services.
 Angular uses dependency injection to provide new components with the services they need.<br class="l-clear-both">Angular can tell which services a component needs by looking at the types of its constructor parameters.
 For example, the constructor of your `HeroListComponent` needs a `HeroService`:
+
+
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor">
+
+</code-example>
+
 When Angular creates a component, it first asks an **injector** for
 the services that the component requires.
 
@@ -331,7 +543,24 @@ If the injector doesn't have a `HeroService`, how does it know how to make one?
 
 In brief, you must have previously registered a **provider** of the `HeroService` with the injector.
 A provider is something that can create or return a service, typically the service class itself.
+
+You can register providers in modules or in components.
+
+In general, add providers to the [root module](guide/architecture#module) so that
+the same instance of a service is available everywhere.
+
+
+<code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers">
+
+</code-example>
+
 Alternatively, register at a component level in the `providers` property of the `@Component` metadata:
+
+
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers">
+
+</code-example>
+
 Registering at a component level means you get a new instance of the
 service with each new instance of that component.
 
@@ -399,3 +628,6 @@ by implementing the lifecycle hook interfaces.
 
 > [**Router**](guide/router): Navigate from page to page within the client
   application and never leave the browser.
+
+> [**Testing**](guide/testing): Run unit tests on your application parts as they interact with the Angular framework
+using the _Angular Testing Platform_.

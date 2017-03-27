@@ -9,7 +9,7 @@ describe('AOT Compilation', function () {
         browser.get('');
     });
 
-    it('should load page and click button', function (done) {
+    it('should load page and click button', function (done: any) {
       let headingSelector = element.all(by.css('h1')).get(0);
       expect(headingSelector.getText()).toEqual('Hello Angular');
 

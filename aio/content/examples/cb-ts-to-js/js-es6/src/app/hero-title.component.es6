@@ -16,7 +16,6 @@ export class HeroTitleComponent {
 // #docregion templateUrl
 HeroTitleComponent.annotations = [
   new Component({
-    moduleId: module.id,
     selector: 'hero-title',
     templateUrl: './hero-title.component.html'
   })

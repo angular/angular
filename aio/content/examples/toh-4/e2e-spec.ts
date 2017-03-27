@@ -128,6 +128,6 @@ function getPageElts() {
   return {
     heroes: element.all(by.css('my-app li')),
     selected: element(by.css('my-app li.selected')),
-    heroDetail: element(by.css('my-app > div, my-app > my-hero-detail > div'))
+    heroDetail: element(by.css('my-app > div, my-app > hero-detail > div'))
   };
 }

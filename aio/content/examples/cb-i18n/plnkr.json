@@ -1,0 +1,19 @@
+{
+  "description": "i18n",
+  "basePath": "src/",
+  "files": [
+    "app/**/*.css",
+    "app/**/*.html",
+    "app/**/*.ts",
+    "messages.xlf",
+    "locale/messages.*.xlf",
+
+    "!**/*.[1].*",
+
+    "main.ts",
+    "styles.css",
+    "systemjs-text-plugin.js",
+    "index.html"
+  ],
+  "tags": ["i18n"]
+}
