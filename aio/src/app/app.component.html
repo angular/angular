@@ -1,29 +1,26 @@
 <md-toolbar color="primary" class="app-toolbar">
-  <button *ngIf="isHamburgerVisible" class="hamburger" md-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
-  <aio-top-menu *ngIf="isSideBySide" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu>
+  <button *ngIf="isHamburgerVisible" class="hamburger" md-button
+    (click)="sidenav.toggle()" title="Docs menu">
+    <md-icon>menu</md-icon>
+  </button>
+  <aio-top-menu *ngIf="isSideBySide"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
 
 <md-sidenav-container class="sidenav-container">
 
-  <md-sidenav #sidenav class="sidenav" [opened]="isSideBySide" [mode] = "isSideBySide ? 'side' : 'over'">
-    <aio-top-menu *ngIf="!isSideBySide" class="small" [nodes]="(navigationViews | async)?.TopBar" [homeImageUrl]="homeImageUrl"></aio-top-menu> 
-    <aio-nav-menu [nodes]="(navigationViews | async)?.SideNav" [selectedNodes]="selectedNodes | async"></aio-nav-menu>
+  <md-sidenav #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
+    <aio-top-menu *ngIf="!isSideBySide" class="small"></aio-top-menu>
+    <aio-nav-menu></aio-nav-menu>
   </md-sidenav>
 
   <section class="sidenav-content">
     <aio-doc-viewer [doc]="currentDocument | async" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
   </section>
+
 </md-sidenav-container>
 
 <aio-search-results #searchResults></aio-search-results>
 
-<footer>
-  <div class="footer">
-    <p>Powered by Google ©2010-2017. Code licensed under an <a href="/license">MIT-style License</a>.</p>
-    <p>Documentation licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
-    </p>
-    <p class="version-info">Version Info | {{ (versionInfo | async)?.full }}</p>
-  </div>
-</footer>
+<aio-footer></aio-footer>

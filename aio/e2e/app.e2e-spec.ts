@@ -22,12 +22,13 @@ describe('site App', function() {
 
     // navigate to a different page
     page.getLink('features').click();
+    expect(page.getDocViewerText()).toMatch(/Features/i);
 
-    // check that we can navigate to the tutorial page via a link in the navigation
-    const heading = page.getNavHeading(/tutorial/i);
-    expect(heading.getText()).toMatch(/tutorial/i);
-    heading.click();
-    page.getLink('tutorial/').click();
+    // Show the menu; the tutorial section should be fully open from previous visit
+    page.docsMenuButton.click();
+
+    // Navigate to the tutorial introduction via a link in the sidenav
+    page.getNavItem(/introduction/i).click();
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
   });
 

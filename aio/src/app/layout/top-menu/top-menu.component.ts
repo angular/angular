@@ -1,50 +1,26 @@
-import { Component, Input } from '@angular/core';
-import { NavigationNode } from 'app/navigation/navigation.service';
+import { Component } from '@angular/core';
+import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/operator/map';
+
+const topBar = 'TopBar';
 
 @Component({
   selector: 'aio-top-menu',
   template: `
     <ul role="navigation">
-    <li><a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a></li>
-    <li *ngFor="let node of nodes"><a class="nav-link" [href]="node.path || node.url">{{ node.title }}</a></li>
+      <li><a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a></li>
+      <li *ngFor="let node of nodes | async"><a class="nav-link" [href]="node.path || node.url">{{ node.title }}</a></li>
     </ul>`,
-  styles: [`
-    .fill-remaining-space {
-      flex: 1 1 auto;
-    }
-
-    .nav-link {
-      margin-right: 10px;
-      margin-left: 20px;
-      cursor: pointer;
-    }
-
-    .nav-link.home img {
-      position: relative;
-      margin-top: -15px;
-      top: 12px;
-      height: 36px;
-    }
-
-    @media (max-width: 700px) {
-      .nav-link {
-        margin-right: 8px;
-        margin-left: 0px;
-      }
-    }
-    @media (max-width: 600px) {
-      .nav-link {
-        font-size: 80%;
-        margin-right: 8px;
-        margin-left: 0px;
-      }
-    }`
-  ]
+  styleUrls: ['top-menu.component.scss']
 })
 export class TopMenuComponent {
-  @Input()
-  nodes: NavigationNode[];
 
-  @Input()
-  homeImageUrl: string;
+  readonly homeImageUrl = 'assets/images/logos/standard/logo-nav.png';
+  nodes: Observable<NavigationNode[]>;
+
+  constructor(navigationService: NavigationService) {
+    this.nodes = navigationService.navigationViews.map(views => views[topBar]);
+  }
 }

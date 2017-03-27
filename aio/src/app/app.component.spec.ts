@@ -1,6 +1,10 @@
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
+import { Http } from '@angular/http';
 import { By } from '@angular/platform-browser';
+
+import { of } from 'rxjs/observable/of';
+
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { GaService } from 'app/shared/ga.service';
@@ -26,6 +30,7 @@ describe('AppComponent', () => {
         { provide: APP_BASE_HREF, useValue: '/' },
         { provide: SearchService, useClass: MockSearchService },
         { provide: GaService, useClass: TestGaService },
+        { provide: Http, useClass: TestHttp },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
         { provide: Logger, useClass: MockLogger }
       ]
@@ -43,17 +48,6 @@ describe('AppComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('google analytics', () => {
-    it('should call gaService.locationChanged with initial URL', () => {
-      const { locationChanged } = TestBed.get(GaService) as TestGaService;
-      expect(locationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
-      const args = locationChanged.calls.first().args;
-      expect(args[0]).toBe(initialUrl);
-    });
-
-    // Todo: add test to confirm tracking URL when navigate.
-  });
-
   describe('isHamburgerVisible', () => {
     console.log('PENDING: AppComponent isHamburgerVisible');
   });
@@ -64,6 +58,31 @@ describe('AppComponent', () => {
       expect(component.isSideBySide).toBe(true);
       component.onResize(500);
       expect(component.isSideBySide).toBe(false);
+    });
+  });
+
+  describe('shows/hide SideNav based on doc', () => {
+    let locationService: MockLocationService;
+
+    beforeEach(() => {
+      locationService = fixture.debugElement.injector.get(LocationService) as any;
+      component.onResize(1000); // side-by-side
+    });
+
+    it('should have sidenav open when doc in the sidenav (guide/pipes)', () => {
+      locationService.urlSubject.next('guide/pipes');
+
+      fixture.detectChanges();
+      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenav.className).toMatch(/sidenav-open/);
+    });
+
+    it('should have sidenav closed when doc not in the sidenav (api)', () => {
+      locationService.urlSubject.next('api');
+
+      fixture.detectChanges();
+      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenav.className).toMatch(/sidenav-clos/);
     });
   });
 
@@ -92,7 +111,7 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('initialisation', () => {
+  describe('initialization', () => {
     it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
       fixture.detectChanges(); // triggers ngOnInit
       expect(searchService.initWorker).toHaveBeenCalled();
@@ -135,4 +154,74 @@ describe('AppComponent', () => {
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
+}
+
+class TestHttp {
+  // tslint:disable:quotemark
+  navJson = {
+    "TopBar": [
+      {
+        "url": "api",
+        "title": "API"
+      },
+      {
+        "url": "features",
+        "title": "Features"
+      }
+    ],
+    "SideNav": [
+      {
+      "title": "Core",
+      "tooltip": "Learn the core capabilities of Angular",
+      "children": [
+          {
+            "url": "guide/pipes",
+            "title": "Pipes",
+            "tooltip": "Pipes transform displayed values within a template."
+          }
+        ]
+      }
+    ],
+    "__versionInfo": {
+      "raw": "4.0.0-rc.6",
+      "major": 4,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [
+        "local"
+      ],
+      "build": "sha.73808dd",
+      "version": "4.0.0-local",
+      "codeName": "snapshot",
+      "isSnapshot": true,
+      "full": "4.0.0-local+sha.73808dd",
+      "branch": "master",
+      "commitSHA": "73808dd38b5ccd729404936834d1568bd066de81"
+    }
+  };
+
+  apiDoc = {
+    "title": "API",
+    "contents": "<h1>API Doc</h1>"
+  };
+
+  pipesDoc = {
+    "title": "Pipes",
+    "contents": "<h1>Pipes Doc</h1>"
+  };
+
+  testDoc = {
+    "title": "Test",
+    "contents": "<h1>Test Doc</h1>"
+  };
+
+  // get = jasmine.createSpy('get').and.callFake((url: string) => { ... });
+  get(url: string) {
+    const json =
+      /navigation.json/.test(url) ? this.navJson :
+      /api/.test(url) ? this.apiDoc :
+      /pipes/.test(url) ? this.pipesDoc :
+      this.testDoc;
+    return of({ json: () => json });
+  }
 }
