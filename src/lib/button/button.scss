@@ -1,19 +1,21 @@
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
-
 @import 'button-base';
 @import '../core/a11y/a11y';
 
 .mat-button, .mat-icon-button {
   @extend %mat-button-base;
 
-  // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
-  &:hover {
-    // Use the same visual treatment for hover as for focus.
-    .mat-button-focus-overlay {
-      opacity: 1;
-    }
+  .mat-button-focus-overlay {
+    transition: none;
+    opacity: 0;
   }
+}
+
+// Only flat buttons (not raised, fabs or icon buttons) have a hover style.
+// Use the same visual treatment for hover as for focus.
+.mat-button:hover .mat-button-focus-overlay {
+  opacity: 1;
 }
 
 .mat-raised-button {

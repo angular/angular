@@ -1,6 +1,5 @@
 @import '../core/theming/theming';
 
-
 // Applies a focus style to an md-button element for each of the supported palettes.
 @mixin _mat-button-focus-color($theme) {
   $primary: map-get($theme, primary);
@@ -21,6 +20,24 @@
 
   &[disabled] .mat-button-focus-overlay {
     background-color: transparent;
+  }
+}
+
+@mixin _mat-button-ripple-color($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+
+  &.mat-primary .mat-ripple-element {
+    background-color: mat-color($primary, 0.26);
+  }
+
+  &.mat-accent .mat-ripple-element {
+    background-color: mat-color($accent, 0.26);
+  }
+
+  &.mat-warn .mat-ripple-element {
+    background-color: mat-color($warn, 0.26);
   }
 }
 
@@ -67,6 +84,10 @@
   .mat-button, .mat-icon-button {
     @include _mat-button-theme-color($theme, 'color');
     background: transparent;
+  }
+
+  .mat-icon-button {
+    @include _mat-button-ripple-color($theme);
   }
 
   .mat-raised-button, .mat-fab, .mat-mini-fab {

@@ -100,10 +100,10 @@ export class MdButton implements OnDestroy {
   private _color: string;
 
   /** Whether the button is round. */
-  _isRoundButton: boolean = ['icon-button', 'fab', 'mini-fab'].some(suffix => {
-    let el = this._getHostElement();
-    return el.hasAttribute('md-' + suffix) || el.hasAttribute('mat-' + suffix);
-  });
+  _isRoundButton: boolean = this._hasAttributeWithPrefix('fab', 'mini-fab');
+
+  /** Whether the button is icon button. */
+  _isIconButton: boolean = this._hasAttributeWithPrefix('icon-button');
 
   /** Whether the ripple effect on click should be disabled. */
   private _disableRipple: boolean = false;
@@ -156,6 +156,18 @@ export class MdButton implements OnDestroy {
 
   _isRippleDisabled() {
     return this.disableRipple || this.disabled;
+  }
+
+  /**
+   * Gets whether the button has one of the given attributes
+   * with either an 'md-' or 'mat-' prefix.
+   */
+  _hasAttributeWithPrefix(...unprefixedAttributeNames: string[]) {
+    return unprefixedAttributeNames.some(suffix => {
+      const el = this._getHostElement();
+
+      return el.hasAttribute('md-' + suffix) || el.hasAttribute('mat-' + suffix);
+    });
   }
 }
 
