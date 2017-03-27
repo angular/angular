@@ -107,7 +107,8 @@ module.exports =
             },
             {
               basePath: CONTENTS_PATH,
-              include: CONTENTS_PATH + '/file-not-found.md',
+              include: CONTENTS_PATH + '/*.md',
+              exclude: [CONTENTS_PATH + '/index.md'],
               fileReader: 'contentFileReader'
             },
             {
