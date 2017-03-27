@@ -369,6 +369,23 @@ describe('MdCheckbox', () => {
           .toBe(0, 'Expected no ripple after element is blurred.');
     }));
 
+    it('should show a ripple when focused programmatically', fakeAsync(() => {
+      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+        .toBe(0, 'Expected no ripples to be present.');
+
+      fakeFocusOriginMonitorSubject.next('program');
+      tick(RIPPLE_FADE_IN_DURATION);
+
+      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+        .toBe(1, 'Expected focus ripple to be present.');
+
+      dispatchFakeEvent(checkboxInstance._inputElement.nativeElement, 'blur');
+      tick(RIPPLE_FADE_OUT_DURATION);
+
+      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+        .toBe(0, 'Expected focus ripple to be removed.');
+    }));
+
     describe('ripple elements', () => {
 
       it('should show ripples on label mousedown', () => {

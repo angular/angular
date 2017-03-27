@@ -199,7 +199,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
     this._focusedSubscription = this._focusOriginMonitor
       .monitor(this._inputElement.nativeElement, this._renderer, false)
       .subscribe(focusOrigin => {
-        if (!this._focusedRipple && focusOrigin === 'keyboard') {
+        if (!this._focusedRipple && (focusOrigin === 'keyboard' || focusOrigin === 'program')) {
           this._focusedRipple = this._ripple.launch(0, 0, { persistent: true, centered: true });
         }
       });
@@ -392,7 +392,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
 
   /** Focuses the checkbox. */
   focus(): void {
-    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'program');
   }
 
   _onInteractionEvent(event: Event) {
