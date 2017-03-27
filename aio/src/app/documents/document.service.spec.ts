@@ -105,6 +105,22 @@ describe('DocumentService', () => {
       expect(currentDocument).toEqual(nextDoc);
     });
 
+    it('should not crash the app if the response is not valid JSON', () => {
+      let latestDocument: DocumentContents;
+      const { service, backend, location } = getServices('initial/url');
+      const connections = backend.connectionsArray;
+
+      service.currentDocument.subscribe(doc => latestDocument = doc);
+
+      connections[0].mockRespond(new Response(new ResponseOptions({ body: 'this is invalid JSON' })));
+      expect(latestDocument.title).toEqual('Error fetching document');
+
+      const doc1 = { title: 'doc 1' };
+      location.urlSubject.next('new/url');
+      connections[1].mockRespond(createResponse(doc1));
+      expect(latestDocument).toEqual(doc1);
+    });
+
     it('should not make a request to the server if the doc is in the cache already', () => {
       let latestDocument: DocumentContents;
       let subscription: Subscription;
