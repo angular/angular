@@ -1,8 +1,12 @@
+footer {
+    position: relative;
+}
+
 footer .footer {
+    // background: url('../src/assets/images/backgrounds/ng-pattern-sm.png');
     padding: 20px;
     z-index: 10;
-    background-image: url('../src//assets/images/backgrounds/ng-pattern-sm.png');
-    background-repeat: repeat;
+    background-color: $blue;
     color: $offwhite;
     text-align: center;
     font-weight: 300;
@@ -19,4 +23,28 @@ footer .footer {
     p {
         margin: 0px 0px 5px;
     }
+}
+
+footer::after {
+    content: "";
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    bottom: 0px;
+    left: 0px;
+    right: 0;
+    background: 
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 168px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 336px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 504px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 672px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 840px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1008px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 1176px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1344px repeat-y;;
+    // background: url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top -2px left -110px repeat-x, url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') bottom left repeat-x;
+    // background-image: url('../src/assets/images/logos/angular2/angular_whiteTransparent.png');
+    opacity: 0.1;
+    background-size: 160px auto;
 }
