@@ -29,7 +29,7 @@
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
         {
-          "url": "tutorial/",
+          "url": "tutorial",
           "title": "Introduction",
           "tooltip": "Introduction to the Tour of Heroes tutorial"
         },
@@ -71,7 +71,7 @@
       "tooltip": "A gentle introduction to Angular.",
       "children": [
         {
-          "url": "guide/docs-overview",
+          "url": "guide",
           "title": "Overview",
           "tooltip": "How to read and use this documentation."
         },
@@ -384,7 +384,7 @@
     },
 
     {
-      "url": "resources/",
+      "url": "resources",
       "title": "Resources",
       "children": [
         {

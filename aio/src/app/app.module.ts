@@ -1,8 +1,7 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
-
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { HttpModule } from '@angular/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { MdToolbarModule } from '@angular/material/toolbar';
 import { MdButtonModule} from '@angular/material/button';
@@ -19,6 +18,7 @@ import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { embeddedComponents, EmbeddedComponents } from 'app/embedded';
+import { FileLoaderProviders } from 'app/shared/file-loader-http.service';
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
@@ -55,6 +55,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   providers: [
     ApiService,
     EmbeddedComponents,
+    FileLoaderProviders,
     GaService,
     Logger,
     Location,

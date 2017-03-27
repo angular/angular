@@ -1,5 +1,4 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Http } from '@angular/http';
 
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
@@ -7,6 +6,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeUntil';
 
+import { FileLoaderService } from 'app/shared/file-loader.service';
 import { Logger } from 'app/shared/logger.service';
 
 export interface ApiItem {
@@ -29,7 +29,7 @@ export interface ApiSection {
 @Injectable()
 export class ApiService implements OnDestroy {
 
-  private apiBase = 'content/docs/api/';
+  private apiBase = 'docs/api/';
   private apiListJsonDefault = 'api-list.json';
   private firstTime = true;
   private onDestroy = new Subject();
@@ -53,7 +53,7 @@ export class ApiService implements OnDestroy {
     return this._sections;
   };
 
-  constructor(private http: Http, private logger: Logger) { }
+  constructor(private loader: FileLoaderService, private logger: Logger) { }
 
   ngOnDestroy() {
     this.onDestroy.next();
@@ -69,7 +69,7 @@ export class ApiService implements OnDestroy {
   fetchSections(src?: string) {
     // TODO: get URL by configuration?
     const url = this.apiBase + (src || this.apiListJsonDefault);
-    this.http.get(url)
+    this.loader.load(url)
       .takeUntil(this.onDestroy)
       .map(response => response.json())
       .do(() => this.logger.log(`Got API sections from ${url}`))
