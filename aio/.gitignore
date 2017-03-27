@@ -1,11 +1,44 @@
-# Ignore node_modules
-node_modules
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# Ignore npm/yarn debug log
+# compiled output
+/dist
+/out-tsc
+/src/content
+/tmp
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
 npm-debug.log
+testem.log
+/typings
 yarn-error.log
 
-# Ignore generated content
-/dist
-/src/content
-/.sass-cache
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
