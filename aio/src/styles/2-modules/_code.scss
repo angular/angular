@@ -5,8 +5,8 @@ code-tabs md-tab-body {
     border-radius: 5px;
     color: $darkgray;
     display: block;
-    padding: 10px;
-    margin: 24px auto;
+    padding: 8px;
+    margin: 16px auto;
 }
 
 code-example header {
@@ -29,16 +29,33 @@ code-tabs.is-anti-pattern md-tab-body {
   border: 0.5px solid $anti-pattern;
 }
 
+code-tabs div .mat-tab-body-content {
+  height: auto;
+}
+
+code-tabs .mat-tab-body-wrapper md-tab-body .mat-tab-body {
+  overflow-y: hidden;
+}
+
+code-tabs mat-tab-body-content .fadeIn {
+  animation: opacity 2s ease-in;
+}
+
 aio-code pre {
     display: flex;
-    line-height: 1.5;
-
-    margin: 0px;
     padding: 0px;
     white-space: pre-wrap;
-    li {
-      line-height: 60%;
-    }
+}
+
+.copy-button {
+  top: -16px;
+  right: -16px;
+  color: $lightgray;
+  background-color: transparent;
+  border: none;
+  &:hover {
+    color: $mediumgray;
+  }
 }
 
 $blue-grey-50: #ECEFF1;

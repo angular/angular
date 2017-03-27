@@ -11,12 +11,16 @@ aio-search-results {
     width: 100%;
     max-height: 40%;
     position: fixed;
-    display: flex;
     top: 0;
     left: 0;
     right: 0;
     background-color: $darkgray;
     border: 24px solid $darkgray;
+
+    @include bp(tiny) {
+        display: block;
+        max-height: 60%;
+    }
 }
 
 .search-area {
@@ -43,5 +47,6 @@ aio-search-results {
 
     @include bp(tiny) {
         width: 100%;
+        display: block;
     }
 }

@@ -107,7 +107,7 @@
       text-align: left;
     }
 
-    p code {
+    p > code {
       font-family: $code-font;
       font-size: 90%;
       color: $blue;
@@ -120,6 +120,9 @@
 
     .sidenav-content a {
       color: $blue;
+      &:hover {
+        color: $mediumgray;
+      }
     }
 
 //   }

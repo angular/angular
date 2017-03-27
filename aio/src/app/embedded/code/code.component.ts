@@ -23,8 +23,9 @@ const copiedLabel = 'Copied!';
 @Component({
   selector: 'aio-code',
   template: `
-    <button class="copy-button" #copyButton (click)="doCopy()">{{ buttonLabel }}</button>
+    
     <pre class="prettyprint lang-{{language}}">
+    <button class="material-icons copy-button" #copyButton (click)="doCopy()">content_copy</button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
