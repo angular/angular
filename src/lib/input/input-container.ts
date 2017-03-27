@@ -1,26 +1,27 @@
 import {
-  Component,
-  Input,
-  Directive,
   AfterContentInit,
+  Component,
   ContentChild,
   ContentChildren,
+  Directive,
   ElementRef,
-  QueryList,
-  ViewEncapsulation,
+  EventEmitter,
+  Input,
   Optional,
   Output,
-  EventEmitter,
-  Renderer
+  QueryList,
+  Renderer,
+  Self,
+  ViewEncapsulation
 } from '@angular/core';
 import {coerceBooleanProperty} from '../core';
 import {NgControl} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
-  MdInputContainerUnsupportedTypeError,
-  MdInputContainerPlaceholderConflictError,
   MdInputContainerDuplicatedHintError,
-  MdInputContainerMissingMdInputError
+  MdInputContainerMissingMdInputError,
+  MdInputContainerPlaceholderConflictError,
+  MdInputContainerUnsupportedTypeError
 } from './input-container-errors';
 
 
@@ -181,7 +182,7 @@ export class MdInputDirective {
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer,
-              @Optional() public _ngControl: NgControl) {
+              @Optional() @Self() public _ngControl: NgControl) {
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
