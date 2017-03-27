@@ -7,6 +7,9 @@ Recommended npm packages, and how to specify package dependencies.
 @description
 Angular applications and Angular itself depend upon features and functionality provided by a variety of third-party packages.
 These packages are maintained and installed with the Node Package Manager (<a href="https://docs.npmjs.com/" target="_blank">npm</a>).
+
+~~~ {.l-sub-section}
+
 Node.js and npm are essential to Angular development.
 
 <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
@@ -19,6 +22,10 @@ Older versions produce errors.
 Consider using [nvm](https://github.com/creationix/nvm) for managing multiple
 versions of node and npm. You may need [nvm](https://github.com/creationix/nvm) if
 you already have projects running on your machine that use other versions of node and npm.
+
+
+~~~
+
 During [Setup](guide/setup), a <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a>
 file is installed with a comprehensive starter set of
 packages as specified in the `dependencies` and `devDependencies` sections.
@@ -26,7 +33,14 @@ packages as specified in the `dependencies` and `devDependencies` sections.
 You can use other packages but the packages in _this particular set_ work well together and include
 everything you need to build and run the sample applications in this series.
 
-Note: A cookbook or guide page may require an additional library such as *jQuery*.You'll install more than you need for the QuickStart guide.
+
+~~~ {.l-sub-section}
+
+Note: A cookbook or guide page may require an additional library such as *jQuery*.
+
+~~~
+
+You'll install more than you need for the QuickStart guide.
 No worries!
 You only serve to the client those packages that the application actually requests.
 
@@ -102,7 +116,14 @@ Install these polyfills using the npm packages that Angular lists in the *peerDe
 
 You must list these packages in the `dependencies` section of your own `package.json`.
 
-For background on this requirement, see [Why peerDependencies?](guide/npm-packages#why-peer-dependencies).***core-js***: Patches the global context (window) with essential features of ES2015 (ES6).
+
+~~~ {.l-sub-section}
+
+For background on this requirement, see [Why peerDependencies?](guide/npm-packages#why-peer-dependencies).
+
+~~~
+
+***core-js***: Patches the global context (window) with essential features of ES2015 (ES6).
  You may substitute an alternative polyfill that provides the same core APIs.
  When these APIs are implemented by the major browsers, this dependency will become unnecessary.
 
@@ -205,9 +226,15 @@ They leave you in control of package and version resolution.
 
 It is your responsibility to list all *peer dependency* packages **among your own *devDependencies***.
 
+
+~~~ {.l-sub-section}
+
 #### The future of *peerDependencies*
 
 The Angular polyfill dependencies are hard requirements. Currently, there is no way to make them optional.
 
 However, there is an npm feature request for "optional peerDependencies," which would allow you to model this relationship better.
 When this feature request is implemented, Angular will switch from *peerDependencies* to *optionalPeerDependencies* for all polyfills.
+
+~~~
+

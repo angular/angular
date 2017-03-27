@@ -14,7 +14,9 @@ The [setup](guide/setup) instructions produce a new project with the following m
 You'll evolve this module as your application grows.
 
 
-{@example 'setup/ts/src/app/app.module.ts'}
+<code-example path="setup/src/app/app.module.ts" linenums="false">
+
+</code-example>
 
 After the `import` statements, you come to a class adorned with the
 **`@NgModule`** [_decorator_](guide/glossary).
@@ -54,6 +56,9 @@ Other guide and cookbook pages will tell you when you need to add additional mod
 ~~~
 
 
+
+~~~ {.l-sub-section}
+
 The `import` statements at the top of the file and the Angular module's `imports` array
 are unrelated and have completely different jobs.
 
@@ -65,6 +70,10 @@ They have nothing to do with Angular and Angular knows nothing about them.
 The _module's_ `imports` array appears _exclusively_ in the `@NgModule` metadata object.
 It tells Angular about specific _other_ Angular modules &mdash; all of them classes decorated with `@NgModule` &mdash;
 that the application needs to function properly.
+
+~~~
+
+
 
 {@a declarations}
 ### The _declarations_ array
@@ -125,7 +134,9 @@ and you'll run it in a browser. You can learn about other options later.
 The recommended place to bootstrap a JIT-compiled browser application is in a separate file 
 in the `src` folder named `src/main.ts`
 
-{@example 'setup/ts/src/main.ts'}
+<code-example path="setup/src/main.ts" linenums="false">
+
+</code-example>
 
 This code creates a browser platform for dynamic (JIT) compilation and
 bootstraps the `AppModule` described above.
@@ -137,7 +148,9 @@ creates an instance of the component and inserts it within the element tag ident
 The `AppComponent` selector &mdash; here and in most documentation samples &mdash; is `my-app` 
 so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
 
-{@example 'setup/ts/src/index.html' region='my-app'}
+<code-example path="setup/src/index.html" region="my-app" linenums="false">
+
+</code-example>
 
 ... and displays the `AppComponent` there.
 

@@ -1,4 +1,4 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
 
@@ -63,11 +63,6 @@ describe('Component Style Tests', function () {
 
     expect(li.getCssValue('listStyleType')).toEqual('square');
     expect(externalLi.getCssValue('listStyleType')).not.toEqual('square');
-  });
-
-  it('supports relative loading with moduleId', function() {
-    let host = element(by.css('quest-summary'));
-    expect(host.getCssValue('color')).toEqual('rgba(255, 255, 255, 1)'); // #ffffff
   });
 
 });

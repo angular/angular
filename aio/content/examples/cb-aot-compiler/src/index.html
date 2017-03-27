@@ -1,0 +1,20 @@
+<!-- #docregion -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ahead of time compilation</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+  </head>
+  <body>
+    <my-app>Loading...</my-app>
+  </body>
+  <!-- #docregion bundle -->
+  <script src="build.js"></script>
+  <!-- #enddocregion bundle -->
+</html>

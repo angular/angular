@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 // #docregion
 @Component({
-  moduleId: module.id,
   selector: 'app-confirm',
   templateUrl: './confirm.component.html'
 })

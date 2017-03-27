@@ -6,6 +6,7 @@ A suggested path through the documentation for Angular newcomers.
 
 @description
 
+
 <figure>
   <img src="assets/images/devguide/intro/people.png" width="200px" height="152px" alt="Us" align="left" style="margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -40,7 +41,13 @@ from small, single-purpose parts.
 
 After reading the above sections, feel free to skip around among the other pages on this site.
 
+
+~~~ {.l-sub-section}
+
 ### Next Step
 
 Try the [tutorial](tutorial "Tour of Heroes") if you're ready to start coding or
 visit the [Architecture](guide/architecture) page if you prefer to learn the basic concepts first.
+
+~~~
+
