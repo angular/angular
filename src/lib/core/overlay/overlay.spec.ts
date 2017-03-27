@@ -100,6 +100,31 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
+  it('should ensure that the most-recently-attached overlay is on top', () => {
+    let pizzaOverlayRef = overlay.create();
+    let cakeOverlayRef = overlay.create();
+
+    pizzaOverlayRef.attach(componentPortal);
+    cakeOverlayRef.attach(templatePortal);
+
+    expect(pizzaOverlayRef.overlayElement.nextSibling)
+        .toBeTruthy('Expected pizza to be on the bottom.');
+    expect(cakeOverlayRef.overlayElement.nextSibling)
+        .toBeFalsy('Expected cake to be on top.');
+
+    pizzaOverlayRef.dispose();
+    cakeOverlayRef.detach();
+
+    pizzaOverlayRef = overlay.create();
+    pizzaOverlayRef.attach(componentPortal);
+    cakeOverlayRef.attach(templatePortal);
+
+    expect(pizzaOverlayRef.overlayElement.nextSibling)
+        .toBeTruthy('Expected pizza to still be on the bottom.');
+    expect(cakeOverlayRef.overlayElement.nextSibling)
+        .toBeFalsy('Expected cake to still be on top.');
+  });
+
   it('should set the direction', () => {
     const state = new OverlayState();
     state.direction = 'rtl';

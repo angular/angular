@@ -30,19 +30,20 @@ export class OverlayRef implements PortalHost {
    * @returns The portal attachment result.
    */
   attach(portal: Portal<any>): any {
-    if (this._state.hasBackdrop) {
-      this._attachBackdrop();
-    }
-
     let attachResult = this._portalHost.attach(portal);
 
     // Update the pane element with the given state configuration.
+    this._updateStackingOrder();
     this.updateSize();
     this.updateDirection();
     this.updatePosition();
 
     // Enable pointer events for the overlay pane element.
     this._togglePointerEvents(true);
+
+    if (this._state.hasBackdrop) {
+      this._attachBackdrop();
+    }
 
     return attachResult;
   }
@@ -151,6 +152,19 @@ export class OverlayRef implements PortalHost {
         this._backdropElement.classList.add('cdk-overlay-backdrop-showing');
       }
     });
+  }
+
+  /**
+   * Updates the stacking order of the element, moving it to the top if necessary.
+   * This is required in cases where one overlay was detached, while another one,
+   * that should be behind it, was destroyed. The next time both of them are opened,
+   * the stacking will be wrong, because the detached element's pane will still be
+   * in its original DOM position.
+   */
+  private _updateStackingOrder() {
+    if (this._pane.nextSibling) {
+      this._pane.parentNode.appendChild(this._pane);
+    }
   }
 
   /** Detaches the backdrop (if any) associated with the overlay. */
