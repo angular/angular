@@ -1,2 +1,2 @@
-<h1>{$ doc.title $}</h1>
+{% if doc.title %}<h1>{$ doc.title $}</h1>{% endif %}
 {$ doc.description | marked $}

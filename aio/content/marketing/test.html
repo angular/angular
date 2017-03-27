@@ -1,0 +1,80 @@
+<h1>Test Code Page</h1>
+
+<h2>&lt;code-tabs&gt;</h2>
+
+<p>No linenums at code-tabs level</p>
+<code-tabs >
+  <code-pane title='TS code file' language='ts'>class {
+    foo(param: string) {}
+  }</code-pane>
+  <code-pane title='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane title='JSON data file' language='json' class='is-anti-pattern'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<p>linenums=true at code-tabs level</p>
+<code-tabs linenums='true'>
+  <code-pane title='TS code file' language='ts'>class {
+    foo(param: string) {}
+  }</code-pane>
+  <code-pane title='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane title='JSON data file' language='json' class='is-anti-pattern'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<p>No linenums at code-tabs level; linenums=true for HTML pane</p>
+<code-tabs >
+  <code-pane title='TS code file' language='ts'>class {
+    foo(param: string) {}
+  }</code-pane>
+  <code-pane title='HTML content file' language='html' linenums='true'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane title='JSON data file' language='json' class='is-anti-pattern'>{ "key": "value" }</code-pane>
+</code-tabs>
+<p></p>
+
+<h2>&lt;code-example&gt;</h2>
+
+<p>One line.</p>
+<code-example>const foo = 'bar'</code-example>
+
+<p>Multi-line, linenums=false.</p>
+<code-example linenums='false'>
+&lt;hero-details <em>nghost-pmm-5&gt;
+  &lt;h2 </em>ngcontent-pmm-5&gt;Bah Dah Bing&lt;/h2&gt;
+  &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+    &lt;h3 _ngcontent-pmm-6&gt;Headless Team&lt;/h3&gt;
+  &lt;/hero-team&gt;
+&lt;/hero-details&gt;
+</code-example>
+
+<p>Default linenums.</p>
+<code-example>
+&lt;hero-details <em>nghost-pmm-5&gt;
+  &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+  &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+    &lt;h3 _ngcontent-pmm-6&gt;Headless Team&lt;/h3&gt;
+  &lt;/hero-team&gt;
+&lt;/hero-details&gt;
+</code-example>
+
+<p>Header on this one.</p>
+<code-example title="hero-details.component.ts (excerpt)">
+  &lt;hero-details <em>nghost-pmm-5&gt;
+    &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+    &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+      &lt;h3 _ngcontent-pmm-6&gt;Winning Team&lt;/h3&gt;
+    &lt;/hero-team&gt;
+  &lt;/hero-details&gt;
+</code-example>
+
+<p>An "avoid" header on this one.</p>
+<code-example class="is-anti-pattern" title="hero-details.component.ts (Avoid)">
+  &lt;hero-details <em>nghost-pmm-5&gt;
+    &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+    &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
+      &lt;h3 _ngcontent-pmm-6&gt;Losing Team&lt;/h3&gt;
+    &lt;/hero-team&gt;
+  &lt;/hero-details&gt;
+</code-example>
+
+<p>More text follows ...</p>
