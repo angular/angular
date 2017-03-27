@@ -103,7 +103,7 @@ function regionParserImpl(contents, fileType) {
     }
     return {
       contents: lines.join('\n'),
-      regions: mapObject(regionMap, (regionName, region) => region.lines.join('\n'))
+      regions: mapObject(regionMap, (regionName, region) => leftAlign(region.lines).join('\n'))
     };
   } else {
     return {contents, regions: {}};
@@ -117,6 +117,17 @@ function getRegionNames(input) {
 function removeLast(array, item) {
   const index = array.lastIndexOf(item);
   array.splice(index, 1);
+}
+
+function leftAlign(lines) {
+  let indent = Number.MAX_VALUE;
+  lines.forEach(line => {
+    const lineIndent = line.search(/\S/);
+    if (lineIndent !== -1) {
+      indent = Math.min(lineIndent, indent);
+    }
+  });
+  return lines.map(line => line.substr(indent));
 }
 
 function RegionParserError(message, index) {

@@ -43,6 +43,17 @@ describe('regionParser service', () => {
     expect(output.contents).toEqual(t('abc', 'def', 'ghi'));
   });
 
+  it('should left align the text of the region', () => {
+    const output = regionParser(
+      t(
+        '/* #docregion X */', '  all', '    indented', '    by', '  two', '  spaces', '/* #enddocregion X */',
+        '/* #docregion Y */', '    first', '  line', '  indented', '    more', '  than', '  later', '  lines', '/* #enddocregion Y */',
+        '/* #docregion Z */', '  ignore', '  ', '  empty', '', '  lines', '/* #enddocregion Z */'
+      ), 'test-type');
+    expect(output.regions['X']).toEqual(t('all', '  indented', '  by', 'two', 'spaces'));
+    expect(output.regions['Y']).toEqual(t('  first', 'line', 'indented', '  more', 'than', 'later', 'lines'));
+    expect(output.regions['Z']).toEqual(t('ignore', '', 'empty', '', 'lines'));
+  });
 
   it('should remove doc plaster annotations from the contents', () => {
     const output =
