@@ -105,6 +105,7 @@ $mat-input-underline-disabled-background-image:
   // Assumes the autofill is non-empty.
   &:-webkit-autofill + .mat-input-placeholder-wrapper .mat-float {
     @include mat-input-placeholder-floating;
+    transition: none;
   }
 
   // Note that we can't use something like visibility: hidden or
@@ -158,6 +159,12 @@ $mat-input-underline-disabled-background-image:
     left: auto;
     right: 0;
   }
+}
+
+// Disable the placeholder animation when the input is not empty (this prevents placeholder
+// animating up when the value is set programmatically).
+.mat-input-placeholder:not(.mat-empty) {
+  transition: none;
 }
 
 // Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
