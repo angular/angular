@@ -101,7 +101,8 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
   host: {
     'role': 'listbox',
     '[attr.tabindex]': 'tabIndex',
-    '[attr.aria-label]': 'placeholder',
+    '[attr.aria-label]': '_ariaLabel',
+    '[attr.aria-labelledby]': 'ariaLabelledby',
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': '_control?.invalid || "false"',
@@ -278,6 +279,12 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       this._tabIndex = value;
     }
   }
+
+  /** Aria label of the select. If not specified, the placeholder will be used as label. */
+  @Input('aria-label') ariaLabel: string = '';
+
+  /** Input that can be used to specify the `aria-labelledby` attribute. */
+  @Input('aria-labelledby') ariaLabelledby: string = '';
 
   /** Combined stream of all of the child options' change events. */
   get optionSelectionChanges(): Observable<MdOptionSelectionChange> {
@@ -745,6 +752,13 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   _getPlaceholderVisibility(): 'visible'|'hidden' {
     return (this.floatPlaceholder !== 'never' || this._selectionModel.isEmpty()) ?
         'visible' : 'hidden';
+  }
+
+  /** Returns the aria-label of the select component. */
+  get _ariaLabel(): string {
+    // If an ariaLabelledby value has been set, the select should not overwrite the
+    // `aria-labelledby` value by setting the ariaLabel to the placeholder.
+    return this.ariaLabelledby ? null : this.ariaLabel || this.placeholder;
   }
 
   /**
