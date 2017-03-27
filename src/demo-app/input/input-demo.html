@@ -119,24 +119,24 @@
   <md-toolbar color="primary">Divider Colors</md-toolbar>
   <md-card-content>
     <h4>Input</h4>
-    <md-input-container dividerColor="primary" >
+    <md-input-container color="primary" >
       <input mdInput placeholder="Default Color" value="example">
     </md-input-container>
-    <md-input-container dividerColor="accent">
+    <md-input-container color="accent">
       <input mdInput placeholder="Accent Color" value="example">
     </md-input-container>
-    <md-input-container dividerColor="warn">
+    <md-input-container color="warn">
       <input mdInput placeholder="Warn Color" value="example">
     </md-input-container>
 
     <h4>Textarea</h4>
-    <md-input-container dividerColor="primary">
+    <md-input-container color="primary">
       <textarea mdInput placeholder="Default Color">example</textarea>
     </md-input-container>
-    <md-input-container dividerColor="accent">
+    <md-input-container color="accent">
       <textarea mdInput placeholder="Accent Color">example</textarea>
     </md-input-container>
-    <md-input-container dividerColor="warn">
+    <md-input-container color="warn">
       <textarea mdInput placeholder="Warn Color">example</textarea>
     </md-input-container>
   </md-card-content>
@@ -173,7 +173,7 @@
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">
     Hello&nbsp;
-    <md-input-container dividerColor="accent">
+    <md-input-container color="accent">
       <input mdInput [(ngModel)]="name" type="text" placeholder="First name">
     </md-input-container>,
     how are you?
@@ -222,9 +222,9 @@
       </md-input-container>
     </p>
     <p>
-      <md-checkbox [(ngModel)]="dividerColor">Check to change the divider color:</md-checkbox>
-      <md-input-container [dividerColor]="dividerColor ? 'primary' : 'accent'">
-        <input mdInput [placeholder]="dividerColor ? 'Primary color' : 'Accent color'">
+      <md-checkbox [(ngModel)]="color">Check to change the color:</md-checkbox>
+      <md-input-container [color]="color ? 'primary' : 'accent'">
+        <input mdInput [placeholder]="color ? 'Primary color' : 'Accent color'">
       </md-input-container>
     </p>
     <p>

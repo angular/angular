@@ -283,7 +283,12 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
   @Input() align: 'start' | 'end' = 'start';
 
   /** Color of the input divider, based on the theme. */
-  @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
+  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
+
+  /** @deprecated Use color instead. */
+  @Input()
+  get dividerColor() { return this.color; }
+  set dividerColor(value) { this.color = value; }
 
   /** Whether the floating label should always float or not. */
   get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; };

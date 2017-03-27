@@ -13,8 +13,8 @@
                [attr.for]="_mdInputChild.id"
                [class.mat-empty]="_mdInputChild.empty && !_shouldAlwaysFloat"
                [class.mat-float]="_canPlaceholderFloat"
-               [class.mat-accent]="dividerColor == 'accent'"
-               [class.mat-warn]="dividerColor == 'warn'"
+               [class.mat-accent]="color == 'accent'"
+               [class.mat-warn]="color == 'warn'"
                *ngIf="_hasPlaceholder()">
           <ng-content select="md-placeholder, mat-placeholder"></ng-content>
           {{_mdInputChild.placeholder}}
@@ -32,8 +32,8 @@
   <div class="mat-input-underline"
        [class.mat-disabled]="_mdInputChild.disabled">
     <span class="mat-input-ripple"
-          [class.mat-accent]="dividerColor == 'accent'"
-          [class.mat-warn]="dividerColor == 'warn'"></span>
+          [class.mat-accent]="color == 'accent'"
+          [class.mat-warn]="color == 'warn'"></span>
   </div>
 
   <div class="mat-input-subscript-wrapper" [ngSwitch]="_getDisplayedMessages()">

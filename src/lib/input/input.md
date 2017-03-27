@@ -79,9 +79,9 @@ Hint labels are specified in one of two ways: either using the `hintLabel` attri
 `align` attribute containing the side. The attribute version is assumed to be at the `start`.
 Specifying a side twice will result in an exception during initialization.
 
-### Divider Color
+### Underline Color
 
-The divider (line under the `input` content) color can be changed by using the `dividerColor`
+The underline (line under the `input` content) color can be changed by using the `color`
 attribute of `md-input-container`. A value of `primary` is the default and will correspond to the
 theme primary color. Alternatively, `accent` or `warn` can be specified to use the theme's accent or
 warn color.
