@@ -42,19 +42,20 @@ Reactive Forms belongs to a different `NgModule` called `ReactiveFormsModule`, s
 
 We bootstrap our `AppModule` in main.ts.
 
-<md-tab-group>
 
-  <md-tab label="app.module.ts">
-    {@example 'cb-dynamic-form/ts/src/app/app.module.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app.module.ts" path="cb-dynamic-form/src/app/app.module.ts">
 
-  <md-tab label="main.ts">
-    {@example 'cb-dynamic-form/ts/src/main.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="main.ts" path="cb-dynamic-form/src/main.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 
 <a id="object-model"></a>## Question Model
@@ -66,7 +67,9 @@ The "question" is the most fundamental object in the model.
 We have created `QuestionBase` as the most fundamental question class.
 
 
-{@example 'cb-dynamic-form/ts/src/app/question-base.ts'}
+<code-example path="cb-dynamic-form/src/app/question-base.ts">
+
+</code-example>
 
 From this base we derived two new classes in `TextboxQuestion` and `DropdownQuestion` that represent Textbox and Dropdown questions. 
 The idea is that the form will be bound to specific question types and render the appropriate controls dynamically. 
@@ -74,53 +77,61 @@ The idea is that the form will be bound to specific question types and render th
 `TextboxQuestion` supports multiple html5 types like text, email, url etc via the `type` property.
 
 
-{@example 'cb-dynamic-form/ts/src/app/question-textbox.ts'}
+<code-example path="cb-dynamic-form/src/app/question-textbox.ts" linenums="false">
+
+</code-example>
 
 `DropdownQuestion` presents a list of choices in a select box.
 
 
-{@example 'cb-dynamic-form/ts/src/app/question-dropdown.ts'}
+<code-example path="cb-dynamic-form/src/app/question-dropdown.ts" linenums="false">
+
+</code-example>
 
 Next we have defined `QuestionControlService`, a simple service for transforming our questions to a `FormGroup`. 
 In a nutshell, the form group consumes the metadata from the question model and allows us to specify default values and validation rules.
 
 
-{@example 'cb-dynamic-form/ts/src/app/question-control.service.ts'}
+<code-example path="cb-dynamic-form/src/app/question-control.service.ts" linenums="false">
+
+</code-example>
 
 <a id="form-component"></a>## Question form components
 Now that we have defined the complete model we are ready to create components to represent the dynamic form.
 `DynamicFormComponent` is the entry point and the main container for the form. 
-<md-tab-group>
 
-  <md-tab label="dynamic-form.component.html">
-    {@example 'cb-dynamic-form/ts/src/app/dynamic-form.component.html'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="dynamic-form.component.html" path="cb-dynamic-form/src/app/dynamic-form.component.html">
 
-  <md-tab label="dynamic-form.component.ts">
-    {@example 'cb-dynamic-form/ts/src/app/dynamic-form.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="dynamic-form.component.ts" path="cb-dynamic-form/src/app/dynamic-form.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 It presents a list of questions, each question bound to a `<df-question>` component element.
 The `<df-question>` tag matches the `DynamicFormQuestionComponent`,
 the component responsible for rendering the details of each _individual_ question based on values in the data-bound question object.  
 
-<md-tab-group>
 
-  <md-tab label="dynamic-form-question.component.html">
-    {@example 'cb-dynamic-form/ts/src/app/dynamic-form-question.component.html'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="dynamic-form-question.component.html" path="cb-dynamic-form/src/app/dynamic-form-question.component.html">
 
-  <md-tab label="dynamic-form-question.component.ts">
-    {@example 'cb-dynamic-form/ts/src/app/dynamic-form-question.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="dynamic-form-question.component.ts" path="cb-dynamic-form/src/app/dynamic-form-question.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 Notice this component can present any type of question in our model. 
 We only have two types of questions at this point but we can imagine many more.
@@ -139,12 +150,16 @@ underlying control objects, populated from the question model with display and v
  Questionnaire maintenance is a simple matter of adding, updating, and removing objects from the `questions` array.
  
 
-{@example 'cb-dynamic-form/ts/src/app/question.service.ts'}
+<code-example path="cb-dynamic-form/src/app/question.service.ts">
+
+</code-example>
 
 Finally, we display an instance of the form in the `AppComponent` shell.
 
 
-{@example 'cb-dynamic-form/ts/src/app/app.component.ts'}
+<code-example path="cb-dynamic-form/src/app/app.component.ts">
+
+</code-example>
 
 <a id="dynamic-template"></a>## Dynamic Template
 Although in this example we're modelling a job application for heroes, there are no references to any specific hero question 

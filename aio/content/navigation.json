@@ -13,13 +13,13 @@
   ],
   "SideNav": [
     {
-      "url": "guide/quickstart",
+      "url": "quickstart",
       "title": "Quickstart",
       "tooltip": "A quick look at an Angular app."
     },
 
     {
-      "url": "guide/cli-quickstart",
+      "url": "cli-quickstart",
       "title": "CLI Quickstart",
       "tooltip": "A quick look at an Angular app built with the Angular CLI."
     },
@@ -29,7 +29,7 @@
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
         {
-          "url": "tutorial/",
+          "url": "tutorial",
           "title": "Introduction",
           "tooltip": "Introduction to the Tour of Heroes tutorial"
         },
@@ -182,12 +182,6 @@
         },
 
         {
-          "url": "guide/component-relative-paths",
-          "title": "Component-relative paths",
-          "tooltip": "Use relative URLs for component templates and styles."
-        },
-
-        {
           "title": "Dependency Injection",
           "tooltip": "More about Dependency Injection",
           "children": [
@@ -211,7 +205,6 @@
         },
 
         {
-          "url": "guide/directives",
           "title": "Directives",
           "tooltip": "Learn how directives modify the layout and behavior of elements.",
           "children": [
@@ -384,7 +377,7 @@
     },
 
     {
-      "url": "resources/",
+      "url": "resources",
       "title": "Resources",
       "children": [
         {

@@ -5,6 +5,7 @@ Documentation Overview
 How to read and use this documentation.
 
 @description
+
 This page describes the Angular documentation at a high level.
 If you're new to Angular, you may want to visit "[Learning Angular](guide/learning-angular)" first.
 
@@ -12,6 +13,7 @@ If you're new to Angular, you may want to visit "[Learning Angular](guide/learni
 
 The documentation is divided into major thematic sections, each
 a collection of pages devoted to that theme.
+
 
 <table width="100%">
 
