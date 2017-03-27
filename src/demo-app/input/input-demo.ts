@@ -4,6 +4,8 @@ import {FormControl, Validators} from '@angular/forms';
 
 let max = 5;
 
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 @Component({
   moduleId: module.id,
   selector: 'input-demo',
@@ -17,6 +19,9 @@ export class InputDemo {
   ctrlDisabled = false;
 
   name: string;
+  errorMessageExample1: string;
+  errorMessageExample2: string;
+  errorMessageExample3: string;
   items: any[] = [
     { value: 10 },
     { value: 20 },
@@ -26,6 +31,7 @@ export class InputDemo {
   ];
   rows = 8;
   formControl = new FormControl('hello', Validators.required);
+  emailFormControl = new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]);
   model = 'hello';
 
   addABunch(n: number) {

@@ -1,6 +1,7 @@
 import {TestBed, async, fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
 import {Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
@@ -27,7 +28,11 @@ describe('MdAutocomplete', () => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [
-          MdAutocompleteModule.forRoot(), MdInputModule.forRoot(), FormsModule, ReactiveFormsModule
+        MdAutocompleteModule.forRoot(),
+        MdInputModule.forRoot(),
+        FormsModule,
+        ReactiveFormsModule,
+        NoopAnimationsModule
       ],
       declarations: [
         SimpleAutocomplete,

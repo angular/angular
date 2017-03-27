@@ -8,12 +8,12 @@
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
-  
+
   // Placeholder colors. Required is used for the `*` star shown in the placeholder.
   $input-placeholder-color: mat-color($foreground, hint-text);
   $input-floating-placeholder-color: mat-color($primary);
   $input-required-placeholder-color: mat-color($accent);
-  
+
   // Underline colors.
   $input-underline-color: mat-color($foreground, divider);
   $input-underline-color-accent: mat-color($accent);
@@ -64,7 +64,10 @@
     }
   }
 
-  .mat-input-container.ng-invalid.ng-touched:not(.mat-focused) {
+  // Styling for the error state of the input container. Note that while the same can be
+  // achieved with the ng-* classes, we use this approach in order to ensure that the same
+  // logic is used to style the error state and to show the error messages.
+  .mat-input-invalid {
     .mat-input-placeholder,
     .mat-placeholder-required {
       color: $input-underline-color-warn;
@@ -73,5 +76,13 @@
     .mat-input-underline {
       border-color: $input-underline-color-warn;
     }
+
+    .mat-input-ripple {
+      background-color: $input-underline-color-warn;
+    }
+  }
+
+  .mat-input-error {
+    color: $input-underline-color-warn;
   }
 }

@@ -1,4 +1,4 @@
-`<md-input-container>` is a wrapper for native `input` and `textarea` elements. This container 
+`<md-input-container>` is a wrapper for native `input` and `textarea` elements. This container
 applies Material Design styles and behavior while still allowing direct access to the underlying
 native element.
 
@@ -14,7 +14,7 @@ elements inside `md-input-container` as well. This includes Angular directives s
 
 The only limitations are that the `type` attribute can only be one of the values supported by
 `md-input-container` and the native element cannot specify a `placeholder` attribute if the
-`md-input-container` also contains a `md-placeholder` element. 
+`md-input-container` also contains a `md-placeholder` element.
 
 ### Supported `input` types
 
@@ -32,6 +32,19 @@ be used with `md-input-container`:
 * time
 * url
 * week
+
+### Error messages
+
+Error messages can be shown beneath an input by specifying `md-error` elements inside the
+`md-input-container`. Errors are hidden by default and will be displayed on invalid inputs after
+the user has interacted with the element or the parent form has been submitted. In addition,
+whenever errors are displayed, the container's `md-hint` labels will be hidden.
+
+If an input element can have more than one error state, it is up to the consumer to toggle which
+messages should be displayed. This can be done with CSS, `ngIf` or `ngSwitch`.
+
+Note that, while multiple error messages can be displayed at the same time, it is recommended to
+only show one at a time.
 
 ### Placeholder
 

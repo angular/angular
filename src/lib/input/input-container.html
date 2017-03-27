@@ -36,6 +36,15 @@
           [class.mat-warn]="dividerColor == 'warn'"></span>
   </div>
 
-  <div *ngIf="hintLabel != ''" [attr.id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
-  <ng-content select="md-hint, mat-hint"></ng-content>
+  <div class="mat-input-subscript-wrapper" [ngSwitch]="_getDisplayedMessages()">
+    <div *ngSwitchCase="'error'" [@transitionMessages]="_subscriptAnimationState">
+      <ng-content select="md-error, mat-error"></ng-content>
+    </div>
+
+    <div class="mat-input-hint-wrapper" *ngSwitchCase="'hint'"
+      [@transitionMessages]="_subscriptAnimationState">
+      <div *ngIf="hintLabel" [id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
+      <ng-content select="md-hint, mat-hint"></ng-content>
+    </div>
+  </div>
 </div>

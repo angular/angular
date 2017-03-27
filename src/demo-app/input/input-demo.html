@@ -52,6 +52,51 @@
 </md-card>
 
 <md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Error messages</md-toolbar>
+  <md-card-content>
+    <h4>Regular</h4>
+
+    <p>
+      <md-input-container>
+        <input mdInput placeholder="example" [(ngModel)]="errorMessageExample1" required>
+        <md-error>This field is required</md-error>
+      </md-input-container>
+
+      <md-input-container>
+        <input mdInput placeholder="email" [formControl]="emailFormControl">
+        <md-error *ngIf="emailFormControl.hasError('required')">
+          This field is required
+        </md-error>
+        <md-error *ngIf="emailFormControl.hasError('pattern')">
+          Please enter a valid email address
+        </md-error>
+      </md-input-container>
+    </p>
+
+    <h4>With hint</h4>
+
+    <md-input-container>
+      <input mdInput placeholder="example" [(ngModel)]="errorMessageExample2" required>
+      <md-error>This field is required</md-error>
+      <md-hint>Please type something here</md-hint>
+    </md-input-container>
+
+
+    <form novalidate>
+      <h4>Inside a form</h4>
+
+      <md-input-container>
+        <input mdInput name="example" placeholder="example"
+          [(ngModel)]="errorMessageExample3" required>
+        <md-error>This field is required</md-error>
+      </md-input-container>
+
+      <button color="primary" md-raised-button>Submit</button>
+    </form>
+  </md-card-content>
+</md-card>
+
+<md-card class="demo-card demo-basic">
   <md-toolbar color="primary">Prefix + Suffix</md-toolbar>
   <md-card-content>
     <h4>Text</h4>

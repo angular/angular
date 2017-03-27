@@ -4,6 +4,7 @@
 
 
 $mat-input-floating-placeholder-scale-factor: 0.75 !default;
+$mat-input-wrapper-spacing: 1em !default;
 
 // Gradient for showing the dashed line when the input is disabled.
 $mat-input-underline-disabled-background-image:
@@ -41,7 +42,7 @@ $mat-input-underline-disabled-background-image:
 // Global wrapper. We need to apply margin to the element for spacing, but
 // cannot apply it to the host element directly.
 .mat-input-wrapper {
-  margin: 1em 0;
+  margin: $mat-input-wrapper-spacing 0;
   // Account for the underline which has 4px of margin + 2px of border.
   padding-bottom: 6px;
 }
@@ -219,27 +220,55 @@ $mat-input-underline-disabled-background-image:
   }
 }
 
-// The hint is shown below the underline. There can be more than one; one at the start
-// and one at the end.
-.mat-hint {
-  display: block;
+// Wrapper for the hints and error messages. Provides positioning and text size.
+// Note that we're using `top` in order to allow for stacked children to flow downwards.
+.mat-input-subscript-wrapper {
   position: absolute;
   font-size: 75%;
-  bottom: 0;
+  top: 100%;
+  width: 100%;
+  margin-top: -$mat-input-wrapper-spacing;
+  overflow: hidden; // prevents multi-line errors from overlapping the input
+}
 
+// Clears the floats on the hints. This is necessary for the hint animation to work.
+.mat-input-hint-wrapper {
+  &::before,
+  &::after {
+    content: ' ';
+    display: table;
+  }
+
+  &::after {
+    clear: both;
+  }
+}
+
+// The hint is shown below the underline. There can be
+// more than one; one at the start and one at the end.
+.mat-hint {
+  display: block;
+  float: left;
+
+  // We use floats here, as opposed to flexbox, in order to make it
+  // easier to reverse their location in rtl and to ensure that they're
+  // aligned properly in some cases (e.g. when there is only an `end` hint).
   &.mat-right {
-    right: 0;
+    float: right;
   }
 
   [dir='rtl'] & {
-    right: 0;
-    left: auto;
+    float: right;
 
     &.mat-right {
-      right: auto;
-      left: 0;
+      float: left;
     }
   }
+}
+
+// Single error message displayed beneath the input.
+.mat-input-error {
+  display: block;
 }
 
 .mat-input-prefix, .mat-input-suffix {
