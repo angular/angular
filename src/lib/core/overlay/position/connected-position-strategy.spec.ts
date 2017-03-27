@@ -534,7 +534,9 @@ describe('ConnectedPositionStrategy', () => {
           fakeElementRef,
           {originX: 'start', originY: 'bottom'},
           {overlayX: 'start', overlayY: 'top'});
-      strategy.withScrollableContainers([new Scrollable(new FakeElementRef(scrollable), null)]);
+
+      strategy.withScrollableContainers([
+          new Scrollable(new FakeElementRef(scrollable), null, null, null)]);
 
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);

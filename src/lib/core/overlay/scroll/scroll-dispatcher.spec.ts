@@ -41,15 +41,15 @@ describe('Scroll Dispatcher', () => {
 
     it('should notify through the directive and service that a scroll event occurred',
         fakeAsync(() => {
-      let hasDirectiveScrollNotified = false;
       // Listen for notifications from scroll directive
-      let scrollable = fixture.componentInstance.scrollable;
-      scrollable.elementScrolled().subscribe(() => { hasDirectiveScrollNotified = true; });
+      const scrollable = fixture.componentInstance.scrollable;
+      const directiveSpy = jasmine.createSpy('directive scroll callback');
+      scrollable.elementScrolled().subscribe(directiveSpy);
 
       // Listen for notifications from scroll service with a throttle of 100ms
       const throttleTime = 100;
-      let hasServiceScrollNotified = false;
-      scroll.scrolled(throttleTime, () => { hasServiceScrollNotified = true; });
+      const serviceSpy = jasmine.createSpy('service scroll callback');
+      scroll.scrolled(throttleTime, serviceSpy);
 
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
@@ -57,16 +57,38 @@ describe('Scroll Dispatcher', () => {
       dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
 
       // The scrollable directive should have notified the service immediately.
-      expect(hasDirectiveScrollNotified).toBe(true);
+      expect(directiveSpy).toHaveBeenCalled();
 
       // Verify that the throttle is used, the service should wait for the throttle time until
       // sending the notification.
-      expect(hasServiceScrollNotified).toBe(false);
+      expect(serviceSpy).not.toHaveBeenCalled();
 
       // After the throttle time, the notification should be sent.
       tick(throttleTime);
-      expect(hasServiceScrollNotified).toBe(true);
+      expect(serviceSpy).toHaveBeenCalled();
     }));
+
+    it('should not execute the global events in the Angular zone', () => {
+      const spy = jasmine.createSpy('zone unstable callback');
+      const subscription = fixture.ngZone.onUnstable.subscribe(spy);
+
+      scroll.scrolled(0, () => {});
+      dispatchFakeEvent(document, 'scroll');
+      dispatchFakeEvent(window, 'resize');
+
+      expect(spy).not.toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
+    it('should not execute the scrollable events in the Angular zone', () => {
+      const spy = jasmine.createSpy('zone unstable callback');
+      const subscription = fixture.ngZone.onUnstable.subscribe(spy);
+
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
+
+      expect(spy).not.toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
   });
 
   describe('Nested scrollables', () => {

@@ -5,7 +5,7 @@ import {
 } from './event-objects';
 
 /** Shorthand to dispatch a fake event on a specified node. */
-export function dispatchFakeEvent(node: Node, type: string) {
+export function dispatchFakeEvent(node: Node | Window, type: string) {
   node.dispatchEvent(createFakeEvent(type));
 }
 
