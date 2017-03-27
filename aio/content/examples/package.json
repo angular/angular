@@ -4,9 +4,32 @@
   "private": true,
   "description": "Master package.json, the superset of all dependencies for all of the _example package.json files. See _boilerplate/package.json for example npm scripts.",
   "scripts": {
-    "http-server": "http-server",
+    "build": "tsc -p src/",
+    "build:watch": "tsc -p src/ -w",
+    "build:e2e": "tsc -p e2e/",
+    "serve": "lite-server -c=bs-config.json",
+    "prestart": "npm run build",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
     "protractor": "protractor",
-    "webdriver:update": "webdriver-manager update --standalone false --gecko false"
+    "webdriver:update": "webdriver-manager update --standalone false --gecko false",
+    "pretest": "npm run build",
+    "test": "concurrently \"npm run build:watch\" \"karma start karma.conf.js\"",
+    "pretest:once": "npm run build",
+    "test:once": "karma start karma.conf.js --single-run",
+    "lint": "tslint ./src/**/*.ts -t verbose",
+
+    "build:upgrade": "tsc",
+    "serve:upgrade": "http-server",
+    "build:cli": "ng build --no-progress",
+    "serve:cli": "http-server dist/",
+    "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
+    "serve:aot": "lite-server -c bs-config.aot.json",
+    "start:webpack": "webpack-dev-server --inline --progress --port 8080",
+    "test:webpack": "karma start karma.webpack.conf.js",
+    "build:webpack": "rimraf dist && webpack --config config/webpack.prod.js --bail",
+    "build:babel": "babel src -d src --extensions \".es6\" --source-maps",
+    "copy-dist-files": "node ./copy-dist-files.js",
+    "i18n": "ng-xi18n"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +54,7 @@
     "zone.js": "^0.7.4"
   },
   "devDependencies": {
+    "@angular/cli": "^1.0.0-rc.0",
     "@types/angular": "^1.5.16",
     "@types/angular-animate": "^1.5.5",
     "@types/angular-cookies": "^1.4.2",
@@ -40,9 +64,8 @@
     "@types/angular-sanitize": "^1.3.3",
     "@types/jasmine": "2.5.36",
     "@types/node": "^6.0.45",
-    "angular-cli": "^1.0.0-beta.26",
     "angular2-template-loader": "^0.6.0",
-    "awesome-typescript-loader": "^3.0.0-beta.18",
+    "awesome-typescript-loader": "^3.0.4",
     "babel-cli": "^6.16.0",
     "babel-preset-angular2": "^0.0.2",
     "babel-preset-es2015": "^6.16.0",
@@ -80,9 +103,9 @@
     "ts-node": "^1.3.0",
     "tslint": "^3.15.1",
     "typescript": "~2.0.10",
-    "webpack": "2.2.0",
-    "webpack-dev-server": "2.2.0-rc.0",
-    "webpack-merge": "^2.4.0"
+    "webpack": "2.2.1",
+    "webpack-dev-server": "2.4.1",
+    "webpack-merge": "^3.0.0"
   },
   "repository": {}
 }

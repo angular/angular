@@ -34,8 +34,9 @@
     },
     // map tells the System loader where to look for things
     map: {
+      'ng-loader': './systemjs-angular-loader.js',
       // our app is within the app folder
-      app: 'app',
+      'app': 'app',
 
       // angular bundles
       '@angular/core': 'ng:core-builds/master/bundles/core.umd.js',
@@ -71,7 +72,12 @@
     packages: {
       app: {
         main: './main.ts',
-        defaultExtension: 'ts'
+        defaultExtension: 'ts',
+        meta: {
+          './*.ts': {
+            loader: 'ng-loader'
+          }
+        }
       },
       rxjs: {
         defaultExtension: 'js'
