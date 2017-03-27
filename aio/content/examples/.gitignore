@@ -1,17 +1,58 @@
 # _boilerplate files
-!_boilerplate/*
-*/*/src/styles.css
-*/*/src/systemjs.config.js
-*/*/src/tsconfig.json
-*/*/bs-config.e2e.json
-*/*/bs-config.json
-*/*/package.json
-*/*/tslint.json
+**/src/styles.css
+**/src/systemjs-angular-loader.js
+**/src/systemjs.config.js
+**/src/tsconfig.json
+**/bs-config.e2e.json
+**/bs-config.json
+**/package.json
+**/tslint.json
+**/karma.conf.js
+**/karma-test-shim.js
+**/browser-test-shim.js
+**/node_modules
 
-# example files
+# built files
+*.map
 _test-output
 protractor-helpers.js
 */e2e-spec.js
+**/*.js
 **/ts/**/*.js
 **/js-es6*/**/*.js
-**/ts-snippets/**/*.js
+dist/
+
+# special
+!_boilerplate/
+!/*
+!systemjs.config.*.js
+!*.1.*
+!*.2.*
+!*.3.*
+
+# AngularJS files
+!**/*.ajs.js
+
+# aot
+**/*.ngfactory.ts
+**/*.ngsummary.json
+**/*.shim.ngstyle.ts
+**/*.metadata.json
+!aot/bs-config.json
+!aot/index.html
+!copy-dist-files.js
+!rollup-config.js
+
+# testing
+!testing/src/browser-test-shim.js
+!testing/karma*.js
+
+# TS to JS
+!cb-ts-to-js/js*/**/*.js
+
+# webpack
+!webpack/**/config/*.js
+!webpack/**/*webpack*.js
+
+# style-guide
+!style-guide/src/systemjs.custom.js

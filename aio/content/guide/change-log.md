@@ -5,8 +5,18 @@ Change Log
 An annotated history of recent documentation improvements.
 
 @description
+
 The Angular documentation is a living document with continuous improvements.
 This log calls attention to recent significant changes.
+
+## Updated to Angular 4.0. Documentation for Angular 2.x can be found at [v2.angular.io](https://v2.angular.io).
+
+## All mention of moduleId removed. "Component relative paths" cookbook deleted (2017-03-13)
+We added a new SystemJS plugin (systemjs-angular-loader.js) to our recommended SystemJS configuration.
+This plugin dynamically converts "component-relative" paths in templateUrl and styleUrls to "absolute paths" for you.
+
+We strongly encourage you to only write component-relative paths.
+That is the only form of URL discussed in these docs. You no longer need to write @Component({ moduleId: module.id }), nor should you.
 
 ## NEW: Downloadable examples for each guide (2017-02-28)
 Now you can download the sample code for any guide and run it locally.

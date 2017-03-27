@@ -63,7 +63,7 @@ describe('Tutorial part 6', () => {
       selectedHero: element(by.css('my-app li.selected')),
       selectedHeroSubview: element(by.css('my-app my-heroes > div:last-child')),
 
-      heroDetail: element(by.css('my-app my-hero-detail > div')),
+      heroDetail: element(by.css('my-app hero-detail > div')),
 
       searchBox: element(by.css('#search-box')),
       searchResults: element.all(by.css('.search-result'))

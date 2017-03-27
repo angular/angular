@@ -45,10 +45,17 @@ The HTML `<title>` is in the document `<head>`, outside the body, making it inac
 
 We could grab the browser `document` object and set the title manually.
 That's dirty and undermines our chances of running the app outside of a browser someday.
+
+~~~ {.l-sub-section}
+
 Running your app outside a browser means that you can take advantage of server-side
 pre-rendering for near-instant first app render times and for SEO.  It means you could run from
 inside a Web Worker to improve your app's responsiveness by using multiple threads.  And it
 means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
+
+
+~~~
+
 ## Use the *Title* service
 Fortunately, Angular bridges the gap by providing a `Title` service as part of the *Browser platform*.
 The [Title](api/platform-browser/index/Title-class) service is a simple class that provides an API
@@ -60,7 +67,9 @@ for getting and setting the current HTML document title:
 Let's inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
-{@example 'cb-set-document-title/ts/src/app/app.component.ts' region='class'}
+<code-example path="cb-set-document-title/src/app/app.component.ts" region="class" linenums="false">
+
+</code-example>
 
 We bind that method to three anchor tags and, voilà!
 <figure class='image-display'>
@@ -69,24 +78,25 @@ We bind that method to three anchor tags and, voilà!
 
 Here's the complete solution
 
-<md-tab-group>
 
-  <md-tab label="src/main.ts">
-    {@example 'cb-set-document-title/ts/src/main.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/main.ts" path="cb-set-document-title/src/main.ts">
 
-  <md-tab label="src/app/app.module.ts">
-    {@example 'cb-set-document-title/ts/src/app/app.module.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="src/app/app.component.ts">
-    {@example 'cb-set-document-title/ts/src/app/app.component.ts'}
-  </md-tab>
+  <code-pane title="src/app/app.module.ts" path="cb-set-document-title/src/app/app.module.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/app.component.ts" path="cb-set-document-title/src/app/app.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 
 ## Why we provide the *Title* service in *bootstrap*

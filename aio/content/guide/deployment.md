@@ -108,12 +108,16 @@ Load the few files you need from the web instead.
 with versions that load from the web. It might look like this.
 
 
-{@example 'deployment/ts/src/index.html' region='node-module-scripts'}
+<code-example path="deployment/src/index.html" region="node-module-scripts" linenums="false">
+
+</code-example>
 
 (2) Replace the `systemjs.config.js` script with a script that 
 loads `systemjs.config.server.js`.
 
-{@example 'deployment/ts/src/index.html' region='systemjs-config'}
+<code-example path="deployment/src/index.html" region="systemjs-config" linenums="false">
+
+</code-example>
 
 (3) Add `systemjs.config.server.js` (shown in the code sample below) to the `src/` folder.
 This alternative version configures _SystemJS_ to load _UMD_ versions of Angular 
@@ -125,7 +129,9 @@ you make to `systemjs.config.js`.
 Notice the `paths` key:
 
 
-{@example 'deployment/ts/src/systemjs.config.server.js' region='paths'}
+<code-example path="deployment/src/systemjs.config.server.js" region="paths" linenums="false">
+
+</code-example>
 
 In the standard SystemJS config, the `npm` path points to the `node_modules/`.
 In this server config, it points to 
@@ -143,44 +149,45 @@ Then change the config's  `'npm'` path to point to that folder.
 
 The following trivial router sample app shows these changes.
 
-<md-tab-group>
 
-  <md-tab label="index.html">
-    {@example 'deployment/ts/src/index.html'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="index.html" path="deployment/src/index.html">
 
-  <md-tab label="systemjs.config.server.js">
-    {@example 'deployment/ts/src/systemjs.config.server.js'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="main.ts">
-    {@example 'deployment/ts/src/main.ts'}
-  </md-tab>
+  <code-pane title="systemjs.config.server.js" path="deployment/src/systemjs.config.server.js">
+
+  </code-pane>
 
 
-  <md-tab label="app/app.module.ts">
-    {@example 'deployment/ts/src/app/app.module.ts'}
-  </md-tab>
+  <code-pane title="main.ts" path="deployment/src/main.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/app.component.ts">
-    {@example 'deployment/ts/src/app/app.component.ts'}
-  </md-tab>
+  <code-pane title="app/app.module.ts" path="deployment/src/app/app.module.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/crisis-list.component.ts">
-    {@example 'deployment/ts/src/app/crisis-list.component.ts'}
-  </md-tab>
+  <code-pane title="app/app.component.ts" path="deployment/src/app/app.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app/hero-list.component.ts">
-    {@example 'deployment/ts/src/app/hero-list.component.ts'}
-  </md-tab>
+  <code-pane title="app/crisis-list.component.ts" path="deployment/src/app/crisis-list.component.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app/hero-list.component.ts" path="deployment/src/app/hero-list.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 Practice with this sample before attempting these techniques on your application.
 
@@ -338,7 +345,14 @@ For example, given the `<base href="/my/app/">`, the browser resolves a URL such
 into a server request for `my/app/some/place/foo.jpg`.
 During navigation, the Angular router uses the _base href_ as the base path to component, template, and module files.
 
-See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let) alternative.In development, you typically start the server in the folder that holds `index.html`. 
+
+~~~ {.l-sub-section}
+
+See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let) alternative.
+
+~~~
+
+In development, you typically start the server in the folder that holds `index.html`. 
 That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
 
 But on the shared or production server, you might serve the app from a subfolder.
@@ -364,7 +378,9 @@ Switching to production mode can make it run faster by disabling development spe
 To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`. 
 
 
-{@example 'deployment/ts/src/main.ts' region='enableProdMode'}
+<code-example path="deployment/src/main.ts" region="enableProdMode" linenums="false">
+
+</code-example>
 
 
 

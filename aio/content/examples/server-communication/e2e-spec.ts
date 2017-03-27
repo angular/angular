@@ -1,4 +1,4 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
 
@@ -56,19 +56,19 @@ describe('Server Communication', function () {
     });
 
     describe('Fetches after each keystroke', function () {
-      it('should fetch results after "B"', function(done) {
+      it('should fetch results after "B"', function(done: any) {
         testForRefreshedResult('B', done);
       });
 
-      it('should fetch results after "Ba"', function(done) {
+      it('should fetch results after "Ba"', function(done: any) {
         testForRefreshedResult('a', done);
       });
 
-      it('should fetch results after "Bas"', function(done) {
+      it('should fetch results after "Bas"', function(done: any) {
         testForRefreshedResult('s', done);
       });
 
-      it('should fetch results after "Basic"', function(done) {
+      it('should fetch results after "Basic"', function(done: any) {
         testForRefreshedResult('ic', done);
       });
     });
@@ -87,19 +87,19 @@ describe('Server Communication', function () {
       expect(resultList.count()).toBe(0, 'result list must be empty');
     });
 
-    it('should fetch results after "Java"', function(done) {
+    it('should fetch results after "Java"', function(done: any) {
       testForNewResult('Java', done);
     });
 
-    it('should fetch results after "JavaS"', function(done) {
+    it('should fetch results after "JavaS"', function(done: any) {
       testForStaleResult('S', done);
     });
 
-    it('should fetch results after "JavaSc"', function(done) {
+    it('should fetch results after "JavaSc"', function(done: any) {
       testForStaleResult('c', done);
     });
 
-    it('should fetch results after "JavaScript"', function(done) {
+    it('should fetch results after "JavaScript"', function(done: any) {
       testForStaleResult('ript', done);
     });
 

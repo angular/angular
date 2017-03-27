@@ -133,6 +133,12 @@ If the `app` folder is the application root, as it is for the sample application
 set the `href` value *exactly* as shown here.
 
 
+<code-example path="router/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
+
+</code-example>
+
+
+
 {@a basics-router-imports}
 ### Router imports
 
@@ -140,7 +146,20 @@ The Angular Router is an optional service that presents a particular component v
 It is not part of the Angular core. It is in its own library package, `@angular/router`.
 Import what you need from it as you would from any other Angular package.
 
+
+<code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (import)" region="import-router">
+
+</code-example>
+
+
+
+~~~ {.l-sub-section}
+
 You'll learn about more options in the [details below](guide/router#browser-url-styles).
+
+
+~~~
+
 
 
 {@a basics-config}
@@ -153,6 +172,12 @@ from which it can determine the component to display.
 A router has no routes until you configure it.
 The following example creates four route definitions, configures the router via the `RouterModule.forRoot` method,
 and adds the result to the `AppModule`'s `imports` array.
+
+
+<code-example path="router/src/app/app.module.0.ts" linenums="false" title="src/app/app.module.ts (excerpt)" region="excerpt">
+
+</code-example>
+
 
 
 {@a example-config}
@@ -213,6 +238,12 @@ But most of the time you navigate as a result of some user action such as the cl
 an anchor tag.
 
 Consider the following template:
+
+
+<code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+
+</code-example>
+
 The `RouterLink` directives on the anchor tags give the router control over those elements. 
 The navigation paths are fixed, so you can assign a string to the `routerLink` (a "one-time" binding).
 
@@ -561,10 +592,17 @@ look, e.g. `localhost:3000/crisis-center`. The in-app URLs can be indistinguisha
 Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as
 "HTML5 style" URLs.
 
+
+~~~ {.l-sub-section}
+
 HTML5 style navigation is the router default.
 In the [LocationStrategy and browser URL styles](guide/router#browser-url-styles) Appendix, 
 learn why HTML5 style is preferred, how to adjust its behavior, and how to switch to the
 older hash (#) style, if necessary.
+
+
+~~~
+
 You must **add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
@@ -574,6 +612,12 @@ CSS files, scripts, and images.
 Add the `<base>` element just after the  `<head>` tag.
 If the `app` folder is the application root, as it is for this application,
 set the `href` value in **`index.html`** *exactly* as shown here.
+
+
+<code-example path="router/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
+
+</code-example>
+
 
 
 ~~~ {.callout.is-important}
@@ -636,10 +680,23 @@ Here is the first configuration. Pass the array of routes, `appRoutes`, to the `
 It returns a module, containing the configured `Router` service provider, plus other providers that the routing library requires. 
 Once the application is bootstrapped, the `Router` performs the initial navigation based on the current browser URL.
 
+
+<code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (first-config)" region="first-config">
+
+</code-example>
+
+
+
+~~~ {.l-sub-section}
+
 Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations.
 As the application grows, you'll want to refactor the routing configuration into a separate file
 and create a **[Routing Module](guide/router#routing-module)**, a special type of `Service Module` dedicated to the purpose
 of routing in feature modules.
+
+
+~~~
+
 Providing the `RouterModule` in the `AppModule` makes the Router available everywhere in the application.
 
 
@@ -659,15 +716,28 @@ and a *router outlet* where the router swaps views on and off the page. Here's w
 The corresponding component template looks like this:
 
 
+<code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+
+</code-example>
+
+
+
 {@a router-outlet}
 ### *RouterOutlet*
 
 The `RouterOutlet` is a directive from the router library that marks
 the spot in the template where the router should display the views for that outlet.
 
+
+~~~ {.l-sub-section}
+
 The router adds the `<router-outlet>` element to the DOM
 and subsequently inserts the navigated view element
 immediately _after_ the `<router-outlet>`.
+
+
+~~~
+
 
 
 {@a router-link}
@@ -684,7 +754,14 @@ You can also add more contextual information to the `RouterLink` by providing qu
 or a URL fragment for jumping to different areas on the page. Query string parameters
 are provided through the `[queryParams]` binding which takes an object (e.g. `{ name: 'value' }`), while the URL fragment
 takes a single value bound to the `[fragment]` input binding.
+
+~~~ {.l-sub-section}
+
 Learn about the how you can also use the _link parameters array_ in the [appendix below](guide/router#link-parameters-array).
+
+
+~~~
+
 
 
 {@a router-link-active}
@@ -713,6 +790,12 @@ They are readily available for you to use in the template.
 The current state of `app.component.ts` looks like this:
 
 
+<code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (excerpt)">
+
+</code-example>
+
+
+
 {@a wildcard}
 ### Wildcard route
 
@@ -724,12 +807,37 @@ A _wildcard_ route has a path consisting of two asterisks. It matches _every_ UR
 The router will select _this_ route if it can't match a route earlier in the configuration.
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](guide/router#redirect) to an existing route.
 
+
+~~~ {.l-sub-section}
+
 The router selects the route with a [_first match wins_](guide/router#example-config) strategy.
 Wildcard routes are the least specific routes in the route configuration.
 Be sure it is the _last_ route in the configuration.
-To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`. The application will fail if the user clicks that button because you haven't defined a `"/sidekicks"` route yet. 
 
-Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead and have it navigate to a simple `PageNotFoundComponent`.Create the `PageNotFoundComponent` to display when users visit invalid URLs.As with the other components, add the `PageNotFoundComponent` to the `AppModule` declarations.
+
+~~~
+
+To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`. 
+
+<code-example path="router/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (excerpt)">
+
+</code-example>
+
+The application will fail if the user clicks that button because you haven't defined a `"/sidekicks"` route yet. 
+
+Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead and have it navigate to a simple `PageNotFoundComponent`.
+
+<code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (wildcard)" region="wildcard">
+
+</code-example>
+
+Create the `PageNotFoundComponent` to display when users visit invalid URLs.
+
+<code-example path="router/src/app/not-found.component.ts" linenums="false" title="src/app/not-found.component.ts (404 component)" region="404 component">
+
+</code-example>
+
+As with the other components, add the `PageNotFoundComponent` to the `AppModule` declarations.
 
 Now when the user visits `/sidekicks`, or any other invalid URL, the browser displays "Page not found".
 The browser address bar continues to point to the invalid URL.
@@ -761,10 +869,19 @@ to the desired default path (`/heroes`). The browser address bar shows `.../hero
 
 Add the default route somewhere _above_ the wildcard route.
 It's just above the wildcard route in the following excerpt showing the complete `appRoutes` for this milestone.
+
+
+<code-example path="router/src/app/app-routing.module.1.ts" linenums="false" title="src/app/app-routing.module.ts (appRoutes)" region="appRoutes">
+
+</code-example>
+
 A redirect route requires a `pathMatch` property to tell the router how to match a URL to the path of a route.
 The router throws an error if you don't.
 In this app, the router should select the route to the `HeroListComponent` only when the *entire URL* matches `''`,
 so set the `pathMatch` value to `'full'`.
+
+
+~~~ {.l-sub-section}
 
 Technically, `pathMatch = 'full'` results in a route hit when the *remaining*, unmatched segments of the URL match `''`.
 In this example, the redirect is in a top level route so the *remaining* URL and the *entire* URL are the same thing.
@@ -788,6 +905,10 @@ Remember to restore the redirect to `pathMatch = 'full'`.
 
 Learn more in Victor Savkin's 
 [post on redirects](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+
+
+~~~
+
 ### Basics wrap up
 
 You've got a very basic navigating app, one that can switch between two views
@@ -884,44 +1005,45 @@ The starter app's structure looks like this:
 
 Here are the files discussed in this milestone.
 
-<md-tab-group>
 
-  <md-tab label="app.component.ts">
-    {@example 'router/ts/src/app/app.component.1.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app.component.ts" path="router/src/app/app.component.1.ts">
 
-  <md-tab label="app.module.ts">
-    {@example 'router/ts/src/app/app.module.1.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="main.ts">
-    {@example 'router/ts/src/main.ts'}
-  </md-tab>
+  <code-pane title="app.module.ts" path="router/src/app/app.module.1.ts">
+
+  </code-pane>
 
 
-  <md-tab label="hero-list.component.ts">
-    {@example 'router/ts/src/app/hero-list.component.ts'}
-  </md-tab>
+  <code-pane title="main.ts" path="router/src/main.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis-list.component.ts">
-    {@example 'router/ts/src/app/crisis-list.component.ts'}
-  </md-tab>
+  <code-pane title="hero-list.component.ts" path="router/src/app/hero-list.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="not-found.component.ts">
-    {@example 'router/ts/src/app/not-found.component.ts'}
-  </md-tab>
+  <code-pane title="crisis-list.component.ts" path="router/src/app/crisis-list.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="index.html">
-    {@example 'router/ts/src/index.html'}
-  </md-tab>
+  <code-pane title="not-found.component.ts" path="router/src/app/not-found.component.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="index.html" path="router/src/index.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 
 ## Milestone 2: *Routing module*
@@ -957,17 +1079,28 @@ the components declared in `AppModule` will have access to router directives suc
 
 After these steps, the file should look like this.
 
-{@example 'router/ts/src/app/app-routing.module.1.ts'}
+<code-example path="router/src/app/app-routing.module.1.ts">
+
+</code-example>
 
 Next, update the `app.module.ts` file, 
 first importing the newly created `AppRoutingModule`from `app-routing.module.ts`,
 then replacing `RouterModule.forRoot` in the `imports` array with the `AppRoutingModule`.
 
-{@example 'router/ts/src/app/app.module.2.ts'}
+<code-example path="router/src/app/app.module.2.ts">
 
+</code-example>
+
+
+
+~~~ {.l-sub-section}
 
 Later in this guide you will create [multiple routing modules](guide/router#hero-routing-module) and discover that
 you must import those routing modules [in the correct order](guide/router#routing-module-order).
+
+
+~~~
+
 The application continues to work just the same, and you can use `AppRoutingModule` as
 the central place to maintain future routing configuration.
 
@@ -1038,13 +1171,15 @@ Follow these steps:
   - Delete the `selector` (routed components don't need them).
   - Delete the `<h1>`.
   - Relabel the `<h2>` to `<h2>HEROES</h2>`.
-  - Delete the `<my-hero-detail>` at the bottom of the template.
+  - Delete the `<hero-detail>` at the bottom of the template.
   - Rename the `AppComponent` class to `HeroListComponent`.
 - Copy the `hero-detail.component.ts` and the `hero.service.ts` files into the `heroes` subfolder.
 - Create a (pre-routing) `heroes.module.ts` in the heroes folder that looks like this:
 
 
-{@example 'router/ts/src/app/heroes/heroes.module.ts' region='v1'}
+<code-example path="router/src/app/heroes/heroes.module.ts" region="v1">
+
+</code-example>
 
 When you're done, you'll have these *hero management* files:
 
@@ -1100,8 +1235,13 @@ Create a new `heroes-routing.module.ts` in the `heroes` folder
 using the same techniques you learned while creating the `AppRoutingModule`.
 
 
-{@example 'router/ts/src/app/heroes/heroes-routing.module.ts'}
+<code-example path="router/src/app/heroes/heroes-routing.module.ts">
 
+</code-example>
+
+
+
+~~~ {.l-sub-section}
 
 Put the routing module file in the same folder as its companion module file.
 Here both `heroes-routing.module.ts` and `heroes.module.ts` are in the same `src/app/heroes` folder.
@@ -1109,6 +1249,10 @@ Here both `heroes-routing.module.ts` and `heroes.module.ts` are in the same `src
 Consider giving each feature module its own route configuration file.
 It may seem like overkill early when the feature routes are simple.
 But routes have a tendency to grow more complex and consistency in patterns pays off over time.
+
+
+~~~
+
 Import the hero components from their new locations in the `src/app/heroes/` folder, define the two hero routes,
 and export the `HeroRoutingModule` class.
 
@@ -1119,9 +1263,16 @@ There is a small but critical difference.
 In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method to register the routes and application level service providers. 
 In a feature module you use the static **`forChild`** method.
 
+
+~~~ {.l-sub-section}
+
 Only call `RouterModule.forRoot` in the root `AppRoutingModule` 
 (or the `AppModule` if that's where you register top level application routes). 
 In any other module, you must call the **`RouterModule.forChild`** method to register additional routes.
+
+~~~
+
+
 
 {@a adding-routing-module}
 ### Add the routing module to the _HeroesModule_
@@ -1134,7 +1285,9 @@ add it to the `imports` array of the `HeroesModule`.
 The finished `HeroesModule` looks like this:
 
 
-{@example 'router/ts/src/app/heroes/heroes.module.ts'}
+<code-example path="router/src/app/heroes/heroes.module.ts">
+
+</code-example>
 
 
 
@@ -1152,6 +1305,12 @@ Remove the `HeroListComponent` import and the `/heroes` route from the `app-rout
 
 **Leave the default and the wildcard routes!**
 These are concerns at the top level of the application itself.
+
+
+<code-example path="router/src/app/app-routing.module.2.ts" linenums="false" title="src/app/app-routing.module.ts (v2)" region="v2">
+
+</code-example>
+
 
 
 {@a merge-hero-routes}
@@ -1173,7 +1332,9 @@ That's a key benefit of creating a separate module for each feature area.
 After these steps, the `AppModule` should look like this:
 
 
-{@example 'router/ts/src/app/app.module.3.ts'}
+<code-example path="router/src/app/app.module.3.ts">
+
+</code-example>
 
 
 
@@ -1183,7 +1344,9 @@ After these steps, the `AppModule` should look like this:
 Look at the module `imports` array. Notice that the `AppRoutingModule` is _last_.
 Most importantly, it comes _after_ the `HeroesModule`.
 
-{@example 'router/ts/src/app/app.module.3.ts' region='module-imports'}
+<code-example path="router/src/app/app.module.3.ts" region="module-imports" linenums="false">
+
+</code-example>
 
 The order of route configuration matters. 
 The router accepts the first route that matches a navigation request path.
@@ -1202,10 +1365,17 @@ _before_ the hero routes.
 The wildcard route &mdash; which matches _every_ URL &mdash; 
 will intercept the attempt to navigate to a hero route.
 
+
+~~~ {.l-sub-section}
+
 Reverse the routing modules and see for yourself that
 a click of the heroes link results in "Page not found".
 Learn about inspecting the runtime router configuration
 [below](guide/router#inspect-config "Inspect the router config").
+
+
+~~~
+
 
 
 {@a route-def-with-parameter}
@@ -1213,6 +1383,12 @@ Learn about inspecting the runtime router configuration
 
 Return to the `HeroesRoutingModule` and look at the route definitions again.
 The route to `HeroDetailComponent` has a twist.
+
+
+<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route">
+
+</code-example>
+
 Notice the `:id` token in the path. That creates a slot in the path for a **Route Parameter**.
 In this case, the router will insert the `id` of a hero into that slot.
 
@@ -1257,10 +1433,28 @@ to navigate to the hero detail view for the selected hero.
 
 Start in the `HeroListComponent`.
 Revise its constructor so that it acquires the `Router` and the `HeroService` by dependency injection:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (constructor)" region="ctor">
+
+</code-example>
+
 Make the following few changes to the component's template:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (template)" region="template">
+
+</code-example>
+
 The template defines an `*ngFor` repeater such as [you've seen before](guide/displaying-data).
 There's a `(click)` [event binding](guide/template-syntax) to the component's 
 `onSelect` method which you implement as follows:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (select)" region="select">
+
+</code-example>
+
 The component's `onSelect` calls the router's **`navigate`** method with a _link parameters array_.
 You can use this same syntax in a `RouterLink` if you decide later to navigate in HTML template rather than in component code.
 
@@ -1273,9 +1467,18 @@ You need *two* pieces of information: the routing path to the component and the 
 
 Accordingly, the _link parameters array_ has *two* items:  the routing _path_ and a _route parameter_ that specifies the
 `id` of the selected hero.
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+
+</code-example>
+
 The router composes the destination URL from the array like this:
 `localhost:3000/hero/15`.
 
+
+
+~~~ {.l-sub-section}
 
 How does the target `HeroDetailComponent` learn about that `id`?
 Don't analyze the URL. Let the router do it.
@@ -1284,12 +1487,19 @@ The router extracts the route parameter (`id:15`) from the URL and supplies it t
 the `HeroDetailComponent` via the `ActivatedRoute` service.
 
 
+~~~
+
+
+
 {@a activated-route}
 ### ActivatedRoute: the one-stop-shop for route information
 
 The route path and parameters are available through an injected router service called the
 [ActivatedRoute](api/router/index/ActivatedRoute-interface).
 It has a great deal of useful information including:
+
+
+~~~ {.l-sub-section}
 
 **`url`**: An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
 
@@ -1310,21 +1520,56 @@ It has a great deal of useful information including:
 **`firstChild`**: contains the first `ActivatedRoute` in the list of child routes.
 
 **`children`**: contains all the [child routes](guide/router#child-routing-component) activated under the current route.
+
+
+~~~
+
 Import the `Router`, `ActivatedRoute`, and `Params` tokens from the router package.
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.1.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (activated route)" region="imports">
+
+</code-example>
+
 Import the `switchMap` operator because you need it later to process the `Observable` route parameters.
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (switchMap operator import)" region="rxjs-operator-import">
+
+</code-example>
+
 
 
 {@a hero-detail-ctor}
 As usual, you write a constructor that asks Angular to inject services
 that the component requires and reference them as private variables.
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (constructor)" region="ctor">
+
+</code-example>
+
 Later, in the `ngOnInit` method, you use the `ActivatedRoute` service to retrieve the parameters for the route,
 pull the hero `id` from the parameters and retrieve the hero to display.
+
+
+~~~ {.l-sub-section}
 
 Put this data access logic in the `ngOnInit` method rather than inside the constructor to improve the component's testability.
 Angular calls the `ngOnInit` method shortly after creating an instance of the `HeroDetailComponent`
 so the hero will be retrieved in time to use it.
   
 Learn more about the `ngOnInit` method and other component lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) guide.
+
+
+~~~
+
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (ngOnInit)" region="ngOnInit">
+
+</code-example>
+
 Since the parameters are provided as an `Observable`, you use the `switchMap` operator to
 provide them for the `id` parameter by name and tell the `HeroService` to fetch the hero with that `id`.
 
@@ -1359,6 +1604,9 @@ Unfortunately, `ngOnInit` is only called once per component instantiation.
 You need a way to detect when the route parameters change from _within the same instance_.
 The observable `params` property handles that beautifully.
 
+
+~~~ {.l-sub-section}
+
 When subscribing to an observable in a component, you almost always arrange to unsubscribe when the component is destroyed.
 
 There are a few exceptional observables where this is not necessary. 
@@ -1368,6 +1616,10 @@ The `ActivatedRoute` and its observables are insulated from the `Router` itself.
 The `Router` destroys a routed component when it is no longer needed and the injected `ActivatedRoute` dies with it.
 
 Feel free to unsubscribe anyway. It is harmless and never a bad practice.  
+
+
+~~~
+
 
 
 {@a snapshot}
@@ -1385,10 +1637,23 @@ The `route.snapshot` provides the initial value of the route parameters.
 You can access the parameters directly without subscribing or adding observable operators.
 It's much simpler to write and read:
 
+
+<code-example path="router/src/app/heroes/hero-detail.component.2.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot">
+
+</code-example>
+
+
+
+~~~ {.l-sub-section}
+
 **Remember:** you only get the _initial_ value of the parameters with this technique.
 Stick with the observable `params` approach if there's even a chance that the router 
 could re-use the component.
 This sample stays with the observable `params` strategy just in case.
+
+
+~~~
+
 
 
 {@a nav-to-list}
@@ -1400,6 +1665,12 @@ back to the `HeroListComponent`.
 The router `navigate` method takes the same one-item _link parameters array_
 that you can bind to a `[routerLink]` directive.
 It holds the _path to the `HeroListComponent`_:
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.1.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (excerpt)" region="gotoHeroes">
+
+</code-example>
+
 
 ### Route Parameters: Required or optional?
 
@@ -1446,10 +1717,28 @@ prefer an *optional parameter* when the value is optional, complex, and/or multi
 
 When navigating to the `HeroDetailComponent` you specified the _required_ `id` of the hero-to-edit in the
 *route parameter* and made it the second item of the [_link parameters array_](guide/router#link-parameters-array).
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+
+</code-example>
+
 The router embedded the `id` value in the navigation URL because you had defined it
 as a route parameter with an `:id` placeholder token in the route `path`:
+
+
+<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route">
+
+</code-example>
+
 When the user clicks the back button, the `HeroDetailComponent` constructs another _link parameters array_
 which it uses to navigate back to the `HeroListComponent`.
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.1.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (gotoHeroes)" region="gotoHeroes">
+
+</code-example>
+
 This array lacks a route parameter because you had no reason to send information to the `HeroListComponent`.
 
 Now you have a reason. You'd like to send the id of the current hero with the navigation request so that the
@@ -1459,6 +1748,12 @@ This is a _nice-to-have_ feature; the list will display perfectly well without i
 Send the `id` with an object that contains an _optional_ `id` parameter.
 For demonstration purposes, there's an extra junk parameter (`foo`) in the object that the `HeroListComponent` should ignore.
 Here's the revised navigation statement:
+
+
+<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (go to heroes)" region="gotoHeroes">
+
+</code-example>
+
 The application still works. Clicking "back" returns to the hero list view.
 
 Look at the browser address bar.
@@ -1476,6 +1771,9 @@ The optional route parameters are not separated by "?" and "&" as they would be 
 They are **separated by semicolons ";"**
 This is *matrix URL* notation &mdash; something you may not have seen before.
 
+
+~~~ {.l-sub-section}
+
 *Matrix URL* notation is an idea first introduced
 in a [1996 proposal](http://www.w3.org/DesignIssues/MatrixURIs.html) by the founder of the web, Tim Berners-Lee.
 
@@ -1488,14 +1786,25 @@ The syntax may seem strange to you but users are unlikely to notice or care
 as long as the URL can be emailed and pasted into a browser address bar
 as this one can.
 
+~~~
+
+
+
 {@a route-parameters-activated-route}
 ### Route parameters in the *ActivatedRoute* service
 
 The list of heroes is unchanged. No hero row is highlighted.
 
+
+~~~ {.l-sub-section}
+
 The <live-example></live-example> *does* highlight the selected
 row because it demonstrates the final state of the application which includes the steps you're *about* to cover.
-At the moment this guide is describing the state of affairs *prior* to those steps.The `HeroListComponent` isn't expecting any parameters at all and wouldn't know what to do with them.
+At the moment this guide is describing the state of affairs *prior* to those steps.
+
+~~~
+
+The `HeroListComponent` isn't expecting any parameters at all and wouldn't know what to do with them.
 You can change that.
 
 Previously, when navigating from the `HeroListComponent` to the `HeroDetailComponent`,
@@ -1506,17 +1815,54 @@ You injected that service in the constructor of the `HeroDetailComponent`.
 This time you'll be navigating in the opposite direction, from the `HeroDetailComponent` to the `HeroListComponent`.
 
 First you extend the router import statement to include the `ActivatedRoute` service symbol:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (import)" region="import-router">
+
+</code-example>
+
 Import the `switchMap` operator to perform an operation on the `Observable` of route parameters.
+
+
+<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (rxjs imports)" region="rxjs-imports">
+
+</code-example>
+
 Then you inject the `ActivatedRoute` in the `HeroListComponent` constructor.
+
+
+<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (constructor and ngOnInit)" region="ctor">
+
+</code-example>
+
 The `ActivatedRoute.params` property is an `Observable` of route parameters. The `params` emits new `id` values
 when the user navigates to the component. In `ngOnInit` you subscribe to those values, set the `selectedId`,
 and get the heroes.
 
+
+~~~ {.l-sub-section}
+
 All route/query parameters are strings.
-The (+) in front of the `params['id']` expression is a JavaScript trick to convert the string to an integer.Add an `isSelected` method that returns `true` when a hero's `id` matches the selected `id`.
+The (+) in front of the `params['id']` expression is a JavaScript trick to convert the string to an integer.
+
+~~~
+
+Add an `isSelected` method that returns `true` when a hero's `id` matches the selected `id`.
+
+
+<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (isSelected)" region="isSelected">
+
+</code-example>
+
 Finally, update the template with a [class binding](guide/template-syntax) to that `isSelected` method.
 The binding adds the `selected` CSS class when the method returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (template)" region="template">
+
+</code-example>
+
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 <figure class='image-display'>
   <img src='assets/images/devguide/router/selected-hero.png' alt="Selected List">  </img>
@@ -1532,7 +1878,19 @@ The heroes feature module is almost complete, but what is a feature without some
 This section shows you how to add some [animations](guide/animations) 
 to the `HeroDetailComponent`.
 
-Create an `animations.ts` file in the root `src/app/` folder. The contents look like this:This file does the following:
+First import `BrowserAnimationsModule`:
+
+<code-example path="router/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (animations-module)" region="animations-module">
+
+</code-example>
+
+Create an `animations.ts` file in the root `src/app/` folder. The contents look like this:
+
+<code-example path="router/src/app/animations.ts" linenums="false" title="src/app/animations.ts (excerpt)">
+
+</code-example>
+
+This file does the following:
 
 * Imports the animation symbols that build the animation triggers, control state, and manage transitions between states. 
 
@@ -1550,7 +1908,13 @@ Add the `HostBinding` decorator  to the imports from `@angular/core`; you'll nee
 
 Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
 
-Then add three `@HostBinding` properties to the class to set the animation and styles for the route component's element.The `'@routeAnimation'` passed to the first `@HostBinding` matches 
+Then add three `@HostBinding` properties to the class to set the animation and styles for the route component's element.
+
+<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (host bindings)" region="host-bindings">
+
+</code-example>
+
+The `'@routeAnimation'` passed to the first `@HostBinding` matches 
 the name of the `slideInDownAnimation` _trigger_, `routeAnimation`.
 Set the `routeAnimation` property to `true` because you only care about the `:enter` and `:leave` states.
 
@@ -1558,8 +1922,15 @@ The other two `@HostBinding` properties style the display and position of the co
 
 The `HeroDetailComponent` will ease in from the left when routed to and will slide down when navigating away.
 
+
+~~~ {.l-sub-section}
+
 Applying route animations to individual components works for a simple demo, but in a real life app,
 it is better to animate routes based on _route paths_.
+
+
+~~~
+
 
 
 {@a milestone-3-wrap-up}
@@ -1675,49 +2046,50 @@ After these changes, the folder structure looks like this:
 </aio-filetree>
 
 
-<md-tab-group>
 
-  <md-tab label="app.component.ts">
-    {@example 'router/ts/src/app/app.component.1.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app.component.ts" path="router/src/app/app.component.1.ts">
 
-  <md-tab label="app.module.ts">
-    {@example 'router/ts/src/app/app.module.3.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app-routing.module.ts">
-    {@example 'router/ts/src/app/app-routing.module.2.ts'}
-  </md-tab>
+  <code-pane title="app.module.ts" path="router/src/app/app.module.3.ts">
+
+  </code-pane>
 
 
-  <md-tab label="hero-list.component.ts">
-    {@example 'router/ts/src/app/heroes/hero-list.component.ts'}
-  </md-tab>
+  <code-pane title="app-routing.module.ts" path="router/src/app/app-routing.module.2.ts">
+
+  </code-pane>
 
 
-  <md-tab label="hero-detail.component.ts">
-    {@example 'router/ts/src/app/heroes/hero-detail.component.ts'}
-  </md-tab>
+  <code-pane title="hero-list.component.ts" path="router/src/app/heroes/hero-list.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="hero.service.ts">
-    {@example 'router/ts/src/app/heroes/hero.service.ts'}
-  </md-tab>
+  <code-pane title="hero-detail.component.ts" path="router/src/app/heroes/hero-detail.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="heroes.module.ts">
-    {@example 'router/ts/src/app/heroes/heroes.module.ts'}
-  </md-tab>
+  <code-pane title="hero.service.ts" path="router/src/app/heroes/hero.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="heroes-routing.module.ts">
-    {@example 'router/ts/src/app/heroes/heroes-routing.module.ts'}
-  </md-tab>
+  <code-pane title="heroes.module.ts" path="router/src/app/heroes/heroes.module.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 
 
@@ -1735,6 +2107,12 @@ Begin by imitating the heroes feature:
 - In the new files, change every mention of "hero" to "crisis", and "heroes" to "crises".
 
 You'll turn the `CrisisService` into a purveyor of mock crises instead of mock heroes:
+
+
+<code-example path="router/src/app/crisis-center/crisis.service.ts" linenums="false" title="src/app/crisis-center/crisis.service.ts (mock-crises)" region="mock-crises">
+
+</code-example>
+
 The resulting crisis center is a foundation for introducing a new concept&mdash;**child routing**.
 You can leave *Heroes* in its current state as a contrast with the *Crisis Center*
 and decide later if the differences are worthwhile.
@@ -1775,6 +2153,12 @@ If your app had many feature areas, the app component trees might look like this
 ### Child routing component
 
 Add the following `crisis-center.component.ts` to the `crisis-center` folder:
+
+
+<code-example path="router/src/app/crisis-center/crisis-center.component.ts" linenums="false" title="src/app/crisis-center/crisis-center.component.ts (minus imports)" region="minus-imports">
+
+</code-example>
+
 The `CrisisCenterComponent` has the following in common with the `AppComponent`:
 
 - It is the *root* of the crisis center area,
@@ -1798,8 +2182,20 @@ The `CrisisCenterComponent` is a *routing component* like the `AppComponent`.
 It has its own `RouterOutlet` and its own child routes.
 
 Add the following `crisis-center-home.component.ts` to the `crisis-center` folder.
+
+
+<code-example path="router/src/app/crisis-center/crisis-center-home.component.ts" linenums="false" title="src/app/crisis-center/crisis-center-home.component.ts (minus imports)" region="minus-imports">
+
+</code-example>
+
 Create a `crisis-center-routing.module.ts` file as you did the `heroes-routing.module.ts` file.
 This time, you define **child routes** *within* the parent `crisis-center` route.
+
+
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (Routes)" region="routes">
+
+</code-example>
+
 Notice that the parent `crisis-center` route has a `children` property
 with a single route containing the `CrisisListComponent`. The `CrisisListComponent` route
 also has a `children` array with two routes.
@@ -1840,15 +2236,33 @@ The absolute URL for the latter example, including the `localhost` origin, is
 Here's the complete `crisis-center-routing.module.ts` file with its imports.
 
 
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.1.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (excerpt)">
+
+</code-example>
+
+
+
 {@a import-crisis-module}
 ### Import crisis center module into the *AppModule* routes
 
 As with the `HeroesModule`, you must add the `CrisisCenterModule` to the `imports` array of the `AppModule` 
 _before_ the `AppRoutingModule`:
+
+
+<code-example path="router/src/app/app.module.4.ts" linenums="false" title="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
+
+</code-example>
+
 Remove the initial crisis center route from the `app-routing.module.ts`. 
 The feature routes are now provided by the `HeroesModule` and the `CrisisCenter` modules. 
 
 The `app-routing.module.ts` file retains the top-level application routes such as the default and wildcard routes.
+
+
+<code-example path="router/src/app/app-routing.module.3.ts" linenums="false" title="src/app/app-routing.module.ts (v3)" region="v3">
+
+</code-example>
+
 
 
 
@@ -1869,6 +2283,9 @@ Navigation _within_ the feature area remains intact even if you change the paren
 
 Here's an example:
 
+
+~~~ {.l-sub-section}
+
 The router supports directory-like syntax in a _link parameters list_ to help guide route name lookup:
 
 `./` or `no leading slash` is relative to the current level.
@@ -1878,13 +2295,24 @@ The router supports directory-like syntax in a _link parameters list_ to help gu
 You can combine relative navigation syntax with an ancestor path. 
 If you must navigate to a sibling route, you could use the `../<sibling>` convention to go up
 one level, then over and down the sibling route path.
+
+
+~~~
+
 To navigate a relative path with the `Router.navigate` method, you must supply the `ActivatedRoute`
 to give the router knowledge of where you are in the current route tree. 
 
 After the _link parameters array_, add an object with a `relativeTo` property set to the `ActivatedRoute`.
 The router then calculates the target URL based on the active route's location.
 
+
+~~~ {.l-sub-section}
+
 **Always** specify the complete _absolute_ path when calling router's `navigateByUrl` method.
+
+
+~~~
+
 
 
 {@a nav-to-crisis}
@@ -1893,12 +2321,36 @@ The router then calculates the target URL based on the active route's location.
 Update the *Crisis List* `onSelect` method to use relative navigation so you don't have
 to start from the top of the route configuration.
 
-You've already injected the `ActivatedRoute` that you need to compose the relative navigation path.When you visit the *Crisis Center*, the ancestor path is `/crisis-center`, 
+You've already injected the `ActivatedRoute` that you need to compose the relative navigation path.
+
+<code-example path="router/src/app/crisis-center/crisis-list.component.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (constructor)" region="ctor">
+
+</code-example>
+
+When you visit the *Crisis Center*, the ancestor path is `/crisis-center`, 
 so you only need to add the `id` of the *Crisis Center* to the existing path. 
+
+
+<code-example path="router/src/app/crisis-center/crisis-list.component.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (relative navigation)" region="onSelect">
+
+</code-example>
+
 If you were using a `RouterLink` to navigate instead of the `Router` service, you'd use the _same_
 link parameters array, but you wouldn't provide the object with the `relativeTo` property. 
 The `ActivatedRoute` is implicit in a `RouterLink` directive.
+
+
+<code-example path="router/src/app/crisis-center/crisis-list.component.1.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (relative routerLink)" region="relative-navigation-router-link">
+
+</code-example>
+
 Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back to the *Crisis Center* list using relative path navigation.
+
+
+<code-example path="router/src/app/crisis-center/crisis-detail.component.ts" linenums="false" title="src/app/crisis-center/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate">
+
+</code-example>
+
 Notice that the path goes up a level using the `../` syntax.
 If the current crisis `id` is `3`, the resulting path back to the crisis list is  `/crisis-center/;id=3;foo=foo`.
 
@@ -1923,6 +2375,12 @@ Each named outlet has its own set of routes with their own components.
 Multiple outlets can be displaying different content, determined by different routes, all at the same time.
 
 Add an outlet named "popup" in the `AppComponent`, directly below the unnamed outlet.
+
+
+<code-example path="router/src/app/app.component.4.ts" linenums="false" title="src/app/app.component.ts (outlets)" region="outlets">
+
+</code-example>
+
 That's where a popup will go, once you learn how to route a popup component to it.
 
 
@@ -1948,19 +2406,20 @@ and two buttons, "Send" and "Cancel".
 
 Here's the component and its template:
 
-<md-tab-group>
 
-  <md-tab label="src/app/compose-message.component.ts">
-    {@example 'router/ts/src/app/compose-message.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/compose-message.component.ts" path="router/src/app/compose-message.component.ts">
 
-  <md-tab label="src/app/compose-message.component.html">
-    {@example 'router/ts/src/app/compose-message.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/compose-message.component.html" path="router/src/app/compose-message.component.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 It looks about the same as any other component you've seen in this guide.
 There are two noteworthy differences.
@@ -1977,12 +2436,24 @@ Do so in the `AppModule`.
 {@a add-secondary-route}
 #### Add a secondary route
 
-Open the `AppRoutingModule` and add a new `compose` route to the `appRoutes`.The `path` and `component` properties should be familiar.
+Open the `AppRoutingModule` and add a new `compose` route to the `appRoutes`.
+
+<code-example path="router/src/app/app-routing.module.3.ts" linenums="false" title="src/app/app-routing.module.ts (compose route)" region="compose">
+
+</code-example>
+
+The `path` and `component` properties should be familiar.
 There's a new property, `outlet`, set to `'popup'`.
 This route now targets the popup outlet and the `ComposeMessageComponent` will display there. 
 
 The user needs a way to open the popup.
-Open the `AppComponent` and add a "Contact" link.Although the `compose` route is pinned to the "popup" outlet, that's not sufficient for wiring the route to a `RouterLink` directive.
+Open the `AppComponent` and add a "Contact" link.
+
+<code-example path="router/src/app/app.component.4.ts" linenums="false" title="src/app/app.component.ts (contact-link)" region="contact-link">
+
+</code-example>
+
+Although the `compose` route is pinned to the "popup" outlet, that's not sufficient for wiring the route to a `RouterLink` directive.
 You have to specify the named outlet in a _link parameters array_ and bind it to the `RouterLink` with a property binding.
 
 The _link parameters array_ contains an object with a single `outlets` property whose value
@@ -1990,6 +2461,9 @@ is another object keyed by one (or more) outlet names.
 In this case there is only the "popup" outlet property and its value is another _link parameters array_ that specifies the `compose` route.
 
 You are in effect saying, _when the user clicks this link, display the component associated with the `compose` route in the `popup` outlet_.
+
+
+~~~ {.l-sub-section}
 
 This `outlets` object within an outer object was completely unnecessary
 when there was only one route and one _unnamed_ outlet to think about.
@@ -2002,6 +2476,10 @@ you can target multiple outlets with multiple routes in the same `RouterLink` di
 
 You're not actually doing that here. 
 But to target a named outlet, you must use the richer, more verbose syntax.
+
+
+~~~
+
 
 
 {@a secondary-route-navigation}
@@ -2049,7 +2527,13 @@ Changing a current route that displays in the primary outlet has no effect on th
 That's why the popup stays visible as you navigate among the crises and heroes.
 
 Clicking the "send" or "cancel" buttons _does_ clear the popup view.
-To see how, look at the `closePopup()` method again:It navigates imperatively with the `Router.navigate()` method, passing in a [link parameters array](guide/router#link-parameters-array).
+To see how, look at the `closePopup()` method again:
+
+<code-example path="router/src/app/compose-message.component.ts" linenums="false" title="src/app/compose-message.component.ts (closePopup)" region="closePopup">
+
+</code-example>
+
+It navigates imperatively with the `Router.navigate()` method, passing in a [link parameters array](guide/router#link-parameters-array).
 
 Like the array bound to the _Contact_ `RouterLink` in the `AppComponent`,
 this one includes an object with an `outlets` property.
@@ -2078,7 +2562,14 @@ A guard's return value controls the router's behavior:
 * If it returns `true`, the navigation process continues.
 * If it returns `false`, the navigation process stops and the user stays put.
 
+
+~~~ {.l-sub-section}
+
 The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
+
+
+~~~
+
 The guard *might* return its boolean answer synchronously.
 But in many cases, the guard can't produce an answer synchronously.
 The guard could ask the user a question, save changes to the server, or fetch fresh data.
@@ -2169,35 +2660,39 @@ The admin feature file structure looks like this:
 The admin feature module contains the `AdminComponent` used for routing within the
 feature module, a dashboard route and two unfinished components to manage crises and heroes.
 
-<md-tab-group>
 
-  <md-tab label="src/app/admin/admin-dashboard.component.ts">
-    {@example 'router/ts/src/app/admin/admin-dashboard.component.1.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/admin/admin-dashboard.component.ts" path="router/src/app/admin/admin-dashboard.component.1.ts">
 
-  <md-tab label="src/app/admin/admin.component.ts">
-    {@example 'router/ts/src/app/admin/admin.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="src/app/admin/admin.module.ts">
-    {@example 'router/ts/src/app/admin/admin.module.ts'}
-  </md-tab>
+  <code-pane title="src/app/admin/admin.component.ts" path="router/src/app/admin/admin.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="src/app/admin/manage-crises.component.ts">
-    {@example 'router/ts/src/app/admin/manage-crises.component.ts'}
-  </md-tab>
+  <code-pane title="src/app/admin/admin.module.ts" path="router/src/app/admin/admin.module.ts">
+
+  </code-pane>
 
 
-  <md-tab label="src/app/admin/manage-heroes.component.ts">
-    {@example 'router/ts/src/app/admin/manage-heroes.component.ts'}
-  </md-tab>
+  <code-pane title="src/app/admin/manage-crises.component.ts" path="router/src/app/admin/manage-crises.component.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/admin/manage-heroes.component.ts" path="router/src/app/admin/manage-heroes.component.ts">
 
+  </code-pane>
+
+
+</code-tabs>
+
+
+
+~~~ {.l-sub-section}
 
 Since the admin dashboard `RouterLink` is an empty path route in the `AdminComponent`, it
 is considered a match to any route within the admin feature area. 
@@ -2205,7 +2700,17 @@ You only want the `Dashboard` link to be active when the user visits that route.
 Adding an additional binding to the `Dashboard` routerLink,
 `[routerLinkActiveOptions]="{ exact: true }"`, marks the `./` link as active when
 the user navigates to the `/admin` URL and not when navigating to any of the child routes.
+
+
+~~~
+
 The initial admin routing configuration:
+
+
+<code-example path="router/src/app/admin/admin-routing.module.1.ts" linenums="false" title="src/app/admin/admin-routing.module.ts (admin routing)" region="admin-routes">
+
+</code-example>
+
 
 
 {@a component-less-route}
@@ -2220,7 +2725,19 @@ You don't need a component to do it.
 A _component-less_ route makes it easier to [guard child routes](guide/router#can-activate-child-guard).
 Next, import the `AdminModule` into `app.module.ts` and add it to the `imports` array
 to register the admin routes.
+
+
+<code-example path="router/src/app/app.module.4.ts" linenums="false" title="src/app/app.module.ts (admin module)" region="admin-module">
+
+</code-example>
+
 Add an "Admin" link to the `AppComponent` shell so that users can get to this feature.
+
+
+<code-example path="router/src/app/app.component.5.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+
+</code-example>
+
 
 
 {@a guard-admin-feature}
@@ -2240,8 +2757,20 @@ that require authenticated users&mdash;so you create an
 
 At the moment you're interested in seeing how guards work so the first version does nothing useful.
 It simply logs to console and `returns` true immediately, allowing navigation to proceed:
+
+
+<code-example path="router/src/app/auth-guard.service.1.ts" linenums="false" title="src/app/auth-guard.service.ts (excerpt)">
+
+</code-example>
+
 Next, open `admin-routing.module.ts `, import the `AuthGuard` class, and
 update the admin route with a `CanActivate()` guard property that references it:
+
+
+<code-example path="router/src/app/admin/admin-routing.module.2.ts" linenums="false" title="src/app/admin/admin-routing.module.ts (guarded admin route)" region="admin-route">
+
+</code-example>
+
 The admin feature is now protected by the guard, albeit protected poorly.
 
 
@@ -2252,6 +2781,12 @@ Make the `AuthGuard` at least pretend to authenticate.
 
 The `AuthGuard` should call an application service that can login a user and retain information about the current user.
 Here's a demo `AuthService`:
+
+
+<code-example path="router/src/app/auth.service.ts" linenums="false" title="src/app/auth.service.ts (excerpt)">
+
+</code-example>
+
 Although it doesn't actually log in, it has what you need for this discussion.
 It has an `isLoggedIn` flag to tell you whether the user is authenticated.
 Its `login` method simulates an API call to an external service by returning an 
@@ -2259,6 +2794,12 @@ Observable that resolves successfully after a short pause.
 The `redirectUrl` property will store the attempted URL so you can navigate to it after authenticating.
 
 Revise the `AuthGuard` to call it.
+
+
+<code-example path="router/src/app/auth-guard.service.2.ts" linenums="false" title="src/app/auth-guard.service.ts (v2)" region="v2">
+
+</code-example>
+
 Notice that you *inject* the `AuthService` and the `Router` in the constructor.
 You haven't provided the `AuthService` yet but it's good to know that you can inject helpful services into routing guards.
 
@@ -2285,29 +2826,37 @@ Register a `/login` route in the `login-routing.module.ts` and add the necessary
 array. In `app.module.ts`, import the `LoginComponent` and add it to the `AppModule` `declarations`.
 Import and add the `LoginRoutingModule` to the `AppModule` imports as well.
 
-<md-tab-group>
 
-  <md-tab label="src/app/app.module.ts">
-    {@example 'router/ts/src/app/app.module.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/app.module.ts" path="router/src/app/app.module.ts">
 
-  <md-tab label="src/app/login.component.ts">
-    {@example 'router/ts/src/app/login.component.1.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="src/app/login-routing.module.ts">
-    {@example 'router/ts/src/app/login-routing.module.ts'}
-  </md-tab>
+  <code-pane title="src/app/login.component.ts" path="router/src/app/login.component.1.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/login-routing.module.ts" path="router/src/app/login-routing.module.ts">
 
+  </code-pane>
+
+
+</code-tabs>
+
+
+
+~~~ {.l-sub-section}
 
 Guards and the service providers they require _must_ be provided at the module-level. This allows
 the Router access to retrieve these services from the `Injector` during the navigation process.
 The same rule applies for feature modules loaded [asynchronously](guide/router#asynchronous-routing).
+
+
+~~~
+
 
 
 {@a can-activate-child-guard}
@@ -2328,8 +2877,20 @@ an `ActivatedRouteSnapshot` and `RouterStateSnapshot`.
 The `CanActivateChild` method can return an `Observable<boolean>` or `Promise<boolean>` for 
 async checks and a `boolean` for sync checks.
 This one returns a `boolean`:
+
+
+<code-example path="router/src/app/auth-guard.service.3.ts" linenums="false" title="src/app/auth-guard.service.ts (excerpt)" region="can-activate-child">
+
+</code-example>
+
 Add the same `AuthGuard` to the `component-less` admin route to protect all other child routes at one time
 instead of adding the `AuthGuard` to each route individually.
+
+
+<code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" title="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child">
+
+</code-example>
+
 
 
 {@a can-deactivate-guard}
@@ -2371,6 +2932,12 @@ Instead, the app updates the entity when the user presses the *Save* button and
 discards the changes when the user presses the *Cancel* button.
 
 Both buttons navigate back to the crisis list after save or cancel.
+
+
+<code-example path="router/src/app/crisis-center/crisis-detail.component.ts" linenums="false" title="src/app/crisis-center/crisis-detail.component.ts (cancel and save methods)" region="cancel-save">
+
+</code-example>
+
 What if the user tries to navigate away without saving or canceling?
 The user could push the browser back button or click the heroes link.
 Both actions trigger a navigation.
@@ -2379,10 +2946,17 @@ Should the app save or cancel automatically?
 This demo does neither. Instead, it asks the user to make that choice explicitly
 in a confirmation dialog box that *waits asynchronously for the user's
 answer*.
+
+~~~ {.l-sub-section}
+
 You could wait for the user's answer with synchronous, blocking code.
 The app will be more responsive&mdash;and can do other work&mdash;by 
 waiting for the user's answer asynchronously. Waiting for the user asynchronously
-is like waiting for the server asynchronously.The `DialogService`, provided in the `AppModule` for app-wide use, does the asking.
+is like waiting for the server asynchronously.
+
+~~~
+
+The `DialogService`, provided in the `AppModule` for app-wide use, does the asking.
 
 It returns a [promise](http://exploringjs.com/es6/ch_promises.html) that
 *resolves* when the user eventually decides what to do: either
@@ -2398,7 +2972,9 @@ It need only detect that the component has a `canDeactivate()` method and call i
 This approach makes the guard reusable.
 
 
-{@example 'router/ts/src/app/can-deactivate-guard.service.ts'}
+<code-example path="router/src/app/can-deactivate-guard.service.ts">
+
+</code-example>
 
 Alternatively, you could make a component-specific `CanDeactivate` guard for the `CrisisDetailComponent`. 
 The `canDeactivate()` method provides you with the current 
@@ -2407,17 +2983,37 @@ and `RouterStateSnapshot` in case you needed to access
 some external information. This would be useful if you only 
 wanted to use this guard for this component and needed to get 
 the component's properties or confirm whether the router should allow navigation away from it.
+
+
+<code-example path="router/src/app/can-deactivate-guard.service.1.ts" linenums="false" title="src/app/can-deactivate-guard.service.ts (component-specific)" region="component-specific">
+
+</code-example>
+
 Looking back at the `CrisisDetailComponent`, it implements the confirmation workflow for unsaved changes.
+
+
+<code-example path="router/src/app/crisis-center/crisis-detail.component.ts" linenums="false" title="src/app/crisis-center/crisis-detail.component.ts (excerpt)" region="canDeactivate">
+
+</code-example>
+
 Notice that the `canDeactivate` method *can* return synchronously;
 it returns `true` immediately if there is no crisis or there are no pending changes.
 But it can also return a `Promise` or an `Observable` and the router will wait for that
 to resolve to truthy (navigate) or falsy (stay put).
 Add the `Guard` to the crisis detail route in `crisis-center-routing.module.ts` using the `canDeactivate` array.
+
+
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (can deactivate guard)" region="can deactivate guard">
+
+</code-example>
+
 Add the `Guard` to the main `AppRoutingModule` `providers` !{_array} so the 
 `Router` can inject it during the navigation process.
 
 
-{@example 'router/ts/src/app/app-routing.module.4.ts'}
+<code-example path="router/src/app/app-routing.module.4.ts">
+
+</code-example>
 
 Now you have given the user a safeguard against unsaved changes.
 <a id="Resolve"></a>
@@ -2454,7 +3050,9 @@ _before_ activating the route and creating the `CrisisDetailComponent`.
 Create the `crisis-detail-resolver.service.ts` file within the `Crisis Center` feature area.
 
 
-{@example 'router/ts/src/app/crisis-center/crisis-detail-resolver.service.ts'}
+<code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.ts">
+
+</code-example>
 
 Take the relevant parts of the crisis retrieval logic in `CrisisDetailComponent.ngOnInit` 
 and move them into the `CrisisDetailResolver`.
@@ -2475,10 +3073,22 @@ Import this resolver in the `crisis-center-routing.module.ts`
 and add a `resolve` object to the `CrisisDetailComponent` route configuration.
 
 Remember to add the `CrisisDetailResolver` service to the `CrisisCenterRoutingModule`'s `providers` !{_array}.
+
+
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (resolver)" region="crisis-detail-resolver">
+
+</code-example>
+
 The `CrisisDetailComponent` should no longer fetch the crisis.
 Update the `CrisisDetailComponent` to get the crisis from the  `ActivatedRoute.data.crisis` property instead;
 that's where you said it should be when you re-configured the route.
 It will be there when the `CrisisDetailComponent` ask for it.
+
+
+<code-example path="router/src/app/crisis-center/crisis-detail.component.ts" linenums="false" title="src/app/crisis-center/crisis-detail.component.ts (ngOnInit v2)" region="ngOnInit">
+
+</code-example>
+
 **Two critical points**
 1. The router's `Resolve` interface is optional. 
 The `CrisisDetailResolver` doesn't inherit from a base class. 
@@ -2490,64 +3100,66 @@ That's the router's job. Write this class and let the router take it from there.
 
 The relevant *Crisis Center* code for this milestone follows.
 
-<md-tab-group>
 
-  <md-tab label="app.component.ts">
-    {@example 'router/ts/src/app/app.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app.component.ts" path="router/src/app/app.component.ts">
 
-  <md-tab label="crisis-center-home.component.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-center-home.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="crisis-center.component.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-center.component.ts'}
-  </md-tab>
+  <code-pane title="crisis-center-home.component.ts" path="router/src/app/crisis-center/crisis-center-home.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis-center-routing.module.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-center-routing.module.4.ts'}
-  </md-tab>
+  <code-pane title="crisis-center.component.ts" path="router/src/app/crisis-center/crisis-center.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis-list.component.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-list.component.ts'}
-  </md-tab>
+  <code-pane title="crisis-center-routing.module.ts" path="router/src/app/crisis-center/crisis-center-routing.module.4.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis-detail.component.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-detail.component.ts'}
-  </md-tab>
+  <code-pane title="crisis-list.component.ts" path="router/src/app/crisis-center/crisis-list.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis-detail-resolver.service.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-detail-resolver.service.ts'}
-  </md-tab>
+  <code-pane title="crisis-detail.component.ts" path="router/src/app/crisis-center/crisis-detail.component.ts">
+
+  </code-pane>
 
 
-  <md-tab label="crisis.service.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis.service.ts'}
-  </md-tab>
+  <code-pane title="crisis-detail-resolver.service.ts" path="router/src/app/crisis-center/crisis-detail-resolver.service.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="crisis.service.ts" path="router/src/app/crisis-center/crisis.service.ts">
+
+  </code-pane>
 
 
-<md-tab-group>
-
-  <md-tab label="auth-guard.service.ts">
-    {@example 'router/ts/src/app/auth-guard.service.3.ts'}
-  </md-tab>
+</code-tabs>
 
 
-  <md-tab label="can-deactivate-guard.service.ts">
-    {@example 'router/ts/src/app/can-deactivate-guard.service.ts'}
-  </md-tab>
+
+<code-tabs>
+
+  <code-pane title="auth-guard.service.ts" path="router/src/app/auth-guard.service.3.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="can-deactivate-guard.service.ts" path="router/src/app/can-deactivate-guard.service.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 
 
@@ -2569,13 +3181,31 @@ Update the `AuthGuard` to provide a `session_id` query that will remain after na
 Add an `anchor` element so you can jump to a certain point on the page.
 
 Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
+
+
+<code-example path="router/src/app/auth-guard.service.4.ts" linenums="false" title="src/app/auth-guard.service.ts (v3)" region="v3">
+
+</code-example>
+
 You can also preserve query parameters and fragments across navigations without having to provide them
 again when navigating. In the `LoginComponent`, you'll add an *object* as the 
 second argument in the `router.navigate` function
 and provide the `preserveQueryParams` and `preserveFragment` to pass along the current query parameters
 and fragment to the next route.
+
+
+<code-example path="router/src/app/login.component.ts" linenums="false" title="src/app/login.component.ts (preserve)" region="preserve">
+
+</code-example>
+
 Since you'll be navigating to the *Admin Dashboard* route after logging in, you'll update it to handle the
 query parameters and fragment.
+
+
+<code-example path="router/src/app/admin/admin-dashboard.component.2.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (v2)" region="v2">
+
+</code-example>
+
 *Query Parameters* and *Fragments* are also available through the `ActivatedRoute` service.
 Just like *route parameters*, the query parameters and fragments are provided as an `Observable`.
 The updated *Crisis Admin* component feeds the `Observable` directly into the template using the `AsyncPipe`.
@@ -2586,8 +3216,15 @@ you have been redirected to the `Admin Dashboard` page with the `query params` a
 You can use these persistent bits of information for things that need to be provided across pages like
 authentication tokens or session ids.
 
+
+~~~ {.l-sub-section}
+
 The `query params` and `fragment` can also be preserved using a `RouterLink` with
 the `preserveQueryParams` and `preserveFragment` bindings respectively.
+
+
+~~~
+
 
 ## Milestone 6: Asynchronous routing
 
@@ -2630,7 +3267,9 @@ followed by a `#` separator,
 followed by the name of the exported module class, `AdminModule`. 
 
 
-{@example 'router/ts/src/app/app-routing.module.5.ts' region='admin-1'}
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin-1">
+
+</code-example>
 
 When the router navigates to this route, it uses the `loadChildren` string to dynamically load the `AdminModule`.
 Then it adds the `AdminModule` routes to its current route configuration.
@@ -2639,8 +3278,15 @@ Finally, it loads the requested route to the destination admin component.
 The lazy loading and re-configuration happen just once, when the route is _first_ requested;
 the module and routes are available immediately for subsequent requests.
 
+
+~~~ {.l-sub-section}
+
 Angular provides a built-in module loader that supports SystemJS to load modules asynchronously. If you were
 using another bundling tool, such as Webpack, you would use the Webpack mechanism for asynchronously loading modules.
+
+
+~~~
+
 Take the final step and detach the admin feature set from the main application.
 The root `AppModule` must neither load nor reference the `AdminModule` or its files.
 
@@ -2667,6 +3313,12 @@ Open `auth-guard.service.ts`.
 Import the `CanLoad` interface from `@angular/router`.
 Add it to the `AuthGuard` class's `implements` list.
 Then implement `canLoad` as follows:
+
+
+<code-example path="router/src/app/auth-guard.service.ts" linenums="false" title="src/app/auth-guard.service.ts (CanLoad guard)" region="canLoad">
+
+</code-example>
+
 The router sets the `canLoad()` method's `route` parameter to the intended destination URL.
 The `checkLogin()` method redirects to that URL once the user has logged in.
 
@@ -2675,7 +3327,9 @@ Now import the `AuthGuard` into the `AppRoutingModule` and add the `AuthGuard` t
 The completed admin route looks like this:
 
 
-{@example 'router/ts/src/app/app-routing.module.5.ts' region='admin'}
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin">
+
+</code-example>
 
 
 
@@ -2740,24 +3394,25 @@ Take the same steps you used to configure `AdminModule` for lazy load.
 
 Here are the updated modules _before enabling preload_:
 
-<md-tab-group>
 
-  <md-tab label="app.module.ts">
-    {@example 'router/ts/src/app/app.module.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app.module.ts" path="router/src/app/app.module.ts">
 
-  <md-tab label="app-routing.module.ts">
-    {@example 'router/ts/src/app/app-routing.module.6.ts' region='preload-v1'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="crisis-center-routing.module.ts">
-    {@example 'router/ts/src/app/crisis-center/crisis-center-routing.module.ts'}
-  </md-tab>
+  <code-pane title="app-routing.module.ts" path="router/src/app/app-routing.module.6.ts" region="preload-v1">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="crisis-center-routing.module.ts" path="router/src/app/crisis-center/crisis-center-routing.module.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 You could try this now and confirm that the  `CrisisCenterModule` loads after you click the "Crisis Center" button.
 
@@ -2765,7 +3420,13 @@ To enable preloading of all lazy loaded modules, import the `PreloadAllModules` 
 
 The second argument in the `RouterModule.forRoot` method takes an object for additional configuration options.
 The `preloadingStrategy` is one of those options. 
-Add the `PreloadAllModules` token to the `forRoot` call:This tells the `Router` preloader to immediately load _all_ lazy loaded routes (routes with a `loadChildren` property).
+Add the `PreloadAllModules` token to the `forRoot` call:
+
+<code-example path="router/src/app/app-routing.module.6.ts" linenums="false" title="src/app/app-routing.module.ts (preload all)" region="forRoot">
+
+</code-example>
+
+This tells the `Router` preloader to immediately load _all_ lazy loaded routes (routes with a `loadChildren` property).
 
 When you visit `http://localhost:3000`, the `/heroes` route loads immediately upon launch
 and the router starts loading the `CrisisCenterModule` right after the `HeroesModule` loads.
@@ -2800,8 +3461,20 @@ In this section, you'll add a custom strategy that _only_ preloads routes whose 
 Recall that you can add anything to the `data` property of a route. 
 
 Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModule`. 
+
+
+<code-example path="router/src/app/app-routing.module.ts" linenums="false" title="src/app/app-routing.module.ts (route data preload)" region="preload-v2">
+
+</code-example>
+
 Add a new file to the project called `selective-preloading-strategy.ts`
-and define a `SelectivePreloadingStrategy` service class as follows:`SelectivePreloadingStrategy` implements the `PreloadingStrategy`, which has one method, `preload`.
+and define a `SelectivePreloadingStrategy` service class as follows:
+
+<code-example path="router/src/app/selective-preloading-strategy.ts" linenums="false" title="src/app/selective-preloading-strategy.ts (excerpt)">
+
+</code-example>
+
+`SelectivePreloadingStrategy` implements the `PreloadingStrategy`, which has one method, `preload`.
 
 The router calls the `preload` method with two arguments:
 1. The route to consider.
@@ -2830,6 +3503,12 @@ Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
 1. Update the template to display the strategy service's `preloadedModules` array.
 
 When you're done it looks like this.
+
+
+<code-example path="router/src/app/admin/admin-dashboard.component.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (preloaded modules)" region="preloaded modules">
+
+</code-example>
+
 Once the application loads the initial route, the `CrisisCenterModule` is preloaded. 
 Verify this by logging in to the `Admin` feature area and noting that the `crisis-center` is listed in the `Preloaded Modules`. 
 It's also logged to the browser's console. 
@@ -2848,6 +3527,12 @@ You can inspect the router's current configuration any time by injecting it and
 examining its `config` property. 
 For example, update the `AppModule` as follows and look in the browser console window
 to see the finished route configuration.
+
+<code-example path="router/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (inspect the router config)" region="inspect-config">
+
+</code-example>
+
+
 
 {@a final-app}
 
@@ -2878,12 +3563,36 @@ A link parameters array holds the following ingredients for router navigation:
 * Required and optional route parameters that go into the route URL.
 
 You can bind the `RouterLink` directive to such an array like this:
+
+
+<code-example path="router/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (h-anchor)" region="h-anchor">
+
+</code-example>
+
 You've written a two element array when specifying a route parameter like this:
+
+
+<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (nav-to-detail)" region="nav-to-detail">
+
+</code-example>
+
 You can provide optional route parameters in an object like this:
+
+
+<code-example path="router/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (cc-query-params)" region="cc-query-params">
+
+</code-example>
+
 These three examples cover the need for an app with one level routing.
 The moment you add a child router, such as the crisis center, you create new link array possibilities.
 
 Recall that you specified a default child route for the crisis center so this simple `RouterLink` is fine.
+
+
+<code-example path="router/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (cc-anchor-w-default)" region="cc-anchor-w-default">
+
+</code-example>
+
 Parse it out.
 
 * The first item in the array identifies the parent route (`/crisis-center`).
@@ -2894,6 +3603,12 @@ Parse it out.
 
 Take it a step further. Consider the following router link that 
 navigates from the root of the application down to the *Dragon Crisis*:
+
+
+<code-example path="router/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (Dragon-anchor)" region="Dragon-anchor">
+
+</code-example>
+
 * The first item in the array identifies the parent route (`/crisis-center`).
 * There are no parameters for this parent route so you're done with it.
 * The second item identifies the child route details about a particular crisis (`/:id`).
@@ -2901,6 +3616,12 @@ navigates from the root of the application down to the *Dragon Crisis*:
 * You added the `id` of the *Dragon Crisis* as the second item in the array (`1`).
 * The resulting path is `/crisis-center/1`.
 If you wanted to, you could redefine the `AppComponent` template with *Crisis Center* routes exclusively:
+
+
+<code-example path="router/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+
+</code-example>
+
 In sum, you can write applications with one, two or more levels of routing.
 The link parameters array affords the flexibility to represent any routing depth and
 any legal sequence of route paths, (required) router parameters, and (optional) route parameter objects.
@@ -2950,8 +3671,15 @@ The `RouterModule.forRoot` function sets the `LocationStrategy` to the `PathLoca
 making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
 
+
+~~~ {.l-sub-section}
+
 Learn about providers and the bootstrap process in the
 [Dependency Injection guide](guide/dependency-injection).
+
+
+~~~
+
 ### Which strategy is best?
 
 You must choose a strategy and you need to make the right call early in the project.
@@ -2983,6 +3711,12 @@ style by default, you *must* configure that strategy with a **base href**.
 The preferred way to configure the strategy is to add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
+
+
+<code-example path="router/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
+
+</code-example>
+
 Without that tag, the browser may not be able to load resources
 (images, CSS, scripts) when "deep linking" into the app.
 Bad things could happen when someone pastes an application link into the
@@ -3002,3 +3736,9 @@ Those developers may still use HTML5 URLs by taking two remedial steps:
 You can go old-school with the `HashLocationStrategy` by
 providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot`
 in the `AppModule`.
+
+
+<code-example path="router/src/app/app.module.6.ts" linenums="false" title="src/app/app.module.ts (hash URL strategy)" region="hash URL strategy">
+
+</code-example>
+

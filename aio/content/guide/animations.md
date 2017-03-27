@@ -41,7 +41,14 @@ add it to your page.
 * [Parallel animation groups](guide/animations#parallel-animation-groups).
 * [Animation callbacks](guide/animations#animation-callbacks).
 
+
+~~~ {.l-sub-section}
+
 The examples in this page are available as a <live-example></live-example>.
+
+
+~~~
+
 
 
 {@a example-transitioning-between-states}
@@ -55,17 +62,27 @@ You can build a simple animation that transitions an element between two states
 driven by a model attribute.
 
 Animations are defined inside `@Component` metadata. Before you can add animations, you need
-to import a few animation-specific functions:
+to import a few animation-specific imports and functions:
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts' region='imports'}
+<code-example path="animations/src/app/app.module.ts" region="animations-module" linenums="false">
+
+</code-example>
+
+
+
+<code-example path="animations/src/app/hero-list-basic.component.ts" region="imports" linenums="false">
+
+</code-example>
 
 With these, you can define an *animation trigger* called `heroState` in the component
 metadata. It uses animations to transition between two states: `active` and `inactive`. When a
 hero is active, the element appears in a slightly larger size and lighter color.
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-basic.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 
 
@@ -81,7 +98,9 @@ Now, using the `[@triggerName]` syntax, attach the animation that you just defin
 one or more elements in the component's template.
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts' region='template'}
+<code-example path="animations/src/app/hero-list-basic.component.ts" region="template" linenums="false">
+
+</code-example>
 
 Here, the animation trigger applies to every element repeated by an `ngFor`. Each of
 the repeated elements animates independently. The value of the
@@ -91,7 +110,9 @@ With this setup, an animated transition appears whenever a hero object changes s
 Here's the full component implementation:
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts'}
+<code-example path="animations/src/app/hero-list-basic.component.ts">
+
+</code-example>
 
 ## States and transitions
 
@@ -107,7 +128,9 @@ component's template.
 You can define *styles* for each animation state:
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts' region='states'}
+<code-example path="animations/src/app/hero-list-basic.component.ts" region="states" linenums="false">
+
+</code-example>
 
 These `state` definitions specify the *end styles* of each state.
 They are applied to the element once it has transitioned to that state, and stay
@@ -117,7 +140,9 @@ After you define states, you can define *transitions* between the states. Each t
 controls the timing of switching between one set of styles and the next:
 
 
-{@example 'animations/ts/src/app/hero-list-basic.component.ts' region='transitions'}
+<code-example path="animations/src/app/hero-list-basic.component.ts" region="transitions" linenums="false">
+
+</code-example>
 
 
 <figure class='image-display'>
@@ -128,13 +153,17 @@ If several transitions have the same timing configuration, you can combine
 them into the same `transition` definition:
 
 
-{@example 'animations/ts/src/app/hero-list-combined-transitions.component.ts' region='transitions'}
+<code-example path="animations/src/app/hero-list-combined-transitions.component.ts" region="transitions" linenums="false">
+
+</code-example>
 
 When both directions of a transition have the same timing, as in the previous
 example, you can use the shorthand syntax `<=>`:
 
 
-{@example 'animations/ts/src/app/hero-list-twoway.component.ts' region='transitions'}
+<code-example path="animations/src/app/hero-list-twoway.component.ts" region="transitions" linenums="false">
+
+</code-example>
 
 You can also apply a style during an animation but not keep it around
 after the animation finishes. You can define such styles inline, in the `transition`. In this example,
@@ -143,7 +172,9 @@ When the transition finishes, none of these styles are kept because they're not
 defined in a `state`.
 
 
-{@example 'animations/ts/src/app/hero-list-inline-styles.component.ts' region='transitions'}
+<code-example path="animations/src/app/hero-list-inline-styles.component.ts" region="transitions" linenums="false">
+
+</code-example>
 
 ### The wildcard state `*`
 
@@ -187,12 +218,17 @@ entering and leaving of elements:
 For example, in the `animations` !{_array} below there are two transitions that use 
 the `void => *` and `* => void` syntax to animate the element in and out of the view.
 
-{@example 'animations/ts/src/app/hero-list-enter-leave.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-enter-leave.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 Note that in this case the styles are applied to the void state directly in the
 transition definitions, and not in a separate `state(void)` definition. Thus, the transforms
 are different on enter and leave: the element enters from the left
 and leaves to the right.
+
+
+~~~ {.l-sub-section}
 
 These two common animations have their own aliases:
 <code-example language="typescript">
@@ -200,6 +236,10 @@ These two common animations have their own aliases:
     transition(':leave', [ ... ]); // * => void  
     
 </code-example>
+
+
+
+~~~
 
 ## Example: Entering and leaving from different states
 <figure>
@@ -224,7 +264,9 @@ This gives you fine-grained control over each transition:
 
 
 
-{@example 'animations/ts/src/app/hero-list-enter-leave-states.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-enter-leave-states.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 ## Animatable properties and units
 
@@ -262,7 +304,9 @@ In this example, the leave animation takes whatever height the element has befor
 leaves and animates from that height to zero:
 
 
-{@example 'animations/ts/src/app/hero-list-auto.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-auto.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 ## Animation timing
 
@@ -310,7 +354,9 @@ slight delay of 10 milliseconds as specified in `'0.2s 10 ease-out'`:
 
 
 
-{@example 'animations/ts/src/app/hero-list-timings.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-timings.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 ## Multi-step animations with keyframes
 <figure>
@@ -328,7 +374,9 @@ This example adds some "bounce" to the enter and leave animations with
 keyframes:
 
 
-{@example 'animations/ts/src/app/hero-list-multistep.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-multistep.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 Note that the offsets are *not* defined in terms of absolute time. They are relative
 measures from zero to one. The final timeline of the animation is based on the combination
@@ -354,7 +402,9 @@ enter and leave allows for two different timing configurations. Both
 are applied to the same element in parallel, but run independently of each other:
 
 
-{@example 'animations/ts/src/app/hero-list-groups.component.ts' region='animationdef'}
+<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" linenums="false">
+
+</code-example>
 
 One group animates the element transform and width; the other group animates the opacity.
 ## Animation callbacks
@@ -365,9 +415,11 @@ In the keyframes example, you have a `trigger` called `@flyInOut`. You can hook
 those callbacks like this:
 
 
-{@example 'animations/ts/src/app/hero-list-multistep.component.ts' region='template'}
+<code-example path="animations/src/app/hero-list-multistep.component.ts" region="template" linenums="false">
 
-The callbacks receive an `AnimationTransitionEvent` which contains useful properties such as `fromState`,
-`toState` and `totalTime`.
+</code-example>
+
+The callbacks receive an `AnimationEvent` that contains contains useful properties such as 
+`fromState`, `toState` and `totalTime`.
 
 Those callbacks will fire whether or not an animation is picked up.

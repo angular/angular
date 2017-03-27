@@ -5,6 +5,7 @@ Hierarchical Dependency Injectors
 Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree.
 
 @description
+
 You learned the basics of Angular Dependency injection in the
 [Dependency Injection](guide/dependency-injection) guide.
 
@@ -26,10 +27,17 @@ An application may have multiple injectors.
 An Angular application is a tree of components. Each component instance has its own injector.
 The tree of components parallels the tree of injectors.
 
+
+~~~ {.l-sub-section}
+
 The component's injector may be a _proxy_ for an ancestor injector higher in the component tree.
 That's an implementation detail that improves efficiency.
 You won't notice the difference and
 your mental model should be that every component has its own injector.
+
+
+~~~
+
 Consider this guide's variation on the Tour of Heroes application.
 At the top is the `AppComponent` which has some sub-components.
 One of them is the `HeroesListComponent`.
@@ -49,9 +57,16 @@ If that injector can't satisfy the request, it passes it along to *its* parent i
 The requests keep bubbling up until Angular finds an injector that can handle the request or runs out of ancestor injectors.
 If it runs out of ancestors, Angular throws an error.
 
+
+~~~ {.l-sub-section}
+
 You can cap the bubbling. An intermediate component can declare that it is the "host" component.
 The hunt for providers will climb no higher than the injector for that host component.
 This is a topic for another day.
+
+
+~~~
+
 ### Re-providing a service at different levels
 
 You can re-register a provider for a particular dependency token at multiple levels of the injector tree.
@@ -83,6 +98,12 @@ If you later modified the `VillainsService`, you could break something in a hero
 That's not supposed to happen but providing the service in the root `AppModule` creates that risk.
 
 Instead, provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
+
+
+<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
+
+</code-example>
+
 By providing `VillainsService` in the `VillainsListComponent` metadata and nowhere else,
 the service becomes available only in the `VillainsListComponent` and its sub-component tree.
 It's still a singleton, but it's a singleton that exist solely in the _villain_ domain.
@@ -102,6 +123,7 @@ To open a hero's tax return, the preparer clicks on a hero name, which opens a c
 Each selected hero tax return opens in its own component and multiple returns can be open at the same time.
 
 Each tax return component has the following characteristics:
+
 * Is its own tax return editing session.
 * Can change a tax return without affecting a return in another component.
 * Has the ability to save the changes to its tax return or cancel them.
@@ -120,12 +142,16 @@ It caches a single `HeroTaxReturn`, tracks changes to that return, and can save 
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 
-{@example 'hierarchical-dependency-injection/ts/src/app/hero-tax-return.service.ts'}
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts">
+
+</code-example>
 
 Here is the `HeroTaxReturnComponent` that makes use of it.
 
 
-{@example 'hierarchical-dependency-injection/ts/src/app/hero-tax-return.component.ts'}
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts">
+
+</code-example>
 
 The _tax-return-to-edit_ arrives via the input property which is implemented with getters and setters.
 The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
@@ -138,13 +164,26 @@ Each component would overwrite the tax return that belonged to another hero.
 What a mess!
 
 Look closely at the metadata for the `HeroTaxReturnComponent`. Notice the `providers` property.
+
+
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" title="src/app/hero-tax-return.component.ts (providers)" region="providers">
+
+</code-example>
+
 The `HeroTaxReturnComponent` has its own provider of the `HeroTaxReturnService`.
 Recall that every component _instance_ has its own injector.
 Providing the service at the component level ensures that _every_ instance of the component gets its own, private instance of the service.
 No tax return overwriting. No mess.
 
+
+~~~ {.l-sub-section}
+
 The rest of the scenario code relies on other Angular features and techniques that you can learn about elsewhere in the documentation.
 You can review it and download it from the <live-example></live-example>.
+
+
+~~~
+
 ### Scenario: specialized providers
 
 Another reason to re-provide a service is to substitute a _more specialized_ implementation of that service,
@@ -176,5 +215,11 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 </figure>
 
 
+
+~~~ {.l-sub-section}
+
 The code for this _cars_ scenario is in the `car.components.ts` and `car.services.ts` files of the sample
 which you can review and download from the <live-example></live-example>.
+
+~~~
+

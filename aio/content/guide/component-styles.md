@@ -5,6 +5,7 @@ Component Styles
 Learn how to apply CSS styles to components.
 
 @description
+
 Angular applications are styled with standard CSS. That means you can apply
 everything you know about CSS stylesheets, selectors, rules, and media queries
 directly to Angular applications.
@@ -36,7 +37,9 @@ The `styles` property takes #{_an} #{_array} of strings that contain CSS code.
 Usually you give it one string, as in the following example:
 
 
-{@example 'component-styles/ts/src/app/hero-app.component.ts'}
+<code-example path="component-styles/src/app/hero-app.component.ts" linenums="false">
+
+</code-example>
 
 The selectors you put into a component's styles apply only within the template
 of that component. The `h1` selector in the preceding example applies only to the `<h1>` tag
@@ -70,7 +73,9 @@ Use the `:host` pseudo-class selector to target styles in the element that *host
 targeting elements *inside* the component's template).
 
 
-{@example 'component-styles/ts/src/app/hero-details.component.css' region='host'}
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" linenums="false">
+
+</code-example>
 
 The `:host` selector is the only way to target the host element. You can't reach
 the host element from inside the component with other selectors because it's not part of the
@@ -82,7 +87,9 @@ including another selector inside parentheses after `:host`.
 The next example targets the host element again, but only when it also has the `active` CSS class.
 
 
-{@example 'component-styles/ts/src/app/hero-details.component.css' region='hostfunction'}
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" linenums="false">
+
+</code-example>
 
 ### :host-context
 
@@ -98,7 +105,9 @@ The following example applies a `background-color` style to all `<h2>` elements 
 if some ancestor element has the CSS class `theme-light`.
 
 
-{@example 'component-styles/ts/src/app/hero-details.component.css' region='hostcontext'}
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" linenums="false">
+
+</code-example>
 
 ### /deep/
 
@@ -111,7 +120,9 @@ children and content children of the component.
 The following example targets all `<h3>` elements, from the host element down 
 through this component to all of its child elements in the DOM. 
 
-{@example 'component-styles/ts/src/app/hero-details.component.css' region='deep'}
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" linenums="false">
+
+</code-example>
 
 The `/deep/` selector also has the alias `>>>`. You can use either interchangeably.
 
@@ -144,7 +155,9 @@ You can add a `styles` #{_array} property to the `@Component` #{_decorator}.
 Each string in the #{_array} (usually just one string) defines the CSS.
 
 
-{@example 'component-styles/ts/src/app/hero-app.component.ts'}
+<code-example path="component-styles/src/app/hero-app.component.ts">
+
+</code-example>
 
 ### Style URLs in metadata
 
@@ -152,7 +165,42 @@ You can load styles from external CSS files by adding a `styleUrls` attribute
 into a component's `@Component` #{_decorator}:
 
 
-{@example 'component-styles/ts/src/app/hero-details.component.ts' region='styleurls'}
+<code-example path="component-styles/src/app/hero-details.component.ts" region="styleurls">
+
+</code-example>
+
+
+
+
+~~~ {.alert.is-important}
+
+The URL is relative to the *application root*, which is usually the
+location of the `index.html` web page that hosts the application. 
+The style file URL is *not* relative to the component file.
+That's why the example URL begins `src/app/`.
+To specify a URL relative to the component file, see [Appendix 2](guide/component-styles#relative-urls).
+
+
+~~~
+
+
+
+
+~~~ {.l-sub-section}
+
+If you use module bundlers like Webpack, you can also use the `styles` attribute
+to load styles from external files at build time. You could write:
+
+`styles: [require('my.component.css')]`
+
+Set the `styles` property, not the `styleUrls` property. The module 
+bundler loads the CSS strings, not Angular. 
+Angular sees the CSS strings only after the bundler loads them. 
+To Angular, it's as if you wrote the `styles` array by hand. 
+For information on loading CSS in this manner, refer to the module bundler's documentation.
+
+
+~~~
 
 ### Template inline styles
 
@@ -160,7 +208,9 @@ You can embed styles directly into the HTML template by putting them
 inside `<style>` tags.
 
 
-{@example 'component-styles/ts/src/app/hero-controls.component.ts' region='inlinestyles'}
+<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles">
+
+</code-example>
 
 ### Template link tags
 
@@ -170,7 +220,9 @@ As with `styleUrls`, the link tag's `href` URL is relative to the
 application root, not the component file.
 
 
-{@example 'component-styles/ts/src/app/hero-team.component.ts' region='stylelink'}
+<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink">
+
+</code-example>
 
 ### CSS @imports
 
@@ -178,8 +230,12 @@ You can also import CSS files into the CSS files using the standard CSS `@import
 For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
 on the [MDN](https://developer.mozilla.org) site.
 
+In this case, the URL is relative to the CSS file into which you're importing.
 
-{@example 'component-styles/ts/src/app/hero-details.component.css' region='import'}
+
+<code-example path="component-styles/src/app/hero-details.component.css" region="import">
+
+</code-example>
 
 
 
@@ -210,7 +266,9 @@ Choose from the following modes:
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
 
-{@example 'component-styles/ts/src/app/quest-summary.component.ts' region='encapsulation.native'}
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" linenums="false">
+
+</code-example>
 
 `Native` view encapsulation only works on browsers that have native support
 for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the 
@@ -283,3 +341,11 @@ It's common practice to split a component's code, HTML, and CSS into three separ
 You include the template and CSS files by setting the `templateUrl` and `styleUrls` metadata properties respectively.
 Because these files are co-located with the component,
 it would be nice to refer to them by name without also having to specify a path back to the root of the application.
+
+You can use a relative URL by prefixing your filenames with `./`:
+
+
+<code-example path="component-styles/src/app/quest-summary.component.ts">
+
+</code-example>
+

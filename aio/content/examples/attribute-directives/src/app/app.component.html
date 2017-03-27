@@ -1,0 +1,24 @@
+<!-- #docregion v2, -->
+<h1>My First Attribute Directive</h1>
+
+<h4>Pick a highlight color</h4>
+<div>
+  <input type="radio" name="colors" (click)="color='lightgreen'">Green
+  <input type="radio" name="colors" (click)="color='yellow'">Yellow
+  <input type="radio" name="colors" (click)="color='cyan'">Cyan
+</div>
+<!-- #docregion color -->
+<p [myHighlight]="color">Highlight me!</p>
+<!-- #enddocregion color, v2 -->
+
+<!-- #docregion defaultColor -->
+<p [myHighlight]="color" defaultColor="violet">
+  Highlight me too!
+</p>
+<!-- #enddocregion defaultColor, -->
+
+<hr>
+<p><i>Mouse over the following lines to see fixed highlights</i></p>
+
+<p [myHighlight]="'yellow'">Highlighted in yellow</p>
+<p myHighlight="orange">Highlighted in orange</p>

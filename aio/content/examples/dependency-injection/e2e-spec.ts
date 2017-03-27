@@ -1,4 +1,4 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by, ElementFinder } from 'protractor';
 
@@ -163,7 +163,7 @@ describe('Dependency Injection Tests', function () {
 
     describe('after button click', function() {
 
-      beforeAll(function (done) {
+      beforeAll(function (done: any) {
         let buttonEle = element.all(by.cssContainingText('button', 'Next User')).get(0);
         buttonEle.click().then(done, done);
       });

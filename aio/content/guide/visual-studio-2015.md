@@ -9,16 +9,30 @@ Use Visual Studio 2015 with the QuickStart files.
 
 This cookbook describes the steps required to set up and use the
 Angular QuickStart files in **Visual Studio 2015 within an ASP.NET 4.x project**.
+
+~~~ {.l-sub-section}
+
 There is no *live example* for this cookbook because it describes Visual Studio, not the application.
+
+
+~~~
+
 
 <a id="asp-net-4"></a>## ASP.NET 4.x Project
 
 This cookbook explains how to set up the QuickStart files with an **ASP.NET 4.x project** in
 Visual Studio 2015.
+
+~~~ {.l-sub-section}
+
 If you prefer a `File | New Project` experience and are using **ASP.NET Core**, 
 then consider the _experimental_
 <a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/" target="_blank">ASP.NET Core + Angular template for Visual Studio 2015</a>. 
 Note that the resulting code does not map to the docs. Adjust accordingly.   
+
+
+~~~
+
 The steps are as follows:
 
 - [Prerequisite](guide/visual-studio-2015#prereq1): Install Node.js
@@ -38,9 +52,16 @@ The steps are as follows:
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
+
+~~~ {.l-sub-section}
+
 **Verify that you are running node version `4.6.x` or greater, and npm `3.x.x` or greater**
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors.
+
+
+~~~
+
 
 
 <h2 id='prereq2'>
@@ -109,8 +130,15 @@ Create the ASP.NET 4.x project in the usual way as follows:
 * Select the `ASP.NET Web Application` template, give the project a name, and click OK.
 * Select the desired ASP.NET 4.5.2 template and click OK.
 
+
+~~~ {.l-sub-section}
+
 In this cookbook we'll select the `Empty` template with no added folders, 
 no authentication and no hosting. Pick the template and options appropriate for your project.
+
+
+~~~
+
 
 
 <h2 id='copy'>
@@ -154,7 +182,14 @@ First, ensure that `index.html` is set as the start page.
 Right-click `index.html` in Solution Explorer and select option `Set As Start Page`.
 
 Build and launch the app with debugger by clicking the **Run** button or press `F5`.
-It's faster to run without the debugger by pressing `Ctrl-F5`.The default browser opens and displays the QuickStart sample application.
+
+~~~ {.l-sub-section}
+
+It's faster to run without the debugger by pressing `Ctrl-F5`.
+
+~~~
+
+The default browser opens and displays the QuickStart sample application.
 
 Try editing any of the project files. *Save* and refresh the browser to
 see the changes. 

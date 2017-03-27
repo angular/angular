@@ -5,6 +5,7 @@ NgModules
 Define application modules with @NgModule.
 
 @description
+
 **NgModules** help organize an application into cohesive blocks of functionality.
 <!-- CF: "app" and "application" are used interchangeably throughout this page.
 I'm not sure what's appropriate, so I left them as is for now.  -->
@@ -121,7 +122,9 @@ By convention, the *root module* class is called `AppModule` and it exists in a 
 
 The `AppModule` from the QuickStart seed on the [Setup](guide/setup) page is as minimal as possible:
 
-{@example 'setup/ts/src/app/app.module.ts'}
+<code-example path="setup/src/app/app.module.ts" linenums="false">
+
+</code-example>
 
 The `@NgModule` decorator defines the metadata for the module.
 This page takes an intuitive approach to understanding the metadata and fills in details as it progresses.
@@ -137,7 +140,9 @@ the _root component_, the top of the app's rather bare component tree.
 
 The example `AppComponent` simply displays a data-bound title:
 
-{@example 'ngmodule/ts/src/app/app.component.0.ts'}
+<code-example path="ngmodule/src/app/app.component.0.ts" linenums="false">
+
+</code-example>
 
 Lastly, the `@NgModule.bootstrap` property identifies this `AppComponent` as the _bootstrap component_.
 When Angular launches the app, it places the HTML rendering of `AppComponent` in the DOM,
@@ -157,7 +162,9 @@ In the first, _dynamic_ option, the [Angular compiler](cookbook/ngmodule-faq)
 compiles the application in the browser and then launches the app.
 
 
-{@example 'ngmodule/ts/src/main.ts'}
+<code-example path="ngmodule/src/main.ts" linenums="false">
+
+</code-example>
 
 The samples in this page demonstrate the dynamic bootstrapping approach.
 
@@ -177,7 +184,9 @@ The syntax for bootstrapping the pre-compiled `AppModuleNgFactory` is similar to
 the dynamic version that bootstraps the `AppModule` class.
 
 
-{@example 'ngmodule/ts/src/main-static.ts'}
+<code-example path="ngmodule/src/main-static.ts" linenums="false">
+
+</code-example>
 
 Because the entire application was pre-compiled,
 Angular doesn't ship the Angular compiler to the browser and doesn't compile in the browser.
@@ -209,39 +218,53 @@ As the app evolves,
 the first addition is a `HighlightDirective`, an [attribute directive](guide/attribute-directives)
 that sets the background color of the attached element.
 
-{@example 'ngmodule/ts/src/app/highlight.directive.ts'}
+<code-example path="ngmodule/src/app/highlight.directive.ts" linenums="false">
+
+</code-example>
 
 Update the `AppComponent` template to attach the directive to the title:
 
-{@example 'ngmodule/ts/src/app/app.component.1.ts' region='template'}
+<code-example path="ngmodule/src/app/app.component.1.ts" region="template" linenums="false">
+
+</code-example>
 
 If you ran the app now, Angular wouldn't recognize the `highlight` attribute and would ignore it.
 You must declare the directive in `AppModule`.
 
 Import the `HighlightDirective` class and add it to the module's `declarations` like this:
 
-{@example 'ngmodule/ts/src/app/app.module.1.ts' region='directive'}
+<code-example path="ngmodule/src/app/app.module.1.ts" region="directive" linenums="false">
+
+</code-example>
 
 ### Add a component
 
 Refactor the title into its own `TitleComponent`.
 The component's template binds to the component's `title` and `subtitle` properties like this:
 
-{@example 'ngmodule/ts/src/app/title.component.html' region='v1'}
+<code-example path="ngmodule/src/app/title.component.html" region="v1" linenums="false">
+
+</code-example>
 
 
 
-{@example 'ngmodule/ts/src/app/title.component.ts' region='v1'}
+<code-example path="ngmodule/src/app/title.component.ts" region="v1" linenums="false">
+
+</code-example>
 
 Rewrite the `AppComponent` to display the new `TitleComponent` in the `<app-title>` element,
 using an input binding to set the `subtitle`.
 
-{@example 'ngmodule/ts/src/app/app.component.1.ts'}
+<code-example path="ngmodule/src/app/app.component.1.ts" linenums="false">
+
+</code-example>
 
 Angular won't recognize the `<app-title>` tag until you declare it in `AppModule`.
 Import the `TitleComponent` class and add it to the module's `declarations`:
 
-{@example 'ngmodule/ts/src/app/app.module.1.ts' region='component'}
+<code-example path="ngmodule/src/app/app.module.1.ts" region="component" linenums="false">
+
+</code-example>
 
 
 
@@ -264,22 +287,30 @@ accessible through a user service.
 This sample application has a dummy implementation of such a `UserService`.
 
 
-{@example 'ngmodule/ts/src/app/user.service.ts'}
+<code-example path="ngmodule/src/app/user.service.ts" linenums="false">
+
+</code-example>
 
 The sample application should display a welcome message to the logged-in user just below the application title.
 Update the `TitleComponent` template to show the welcome message below the application title.
 
-{@example 'ngmodule/ts/src/app/title.component.html'}
+<code-example path="ngmodule/src/app/title.component.html" linenums="false">
+
+</code-example>
 
 Update the `TitleComponent` class with a constructor that injects the `UserService`
 and sets the component's `user` property from the service.
 
-{@example 'ngmodule/ts/src/app/title.component.ts'}
+<code-example path="ngmodule/src/app/title.component.ts" linenums="false">
+
+</code-example>
 
 You've defined and used the service. Now to _provide_ it for all components to use,
 add it to a `providers` property in the `AppModule` metadata:
 
-{@example 'ngmodule/ts/src/app/app.module.1.ts' region='providers'}
+<code-example path="ngmodule/src/app/app.module.1.ts" region="providers" linenums="false">
+
+</code-example>
 
 
 
@@ -290,7 +321,9 @@ add it to a `providers` property in the `AppModule` metadata:
 In the revised `TitleComponent`, an `*ngIf` directive guards the message.
 There is no message if there is no user.
 
-{@example 'ngmodule/ts/src/app/title.component.html' region='ngIf'}
+<code-example path="ngmodule/src/app/title.component.html" region="ngIf" linenums="false">
+
+</code-example>
 
 Although `AppModule` doesn't declare `NgIf`, the application still compiles and runs.
 How can that be? The Angular compiler should either ignore or complain about unrecognized HTML.
@@ -298,16 +331,25 @@ How can that be? The Angular compiler should either ignore or complain about unr
 Angular does recognize `NgIf` because you imported it earlier.
 The initial version of `AppModule` imports `BrowserModule`.
 
-{@example 'ngmodule/ts/src/app/app.module.0.ts' region='imports'}
+<code-example path="ngmodule/src/app/app.module.0.ts" region="imports" linenums="false">
+
+</code-example>
 
 Importing `BrowserModule` made all of its public components, directives, and pipes visible
 to the component templates in `AppModule`.
+
+~~~ {.l-sub-section}
+
 More accurately, `NgIf` is declared in `CommonModule` from `@angular/common`.
 
 `CommonModule` contributes many of the common directives that applications need, including `ngIf` and `ngFor`.
 
 `BrowserModule` imports `CommonModule` and [re-exports](cookbook/ngmodule-faq) it.
-The net effect is that an importer of `BrowserModule` gets `CommonModule` directives automatically.Many familiar Angular directives don't belong to `CommonModule`.
+The net effect is that an importer of `BrowserModule` gets `CommonModule` directives automatically.
+
+~~~
+
+Many familiar Angular directives don't belong to `CommonModule`.
 For example,  `NgModel` and `RouterLink` belong to Angular's `FormsModule` and `RouterModule` respectively.
 You must import those modules before you can use their directives.
 
@@ -321,6 +363,9 @@ a form component that imports form support from the Angular `FormsModule`.
 The `ContactComponent` presents a "contact editor,"
 implemented with Angular forms in the [template-driven form](guide/forms) style.
 
+
+~~~ {.l-sub-section}
+
 ### Angular form styles
 
 You can write Angular form components in
@@ -332,10 +377,16 @@ The following sample imports the `FormsModule` from `@angular/forms` because
 the `ContactComponent` is written in _template-driven_ style.
 Modules with components written in the _reactive_ style
 import the `ReactiveFormsModule`.
+
+
+~~~
+
 The `ContactComponent` selector matches an element named `<app-contact>`.
 Add an element with that name to the `AppComponent` template, just below the `<app-title>`:
 
-{@example 'ngmodule/ts/src/app/app.component.1b.ts' region='template'}
+<code-example path="ngmodule/src/app/app.component.1b.ts" region="template" linenums="false">
+
+</code-example>
 
 Form components are often complex. The `ContactComponent` has its own `ContactService`
 and [custom pipe](guide/pipes) (called `Awesome`),
@@ -343,39 +394,40 @@ and an alternative version of the `HighlightDirective`.
 
 To make it manageable, place all contact-related material in an `src/app/contact` folder
 and break the component into three constituent HTML, TypeScript, and css files:
-<md-tab-group>
 
-  <md-tab label="src/app/contact/contact.component.html">
-    {@example 'ngmodule/ts/src/app/contact/contact.component.html'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/contact/contact.component.html" path="ngmodule/src/app/contact/contact.component.html">
 
-  <md-tab label="src/app/contact/contact.component.ts">
-    {@example 'ngmodule/ts/src/app/contact/contact.component.3.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="src/app/contact/contact.component.css">
-    {@example 'ngmodule/ts/src/app/contact/contact.component.css'}
-  </md-tab>
+  <code-pane title="src/app/contact/contact.component.ts" path="ngmodule/src/app/contact/contact.component.3.ts">
+
+  </code-pane>
 
 
-  <md-tab label="src/app/contact/contact.service.ts">
-    {@example 'ngmodule/ts/src/app/contact/contact.service.ts'}
-  </md-tab>
+  <code-pane title="src/app/contact/contact.component.css" path="ngmodule/src/app/contact/contact.component.css">
+
+  </code-pane>
 
 
-  <md-tab label="src/app/contact/awesome.pipe.ts">
-    {@example 'ngmodule/ts/src/app/contact/awesome.pipe.ts'}
-  </md-tab>
+  <code-pane title="src/app/contact/contact.service.ts" path="ngmodule/src/app/contact/contact.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="src/app/contact/highlight.directive.ts">
-    {@example 'ngmodule/ts/src/app/contact/highlight.directive.ts'}
-  </md-tab>
+  <code-pane title="src/app/contact/awesome.pipe.ts" path="ngmodule/src/app/contact/awesome.pipe.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 In the middle of the component template,
 notice the two-way data binding `[(ngModel)]`.
@@ -393,7 +445,9 @@ form features such as validation aren't yet available.
 
 Add the `FormsModule` to the `AppModule` metadata's `imports` list.
 
-{@example 'ngmodule/ts/src/app/app.module.1.ts' region='imports'}
+<code-example path="ngmodule/src/app/app.module.1.ts" region="imports" linenums="false">
+
+</code-example>
 
 Now `[(ngModel)]` binding will work and the user input will be validated by Angular forms,
 once you declare the new component, pipe, and directive.
@@ -420,21 +474,32 @@ Components, directives, and pipes belong to _one module only_.
 The application won't compile until you declare the contact component, directive, and pipe.
 Update the `declarations` in the  `AppModule` accordingly:
 
-{@example 'ngmodule/ts/src/app/app.module.1.ts' region='declarations'}
+<code-example path="ngmodule/src/app/app.module.1.ts" region="declarations" linenums="false">
+
+</code-example>
 
 
 
 {@a import-name-conflict}
 
+
+~~~ {.l-sub-section}
+
 There are two directives with the same name, both called `HighlightDirective`.
 
 To work around this, create an alias for the contact version using the `as` JavaScript import keyword.
 
-{@example 'ngmodule/ts/src/app/app.module.1b.ts' region='import-alias'}
+<code-example path="ngmodule/src/app/app.module.1b.ts" region="import-alias" linenums="false">
+
+</code-example>
 
 This solves the immediate issue of referencing both directive _types_ in the same file but
 leaves another issue unresolved. 
 You'll learn more about that issue later in this page, in [Resolve directive conflicts](guide/ngmodule#resolve-conflicts).
+
+
+~~~
+
 ### Provide the _ContactService_
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
@@ -446,12 +511,17 @@ You want to share this service with other contact-related components that you'll
 
 In this app, add `ContactService` to the `AppModule` metadata's `providers` list:
 
-{@example 'ngmodule/ts/src/app/app.module.1b.ts' region='providers'}
+<code-example path="ngmodule/src/app/app.module.1b.ts" region="providers" linenums="false">
+
+</code-example>
 
 Now you can inject `ContactService` (like `UserService`) into any component in the application.
 
 
 {@a application-scoped-providers}
+
+
+~~~ {.l-sub-section}
 
 ### Application-scoped providers
   The `ContactService` provider is _application_-scoped because Angular
@@ -475,6 +545,10 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 
   Read more in the [How do I restrict service scope to a module?](cookbook/ngmodule-faq) section
   of the [NgModule FAQs](cookbook/ngmodule-faq) page.
+
+
+~~~
+
 ### Run the app
 Everything is in place to run the application with its contact editor.
 
@@ -553,19 +627,20 @@ An issue arose [earlier](guide/ngmodule#import-name-conflict) when you declared 
 you already had a `HighlightDirective` class at the application level.
 
 The selectors of the two directives both highlight the attached element with a different color.
-<md-tab-group>
 
-  <md-tab label="src/app/highlight.directive.ts">
-    {@example 'ngmodule/ts/src/app/highlight.directive.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/highlight.directive.ts" path="ngmodule/src/app/highlight.directive.ts">
 
-  <md-tab label="src/app/contact/highlight.directive.ts">
-    {@example 'ngmodule/ts/src/app/contact/highlight.directive.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 Both directives are declared in this module so both directives are active.
 
@@ -573,6 +648,9 @@ When the two directives compete to color the same element,
 the directive that's declared later wins because its DOM changes overwrite the first.
 In this case, the contact's `HighlightDirective` makes the application title text blue
 when it should stay gold.
+
+
+~~~ {.l-sub-section}
 
 The issue is that two different classes are trying to do the same thing.
 
@@ -582,6 +660,10 @@ Angular removes duplicate classes and only registers one of them.
 But from Angular's perspective, two different classes, defined in different files, that have the same name
 are not duplicates. Angular keeps both directives and
 they take turns modifying the same HTML element.
+
+
+~~~
+
 At least the app still compiles.
 If you define two different component classes with the same selector specifying the same element tag,
 the compiler reports an error. It can't insert two components in the same DOM location.
@@ -654,7 +736,9 @@ It's easy to refactor the contact material into a contact feature module.
 
 Here's the new `ContactModule`:
 
-{@example 'ngmodule/ts/src/app/contact/contact.module.2.ts'}
+<code-example path="ngmodule/src/app/contact/contact.module.2.ts">
+
+</code-example>
 
 You copy from `AppModule` the contact-related import statements and `@NgModule` properties
 that concern the contact, and paste them into `ContactModule`.
@@ -693,19 +777,20 @@ Leave only the classes required at the application root level.
 Then import the `ContactModule` so the app can continue to display the exported `ContactComponent`.
 
 Here's the refactored version of the `AppModule` along with the previous version.
-<md-tab-group>
 
-  <md-tab label="src/app/app.module.ts (v2)">
-    {@example 'ngmodule/ts/src/app/app.module.2.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/app.module.ts (v2)" path="ngmodule/src/app/app.module.2.ts">
 
-  <md-tab label="src/app/app.module.ts (v1)">
-    {@example 'ngmodule/ts/src/app/app.module.1b.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/app.module.ts (v1)" path="ngmodule/src/app/app.module.1b.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 ### ImprovementsThere's a lot to like in the revised `AppModule`.
 * It does not change as the _Contact_ domain grows.
@@ -730,8 +815,15 @@ The Heroic Staffing Agency sample app has evolved.
 It has two more modules, one for managing the heroes on staff and another for matching crises to the heroes.
 Both modules are in the early stages of development.
 Their specifics aren't important to the story and this page doesn't discuss every line of code.
+
+~~~ {.l-sub-section}
+
 Examine and download the complete source for this version from 
-the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>Some facets of the current application merit discussion are as follows:
+the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
+
+~~~
+
+Some facets of the current application merit discussion are as follows:
 
 * The app has three feature modules: Contact, Hero, and Crisis.
 * The Angular router helps users navigate among these modules.
@@ -743,19 +835,30 @@ the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">li
 The new `AppComponent` template has
 a title, three links, and a `<router-outlet>`.
 
-{@example 'ngmodule/ts/src/app/app.component.3.ts' region='template'}
+<code-example path="ngmodule/src/app/app.component.3.ts" region="template" linenums="false">
+
+</code-example>
 
 The `<app-contact>` element is gone; you're routing to the _Contact_ page now.
 
 The `AppModule` has changed modestly:
 
-{@example 'ngmodule/ts/src/app/app.module.3.ts'}
+<code-example path="ngmodule/src/app/app.module.3.ts">
 
+</code-example>
+
+
+
+~~~ {.l-sub-section}
 
 Some file names bear a `.3` extension that indicates
 a difference with prior or future versions.
 The significant differences will be explained in due course.
 <!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? --> 
+
+
+~~~
+
 The module still imports `ContactModule` so that its routes and components are mounted when the app starts.
 
 The module does _not_ import `HeroModule` or `CrisisModule`.
@@ -767,7 +870,9 @@ that handles the app's routing concerns.
 
 ### App routing
 
-{@example 'ngmodule/ts/src/app/app-routing.module.ts'}
+<code-example path="ngmodule/src/app/app-routing.module.ts" linenums="false">
+
+</code-example>
 
 The router is the subject of the [Routing & Navigation](guide/router) page, so this section skips many of the details and
 concentrates on the intersection of NgModules and routing.
@@ -784,18 +889,29 @@ You'll get to that file in a moment.
 
 The remaining two routes use lazy loading syntax to tell the router where to find the modules:
 
-{@example 'ngmodule/ts/src/app/app-routing.module.ts' region='lazy-routes'}
+<code-example path="ngmodule/src/app/app-routing.module.ts" region="lazy-routes" linenums="false">
 
+</code-example>
+
+
+
+~~~ {.l-sub-section}
 
 A lazy-loaded module location is a _string_, not a _type_.
 In this app, the string identifies both the module _file_ and the module _class_,
 the latter separated from the former by a `#`.
+
+
+~~~
+
 ### RouterModule.forRoot
 
 The `forRoot` static class method of the `RouterModule` with the provided configuration and
 added to the `imports` array provides the routing concerns for the module.
 
-{@example 'ngmodule/ts/src/app/app-routing.module.ts' region='forRoot'}
+<code-example path="ngmodule/src/app/app-routing.module.ts" region="forRoot" linenums="false">
+
+</code-example>
 
 The returned `AppRoutingModule` class is a `Routing Module` containing both the `RouterModule` directives
 and the dependency-injection providers that produce a configured `Router`.
@@ -812,13 +928,17 @@ Never call `RouterModule.forRoot` in a feature-routing module.
 Back in the root `AppModule`, add the `AppRoutingModule` to its `imports` list,
 and the app is ready to navigate.
 
-{@example 'ngmodule/ts/src/app/app.module.3.ts' region='imports'}
+<code-example path="ngmodule/src/app/app.module.3.ts" region="imports" linenums="false">
+
+</code-example>
 
 ### Routing to a feature module
 The `src/app/contact` folder holds a new file, `contact-routing.module.ts`.
 It defines the `contact` route mentioned earlier and provides a `ContactRoutingModule` as follows:
 
-{@example 'ngmodule/ts/src/app/contact/contact-routing.module.ts' region='routing'}
+<code-example path="ngmodule/src/app/contact/contact-routing.module.ts" region="routing" linenums="false">
+
+</code-example>
 
 This time you pass the route list to the `forChild` method of the `RouterModule`.
 The route list is only responsible for providing additional routes and is intended for feature modules.
@@ -846,19 +966,20 @@ that has both shared [declarables](cookbook/ngmodule-faq) and services.
 ~~~
 
 `ContactModule` has changed in two small but important ways.
-<md-tab-group>
 
-  <md-tab label="src/app/contact/contact.module.3.ts">
-    {@example 'ngmodule/ts/src/app/contact/contact.module.3.ts' region='class'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/contact/contact.module.3.ts" path="ngmodule/src/app/contact/contact.module.3.ts" region="class">
 
-  <md-tab label="src/app/contact/contact.module.2.ts">
-    {@example 'ngmodule/ts/src/app/contact/contact.module.2.ts' region='class'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/contact/contact.module.2.ts" path="ngmodule/src/app/contact/contact.module.2.ts" region="class">
+
+  </code-pane>
+
+
+</code-tabs>
 
 * It imports the `ContactRoutingModule` object from `contact-routing.module.ts`.
 * It no longer exports `ContactComponent`.
@@ -935,7 +1056,9 @@ In the next section, [Shared modules](guide/ngmodule#shared-module "Shared modul
 
 The `HeroModule` is a feature module like any other.
 
-{@example 'ngmodule/ts/src/app/hero/hero.module.3.ts' region='class'}
+<code-example path="ngmodule/src/app/hero/hero.module.3.ts" region="class" linenums="false">
+
+</code-example>
 
 It imports the `FormsModule` because the `HeroDetailComponent` template binds with `[(ngModel)]`.
 It imports the `HeroRoutingModule` from `hero-routing.module.ts` just as `ContactModule` and `CrisisModule` do.
@@ -964,7 +1087,9 @@ and share them with the modules that need them.
 
 Here is the `SharedModule`:
 
-{@example 'ngmodule/ts/src/app/shared/shared.module.ts'}
+<code-example path="ngmodule/src/app/shared/shared.module.ts">
+
+</code-example>
 
 Note the following:
 * It imports the `CommonModule` because its component needs common directives.
@@ -1041,11 +1166,20 @@ Perform the following steps:
 
 Most of this work is familiar. The interesting part is the `CoreModule`.
 
-{@example 'ngmodule/ts/src/app/core/core.module.ts' region='v4'}
+<code-example path="ngmodule/src/app/core/core.module.ts" region="v4">
 
+</code-example>
+
+
+
+~~~ {.l-sub-section}
 
 You're importing some extra symbols from the Angular core library that you're not using yet.
-They'll become relevant later in this page.The `@NgModule` metadata should be familiar.
+They'll become relevant later in this page.
+
+~~~
+
+The `@NgModule` metadata should be familiar.
 You declare the `TitleComponent`  because this module owns it and you export it
 because `AppComponent` (which is in `AppModule`) displays the title in its template.
 `TitleComponent` needs the Angular `NgIf` directive that you import from `CommonModule`.
@@ -1053,6 +1187,9 @@ because `AppComponent` (which is in `AppModule`) displays the title in its templ
 `CoreModule` provides the `UserService`. Angular registers that provider with the app root injector,
 making a singleton instance of the `UserService` available to any component that needs it,
 whether that component is eagerly or lazily loaded.
+
+
+~~~ {.l-sub-section}
 
 ### Why bother?
 This scenario is clearly contrived.
@@ -1079,25 +1216,30 @@ Their _providers_ aren't shared.
 We recommend collecting such single-use classes and hiding their details inside a `CoreModule`.
 A simplified root `AppModule` imports `CoreModule` in its capacity as orchestrator of the application as a whole.
 
+
+~~~
+
+
 ## Cleanup
 Having refactored to a `CoreModule` and a `SharedModule`, it's time to clean up the other modules.
 
 ### A trimmer _AppModule_
 
 Here is the updated `AppModule` paired with version 3 for comparison:
-<md-tab-group>
 
-  <md-tab label="src/app/app.module.ts (v4)">
-    {@example 'ngmodule/ts/src/app/app.module.ts' region='v4'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/app.module.ts (v4)" path="ngmodule/src/app/app.module.ts" region="v4">
 
-  <md-tab label="src/app/app.module.ts (v3)">
-    {@example 'ngmodule/ts/src/app/app.module.3.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/app.module.ts (v3)" path="ngmodule/src/app/app.module.3.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 `AppModule` now has the following qualities:
 * A little smaller because many `src/app/root` classes have moved to other modules.
@@ -1107,19 +1249,20 @@ Here is the updated `AppModule` paired with version 3 for comparison:
 
 ### A trimmer _ContactModule_
 Here is the new `ContactModule` paired with the prior version:
-<md-tab-group>
 
-  <md-tab label="src/app/contact/contact.module.ts (v4)">
-    {@example 'ngmodule/ts/src/app/contact/contact.module.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="src/app/contact/contact.module.ts (v4)" path="ngmodule/src/app/contact/contact.module.ts">
 
-  <md-tab label="src/app/contact/contact.module.ts (v3)">
-    {@example 'ngmodule/ts/src/app/contact/contact.module.3.ts'}
-  </md-tab>
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="src/app/contact/contact.module.ts (v3)" path="ngmodule/src/app/contact/contact.module.3.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 Notice the following:
 * The `AwesomePipe` and `HighlightDirective` are gone.
@@ -1146,22 +1289,35 @@ a simple object with the following properties:
 * `providers`: the configured providers
 
 The root `AppModule` imports the `CoreModule` and adds the `providers` to the `AppModule` providers.
+
+~~~ {.l-sub-section}
+
 More precisely, Angular accumulates all imported providers before appending the items listed in `@NgModule.providers`.
 This sequence ensures that whatever you add explicitly to the `AppModule` providers takes precedence
-over the providers of imported modules.Add a `CoreModule.forRoot` method that configures the core `UserService`.
+over the providers of imported modules.
+
+~~~
+
+Add a `CoreModule.forRoot` method that configures the core `UserService`.
 
 You've extended the core `UserService` with an optional, injected `UserServiceConfig`.
 If a `UserServiceConfig` exists, the `UserService` sets the user name from that config.
 
-{@example 'ngmodule/ts/src/app/core/user.service.ts' region='ctor'}
+<code-example path="ngmodule/src/app/core/user.service.ts" region="ctor" linenums="false">
+
+</code-example>
 
 Here's `CoreModule.forRoot` that takes a `UserServiceConfig` object:
 
-{@example 'ngmodule/ts/src/app/core/core.module.ts' region='for-root'}
+<code-example path="ngmodule/src/app/core/core.module.ts" region="for-root" linenums="false">
+
+</code-example>
 
 Lastly, call it within the `imports` list of the `AppModule`.
 
-{@example 'ngmodule/ts/src/app/app.module.ts' region='import-for-root'}
+<code-example path="ngmodule/src/app/app.module.ts" region="import-for-root" linenums="false">
+
+</code-example>
 
 The app displays "Miss Marple" as the user instead of the default "Sherlock Holmes".
 
@@ -1196,7 +1352,9 @@ It looks like it is supposed to go to a specific question/section within the pag
 You could hope that no developer makes that mistake.
 Or you can guard against it and fail fast by adding the following `CoreModule` constructor.
 
-{@example 'ngmodule/ts/src/app/core/core.module.ts' region='ctor'}
+<code-example path="ngmodule/src/app/core/core.module.ts" region="ctor" linenums="false">
+
+</code-example>
 
 The constructor tells Angular to inject the `CoreModule` into itself.
 That seems dangerously circular.

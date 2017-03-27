@@ -37,7 +37,9 @@ Before components can be added we have to define an anchor point to mark where c
 The ad banner uses a helper directive called `AdDirective` to mark valid insertion points in the template.
 
 
-{@example 'cb-dynamic-component-loader/ts/src/app/ad.directive.ts'}
+<code-example path="cb-dynamic-component-loader/src/app/ad.directive.ts" linenums="false">
+
+</code-example>
 
 `AdDirective` injects `ViewContainerRef` to gain access to the view container of the element that will become the host of the dynamically added component.
  
@@ -47,41 +49,44 @@ The next step is to implement the ad banner. Most of the implementation is in `A
 
 We start by adding a `template` element with the `AdDirective` directive applied.
 
-<md-tab-group>
 
-  <md-tab label="ad-banner.component.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/ad-banner.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="ad-banner.component.ts" path="cb-dynamic-component-loader/src/app/ad-banner.component.ts">
 
-  <md-tab label="ad.service.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/ad.service.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="ad-item.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/ad-item.ts'}
-  </md-tab>
+  <code-pane title="ad.service.ts" path="cb-dynamic-component-loader/src/app/ad.service.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app.module.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/app.module.ts'}
-  </md-tab>
+  <code-pane title="ad-item.ts" path="cb-dynamic-component-loader/src/app/ad-item.ts">
+
+  </code-pane>
 
 
-  <md-tab label="app.component">
-    {@example 'cb-dynamic-component-loader/ts/src/app/app.component.ts'}
-  </md-tab>
+  <code-pane title="app.module.ts" path="cb-dynamic-component-loader/src/app/app.module.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="app.component" path="cb-dynamic-component-loader/src/app/app.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 The `template` element decorated with the `ad-host` directive marks where dynamically loaded components will be added.
 
 Using a `template` element is recommended since it doesn't render any additional output.
 
 
-{@example 'cb-dynamic-component-loader/ts/src/app/ad-banner.component.ts' region='ad-host'}
+<code-example path="cb-dynamic-component-loader/src/app/ad-banner.component.ts" region="ad-host" linenums="false">
+
+</code-example>
 
 ### Resolving Components
 
@@ -102,7 +107,9 @@ Generally the compiler will generate a component factory for any component refer
 With dynamically loaded components there are no selector references in the templates since components are loaded at runtime. In order to ensure that the compiler will still generate a factory, dynamically loaded components have to be added to their `NgModule`'s `entryComponents` array.   
 
 
-{@example 'cb-dynamic-component-loader/ts/src/app/app.module.ts' region='entry-components'}
+<code-example path="cb-dynamic-component-loader/src/app/app.module.ts" region="entry-components" linenums="false">
+
+</code-example>
 
 Components are added to the template by calling `createComponent` on the `ViewContainerRef` reference. 
 
@@ -112,24 +119,25 @@ In the Ad banner, all components implement a common `AdComponent` interface to s
 
 Two sample components and the `AdComponent` interface are shown below:
 
-<md-tab-group>
 
-  <md-tab label="hero-job-ad.component.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/hero-job-ad.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="hero-job-ad.component.ts" path="cb-dynamic-component-loader/src/app/hero-job-ad.component.ts">
 
-  <md-tab label="hero-profile.component.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/hero-profile.component.ts'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="ad.component.ts">
-    {@example 'cb-dynamic-component-loader/ts/src/app/ad.component.ts'}
-  </md-tab>
+  <code-pane title="hero-profile.component.ts" path="cb-dynamic-component-loader/src/app/hero-profile.component.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="ad.component.ts" path="cb-dynamic-component-loader/src/app/ad.component.ts">
+
+  </code-pane>
+
+
+</code-tabs>
 
 The final ad banner looks like this:
 <figure class='image-display'>

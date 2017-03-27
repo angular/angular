@@ -3,7 +3,6 @@ import { Attribute, Component, Inject, Optional } from '@angular/core';
 // #docregion
 // #docregion templateUrl
 @Component({
-  moduleId: module.id,
   selector: 'hero-title',
   templateUrl: './hero-title.component.html'
 })

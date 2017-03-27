@@ -5,6 +5,7 @@ Browser support
 Browser support and polyfills guide.
 
 @description
+
 Angular supports most recent browsers. This includes the following specific versions:
 
 <table>
@@ -237,9 +238,16 @@ Angular supports most recent browsers. This includes the following specific vers
 </table>
 
 
+
+~~~ {.l-sub-section}
+
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, 
 using <a href="https://saucelabs.com/" target="_blank">SauceLabs</a> and 
 <a href="https://www.browserstack.com" target="_blank">Browserstack</a>.
+
+
+~~~
+
 ## Polyfills #
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
@@ -247,7 +255,9 @@ Targeting such a wide range of browsers is challenging because they do not suppo
 You can compensate by loading polyfill scripts ("polyfills") on the host web page (`index.html`)
 that implement missing features in JavaScript.
 
-{@example 'quickstart/ts/src/index.html' region='polyfills'}
+<code-example path="quickstart/src/index.html" region="polyfills" linenums="false">
+
+</code-example>
 
 A particular browser may require at least one polyfill to run _any_ Angular application. 
 You may need additional polyfills for specific features.

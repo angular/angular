@@ -5,6 +5,7 @@ Attribute Directives
 Attribute directives attach behavior to elements.
 
 @description
+
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 
 # Contents
@@ -48,6 +49,12 @@ The controller class implements the desired directive behavior.
 This page demonstrates building a simple _myHighlight_ attribute
 directive to set an element's background color
 when the user hovers over that element. You can apply it like this:
+
+
+<code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (applied)" region="applied">
+
+</code-example>
+
 ### Write the directive code
 
 Follow the [setup](guide/setup) instructions for creating a new local project
@@ -56,7 +63,9 @@ named <span ngio-ex>attribute-directives</span>.
 Create the following source file in the indicated folder:
 
 
-{@example 'attribute-directives/ts/src/app/highlight.directive.1.ts'}
+<code-example path="attribute-directives/src/app/highlight.directive.1.ts">
+
+</code-example>
 
 The `import` statement specifies symbols from the Angular `core`:
 
@@ -74,6 +83,9 @@ is the attribute name in square brackets.
 Here, the directive's selector is `[myHighlight]`.
 Angular locates all elements in the template that have an attribute named `myHighlight`.
 
+
+~~~ {.l-sub-section}
+
 ### Why not call it "highlight"?
 
 Though *highlight* is a more concise name than *myHighlight* and would work,
@@ -84,6 +96,10 @@ This also reduces the risk of colliding with third-party directive names.
 Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
 that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose. 
 For a simple demo, the short prefix, `my`, helps distinguish your custom directive.
+
+
+~~~
+
 After the `@Directive` metadata comes the directive's controller class, 
 called `HighlightDirective`, which contains the logic for the directive.
 <span if-docs="ts">Exporting `HighlightDirective` makes it accessible to other components.</span>
@@ -104,19 +120,25 @@ Put the template in its own <span ngio-ex>app.component.html</span>
 file that looks like this:
 
 
-{@example 'attribute-directives/ts/src/app/app.component.1.html'}
+<code-example path="attribute-directives/src/app/app.component.1.html">
+
+</code-example>
 
 Now reference this template in the `AppComponent`:
 
 
-{@example 'attribute-directives/ts/src/app/app.component.ts'}
+<code-example path="attribute-directives/src/app/app.component.ts">
+
+</code-example>
 
 Next, add an `import` statement to fetch the `Highlight` directive and
 add that class to the `declarations` NgModule metadata. This way Angular
 recognizes the directive when it encounters `myHighlight` in the template.
 
 
-{@example 'attribute-directives/ts/src/app/app.module.ts'}
+<code-example path="attribute-directives/src/app/app.module.ts">
+
+</code-example>
 
 Now when the app runs, the `myHighlight` directive highlights the paragraph text.
 
@@ -124,6 +146,9 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
   <img src="assets/images/devguide/attribute-directives/first-highlight.png" alt="First Highlight">  </img>
 </figure>
 
+
+
+~~~ {.l-sub-section}
 
 ### Your directive isn't working?
 
@@ -141,6 +166,10 @@ Angular detects that you're trying to bind to *something* but it can't find this
 in the module's `declarations` array.
 After specifying `HighlightDirective` in the `declarations` array,
 Angular knows it can apply the directive to components declared in this module.
+
+
+~~~
+
 To summarize, Angular found the `myHighlight` attribute on the `<p>` element.
 It created an instance of the `HighlightDirective` class and
 injected a reference to the `<p>` element into the directive's constructor
@@ -155,10 +184,25 @@ and respond by setting or clearing the highlight color.
 
 Begin by adding `HostListener` to the list of imported symbols;
 add the `Input` symbol as well because you'll need it soon.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports">
+
+</code-example>
+
 Then add two eventhandlers that respond when the mouse enters or leaves,
 each adorned by the `HostListener` !{_decorator}.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (mouse-methods)" region="mouse-methods">
+
+</code-example>
+
 The `@HostListener` !{_decorator} lets you subscribe to events of the DOM 
 element that hosts an attribute directive, the `<p>` in this case.
+
+
+~~~ {.l-sub-section}
 
 Of course you could reach into the DOM with standard JavaScript and and attach event listeners manually.
 There are at least three problems with _that_ approach:
@@ -166,12 +210,24 @@ There are at least three problems with _that_ approach:
 1. You have to write the listeners correctly.
 1. The code must *detach* the listener when the directive is destroyed to avoid memory leaks.
 1. Talking to DOM API directly isn't a best practice.
+
+
+~~~
+
 The handlers delegate to a helper method that sets the color on the DOM element, `#{_priv}el`,
 which you declare and initialize in the constructor.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (constructor)" region="ctor">
+
+</code-example>
+
 Here's the updated directive in full:
 
 
-{@example 'attribute-directives/ts/src/app/highlight.directive.2.ts'}
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts">
+
+</code-example>
 
 Run the app and confirm that the background color appears when
 the mouse hovers over the `p` and disappears as it moves out.
@@ -189,6 +245,12 @@ In this section, you give the developer the power to set the highlight color whi
 Start by adding a `highlightColor` property to the directive class like this:
 
 
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (highlightColor)" region="color">
+
+</code-example>
+
+
+
 {@a input}
 ### Binding to an _@Input_ property
 
@@ -198,15 +260,45 @@ It's called an *input* property because data flows from the binding expression _
 Without that input metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more about that.
 
 Try it by adding the following directive binding variations to the `AppComponent` template:
+
+
+<code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (excerpt)" region="color-1">
+
+</code-example>
+
 Add a `color` property to the `AppComponent`.
+
+
+<code-example path="attribute-directives/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
+
+</code-example>
+
 Let it control the highlight color with a property binding.
+
+
+<code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (excerpt)" region="color-2">
+
+</code-example>
+
 That's good, but it would be nice to _simultaneously_ apply the directive and set the color _in the same attribute_ like this.
+
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color">
+
+</code-example>
+
 The `[myHighlight]` attribute binding both applies the highlighting directive to the `<p>` element
 and sets the directive's highlight color with a property binding.
 You're re-using the directive's attribute selector (`[myHighlight]`) to do both jobs.
 That's a crisp, compact syntax.
 
 You'll have to rename the directive's `highlightColor` property to `myHighlight` because that's now the color property binding name.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (renamed to match directive selector)" region="color-2">
+
+</code-example>
+
 This is disagreeable. The word, `myHighlight`, is a terrible property name and it doesn't convey the property's intent.
 
 
@@ -216,13 +308,37 @@ This is disagreeable. The word, `myHighlight`, is a terrible property name and i
 Fortunately you can name the directive property whatever you want _and_ **_alias it_** for binding purposes.
 
 Restore the original property name and specify the selector as the alias in the argument to `@Input`.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (color property with alias)" region="color">
+
+</code-example>
+
 _Inside_ the directive the property is known as `highlightColor`.
 _Outside_ the directive, where you bind to it, it's known as `myHighlight`.
 
 You get the best of both worlds: the property name you want and the binding syntax you want:
+
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color">
+
+</code-example>
+
 Now that you're binding to `highlightColor`, modify the `onMouseEnter()` method to use it.
 If someone neglects to bind to `highlightColor`, highlight in red:
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (mouse enter)" region="mouse-enter">
+
+</code-example>
+
 Here's the latest version of the directive class.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (excerpt)">
+
+</code-example>
+
 ## Write a harness to try it
 
 It may be difficult to imagine how this directive actually works.
@@ -230,7 +346,19 @@ In this section, you'll turn `AppComponent` into a harness that
 lets you pick the highlight color with a radio button and bind your color choice to the directive.
 
 Update <span ngio-ex>app.component.html</span> as follows:
+
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (v2)" region="v2">
+
+</code-example>
+
 Revise the `AppComponent.color` so that it has no initial value.
+
+
+<code-example path="attribute-directives/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
+
+</code-example>
+
 Here are the harness and directive in action.
 
 <figure class='image-display'>
@@ -247,13 +375,31 @@ the user picks a highlight color&mdash;is hard-coded as "red".
 Let the template developer set the default color.
 
 Add a second **input** property to `HighlightDirective` called `defaultColor`:
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (defaultColor)" region="defaultColor">
+
+</code-example>
+
 Revise the directive's `onMouseEnter` so that it first tries to highlight with the `highlightColor`,
 then with the `defaultColor`, and falls back to "red" if both properties are undefined.
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (mouse-enter)" region="mouse-enter">
+
+</code-example>
+
 How do you bind to a second property when you're already binding to the `myHighlight` attribute name?
 
 As with components, you can add as many directive property bindings as you need by stringing them along in the template.
 The developer should be able to write the following template HTML to both bind to the `AppComponent.color`
 and fall back to "violet" as the default color.
+
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (defaultColor)" region="defaultColor">
+
+</code-example>
+
 Angular knows that the `defaultColor` binding belongs to the `HighlightDirective`
 because you made it _public_ with the `@Input` !{_decorator}.
 
@@ -275,39 +421,40 @@ This page covered how to:
 
 The final source code follows:
 
-<md-tab-group>
 
-  <md-tab label="app/app.component.ts">
-    {@example 'attribute-directives/ts/src/app/app.component.ts'}
-  </md-tab>
+<code-tabs>
 
+  <code-pane title="app/app.component.ts" path="attribute-directives/src/app/app.component.ts">
 
-  <md-tab label="app/app.component.html">
-    {@example 'attribute-directives/ts/src/app/app.component.html'}
-  </md-tab>
+  </code-pane>
 
 
-  <md-tab label="app/highlight.directive.ts">
-    {@example 'attribute-directives/ts/src/app/highlight.directive.ts'}
-  </md-tab>
+  <code-pane title="app/app.component.html" path="attribute-directives/src/app/app.component.html">
+
+  </code-pane>
 
 
-  <md-tab label="app/app.module.ts">
-    {@example 'attribute-directives/ts/src/app/app.module.ts'}
-  </md-tab>
+  <code-pane title="app/highlight.directive.ts" path="attribute-directives/src/app/highlight.directive.ts">
+
+  </code-pane>
 
 
-  <md-tab label="main.ts">
-    {@example 'attribute-directives/ts/src/main.ts'}
-  </md-tab>
+  <code-pane title="app/app.module.ts" path="attribute-directives/src/app/app.module.ts">
+
+  </code-pane>
 
 
-  <md-tab label="index.html">
-    {@example 'attribute-directives/ts/src/index.html'}
-  </md-tab>
+  <code-pane title="main.ts" path="attribute-directives/src/main.ts">
+
+  </code-pane>
 
 
-</md-tab-group>
+  <code-pane title="index.html" path="attribute-directives/src/index.html">
+
+  </code-pane>
+
+
+</code-tabs>
 
 You can also experience and download the <live-example title="Attribute Directive example"></live-example>.
 
@@ -315,7 +462,19 @@ You can also experience and download the <live-example title="Attribute Directiv
 
 In this demo, the `hightlightColor` property is an ***input*** property of
 the `HighlightDirective`. You've seen it applied without an alias:
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (color)" region="color">
+
+</code-example>
+
 You've seen it with an alias:
+
+
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (color)" region="color">
+
+</code-example>
+
 Either way, the `@Input` !{_decorator} tells Angular that this property is
 _public_ and available for binding by a parent component.
 Without  `@Input`, Angular refuses to bind to the property.
@@ -345,6 +504,12 @@ You can tell if `@Input` is needed by the position of the property name in a bin
   that property must be adorned with the `@Input` !{_decorator}.
 
 Now apply that reasoning to the following example:
+
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color">
+
+</code-example>
+
 * The `color` property in the expression on the right belongs to the template's component.
   The template and its component trust each other.
   The `color` property doesn't require the `@Input` !{_decorator}.

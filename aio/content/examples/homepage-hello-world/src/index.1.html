@@ -1,0 +1,32 @@
+<!-- #docregion -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Angular Hello World</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- 1. Load libraries -->
+     <!-- Polyfills -->
+    <script src="https://unpkg.com/core-js/client/shim.min.js"></script>
+
+    <script src="https://unpkg.com/zone.js@0.8.4"></script>
+    <script src="https://unpkg.com/systemjs@0.19.39/dist/system.src.js"></script>
+    <script src="https://unpkg.com/typescript@2.2.1/lib/typescript.js"></script>
+
+    <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+
+  </head>
+
+  <!-- Display the application -->
+  <body>
+    <hello-world>Loading...</hello-world>
+  </body>
+
+</html>
