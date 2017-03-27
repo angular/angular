@@ -52,7 +52,7 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
 /**
  * @whatItDoes Sets up a location synchronization.
  *
- * History.pushState does not fire onPopState, so the angular2 location
+ * History.pushState does not fire onPopState, so the Angular location
  * doesn't detect it. The workaround is to attach a location change listener
  *
  * @experimental

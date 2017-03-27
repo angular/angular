@@ -7,7 +7,7 @@
  */
 
 /**
- * Public Test Library for unit testing Angular2 Applications. Assumes that you are running
+ * Public Test Library for unit testing Angular applications. Assumes that you are running
  * with Jasmine, Mocha, or a similar framework which exports a beforeEach function and
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */

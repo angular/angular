@@ -72,7 +72,7 @@ export class NgLocaleLocalization extends NgLocalization {
 }
 
 // This is generated code DO NOT MODIFY
-// see angular2/script/cldr/gen_plural_rules.js
+// see angular/script/cldr/gen_plural_rules.js
 
 /** @experimental */
 export enum Plural {
