@@ -5,7 +5,6 @@
   "repository": "git@github.com:angular/angular.git",
   "author": "Angular",
   "license": "MIT",
-  "angular-cli": {},
   "scripts": {
     "ng": "yarn check-env && ng",
     "start": "yarn check-env && ng serve",
@@ -41,7 +40,6 @@
     "core-js": "^2.4.1",
     "rho": "https://github.com/petebacondarwin/rho#heading-fix",
     "rxjs": "^5.2.0",
-    "ts-helpers": "^1.1.1",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
@@ -50,7 +48,7 @@
     "@types/jasmine": "2.5.38",
     "@types/node": "~6.0.60",
     "canonical-path": "^0.0.2",
-    "codelyzer": "~2.0.0-beta.4",
+    "codelyzer": "~2.0.0",
     "dgeni": "^0.4.7",
     "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
@@ -67,7 +65,7 @@
     "protractor": "~5.1.0",
     "rimraf": "^2.6.1",
     "ts-node": "~2.0.0",
-    "tslint": "~4.4.2",
-    "typescript": "2.1.6"
+    "tslint": "~4.5.0",
+    "typescript": "2.2.0"
   }
 }
