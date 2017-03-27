@@ -4933,9 +4933,9 @@ restore-cursor@^2.0.0:
     onetime "^2.0.0"
     signal-exit "^3.0.2"
 
-"rho@https://github.com/petebacondarwin/rho#heading-fix":
+"rho@https://github.com/petebacondarwin/rho#master":
   version "0.4.0"
-  resolved "https://github.com/petebacondarwin/rho#dcc9780a59d6bf6a62abe2fca4b08db6629da2ca"
+  resolved "https://github.com/petebacondarwin/rho#0ad228a47ceb598648504ca8f57eba14aa0fc5e1"
   dependencies:
     html "*"
     nomnom "*"

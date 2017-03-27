@@ -38,7 +38,7 @@
     "@angular/router": "next",
     "@angular/service-worker": "^1.0.0-beta.8",
     "core-js": "^2.4.1",
-    "rho": "https://github.com/petebacondarwin/rho#heading-fix",
+    "rho": "https://github.com/petebacondarwin/rho#master",
     "rxjs": "^5.2.0",
     "zone.js": "^0.8.4"
   },
