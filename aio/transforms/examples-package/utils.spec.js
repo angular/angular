@@ -1,6 +1,6 @@
 const { mapObject, parseAttributes } = require('./utils');
 
-fdescribe('utils', () => {
+describe('utils', () => {
   describe('mapObject', () => {
     it('creates a new object', () => {
       const testObj = { a: 1 };
