@@ -55,7 +55,6 @@
     "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
     "firebase-tools": "^3.2.1",
-    "gulp": "^3.9.1",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
