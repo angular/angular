@@ -54,7 +54,8 @@ export class DocumentService {
             return Observable.of({ title: 'Not Found', contents: 'Document not found' });
           }
         } else {
-          throw error;
+          this.logger.error('Error fetching document', error);
+          return Observable.of({ title: 'Error fetching document', contents: 'Sorry we were not able to fetch that document.' });
         }
       })
       .subscribe(subject);
