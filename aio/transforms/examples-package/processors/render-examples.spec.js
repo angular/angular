@@ -49,6 +49,14 @@ describe('renderExamples processor', () => {
         expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nwhole file\n</${CODE_TAG}>`);
       });
 
+      it(`should replace all instances of <${CODE_TAG}> tags`, () => {
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url">Some code</${CODE_TAG}><${CODE_TAG} path="test/url" region="region-1">Other code</${CODE_TAG}>`}
+        ];
+        processor.$process(docs);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nwhole file\n</${CODE_TAG}><${CODE_TAG}>\nregion 1 contents\n</${CODE_TAG}>`);
+      });
+
       it('should contain the region contents from the example file if a region is specified', () => {
         const docs = [
           { renderedContent: `<${CODE_TAG} path="test/url" region="region-1">Some code</${CODE_TAG}>` }
