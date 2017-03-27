@@ -18,7 +18,7 @@ export interface TabInfo {
   selector: 'code-tabs',
   template: `
     <md-tab-group>
-      <md-tab *ngFor="let tab of tabs">
+      <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
         <template md-tab-label>
           <span class="{{tab.class}}">{{ tab.title }}</span>
         </template>
