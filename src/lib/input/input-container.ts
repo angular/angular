@@ -101,7 +101,7 @@ export class MdErrorDirective { }
     '[placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
-    '[attr.aria-describedby]': 'ariaDescribedby',
+    '[attr.aria-describedby]': 'ariaDescribedby || null',
     '(blur)': '_onBlur()',
     '(focus)': '_onFocus()',
     '(input)': '_onInput()',
