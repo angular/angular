@@ -31,6 +31,7 @@ export class MockAnimationDriver implements AnimationDriver {
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;
   public previousStyles: {[key: string]: string | number} = {};
+  private _onInitFns: (() => any)[] = [];
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
@@ -43,6 +44,16 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
         Object.keys(styles).forEach(prop => { this.previousStyles[prop] = styles[prop]; });
       }
     });
+  }
+
+  /* @internal */
+  onInit(fn: () => any) { this._onInitFns.push(fn); }
+
+  /* @internal */
+  init() {
+    super.init();
+    this._onInitFns.forEach(fn => fn());
+    this._onInitFns = [];
   }
 
   finish(): void {

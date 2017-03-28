@@ -87,6 +87,22 @@ export function main() {
         expect(engine.queuedPlayers.pop() instanceof NoopAnimationPlayer).toBe(true);
       });
 
+      it('should not initialize the animation until the engine has been flushed', () => {
+        const engine = makeEngine();
+        engine.registerTrigger(trigger(
+            'trig', [transition('* => something', [animate(1000, style({color: 'gold'}))])]));
+
+        engine.setProperty(element, 'trig', 'something');
+        const player = engine.queuedPlayers.pop() as MockAnimationPlayer;
+
+        let initialized = false;
+        player.onInit(() => initialized = true);
+
+        expect(initialized).toBe(false);
+        engine.flush();
+        expect(initialized).toBe(true);
+      });
+
       it('should not queue an animation if the property value has not changed at all', () => {
         const engine = makeEngine();
 

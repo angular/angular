@@ -259,8 +259,6 @@ export class DomAnimationEngine {
       const player = this._buildPlayer(element, instruction, previousPlayers, i);
       player.onDestroy(
           () => { deleteFromArrayMap(this._activeElementAnimations, element, player); });
-      player.init();
-
       this._markPlayerAsActive(element, player);
       return player;
     });
@@ -354,6 +352,7 @@ export class DomAnimationEngine {
       // in the event that an animation throws an error then we do
       // not want to re-run animations on any previous animations
       // if they have already been kicked off beforehand
+      player.init();
       if (!player.hasStarted()) {
         player.play();
       }
