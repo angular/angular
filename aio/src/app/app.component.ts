@@ -15,7 +15,11 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
 })
 export class AppComponent implements OnInit {
   readonly sideBySideWidth = 600;
-  readonly homeImageUrl = 'assets/images/logos/standard/logo-nav.png';
+  get homeImageUrl() {
+     return this.isSideBySide ?
+                'assets/images/logos/standard/logo-nav.png' :
+                'assets/images/logos/standard/logo-nav-small.png';
+  }
 
   isHamburgerVisible = true; // always ... for now
   isSideBySide = false;
