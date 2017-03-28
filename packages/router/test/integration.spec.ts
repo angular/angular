@@ -398,6 +398,25 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/team/22/user/victor');
      })));
 
+  it('should navigate to the same url when config changes',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'a', component: SimpleCmp}]);
+
+       router.navigate(['/a']);
+       advance(fixture);
+       expect(location.path()).toEqual('/a');
+       expect(fixture.nativeElement).toHaveText('simple');
+
+       router.resetConfig([{path: 'a', component: RouteCmp}]);
+
+       router.navigate(['/a']);
+       advance(fixture);
+       expect(location.path()).toEqual('/a');
+       expect(fixture.nativeElement).toHaveText('route');
+     })));
+
   it('should navigate when locations changes',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
        const fixture = createRoot(router, RootCmp);
