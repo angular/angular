@@ -27,13 +27,20 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
 }
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
-  private _records: Map<K, V> = new Map<K, V>();
+  private _records = new Map<K, KeyValueChangeRecord_<K, V>>();
+
   private _mapHead: KeyValueChangeRecord_<K, V> = null;
+  // _appendAfter is used in the check loop
+  private _appendAfter: KeyValueChangeRecord_<K, V> = null;
+
   private _previousMapHead: KeyValueChangeRecord_<K, V> = null;
+
   private _changesHead: KeyValueChangeRecord_<K, V> = null;
   private _changesTail: KeyValueChangeRecord_<K, V> = null;
+
   private _additionsHead: KeyValueChangeRecord_<K, V> = null;
   private _additionsTail: KeyValueChangeRecord_<K, V> = null;
+
   private _removalsHead: KeyValueChangeRecord_<K, V> = null;
   private _removalsTail: KeyValueChangeRecord_<K, V> = null;
 
@@ -90,67 +97,130 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
   onDestroy() {}
 
+  /**
+   * Check the current state of the map vs the previous.
+   * The algorithm is optimised for when the keys do no change.
+   */
   check(map: Map<any, any>|{[k: string]: any}): boolean {
     this._reset();
-    const records = this._records;
-    let oldSeqRecord: KeyValueChangeRecord_<K, V> = this._mapHead;
-    let lastOldSeqRecord: KeyValueChangeRecord_<K, V> = null;
-    let lastNewSeqRecord: KeyValueChangeRecord_<K, V> = null;
-    let seqChanged: boolean = false;
+
+    let insertBefore = this._mapHead;
+    this._appendAfter = null;
 
     this._forEach(map, (value: any, key: any) => {
-      let newSeqRecord: any;
-      if (oldSeqRecord && key === oldSeqRecord.key) {
-        newSeqRecord = oldSeqRecord;
-        this._maybeAddToChanges(newSeqRecord, value);
+      if (insertBefore && insertBefore.key === key) {
+        this._maybeAddToChanges(insertBefore, value);
+        this._appendAfter = insertBefore;
+        insertBefore = insertBefore._next;
       } else {
-        seqChanged = true;
-        if (oldSeqRecord !== null) {
-          this._removeFromSeq(lastOldSeqRecord, oldSeqRecord);
-          this._addToRemovals(oldSeqRecord);
-        }
-        if (records.has(key)) {
-          newSeqRecord = records.get(key);
-          this._maybeAddToChanges(newSeqRecord, value);
-        } else {
-          newSeqRecord = new KeyValueChangeRecord_<K, V>(key);
-          records.set(key, newSeqRecord);
-          newSeqRecord.currentValue = value;
-          this._addToAdditions(newSeqRecord);
-        }
+        const record = this._getOrCreateRecordForKey(key, value);
+        insertBefore = this._insertBeforeOrAppend(insertBefore, record);
+      }
+    });
+
+    // Items remaining at the end of the list have been deleted
+    if (insertBefore) {
+      if (insertBefore._prev) {
+        insertBefore._prev._next = null;
       }
 
-      if (seqChanged) {
-        if (this._isInRemovals(newSeqRecord)) {
-          this._removeFromRemovals(newSeqRecord);
+      this._removalsHead = insertBefore;
+      this._removalsTail = insertBefore;
+
+      for (let record = insertBefore; record !== null; record = record._nextRemoved) {
+        if (record === this._mapHead) {
+          this._mapHead = null;
         }
-        if (lastNewSeqRecord == null) {
-          this._mapHead = newSeqRecord;
-        } else {
-          lastNewSeqRecord._next = newSeqRecord;
-        }
+        this._records.delete(record.key);
+        record._nextRemoved = record._next;
+        record.previousValue = record.currentValue;
+        record.currentValue = null;
+        record._prev = null;
+        record._next = null;
       }
-      lastOldSeqRecord = oldSeqRecord;
-      lastNewSeqRecord = newSeqRecord;
-      oldSeqRecord = oldSeqRecord && oldSeqRecord._next;
-    });
-    this._truncate(lastOldSeqRecord, oldSeqRecord);
+    }
+
     return this.isDirty;
+  }
+
+  /**
+   * Inserts a record before `before` or append at the end of the list when `before` is null.
+   *
+   * Notes:
+   * - This method appends at `this._appendAfter`,
+   * - This method updates `this._appendAfter`,
+   * - The return value is the new value for the insertion pointer.
+   */
+  private _insertBeforeOrAppend(
+      before: KeyValueChangeRecord_<K, V>,
+      record: KeyValueChangeRecord_<K, V>): KeyValueChangeRecord_<K, V> {
+    if (before) {
+      const prev = before._prev;
+      record._next = before;
+      record._prev = prev;
+      before._prev = record;
+      if (prev) {
+        prev._next = record;
+      }
+      if (before === this._mapHead) {
+        this._mapHead = record;
+      }
+
+      this._appendAfter = before;
+      return before;
+    }
+
+    if (this._appendAfter) {
+      this._appendAfter._next = record;
+      record._prev = this._appendAfter;
+    } else {
+      this._mapHead = record;
+    }
+
+    this._appendAfter = record;
+    return null;
+  }
+
+  private _getOrCreateRecordForKey(key: K, value: V): KeyValueChangeRecord_<K, V> {
+    if (this._records.has(key)) {
+      const record = this._records.get(key);
+      this._maybeAddToChanges(record, value);
+      const prev = record._prev;
+      const next = record._next;
+      if (prev) {
+        prev._next = next;
+      }
+      if (next) {
+        next._prev = prev;
+      }
+      record._next = null;
+      record._prev = null;
+
+      return record;
+    }
+
+    const record = new KeyValueChangeRecord_<K, V>(key);
+    this._records.set(key, record);
+    record.currentValue = value;
+    this._addToAdditions(record);
+    return record;
   }
 
   /** @internal */
   _reset() {
     if (this.isDirty) {
       let record: KeyValueChangeRecord_<K, V>;
-      // Record the state of the mapping
-      for (record = this._previousMapHead = this._mapHead; record !== null; record = record._next) {
+      // let `_previousMapHead` contain the state of the map before the changes
+      this._previousMapHead = this._mapHead;
+      for (record = this._previousMapHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
       }
 
+      // Update `record.previousValue` with the value of the item before the changes
+      // We need to update all changed items (that's those which have been added and changed)
       for (record = this._changesHead; record !== null; record = record._nextChanged) {
         record.previousValue = record.currentValue;
       }
-
       for (record = this._additionsHead; record != null; record = record._nextAdded) {
         record.previousValue = record.currentValue;
       }
@@ -161,74 +231,13 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     }
   }
 
-  private _truncate(lastRecord: KeyValueChangeRecord_<K, V>, record: KeyValueChangeRecord_<K, V>) {
-    while (record !== null) {
-      if (lastRecord === null) {
-        this._mapHead = null;
-      } else {
-        lastRecord._next = null;
-      }
-      const nextRecord = record._next;
-      this._addToRemovals(record);
-      lastRecord = record;
-      record = nextRecord;
-    }
-
-    for (let rec: KeyValueChangeRecord_<K, V> = this._removalsHead; rec !== null;
-         rec = rec._nextRemoved) {
-      rec.previousValue = rec.currentValue;
-      rec.currentValue = null;
-      this._records.delete(rec.key);
-    }
-  }
-
+  // Add the record or a given key to the list of changes only when the value has actually changed
   private _maybeAddToChanges(record: KeyValueChangeRecord_<K, V>, newValue: any): void {
     if (!looseIdentical(newValue, record.currentValue)) {
       record.previousValue = record.currentValue;
       record.currentValue = newValue;
       this._addToChanges(record);
     }
-  }
-
-  private _isInRemovals(record: KeyValueChangeRecord_<K, V>) {
-    return record === this._removalsHead || record._nextRemoved !== null ||
-        record._prevRemoved !== null;
-  }
-
-  private _addToRemovals(record: KeyValueChangeRecord_<K, V>) {
-    if (this._removalsHead === null) {
-      this._removalsHead = this._removalsTail = record;
-    } else {
-      this._removalsTail._nextRemoved = record;
-      record._prevRemoved = this._removalsTail;
-      this._removalsTail = record;
-    }
-  }
-
-  private _removeFromSeq(prev: KeyValueChangeRecord_<K, V>, record: KeyValueChangeRecord_<K, V>) {
-    const next = record._next;
-    if (prev === null) {
-      this._mapHead = next;
-    } else {
-      prev._next = next;
-    }
-    record._next = null;
-  }
-
-  private _removeFromRemovals(record: KeyValueChangeRecord_<K, V>) {
-    const prev = record._prevRemoved;
-    const next = record._nextRemoved;
-    if (prev === null) {
-      this._removalsHead = next;
-    } else {
-      prev._nextRemoved = next;
-    }
-    if (next === null) {
-      this._removalsTail = prev;
-    } else {
-      next._prevRemoved = prev;
-    }
-    record._prevRemoved = record._nextRemoved = null;
   }
 
   private _addToAdditions(record: KeyValueChangeRecord_<K, V>) {
@@ -303,11 +312,11 @@ class KeyValueChangeRecord_<K, V> implements KeyValueChangeRecord<K, V> {
   /** @internal */
   _next: KeyValueChangeRecord_<K, V> = null;
   /** @internal */
+  _prev: KeyValueChangeRecord_<K, V> = null;
+  /** @internal */
   _nextAdded: KeyValueChangeRecord_<K, V> = null;
   /** @internal */
   _nextRemoved: KeyValueChangeRecord_<K, V> = null;
-  /** @internal */
-  _prevRemoved: KeyValueChangeRecord_<K, V> = null;
   /** @internal */
   _nextChanged: KeyValueChangeRecord_<K, V> = null;
 

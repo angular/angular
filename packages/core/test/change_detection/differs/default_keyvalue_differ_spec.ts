@@ -7,7 +7,6 @@
  */
 
 import {DefaultKeyValueDiffer, DefaultKeyValueDifferFactory} from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
-import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {kvChangesAsString} from '../../change_detection/util';
 
 // todo(vicb): Update the code & tests for object equality
@@ -55,21 +54,17 @@ export function main() {
       });
 
       it('should expose previous and current value', () => {
-        let previous: any /** TODO #9100 */, current: any /** TODO #9100 */;
-
         m.set(1, 10);
         differ.check(m);
 
         m.set(1, 20);
         differ.check(m);
 
-        differ.forEachChangedItem((record: any /** TODO #9100 */) => {
-          previous = record.previousValue;
-          current = record.currentValue;
+        differ.forEachChangedItem((record: any) => {
+          expect(record.previousValue).toEqual(10);
+          expect(record.currentValue).toEqual(20);
         });
 
-        expect(previous).toEqual(10);
-        expect(current).toEqual(20);
       });
 
       it('should do basic map watching', () => {
@@ -198,6 +193,19 @@ export function main() {
             changes: ['b[0->1]', 'a[0->1]']
           }));
         });
+
+        it('should when the first item is moved', () => {
+          differ.check({a: 'a', b: 'b'});
+          differ.check({c: 'c', a: 'a'});
+
+          expect(differ.toString()).toEqual(kvChangesAsString({
+            map: ['c[null->c]', 'a'],
+            previous: ['a', 'b[b->null]'],
+            additions: ['c[null->c]'],
+            removals: ['b[b->null]']
+          }));
+        });
+
       });
 
       describe('diff', () => {
