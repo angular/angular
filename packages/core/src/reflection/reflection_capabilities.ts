@@ -54,17 +54,6 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   private _ownParameters(type: Type<any>, parentCtor: any): any[][]|null {
-    // If we have no decorators, we only have function.length as metadata.
-    // In that case, to detect whether a child class declared an own constructor or not,
-    // we need to look inside of that constructor to check whether it is
-    // just calling the parent.
-    // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
-    // that sets 'design:paramtypes' to []
-    // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(type.toString())) {
-      return null;
-    }
-
     // Prefer the direct API.
     if ((<any>type).parameters && (<any>type).parameters !== parentCtor.parameters) {
       return (<any>type).parameters;
@@ -92,12 +81,16 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
-
-    // If a class has no decorators, at least create metadata
-    // based on function.length.
-    // Note: We know that this is a real constructor as we checked
-    // the content of the constructor above.
-    return new Array((<any>type.length)).fill(undefined);
+    if (!this._hasOwnAnnotations(type, parentCtor) && !DELEGATE_CTOR.exec(type.toString())) {
+      // If we have no decorators, we only have function.length as metadata.
+      // In that case, to detect whether a child class declared an own constructor or not,
+      // we need to look inside of that constructor to check whether it is
+      // just calling the parent.
+      // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
+      // that sets 'design:paramtypes' to []
+      // if a class inherits from another class but has no ctor declared itself.
+      return new Array((<any>type.length)).fill(undefined);
+    }
   }
 
   parameters(type: Type<any>): any[][] {
@@ -111,7 +104,30 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     if (!parameters && parentCtor !== Object) {
       parameters = this.parameters(parentCtor);
     }
-    return parameters || [];
+    if (!parameters) {
+      // If a class has no decorators, at least create metadata
+      // based on function.length.
+      parameters = new Array((<any>type.length)).fill(undefined);
+    }
+    return parameters;
+  }
+
+  private _hasOwnAnnotations(typeOrFunc: Type<any>, parentCtor: any): boolean {
+    // Prefer the direct API.
+    if ((<any>typeOrFunc).annotations && (<any>typeOrFunc).annotations !== parentCtor.annotations) {
+      return true;
+    }
+
+    // API of tsickle for lowering decorators to properties on the class.
+    if ((<any>typeOrFunc).decorators && (<any>typeOrFunc).decorators !== parentCtor.decorators) {
+      return true;
+    }
+
+    // API for metadata created by invoking the decorators.
+    if (this._reflect && this._reflect.hasOwnMetadata('annotations', typeOrFunc)) {
+      return true;
+    }
+    return false;
   }
 
   private _ownAnnotations(typeOrFunc: Type<any>, parentCtor: any): any[]|null {

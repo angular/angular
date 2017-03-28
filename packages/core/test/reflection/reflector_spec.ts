@@ -236,6 +236,14 @@ export function main() {
           private x = 10;
         }
 
+        function ExoticChildWithDecorator(someArg: any) { this.x = 20; }
+        ExoticChildWithDecorator.prototype = Object.create(Parent.prototype);
+        const Reflect = global['Reflect'];
+        Reflect.getOwnMetadataKeys(ChildWithDecorator).forEach((key: string) => {
+          Reflect.defineMetadata(
+              key, Reflect.getOwnMetadata(key, ChildWithDecorator), ExoticChildWithDecorator);
+        });
+
         // Note: We need the class decorator as well,
         // as otherwise TS won't capture the ctor arguments!
         @ClassDecorator({value: 'child'})
@@ -263,6 +271,10 @@ export function main() {
         ]);
 
         expect(reflector.parameters(ChildWithDecoratorAndProps)).toEqual([
+          [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
+        ]);
+
+        expect(reflector.parameters(<any>ExoticChildWithDecorator)).toEqual([
           [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
         ]);
 
