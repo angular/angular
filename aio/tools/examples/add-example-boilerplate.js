@@ -12,6 +12,7 @@ const EXAMPLES_TESTING_PATH = path.join(EXAMPLES_PATH, 'testing');
 const files = {
   exampleBoilerplate: [
     'src/styles.css',
+    'src/systemjs-angular-loader.js',
     'src/systemjs.config.js',
     'src/tsconfig.json',
     'bs-config.json',
