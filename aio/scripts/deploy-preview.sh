@@ -25,7 +25,7 @@ httpCode=$(
 )
 
 # Exit with an error if the request failed
-if [ $httpCode -lt 200 ] || [ $httpCode -ge 400 ]; then
+if [ $httpCode -gt 0] && [ $httpCode -lt 200 ] || [ $httpCode -ge 400 ]; then
   exit 1
 fi
 
