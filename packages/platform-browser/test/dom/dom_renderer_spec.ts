@@ -104,6 +104,24 @@ export function main() {
            expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
          });
     }
+
+    if (browserDetection.supportsHtmlTemplate) {
+      it('should add and remove children from HTML template content fragment', () => {
+        const template = document.createElement('template');
+        const div = document.createElement('div');
+        const span = document.createElement('span');
+
+        renderer.appendChild(template, div);
+        expect(template.children.length).toBe(0);
+        expect(template.content.children.length).toBe(1);
+
+        renderer.insertBefore(template, span, div);
+        expect(template.content.children).toEqual([span, div]);
+
+        renderer.removeChild(template, div);
+        expect(template.content.children).toEqual([span])
+      });
+    }
   });
 }
 

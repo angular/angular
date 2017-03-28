@@ -117,17 +117,19 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createText(value: string): any { return document.createTextNode(value); }
 
-  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+  appendChild(parent: any, newChild: any): void {
+    this.nodeOrContent(parent).appendChild(newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
-      parent.insertBefore(newChild, refChild);
+      this.nodeOrContent(parent).insertBefore(newChild, refChild);
     }
   }
 
   removeChild(parent: any, oldChild: any): void {
     if (parent) {
-      parent.removeChild(oldChild);
+      this.nodeOrContent(parent).removeChild(oldChild);
     }
   }
 
@@ -211,6 +213,14 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
     return <() => void>this.eventManager.addEventListener(
                target, event, decoratePreventDefault(callback)) as() => void;
+  }
+
+  private nodeOrContent(parent: any): any {
+    if (parent && parent.content instanceof DocumentFragment) {
+      return parent.content;
+    } else {
+      return parent;
+    }
   }
 }
 
