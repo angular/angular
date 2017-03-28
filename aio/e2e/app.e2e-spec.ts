@@ -24,11 +24,16 @@ describe('site App', function() {
     page.getLink('features').click();
 
     // check that we can navigate to the tutorial page via a link in the navigation
-    const heading = page.getNavHeading(/tutorial/i);
-    expect(heading.getText()).toMatch(/tutorial/i);
-    heading.click();
+    // since we are on a non-SideNav page the SideNav is not present
+    page.docsMenuButton.click();
     page.getLink('tutorial/').click();
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
+  });
+
+  it('should not show the sidenav if the document being viewed is not in the SideNav navigation', () => {
+    page.navigateTo('features');
+    expect(page.getDocViewerText()).toMatch(/Features & Benefits/i);
+    expect(page.getNavHeading(/tutorial/i).isPresent()).toBe(false);
   });
 
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {

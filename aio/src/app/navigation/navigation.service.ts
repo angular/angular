@@ -19,8 +19,13 @@ export interface NavigationViews {
   [name: string]: NavigationNode[];
 }
 
+export interface SelectedNodeInfo {
+  navView: string;
+  nodes: NavigationNode[];
+}
+
 export interface NavigationMap {
-  [url: string]: NavigationNode;
+  [url: string]: SelectedNodeInfo;
 }
 
 export interface VersionInfo {
@@ -59,12 +64,18 @@ export class NavigationService {
    */
   selectedNodes: Observable<NavigationNode[]>;
 
+  /**
+   * The NavigationView key that contains the currently seleted NavigationNode
+   */
+   selectedNavView: Observable<string>;
+
   constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
     this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.selectedNodes = this.getSelectedNodes(this.navigationViews);
+    this.selectedNodes = this.getSelectedNodeInfo(this.navigationViews).map(nodeInfo => nodeInfo.nodes);
+    this.selectedNavView = this.getSelectedNodeInfo(this.navigationViews).map(nodeInfo => nodeInfo.navView);
   }
 
   /**
@@ -104,11 +115,14 @@ export class NavigationService {
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getSelectedNodes(navigationViews: Observable<NavigationViews>) {
+  private getSelectedNodeInfo(navigationViews: Observable<NavigationViews>): Observable<SelectedNodeInfo> {
     const selectedNodes = combineLatest(
       navigationViews.map(this.computeUrlToNodesMap),
       this.location.currentUrl,
-      (navMap, url) => navMap[url] || [])
+      (navMap, url) => {
+        url = url.replace(/\/$/, '');
+        return navMap[url] ? navMap[url] : { navView: null, nodes: [] };
+      })
       .publishReplay(1);
     selectedNodes.connect();
     return selectedNodes;
@@ -122,17 +136,17 @@ export class NavigationService {
    */
   private computeUrlToNodesMap(navigation: NavigationViews) {
     const navMap: NavigationMap = {};
-    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
+    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(key, node)));
     return navMap;
 
-    function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {
+    function walkNodes(navView: string, node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
       if (node.url) {
-        // only map to this node if it has a url associated with it
-        navMap[node.url] = nodes;
+        // only map to this node if it has a url associated with it (strip off trailing slashes)
+        navMap[node.url.replace(/\/$/, '')] = { navView, nodes };
       }
       if (node.children) {
-        node.children.forEach(child => walkNodes(child, nodes));
+        node.children.forEach(child => walkNodes(navView, child, nodes));
       }
     }
   }

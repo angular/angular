@@ -82,7 +82,7 @@ describe('NavigationService', () => {
     const nodeTree: NavigationNode[] = [
       { title: 'a', children: [
         { url: 'b', title: 'b', children: [
-          { url: 'c', title: 'c' },
+          { url: 'c/', title: 'c' },
           { url: 'd', title: 'd' }
         ] },
         { url: 'e', title: 'e' }
@@ -123,6 +123,64 @@ describe('NavigationService', () => {
     it('should be an empty array if no navigation node matches the current location', () => {
       location.urlSubject.next('g');
       expect(currentNodes).toEqual([]);
+    });
+
+    it('should ignore trailing slashes on URLs in the navmap', () => {
+      location.urlSubject.next('c');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0].children[0],
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
+      location.urlSubject.next('c/');
+      expect(currentNodes).toEqual([
+        nodeTree[0].children[0].children[0],
+        nodeTree[0].children[0],
+        nodeTree[0]
+      ]);
+    });
+  });
+
+  describe('selectedNavView', () => {
+    let service: NavigationService, location: MockLocationService;
+    let currentNavView: string;
+    const nav1: NavigationNode[] = [
+      { title: 'a', children: [
+        { url: 'b', title: 'b', children: [
+          { url: 'c', title: 'c' },
+          { url: 'd', title: 'd' }
+        ] },
+        { url: 'e', title: 'e' }
+      ] }
+    ];
+    const nav2: NavigationNode[] = [
+      { url: 'f', title: 'f' }
+    ];
+
+    beforeEach(() => {
+      location = injector.get(LocationService);
+
+      service = injector.get(NavigationService);
+      service.selectedNavView.subscribe(view => currentNavView = view);
+
+      const backend = injector.get(ConnectionBackend);
+      backend.connectionsArray[0].mockRespond(createResponse({ nav1, nav2 }));
+    });
+
+    it('should be the name of navigation view that contains the current selected node', () => {
+      location.urlSubject.next('b');
+      expect(currentNavView).toEqual('nav1');
+
+      location.urlSubject.next('f');
+      expect(currentNavView).toEqual('nav2');
+
+      location.urlSubject.next('d');
+      expect(currentNavView).toEqual('nav1');
+    });
+
+    it('should be null if no navigation node matches the current location', () => {
+      location.urlSubject.next('g');
+      expect(currentNavView).toEqual(null);
     });
   });
 
