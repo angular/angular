@@ -313,7 +313,7 @@ export class Router {
   get events(): Observable<Event> { return this.routerEvents; }
 
   /** @internal */
-  triggerEvent(e: Event) { this.routerEvents.next(e); }
+  triggerEvent(e: Event): void { this.routerEvents.next(e); }
 
   /**
    * Resets the configuration used for navigation and generating links.
@@ -332,10 +332,11 @@ export class Router {
   resetConfig(config: Routes): void {
     validateConfig(config);
     this.config = config;
+    this.navigated = false;
   }
 
   /** @docsNotRequired */
-  ngOnDestroy() { this.dispose(); }
+  ngOnDestroy(): void { this.dispose(); }
 
   /** Disposes of the router */
   dispose(): void {
