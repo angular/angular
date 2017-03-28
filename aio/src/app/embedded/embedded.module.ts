@@ -17,12 +17,13 @@ import { ApiListComponent } from './api/api-list.component';
 import { CodeExampleComponent } from './code/code-example.component';
 import { CodeTabsComponent } from './code/code-tabs.component';
 import { DocTitleComponent } from './doc-title.component';
+import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example/live-example.component';
 
 /** Components that can be embedded in docs
  * such as CodeExampleComponent, LiveExampleComponent,...
  */
 export const embeddedComponents: any[] = [
-  ApiListComponent, CodeExampleComponent, DocTitleComponent, CodeTabsComponent
+  ApiListComponent, CodeExampleComponent, DocTitleComponent, CodeTabsComponent, LiveExampleComponent
 ];
 
 /** Injectable class w/ property returning components that can be embedded in docs */
@@ -34,7 +35,8 @@ export class EmbeddedComponents {
   imports: [ CommonModule, MdTabsModule ],
   declarations: [
     embeddedComponents,
-    CodeComponent
+    CodeComponent,
+    EmbeddedPlunkerComponent
   ],
   providers: [
     EmbeddedComponents,

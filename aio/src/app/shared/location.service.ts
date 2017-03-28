@@ -90,8 +90,13 @@ export class LocationService {
       return true;
     }
 
-    // check for external link
+    // don't navigate if external link or zip
     const { pathname, search, hash } = anchor;
+
+    if (anchor.getAttribute('download') != null) {
+      return true; // let the download happen
+    }
+
     const relativeUrl = pathname + search + hash;
     this.urlParser.href = relativeUrl;
     if (anchor.href !== this.urlParser.href) {
