@@ -12,6 +12,8 @@ import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
+import {of } from 'rxjs/observable/of';
+import {delay} from 'rxjs/operator/delay';
 import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
@@ -1660,52 +1662,375 @@ describe('Integration', () => {
     });
 
     describe('CanDeactivate', () => {
-      describe('should not deactivate a route when CanDeactivate returns false', () => {
-        let log: any;
+      let log: any;
+
+      beforeEach(() => {
+        log = [];
+
+        TestBed.configureTestingModule({
+          providers: [
+            {
+              provide: 'CanDeactivateParent',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return a.params['id'] === '22';
+              }
+            },
+            {
+              provide: 'CanDeactivateTeam',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return c.route.snapshot.params['id'] === '22';
+              }
+            },
+            {
+              provide: 'CanDeactivateUser',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return a.params['name'] === 'victor';
+              }
+            },
+            {
+              provide: 'RecordingDeactivate',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                log.push({path: a.routeConfig.path, component: c});
+                return true;
+              }
+            },
+            {
+              provide: 'alwaysFalse',
+              useValue:
+                  (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+            },
+            {
+              provide: 'alwaysFalseAndLogging',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                log.push('called');
+                return false;
+              }
+            },
+            {
+              provide: 'alwaysFalseWithDelayAndLogging',
+              useValue: () => {
+                log.push('called');
+                let resolve: (result: boolean) => void;
+                const promise = new Promise(res => resolve = res);
+
+                setTimeout(() => resolve(false), 0);
+
+                return promise;
+              }
+            },
+            {
+              provide: 'canActivate_alwaysTrueAndLogging',
+              useValue: () => {
+                log.push('canActivate called');
+                return true;
+              }
+            },
+          ]
+        });
+      });
+
+      it('should not deactivate a route when CanDeactivate returns false',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig(
+               [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivateTeam']}]);
+
+           router.navigateByUrl('/team/22');
+           advance(fixture);
+           expect(location.path()).toEqual('/team/22');
+
+           let successStatus: boolean;
+           router.navigateByUrl('/team/33').then(res => successStatus = res);
+           advance(fixture);
+           expect(location.path()).toEqual('/team/33');
+           expect(successStatus).toEqual(true);
+
+           let canceledStatus: boolean;
+           router.navigateByUrl('/team/44').then(res => canceledStatus = res);
+           advance(fixture);
+           expect(location.path()).toEqual('/team/33');
+           expect(canceledStatus).toEqual(false);
+         })));
+
+      it('works with componentless routes',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {
+               path: 'grandparent',
+               canDeactivate: ['RecordingDeactivate'],
+               children: [{
+                 path: 'parent',
+                 canDeactivate: ['RecordingDeactivate'],
+                 children: [{
+                   path: 'child',
+                   canDeactivate: ['RecordingDeactivate'],
+                   children: [{
+                     path: 'simple',
+                     component: SimpleCmp,
+                     canDeactivate: ['RecordingDeactivate']
+                   }]
+                 }]
+               }]
+             },
+             {path: 'simple', component: SimpleCmp}
+           ]);
+
+           router.navigateByUrl('/grandparent/parent/child/simple');
+           advance(fixture);
+           expect(location.path()).toEqual('/grandparent/parent/child/simple');
+
+           router.navigateByUrl('/simple');
+           advance(fixture);
+
+           const child = fixture.debugElement.children[1].componentInstance;
+
+           expect(log.map((a: any) => a.path)).toEqual([
+             'simple', 'child', 'parent', 'grandparent'
+           ]);
+           expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
+         })));
+
+      it('works with aux routes',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'two-outlets',
+             component: TwoOutletsCmp,
+             children: [
+               {path: 'a', component: BlankCmp}, {
+                 path: 'b',
+                 canDeactivate: ['RecordingDeactivate'],
+                 component: SimpleCmp,
+                 outlet: 'aux'
+               }
+             ]
+           }]);
+
+           router.navigateByUrl('/two-outlets/(a//aux:b)');
+           advance(fixture);
+           expect(location.path()).toEqual('/two-outlets/(a//aux:b)');
+
+           router.navigate(['two-outlets', {outlets: {aux: null}}]);
+           advance(fixture);
+
+           expect(log.map((a: any) => a.path)).toEqual(['b']);
+           expect(location.path()).toEqual('/two-outlets/(a)');
+         })));
+
+      it('works with a nested route',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'team/:id',
+             component: TeamCmp,
+             children: [
+               {path: '', pathMatch: 'full', component: SimpleCmp},
+               {path: 'user/:name', component: UserCmp, canDeactivate: ['CanDeactivateUser']}
+             ]
+           }]);
+
+           router.navigateByUrl('/team/22/user/victor');
+           advance(fixture);
+
+           // this works because we can deactivate victor
+           router.navigateByUrl('/team/33');
+           advance(fixture);
+           expect(location.path()).toEqual('/team/33');
+
+           router.navigateByUrl('/team/33/user/fedor');
+           advance(fixture);
+
+           // this doesn't work cause we cannot deactivate fedor
+           router.navigateByUrl('/team/44');
+           advance(fixture);
+           expect(location.path()).toEqual('/team/33/user/fedor');
+         })));
+
+      it('should not create a route state if navigation is canceled',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'main',
+             component: TeamCmp,
+             children: [
+               {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
+               {path: 'component2', component: SimpleCmp}
+             ]
+           }]);
+
+           router.navigateByUrl('/main/component1');
+           advance(fixture);
+
+           router.navigateByUrl('/main/component2');
+           advance(fixture);
+
+           const teamCmp = fixture.debugElement.children[1].componentInstance;
+           expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
+           expect(location.path()).toEqual('/main/component1');
+         })));
+
+      it('should not run CanActivate when CanDeactivate returns false',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'main',
+             component: TeamCmp,
+             children: [
+               {
+                 path: 'component1',
+                 component: SimpleCmp,
+                 canDeactivate: ['alwaysFalseWithDelayAndLogging']
+               },
+               {
+                 path: 'component2',
+                 component: SimpleCmp,
+                 canActivate: ['canActivate_alwaysTrueAndLogging']
+               },
+             ]
+           }]);
+
+           router.navigateByUrl('/main/component1');
+           advance(fixture);
+           expect(location.path()).toEqual('/main/component1');
+
+           router.navigateByUrl('/main/component2');
+           advance(fixture);
+           expect(location.path()).toEqual('/main/component1');
+           expect(log).toEqual(['called']);
+         })));
+
+      it('should call guards every time when navigating to the same url over and over again',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {path: 'simple', component: SimpleCmp, canDeactivate: ['alwaysFalseAndLogging']},
+             {path: 'blank', component: BlankCmp}
+
+           ]);
+
+           router.navigateByUrl('/simple');
+           advance(fixture);
+
+           router.navigateByUrl('/blank');
+           advance(fixture);
+           expect(log).toEqual(['called']);
+           expect(location.path()).toEqual('/simple');
+
+           router.navigateByUrl('/blank');
+           advance(fixture);
+           expect(log).toEqual(['called', 'called']);
+           expect(location.path()).toEqual('/simple');
+         })));
+
+      describe('next state', () => {
+        let log: string[];
+
+        class ClassWithNextState implements CanDeactivate<TeamCmp> {
+          canDeactivate(
+              component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
+              currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): boolean {
+            log.push(currentState.url, nextState.url);
+            return true;
+          }
+        }
 
         beforeEach(() => {
           log = [];
-
           TestBed.configureTestingModule({
             providers: [
-              {
-                provide: 'CanDeactivateParent',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return a.params['id'] === '22';
-                }
-              },
-              {
-                provide: 'CanDeactivateTeam',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return c.route.snapshot.params['id'] === '22';
-                }
-              },
-              {
-                provide: 'CanDeactivateUser',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return a.params['name'] === 'victor';
-                }
-              },
-              {
-                provide: 'RecordingDeactivate',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  log.push({path: a.routeConfig.path, component: c});
+              ClassWithNextState, {
+                provide: 'FunctionWithNextState',
+                useValue: (cmp: any, currentRoute: ActivatedRouteSnapshot,
+                           currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
+                  log.push(currentState.url, nextState.url);
                   return true;
-                }
-              },
-              {
-                provide: 'alwaysFalse',
-                useValue:
-                    (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
-              },
-              {
-                provide: 'alwaysFalseAndLogging',
-                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  log.push('called');
-                  return false;
                 }
               }
             ]
+          });
+        });
+
+        it('should pass next state as the 4 argument when guard is a class',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig(
+                 [{path: 'team/:id', component: TeamCmp, canDeactivate: [ClassWithNextState]}]);
+
+             router.navigateByUrl('/team/22');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/22');
+
+             router.navigateByUrl('/team/33');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/33');
+             expect(log).toEqual(['/team/22', '/team/33']);
+           })));
+
+        it('should pass next state as the 4 argument when guard is a function',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([
+               {path: 'team/:id', component: TeamCmp, canDeactivate: ['FunctionWithNextState']}
+             ]);
+
+             router.navigateByUrl('/team/22');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/22');
+
+             router.navigateByUrl('/team/33');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/33');
+             expect(log).toEqual(['/team/22', '/team/33']);
+           })));
+      });
+
+      describe('should work when given a class', () => {
+        class AlwaysTrue implements CanDeactivate<TeamCmp> {
+          canDeactivate(
+              component: TeamCmp, route: ActivatedRouteSnapshot,
+              state: RouterStateSnapshot): boolean {
+            return true;
+          }
+        }
+
+        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig(
+                 [{path: 'team/:id', component: TeamCmp, canDeactivate: [AlwaysTrue]}]);
+
+             router.navigateByUrl('/team/22');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/22');
+
+             router.navigateByUrl('/team/33');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/33');
+           })));
+      });
+
+
+      describe('should work when returns an observable', () => {
+        beforeEach(() => {
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'CanDeactivate',
+              useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return Observable.create((observer: any) => { observer.next(false); });
+              }
+            }]
           });
         });
 
@@ -1713,290 +2038,16 @@ describe('Integration', () => {
              const fixture = createRoot(router, RootCmp);
 
              router.resetConfig(
-                 [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivateTeam']}]);
+                 [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']}]);
 
              router.navigateByUrl('/team/22');
              advance(fixture);
              expect(location.path()).toEqual('/team/22');
 
-             let successStatus: boolean;
-             router.navigateByUrl('/team/33').then(res => successStatus = res);
-             advance(fixture);
-             expect(location.path()).toEqual('/team/33');
-             expect(successStatus).toEqual(true);
-
-             let canceledStatus: boolean;
-             router.navigateByUrl('/team/44').then(res => canceledStatus = res);
-             advance(fixture);
-             expect(location.path()).toEqual('/team/33');
-             expect(canceledStatus).toEqual(false);
-           })));
-
-        it('works with componentless routes',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([
-               {
-                 path: 'grandparent',
-                 canDeactivate: ['RecordingDeactivate'],
-                 children: [{
-                   path: 'parent',
-                   canDeactivate: ['RecordingDeactivate'],
-                   children: [{
-                     path: 'child',
-                     canDeactivate: ['RecordingDeactivate'],
-                     children: [{
-                       path: 'simple',
-                       component: SimpleCmp,
-                       canDeactivate: ['RecordingDeactivate']
-                     }]
-                   }]
-                 }]
-               },
-               {path: 'simple', component: SimpleCmp}
-             ]);
-
-             router.navigateByUrl('/grandparent/parent/child/simple');
-             advance(fixture);
-             expect(location.path()).toEqual('/grandparent/parent/child/simple');
-
-             router.navigateByUrl('/simple');
-             advance(fixture);
-
-             const child = fixture.debugElement.children[1].componentInstance;
-
-             expect(log.map((a: any) => a.path)).toEqual([
-               'simple', 'child', 'parent', 'grandparent'
-             ]);
-             expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
-           })));
-
-        it('works with aux routes',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([{
-               path: 'two-outlets',
-               component: TwoOutletsCmp,
-               children: [
-                 {path: 'a', component: BlankCmp}, {
-                   path: 'b',
-                   canDeactivate: ['RecordingDeactivate'],
-                   component: SimpleCmp,
-                   outlet: 'aux'
-                 }
-               ]
-             }]);
-
-             router.navigateByUrl('/two-outlets/(a//aux:b)');
-             advance(fixture);
-             expect(location.path()).toEqual('/two-outlets/(a//aux:b)');
-
-             router.navigate(['two-outlets', {outlets: {aux: null}}]);
-             advance(fixture);
-
-             expect(log.map((a: any) => a.path)).toEqual(['b']);
-             expect(location.path()).toEqual('/two-outlets/(a)');
-           })));
-
-        it('works with a nested route',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([{
-               path: 'team/:id',
-               component: TeamCmp,
-               children: [
-                 {path: '', pathMatch: 'full', component: SimpleCmp},
-                 {path: 'user/:name', component: UserCmp, canDeactivate: ['CanDeactivateUser']}
-               ]
-             }]);
-
-             router.navigateByUrl('/team/22/user/victor');
-             advance(fixture);
-
-             // this works because we can deactivate victor
              router.navigateByUrl('/team/33');
              advance(fixture);
-             expect(location.path()).toEqual('/team/33');
-
-             router.navigateByUrl('/team/33/user/fedor');
-             advance(fixture);
-
-             // this doesn't work cause we cannot deactivate fedor
-             router.navigateByUrl('/team/44');
-             advance(fixture);
-             expect(location.path()).toEqual('/team/33/user/fedor');
+             expect(location.path()).toEqual('/team/22');
            })));
-
-        it('should not create a route state if navigation is canceled',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([{
-               path: 'main',
-               component: TeamCmp,
-               children: [
-                 {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
-                 {path: 'component2', component: SimpleCmp}
-               ]
-             }]);
-
-             router.navigateByUrl('/main/component1');
-             advance(fixture);
-
-             router.navigateByUrl('/main/component2');
-             advance(fixture);
-
-             const teamCmp = fixture.debugElement.children[1].componentInstance;
-             expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
-             expect(location.path()).toEqual('/main/component1');
-           })));
-
-        it('should call guards every time when navigating to the same url over and over again',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([
-               {path: 'simple', component: SimpleCmp, canDeactivate: ['alwaysFalseAndLogging']},
-               {path: 'blank', component: BlankCmp}
-
-             ]);
-
-             router.navigateByUrl('/simple');
-             advance(fixture);
-
-             router.navigateByUrl('/blank');
-             advance(fixture);
-             expect(log).toEqual(['called']);
-             expect(location.path()).toEqual('/simple');
-
-             router.navigateByUrl('/blank');
-             advance(fixture);
-             expect(log).toEqual(['called', 'called']);
-             expect(location.path()).toEqual('/simple');
-           })));
-
-        describe('next state', () => {
-          let log: string[];
-
-          class ClassWithNextState implements CanDeactivate<TeamCmp> {
-            canDeactivate(
-                component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
-                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): boolean {
-              log.push(currentState.url, nextState.url);
-              return true;
-            }
-          }
-
-          beforeEach(() => {
-            log = [];
-            TestBed.configureTestingModule({
-              providers: [
-                ClassWithNextState, {
-                  provide: 'FunctionWithNextState',
-                  useValue: (cmp: any, currentRoute: ActivatedRouteSnapshot,
-                             currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
-                    log.push(currentState.url, nextState.url);
-                    return true;
-                  }
-                }
-              ]
-            });
-          });
-
-          it('should pass next state as the 4 argument when guard is a class',
-             fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-               const fixture = createRoot(router, RootCmp);
-
-               router.resetConfig(
-                   [{path: 'team/:id', component: TeamCmp, canDeactivate: [ClassWithNextState]}]);
-
-               router.navigateByUrl('/team/22');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-
-               router.navigateByUrl('/team/33');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/33');
-               expect(log).toEqual(['/team/22', '/team/33']);
-             })));
-
-          it('should pass next state as the 4 argument when guard is a function',
-             fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-               const fixture = createRoot(router, RootCmp);
-
-               router.resetConfig([
-                 {path: 'team/:id', component: TeamCmp, canDeactivate: ['FunctionWithNextState']}
-               ]);
-
-               router.navigateByUrl('/team/22');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-
-               router.navigateByUrl('/team/33');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/33');
-               expect(log).toEqual(['/team/22', '/team/33']);
-             })));
-        });
-
-        describe('should work when given a class', () => {
-          class AlwaysTrue implements CanDeactivate<TeamCmp> {
-            canDeactivate(
-                component: TeamCmp, route: ActivatedRouteSnapshot,
-                state: RouterStateSnapshot): boolean {
-              return true;
-            }
-          }
-
-          beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
-
-          it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-               const fixture = createRoot(router, RootCmp);
-
-               router.resetConfig(
-                   [{path: 'team/:id', component: TeamCmp, canDeactivate: [AlwaysTrue]}]);
-
-               router.navigateByUrl('/team/22');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-
-               router.navigateByUrl('/team/33');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/33');
-             })));
-        });
-
-
-        describe('should work when returns an observable', () => {
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [{
-                provide: 'CanDeactivate',
-                useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return Observable.create((observer: any) => { observer.next(false); });
-                }
-              }]
-            });
-          });
-
-          it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-               const fixture = createRoot(router, RootCmp);
-
-               router.resetConfig(
-                   [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']}]);
-
-               router.navigateByUrl('/team/22');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-
-               router.navigateByUrl('/team/33');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-             })));
-        });
       });
     });
 
