@@ -668,7 +668,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   getSpanAt(line: number, column: number): Span { return spanAt(this.source, line, column); }
 
   private getTemplateRefContextType(type: ts.Symbol): ts.Symbol {
-    const constructor = type.members['__constructor'];
+    const constructor = type.members && type.members['__constructor'];
     if (constructor) {
       const constructorDeclaration = constructor.declarations[0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
