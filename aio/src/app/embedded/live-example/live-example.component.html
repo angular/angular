@@ -1,0 +1,15 @@
+<span *ngIf="!isEmbedded">
+  <a [href]="plnkr" target="_blank" title="{{title}}">{{title}}</a>
+  <span *ngIf="enableDownload">
+    /  <a [href]="zip" download title="Download example">download example</a>
+  </span>
+</span>
+<div *ngIf="isEmbedded">
+  <div *ngIf="showEmbedded" title="{{title}}">
+    <aio-embedded-plunker [src]="plnkr"></aio-embedded-plunker>
+  </div>
+  <img *ngIf="!showEmbedded" (click)="toggleEmbedded()" [src]="plnkrImg" width="100%" height="100%" alt="{{title}}">
+  <p *ngIf="enableDownload">
+    You can also <a [href]="zip" download title="Download example">download this example</a>.
+  </p>
+</div>
