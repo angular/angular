@@ -81,7 +81,9 @@ export class ScrollDispatcher {
 
     // Note that we need to do the subscribing from here, in order to be able to remove
     // the global event listeners once there are no more subscriptions.
-    return observable.subscribe(callback).add(() => {
+    let subscription = observable.subscribe(callback);
+
+    subscription.add(() => {
       this._scrolledCount--;
 
       if (this._globalSubscription && !this.scrollableReferences.size && !this._scrolledCount) {
@@ -89,6 +91,8 @@ export class ScrollDispatcher {
         this._globalSubscription = null;
       }
     });
+
+    return subscription;
   }
 
   /** Returns all registered Scrollables that contain the provided element. */

@@ -89,6 +89,19 @@ describe('Scroll Dispatcher', () => {
       expect(spy).not.toHaveBeenCalled();
       subscription.unsubscribe();
     });
+
+    it('should be able to unsubscribe from the global scrollable', () => {
+      const spy = jasmine.createSpy('global scroll callback');
+      const subscription = scroll.scrolled(0, spy);
+
+      dispatchFakeEvent(document, 'scroll');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      subscription.unsubscribe();
+      dispatchFakeEvent(document, 'scroll');
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Nested scrollables', () => {
