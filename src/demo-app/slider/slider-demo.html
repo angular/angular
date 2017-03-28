@@ -2,6 +2,11 @@
 Label <md-slider #slidey></md-slider>
 {{slidey.value}}
 
+<h1>Colors</h1>
+<md-slider color="primary" value="50" thumbLabel></md-slider>
+<md-slider color="accent" value="50" thumbLabel></md-slider>
+<md-slider color="warn" value="50" thumbLabel></md-slider>
+
 <h1>Slider with Min and Max</h1>
 <input [(ngModel)]="min">
 <md-slider [min]="min" [max]="max" tickInterval="5" #slider2></md-slider>

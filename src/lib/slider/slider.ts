@@ -84,6 +84,9 @@ export class MdSliderChange {
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuenow]': 'value',
+    '[class.mat-primary]': 'color == "primary"',
+    '[class.mat-accent]': 'color != "primary" && color != "warn"',
+    '[class.mat-warn]': 'color == "warn"',
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-slider-has-ticks]': 'tickInterval',
     '[class.mat-slider-horizontal]': '!vertical',
@@ -203,6 +206,8 @@ export class MdSlider implements ControlValueAccessor, OnDestroy {
   get vertical() { return this._vertical; }
   set vertical(value: any) { this._vertical = coerceBooleanProperty(value); }
   private _vertical = false;
+
+  @Input() color: 'primary' | 'accent' | 'warn' = 'accent';
 
   /** Event emitted when the slider value has changed. */
   @Output() change = new EventEmitter<MdSliderChange>();
