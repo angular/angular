@@ -176,7 +176,8 @@ groups:
         - "packages/language-service/*"
     users:
       - chuckjaz #primary
-      # needs secondary
+      - tbosch #secondary
+      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
