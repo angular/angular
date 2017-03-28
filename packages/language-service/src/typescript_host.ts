@@ -492,7 +492,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
             const type = this.checker.getTypeAtLocation(target);
             if (type) {
               const staticSymbol =
-                  this._reflector.getStaticSymbol(sourceFile.fileName, classDeclaration.name.text);
+                  this.reflector.getStaticSymbol(sourceFile.fileName, classDeclaration.name.text);
               try {
                 if (this.resolver.isDirective(staticSymbol as any)) {
                   const {metadata} =

@@ -52,6 +52,15 @@ describe('diagnostics', () => {
       includeDiagnostic(diagnostics(template), message, at, len);
     }
 
+    describe('regression', () => {
+      it('should be able to return diagnostics if reflector gets invalidated', () => {
+        const fileName = '/app/main.ts';
+        ngService.getDiagnostics(fileName);
+        (ngHost as any)._reflector = null;
+        ngService.getDiagnostics(fileName);
+      });
+    });
+
     describe('with $event', () => {
       it('should accept an event',
          () => { accept('<div (click)="myClick($event)">Click me!</div>'); });
