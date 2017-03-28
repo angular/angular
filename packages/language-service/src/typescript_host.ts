@@ -87,6 +87,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private fileToComponent: Map<string, StaticSymbol>;
   private templateReferences: string[];
   private collectedErrors: Map<string, any[]>;
+  private fileVersions = new Map<string, string>();
 
   constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
 
@@ -222,7 +223,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (this.modulesOutOfDate) {
       this.analyzedModules = null;
       this._reflector = null;
-      this._staticSymbolResolver = null;
       this.templateReferences = null;
       this.fileToComponent = null;
       this.ensureAnalyzedModules();
@@ -242,8 +242,28 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   private validate() {
     const program = this.program;
-    if (this.lastProgram != program) {
+    if (this._staticSymbolResolver && this.lastProgram != program) {
+      // Invalidate file that have changed in the static symbol resolver
+      const invalidateFile = (fileName: string) =>
+          this._staticSymbolResolver.invalidateFile(fileName);
       this.clearCaches();
+      const seen = new Set<string>();
+      for (let sourceFile of this.program.getSourceFiles()) {
+        const fileName = sourceFile.fileName;
+        seen.add(fileName);
+        const version = this.host.getScriptVersion(fileName);
+        const lastVersion = this.fileVersions.get(fileName);
+        if (version != lastVersion) {
+          this.fileVersions.set(fileName, version);
+          invalidateFile(fileName);
+        }
+      }
+
+      // Remove file versions that are no longer in the file and invalidate them.
+      const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
+      missing.forEach(f => this.fileVersions.delete(f));
+      missing.forEach(invalidateFile);
+
       this.lastProgram = program;
     }
   }

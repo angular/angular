@@ -33,6 +33,7 @@ export class CompilerHost implements AotCompilerHost {
   private resolverCache = new Map<string, ModuleMetadata[]>();
   private bundleIndexCache = new Map<string, boolean>();
   private bundleIndexNames = new Set<string>();
+  private moduleFileNames = new Map<string, string>();
   protected resolveModuleNameHost: CompilerHostContext;
 
   constructor(
@@ -69,19 +70,25 @@ export class CompilerHost implements AotCompilerHost {
   getCanonicalFileName(fileName: string): string { return fileName; }
 
   moduleNameToFileName(m: string, containingFile: string): string|null {
-    if (!containingFile || !containingFile.length) {
-      if (m.indexOf('.') === 0) {
-        throw new Error('Resolution of relative paths requires a containing file.');
+    const key = m + ':' + (containingFile || '');
+    let result = this.moduleFileNames.get(key);
+    if (!result) {
+      if (!containingFile || !containingFile.length) {
+        if (m.indexOf('.') === 0) {
+          throw new Error('Resolution of relative paths requires a containing file.');
+        }
+        // Any containing file gives the same result for absolute imports
+        containingFile = this.getCanonicalFileName(path.join(this.basePath, 'index.ts'));
       }
-      // Any containing file gives the same result for absolute imports
-      containingFile = this.getCanonicalFileName(path.join(this.basePath, 'index.ts'));
+      m = m.replace(EXT, '');
+      const resolved =
+          ts.resolveModuleName(
+                m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)
+              .resolvedModule;
+      result = resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
+      this.moduleFileNames.set(key, result);
     }
-    m = m.replace(EXT, '');
-    const resolved =
-        ts.resolveModuleName(
-              m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)
-            .resolvedModule;
-    return resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
+    return result;
   };
 
   /**

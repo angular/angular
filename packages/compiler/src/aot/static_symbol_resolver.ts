@@ -59,6 +59,7 @@ export class StaticSymbolResolver {
   // Note: this will only contain StaticSymbols without members!
   private importAs = new Map<StaticSymbol, StaticSymbol>();
   private symbolResourcePaths = new Map<StaticSymbol, string>();
+  private symbolFromFile = new Map<string, StaticSymbol[]>();
 
   constructor(
       private host: StaticSymbolResolverHost, private staticSymbolCache: StaticSymbolCache,
@@ -141,6 +142,25 @@ export class StaticSymbolResolver {
     sourceSymbol.assertNoMembers();
     targetSymbol.assertNoMembers();
     this.importAs.set(sourceSymbol, targetSymbol);
+  }
+
+  /**
+   * Invalidate all information derived from the given file.
+   *
+   * @param fileName the file to invalidate
+   */
+  invalidateFile(fileName: string) {
+    this.metadataCache.delete(fileName);
+    this.resolvedFilePaths.delete(fileName);
+    const symbols = this.symbolFromFile.get(fileName);
+    if (symbols) {
+      this.symbolFromFile.delete(fileName);
+      for (const symbol of symbols) {
+        this.resolvedSymbols.delete(symbol);
+        this.importAs.delete(symbol);
+        this.symbolResourcePaths.delete(symbol);
+      }
+    }
   }
 
   private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol {
@@ -281,6 +301,7 @@ export class StaticSymbolResolver {
     }
     resolvedSymbols.forEach(
         (resolvedSymbol) => this.resolvedSymbols.set(resolvedSymbol.symbol, resolvedSymbol));
+    this.symbolFromFile.set(filePath, resolvedSymbols.map(resolvedSymbol => resolvedSymbol.symbol));
   }
 
   private createResolvedSymbol(
