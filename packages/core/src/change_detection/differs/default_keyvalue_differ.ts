@@ -9,7 +9,6 @@
 import {looseIdentical, stringify} from '../../util';
 import {isJsObject} from '../change_detection_util';
 import {ChangeDetectorRef} from '../change_detector_ref';
-
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
 
@@ -82,7 +81,8 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (!map) {
       map = new Map();
     } else if (!(map instanceof Map || isJsObject(map))) {
-      throw new Error(`Error trying to diff '${map}'`);
+      throw new Error(
+          `Error trying to diff '${stringify(map)}'. Only maps and objects are allowed`);
     }
 
     return this.check(map) ? this : null;

@@ -157,7 +157,8 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   diff(collection: NgIterable<V>): DefaultIterableDiffer<V> {
     if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
-      throw new Error(`Error trying to diff '${collection}'`);
+      throw new Error(
+          `Error trying to diff '${stringify(collection)}'. Only arrays and iterables are allowed`);
     }
 
     if (this.check(collection)) {
