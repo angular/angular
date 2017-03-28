@@ -118,7 +118,7 @@ export class StaticReflector implements ɵReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       propMetadata = {};
       if (classMetadata['extends']) {
-        const parentType = this.simplify(type, classMetadata['extends']);
+        const parentType = this.trySimplify(type, classMetadata['extends']);
         if (parentType instanceof StaticSymbol) {
           const parentPropMetadata = this.propMetadata(parentType);
           Object.keys(parentPropMetadata).forEach((parentProp) => {
@@ -176,7 +176,7 @@ export class StaticReflector implements ɵReflectorReader {
             parameters.push(nestedResult);
           });
         } else if (classMetadata['extends']) {
-          const parentType = this.simplify(type, classMetadata['extends']);
+          const parentType = this.trySimplify(type, classMetadata['extends']);
           if (parentType instanceof StaticSymbol) {
             parameters = this.parameters(parentType);
           }
@@ -199,7 +199,7 @@ export class StaticReflector implements ɵReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       methodNames = {};
       if (classMetadata['extends']) {
-        const parentType = this.simplify(type, classMetadata['extends']);
+        const parentType = this.trySimplify(type, classMetadata['extends']);
         if (parentType instanceof StaticSymbol) {
           const parentMethodNames = this._methodNames(parentType);
           Object.keys(parentMethodNames).forEach((parentProp) => {
