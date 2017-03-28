@@ -45,24 +45,11 @@ export class MdProgressSpinnerCssMatStyler {}
 
 
 /**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'md-progress-circle, mat-progress-circle',
-  host: {
-    '[class.mat-progress-circle]': 'true'
-  }
-})
-export class MdProgressCircleCssMatStyler {}
-
-
-/**
  * <md-progress-spinner> component.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-progress-spinner, mat-progress-spinner, md-progress-circle, mat-progress-circle',
+  selector: 'md-progress-spinner, mat-progress-spinner',
   host: {
     'role': 'progressbar',
     '[attr.aria-valuemin]': '_ariaValueMin',
