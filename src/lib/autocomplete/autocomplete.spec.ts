@@ -918,6 +918,69 @@ describe('MdAutocomplete', () => {
 
   });
 
+  describe('Option selection', () => {
+    let fixture: ComponentFixture<SimpleAutocomplete>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+    });
+
+    it('should deselect any other selected option', async(() => {
+      let options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[0].click();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+
+        let componentOptions = fixture.componentInstance.options.toArray();
+        expect(componentOptions[0].selected)
+            .toBe(true, `Clicked option should be selected.`);
+
+        options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(componentOptions[0].selected)
+            .toBe(false, `Previous option should not be selected.`);
+        expect(componentOptions[1].selected)
+            .toBe(true, `New Clicked option should be selected.`);
+
+      });
+    }));
+
+    it('should call deselect only on the previous selected option', async(() => {
+      let options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[0].click();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+
+        let componentOptions = fixture.componentInstance.options.toArray();
+        componentOptions.forEach(option => spyOn(option, 'deselect'));
+
+        expect(componentOptions[0].selected)
+            .toBe(true, `Clicked option should be selected.`);
+
+        options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+        options[1].click();
+        fixture.detectChanges();
+
+        expect(componentOptions[0].deselect).toHaveBeenCalled();
+        componentOptions.slice(1).forEach(option => expect(option.deselect).not.toHaveBeenCalled());
+      });
+    }));
+  });
+
   describe('misc', () => {
 
     it('should allow basic use without any forms directives', () => {

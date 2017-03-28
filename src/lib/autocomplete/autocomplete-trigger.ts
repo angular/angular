@@ -307,11 +307,23 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    */
   private _setValueAndClose(event: MdOptionSelectionChange | null): void {
     if (event) {
+      this._clearPreviousSelectedOption(event.source);
       this._setTriggerValue(event.source.value);
       this._onChange(event.source.value);
     }
 
     this.closePanel();
+  }
+
+  /**
+   * Clear any previous selected option and emit a selection change event for this option
+   */
+  private _clearPreviousSelectedOption(skip: MdOption) {
+    this.autocomplete.options.forEach((option) => {
+      if (option != skip && option.selected) {
+        option.deselect();
+      }
+    });
   }
 
   private _createOverlay(): void {
