@@ -116,10 +116,13 @@ export function main() {
         expect(template.content.children.length).toBe(1);
 
         renderer.insertBefore(template, span, div);
-        expect(template.content.children).toEqual([span, div]);
+        expect(template.content.children.length).toBe(2);
+        expect(template.content.children.item(0)).toBe(span);
+        expect(template.content.children.item(1)).toBe(div);
 
         renderer.removeChild(template, div);
-        expect(template.content.children).toEqual([span])
+        expect(template.content.children.length).toBe(1);
+        expect(template.content.children.item(0)).toBe(span);
       });
     }
   });
