@@ -1,6 +1,6 @@
 /* tslint:disable component-selector */
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Location, PlatformLocation } from '@angular/common';
+import { Component, ElementRef, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 
 const defaultPlnkrImg = 'plunker/placeholder.png';
 const imageBase  = 'assets/images/';
@@ -65,7 +65,6 @@ const zipBase = 'content/zips/';
 })
 export class LiveExampleComponent implements OnInit {
 
-  private attrs;
   enableDownload = true;
   isEmbedded = false;
   plnkr: string;
@@ -79,8 +78,8 @@ export class LiveExampleComponent implements OnInit {
 
     let exampleDir = attrs.name;
     if (!exampleDir) {
-      const psegs = location.path(false).split('/');
-      exampleDir = psegs[psegs.length - 1] || psegs[psegs.length - 2];
+      // take last segment, excluding hash fragment and query params
+      exampleDir = location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/)[0];
     }
     exampleDir = exampleDir.trim();
 
@@ -136,7 +135,7 @@ export class LiveExampleComponent implements OnInit {
 
 function boolFromAtty(atty: string , def: boolean = false) {
   // tslint:disable-next-line:triple-equals
-  return atty == undefined ? def :  atty.trim() === 'false' ? false : true;
+  return atty == undefined ? def :  atty.trim() !== 'false';
 }
 
 ///// EmbeddedPlunkerComponent ///
@@ -149,12 +148,12 @@ function boolFromAtty(atty: string , def: boolean = false) {
   template: `<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>`,
   styles: [ 'iframe { min-height: 400px; }']
 })
-export class EmbeddedPlunkerComponent implements OnInit {
+export class EmbeddedPlunkerComponent implements AfterViewInit {
   @Input() src: string;
 
   @ViewChild('iframe') iframe: ElementRef;
 
-  ngOnInit() {
+  ngAfterViewInit() {
     // DEVELOPMENT TESTING ONLY
     // this.src = 'https://angular.io/resources/live-examples/quickstart/ts/eplnkr.html';
 

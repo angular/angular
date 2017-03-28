@@ -87,6 +87,24 @@ describe('LiveExampleComponent', () => {
       });
     }));
 
+    it('should have expected plunker & download hrefs even when path has # frag', async(() => {
+      testPath = '/tutorial/toh-pt1#somewhere';
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
+      });
+    }));
+
+    it('should have expected plunker & download hrefs even when path has ? params', async(() => {
+      testPath = '/tutorial/toh-pt1?foo=1&bar="bar"';
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
+      });
+    }));
+
     it('should have expected flat-style plunker when has `flat-style`', async(() => {
       testPath = '/tutorial/toh-pt1';
       setHostTemplate('<live-example flat-style></live-example>');

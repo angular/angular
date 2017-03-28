@@ -93,8 +93,8 @@ export class LocationService {
     // don't navigate if external link or zip
     const { pathname, search, hash } = anchor;
 
-    if (/.zip$/.test(pathname)) {
-      return true;
+    if (anchor.getAttribute('download') != null) {
+      return true; // let the download happen
     }
 
     const relativeUrl = pathname + search + hash;
