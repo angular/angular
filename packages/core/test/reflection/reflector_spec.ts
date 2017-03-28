@@ -8,6 +8,7 @@
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
 import {DELEGATE_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {global} from '@angular/core/src/util';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
 interface ClassDecoratorFactory {
@@ -171,8 +172,12 @@ export function main() {
         class ChildWithCtor extends Parent {
           constructor() { super(); }
         }
+        class ChildNoCtorPrivateProps extends Parent {
+          private x = 10;
+        }
 
         expect(DELEGATE_CTOR.exec(ChildNoCtor.toString())).toBeTruthy();
+        expect(DELEGATE_CTOR.exec(ChildNoCtorPrivateProps.toString())).toBeTruthy();
         expect(DELEGATE_CTOR.exec(ChildWithCtor.toString())).toBeFalsy();
       });
     });
@@ -222,6 +227,15 @@ export function main() {
 
         class Child extends Parent {}
 
+        @ClassDecorator({value: 'child'})
+        class ChildWithDecorator extends Parent {
+        }
+
+        @ClassDecorator({value: 'child'})
+        class ChildWithDecoratorAndProps extends Parent {
+          private x = 10;
+        }
+
         // Note: We need the class decorator as well,
         // as otherwise TS won't capture the ctor arguments!
         @ClassDecorator({value: 'child'})
@@ -241,6 +255,14 @@ export function main() {
         ]);
 
         expect(reflector.parameters(Child)).toEqual([
+          [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
+        ]);
+
+        expect(reflector.parameters(ChildWithDecorator)).toEqual([
+          [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
+        ]);
+
+        expect(reflector.parameters(ChildWithDecoratorAndProps)).toEqual([
           [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
         ]);
 
