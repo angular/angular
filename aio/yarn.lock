@@ -2604,7 +2604,7 @@ html-webpack-plugin@^2.19.0:
     pretty-error "^2.0.2"
     toposort "^1.0.0"
 
-html@*:
+html@*, html@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/html/-/html-1.0.0.tgz#a544fa9ea5492bfb3a2cca8210a10be7b5af1f61"
   dependencies:
@@ -5781,13 +5781,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@2.2.0:
+typescript@2.2.0, "typescript@>=2.0.0 <2.3.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.0.tgz#626f2fc70087d2480f21ebb12c1888288c8614e3"
-
-"typescript@>=2.0.0 <2.3.0":
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.1.6.tgz#40c7e6e9e5da7961b7718b55505f9cac9487a607"
 
 typescript@^1.7.5:
   version "1.8.10"
