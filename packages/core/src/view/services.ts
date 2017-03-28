@@ -275,7 +275,7 @@ function camelCaseToDashCase(input: string): string {
 function normalizeDebugBindingValue(value: any): string {
   try {
     // Limit the size of the value as otherwise the DOM just gets polluted.
-    return value ? value.toString().slice(0, 30) : value;
+    return value != null ? value.toString().slice(0, 30) : value;
   } catch (e) {
     return '[ERROR] Exception while trying to serialize the value';
   }

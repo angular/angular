@@ -8,7 +8,7 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {ApplicationRef, CompilerFactory, Component, HostListener, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -164,6 +164,23 @@ class NativeEncapsulationApp {
   bootstrap: [NativeEncapsulationApp]
 })
 class NativeExampleModule {
+}
+
+@Component({selector: 'my-child', template: 'Works!'})
+class MyChildComponent {
+  @Input() public attr: boolean;
+}
+
+@Component({selector: 'app', template: '<my-child [attr]="false"></my-child>'})
+class MyHostComponent {
+}
+
+@NgModule({
+  declarations: [MyHostComponent, MyChildComponent],
+  bootstrap: [MyHostComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
+})
+class FalseAttributesModule {
 }
 
 export function main() {
@@ -403,6 +420,15 @@ export function main() {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
              expect(output).not.toBe('');
              expect(output).toContain('color: red');
+             called = true;
+           });
+         }));
+
+      it('should handle false values on attributes', async(() => {
+           renderModule(FalseAttributesModule, {document: doc}).then((output) => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
              called = true;
            });
          }));
