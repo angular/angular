@@ -495,6 +495,31 @@ describe('StaticReflector', () => {
     expect(() => reflector.propMetadata(appComponent)).not.toThrow();
   });
 
+  it('should not throw with an invalid extends', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Component} from '@angular/core';
+
+        function InvalidParent() {
+          return InvalidParent;
+        }
+
+        @Component({
+          selector: 'tmp',
+          template: '',
+        })
+        export class BadComponent extends InvalidParent() {
+
+        }
+      `;
+    init(data);
+    const badComponent = reflector.getStaticSymbol(file, 'BadComponent');
+    expect(reflector.propMetadata(badComponent)).toEqual({});
+    expect(reflector.parameters(badComponent)).toEqual([]);
+    expect(reflector.hasLifecycleHook(badComponent, 'onDestroy')).toEqual(false);
+  });
+
   it('should produce a annotation even if it contains errors', () => {
     const data = Object.create(DEFAULT_TEST_DATA);
     const file = '/tmp/src/invalid-component.ts';
