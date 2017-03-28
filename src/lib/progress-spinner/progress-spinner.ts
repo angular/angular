@@ -134,7 +134,7 @@ export class MdProgressSpinner implements OnDestroy {
   set value(v: number) {
     if (v != null && this.mode == 'determinate') {
       let newValue = clamp(v);
-      this._animateCircle((this.value || 0), newValue, linearEase, DURATION_DETERMINATE, 0);
+      this._animateCircle(this.value || 0, newValue);
       this._value = newValue;
     }
   }
@@ -150,13 +150,16 @@ export class MdProgressSpinner implements OnDestroy {
   get mode() {
     return this._mode;
   }
-  set mode(m: ProgressSpinnerMode) {
-    if (m == 'indeterminate') {
-      this._startIndeterminateAnimation();
-    } else {
-      this._cleanupIndeterminateAnimation();
+  set mode(mode: ProgressSpinnerMode) {
+    if (mode !== this._mode) {
+      if (mode === 'indeterminate') {
+        this._startIndeterminateAnimation();
+      } else {
+        this._cleanupIndeterminateAnimation();
+        this._animateCircle(0, this._value);
+      }
+      this._mode = mode;
     }
-    this._mode = m;
   }
 
   constructor(
@@ -176,8 +179,8 @@ export class MdProgressSpinner implements OnDestroy {
    * @param rotation The starting angle of the circle fill, with 0° represented at the top center
    *    of the circle.
    */
-  private _animateCircle(animateFrom: number, animateTo: number, ease: EasingFn,
-                        duration: number, rotation: number) {
+  private _animateCircle(animateFrom: number, animateTo: number, ease: EasingFn = linearEase,
+                        duration = DURATION_DETERMINATE, rotation = 0) {
 
     let id = ++this._lastAnimationId;
     let startTime = Date.now();
@@ -246,7 +249,7 @@ export class MdProgressSpinner implements OnDestroy {
    * Renders the arc onto the SVG element. Proxies `getArc` while setting the proper
    * DOM attribute on the `<path>`.
    */
-  private _renderArc(currentValue: number, rotation: number) {
+  private _renderArc(currentValue: number, rotation = 0) {
     // Caches the path reference so it doesn't have to be looked up every time.
     let path = this._path = this._path || this._elementRef.nativeElement.querySelector('path');
 
