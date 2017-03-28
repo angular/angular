@@ -115,7 +115,7 @@ export class UrlTree {
       /** The fragment of the URL */
       public fragment: string) {}
 
-  get queryParamMap() {
+  get queryParamMap(): ParamMap {
     if (!this._queryParamMap) {
       this._queryParamMap = convertToParamMap(this.queryParams);
     }
@@ -123,7 +123,7 @@ export class UrlTree {
   }
 
   /** @docsNotRequired */
-  toString(): string { return new DefaultUrlSerializer().serialize(this); }
+  toString(): string { return DEFAULT_SERIALIZER.serialize(this); }
 }
 
 /**
@@ -293,6 +293,8 @@ export class DefaultUrlSerializer implements UrlSerializer {
     return `${segment}${query}${fragment}`;
   }
 }
+
+const DEFAULT_SERIALIZER = new DefaultUrlSerializer();
 
 export function serializePaths(segment: UrlSegmentGroup): string {
   return segment.segments.map(p => serializePath(p)).join('/');
