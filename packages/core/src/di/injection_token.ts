@@ -42,8 +42,8 @@ export class OpaqueToken {
  * runtime representation) such as when injecting an interface, callable type, array or
  * parametrized type.
  *
- * `InjectionToken` is parametrize on `T` which is the type of object which will be returned by the
- * `Injector`. This provides additional level of type safety.
+ * `InjectionToken` is parameterized on `T` which is the type of object which will be returned by
+ * the `Injector`. This provides additional level of type safety.
  *
  * ```
  * interface MyInterface {...}
@@ -53,7 +53,7 @@ export class OpaqueToken {
  *
  * ### Example
  *
- * {@example core/di/ts/injector_spec.ts region='Injector'}
+ * {@example core/di/ts/injector_spec.ts region='InjectionToken'}
  *
  * @stable
  */
