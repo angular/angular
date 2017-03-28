@@ -1,4 +1,10 @@
-var rho = require('rho');
+const rho = require('rho');
+const { prettyPrint } = require('html');
+
+const defaultUnformattedTags = [
+  'a', 'span', 'bdo', 'em', 'strong', 'dfn', 'code', 'samp', 'kbd', 'var', 'cite', 'abbr', 'acronym',
+  'q', 'sub', 'sup', 'tt', 'i', 'b', 'big', 'small', 'u', 's', 'strike', 'font', 'ins', 'del', 'pre',
+  'address', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 /**
  * @dgService renderMarkdown
@@ -45,11 +51,18 @@ module.exports = function renderMarkdown() {
 
     if (isBlock) compiler.out.push('<div>');
     compiler.out.push(walk.substring(startIdx, endIdx + 1));
-    if (isBlock) compiler.out.push('</div>');
+    if (isBlock) compiler.out.push('</div>\n');
 
     walk.startFrom(endIdx + 2);
     return true;
   };
 
-  return function renderMarkdownImpl(content) { return rho.toHtml(content, true); };
+  renderMarkdownImpl.unformattedTags = [];
+
+  return renderMarkdownImpl;
+
+  function renderMarkdownImpl(content) {
+    const rawHtml = new rho.BlockCompiler(rho.options).toHtml(content);
+    return prettyPrint(rawHtml, { indent_size: 2, unformatted: [...defaultUnformattedTags, ...renderMarkdownImpl.unformattedTags]});
+  };
 };

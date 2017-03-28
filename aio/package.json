@@ -38,7 +38,6 @@
     "@angular/router": "next",
     "@angular/service-worker": "^1.0.0-beta.8",
     "core-js": "^2.4.1",
-    "rho": "https://github.com/petebacondarwin/rho#master",
     "rxjs": "^5.2.0",
     "zone.js": "^0.8.4"
   },
@@ -53,6 +52,7 @@
     "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
     "firebase-tools": "^3.2.1",
+    "html": "^1.0.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
@@ -63,6 +63,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "lodash": "^4.17.4",
     "protractor": "~5.1.0",
+    "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",

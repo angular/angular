@@ -1,7 +1,11 @@
 const renderMarkdownFactory = require('./renderMarkdown');
-const renderMarkdown = renderMarkdownFactory();
 
 describe('rho: renderMarkdown service', () => {
+  let renderMarkdown;
+  beforeEach(() => {
+    renderMarkdown = renderMarkdownFactory();
+  });
+
   it('should convert markdown to HTML', () => {
     const content = '# heading 1\n' +
         '\n' +
@@ -17,13 +21,13 @@ describe('rho: renderMarkdown service', () => {
         '<ul>\n' +
         '  <li>List item 1</li>\n' +
         '  <li>List item 2</li>\n' +
-        '</ul>\n');
+        '</ul>');
   });
 
   it('should not process markdown inside inline tags', () => {
     const content = '# heading {@link some_url_path}';
     const output = renderMarkdown(content);
-    expect(output).toEqual('<h1>heading {@link some_url_path}</h1>\n');
+    expect(output).toEqual('<h1>heading {@link some_url_path}</h1>');
   });
 
   it('should not put block level inline tags inside paragraphs', () => {
@@ -36,6 +40,13 @@ describe('rho: renderMarkdown service', () => {
     expect(output).toEqual(
         '<p>A paragraph.</p>\n' +
         '<div>{@example blah **blah** blah }</div>\n' +
-        '<p>Another paragraph</p>\n');
+        '<p>Another paragraph</p>');
+  });
+
+  it('should not format the contents of tags marked as unformatted ', () => {
+    renderMarkdown.unformattedTags = ['code-example'];
+    const content = '<code-example>\n  abc\n  def\n</code-example>';
+    const output = renderMarkdown(content);
+    expect(output).toEqual('<code-example>\n  abc\n  def\n</code-example>');
   });
 });
