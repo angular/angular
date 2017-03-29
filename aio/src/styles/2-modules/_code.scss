@@ -43,11 +43,26 @@ code-tabs mat-tab-body-content .fadeIn {
 
 aio-code pre {
     display: flex;
-    padding: 0px;
+    padding: 0;
     white-space: pre-wrap;
 }
 
-.lang-ts .copy-button {
+code ol {
+  font-family: $main-font;
+  color: $lightgray;
+  
+  li {
+    margin: 0;
+    font-family: $code-font;
+    font-size: 90%;
+  }
+}
+
+.prettyprint {
+  position: relative;
+}
+
+.copy-button {
   top: -16px;
   right: -16px;
   color: $lightgray;
@@ -58,8 +73,8 @@ aio-code pre {
   }
 }
 
-.lang- .copy-button {
-  visibility: hidden;
+.code-tab-group div.mat-tab-body-content {
+  height: auto;
 }
 
 $blue-grey-50: #ECEFF1;
@@ -72,36 +87,6 @@ $blue-grey-600: #546E7A;
 $blue-grey-700: #455A64;
 $blue-grey-800: #37474F;
 $blue-grey-900: #263238;
-
-$pink-50: #FCE4EC;
-$pink-100: #F8BBD0;
-$pink-200: #F48FB1;
-$pink-300: #F06292;
-$pink-400: #EC407A;
-$pink-500: #E91E63;
-$pink-600: #D81B60;
-$pink-700: #C2185B;
-$pink-800: #AD1457;
-$pink-900: #880E4F;
-$pink-A100: #FF80AB;
-$pink-A200: #FF4081;
-$pink-A400: #F50057;
-$pink-A700: #C51162;
-
-$teal-50: #E0F2F1;
-$teal-100: #B2DFDB;
-$teal-200: #80CBC4;
-$teal-300: #4DB6AC;
-$teal-400: #26A69A;
-$teal-500: #009688;
-$teal-600: #00897B;
-$teal-700: #00796B;
-$teal-800: #00695C;
-$teal-900: #004D40;
-$teal-A100: #A7FFEB;
-$teal-A200: #64FFDA;
-$teal-A400: #1DE9B6;
-$teal-A700: #00BFA5;
 
 $white: #FFFFFF;
 
@@ -126,33 +111,33 @@ $white: #FFFFFF;
     outline: 1px solid rgba($blue-grey-700, .56);
   }
   .kwd {
-    color: $pink-600;
+    color: $darkgray;
   }
   .typ,
   .tag {
-    color: $pink-600;
+    color: $darkred;
   }
   .str,
   .atv {
-    color: $teal-700;
+    color: $blue;
   }
   .atn {
-    color: $teal-700;
+    color: $blue;
   }
   .com {
-    color: $teal-700;
+    color: $mediumgray;
   }
   .lit {
-    color: $teal-700;
+    color: $blue;
   }
   .pun {
     color: $blue-grey-700;
   }
   .pln {
-    color: $blue-grey-700;
+    color: $green-800;
   }
   .dec {
-    color: $teal-700;
+    color: $blue;
   }
 
 
@@ -170,32 +155,32 @@ $white: #FFFFFF;
     }
 
     .kwd {
-      color: $pink-600;
+      color: $darkgray;
     }
     .typ,
     .tag {
-      color: $pink-600;
+      color: $darkred;
     }
     .str,
     .atv {
-      color: $teal-700;
+      color: $blue;
     }
     .atn {
-      color: $teal-700;
+      color: $blue;
     }
     .com {
-      color: $teal-700;
+      color: $mediumgray;
     }
     .lit {
-      color: $teal-700;
+      color: $blue;
     }
     .pun {
       color: $blue-grey-700;
     }
     .pln {
-      color: $blue-grey-700;
+      color: $green-800;
     }
     .dec {
-      color: $teal-700;
+      color: $blue;
     }
   }

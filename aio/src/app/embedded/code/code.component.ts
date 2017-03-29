@@ -25,7 +25,7 @@ const copiedLabel = 'Copied!';
   template: `
     
     <pre class="prettyprint lang-{{language}}">
-    <button class="material-icons copy-button" #copyButton (click)="doCopy()">content_copy</button>
+      <button class="material-icons copy-button" (click)="doCopy()">content_copy</button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
