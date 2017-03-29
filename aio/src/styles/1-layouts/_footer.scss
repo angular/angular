@@ -3,7 +3,6 @@ footer {
 }
 
 footer .footer {
-    // background: url('../src/assets/images/backgrounds/ng-pattern-sm.png');
     padding: 20px;
     z-index: 10;
     background-color: $blue;
@@ -30,8 +29,8 @@ footer::after {
     position: absolute;
     z-index: 10;
     top: 0;
-    bottom: 0px;
-    left: 0px;
+    bottom: 0;
+    left: 0;
     right: 0;
     background: 
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left repeat-y,
@@ -42,9 +41,10 @@ footer::after {
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 840px repeat-y,
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1008px repeat-y,
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 1176px repeat-y,
-        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1344px repeat-y;;
-    // background: url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top -2px left -110px repeat-x, url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') bottom left repeat-x;
-    // background-image: url('../src/assets/images/logos/angular2/angular_whiteTransparent.png');
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1344px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 1512px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 1680px repeat-y,
+        url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 1848px repeat-y;
     opacity: 0.1;
     background-size: 160px auto;
 }
