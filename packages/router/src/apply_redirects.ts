@@ -18,7 +18,7 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {Route, Routes} from './config';
+import {InternalRoute, Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
@@ -241,13 +241,13 @@ class ApplyRedirects {
   }
 
   private matchSegmentAgainstRoute(
-      ngModule: NgModuleRef<any>, rawSegmentGroup: UrlSegmentGroup, route: Route,
+      ngModule: NgModuleRef<any>, rawSegmentGroup: UrlSegmentGroup, route: InternalRoute,
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
         return map.call(
             this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
-              (<any>route)._loadedConfig = cfg;
+              route._loadedConfig = cfg;
               return new UrlSegmentGroup(segments, {});
             });
       }
@@ -286,7 +286,8 @@ class ApplyRedirects {
     });
   }
 
-  private getChildConfig(ngModule: NgModuleRef<any>, route: Route): Observable<LoadedRouterConfig> {
+  private getChildConfig(ngModule: NgModuleRef<any>, route: InternalRoute):
+      Observable<LoadedRouterConfig> {
     if (route.children) {
       // The children belong to the same module
       return of (new LoadedRouterConfig(route.children, ngModule));
@@ -302,7 +303,7 @@ class ApplyRedirects {
         if (shouldLoad) {
           return map.call(
               this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
-                (<any>route)._loadedConfig = cfg;
+                route._loadedConfig = cfg;
                 return cfg;
               });
         }
