@@ -10,20 +10,20 @@ aio-top-menu ul {
   flex-direction: row;
   align-items: center;
   list-style-position: inside;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 aio-top-menu li {
   list-style-type: none;
-  padding: 0px;
+  padding: 0;
 }
 
 md-toolbar.mat-toolbar {
   position: relative;
   z-index: 10;
-  box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.30);
-  padding: 0 16px 0px 0px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
+  padding: 0 16px 0 0;
 }
 
 .search-container {

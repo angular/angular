@@ -17,7 +17,7 @@ export interface TabInfo {
 @Component({
   selector: 'code-tabs',
   template: `
-    <md-tab-group>
+    <md-tab-group class="code-tab-group">
       <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
         <template md-tab-label>
           <span class="{{tab.class}}">{{ tab.title }}</span>
