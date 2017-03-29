@@ -132,7 +132,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references['q'];
+      const q = fixture.debugElement.children[0].references !['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -145,7 +145,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references['q'];
+      const q = fixture.debugElement.children[0].references !['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -156,7 +156,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
 @Directive({selector: '[text]'})
 class TextDirective {
-  @Input() public text: string = null;
+  @Input() public text: string|null = null;
 }
 
 @Component({selector: 'needs-content-children', template: ''})

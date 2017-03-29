@@ -34,7 +34,8 @@ function main() {
       if (/.*\/node_modules\/.*/.test(fileName) && !/.*ngsummary\.json$/.test(fileName) &&
           !/package\.json$/.test(fileName)) {
         // Only allow to read summaries and package.json files from node_modules
-        return null;
+        // TODO (mhevery): Fix this. TypeScript.d.ts does not allow returning null.
+        return null !;
       }
       readFiles.push(path.relative(basePath, fileName));
       return super.readFile(fileName);

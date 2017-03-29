@@ -35,7 +35,7 @@ export function getStringParameter(name: string) {
 }
 
 export function bindAction(selector: string, callback: () => void) {
-  document.querySelector(selector).addEventListener('click', callback);
+  document.querySelector(selector) !.addEventListener('click', callback);
 }
 
 
@@ -60,7 +60,7 @@ export function profile(create: () => void, destroy: () => void, name: string) {
 function urlParamsToForm() {
   const regex = /(\w+)=(\w+)/g;
   const search = decodeURIComponent(location.search);
-  let match: any[];
+  let match: any[]|null;
   while (match = regex.exec(search)) {
     const name = match[1];
     const value = match[2];

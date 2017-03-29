@@ -184,19 +184,19 @@ class TestComp {
 
 export function main() {
   function createComponentFixture<T>(
-      template: string, providers: Provider[] = null, comp: Type<T> = null): ComponentFixture<T> {
+      template: string, providers?: Provider[] | null, comp?: Type<T>): ComponentFixture<T> {
     if (!comp) {
       comp = <any>TestComp;
     }
-    TestBed.overrideComponent(comp, {set: {template}});
+    TestBed.overrideComponent(comp !, {set: {template}});
     if (providers && providers.length) {
-      TestBed.overrideComponent(comp, {add: {providers: providers}});
+      TestBed.overrideComponent(comp !, {add: {providers: providers}});
     }
-    return TestBed.createComponent(comp);
+    return TestBed.createComponent(comp !);
   }
 
   function createComponent(
-      template: string, providers: Provider[] = null, comp: Type<any> = null): DebugElement {
+      template: string, providers?: Provider[], comp?: Type<any>): DebugElement {
     const fixture = createComponentFixture(template, providers, comp);
     fixture.detectChanges();
     return fixture.debugElement;

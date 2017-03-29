@@ -82,17 +82,17 @@ export interface KeyValueChangeRecord<K, V> {
   /**
    * Current key in the Map.
    */
-  /* readonly */ key: K;
+  readonly key: K;
 
   /**
-   * Current value for the key or `undefined` if removed.
+   * Current value for the key or `null` if removed.
    */
-  /* readonly */ currentValue: V;
+  readonly currentValue: V|null;
 
   /**
-   * Previous value for the key or `undefined` if added.
+   * Previous value for the key or `null` if added.
    */
-  /* readonly */ previousValue: V;
+  readonly previousValue: V|null;
 }
 
 /**

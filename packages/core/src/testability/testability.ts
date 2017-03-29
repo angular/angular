@@ -92,7 +92,7 @@ export class Testability implements PublicTestability {
       // Schedules the call backs in a new frame so that it is always async.
       scheduleMicroTask(() => {
         while (this._callbacks.length !== 0) {
-          (this._callbacks.pop())(this._didWork);
+          (this._callbacks.pop() !)(this._didWork);
         }
         this._didWork = false;
       });
@@ -136,13 +136,13 @@ export class TestabilityRegistry {
     this._applications.set(token, testability);
   }
 
-  getTestability(elem: any): Testability { return this._applications.get(elem); }
+  getTestability(elem: any): Testability|null { return this._applications.get(elem) || null; }
 
   getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
 
   getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
 
-  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
+  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
 }
@@ -157,13 +157,13 @@ export class TestabilityRegistry {
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability;
+      Testability|null;
 }
 
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability {
+      Testability|null {
     return null;
   }
 }

@@ -309,7 +309,7 @@ export function main() {
 
         function modifyArrayUsingOperation(
             arr: number[], endData: any[], prev: number, next: number) {
-          let value: number = null;
+          let value: number = null !;
           if (prev == null) {
             value = endData[next];
             arr.splice(next, 0, value);

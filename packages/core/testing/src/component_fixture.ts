@@ -42,15 +42,16 @@ export class ComponentFixture<T> {
 
   private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
-  private _resolve: (result: any) => void;
-  private _promise: Promise<any> = null;
+  private _resolve: ((result: any) => void)|null = null;
+  private _promise: Promise<any>|null = null;
   private _onUnstableSubscription: any /** TODO #9100 */ = null;
   private _onStableSubscription: any /** TODO #9100 */ = null;
   private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
   private _onErrorSubscription: any /** TODO #9100 */ = null;
 
   constructor(
-      public componentRef: ComponentRef<T>, public ngZone: NgZone, private _autoDetect: boolean) {
+      public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
+      private _autoDetect: boolean) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -59,7 +60,7 @@ export class ComponentFixture<T> {
     this.componentRef = componentRef;
     this.ngZone = ngZone;
 
-    if (ngZone != null) {
+    if (ngZone) {
       this._onUnstableSubscription =
           ngZone.onUnstable.subscribe({next: () => { this._isStable = false; }});
       this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
@@ -82,7 +83,7 @@ export class ComponentFixture<T> {
             scheduleMicroTask(() => {
               if (!this.ngZone.hasPendingMacrotasks) {
                 if (this._promise !== null) {
-                  this._resolve(true);
+                  this._resolve !(true);
                   this._resolve = null;
                   this._promise = null;
                 }

@@ -16,20 +16,17 @@ export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     ngContentIndex: number, childCount: number, handleEvent?: ElementHandleEventFn,
     templateFactory?: ViewDefinitionFactory): NodeDef {
-  if (!handleEvent) {
-    handleEvent = NOOP;
-  }
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
 
   return {
     // will bet set by the view definition
-    index: undefined,
-    parent: undefined,
-    renderParent: undefined,
-    bindingIndex: undefined,
-    outputIndex: undefined,
+    index: -1,
+    parent: null,
+    renderParent: null,
+    bindingIndex: -1,
+    outputIndex: -1,
     // regular values
     flags,
     childFlags: 0,
@@ -39,19 +36,20 @@ export function anchorDef(
     bindingFlags: 0,
     outputs: [],
     element: {
-      ns: undefined,
-      name: undefined,
-      attrs: undefined, template,
-      componentProvider: undefined,
-      componentView: undefined,
-      componentRendererType: undefined,
-      publicProviders: undefined,
-      allProviders: undefined, handleEvent
+      ns: null,
+      name: null,
+      attrs: null, template,
+      componentProvider: null,
+      componentView: null,
+      componentRendererType: null,
+      publicProviders: null,
+      allProviders: null,
+      handleEvent: handleEvent || NOOP
     },
-    provider: undefined,
-    text: undefined,
-    query: undefined,
-    ngContent: undefined
+    provider: null,
+    text: null,
+    query: null,
+    ngContent: null
   };
 }
 
@@ -61,13 +59,13 @@ export function elementDef(
     fixedAttrs: [string, string][] = [],
     bindings?: [BindingFlags, string, string | SecurityContext][], outputs?: ([string, string])[],
     handleEvent?: ElementHandleEventFn, componentView?: ViewDefinitionFactory,
-    componentRendererType?: RendererType2): NodeDef {
+    componentRendererType?: RendererType2 | null): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
   }
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  let ns: string;
-  let name: string;
+  let ns: string = null !;
+  let name: string = null !;
   if (namespaceAndName) {
     [ns, name] = splitNamespace(namespaceAndName);
   }
@@ -77,8 +75,8 @@ export function elementDef(
     const [bindingFlags, namespaceAndName, suffixOrSecurityContext] = bindings[i];
 
     const [ns, name] = splitNamespace(namespaceAndName);
-    let securityContext: SecurityContext;
-    let suffix: string;
+    let securityContext: SecurityContext = undefined !;
+    let suffix: string = undefined !;
     switch (bindingFlags & BindingFlags.Types) {
       case BindingFlags.TypeElementStyle:
         suffix = <string>suffixOrSecurityContext;
@@ -98,7 +96,7 @@ export function elementDef(
     outputDefs[i] = {
       type: OutputType.ElementOutput,
       target: <any>target, eventName,
-      propName: undefined
+      propName: null
     };
   }
   fixedAttrs = fixedAttrs || [];
@@ -113,11 +111,11 @@ export function elementDef(
   flags |= NodeFlags.TypeElement;
   return {
     // will bet set by the view definition
-    index: undefined,
-    parent: undefined,
-    renderParent: undefined,
-    bindingIndex: undefined,
-    outputIndex: undefined,
+    index: -1,
+    parent: null,
+    renderParent: null,
+    bindingIndex: -1,
+    outputIndex: -1,
     // regular values
     flags,
     childFlags: 0,
@@ -130,21 +128,24 @@ export function elementDef(
       ns,
       name,
       attrs,
-      template: undefined,
+      template: null,
       // will bet set by the view definition
-      componentProvider: undefined, componentView, componentRendererType,
-      publicProviders: undefined,
-      allProviders: undefined, handleEvent,
+      componentProvider: null,
+      componentView: componentView || null,
+      componentRendererType: componentRendererType,
+      publicProviders: null,
+      allProviders: null,
+      handleEvent: handleEvent || NOOP,
     },
-    provider: undefined,
-    text: undefined,
-    query: undefined,
-    ngContent: undefined
+    provider: null,
+    text: null,
+    query: null,
+    ngContent: null
   };
 }
 
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
-  const elDef = def.element;
+  const elDef = def.element !;
   const rootSelectorOrNode = view.root.selectorOrNode;
   const renderer = view.renderer;
   let el: any;
@@ -175,7 +176,7 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
     const output = def.outputs[i];
     const handleEventClosure = renderEventHandlerClosure(
         view, def.index, elementEventFullName(output.target, output.eventName));
-    let listenTarget = output.target;
+    let listenTarget: 'window'|'document'|'body'|'component'|null = output.target;
     let listenerView = view;
     if (output.target === 'component') {
       listenTarget = null;
@@ -183,7 +184,7 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
     }
     const disposable =
         <any>listenerView.renderer.listen(listenTarget || el, output.eventName, handleEventClosure);
-    view.disposables[def.outputIndex + i] = disposable;
+    view.disposables ![def.outputIndex + i] = disposable;
   }
 }
 
@@ -225,7 +226,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
   const binding = def.bindings[bindingIdx];
   const elData = asElementData(view, def.index);
   const renderNode = elData.renderElement;
-  const name = binding.name;
+  const name = binding.name !;
   switch (binding.flags & BindingFlags.Types) {
     case BindingFlags.TypeElementAttribute:
       setElementAttribute(view, binding, renderNode, binding.ns, name, value);
@@ -248,7 +249,8 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 }
 
 function setElementAttribute(
-    view: ViewData, binding: BindingDef, renderNode: any, ns: string, name: string, value: any) {
+    view: ViewData, binding: BindingDef, renderNode: any, ns: string | null, name: string,
+    value: any) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
@@ -271,7 +273,7 @@ function setElementClass(view: ViewData, renderNode: any, name: string, value: b
 
 function setElementStyle(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
-  let renderValue = view.root.sanitizer.sanitize(SecurityContext.STYLE, value);
+  let renderValue: string|null = view.root.sanitizer.sanitize(SecurityContext.STYLE, value);
   if (renderValue != null) {
     renderValue = renderValue.toString();
     const unit = binding.suffix;

@@ -99,7 +99,7 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
+    parentPlatformFactory: ((extraProviders?: Provider[]) => PlatformRef) | null, name: string,
     providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
   const marker = new InjectionToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
@@ -153,7 +153,7 @@ export function destroyPlatform(): void {
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
-export function getPlatform(): PlatformRef {
+export function getPlatform(): PlatformRef|null {
   return _platform && !_platform.destroyed ? _platform : null;
 }
 
@@ -278,10 +278,10 @@ export class PlatformRef_ extends PlatformRef {
   }
 
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleFactoryWithZone(moduleFactory, null);
+    return this._bootstrapModuleFactoryWithZone(moduleFactory);
   }
 
-  private _bootstrapModuleFactoryWithZone<M>(moduleFactory: NgModuleFactory<M>, ngZone: NgZone):
+  private _bootstrapModuleFactoryWithZone<M>(moduleFactory: NgModuleFactory<M>, ngZone?: NgZone):
       Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
@@ -299,7 +299,7 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
-      ngZone.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
+      ngZone !.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
       return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         return initStatus.donePromise.then(() => {
@@ -312,12 +312,12 @@ export class PlatformRef_ extends PlatformRef {
 
   bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
       Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleWithZone(moduleType, compilerOptions, null);
+    return this._bootstrapModuleWithZone(moduleType, compilerOptions);
   }
 
   private _bootstrapModuleWithZone<M>(
       moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
-      ngZone: NgZone = null): Promise<NgModuleRef<M>> {
+      ngZone?: NgZone): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const compiler = compilerFactory.createCompiler(
         Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
@@ -500,7 +500,8 @@ export class ApplicationRef_ extends ApplicationRef {
     if (componentOrFactory instanceof ComponentFactory) {
       componentFactory = componentOrFactory;
     } else {
-      componentFactory = this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
+      componentFactory =
+          this._componentFactoryResolver.resolveComponentFactory(componentOrFactory) !;
     }
     this._rootComponentTypes.push(componentFactory.componentType);
 

@@ -13,7 +13,7 @@ import {platformServer} from '@angular/platform-server';
 import {MainModule} from '../src/module';
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
-let mainModuleRef: NgModuleRef<MainModule> = null;
+let mainModuleRef: NgModuleRef<MainModule> = null !;
 beforeEach((done) => {
   platformServer().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef: any) => {
     mainModuleRef = moduleRef;
@@ -29,5 +29,5 @@ export function createComponent<C>(comp: {new (...args: any[]): C}): ComponentFi
   const moduleRef = createModule();
   const compRef =
       moduleRef.componentFactoryResolver.resolveComponentFactory(comp).create(moduleRef.injector);
-  return new ComponentFixture(compRef, null, null);
+  return new ComponentFixture(compRef, null, false);
 }

@@ -318,7 +318,7 @@ export function main() {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.children[0].references['alice']).toBeAnInstanceOf(MyDir);
+      expect(fixture.debugElement.children[0].references !['alice']).toBeAnInstanceOf(MyDir);
     });
 
     it('should allow injecting from the element injector', () => {

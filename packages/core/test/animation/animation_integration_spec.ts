@@ -60,7 +60,7 @@ export function main() {
         engine.flush();
 
         expect(getLog().length).toEqual(1);
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
         ]);
       });
@@ -96,7 +96,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
         ]);
 
@@ -105,7 +105,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -114,7 +114,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -123,7 +123,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -132,7 +132,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -142,7 +142,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
         ]);
       });
@@ -174,7 +174,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
         ]);
 
@@ -182,7 +182,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop().keyframes).toEqual([
+        expect(getLog().pop() !.keyframes).toEqual([
           {offset: 0, opacity: '1'}, {offset: 1, opacity: '0'}
         ]);
       });
@@ -233,7 +233,7 @@ export function main() {
              engine.flush();
              expect(getLog().length).toEqual(1);
 
-             const data = getLog().pop();
+             const data = getLog().pop() !;
              expect(data.element).toEqual(fixture.elementRef.nativeElement);
              expect(data.keyframes).toEqual([{offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}]);
            }));
@@ -679,8 +679,8 @@ export function main() {
 
         expect(getLog().length).toEqual(2);
 
-        const player2 = getLog().pop();
-        const player1 = getLog().pop();
+        const player2 = getLog().pop() !;
+        const player1 = getLog().pop() !;
 
         expect(player2.keyframes).toEqual([
           {width: AUTO_STYLE, offset: 0},
@@ -712,7 +712,7 @@ export function main() {
           ]
         })
         class Cmp {
-          public exp: string;
+          public exp: string|null;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});

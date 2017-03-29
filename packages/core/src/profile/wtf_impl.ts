@@ -53,7 +53,9 @@ export function createScope(signature: string, flags: any = null): any {
   return events.createScope(signature, flags);
 }
 
-export function leave<T>(scope: Scope, returnValue?: T): T {
+export function leave<T>(scope: Scope): void;
+export function leave<T>(scope: Scope, returnValue?: T): T;
+export function leave<T>(scope: Scope, returnValue?: any): any {
   trace.leaveScope(scope, returnValue);
   return returnValue;
 }

@@ -21,7 +21,7 @@ export function main() {
         m = new Map();
       });
 
-      afterEach(() => { differ = null; });
+      afterEach(() => { differ = null !; });
 
       it('should detect additions', () => {
         differ.check(m);

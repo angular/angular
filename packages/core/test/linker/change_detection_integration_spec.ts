@@ -261,14 +261,14 @@ export function main() {
       describe('safe navigation operator', () => {
         it('should support reading properties of nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.city', Person);
-             ctx.componentInstance.address = null;
+             ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
-             ctx.componentInstance.address = null;
+             ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
@@ -289,7 +289,7 @@ export function main() {
 
         it('should support short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
-             ctx.componentInstance.value = null;
+             ctx.componentInstance.value = null !;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
@@ -317,7 +317,7 @@ export function main() {
              expect(() => {
                const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
                const person = new Person();
-               person.address = null;
+               person.address = null !;
                ctx.componentInstance.value = person;
                ctx.detectChanges(false);
              }).toThrow();
@@ -553,7 +553,7 @@ export function main() {
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
              // change from undefined -> null
-             ctx.componentInstance.name = null;
+             ctx.componentInstance.name = null !;
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['null state:0']);
              ctx.detectChanges(false);
@@ -1620,10 +1620,10 @@ class TestLocals {
 class Person {
   age: number;
   name: string;
-  address: Address = null;
+  address: Address|null = null;
   phones: number[];
 
-  init(name: string, address: Address = null) {
+  init(name: string, address: Address|null = null) {
     this.name = name;
     this.address = address;
   }

@@ -79,7 +79,7 @@ export function main() {
   ];
 
   function createInjector(
-      providers: Provider[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
+      providers: Provider[], parent?: ReflectiveInjector | null): ReflectiveInjector_ {
     const resolvedProviders = ReflectiveInjector.resolve(providers.concat(dynamicProviders));
     if (parent != null) {
       return <ReflectiveInjector_>parent.createChildFromResolved(resolvedProviders);

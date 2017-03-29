@@ -135,7 +135,7 @@ export class TestBed implements Injector {
   }
 
   static overrideTemplate(component: Type<any>, template: string): typeof TestBed {
-    getTestBed().overrideComponent(component, {set: {template, templateUrl: null}});
+    getTestBed().overrideComponent(component, {set: {template, templateUrl: null !}});
     return TestBed;
   }
 
@@ -149,9 +149,9 @@ export class TestBed implements Injector {
 
   private _instantiated: boolean = false;
 
-  private _compiler: TestingCompiler = null;
-  private _moduleRef: NgModuleRef<any> = null;
-  private _moduleWithComponentFactories: ModuleWithComponentFactories<any> = null;
+  private _compiler: TestingCompiler = null !;
+  private _moduleRef: NgModuleRef<any> = null !;
+  private _moduleWithComponentFactories: ModuleWithComponentFactories<any> = null !;
 
   private _compilerOptions: CompilerOptions[] = [];
 
@@ -194,19 +194,19 @@ export class TestBed implements Injector {
    */
   resetTestEnvironment() {
     this.resetTestingModule();
-    this.platform = null;
-    this.ngModule = null;
+    this.platform = null !;
+    this.ngModule = null !;
   }
 
   resetTestingModule() {
-    this._compiler = null;
+    this._compiler = null !;
     this._moduleOverrides = [];
     this._componentOverrides = [];
     this._directiveOverrides = [];
     this._pipeOverrides = [];
 
-    this._moduleRef = null;
-    this._moduleWithComponentFactories = null;
+    this._moduleRef = null !;
+    this._moduleWithComponentFactories = null !;
     this._compilerOptions = [];
     this._providers = [];
     this._declarations = [];
@@ -223,9 +223,9 @@ export class TestBed implements Injector {
     this._activeFixtures = [];
   }
 
-  platform: PlatformRef = null;
+  platform: PlatformRef = null !;
 
-  ngModule: Type<any>|Type<any>[] = null;
+  ngModule: Type<any>|Type<any>[] = null !;
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}) {
     this._assertNotInstantiated('TestBed.configureCompiler', 'configure the compiler');
@@ -383,7 +383,7 @@ export class TestBed implements Injector {
   }
 }
 
-let _testBed: TestBed = null;
+let _testBed: TestBed = null !;
 
 /**
  * @experimental
@@ -463,7 +463,7 @@ export class InjectSetupWrapper {
  */
 export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;
-export function withModule(moduleDef: TestModuleMetadata, fn: Function = null): (() => any)|
+export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null): (() => any)|
     InjectSetupWrapper {
   if (fn) {
     // Not using an arrow function to preserve context passed from call site

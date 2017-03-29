@@ -13,15 +13,15 @@ export function main() {
   describe('viewDef', () => {
 
     describe('parent', () => {
-      function parents(viewDef: ViewDefinition): number[] {
+      function parents(viewDef: ViewDefinition): (number | null)[] {
         return viewDef.nodes.map(node => node.parent ? node.parent.index : null);
       }
 
       it('should calculate parents for one level', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          textDef(null, ['a']),
-          textDef(null, ['a']),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          textDef(null !, ['a']),
+          textDef(null !, ['a']),
         ]);
 
         expect(parents(vd)).toEqual([null, 0, 0]);
@@ -29,11 +29,11 @@ export function main() {
 
       it('should calculate parents for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          textDef(null, ['a']),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          textDef(null, ['a']),
-          textDef(null, ['a']),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          textDef(null !, ['a']),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          textDef(null !, ['a']),
+          textDef(null !, ['a']),
         ]);
 
         expect(parents(vd)).toEqual([null, 0, null, 2, null]);
@@ -41,12 +41,12 @@ export function main() {
 
       it('should calculate parents for multiple levels', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          textDef(null, ['a']),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          textDef(null, ['a']),
-          textDef(null, ['a']),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          textDef(null !, ['a']),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          textDef(null !, ['a']),
+          textDef(null !, ['a']),
         ]);
 
         expect(parents(vd)).toEqual([null, 0, 1, null, 3, null]);
@@ -65,8 +65,8 @@ export function main() {
 
       it('should calculate childFlags for one level', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          directiveDef(NodeFlags.AfterContentChecked, null !, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -80,9 +80,9 @@ export function main() {
 
       it('should calculate childFlags for two levels', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, [])
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          directiveDef(NodeFlags.AfterContentChecked, null !, 0, AService, [])
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -98,11 +98,11 @@ export function main() {
 
       it('should calculate childFlags for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          directiveDef(NodeFlags.AfterContentInit, null, 0, AService, []),
-          directiveDef(NodeFlags.AfterViewChecked, null, 0, AService, []),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          directiveDef(NodeFlags.AfterContentChecked, null !, 0, AService, []),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          directiveDef(NodeFlags.AfterContentInit, null !, 0, AService, []),
+          directiveDef(NodeFlags.AfterViewChecked, null !, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -120,12 +120,12 @@ export function main() {
 
       it('should calculate childFlags for multiple levels', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(NodeFlags.AfterContentChecked, null, 0, AService, []),
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          directiveDef(NodeFlags.AfterContentInit, null, 0, AService, []),
-          directiveDef(NodeFlags.AfterViewInit, null, 0, AService, []),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
+          directiveDef(NodeFlags.AfterContentChecked, null !, 0, AService, []),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          directiveDef(NodeFlags.AfterContentInit, null !, 0, AService, []),
+          directiveDef(NodeFlags.AfterViewInit, null !, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
@@ -151,7 +151,7 @@ export function main() {
 
       it('should calculate childMatchedQueries for one level', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
           directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
         ]);
 
@@ -160,8 +160,8 @@ export function main() {
 
       it('should calculate childMatchedQueries for two levels', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
           directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
         ]);
 
@@ -170,9 +170,9 @@ export function main() {
 
       it('should calculate childMatchedQueries for one level, multiple roots', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
           directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
           directiveDef(NodeFlags.None, [[2, QueryValueType.Provider]], 0, AService, []),
           directiveDef(NodeFlags.None, [[3, QueryValueType.Provider]], 0, AService, []),
         ]);
@@ -184,10 +184,10 @@ export function main() {
 
       it('should calculate childMatchedQueries for multiple levels', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
           directiveDef(NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
-          elementDef(NodeFlags.None, null, null, 2, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 2, 'span'),
           directiveDef(NodeFlags.None, [[2, QueryValueType.Provider]], 0, AService, []),
           directiveDef(NodeFlags.None, [[3, QueryValueType.Provider]], 0, AService, []),
         ]);
@@ -199,13 +199,13 @@ export function main() {
 
       it('should included embedded views into childMatchedQueries', () => {
         const vd = viewDef(ViewFlags.None, [
-          elementDef(NodeFlags.None, null, null, 1, 'span'),
+          elementDef(NodeFlags.None, null !, null !, 1, 'span'),
           anchorDef(
-              NodeFlags.None, null, null, 0, null,
+              NodeFlags.None, null !, null !, 0, null !,
               () => viewDef(
                   ViewFlags.None,
                   [
-                    elementDef(NodeFlags.None, [[1, QueryValueType.Provider]], null, 0, 'span'),
+                    elementDef(NodeFlags.None, [[1, QueryValueType.Provider]], null !, 0, 'span'),
                   ]))
         ]);
 

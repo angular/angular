@@ -31,7 +31,7 @@ export function main() {
     describe('create', () => {
       it('should create elements without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, null, 0, 'span')
+                            elementDef(NodeFlags.None, null !, null !, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().nodeName(rootNodes[0]).toLowerCase()).toBe('span');
@@ -39,16 +39,16 @@ export function main() {
 
       it('should create views with multiple root elements', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, null, 0, 'span'),
-                            elementDef(NodeFlags.None, null, null, 0, 'span')
+                            elementDef(NodeFlags.None, null !, null !, 0, 'span'),
+                            elementDef(NodeFlags.None, null !, null !, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(2);
       });
 
       it('should create elements with parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, null, 1, 'div'),
-                            elementDef(NodeFlags.None, null, null, 0, 'span'),
+                            elementDef(NodeFlags.None, null !, null !, 1, 'div'),
+                            elementDef(NodeFlags.None, null !, null !, 0, 'span'),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         const spanEl = getDOM().childNodes(rootNodes[0])[0];
@@ -57,7 +57,7 @@ export function main() {
 
       it('should set fixed attributes', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
-                            elementDef(NodeFlags.None, null, null, 0, 'div', [['title', 'a']]),
+                            elementDef(NodeFlags.None, null !, null !, 0, 'div', [['title', 'a']]),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
@@ -66,8 +66,8 @@ export function main() {
       it('should add debug information to the renderer', () => {
         const someContext = new Object();
         const {view, rootNodes} = createAndGetRootNodes(
-            compViewDef([elementDef(NodeFlags.None, null, null, 0, 'div')]), someContext);
-        expect(getDebugNode(rootNodes[0]).nativeNode).toBe(asElementData(view, 0).renderElement);
+            compViewDef([elementDef(NodeFlags.None, null !, null !, 0, 'div')]), someContext);
+        expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);
       });
     });
 
@@ -78,13 +78,13 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, null, 0, 'input', null,
+                    NodeFlags.None, null !, null !, 0, 'input', null !,
                     [
                       [BindingFlags.TypeProperty, 'title', SecurityContext.NONE],
                       [BindingFlags.TypeProperty, 'value', SecurityContext.NONE]
                     ]),
               ],
-              null, (check, view) => {
+              null !, (check, view) => {
                 checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, ['v1', 'v2']);
               }));
 
@@ -103,13 +103,13 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, null, 0, 'div', null,
+                    NodeFlags.None, null !, null !, 0, 'div', null !,
                     [
                       [BindingFlags.TypeElementAttribute, 'a1', SecurityContext.NONE],
                       [BindingFlags.TypeElementAttribute, 'a2', SecurityContext.NONE]
                     ]),
               ],
-              null, (check, view) => {
+              null !, (check, view) => {
                 checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, ['v1', 'v2']);
               }));
 
@@ -128,10 +128,10 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, null, 0, 'div', null,
+                    NodeFlags.None, null !, null !, 0, 'div', null !,
                     [
-                      [BindingFlags.TypeElementClass, 'c1', null],
-                      [BindingFlags.TypeElementClass, 'c2', null]
+                      [BindingFlags.TypeElementClass, 'c1', null !],
+                      [BindingFlags.TypeElementClass, 'c2', null !]
                     ]),
               ],
               (check, view) => {
@@ -153,13 +153,13 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
-                    NodeFlags.None, null, null, 0, 'div', null,
+                    NodeFlags.None, null !, null !, 0, 'div', null !,
                     [
                       [BindingFlags.TypeElementStyle, 'width', 'px'],
-                      [BindingFlags.TypeElementStyle, 'color', null]
+                      [BindingFlags.TypeElementStyle, 'color', null !]
                     ]),
               ],
-              null, (check, view) => {
+              null !, (check, view) => {
                 checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, [10, 'red']);
               }));
 
@@ -191,7 +191,7 @@ export function main() {
           const removeListenerSpy =
               spyOn(HTMLElement.prototype, 'removeEventListener').and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
+              NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               handleEventSpy)]));
 
           rootNodes[0].click();
@@ -212,8 +212,8 @@ export function main() {
           const addListenerSpy = spyOn(window, 'addEventListener');
           const removeListenerSpy = spyOn(window, 'removeEventListener');
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, [['window', 'windowClick']],
-              handleEventSpy)]));
+              NodeFlags.None, null !, null !, 0, 'button', null !, null !,
+              [['window', 'windowClick']], handleEventSpy)]));
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('windowClick');
@@ -235,8 +235,8 @@ export function main() {
           const addListenerSpy = spyOn(document, 'addEventListener');
           const removeListenerSpy = spyOn(document, 'removeEventListener');
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, [['document', 'documentClick']],
-              handleEventSpy)]));
+              NodeFlags.None, null !, null !, 0, 'button', null !, null !,
+              [['document', 'documentClick']], handleEventSpy)]));
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('documentClick');
@@ -255,10 +255,10 @@ export function main() {
 
         it('should preventDefault only if the handler returns false', () => {
           let eventHandlerResult: any;
-          let preventDefaultSpy: jasmine.Spy;
+          let preventDefaultSpy: jasmine.Spy = undefined !;
 
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
+              NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               (view, eventName, event) => {
                 preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
                 return eventHandlerResult;
@@ -284,7 +284,7 @@ export function main() {
         it('should report debug info on event errors', () => {
           const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              NodeFlags.None, null, null, 0, 'button', null, null, [[null, 'click']],
+              NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               () => { throw new Error('Test'); })]));
 
           let err: any;

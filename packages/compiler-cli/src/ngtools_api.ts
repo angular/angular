@@ -32,9 +32,9 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   angularCompilerOptions: AngularCompilerOptions;
 
   // i18n options.
-  i18nFormat: string;
-  i18nFile: string;
-  locale: string;
+  i18nFormat?: string;
+  i18nFile?: string;
+  locale?: string;
 
   readResource: (fileName: string) => Promise<string>;
 
@@ -58,7 +58,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   program: ts.Program;
   host: ts.CompilerHost;
   angularCompilerOptions: AngularCompilerOptions;
-  i18nFormat: string;
+  i18nFormat?: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
   locale?: string;

@@ -45,7 +45,7 @@ export function main() {
 
     function createModule(providers?: any[]): Type<any>;
     function createModule(options: CreateModuleOptions): Type<any>;
-    function createModule(providersOrOptions: any[] | CreateModuleOptions): Type<any> {
+    function createModule(providersOrOptions: any[] | CreateModuleOptions | undefined): Type<any> {
       let options: CreateModuleOptions = {};
       if (providersOrOptions instanceof Array) {
         options = {providers: providersOrOptions};
@@ -92,7 +92,8 @@ export function main() {
          createRootEl();
          const modFactory = compiler.compileModuleSync(SomeModule);
          const module = modFactory.create(TestBed);
-         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
+         const cmpFactory =
+             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
          const component = app.bootstrap(cmpFactory);
 
          // The component should see the child module providers
@@ -388,7 +389,7 @@ export function main() {
            vc.insert(hostView);
            expect(() => appRef.attachView(hostView))
                .toThrowError('This view is already attached to a ViewContainer!');
-           hostView = vc.detach(0);
+           hostView = vc.detach(0) !;
 
            appRef.attachView(hostView);
            expect(() => vc.insert(hostView))

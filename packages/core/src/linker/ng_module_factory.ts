@@ -60,7 +60,7 @@ export class NgModuleFactory<T> {
 
   get moduleType(): Type<T> { return this._moduleType; }
 
-  create(parentInjector: Injector): NgModuleRef<T> {
+  create(parentInjector: Injector|null): NgModuleRef<T> {
     const instance = new this._injectorClass(parentInjector || Injector.NULL);
     instance.create();
     return instance;

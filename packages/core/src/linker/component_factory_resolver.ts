@@ -56,7 +56,7 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
     let factory = this._factories.get(component) || this._parent.resolveComponentFactory(component);
 
-    return factory ? new ComponentFactoryBoundToModule(factory, this._ngModule) : null;
+    return new ComponentFactoryBoundToModule(factory, this._ngModule);
   }
 }
 

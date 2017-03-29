@@ -115,7 +115,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(providers: Provider[], parent: Injector = null): ReflectiveInjector {
+  static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
   }
@@ -143,7 +143,7 @@ export abstract class ReflectiveInjector implements Injector {
    * ```
    * @experimental
    */
-  static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent: Injector = null):
+  static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector):
       ReflectiveInjector {
     return new ReflectiveInjector_(providers, parent);
   }
@@ -163,7 +163,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(child.parent).toBe(parent);
    * ```
    */
-  abstract get parent(): Injector;
+  abstract get parent(): Injector|null;
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.
@@ -282,16 +282,16 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   /** @internal */
   public _providers: ResolvedReflectiveProvider[];
   /** @internal */
-  public _parent: Injector;
+  public _parent: Injector|null;
 
   keyIds: number[];
   objs: any[];
   /**
    * Private
    */
-  constructor(_providers: ResolvedReflectiveProvider[], _parent: Injector = null) {
+  constructor(_providers: ResolvedReflectiveProvider[], _parent?: Injector) {
     this._providers = _providers;
-    this._parent = _parent;
+    this._parent = _parent || null;
 
     const len = _providers.length;
 
@@ -308,7 +308,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._getByKey(ReflectiveKey.get(token), null, notFoundValue);
   }
 
-  get parent(): Injector { return this._parent; }
+  get parent(): Injector|null { return this._parent; }
 
   resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
@@ -388,7 +388,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._getByKey(dep.key, dep.visibility, dep.optional ? null : THROW_IF_NOT_FOUND);
   }
 
-  private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf, notFoundValue: any): any {
+  private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf|null, notFoundValue: any): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
@@ -431,8 +431,8 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   /** @internal */
-  _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, visibility: Self|SkipSelf): any {
-    let inj: Injector;
+  _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, visibility: Self|SkipSelf|null): any {
+    let inj: Injector|null;
 
     if (visibility instanceof SkipSelf) {
       inj = this._parent;

@@ -67,7 +67,7 @@ export function main() {
             '<needs-content-children #q><div text="foo"></div></needs-content-children>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
         view.detectChanges();
         expect(q.textDirChildren.length).toEqual(1);
         expect(q.numberOfChildrenAfterContentInit).toEqual(1);
@@ -79,7 +79,7 @@ export function main() {
         const view = createTestCmp(MyComp0, template);
         view.componentInstance.shouldShow = true;
         view.detectChanges();
-        const q: NeedsContentChild = view.debugElement.children[0].references['q'];
+        const q: NeedsContentChild = view.debugElement.children[0].references !['q'];
         expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
         view.componentInstance.shouldShow = false;
@@ -93,7 +93,7 @@ export function main() {
         const template = '<needs-view-child #q></needs-view-child>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-        const q: NeedsViewChild = view.debugElement.children[0].references['q'];
+        const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
         expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
         q.shouldShow = false;
@@ -107,7 +107,7 @@ export function main() {
         const template =
             '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
         const view = createTestCmp(MyComp0, template);
-        const q: NeedsStaticContentAndViewChild = view.debugElement.children[0].references['q'];
+        const q: NeedsStaticContentAndViewChild = view.debugElement.children[0].references !['q'];
         expect(q.contentChild.text).toBeFalsy();
         expect(q.viewChild.text).toBeFalsy();
 
@@ -128,7 +128,7 @@ export function main() {
         const view = TestBed.createComponent(MyComp0);
 
         view.detectChanges();
-        const q: NeedsViewChild = view.debugElement.children[0].references['q'];
+        const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
         expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
         q.shouldShow = false;
@@ -312,7 +312,7 @@ export function main() {
                '</needs-query>';
            const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-           const q = view.debugElement.children[0].references['q'];
+           const q = view.debugElement.children[0].references !['q'];
 
            q.query.changes.subscribe({
              next: () => {
@@ -333,14 +333,14 @@ export function main() {
            view.componentInstance.shouldShow = true;
            view.detectChanges();
 
-           const q: NeedsQuery = view.debugElement.children[0].references['q'];
+           const q: NeedsQuery = view.debugElement.children[0].references !['q'];
            expect(q.query.length).toEqual(1);
 
            view.componentInstance.shouldShow = false;
            view.detectChanges();
            view.componentInstance.shouldShow = true;
            view.detectChanges();
-           const q2: NeedsQuery = view.debugElement.children[0].references['q'];
+           const q2: NeedsQuery = view.debugElement.children[0].references !['q'];
 
            expect(q2.query.length).toEqual(1);
          });
@@ -353,7 +353,7 @@ export function main() {
                '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
                '</needs-query-by-ref-binding>';
            const view = createTestCmpAndDetectChanges(MyComp0, template);
-           const q = view.debugElement.children[0].references['q'];
+           const q = view.debugElement.children[0].references !['q'];
 
            view.componentInstance.list = ['1d', '2d'];
            view.detectChanges();
@@ -367,7 +367,7 @@ export function main() {
             '<div text="two" #textLabel2="textDir"></div>' +
             '</needs-query-by-ref-bindings>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
 
         expect(q.query.first.text).toEqual('one');
         expect(q.query.last.text).toEqual('two');
@@ -378,7 +378,7 @@ export function main() {
             '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
             '</needs-query-by-ref-binding>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
 
         view.componentInstance.list = ['1d', '2d'];
         view.detectChanges();
@@ -394,7 +394,7 @@ export function main() {
             '</div>' +
             '</needs-query-by-ref-binding>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
 
         view.componentInstance.list = ['1d', '2d'];
         view.detectChanges();
@@ -415,14 +415,14 @@ export function main() {
         const template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-        const q: NeedsViewQueryByLabel = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQueryByLabel = view.debugElement.children[0].references !['q'];
         expect(q.query.first.nativeElement).toHaveText('text');
       });
 
       it('should contain all child directives in the view dom', () => {
         const template = '<needs-view-children #q></needs-view-children>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
         expect(q.textDirChildren.length).toEqual(1);
         expect(q.numberOfChildrenAfterViewInit).toEqual(1);
       });
@@ -432,21 +432,21 @@ export function main() {
       it('should contain all the elements in the view with that have the given directive', () => {
         const template = '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q: NeedsViewQuery = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQuery = view.debugElement.children[0].references !['q'];
         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
       });
 
       it('should not include directive present on the host element', () => {
         const template = '<needs-view-query #q text="self"></needs-view-query>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q: NeedsViewQuery = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQuery = view.debugElement.children[0].references !['q'];
         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
       });
 
       it('should reflect changes in the component', () => {
         const template = '<needs-view-query-if #q></needs-view-query-if>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q: NeedsViewQueryIf = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQueryIf = view.debugElement.children[0].references !['q'];
         expect(q.query.length).toBe(0);
 
         q.show = true;
@@ -458,7 +458,7 @@ export function main() {
       it('should not be affected by other changes in the component', () => {
         const template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q: NeedsViewQueryNestedIf = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQueryNestedIf = view.debugElement.children[0].references !['q'];
 
         expect(q.query.length).toEqual(1);
         expect(q.query.first.text).toEqual('1');
@@ -473,7 +473,7 @@ export function main() {
          () => {
            const template = '<needs-view-query-order #q></needs-view-query-order>';
            const view = createTestCmpAndDetectChanges(MyComp0, template);
-           const q: NeedsViewQueryOrder = view.debugElement.children[0].references['q'];
+           const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
 
            expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
 
@@ -486,7 +486,7 @@ export function main() {
          () => {
            const template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
            const view = createTestCmpAndDetectChanges(MyComp0, template);
-           const q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].references['q'];
+           const q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].references !['q'];
            expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
 
            q.list = ['-3', '2'];
@@ -497,7 +497,7 @@ export function main() {
       it('should handle long ngFor cycles', () => {
         const template = '<needs-view-query-order #q></needs-view-query-order>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q: NeedsViewQueryOrder = view.debugElement.children[0].references['q'];
+        const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
 
         // no significance to 50, just a reasonably large cycle.
         for (let i = 0; i < 50; i++) {
@@ -511,7 +511,7 @@ export function main() {
       it('should support more than three queries', () => {
         const template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
         expect(q.query1).toBeDefined();
         expect(q.query2).toBeDefined();
         expect(q.query3).toBeDefined();
@@ -524,7 +524,7 @@ export function main() {
         const template =
             '<manual-projecting #q><ng-template><div text="1"></div></ng-template></manual-projecting>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
-        const q = view.debugElement.children[0].references['q'];
+        const q = view.debugElement.children[0].references !['q'];
         expect(q.query.length).toBe(0);
 
         q.create();
@@ -553,7 +553,7 @@ export function main() {
                '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
            const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-           const q = view.debugElement.children[0].references['q'];
+           const q = view.debugElement.children[0].references !['q'];
            // This should be 1, but due to
            // https://github.com/angular/angular/issues/15117 this is 0.
            expect(q.query.length).toBe(0);
@@ -812,7 +812,7 @@ class NeedsViewContainerWithRead {
 
 @Component({selector: 'has-null-query-condition', template: '<div></div>'})
 class HasNullQueryCondition {
-  @ContentChildren(null) errorTrigger: any;
+  @ContentChildren(null !) errorTrigger: any;
 }
 
 @Component({selector: 'my-comp', template: ''})

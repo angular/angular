@@ -38,9 +38,9 @@ export function directiveDef(
       bindings[bindingIndex] = {
         flags: BindingFlags.TypeProperty,
         name: prop, nonMinifiedName,
-        ns: undefined,
-        securityContext: undefined,
-        suffix: undefined
+        ns: null,
+        securityContext: null,
+        suffix: null
       };
     }
   }
@@ -67,9 +67,9 @@ export function providerDef(
 }
 
 export function _def(
-    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][], childCount: number,
-    token: any, value: any, deps: ([DepFlags, any] | any)[], bindings?: BindingDef[],
-    outputs?: OutputDef[]): NodeDef {
+    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][] | null,
+    childCount: number, token: any, value: any, deps: ([DepFlags, any] | any)[],
+    bindings?: BindingDef[], outputs?: OutputDef[]): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   if (!outputs) {
     outputs = [];
@@ -92,23 +92,23 @@ export function _def(
 
   return {
     // will bet set by the view definition
-    index: undefined,
-    parent: undefined,
-    renderParent: undefined,
-    bindingIndex: undefined,
-    outputIndex: undefined,
+    index: -1,
+    parent: null,
+    renderParent: null,
+    bindingIndex: -1,
+    outputIndex: -1,
     // regular values
     flags,
     childFlags: 0,
     directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
-    ngContentIndex: undefined, childCount, bindings,
+    ngContentIndex: -1, childCount, bindings,
     bindingFlags: calcBindingFlags(bindings), outputs,
-    element: undefined,
+    element: null,
     provider: {token, tokenKey: tokenKey(token), value, deps: depDefs},
-    text: undefined,
-    query: undefined,
-    ngContent: undefined
+    text: null,
+    query: null,
+    ngContent: null
   };
 }
 
@@ -126,22 +126,22 @@ export function createPipeInstance(view: ViewData, def: NodeDef): any {
   const allowPrivateServices = true;
   // pipes are always eager and classes!
   return createClass(
-      compView.parent, viewParentEl(compView), allowPrivateServices, def.provider.value,
-      def.provider.deps);
+      compView.parent !, viewParentEl(compView) !, allowPrivateServices, def.provider !.value,
+      def.provider !.deps);
 }
 
 export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
   // components can see other private services, other directives can't.
   const allowPrivateServices = (def.flags & NodeFlags.Component) > 0;
   // directives are always eager and classes!
-  const instance =
-      createClass(view, def.parent, allowPrivateServices, def.provider.value, def.provider.deps);
+  const instance = createClass(
+      view, def.parent !, allowPrivateServices, def.provider !.value, def.provider !.deps);
   if (def.outputs.length) {
     for (let i = 0; i < def.outputs.length; i++) {
       const output = def.outputs[i];
-      const subscription = instance[output.propName].subscribe(
-          eventHandlerClosure(view, def.parent.index, output.eventName));
-      view.disposables[def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
+      const subscription = instance[output.propName !].subscribe(
+          eventHandlerClosure(view, def.parent !.index, output.eventName));
+      view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
   return instance;
@@ -157,7 +157,7 @@ export function checkAndUpdateDirectiveInline(
   const providerData = asProviderData(view, def.index);
   const directive = providerData.instance;
   let changed = false;
-  let changes: SimpleChanges;
+  let changes: SimpleChanges = undefined !;
   const bindLen = def.bindings.length;
   if (bindLen > 0 && checkBinding(view, def, 0, v0)) {
     changed = true;
@@ -216,7 +216,7 @@ export function checkAndUpdateDirectiveDynamic(
   const providerData = asProviderData(view, def.index);
   const directive = providerData.instance;
   let changed = false;
-  let changes: SimpleChanges;
+  let changes: SimpleChanges = undefined !;
   for (let i = 0; i < values.length; i++) {
     if (checkBinding(view, def, i, values[i])) {
       changed = true;
@@ -242,18 +242,18 @@ function _createProviderInstance(view: ViewData, def: NodeDef): any {
   let injectable: any;
   switch (def.flags & NodeFlags.Types) {
     case NodeFlags.TypeClassProvider:
-      injectable =
-          createClass(view, def.parent, allowPrivateServices, providerDef.value, providerDef.deps);
+      injectable = createClass(
+          view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
       break;
     case NodeFlags.TypeFactoryProvider:
-      injectable =
-          callFactory(view, def.parent, allowPrivateServices, providerDef.value, providerDef.deps);
+      injectable = callFactory(
+          view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
       break;
     case NodeFlags.TypeUseExistingProvider:
-      injectable = resolveDep(view, def.parent, allowPrivateServices, providerDef.deps[0]);
+      injectable = resolveDep(view, def.parent !, allowPrivateServices, providerDef !.deps[0]);
       break;
     case NodeFlags.TypeValueProvider:
-      injectable = providerDef.value;
+      injectable = providerDef !.value;
       break;
   }
   return injectable;
@@ -345,7 +345,7 @@ export const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
 export function resolveDep(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
-    notFoundValue = Injector.THROW_IF_NOT_FOUND): any {
+    notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
   if (depDef.flags & DepFlags.Value) {
     return depDef.token;
   }
@@ -357,7 +357,7 @@ export function resolveDep(
 
   if (elDef && (depDef.flags & DepFlags.SkipSelf)) {
     allowPrivateServices = false;
-    elDef = elDef.parent;
+    elDef = elDef.parent !;
   }
 
   while (view) {
@@ -376,7 +376,7 @@ export function resolveDep(
         case ViewContainerRefTokenKey:
           return asElementData(view, elDef.index).viewContainer;
         case TemplateRefTokenKey: {
-          if (elDef.element.template) {
+          if (elDef.element !.template) {
             return asElementData(view, elDef.index).template;
           }
           break;
@@ -389,8 +389,8 @@ export function resolveDep(
           return createInjector(view, elDef);
         default:
           const providerDef =
-              (allowPrivateServices ? elDef.element.allProviders :
-                                      elDef.element.publicProviders)[tokenKey];
+              (allowPrivateServices ? elDef.element !.allProviders :
+                                      elDef.element !.publicProviders) ![tokenKey];
           if (providerDef) {
             const providerData = asProviderData(view, providerDef.index);
             if (providerData.instance === NOT_CREATED) {
@@ -401,8 +401,8 @@ export function resolveDep(
       }
     }
     allowPrivateServices = isComponentView(view);
-    elDef = viewParentEl(view);
-    view = view.parent;
+    elDef = viewParentEl(view) !;
+    view = view.parent !;
   }
 
   const value = startView.root.injector.get(depDef.token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
@@ -437,13 +437,13 @@ function updateProp(
     view: ViewData, providerData: ProviderData, def: NodeDef, bindingIdx: number, value: any,
     changes: SimpleChanges): SimpleChanges {
   if (def.flags & NodeFlags.Component) {
-    const compView = asElementData(view, def.parent.index).componentView;
+    const compView = asElementData(view, def.parent !.index).componentView;
     if (compView.def.flags & ViewFlags.OnPush) {
       compView.state |= ViewState.ChecksEnabled;
     }
   }
   const binding = def.bindings[bindingIdx];
-  const propName = binding.name;
+  const propName = binding.name !;
   // Note: This is still safe with Closure Compiler as
   // the user passed in the property name as an object has to `providerDef`,
   // so Closure Compiler will have renamed the property correctly already.
@@ -455,7 +455,7 @@ function updateProp(
       oldValue = oldValue.wrapped;
     }
     const binding = def.bindings[bindingIdx];
-    changes[binding.nonMinifiedName] =
+    changes[binding.nonMinifiedName !] =
         new SimpleChange(oldValue, value, (view.state & ViewState.FirstCheck) !== 0);
   }
   view.oldValues[def.bindingIndex + bindingIdx] = value;

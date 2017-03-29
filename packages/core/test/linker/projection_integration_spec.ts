@@ -234,7 +234,7 @@ export function main() {
     });
 
     it('should support moving non projected light dom around', () => {
-      let sourceDirective: ManualViewportDirective;
+      let sourceDirective: ManualViewportDirective = undefined !;
 
       @Directive({selector: '[manual]'})
       class ManualViewportDirective {

@@ -20,8 +20,11 @@ export function html(html: string): Element {
   return div;
 }
 
-export function multiTrim(text: string): string {
-  return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+export function multiTrim(text: string | null | undefined): string {
+  if (typeof text == 'string') {
+    return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+  }
+  throw new Error('Argument can not be undefined.');
 }
 
 export function nodes(html: string) {

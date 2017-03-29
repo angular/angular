@@ -14,21 +14,21 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
   for (let i = 1; i < constants.length; i++) {
     bindings[i - 1] = {
       flags: BindingFlags.TypeProperty,
-      name: undefined,
-      ns: undefined,
-      nonMinifiedName: undefined,
-      securityContext: undefined,
+      name: null,
+      ns: null,
+      nonMinifiedName: null,
+      securityContext: null,
       suffix: constants[i]
     };
   }
   const flags = NodeFlags.TypeText;
   return {
     // will bet set by the view definition
-    index: undefined,
-    parent: undefined,
-    renderParent: undefined,
-    bindingIndex: undefined,
-    outputIndex: undefined,
+    index: -1,
+    parent: null,
+    renderParent: null,
+    bindingIndex: -1,
+    outputIndex: -1,
     // regular values
     flags,
     childFlags: 0,
@@ -40,18 +40,18 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     childCount: 0, bindings,
     bindingFlags: calcBindingFlags(bindings),
     outputs: [],
-    element: undefined,
-    provider: undefined,
+    element: null,
+    provider: null,
     text: {prefix: constants[0]},
-    query: undefined,
-    ngContent: undefined
+    query: null,
+    ngContent: null
   };
 }
 
 export function createText(view: ViewData, renderHost: any, def: NodeDef): TextData {
   let renderNode: any;
   const renderer = view.renderer;
-  renderNode = renderer.createText(def.text.prefix);
+  renderNode = renderer.createText(def.text !.prefix);
   const parentEl = getParentRenderElement(view, renderHost, def);
   if (parentEl) {
     renderer.appendChild(parentEl, renderNode);
@@ -77,7 +77,7 @@ export function checkAndUpdateTextInline(
   if (bindLen > 9 && checkAndUpdateBinding(view, def, 9, v9)) changed = true;
 
   if (changed) {
-    let value = def.text.prefix;
+    let value = def.text !.prefix;
     if (bindLen > 0) value += _addInterpolationPart(v0, bindings[0]);
     if (bindLen > 1) value += _addInterpolationPart(v1, bindings[1]);
     if (bindLen > 2) value += _addInterpolationPart(v2, bindings[2]);
@@ -109,7 +109,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
     for (let i = 0; i < values.length; i++) {
       value = value + _addInterpolationPart(values[i], bindings[i]);
     }
-    value = def.text.prefix + value;
+    value = def.text !.prefix + value;
     const renderNode = asTextData(view, def.index).renderText;
     view.renderer.setValue(renderNode, value);
   }
