@@ -171,6 +171,36 @@ describe('diagnostics', () => {
       });
     });
 
+    // Issue #15460
+    it('should be able to find members defined on an ancestor type', () => {
+      const app_component = `
+        import { Component } from '@angular/core';
+        import { NgForm } from '@angular/common';
+
+        @Component({
+          selector: 'example-app',
+          template: \`
+             <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+              <input name="first" ngModel required #first="ngModel">
+              <input name="last" ngModel>
+              <button>Submit</button>
+            </form>
+            <p>First name value: {{ first.value }}</p>
+            <p>First name valid: {{ first.valid }}</p>
+            <p>Form value: {{ f.value | json }}</p>
+            <p>Form valid: {{ f.valid }}</p>
+         \`,
+        })
+        export class AppComponent {
+          onSubmit(form: NgForm) {}
+        }
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, app_component);
+      const diagnostic = ngService.getDiagnostics(fileName);
+      expect(diagnostic).toEqual([]);
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
