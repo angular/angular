@@ -1,5 +1,8 @@
+// TypeScript config file that extends the default tsconfig file for the library. This config is 
+// used to compile the specs for Karma. Since the code will run inside of the browser, the target
+// needs to be ES5. The format needs to be CommonJS since Karma only supports that module format.
 {
-  "extends": "./tsconfig",
+  "extends": "./tsconfig-build",
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",

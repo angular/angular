@@ -1,6 +1,8 @@
+// TypeScript config file that is used to compile the e2e-app. Protractor will run all specs
+// against the e2e-app in the browser and therefore the code needs to be ES5 compatible.
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "es2015", "dom"],
@@ -8,7 +10,7 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "outDir": "../../dist/packages/demo-app",
+    "outDir": "../../dist/packages/e2e-app",
     "sourceMap": true,
     "target": "es5",
     "stripInternal": false,
@@ -22,10 +24,9 @@
       ]
     }
   },
-  "files": [
-    "./demo-app-types.d.ts",
-    "./demo-app-module.ts",
-    "./system-config.ts",
-    "./main.ts"
-  ]
+  "angularCompilerOptions": {
+    "genDir": "../../dist",
+    "skipTemplateCodegen": true,
+    "debug": true
+  }
 }

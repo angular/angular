@@ -1,6 +1,8 @@
-/* Config file for the Angular Compiler. Paths need to be relative to the dist folder. */
+// TypeScript config that extends the demo-app tsconfig file. This config compiles the 
+// "main-aot.ts" file and also enables templage code generation / AOT. All paths need
+// to be relative to the output directory.
 {
-  "extends": "./tsconfig",
+  "extends": "./tsconfig-build",
   "compilerOptions": {
     "experimentalDecorators": true,
     "paths": {

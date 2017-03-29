@@ -13,7 +13,7 @@ const inlineResources = require('../../../scripts/release/inline-resources');
 const uglify = require('uglify-js');
 
 const libraryRoot = join(SOURCE_ROOT, 'lib');
-const tsconfigPath = join(libraryRoot, 'tsconfig.json');
+const tsconfigPath = join(libraryRoot, 'tsconfig-build.json');
 
 // Paths to the different output directories.
 const materialDir = DIST_MATERIAL;

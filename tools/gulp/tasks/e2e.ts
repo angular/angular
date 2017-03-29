@@ -13,7 +13,7 @@ const appDir = path.join(SOURCE_ROOT, 'e2e-app');
 const outDir = DIST_E2EAPP;
 
 const PROTRACTOR_CONFIG_PATH = path.join(PROJECT_ROOT, 'test/protractor.conf.js');
-const tsconfigPath = path.join(appDir, 'tsconfig.json');
+const tsconfigPath = path.join(appDir, 'tsconfig-build.json');
 
 task(':watch:e2eapp', () => {
   watch(path.join(appDir, '**/*.ts'), [':build:e2eapp:ts']);

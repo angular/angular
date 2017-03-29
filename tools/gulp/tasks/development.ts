@@ -16,7 +16,7 @@ task(':watch:devapp', () => {
 });
 
 /** Path to the demo-app tsconfig file. */
-const tsconfigPath = join(appDir, 'tsconfig.json');
+const tsconfigPath = join(appDir, 'tsconfig-build.json');
 
 task(':build:devapp:ts', tsBuildTask(tsconfigPath));
 task(':build:devapp:scss', sassBuildTask(outDir, appDir));

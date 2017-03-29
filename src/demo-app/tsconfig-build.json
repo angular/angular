@@ -1,6 +1,8 @@
+// TypeScript config file that is used to compile the demo-app. Target environment will be ES5,
+// since the demo-app will be served in the browser.
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "es2015", "dom"],
@@ -8,7 +10,7 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "outDir": "../../dist/packages/e2e-app",
+    "outDir": "../../dist/packages/demo-app",
     "sourceMap": true,
     "target": "es5",
     "stripInternal": false,
@@ -22,9 +24,10 @@
       ]
     }
   },
-  "angularCompilerOptions": {
-    "genDir": "../../dist",
-    "skipTemplateCodegen": true,
-    "debug": true
-  }
+  "files": [
+    "./demo-app-types.d.ts",
+    "./demo-app-module.ts",
+    "./system-config.ts",
+    "./main.ts"
+  ]
 }
