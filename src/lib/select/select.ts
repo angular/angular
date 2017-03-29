@@ -15,6 +15,7 @@ import {
   ViewChild,
   ChangeDetectorRef,
   Attribute,
+  OnInit,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange} from '../core/option/option';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
@@ -119,7 +120,7 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
   ],
   exportAs: 'mdSelect',
 })
-export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestroy {
+export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlValueAccessor {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -311,8 +312,11 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     this._tabIndex = parseInt(tabIndex) || 0;
   }
 
-  ngAfterContentInit() {
+  ngOnInit() {
     this._selectionModel = new SelectionModel<MdOption>(this.multiple, null, false);
+  }
+
+  ngAfterContentInit() {
     this._initKeyManager();
 
     this._changeSubscription = this.options.changes.startWith(null).subscribe(() => {
