@@ -205,6 +205,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _handleKeydown(event: KeyboardEvent): void {
     if (this.activeOption && event.keyCode === ENTER) {
       this.activeOption._selectViaInteraction();
+      event.preventDefault();
     } else {
       this.autocomplete._keyManager.onKeydown(event);
       if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {

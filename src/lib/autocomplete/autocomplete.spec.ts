@@ -631,6 +631,20 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should prevent the default enter key action', async(() => {
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+
+        fixture.whenStable().then(() => {
+          spyOn(ENTER_EVENT, 'preventDefault');
+
+          fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+
+          expect(ENTER_EVENT.preventDefault).toHaveBeenCalled();
+        });
+      });
+    }));
+
     it('should fill the text field, not select an option, when SPACE is entered', async(() => {
       fixture.whenStable().then(() => {
         typeInElement('New', input);
