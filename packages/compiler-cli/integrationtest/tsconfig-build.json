@@ -10,6 +10,8 @@
     "target": "es5",
     "experimentalDecorators": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
     "moduleResolution": "node",
     "rootDir": "",
     "declaration": true,

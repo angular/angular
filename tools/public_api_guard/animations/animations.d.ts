@@ -1,5 +1,5 @@
 /** @experimental */
-export declare function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
+export declare function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null): AnimationAnimateMetadata;
 
 /** @experimental */
 export declare type AnimateTimings = {
@@ -10,7 +10,7 @@ export declare type AnimateTimings = {
 
 /** @experimental */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
-    styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata;
+    styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null;
     timings: string | number | AnimateTimings;
 }
 
