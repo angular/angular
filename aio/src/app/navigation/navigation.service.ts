@@ -1,49 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
+
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/publishLast';
+import 'rxjs/add/operator/publishReplay';
 
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 
-import { NavigationNode } from './navigation-node';
-export { NavigationNode } from './navigation-node';
-
-
-export type NavigationResponse = {__versionInfo: VersionInfo } & { [name: string]: NavigationNode[]|VersionInfo };
-
-export interface NavigationViews {
-  [name: string]: NavigationNode[];
-}
-
-export interface NavigationMap {
-  [url: string]: NavigationNode;
-}
-
-export interface VersionInfo {
-  raw: string;
-  major: number;
-  minor: number;
-  patch: number;
-  prerelease: string[];
-  build: string;
-  version: string;
-  codeName: string;
-  isSnapshot: boolean;
-  full: string;
-  branch: string;
-  commitSHA: string;
-}
+// Import and re-export the Navigation model types
+import { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+export { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
 const navigationPath = 'content/navigation.json';
 
+const urlParser = document.createElement('a');
+function cleanUrl(url: string) {
+  // remove hash (#) and query params (?)
+  urlParser.href = '/' + url;
+  // strip leading and trailing slashes
+  return urlParser.pathname.replace(/^\/+|\/$/g, '');
+}
 
 @Injectable()
 export class NavigationService {
-
   /**
    * An observable collection of NavigationNode trees, which can be used to render navigational menus
    */
@@ -55,16 +37,18 @@ export class NavigationService {
   versionInfo: Observable<VersionInfo>;
 
   /**
-   * An observable array of nodes that indicate which nodes in the `navigationViews` match the current URL location
+   * An observable of the current node with info about the
+   * node (if any) that matches the current URL location
+   * including its navigation view and its ancestor nodes in that view
    */
-  selectedNodes: Observable<NavigationNode[]>;
+  currentNode: Observable<CurrentNode>;
 
   constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
     this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.selectedNodes = this.getSelectedNodes(this.navigationViews);
+    this.currentNode = this.getCurrentNode(this.navigationViews);
   }
 
   /**
@@ -99,45 +83,48 @@ export class NavigationService {
   }
 
   /**
-   * Get an observable that will list the nodes that are currently selected
+   * Get an observable of the current node (the one that matches the current URL)
    * We use `publishReplay(1)` because otherwise subscribers will have to wait until the next
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getSelectedNodes(navigationViews: Observable<NavigationViews>) {
-    const selectedNodes = combineLatest(
-      navigationViews.map(this.computeUrlToNodesMap),
+  private getCurrentNode(navigationViews: Observable<NavigationViews>): Observable<CurrentNode> {
+    const currentNode = combineLatest(
+      navigationViews.map(this.computeUrlToNavNodesMap),
       this.location.currentUrl,
       (navMap, url) => {
-        // strip trailing slashes from the currentUrl - they are not relevant to matching against the navMap
-        url = url.replace(/\/$/, '');
-        return navMap[url] || [];
+        let urlKey = cleanUrl(url);
+        urlKey = urlKey.startsWith('api/') ? 'api' : urlKey;
+        return navMap[urlKey] || { view: '', url, nodes: [] };
       })
       .publishReplay(1);
-    selectedNodes.connect();
-    return selectedNodes;
+    currentNode.connect();
+    return currentNode;
   }
 
   /**
    * Compute a mapping from URL to an array of nodes, where the first node in the array
    * is the one that matches the URL and the rest are the ancestors of that node.
    *
-   * @param navigation A collection of navigation nodes that are to be mapped
+   * @param navigation - A collection of navigation nodes that are to be mapped
    */
-  private computeUrlToNodesMap(navigation: NavigationViews) {
-    const navMap: NavigationMap = {};
-    Object.keys(navigation).forEach(key => navigation[key].forEach(node => walkNodes(node)));
+  private computeUrlToNavNodesMap(navigation: NavigationViews) {
+    const navMap = new Map<string, CurrentNode>();
+    Object.keys(navigation)
+      .forEach(view => navigation[view].forEach(node => walkNodes(view, node)));
     return navMap;
 
-    function walkNodes(node: NavigationNode, ancestors: NavigationNode[] = []) {
+    function walkNodes(view: string, node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
+      const url = node.url;
+
       // only map to this node if it has a url associated with it
-      if (node.url) {
+      if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
-        navMap[node.url.replace(/\/$/, '')] = nodes;
+        navMap[url.replace(/\/$/, '')] = { url, view, nodes };
       }
       if (node.children) {
-        node.children.forEach(child => walkNodes(child, nodes));
+        node.children.forEach(child => walkNodes(view, child, nodes));
       }
     }
   }

@@ -1,19 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
+
 import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/publishReplay';
+
+import { GaService } from 'app/shared/ga.service';
 
 @Injectable()
 export class LocationService {
 
   private readonly urlParser = document.createElement('a');
-  private urlSubject = new ReplaySubject<string>(1);
-  currentUrl = this.urlSubject.asObservable();
+  private urlSubject = new Subject<string>();
+  currentUrl = this.urlSubject
+    .do(url => this.gaService.locationChanged(url))
+    .publishReplay(1);
 
   constructor(
+    private gaService: GaService,
     private location: Location,
     private platformLocation: PlatformLocation) {
 
+    this.currentUrl.connect();
     const initialUrl = this.stripLeadingSlashes(location.path(true));
     this.urlSubject.next(initialUrl);
 

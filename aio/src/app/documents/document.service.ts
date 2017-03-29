@@ -3,6 +3,9 @@ import { Http, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
+import { of } from 'rxjs/observable/of';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 
 import { DocumentContents } from './document-contents';
@@ -51,7 +54,7 @@ export class DocumentService {
             // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
             return this.getDocument(FILE_NOT_FOUND_URL);
           } else {
-            return Observable.of({ title: 'Not Found', contents: 'Document not found' });
+            return of({ title: 'Not Found', contents: 'Document not found' });
           }
         } else {
           this.logger.error('Error fetching document', error);
