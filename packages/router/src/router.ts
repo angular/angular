@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
+import {InternalRoute, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -806,15 +806,15 @@ export class PreActivation {
   private traverseChildRoutes(
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
       outletMap: RouterOutletMap, futurePath: ActivatedRouteSnapshot[]): void {
-    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
+    const prevChildren = nodeChildrenAsMap(currNode);
 
     futureNode.children.forEach(c => {
       this.traverseRoutes(c, prevChildren[c.value.outlet], outletMap, futurePath.concat([c.value]));
       delete prevChildren[c.value.outlet];
     });
     forEach(
-        prevChildren,
-        (v: any, k: string) => this.deactiveRouteAndItsChildren(v, outletMap._outlets[k]));
+        prevChildren, (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
+                          this.deactiveRouteAndItsChildren(v, outletMap._outlets[k]));
   }
 
   private traverseRoutes(
@@ -881,10 +881,10 @@ export class PreActivation {
 
   private deactiveRouteAndItsChildren(
       route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet): void {
-    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
+    const prevChildren = nodeChildrenAsMap(route);
     const r = route.value;
 
-    forEach(prevChildren, (v: any, k: string) => {
+    forEach(prevChildren, (v: TreeNode<ActivatedRouteSnapshot>, k: string) => {
       if (!r.component) {
         this.deactiveRouteAndItsChildren(v, outlet);
       } else if (!!outlet) {
@@ -1167,33 +1167,34 @@ function advanceActivatedRouteNodeAndItsChildren(node: TreeNode<ActivatedRoute>)
 }
 
 function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
-  let s = snapshot.parent;
-  while (s) {
-    const c: any = s._routeConfig;
-    if (c && c._loadedConfig) return c._loadedConfig;
-    if (c && c.component) return null;
-    s = s.parent;
+  for (let s = snapshot.parent; s; s = s.parent) {
+    const route: InternalRoute = s._routeConfig;
+    if (route && route._loadedConfig) return route._loadedConfig;
+    if (route && route.component) return null;
   }
+
   return null;
 }
 
 function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
   if (!snapshot) return null;
 
-  let s = snapshot.parent;
-  while (s) {
-    const c: any = s._routeConfig;
-    if (c && c._loadedConfig) return c._loadedConfig;
-    s = s.parent;
+  for (let s = snapshot.parent; s; s = s.parent) {
+    const route: InternalRoute = s._routeConfig;
+    if (route && route._loadedConfig) return route._loadedConfig;
   }
+
   return null;
 }
 
-function nodeChildrenAsMap(node: TreeNode<any>) {
-  return node ? node.children.reduce((m: any, c: TreeNode<any>) => {
-    m[c.value.outlet] = c;
-    return m;
-  }, {}) : {};
+function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>) {
+  const map: {[key: string]: TreeNode<T>} = {};
+
+  if (node) {
+    node.children.forEach(child => map[child.value.outlet] = child);
+  }
+
+  return map;
 }
 
 function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOutlet {

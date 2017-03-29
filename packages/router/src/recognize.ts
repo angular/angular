@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, ResolveData, Route, Routes} from './config';
+import {Data, InternalRoute, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
@@ -66,9 +66,9 @@ class Recognizer {
       TreeNode<ActivatedRouteSnapshot>[] {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(config, segmentGroup);
-    } else {
-      return this.processSegment(config, segmentGroup, segmentGroup.segments, outlet);
     }
+
+    return this.processSegment(config, segmentGroup, segmentGroup.segments, outlet);
   }
 
   processChildren(config: Route[], segmentGroup: UrlSegmentGroup):
@@ -92,9 +92,9 @@ class Recognizer {
     }
     if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
       return [];
-    } else {
-      throw new NoMatch();
     }
+
+    throw new NoMatch();
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
@@ -107,7 +107,7 @@ class Recognizer {
       outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
     if (route.redirectTo) throw new NoMatch();
 
-    if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
+    if ((route.outlet || PRIMARY_OUTLET) !== outlet) throw new NoMatch();
 
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments).parameters : {};
@@ -135,15 +135,14 @@ class Recognizer {
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
-
-    } else if (childConfig.length === 0 && slicedSegments.length === 0) {
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
-
-    } else {
-      const children =
-          this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
     }
+
+    if (childConfig.length === 0 && slicedSegments.length === 0) {
+      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+    }
+
+    const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
   }
 }
 
@@ -155,23 +154,25 @@ function sortActivatedRouteSnapshots(nodes: TreeNode<ActivatedRouteSnapshot>[]):
   });
 }
 
-function getChildConfig(route: Route): Route[] {
+function getChildConfig(route: InternalRoute): Route[] {
   if (route.children) {
     return route.children;
-  } else if (route.loadChildren) {
-    return (<any>route)._loadedConfig.routes;
-  } else {
-    return [];
   }
+
+  if (route.loadChildren) {
+    return route._loadedConfig.routes;
+  }
+
+  return [];
 }
 
 function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]) {
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       throw new NoMatch();
-    } else {
-      return {consumedSegments: [], lastChild: 0, parameters: {}};
     }
+
+    return {consumedSegments: [], lastChild: 0, parameters: {}};
   }
 
   const matcher = route.matcher || defaultUrlMatcher;
@@ -228,9 +229,9 @@ function split(
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments: []};
+  }
 
-  } else if (
-      slicedSegments.length === 0 &&
+  if (slicedSegments.length === 0 &&
       containsEmptyPathMatches(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
         segmentGroup.segments, addEmptyPathsToChildrenIfNeeded(
@@ -238,13 +239,12 @@ function split(
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments};
-
-  } else {
-    const s = new UrlSegmentGroup(segmentGroup.segments, segmentGroup.children);
-    s._sourceSegment = segmentGroup;
-    s._segmentIndexShift = consumedSegments.length;
-    return {segmentGroup: s, slicedSegments};
   }
+
+  const s = new UrlSegmentGroup(segmentGroup.segments, segmentGroup.children);
+  s._sourceSegment = segmentGroup;
+  s._segmentIndexShift = consumedSegments.length;
+  return {segmentGroup: s, slicedSegments};
 }
 
 function addEmptyPathsToChildrenIfNeeded(
@@ -283,33 +283,32 @@ function createChildrenForEmptyPaths(
 
 function containsEmptyPathMatchesWithNamedOutlets(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[]): boolean {
-  return routes
-             .filter(
-                 r => emptyPathMatch(segmentGroup, slicedSegments, r) &&
-                     getOutlet(r) !== PRIMARY_OUTLET)
-             .length > 0;
+  return routes.some(
+      r => emptyPathMatch(segmentGroup, slicedSegments, r) && getOutlet(r) !== PRIMARY_OUTLET);
 }
 
 function containsEmptyPathMatches(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[]): boolean {
-  return routes.filter(r => emptyPathMatch(segmentGroup, slicedSegments, r)).length > 0;
+  return routes.some(r => emptyPathMatch(segmentGroup, slicedSegments, r));
 }
 
 function emptyPathMatch(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], r: Route): boolean {
-  if ((segmentGroup.hasChildren() || slicedSegments.length > 0) && r.pathMatch === 'full')
+  if ((segmentGroup.hasChildren() || slicedSegments.length > 0) && r.pathMatch === 'full') {
     return false;
+  }
+
   return r.path === '' && r.redirectTo === undefined;
 }
 
 function getOutlet(route: Route): string {
-  return route.outlet ? route.outlet : PRIMARY_OUTLET;
+  return route.outlet || PRIMARY_OUTLET;
 }
 
 function getData(route: Route): Data {
-  return route.data ? route.data : {};
+  return route.data || {};
 }
 
 function getResolve(route: Route): ResolveData {
-  return route.resolve ? route.resolve : {};
+  return route.resolve || {};
 }

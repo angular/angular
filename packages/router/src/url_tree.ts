@@ -345,7 +345,7 @@ export function serializePath(path: UrlSegment): string {
 }
 
 function serializeParams(params: {[key: string]: string}): string {
-  return pairs(params).map(p => `;${encode(p.first)}=${encode(p.second)}`).join('');
+  return Object.keys(params).map(key => `;${encode(key)}=${encode(params[key])}`).join('');
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
@@ -356,20 +356,6 @@ function serializeQueryParams(params: {[key: string]: any}): string {
   });
 
   return strParams.length ? `?${strParams.join("&")}` : '';
-}
-
-class Pair<A, B> {
-  constructor(public first: A, public second: B) {}
-}
-
-function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
-  const res: Pair<string, T>[] = [];
-  for (const prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
-      res.push(new Pair<string, T>(prop, obj[prop]));
-    }
-  }
-  return res;
 }
 
 const SEGMENT_RE = /^[^\/()?;=&#]+/;
