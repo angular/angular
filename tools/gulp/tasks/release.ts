@@ -34,7 +34,7 @@ const themingBundlePath = join(DIST_RELEASE, '_theming.scss');
 const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css');
 
 task('build:release', sequenceTask(
-  'library:build',
+  'library:clean-build',
   ':package:release',
 ));
 

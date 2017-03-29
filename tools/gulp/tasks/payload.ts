@@ -9,7 +9,7 @@ import {openFirebaseDashboardDatabase} from '../util/firebase';
 const bundlesDir = join(DIST_ROOT, 'bundles');
 
 /** Task which runs test against the size of whole library. */
-task('payload', ['library:build'], () => {
+task('payload', ['library:clean-build'], () => {
 
   let results = {
     umd_kb: getBundleSize('material.umd.js'),

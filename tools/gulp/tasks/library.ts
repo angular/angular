@@ -21,8 +21,9 @@ const bundlesDir = DIST_BUNDLES;
 
 const esmMainFile = join(materialDir, 'index.js');
 
+task('library:clean-build', sequenceTask('clean', 'library:build'));
+
 task('library:build', sequenceTask(
-  'clean',
   ['library:build:esm', 'library:assets'],
   // Inline assets into ESM output.
   'library:assets:inline',
