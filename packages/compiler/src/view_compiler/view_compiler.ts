@@ -644,8 +644,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       return EventHandlerVars.event;
     }
     let currViewExpr: o.Expression = VIEW_VAR;
-    for (let currBuilder: ViewBuilder = this; currBuilder;
-         currBuilder = currBuilder.parent, currViewExpr = currViewExpr.prop('parent')) {
+    for (let currBuilder: ViewBuilder = this; currBuilder; currBuilder = currBuilder.parent,
+                          currViewExpr = currViewExpr.prop('parent').cast(o.DYNAMIC_TYPE)) {
       // check references
       const refNodeIndex = currBuilder.refNodeIndices[name];
       if (refNodeIndex != null) {
@@ -717,7 +717,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       let compBuilder: ViewBuilder = this;
       while (compBuilder.parent) {
         compBuilder = compBuilder.parent;
-        compViewExpr = compViewExpr.prop('parent');
+        compViewExpr = compViewExpr.prop('parent').cast(o.DYNAMIC_TYPE);
       }
       const pipeNodeIndex = compBuilder.purePipeNodeIndices[name];
       const pipeValueExpr: o.Expression =

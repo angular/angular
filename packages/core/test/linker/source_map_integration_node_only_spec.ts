@@ -26,15 +26,15 @@ export function main() {
     });
 
     function getErrorLoggerStack(e: Error): string {
-      let logStack: string;
-      getErrorLogger(e)(<any>{error: () => logStack = new Error().stack}, e.message);
+      let logStack: string = undefined !;
+      getErrorLogger(e)(<any>{error: () => logStack = new Error().stack !}, e.message);
       return logStack;
     }
 
     function getSourceMap(genFile: string): SourceMap {
       const jitSources = jitSpy.calls.all().map((call) => call.args[call.args.length - 1]);
       return jitSources.map(source => extractSourceMap(source))
-          .find(map => map && map.file === genFile);
+          .find(map => !!(map && map.file === genFile)) !;
     }
 
     function getSourcePositionForStack(stack: string):
@@ -46,9 +46,9 @@ export function main() {
               .map(line => /\((.*\.ngfactory\.js):(\d+):(\d+)/.exec(line))
               .filter(match => !!match)
               .map(match => ({
-                     file: match[1],
-                     line: parseInt(match[2], 10),
-                     column: parseInt(match[3], 10)
+                     file: match ![1],
+                     line: parseInt(match ![2], 10),
+                     column: parseInt(match ![3], 10)
                    }));
       const ngFactoryLocation = ngFactoryLocations[0];
 
