@@ -47,7 +47,7 @@ aio-code pre {
     white-space: pre-wrap;
 }
 
-.copy-button {
+.lang-ts .copy-button {
   top: -16px;
   right: -16px;
   color: $lightgray;
@@ -56,6 +56,10 @@ aio-code pre {
   &:hover {
     color: $mediumgray;
   }
+}
+
+.lang- .copy-button {
+  visibility: hidden;
 }
 
 $blue-grey-50: #ECEFF1;
