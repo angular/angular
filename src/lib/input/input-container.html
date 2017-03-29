@@ -1,6 +1,6 @@
 <div class="mat-input-wrapper">
   <div class="mat-input-table">
-    <div class="mat-input-prefix">
+    <div class="mat-input-prefix" *ngIf="_prefixChildren.length">
       <!-- TODO(andrewseguin): remove [md-prefix] -->
       <ng-content select="[mdPrefix], [matPrefix], [md-prefix]"></ng-content>
     </div>
@@ -23,7 +23,7 @@
       </span>
     </div>
 
-    <div class="mat-input-suffix">
+    <div class="mat-input-suffix" *ngIf="_suffixChildren.length">
       <!-- TODO(andrewseguin): remove [md-suffix] -->
       <ng-content select="[mdSuffix], [matSuffix], [md-suffix]"></ng-content>
     </div>

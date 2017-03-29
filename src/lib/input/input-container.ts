@@ -1,30 +1,24 @@
 import {
-  AfterViewInit,
   AfterContentInit,
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ContentChild,
   ContentChildren,
   Directive,
   ElementRef,
+  EventEmitter,
   Input,
   Optional,
   Output,
-  EventEmitter,
-  Renderer,
-  ChangeDetectorRef,
-  ViewEncapsulation,
-  Self,
   QueryList,
+  Renderer,
+  Self,
+  ViewEncapsulation
 } from '@angular/core';
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty} from '../core';
-import {NgControl, NgForm, FormGroupDirective} from '@angular/forms';
+import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
   MdInputContainerDuplicatedHintError,
@@ -89,6 +83,20 @@ export class MdHint {
   }
 })
 export class MdErrorDirective { }
+
+/** The input prefix. */
+@Directive({
+  selector: '[mdPrefix], [matPrefix], [md-prefix]'
+})
+export class MdPrefix {}
+
+
+/** The input suffix. */
+@Directive({
+  selector: '[mdSuffix], [matSuffix], [md-suffix]'
+})
+export class MdSuffix {}
+
 
 /** The input directive, used to mark the input that `MdInputContainer` is wrapping. */
 @Directive({
@@ -326,6 +334,10 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
   @ContentChildren(MdErrorDirective) _errorChildren: QueryList<MdErrorDirective>;
 
   @ContentChildren(MdHint) _hintChildren: QueryList<MdHint>;
+
+  @ContentChildren(MdPrefix) _prefixChildren: QueryList<MdPrefix>;
+
+  @ContentChildren(MdSuffix) _suffixChildren: QueryList<MdSuffix>;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
