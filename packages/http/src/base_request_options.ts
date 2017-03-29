@@ -25,16 +25,14 @@ import {URLSearchParams} from './url_search_params';
  * All values are null by default. Typical defaults can be found in the {@link BaseRequestOptions}
  * class, which sub-classes `RequestOptions`.
  *
- * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
- *
  * ```typescript
  * import {RequestOptions, Request, RequestMethod} from '@angular/http';
  *
- * var options = new RequestOptions({
+ * const options = new RequestOptions({
  *   method: RequestMethod.Post,
  *   url: 'https://google.com'
  * });
- * var req = new Request(options);
+ * const req = new Request(options);
  * console.log('req.method:', RequestMethod[req.method]); // Post
  * console.log('options.url:', options.url); // https://google.com
  * ```
@@ -102,15 +100,13 @@ export class RequestOptions {
    * the `options` object. If these values should be merged, it should be done prior to calling
    * `merge` on the `RequestOptions` instance.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
-   *
    * ```typescript
    * import {RequestOptions, Request, RequestMethod} from '@angular/http';
    *
-   * var options = new RequestOptions({
+   * const options = new RequestOptions({
    *   method: RequestMethod.Post
    * });
-   * var req = new Request(options.merge({
+   * const req = new Request(options.merge({
    *   url: 'https://google.com'
    * }));
    * console.log('req.method:', RequestMethod[req.method]); // Post
@@ -179,31 +175,24 @@ export class RequestOptions {
  * when configuring an {@link Injector}, in order to override the default options
  * used by {@link Http} to create and send {@link Request Requests}.
  *
- * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
- *
  * ```typescript
- * import {provide} from '@angular/core';
- * import {bootstrap} from '@angular/platform-browser/browser';
- * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from '@angular/http';
- * import {App} from './myapp';
+ * import {BaseRequestOptions, RequestOptions} from '@angular/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, {provide: RequestOptions, useClass: MyOptions}]);
+ * {provide: RequestOptions, useClass: MyOptions};
  * ```
  *
  * The options could also be extended when manually creating a {@link Request}
  * object.
  *
- * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
- *
  * ```
  * import {BaseRequestOptions, Request, RequestMethod} from '@angular/http';
  *
- * var options = new BaseRequestOptions();
- * var req = new Request(options.merge({
+ * const options = new BaseRequestOptions();
+ * const req = new Request(options.merge({
  *   method: RequestMethod.Post,
  *   url: 'https://google.com'
  * }));
