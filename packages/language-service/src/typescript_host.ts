@@ -803,6 +803,7 @@ class TypeWrapper implements Symbol {
 
 class SymbolWrapper implements Symbol {
   private _tsType: ts.Type;
+  private _members: SymbolTable;
 
   constructor(private symbol: ts.Symbol, private context: TypeContext) {}
 
@@ -825,7 +826,18 @@ class SymbolWrapper implements Symbol {
 
   get definition(): Definition { return definitionFromTsSymbol(this.symbol); }
 
-  members(): SymbolTable { return new SymbolTableWrapper(this.symbol.members, this.context); }
+  members(): SymbolTable {
+    if (!this._members) {
+      if ((this.symbol.flags & (ts.SymbolFlags.Class | ts.SymbolFlags.Interface)) != 0) {
+        const declaredType = this.context.checker.getDeclaredTypeOfSymbol(this.symbol);
+        const typeWrapper = new TypeWrapper(declaredType, this.context);
+        this._members = typeWrapper.members();
+      } else {
+        this._members = new SymbolTableWrapper(this.symbol.members, this.context);
+      }
+    }
+    return this._members;
+  }
 
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
@@ -1044,7 +1056,7 @@ class PipeSymbol implements Symbol {
   }
 
   private findTransformMethodType(classSymbol: ts.Symbol): ts.Type {
-    const transform = classSymbol.members['transform'];
+    const transform = classSymbol.members && classSymbol.members['transform'];
     if (transform) {
       return this.context.checker.getTypeOfSymbolAtLocation(transform, this.context.node);
     }
