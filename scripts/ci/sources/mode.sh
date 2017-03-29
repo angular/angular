@@ -13,6 +13,10 @@ is_aot() {
   [[ "$MODE" = aot ]]
 }
 
+is_closure_compiler() {
+  [[ "$MODE" = closure-compiler ]]
+}
+
 is_payload() {
   [[ "$MODE" = payload ]]
 }
