@@ -7,7 +7,6 @@
 $mat-slide-toggle-thumb-size: 20px !default;
 $mat-slide-toggle-bar-border-radius: 8px !default;
 $mat-slide-toggle-height: 24px !default;
-$mat-slide-toggle-margin: 16px !default;
 $mat-slide-toggle-spacing: 8px !default;
 $mat-slide-toggle-ripple-radius: 23px !default;
 $mat-slide-toggle-bar-width: 36px !default;
@@ -19,7 +18,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   display: inline-block;
   height: $mat-slide-toggle-height;
 
-  margin: $mat-slide-toggle-margin 0;
   line-height: $mat-slide-toggle-height;
 
   white-space: nowrap;
