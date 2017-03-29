@@ -14,8 +14,7 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 /**
  * Attention: This regex has to hold even if the code is minified!
  */
-export const DELEGATE_CTOR =
-    /^function\s+\S+\(\)\s*{\s*("use strict";)?\s*(return\s+)?(\S+\s+!==\s+null\s+&&\s+)?\S+\.apply\(this,\s*arguments\)/;
+export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
