@@ -11,7 +11,7 @@ Then it became a master/detail form with both a list of heroes and the hero deta
 Soon there will be new requirements and capabilities.
 You can't keep piling features on top of features in one component; that's not maintainable.
 
-You'll ned to break it up into sub-components, each focused on a specific task or workflow.
+You'll need to break it up into sub-components, each focused on a specific task or workflow.
 Eventually, the `AppComponent` could become a simple shell that hosts those sub-components.
 
 In this page, you'll take the first step in that direction by carving out the hero details into a separate, reusable component.
