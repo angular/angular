@@ -36,4 +36,9 @@
     $background: map-get($theme, background);
     background-color: mat-color($background, background);
   }
+
+  // Marker that is used to determine whether the user has added a theme to their page.
+  .mat-theme-loaded-marker {
+    display: none;
+  }
 }
