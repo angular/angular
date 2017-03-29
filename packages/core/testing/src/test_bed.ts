@@ -91,7 +91,7 @@ export class TestBed implements Injector {
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js
    */
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): typeof TestBed {
+  static configureCompiler(config: CompilerOptions): typeof TestBed {
     getTestBed().configureCompiler(config);
     return TestBed;
   }
@@ -227,7 +227,7 @@ export class TestBed implements Injector {
 
   ngModule: Type<any>|Type<any>[] = null;
 
-  configureCompiler(config: {providers?: any[], useJit?: boolean}) {
+  configureCompiler(config: CompilerOptions) {
     this._assertNotInstantiated('TestBed.configureCompiler', 'configure the compiler');
     this._compilerOptions.push(config);
   }

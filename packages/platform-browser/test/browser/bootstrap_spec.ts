@@ -7,11 +7,12 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, CompilerOptions, Component, Directive, ErrorHandler, Inject, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, VERSION, createPlatformFactory, ɵConsole as Console} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory, ɵstringify as stringify} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
+import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -28,6 +29,11 @@ class HelloRootCmp {
   constructor() { this.greeting = 'hello'; }
 }
 
+@Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
+class HelloRootCmpContent {
+  constructor() {}
+}
+
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
@@ -36,12 +42,22 @@ class HelloRootCmp2 {
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp3 {
-  constructor(@Inject('appBinding') public appBinding: any) {}
+  appBinding: any /** TODO #9100 */;
+
+  constructor(@Inject('appBinding') appBinding: any /** TODO #9100 */) {
+    this.appBinding = appBinding;
+  }
 }
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp4 {
-  constructor(@Inject(ApplicationRef) public appRef: ApplicationRef) {}
+  appRef: any /** TODO #9100 */;
+
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
+}
+
+@Component({selector: 'hello-app'})
+class HelloRootMissingTemplate {
 }
 
 @Directive({selector: 'hello-app'})
@@ -50,17 +66,35 @@ class HelloRootDirectiveIsNotCmp {
 
 @Component({selector: 'hello-app', template: ''})
 class HelloOnDestroyTickCmp implements OnDestroy {
-  constructor(@Inject(ApplicationRef) public appRef: ApplicationRef) {}
+  appRef: ApplicationRef;
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
 
   ngOnDestroy(): void { this.appRef.tick(); }
 }
 
-@Component({selector: 'hello-app', template: '<some-el [someProp]="true">hello world!</some-el>'})
-class HelloCmpUsingCustomElement {
+@Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
+class HelloUrlCmp {
+  greeting = 'hello';
 }
 
-@Component({selector: 'hello-app', template: '<template>Hello</template>'})
-class HelloCmpWithTemplateEl {
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+class SomeDirective {
+  @Input()
+  someDir: string;
+}
+
+@Pipe({name: 'somePipe'})
+class SomePipe {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+class HelloCmpUsingPlatformDirectiveAndPipe {
+  show: boolean = false;
+}
+
+@Component({selector: 'hello-app', template: '<some-el [someProp]="true">hello world!</some-el>'})
+class HelloCmpUsingCustomElement {
 }
 
 class MockConsole {
@@ -70,15 +104,16 @@ class MockConsole {
 
 
 class DummyConsole implements Console {
-  warnings: string[] = [];
+  public warnings: string[] = [];
 
   log(message: string) {}
   warn(message: string) { this.warnings.push(message); }
 }
 
+
+class TestModule {}
 function bootstrap(
-    cmpType: any, providers: Provider[] = [], platformProviders: Provider[] = [],
-    compilerOptions?: CompilerOptions): Promise<any> {
+    cmpType: any, providers: Provider[] = [], platformProviders: Provider[] = []): Promise<any> {
   @NgModule({
     imports: [BrowserModule],
     declarations: [cmpType],
@@ -88,11 +123,12 @@ function bootstrap(
   })
   class TestModule {
   }
-  return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule, compilerOptions);
+  return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule);
 }
 
 export function main() {
-  let el: any, el2: any, testProviders: Provider[], lightDom: any;
+  let el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: Provider[],
+      lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     let compilerConsole: DummyConsole;
@@ -199,28 +235,6 @@ export function main() {
          refPromise.then((ref) => {
            expect(el).toHaveText('hello world!');
            expect(el.getAttribute('ng-version')).toEqual(VERSION.full);
-           async.done();
-         });
-       }));
-
-    it('should display a warning when enableLegacyTemplate is true',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         expect(compilerConsole.warnings.length).toBe(0);
-
-         const refPromise = bootstrap(HelloCmpWithTemplateEl, [], [], {enableLegacyTemplate: true, providers: testProviders});
-
-         refPromise.then(() => {
-           expect(compilerConsole.warnings.length).toBe(1);
-           async.done();
-         });
-       }));
-
-    it('should not display a warning when enableLegacyTemplate is false',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const refPromise = bootstrap(HelloCmpWithTemplateEl, [], [], {enableLegacyTemplate: false, providers: testProviders});
-
-         refPromise.then(() => {
-           expect(compilerConsole.warnings.length).toBe(0);
            async.done();
          });
        }));
