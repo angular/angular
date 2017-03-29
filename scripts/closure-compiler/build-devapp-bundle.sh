@@ -13,7 +13,7 @@ $(npm bin)/gulp build:devapp
 $(npm bin)/gulp :package:release
 
 # Rebuild demo-app with ES2015 modules. Closure compiler is then able to parse imports.
-$(npm bin)/tsc -p src/demo-app/ --target ES2015 --module ES2015
+$(npm bin)/tsc -p src/demo-app/tsconfig-build.json --target ES2015 --module ES2015
 
 # Re-compile RxJS sources into ES2015. Otherwise closure compiler can't parse it properly.
 $(npm bin)/ngc -p scripts/closure-compiler/tsconfig-rxjs.json
