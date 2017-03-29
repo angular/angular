@@ -28,6 +28,7 @@ import { NavigationService } from 'app/navigation/navigation.service';
 import { DocumentService } from 'app/documents/document.service';
 import { SearchService } from 'app/search/search.service';
 import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
+import { FooterComponent } from 'app/layout/footer/footer.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
@@ -50,6 +51,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   declarations: [
     AppComponent,
     DocViewerComponent,
+    FooterComponent,
     TopMenuComponent,
     NavMenuComponent,
     NavItemComponent,

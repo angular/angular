@@ -1,11 +1,17 @@
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { APP_BASE_HREF } from '@angular/common';
+import { Http } from '@angular/http';
 import { By } from '@angular/platform-browser';
+
+import { of } from 'rxjs/observable/of';
+
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { GaService } from 'app/shared/ga.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchService } from 'app/search/search.service';
+import { MockSearchService } from 'testing/search.service';
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
@@ -23,8 +29,10 @@ describe('AppComponent', () => {
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' },
         { provide: GaService, useClass: TestGaService },
+        { provide: Http, useClass: TestHttp },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
-        { provide: Logger, useClass: MockLogger }
+        { provide: Logger, useClass: MockLogger },
+        { provide: SearchService, useClass: MockSearchService }
       ]
     });
     TestBed.compileComponents();
@@ -40,19 +48,8 @@ describe('AppComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('google analytics', () => {
-    it('should call gaService.locationChanged with initial URL', () => {
-      const { locationChanged } = TestBed.get(GaService) as TestGaService;
-      expect(locationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
-      const args = locationChanged.calls.first().args;
-      expect(args[0]).toBe(initialUrl);
-    });
-
-    // Todo: add test to confirm tracking URL when navigate.
-  });
-
-  describe('isHamburgerVisible', () => {
-    console.log('PENDING: AppComponent isHamburgerVisible');
+  describe('is Hamburger Visible', () => {
+    console.log('PENDING: AppComponent');
   });
 
   describe('onResize', () => {
@@ -61,6 +58,39 @@ describe('AppComponent', () => {
       expect(component.isSideBySide).toBe(true);
       component.onResize(500);
       expect(component.isSideBySide).toBe(false);
+    });
+  });
+
+  describe('shows/hide SideNav based on doc\'s navigation view', () => {
+    let locationService: MockLocationService;
+
+    beforeEach(() => {
+      locationService = fixture.debugElement.injector.get(LocationService) as any;
+      component.onResize(1000); // side-by-side
+    });
+
+    it('should have sidenav open when doc in the sidenav (guide/pipes)', () => {
+      locationService.urlSubject.next('guide/pipes');
+
+      fixture.detectChanges();
+      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenav.className).toMatch(/sidenav-open/);
+    });
+
+    it('should have sidenav open when doc is an api page', () => {
+      locationService.urlSubject.next('api/a/b/c/d');
+
+      fixture.detectChanges();
+      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenav.className).toMatch(/sidenav-open/);
+    });
+
+    it('should have sidenav closed when doc not in the sidenav (features)', () => {
+      locationService.urlSubject.next('features');
+
+      fixture.detectChanges();
+      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenav.className).toMatch(/sidenav-clos/);
     });
   });
 
@@ -87,6 +117,14 @@ describe('AppComponent', () => {
       component.onDocRendered(null);
       expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
     });
+  });
+
+  describe('initialization', () => {
+    it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
+      fixture.detectChanges(); // triggers ngOnInit
+      expect(searchService.initWorker).toHaveBeenCalled();
+      expect(searchService.loadIndex).toHaveBeenCalled();
+    }));
   });
 
   describe('click intercepting', () => {
@@ -120,8 +158,95 @@ describe('AppComponent', () => {
       expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
     });
   });
+
+  describe('footer', () => {
+    it('should have version number', () => {
+      const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer p.version-info')).nativeElement;
+      expect(versionEl.innerText).toContain(TestHttp.versionFull);
+    });
+  });
+
 });
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
+}
+
+class TestSearchService {
+  initWorker = jasmine.createSpy('initWorker');
+  loadIndex  = jasmine.createSpy('loadIndex');
+}
+
+class TestHttp {
+  static versionFull = '4.0.0-local+sha.73808dd';
+
+  // tslint:disable:quotemark
+  navJson = {
+    "TopBar": [
+      {
+        "url": "features",
+        "title": "Features"
+      }
+    ],
+    "SideNav": [
+      {
+      "title": "Core",
+      "tooltip": "Learn the core capabilities of Angular",
+      "children": [
+          {
+            "url": "guide/pipes",
+            "title": "Pipes",
+            "tooltip": "Pipes transform displayed values within a template."
+          }
+        ]
+      },
+      {
+        "url": "api",
+        "title": "API",
+        "tooltip": "Details of the Angular classes and values."
+      }
+    ],
+    "__versionInfo": {
+      "raw": "4.0.0-rc.6",
+      "major": 4,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [
+        "local"
+      ],
+      "build": "sha.73808dd",
+      "version": "4.0.0-local",
+      "codeName": "snapshot",
+      "isSnapshot": true,
+      "full": TestHttp.versionFull,
+      "branch": "master",
+      "commitSHA": "73808dd38b5ccd729404936834d1568bd066de81"
+    }
+  };
+
+  apiDoc = {
+    "title": "API",
+    "contents": "<h1>API Doc</h1>"
+  };
+
+  pipesDoc = {
+    "title": "Pipes",
+    "contents": "<h1>Pipes Doc</h1>"
+  };
+
+  testDoc = {
+    "title": "Test",
+    "contents": "<h1>Test Doc</h1>"
+  };
+
+  // get = jasmine.createSpy('get').and.callFake((url: string) => { ... });
+  get(url: string) {
+    const json =
+      /navigation.json/.test(url) ? this.navJson :
+      /api/.test(url) ? this.apiDoc :
+      /pipes/.test(url) ? this.pipesDoc :
+      this.testDoc;
+    return of({ json: () => json });
+  }
+
 }
