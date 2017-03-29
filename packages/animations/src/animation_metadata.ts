@@ -98,7 +98,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
  */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
   timings: string|number|AnimateTimings;
-  styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata;
+  styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata|null;
 }
 
 /**
@@ -218,8 +218,8 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * @experimental Animation support is experimental.
  */
 export function animate(
-    timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
-                                  null): AnimationAnimateMetadata {
+    timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata |
+        null = null): AnimationAnimateMetadata {
   return {type: AnimationMetadataType.Animate, styles: styles, timings: timings};
 }
 

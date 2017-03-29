@@ -9,8 +9,8 @@ export declare class ComponentFixture<T> {
     debugElement: DebugElement;
     elementRef: ElementRef;
     nativeElement: any;
-    ngZone: NgZone;
-    constructor(componentRef: ComponentRef<T>, ngZone: NgZone, _autoDetect: boolean);
+    ngZone: NgZone | null;
+    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, _autoDetect: boolean);
     autoDetectChanges(autoDetect?: boolean): void;
     checkNoChanges(): void;
     destroy(): void;

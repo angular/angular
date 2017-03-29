@@ -67,9 +67,9 @@ function codeGenTest() {
         angularCompilerOptions: config.ngOptions,
 
         // i18n options.
-        i18nFormat: null,
-        i18nFile: null,
-        locale: null,
+        i18nFormat: undefined,
+        i18nFile: undefined,
+        locale: undefined,
 
         readResource: (fileName: string) => {
           readResources.push(fileName);
@@ -131,8 +131,8 @@ function i18nTest() {
         compilerOptions: config.parsed.options, program, host,
         angularCompilerOptions: config.ngOptions,
         i18nFormat: 'xlf',
-        locale: null,
-        outFile: null,
+        locale: undefined,
+        outFile: undefined,
         readResource: (fileName: string) => {
           readResources.push(fileName);
           return hostContext.readResource(fileName);
