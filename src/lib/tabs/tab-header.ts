@@ -2,7 +2,6 @@ import {
   ViewChild,
   Component,
   Input,
-  NgZone,
   QueryList,
   ElementRef,
   ViewEncapsulation,
@@ -12,12 +11,14 @@ import {
   Optional,
   AfterContentChecked,
   AfterContentInit,
+  OnDestroy,
 } from '@angular/core';
 import {RIGHT_ARROW, LEFT_ARROW, ENTER, Dir, LayoutDirection} from '../core';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
-import 'rxjs/add/operator/map';
+import {Subscription} from 'rxjs/Subscription';
 import {applyCssTransform} from '../core/style/apply-transform';
+import 'rxjs/add/operator/map';
 
 /**
  * The directions that scrolling can go in when the header's tabs exceed the header width. 'After'
@@ -51,7 +52,7 @@ const EXAGGERATED_OVERSCROLL = 60;
     '[class.mat-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
   }
 })
-export class MdTabHeader implements AfterContentChecked, AfterContentInit {
+export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDestroy {
   @ContentChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
 
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
@@ -66,6 +67,9 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit {
 
   /** Whether the header should scroll to the selected index after the view has been checked. */
   private _selectedIndexChanged = false;
+
+  /** Subscription to changes in the layout direction. */
+  private _directionChange: Subscription;
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;
@@ -102,9 +106,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit {
   /** Event emitted when a label is focused. */
   @Output() indexFocused = new EventEmitter();
 
-  constructor(private _zone: NgZone,
-              private _elementRef: ElementRef,
-              @Optional() private _dir: Dir) {}
+  constructor(private _elementRef: ElementRef, @Optional() private _dir: Dir) {}
 
   ngAfterContentChecked(): void {
     // If the number of tab labels have changed, check if scrolling should be enabled
@@ -149,6 +151,17 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit {
    */
   ngAfterContentInit() {
     this._alignInkBarToSelectedTab();
+
+    if (this._dir) {
+      this._directionChange = this._dir.dirChange.subscribe(() => this._alignInkBarToSelectedTab());
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._directionChange) {
+      this._directionChange.unsubscribe();
+      this._directionChange = null;
+    }
   }
 
   /**
@@ -373,10 +386,6 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit {
         ? this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement
         : null;
 
-    this._zone.runOutsideAngular(() => {
-      requestAnimationFrame(() => {
-        this._inkBar.alignToElement(selectedLabelWrapper);
-      });
-    });
+    this._inkBar.alignToElement(selectedLabelWrapper);
   }
 }

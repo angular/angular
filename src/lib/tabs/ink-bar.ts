@@ -1,4 +1,4 @@
-import {Directive, Renderer, ElementRef} from '@angular/core';
+import {Directive, Renderer, ElementRef, NgZone} from '@angular/core';
 
 
 /**
@@ -12,7 +12,10 @@ import {Directive, Renderer, ElementRef} from '@angular/core';
   },
 })
 export class MdInkBar {
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(
+    private _renderer: Renderer,
+    private _elementRef: ElementRef,
+    private _ngZone: NgZone) {}
 
   /**
    * Calculates the styles from the provided element in order to align the ink-bar to that element.
@@ -21,10 +24,15 @@ export class MdInkBar {
    */
   alignToElement(element: HTMLElement) {
     this.show();
-    this._renderer.setElementStyle(this._elementRef.nativeElement, 'left',
-        this._getLeftPosition(element));
-    this._renderer.setElementStyle(this._elementRef.nativeElement, 'width',
-        this._getElementWidth(element));
+
+    this._ngZone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        this._renderer.setElementStyle(this._elementRef.nativeElement, 'left',
+            this._getLeftPosition(element));
+        this._renderer.setElementStyle(this._elementRef.nativeElement, 'width',
+            this._getElementWidth(element));
+      });
+    });
   }
 
   /** Shows the ink bar. */
