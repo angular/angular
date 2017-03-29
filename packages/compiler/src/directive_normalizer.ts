@@ -65,6 +65,10 @@ export class DirectiveNormalizer {
     let normalizedTemplateSync: CompileTemplateMetadata = null;
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
     if (prenormData.template != null) {
+      if (prenormData.templateUrl != null) {
+        throw syntaxError(
+            `'${stringify(prenormData.componentType)}' component cannot define both template and templateUrl`);
+      }
       if (typeof prenormData.template !== 'string') {
         throw syntaxError(
             `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
