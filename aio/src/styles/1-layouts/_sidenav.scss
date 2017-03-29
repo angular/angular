@@ -41,6 +41,14 @@
 }
 
 /************************************/
+/** STEF:  HELP WITH LOGO SPACING **/
+.nav-link.home {
+  margin: 0 20px 0 10px;
+}
+/** STEF:  MENU AT TOP OF SIDE-NAV HELP! **/
+aio-nav-menu.top-menu .vertical-menu-item  {
+  background-color: $lightgray;
+}
 
 .mat-sidenav.sidenav {
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
@@ -109,7 +117,6 @@
 .heading-children.expanded {
   visibility: visible;
   opacity: 1;
-  // height: auto;
   max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
   transition: visibility 500ms, opacity 500ms, max-height 500ms;
   -webkit-transition-timing-function: ease-in-out;
@@ -125,6 +132,7 @@
   transition-timing-function: ease-out;
 }
 
+a.selected.level-1,
 .heading.selected.level-1,
 .heading-children.selected.level-1 {
   border-left: 3px $blue solid;
@@ -134,7 +142,6 @@
   font-family: $main-font;
   font-size: 14px;
   font-weight: 400;
-  text-transform: uppercase;
   padding-left: 10px;
   transition: background-color 0.2s;
 }

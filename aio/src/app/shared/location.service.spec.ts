@@ -1,12 +1,9 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
-import { LocationService } from './location.service';
 
-class MockPlatformLocation {
-  pathname = 'a/b/c';
-  replaceState = jasmine.createSpy('PlatformLocation.replaceState');
-}
+import { GaService } from 'app/shared/ga.service';
+import { LocationService } from './location.service';
 
 describe('LocationService', () => {
 
@@ -16,6 +13,7 @@ describe('LocationService', () => {
     injector = ReflectiveInjector.resolveAndCreate([
         LocationService,
         Location,
+        { provide: GaService, useClass: TestGaService },
         { provide: LocationStrategy, useClass: MockLocationStrategy },
         { provide: PlatformLocation, useClass: MockPlatformLocation }
     ]);
@@ -341,4 +339,54 @@ describe('LocationService', () => {
       });
     });
   });
+
+  describe('google analytics - GaService#locationChanged', () => {
+
+    let gaLocationChanged: jasmine.Spy;
+    let location: Location;
+    let service: LocationService;
+
+    beforeEach(() => {
+      const gaService = injector.get(GaService);
+      gaLocationChanged = gaService.locationChanged;
+      location = injector.get(Location);
+      service = injector.get(LocationService);
+    });
+
+    it('should call locationChanged with initial URL', () => {
+      const initialUrl = location.path().replace(/^\/+/, '');
+
+      expect(gaLocationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
+      const args = gaLocationChanged.calls.first().args;
+      expect(args[0]).toBe(initialUrl);
+    });
+
+    it('should call locationChanged when `go` to a page', () => {
+      service.go('some-new-url');
+      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
+      const args = gaLocationChanged.calls.argsFor(1);
+      expect(args[0]).toBe('some-new-url');
+    });
+
+    it('should call locationChanged when window history changes', () => {
+     const locationStrategy: MockLocationStrategy = injector.get(LocationStrategy);
+     locationStrategy.simulatePopState('/next-url');
+
+      expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
+      const args = gaLocationChanged.calls.argsFor(1);
+      expect(args[0]).toBe('next-url');
+    });
+
+  });
+
 });
+
+/// Test Helpers ///
+class MockPlatformLocation {
+  pathname = 'a/b/c';
+  replaceState = jasmine.createSpy('PlatformLocation.replaceState');
+}
+
+class TestGaService {
+  locationChanged = jasmine.createSpy('locationChanged');
+}

@@ -1,28 +1,86 @@
 {
   "TopBar": [
     {
-      "url": "api",
-      "title": "API"
-    },    {
-      "url": "news",
-      "title": "News"
-    },    {
       "url": "features",
       "title": "Features"
+    },
+    {
+      "url": "events",
+      "title": "Events"
     }
   ],
+
   "SideNav": [
     {
-      "url": "quickstart",
-      "title": "Quickstart",
-      "tooltip": "A quick look at an Angular app."
+      "url": "overview",
+      "title": "Docs",
+      "hidden": true
     },
 
     {
-      "url": "cli-quickstart",
-      "title": "CLI Quickstart",
-      "tooltip": "A quick look at an Angular app built with the Angular CLI."
-    },
+      "title": "Getting started",
+      "tooltip": "A gentle introduction to Angular.",
+      "children": [
+        {
+          "url": "guide/learning-angular",
+          "title": "Learning Angular",
+          "tooltip": "A suggested path through the documentation for Angular newcomers."
+        },
+
+        {
+          "url": "quickstart",
+          "title": "Basic Quickstart",
+          "tooltip": "A quick look at an Angular app without tooling."
+        },
+
+        {
+          "url": "cli-quickstart",
+          "title": "CLI Quickstart",
+          "tooltip": "A quick look at an Angular app built with the Angular CLI."
+        },
+
+        {
+          "url": "guide/setup",
+          "title": "Setup",
+          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+        },
+
+        {
+          "url": "guide/architecture",
+          "title": "Architecture",
+          "tooltip": "The basic building blocks of Angular applications."
+        },
+
+        {
+          "url": "guide/appmodule",
+          "title": "The root AppModule",
+          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+        },
+
+        {
+          "url": "guide/displaying-data",
+          "title": "Displaying data",
+          "tooltip": "Property binding helps show app data in the UI."
+        },
+
+        {
+          "url": "guide/user-input",
+          "title": "User Input",
+          "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
+        },
+
+        {
+          "url": "guide/forms",
+          "title": "Forms",
+          "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+        },
+
+        {
+          "url": "guide/dependency-injection",
+          "title": "Dependency Injection",
+          "tooltip": "Angular's dependency injection system creates and delivers dependent services \"just-in-time\"."
+        }
+    ]},
 
     {
       "title": "Tutorial",
@@ -65,94 +123,6 @@
         }
       ]
     },
-
-    {
-      "title": "Getting started",
-      "tooltip": "A gentle introduction to Angular.",
-      "children": [
-        {
-          "url": "guide/docs-overview",
-          "title": "Overview",
-          "tooltip": "How to read and use this documentation."
-        },
-        {
-          "url": "guide/setup",
-          "title": "Setup",
-          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
-        },
-
-        {
-          "url": "guide/learning-angular",
-          "title": "Learning Angular",
-          "tooltip": "A suggested path through the documentation for Angular newcomers."
-        },
-
-        {
-          "url": "guide/architecture",
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications."
-        },
-
-        {
-          "url": "guide/appmodule",
-          "title": "The root AppModule",
-          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
-        },
-
-        {
-          "url": "guide/displaying-data",
-          "title": "Displaying data",
-          "tooltip": "Property binding helps show app data in the UI."
-        },
-
-        {
-          "url": "guide/user-input",
-          "title": "User Input",
-          "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
-        },
-
-        {
-          "url": "guide/forms",
-          "title": "Forms",
-          "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
-        },
-
-        {
-          "url": "guide/dependency-injection",
-          "title": "Dependency Injection",
-          "tooltip": "Angular's dependency injection system creates and delivers dependent services \"just-in-time\"."
-        },
-
-        {
-          "url": "guide/template-syntax",
-          "title": "Template Syntax",
-          "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
-        },
-
-        {
-          "url": "guide/cheatsheet",
-          "title": "Cheat Sheet",
-          "tooltip": "A quick guide to common Angular coding techniques."
-        },
-
-        {
-          "url": "guide/style-guide",
-          "title": "Style guide",
-          "tooltip": "Write Angular with style."
-        },
-
-        {
-          "url": "guide/glossary",
-          "title": "Glossary",
-          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
-        },
-
-        {
-          "url": "guide/change-log",
-          "title": "Change Log",
-          "tooltip": "An annotated history of recent documentation improvements."
-        }
-    ]},
 
     {
       "title": "Core",
@@ -266,8 +236,20 @@
           "url": "guide/router",
           "title": "Routing & navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
+        },
+
+        {
+          "url": "guide/template-syntax",
+          "title": "Template Syntax",
+          "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
         }
     ]},
+
+    {
+      "title": "API",
+      "tooltip": "Details of the Angular classes and values.",
+      "url": "api"
+    },
 
     {
       "title": "Additional Techniques",
@@ -381,9 +363,27 @@
       "title": "Resources",
       "children": [
         {
-          "url": "about",
-          "title": "About",
-          "tooltip": "The people behind Angular."
+          "url": "guide/change-log",
+          "title": "Change Log",
+          "tooltip": "An annotated history of recent documentation improvements."
+        },
+
+        {
+          "url": "guide/cheatsheet",
+          "title": "Cheat Sheet",
+          "tooltip": "A quick guide to common Angular coding techniques."
+        },
+
+        {
+          "url": "guide/glossary",
+          "title": "Glossary",
+          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
+        },
+
+        {
+          "url": "guide/style-guide",
+          "title": "Style guide",
+          "tooltip": "Write Angular with style."
         }
       ]
     },
