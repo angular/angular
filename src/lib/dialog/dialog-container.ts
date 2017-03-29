@@ -91,9 +91,7 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
       throw new MdDialogContentAlreadyAttachedError();
     }
 
-    let attachResult = this._portalHost.attachComponentPortal(portal);
-    this._trapFocus();
-    return attachResult;
+    return this._portalHost.attachComponentPortal(portal);
   }
 
   /**
@@ -105,9 +103,7 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
       throw new MdDialogContentAlreadyAttachedError();
     }
 
-    let attachedResult = this._portalHost.attachTemplatePortal(portal);
-    this._trapFocus();
-    return attachedResult;
+    return this._portalHost.attachTemplatePortal(portal);
   }
 
   /**
@@ -142,6 +138,10 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
    * @docs-private
    */
   _onAnimationDone(event: AnimationEvent) {
+    if (event.toState === 'enter') {
+      this._trapFocus();
+    }
+
     this._onAnimationStateChange.emit(event.toState as MdDialogContainerAnimationState);
   }
 
@@ -162,6 +162,8 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
       this._onAnimationStateChange.complete();
     });
 
-    this._focusTrap.destroy();
+    if (this._focusTrap) {
+      this._focusTrap.destroy();
+    }
   }
 }
