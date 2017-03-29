@@ -51,6 +51,16 @@ export function main() {
              templateUrl: <any>{}
            })).toThrowError('The templateUrl specified for component SomeComp is not a string');
          }));
+      it('should throw if both template and templateUrl are defined',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           expect(() => normalizer.normalizeTemplate({
+             ngModuleType: null,
+             componentType: SomeComp,
+             moduleUrl: SOME_MODULE_URL,
+             template: '',
+             templateUrl: '',
+           })).toThrowError(`'SomeComp' component cannot define both template and templateUrl`);
+         }));
     });
 
     describe('normalizeTemplateSync', () => {
