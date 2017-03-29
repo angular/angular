@@ -26,7 +26,7 @@ import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
-  let dir: {value: string};
+  let dir: {value: 'ltr'|'rtl'};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -1571,6 +1571,23 @@ describe('MdSelect', () => {
       expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
     });
 
+    it('should sort the selected options in reverse in rtl', () => {
+      dir.value = 'rtl';
+      trigger.click();
+      fixture.detectChanges();
+
+      const options = overlayContainerElement.querySelectorAll('md-option') as
+          NodeListOf<HTMLElement>;
+
+      options[2].click();
+      options[0].click();
+      options[1].click();
+      fixture.detectChanges();
+
+      expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
+      expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
+    });
+
     it('should sort the values, that get set via the model, based on the panel order', () => {
       trigger.click();
       fixture.detectChanges();
@@ -1579,6 +1596,17 @@ describe('MdSelect', () => {
       fixture.detectChanges();
 
       expect(trigger.textContent).toContain('Steak, Pizza, Tacos');
+    });
+
+    it('should reverse sort the values, that get set via the model in rtl', () => {
+      dir.value = 'rtl';
+      trigger.click();
+      fixture.detectChanges();
+
+      testInstance.control.setValue(['tacos-2', 'steak-0', 'pizza-1']);
+      fixture.detectChanges();
+
+      expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
     });
 
     it('should throw an exception when trying to set a non-array value', () => {
