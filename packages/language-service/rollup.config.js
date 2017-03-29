@@ -49,13 +49,15 @@ function resolve(id, from) {
 }
 
 var banner = `
+var $reflect = {defineMetadata: function() {}, getOwnMetadata: function(){}};
+((typeof global !== 'undefined' && global)||{})['Reflect'] = $reflect;
 var $deferred, $resolved, $provided;
 function $getModule(name) { return $provided[name] || require(name); }
 function define(modules, cb) { $deferred = { modules: modules, cb: cb }; }
 module.exports = function(provided) {
   if ($resolved) return $resolved;
   var result = {};
-  $provided = Object.assign({}, provided || {}, { exports: result });
+  $provided = Object.assign({'reflect-metadata': $reflect}, provided || {}, { exports: result });
   $deferred.cb.apply(this, $deferred.modules.map($getModule));
   $resolved = result;
   return result;
