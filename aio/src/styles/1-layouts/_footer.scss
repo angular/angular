@@ -1,8 +1,10 @@
 footer {
     position: relative;
+    line-height: 24px;
 }
 
 footer .footer {
+    flex: 1;
     padding: 20px;
     z-index: 10;
     background-color: $blue;
@@ -20,7 +22,7 @@ footer .footer {
         }
     }
     p {
-        margin: 0px 0px 5px;
+        margin: 0 0 5px;
     }
 }
 

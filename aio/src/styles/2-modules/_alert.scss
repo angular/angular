@@ -1,7 +1,6 @@
 .alert {
-    display: flex;
-    padding: 0px 10px;
-    margin: 20px 0px;
+    padding: 16px;
+    margin: 24px 0px;
     font-size: 14px;
     color: $darkgray;
     &.is-critical {
@@ -17,5 +16,10 @@
     &.is-helpful {
         border-left: 10px solid $blue;
         background-color: rgba($blue, 0.05);
+    }
+
+    p {
+        margin: 0;
+        padding: 8px 16px;
     }
 }
