@@ -1,3 +1,13 @@
+<a name="4.1.0-beta.0"></a>
+# [4.1.0-beta.0](https://github.com/angular/angular/compare/4.0.0...4.1.0-beta.0) (2017-03-29)
+
+### Features
+
+* **compiler:** support ICU messages in XLIFF ([b8d5f87](https://github.com/angular/angular/commit/b8d5f87)), closes [#12636](https://github.com/angular/angular/issues/12636) [#15068](https://github.com/angular/angular/issues/15068)
+
+Note: 4.1.0-beta.0 release also contains all the changes present in the 4.0.1 release.
+
+
 <a name="4.0.1"></a>
 ## [4.0.1](https://github.com/angular/angular/compare/4.0.0...4.0.1) (2017-03-29)
 
