@@ -5,6 +5,15 @@
       "title": "Features"
     },
     {
+      "url": "docs",
+      "title": "Docs",
+      "hidden": true
+    },
+    {
+      "url": "resources",
+      "title": "Resources"
+    },
+    {
       "url": "events",
       "title": "Events"
     }
@@ -12,8 +21,9 @@
 
   "SideNav": [
     {
-      "url": "overview",
+      "url": "docs",
       "title": "Docs",
+      "tooltip": "Angular Documentation",
       "hidden": true
     },
 
@@ -359,8 +369,7 @@
     },
 
     {
-      "url": "resources",
-      "title": "Resources",
+      "title": "References",
       "children": [
         {
           "url": "guide/change-log",
@@ -386,8 +395,30 @@
           "tooltip": "Write Angular with style."
         }
       ]
-    },
+    }
+  ],
 
+  "Footer": [
+    {
+      "title": "Resources",
+      "children": [
+        {
+          "url": "about",
+          "title": "About",
+          "tooltip": "Angular contributors."
+        },
+        {
+          "url": "resources",
+          "title": "Resource Listing",
+          "tooltip": "Angular tools, training, and blogs from around the web."
+        },
+        {
+          "url": "presskit",
+          "title": "Press Kit",
+          "tooltip": "Press contacts, logos, and branding."
+        }
+      ]
+    },
     {
       "title": "Help",
       "children": [
@@ -400,6 +431,54 @@
           "url": "https://gitter.im/angular/angular",
           "title": "Gitter",
           "tooltip": "Chat about Angular with other birds of a feather."
+        },
+        {
+          "url": "https://github.com/angular/angular/issues",
+          "title": "Report Issues",
+          "tooltip": "Post issues and suggestions on github."
+        },
+        {
+          "title": "Site Feedback",
+          "tooltip": "Submit feedback on this page."
+        }
+      ]
+    },
+    {
+      "title": "Community",
+      "children": [
+        {
+          "url": "events",
+          "title": "Events",
+          "tooltip": "Post issues and suggestions on github."
+        },
+        {
+          "url": "http://www.meetup.com/topics/angularjs/",
+          "title": "Meetups",
+          "tooltip": "Attend a meetup and learn from fellow developers."
+        },
+        {
+          "url": "https://twitter.com/angular",
+          "title": "Twitter",
+          "tooltip": "Twitter"
+        },
+        {
+          "url": "hhttps://github.com/angular/angular",
+          "title": "GitHub",
+          "tooltip": "GitHub"
+        },
+        {
+          "url": "contribute",
+          "title": "Contribute",
+          "tooltip": "Contribute to Angular"
+        }
+      ]
+    },
+    {
+      "title": "Languages",
+      "children": [
+        {
+          "title": "中文版",
+          "url": "https://angular.cn/"
         }
       ]
     }

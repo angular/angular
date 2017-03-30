@@ -1,40 +1,91 @@
 footer {
-    position: relative;
-    line-height: 24px;
-}
+  position: relative;
+  line-height: 24px;
+  flex: 1;
+  padding: 20px;
+  z-index: 10;
+  background-color: $blue;
+  color: $offwhite;
+  font-weight: 300;
 
-footer .footer {
-    flex: 1;
-    padding: 20px;
-    z-index: 10;
-    background-color: $blue;
-    color: $offwhite;
+  a {
+      color: $offwhite;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+      &:visited {
+        text-decoration: none;
+      }
+  }
+  a.action {
+    cursor: pointer;
+  }
+  h3 {
+    font-size: 130%;
+  }
+  p {
     text-align: center;
-    font-weight: 300;
-    a {
-        color: $offwhite;
-        text-decoration: none;
-        &:hover {
-            text-decoration: underline;
-        }
-        &:visited {
-        text-decoration: none;
-        }
+    margin: 10px 0px 5px;
+  }
+
+  div.grid-fluid {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+
+    -webkit-justify-content: space-around;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+
+    -webkit-align-content: flex-start;
+    -ms-flex-line-pack: start;
+    align-content: flex-start;
+
+    text-align: left;
+
+    ul {
+      list-style-position: inside;
+      padding: 0px;
+      margin: 0px;
+
+      li {
+        list-style-type: none;
+        padding: 0px;
+        text-align: left;
+      }
     }
-    p {
-        margin: 0 0 5px;
+  }
+
+  @media (max-width: 700px) {
+    h3 {
+      font-size: 110%;
     }
+  }
+  @media (max-width: 600px) {
+    h3 {
+      font-size: 100%;
+    }
+  }
 }
 
 footer::after {
-    content: "";
+    // content: "";
     position: absolute;
     z-index: 10;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background: 
+    background:
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left repeat-y,
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top 80px left 168px repeat-y,
         url('../src/assets/images/logos/angular2/angular_whiteTransparent.png') top left 336px repeat-y,
