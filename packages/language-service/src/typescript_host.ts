@@ -751,8 +751,10 @@ function toSymbolTable(symbols: ts.Symbol[]): ts.SymbolTable {
   return result;
 }
 
-function toSymbols(symbolTable: ts.SymbolTable, filter?: (symbol: ts.Symbol) => boolean) {
+function toSymbols(
+    symbolTable: ts.SymbolTable | undefined, filter?: (symbol: ts.Symbol) => boolean) {
   const result: ts.Symbol[] = [];
+  if (!symbolTable) return result;
   const own = typeof symbolTable.hasOwnProperty === 'function' ?
       (name: string) => symbolTable.hasOwnProperty(name) :
       (name: string) => !!symbolTable[name];
@@ -912,8 +914,9 @@ class SymbolTableWrapper implements SymbolTable {
   private symbolTable: ts.SymbolTable;
 
   constructor(
-      symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext,
+      symbols: ts.SymbolTable|ts.Symbol[]|undefined, private context: TypeContext,
       filter?: (symbol: ts.Symbol) => boolean) {
+    symbols = symbols || [];
     if (Array.isArray(symbols)) {
       this.symbols = filter ? symbols.filter(filter) : symbols;
       this.symbolTable = toSymbolTable(symbols);
@@ -1057,10 +1060,13 @@ class PipeSymbol implements Symbol {
     return findClassSymbolInContext(type, this.context);
   }
 
-  private findTransformMethodType(classSymbol: ts.Symbol): ts.Type {
-    const transform = classSymbol.members && classSymbol.members['transform'];
-    if (transform) {
-      return this.context.checker.getTypeOfSymbolAtLocation(transform, this.context.node);
+  private findTransformMethodType(classSymbol: ts.Symbol): ts.Type|undefined {
+    const classType = this.context.checker.getDeclaredTypeOfSymbol(classSymbol);
+    if (classType) {
+      const transform = classType.getProperty('transform');
+      if (transform) {
+        return this.context.checker.getTypeOfSymbolAtLocation(transform, this.context.node);
+      }
     }
   }
 }

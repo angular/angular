@@ -155,7 +155,7 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
     const directive = this.directiveSummary;
     if (directive && ast.value) {
       const context = this.info.template.query.getTemplateContext(directive.type.reference);
-      if (!context.has(ast.value)) {
+      if (context && !context.has(ast.value)) {
         if (ast.value === '$implicit') {
           this.reportError(
               'The template context does not have an implicit value', spanOf(ast.sourceSpan));
