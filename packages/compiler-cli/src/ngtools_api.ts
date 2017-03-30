@@ -124,7 +124,7 @@ export class NgTools_InternalApi_NG_2 {
     const symbolCache = new StaticSymbolCache();
     const summaryResolver = new AotSummaryResolver(ngCompilerHost, symbolCache);
     const symbolResolver = new StaticSymbolResolver(ngCompilerHost, symbolCache, summaryResolver);
-    const staticReflector = new StaticReflector(symbolResolver);
+    const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
     const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
 
     return Object.keys(routeMap).reduce(

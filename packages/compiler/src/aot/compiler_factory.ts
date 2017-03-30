@@ -47,7 +47,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const symbolCache = new StaticSymbolCache();
   const summaryResolver = new AotSummaryResolver(compilerHost, symbolCache);
   const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
-  const staticReflector = new StaticReflector(symbolResolver);
+  const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
   const console = new Console();
   const htmlParser = new I18NHtmlParser(
