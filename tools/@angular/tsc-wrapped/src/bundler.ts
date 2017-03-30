@@ -522,12 +522,14 @@ export class CompilerHostAdapter implements MetadataBundlerHost {
 
 function resolveModule(importName: string, from: string): string {
   if (importName.startsWith('.') && from) {
-    const normalPath = path.normalize(path.join(path.dirname(from), importName));
+    let normalPath = path.normalize(path.join(path.dirname(from), importName));
     if (!normalPath.startsWith('.') && from.startsWith('.')) {
       // path.normalize() preserves leading '../' but not './'. This adds it back.
-      return `.${path.sep}${normalPath}`;
+      normalPath = `.${path.sep}${normalPath}`;
     }
-    return normalPath;
+    // Replace windows path delimiters with forward-slashes. Otherwise the paths are not
+    // TypeScript compatible when building the bundle.
+    return normalPath.replace(/\\/g, '/');
   }
   return importName;
 }
