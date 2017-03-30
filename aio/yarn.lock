@@ -4935,7 +4935,7 @@ restore-cursor@^2.0.0:
 
 "rho@https://github.com/petebacondarwin/rho#master":
   version "0.4.0"
-  resolved "https://github.com/petebacondarwin/rho#0ad228a47ceb598648504ca8f57eba14aa0fc5e1"
+  resolved "https://github.com/petebacondarwin/rho#c7dbd35fce17111de5131b8035b70e4f8c966362"
   dependencies:
     html "*"
     nomnom "*"
