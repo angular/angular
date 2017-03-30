@@ -151,7 +151,7 @@ module.exports =
             },
             {
               basePath: CONTENTS_PATH,
-              include: CONTENTS_PATH + '/marketing/contributor.json',
+              include: CONTENTS_PATH + '/marketing/contributors.json',
               fileReader: 'jsonFileReader'
             },
           ];
@@ -286,7 +286,7 @@ module.exports =
               outputPathTemplate: '${path}.json'
             },
             {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-            {docTypes: ['contributor-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 
