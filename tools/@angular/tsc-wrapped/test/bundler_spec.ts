@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -82,6 +81,19 @@ describe('metadata bundler', () => {
       {privateName: 'ɵa', name: 'PrivateOne', module: './src/one'},
       {privateName: 'ɵb', name: 'PrivateTwo', module: './src/two/index'}
     ]);
+  });
+
+  it('should not output windows paths in metadata', () => {
+    const host = new MockStringBundlerHost('/', {
+      'index.ts': `
+        export * from './exports/test';
+      `,
+      'exports': {'test.ts': `export class TestExport {}`}
+    });
+    const bundler = new MetadataBundler('/index', undefined, host);
+    const result = bundler.getMetadataBundle();
+
+    expect(result.metadata.origins).toEqual({'TestExport': './exports/test'});
   });
 
   it('should convert re-exported to the export', () => {

@@ -54,7 +54,9 @@ export class Host implements ts.LanguageServiceHost {
 }
 
 export function open(directory: Directory, fileName: string): Directory|string|undefined {
-  const names = fileName.split('/');
+  // Path might be normalized by the current node environment. But it could also happen that this
+  // path directly comes from the compiler in POSIX format. Support both separators for development.
+  const names = fileName.split(/[\\/]/);
   let current: Directory|string = directory;
   if (names.length && names[0] === '') names.shift();
   for (const name of names) {
