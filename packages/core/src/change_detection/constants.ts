@@ -15,6 +15,12 @@
 export enum ChangeDetectionStrategy {
   /**
    * `OnPush` means that the change detector's mode will be set to `CheckOnce` during hydration.
+   *
+   * This strategy only affects the template of a component. This means that lifecycle hooks will
+   * still be called. And it makes sense, because you want to tell Angular, that it does not need
+   * to dirty check the template as the component knows that e.g. all data is immutable. However,
+   * the component needs to be told when it gets new data so that it can tell Angular to dirty check
+   * the template again.
    */
   OnPush,
 

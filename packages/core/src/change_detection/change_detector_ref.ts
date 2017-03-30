@@ -15,8 +15,6 @@ export abstract class ChangeDetectorRef {
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/GC512b?p=preview))
-   *
    * ```typescript
    * @Component({
    *   selector: 'cmp',
@@ -53,9 +51,14 @@ export abstract class ChangeDetectorRef {
    *
    * The detached change detector will not be checked until it is reattached.
    *
+   * This method only affects the template of a component. This means that lifecycle hooks on a
+   * detached component will still be called. And it makes sense, because you want to tell
+   * Angular, that it does not need to dirty check the template as the component knows that
+   * e.g. all data is immutable. However, the component needs to be told when it gets new data
+   * so that it can tell Angular to dirty check the template again.
+   *
    * This can also be used in combination with {@link ChangeDetectorRef#detectChanges} to implement
-   * local change
-   * detection checks.
+   * local change detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
@@ -143,15 +146,13 @@ export abstract class ChangeDetectorRef {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/aUhZha?p=preview))
-   *
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
    * is set to false.
    *
    * ```typescript
    * class DataProvider {
-   *   data = 1;
+   *   data: number = 1;
    *
    *   constructor() {
    *     setInterval(() => {
@@ -185,7 +186,7 @@ export abstract class ChangeDetectorRef {
    *   `,
    * })
    * class App {
-   *   live = true;
+   *   live: boolean = true;
    * }
    * ```
    */
