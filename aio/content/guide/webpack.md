@@ -6,6 +6,7 @@ Create Angular applications with a Webpack based tooling.
 
 @description
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -69,11 +70,13 @@ You supply Webpack with one or more *entry* files and let it find and incorporat
 The one entry point file in this example is the application's root file, `src/main.ts`:
 
 
+
 <code-example path="webpack/config/webpack.common.js" region="one-entry" linenums="false">
 
 </code-example>
 
 Webpack inspects that file and traverses its `import` dependencies recursively.
+
 
 
 <code-example path="webpack/src/app/app.component.ts" region="component" linenums="false">
@@ -85,7 +88,9 @@ It opens the `@angular/core` file and follows _its_ network of `import` statemen
 
 Then it **outputs** these files to the `app.js` _bundle file_ designated in configuration:
 
+
 <div class='code-example'>
+
 
   <code-example name="webpack.config.js (single output)" language="javascript">
     output: {    
@@ -108,7 +113,9 @@ It's preferable to separate the volatile application app code from comparatively
 
 Change the configuration so that it has two entry points, `main.ts` and `vendor.ts`:
 
+
 <div class='code-example'>
+
 
   <code-example language="javascript">
     entry: {    
@@ -141,6 +148,7 @@ The `[name]` in the output name is a *placeholder* that a Webpack plugin replace
 To tell Webpack what belongs in the vendor bundle,
 add a `vendor.ts` file that only imports the application's third-party modules:
 
+
 <code-example path="webpack/src/vendor.ts" linenums="false">
 
 </code-example>
@@ -156,7 +164,9 @@ Webpack _itself_ only understands JavaScript files.
 Teach it to transform non-JavaScript file into their JavaScript equivalents with *loaders*.
 Configure loaders for TypeScript and CSS as follows.
 
+
 <div class='code-example'>
+
 
   <code-example language="javascript">
     rules: [    
@@ -178,7 +188,9 @@ Configure loaders for TypeScript and CSS as follows.
 When Webpack encounters `import` statements like the following, 
 it applies the `test` RegEx patterns. 
 
+
 <div class='code-example'>
+
 
   <code-example language="typescript">
     import { AppComponent } from './app.component.ts';    
@@ -208,7 +220,9 @@ Then it applies the `style` loader to append the css inside `<style>` elements o
 Webpack has a build pipeline with well-defined phases.
 Tap into that pipeline with plugins such as the `uglify` minification plugin:
 
+
 <div class='code-example'>
+
 
   <code-example language="javascript">
     plugins: [    
@@ -231,6 +245,7 @@ After that brief orientation, you are ready to build your own Webpack configurat
 Begin by setting up the development environment.
 
 Create a new project folder.
+
 <code-example language="sh" class="code-shell">
   mkdir angular-webpack  
     cd    angular-webpack  
@@ -240,11 +255,14 @@ Create a new project folder.
 Add these files:
 
 
+
 <code-tabs>
+
 
   <code-pane title="package.json" path="webpack/package.webpack.json">
 
   </code-pane>
+
 
 
   <code-pane title="src/tsconfig.json" path="webpack/src/tsconfig.1.json">
@@ -252,14 +270,17 @@ Add these files:
   </code-pane>
 
 
+
   <code-pane title="webpack.config.js" path="webpack/webpack.config.js">
 
   </code-pane>
 
 
+
   <code-pane title="karma.conf.js" path="webpack/karma.webpack.conf.js">
 
   </code-pane>
+
 
 
   <code-pane title="config/helpers.js" path="webpack/config/helpers.js">
@@ -284,6 +305,7 @@ They are listed in the updated `packages.json`.
 ~~~
 
 Open a terminal window and install the npm packages.
+
 <code-example language="sh" class="code-shell">
   npm install  
     
@@ -302,6 +324,7 @@ Polyfills should be bundled separately from the application and vendor bundles.
 Add a `polyfills.ts` like this one to the `src/` folder.
 
 
+
 <code-example path="webpack/src/polyfills.ts" linenums="false">
 
 </code-example>
@@ -309,6 +332,7 @@ Add a `polyfills.ts` like this one to the `src/` folder.
 
 
 ~~~ {.callout.is-critical}
+
 
 
 <header>
@@ -332,6 +356,7 @@ Developers typically have separate configurations for development, production, a
 All three have a lot of configuration in common.
 
 Gather the common configuration in a file called `webpack.common.js`.
+
 
 
 <code-example path="webpack/config/webpack.common.js" linenums="false">
@@ -359,6 +384,7 @@ and exports several objects as properties of a `module.exports` object.
 The first export is the `entry` object:
 
 
+
 <code-example path="webpack/config/webpack.common.js" region="entries" linenums="false">
 
 </code-example>
@@ -376,7 +402,9 @@ This `entry` object defines the three bundles:
 The app will `import` dozens if not hundreds of JavaScript and TypeScript files.
 You could write `import` statements with explicit extensions like this example:
 
+
 <div class='code-example'>
+
 
   <code-example language="typescript">
     import { AppComponent } from './app.component.ts';    
@@ -389,6 +417,7 @@ You could write `import` statements with explicit extensions like this example:
 But most `import` statements don't mention the extension at all.
 Tell Webpack to resolve extension-less file requests by looking for matching files with
 `.ts` extension or `.js` extension (for regular JavaScript files and pre-compiled TypeScript files).
+
 
 
 <code-example path="webpack/config/webpack.common.js" region="resolve" linenums="false">
@@ -410,6 +439,7 @@ add `.css` and `.html` to the list.
 {@a common-rules}
 #### _module.rules_
 Rules tell Webpack which loaders to use for each file, or module:
+
 
 
 <code-example path="webpack/config/webpack.common.js" region="loaders" linenums="false">
@@ -449,6 +479,7 @@ Multiple loaders can be chained using the array notation.
 {@a common-plugins}
 #### _plugins_
 Finally, create instances of three plugins:
+
 
 
 <code-example path="webpack/config/webpack.common.js" region="plugins" linenums="false">
@@ -503,6 +534,7 @@ These files tend to be short and simple.
 Here is the `webpack.dev.js` development configuration file.
 
 
+
 <code-example path="webpack/config/webpack.dev.js" linenums="false">
 
 </code-example>
@@ -525,6 +557,7 @@ other configuration options in this file.
 
 Grab the app code at the end of this guide and try:
 
+
 <code-example language="sh" class="code-shell">
   npm start  
     
@@ -537,6 +570,7 @@ Grab the app code at the end of this guide and try:
 ### Production configuration
 
 Configuration of a *production* build resembles *development* configuration with a few key changes.
+
 
 
 <code-example path="webpack/config/webpack.prod.js" linenums="false">
@@ -562,11 +596,13 @@ There are additional plugins:
 Thanks to the `DefinePlugin` and the `ENV` variable defined at top, you can enable Angular production mode like this:
 
 
+
 <code-example path="webpack/src/main.ts" region="enable-prod" linenums="false">
 
 </code-example>
 
 Grab the app code at the end of this guide and try:
+
 
 <code-example language="sh" class="code-shell">
   npm run build  
@@ -588,11 +624,13 @@ You could merge the test configuration into the `webpack.common` configuration a
 But it might be simpler to start over with a completely fresh configuration.
 
 
+
 <code-example path="webpack/config/webpack.test.js" linenums="false">
 
 </code-example>
 
 Reconfigure [Karma](https://karma-runner.github.io/1.0/index.html) to use Webpack to run the tests:
+
 
 
 <code-example path="webpack/config/karma.conf.js" linenums="false">
@@ -606,6 +644,7 @@ The `karma-test-shim` tells Karma what files to pre-load and
 primes the Angular test framework with test versions of the providers that every app expects to be pre-loaded.
 
 
+
 <code-example path="webpack/config/karma-test-shim.js" linenums="false">
 
 </code-example>
@@ -615,6 +654,7 @@ You tell Webpack to find and load the test files (the files ending in `.spec.ts`
 Each spec file imports all&mdash;and only&mdash;the application source code that it tests.
 Webpack loads just _those_ specific application files and ignores the other files that you aren't testing.
 Grab the app code at the end of this guide and try:
+
 
 <code-example language="sh" class="code-shell">
   npm test  
@@ -627,16 +667,20 @@ Here is the source code for a small application that bundles with the
 Webpack techniques covered in this guide.
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/index.html" path="webpack/src/index.html">
 
   </code-pane>
 
 
+
   <code-pane title="src/main.ts" path="webpack/src/main.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/assets/css/styles.css" path="webpack/src/assets/css/styles.css">
@@ -648,11 +692,14 @@ Webpack techniques covered in this guide.
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.ts" path="webpack/src/app/app.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.component.html" path="webpack/src/app/app.component.html">
@@ -660,14 +707,17 @@ Webpack techniques covered in this guide.
   </code-pane>
 
 
+
   <code-pane title="src/app/app.component.css" path="webpack/src/app/app.component.css">
 
   </code-pane>
 
 
+
   <code-pane title="src/app/app.component.spec.ts" path="webpack/src/app/app.component.spec.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.module.ts" path="webpack/src/app/app.module.ts">
@@ -687,11 +737,14 @@ on the image and download it to that folder.
 {@a bundle-ts}
 Here again are the TypeScript entry-point files that define the `polyfills` and `vendor` bundles.
 
+
 <code-tabs>
+
 
   <code-pane title="src/polyfills.ts" path="webpack/src/polyfills.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/vendor.ts" path="webpack/src/vendor.ts">

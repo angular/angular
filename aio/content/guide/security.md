@@ -15,6 +15,7 @@ For more information about the attacks and mitigations described below, see [OWA
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
 
+
 <h2 id='report-issues'>
   Reporting vulnerabilities
 </h2>
@@ -23,6 +24,7 @@ To report vulnerabilities in Angular itself, email us at [security@angular.io](g
 
 For more information about how Google handles security issues, see [Google's security
 philosophy](https://www.google.com/about/appsecurity/).
+
 
 
 <h2 id='best-practices'>
@@ -41,6 +43,7 @@ community and make a pull request.
 
 * **Avoid Angular APIs marked in the documentation as “_Security Risk_.”**
 For more information, see the [Trusting safe values](guide/security#bypass-security-apis) section of this page.
+
 
 
 <h2 id='xss'>
@@ -94,6 +97,7 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 content, and once by binding it to the `innerHTML` property of an element:
 
 
+
 <code-example path="security/src/app/inner-html-binding.component.html">
 
 </code-example>
@@ -106,6 +110,7 @@ a value that an attacker might control into `innerHTML` normally causes an XSS
 vulnerability. For example, code contained in a `<script>` tag is executed:
 
 
+
 <code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" title="src/app/inner-html-binding.component.ts (class)" region="class">
 
 </code-example>
@@ -113,6 +118,7 @@ vulnerability. For example, code contained in a `<script>` tag is executed:
 
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `<script>`
 tag but keeps safe content such as the text content of the `<script>` tag and the `<b>` element.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>  </img>
@@ -154,6 +160,7 @@ carries a high risk of introducing template-injection vulnerabilities.
 
 
 
+
 <h2 id='bypass-security-apis'>
   Trusting safe values
 </h2>
@@ -179,6 +186,7 @@ your intended use of the value. Imagine that the following template needs to bin
 `javascript:alert(...)` call:
 
 
+
 <code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (URL)" region="URL">
 
 </code-example>
@@ -188,9 +196,11 @@ in development mode, logs this action to the console. To prevent
 this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
 
 
+
 <code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
 
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -205,15 +215,18 @@ could execute. So call a method on the controller to construct a trusted video U
 Angular to allow binding into `<iframe src>`:
 
 
+
 <code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (iframe)" region="iframe">
 
 </code-example>
 
 
 
+
 <code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
 
 </code-example>
+
 
 
 
@@ -225,6 +238,7 @@ Angular to allow binding into `<iframe src>`:
 Angular has built-in support to help prevent two common HTTP vulnerabilities, cross-site request
 forgery (CSRF or XSRF) and cross-site script inclusion (XSSI). Both of these must be mitigated primarily 
 on the server side, but Angular provides helpers to make integration on the client side easier.
+
 
 <h3 id='xsrf'>
   Cross-site request forgery
@@ -271,11 +285,13 @@ cryptographically secure random number generator, and expire in a day or two.
 
 Your server may use a different cookie or header name for this purpose.
 An Angular application can customize cookie and header names by providing its own `CookieXSRFStrategy` values.
+
 <code-example language="typescript">
   { provide: XSRFStrategy, useValue: new CookieXSRFStrategy('myCookieName', 'My-Header-Name') }
 </code-example>
 
 Or you can implement and provide an entirely custom `XSRFStrategy`:
+
 
 <code-example language="typescript">
   { provide: XSRFStrategy, useClass: MyXSRFStrategy }  
@@ -290,6 +306,7 @@ The Stanford University paper
 
 See also Dave Smith's easy-to-understand 
 <a href="https://www.youtube.com/watch?v=9inczw6qtpY" target="_blank" title="Cross Site Request Funkery Securing Your Angular Apps From Evil Doers">talk on XSRF at AngularConnect 2016</a>.
+
 
 <h3 id='xssi'>
   Cross-site script inclusion (XSSI)
@@ -308,6 +325,7 @@ Angular's `Http` library recognizes this convention and automatically strips the
 
 For more information, see the XSSI section of this [Google web security blog
 post](https://security.googleblog.com/2011/05/website-security-for-webmasters.html).
+
 
 
 <h2 id='code-review'>

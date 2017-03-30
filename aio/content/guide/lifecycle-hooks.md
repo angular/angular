@@ -7,6 +7,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 @description
 
 
+
 <figure>
   <img src="assets/images/devguide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px">  </img>
 </figure>
@@ -35,6 +36,7 @@ Each interface has a single hook method whose name is the interface name prefixe
 For example, the `OnInit` interface has a hook method named `ngOnInit()` 
 that Angular calls shortly after creating the component:
 
+
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" linenums="false">
 
 </code-example>
@@ -48,11 +50,14 @@ Angular only calls a directive/component hook method *if it is defined*.
 ## Lifecycle sequence
 *After* creating a component/directive by calling its constructor, Angular
 calls the lifecycle hook methods in the following sequence at specific moments:
+
 <table width="100%">
+
 
   <col width="20%">
 
   </col>
+
 
 
   <col width="80%">
@@ -60,11 +65,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </col>
 
 
+
   <tr>
+
 
     <th>
       Hook
     </th>
+
 
 
     <th>
@@ -75,11 +83,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngOnChanges()</code>
     </td>
+
 
 
     <td>
@@ -94,11 +105,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngOnInit()</code>
     </td>
+
 
 
     <td>
@@ -113,11 +127,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngDoCheck()</code>
     </td>
+
 
 
     <td>
@@ -131,11 +148,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngAfterContentInit()</code>
     </td>
+
 
 
     <td>
@@ -151,11 +171,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngAfterContentChecked()</code>
     </td>
+
 
 
     <td>
@@ -171,11 +194,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngAfterViewInit()</code>
     </td>
+
 
 
     <td>
@@ -191,11 +217,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngAfterViewChecked()</code>
     </td>
+
 
 
     <td>
@@ -211,11 +240,14 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <code>ngOnDestroy</code>
     </td>
+
 
 
     <td>
@@ -254,11 +286,14 @@ a *child* component that illustrates one or more of the lifecycle hook methods.
 
 Here's a brief description of each exercise:
 
+
 <table width="100%">
+
 
   <col width="20%">
 
   </col>
+
 
 
   <col width="80%">
@@ -266,11 +301,14 @@ Here's a brief description of each exercise:
   </col>
 
 
+
   <tr>
+
 
     <th>
       Component
     </th>
+
 
 
     <th>
@@ -281,11 +319,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#peek-a-boo">Peek-a-boo</a>
     </td>
+
 
 
     <td>
@@ -297,11 +338,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#spy">Spy</a>
     </td>
+
 
 
     <td>
@@ -317,11 +361,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#onchanges">OnChanges</a>
     </td>
+
 
 
     <td>
@@ -334,11 +381,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#docheck">DoCheck</a>
     </td>
+
 
 
     <td>
@@ -350,11 +400,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#afterview">AfterView</a>
     </td>
+
 
 
     <td>
@@ -366,11 +419,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <a href="#aftercontent">AfterContent</a>
     </td>
+
 
 
     <td>
@@ -383,11 +439,14 @@ Here's a brief description of each exercise:
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       Counter
     </td>
+
 
 
     <td>
@@ -419,6 +478,7 @@ You would rarely, if ever, implement all of the interfaces like this.
 The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
+
 <figure class='image-display'>
   <img src="assets/images/devguide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">  </img>
 </figure>
@@ -471,6 +531,7 @@ The sneaky spy directive is simple, consisting almost entirely of `ngOnInit()` a
 that log messages to the parent via an injected `LoggerService`.
 
 
+
 <code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" linenums="false">
 
 </code-example>
@@ -479,12 +540,14 @@ You can apply the spy to any native or component element and it'll be initialize
 at the same time as that element.
 Here it is attached to the repeated hero `<div>`:
 
+
 <code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" linenums="false">
 
 </code-example>
 
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
 with an entry in the *Hook Log* as seen here:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">  </img>
@@ -562,6 +625,7 @@ You risk memory leaks if you neglect to do so.
 Angular calls its `ngOnChanges()` method whenever it detects changes to ***input properties*** of the component (or directive).
 This example monitors the `OnChanges` hook.
 
+
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" linenums="false">
 
 </code-example>
@@ -572,6 +636,7 @@ This hook iterates over the changed properties and logs them.
 
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
 
+
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" linenums="false">
 
 </code-example>
@@ -579,11 +644,13 @@ The example component, `OnChangesComponent`, has two input properties: `hero` an
 The host `OnChangesParentComponent` binds to them like this:
 
 
+
 <code-example path="lifecycle-hooks/src/app/on-changes-parent.component.html" region="on-changes">
 
 </code-example>
 
 Here's the sample in action as the user makes changes.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">  </img>
@@ -612,6 +679,7 @@ Use this method to detect a change that Angular overlooked.
 
 The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoCheck()` hook:
 
+
 <code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" linenums="false">
 
 </code-example>
@@ -619,6 +687,7 @@ The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoChec
 This code inspects certain _values of interest_, capturing and comparing their current state against previous values.
 It writes a special message to the log when there are no substantive changes to the `hero` or the `power`
 so you can see how often `DoCheck` is called. The results are illuminating:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">  </img>
@@ -643,11 +712,13 @@ The *AfterView* sample explores the `AfterViewInit()` and `AfterViewChecked()` h
 
 Here's a child view that displays a hero's name in an `<input>`:
 
+
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" linenums="false">
 
 </code-example>
 
 The `AfterViewComponent` displays this child view *within its template*:
+
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" linenums="false">
 
@@ -656,6 +727,7 @@ The `AfterViewComponent` displays this child view *within its template*:
 The following hooks take action based on changing values *within the child view*,
 which can only be reached by querying for the child view via the property decorated with
 [@ViewChild](api/core/index/ViewChild-decorator).
+
 
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" linenums="false">
@@ -667,6 +739,7 @@ which can only be reached by querying for the child view via the property decora
 {@a wait-a-tick}
 ### Abide by the unidirectional data flow rule
 The `doSomething()` method updates the screen when the hero name exceeds 10 characters.
+
 
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" linenums="false">
@@ -682,6 +755,7 @@ Angular throws an error if the hook updates the component's data-bound `comment`
 The `LoggerService.tick_then()` postpones the log update 
 for one turn of the browser's JavaScript cycle and that's just long enough.
 Here's *AfterView* in action:
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">  </img>
 </figure>
@@ -714,6 +788,7 @@ Consider this variation on the [previous _AfterView_](guide/lifecycle-hooks#afte
 This time, instead of including the child view within the template, it imports the content from
 the `AfterContentComponent`'s parent. Here's the parent's template:
 
+
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" linenums="false">
 
 </code-example>
@@ -724,6 +799,7 @@ into the component*.
 
 Now look at the component's template:
 
+
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" linenums="false">
 
 </code-example>
@@ -731,6 +807,7 @@ Now look at the component's template:
 The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content">  </img>
 </figure>
@@ -761,6 +838,7 @@ projected into the component.
 The following *AfterContent* hooks take action based on changing values in a *content child*,
 which can only be reached by querying for them via the property decorated with
 [@ContentChild](api/core/index/ContentChild-decorator).
+
 
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" linenums="false">

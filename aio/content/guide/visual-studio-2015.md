@@ -46,6 +46,7 @@ The steps are as follows:
 - [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app
 
 
+
 <h2 id='prereq1'>
   Prerequisite: Node.js
 </h2>
@@ -64,6 +65,7 @@ Older versions produce errors.
 
 
 
+
 <h2 id='prereq2'>
   Prerequisite: Visual Studio 2015 Update 3
 </h2>
@@ -74,6 +76,7 @@ To view your version of Visual Studio 2015, go to `Help | About Visual Studio`.
 
 If you don't have it, install **[Visual Studio 2015 Update 3](https://www.visualstudio.com/en-us/news/releasenotes/vs2015-update3-vs)**.
 Or use `Tools | Extensions and Updates` to update to Update 3 directly from Visual Studio 2015.
+
 
 
 <h2 id='prereq3'>
@@ -94,6 +97,7 @@ if not found then look in the global path and if it is not found there, Visual S
 will use its own versions of the tools.
 
 
+
 <h2 id='prereq4'>
   Prerequisite: Install TypeScript 2 for Visual Studio 2015
 </h2>
@@ -111,12 +115,14 @@ At this point, Visual Studio is ready. It’s a good idea to close Visual Studio
 restart it to make sure everything is clean.
 
 
+
 <h2 id='download'>
   Step 1: Download the QuickStart files
 </h2>
 
 [Download the QuickStart source](https://github.com/angular/quickstart)
 from github. If you downloaded as a zip file, extract the files.
+
 
 
 <h2 id='create-project'>
@@ -141,6 +147,7 @@ no authentication and no hosting. Pick the template and options appropriate for 
 
 
 
+
 <h2 id='copy'>
   Step 3: Copy the QuickStart files into the ASP.NET project folder
 </h2>
@@ -158,6 +165,7 @@ Include the files in the Visual Studio project as follows:
   * tsconfig.json
   
 
+
 <h2 id='restore'>
   Step 4: Restore the required packages
 </h2>
@@ -172,6 +180,7 @@ Restore the packages required for an Angular application as follows:
 * When the restore is finished, a message should say: `npm command completed with exit code 0`.
 * Click the `Refresh` icon in Solution Explorer.
 * **Do not** include the `node_modules` folder in the project. Let it be a hidden project folder.
+
 
 
 <h2 id='build-and-run'>
@@ -193,6 +202,7 @@ The default browser opens and displays the QuickStart sample application.
 
 Try editing any of the project files. *Save* and refresh the browser to
 see the changes. 
+
 
 
 <h2 id='routing'>

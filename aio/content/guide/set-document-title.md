@@ -11,15 +11,19 @@ Setting the document or window title using the Title service.
 Our app should be able to make the browser title bar say whatever we want it to say.
 This cookbook explains how to do it.**See the <live-example name="cb-set-document-title"></live-example>**.
 
+
 <table>
 
+
   <tr>
+
 
     <td>
       To see the browser title bar change in the live example,      
             open it again in the Plunker editor by clicking the icon in the upper right,      
             then pop out the preview window by clicking the blue 'X' button in the upper right corner.
     </td>
+
 
 
     <td>
@@ -35,6 +39,7 @@ This cookbook explains how to do it.**See the <live-example name="cb-set-documen
 ## The problem with *&lt;title&gt;*
 
 The obvious approach is to bind a property of the component to the HTML `<title>` like this:
+
 <code-example format=''>
   &lt;title&gt;{{This_Does_Not_Work}}&lt;/title&gt;
 </code-example>
@@ -67,11 +72,13 @@ for getting and setting the current HTML document title:
 Let's inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
+
 <code-example path="cb-set-document-title/src/app/app.component.ts" region="class" linenums="false">
 
 </code-example>
 
 We bind that method to three anchor tags and, voilà!
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/set-document-title/set-title-anim.gif" alt="Set title">  </img>
 </figure>
@@ -79,16 +86,20 @@ We bind that method to three anchor tags and, voilà!
 Here's the complete solution
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/main.ts" path="cb-set-document-title/src/main.ts">
 
   </code-pane>
 
 
+
   <code-pane title="src/app/app.module.ts" path="cb-set-document-title/src/app/app.module.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.component.ts" path="cb-set-document-title/src/app/app.component.ts">
