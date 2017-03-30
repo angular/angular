@@ -24,6 +24,7 @@ import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { EmbeddedModule } from 'app/embedded/embedded.module';
 import { GaService } from 'app/shared/ga.service';
+import { GoogleFeedbackService } from 'app/shared/google-feedback.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { NavigationService } from 'app/navigation/navigation.service';
@@ -64,6 +65,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   providers: [
     ApiService,
     GaService,
+    GoogleFeedbackService,
     Logger,
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },

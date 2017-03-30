@@ -1,22 +1,56 @@
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.nav-link {
+  margin-right: 10px;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.nav-link.home img {
+  position: relative;
+  margin-top: -15px;
+  top: 12px;
+  height: 36px;
+}
+
+@media (max-width: 700px) {
+  .nav-link {
+    font-size: 80%;
+    margin-right: 8px;
+    margin-left: 0px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-link {
+    font-size: 80%;
+    margin-right: 8px;
+    margin-left: 0px;
+  }
+}
+
 aio-top-menu {
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 80%;
-}
 
-aio-top-menu ul {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  list-style-position: inside;
-  padding: 0;
-  margin: 0;
-}
+  ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style-position: inside;
+    padding: 0px;
+    margin: 0px;
 
-aio-top-menu li {
-  list-style-type: none;
-  padding: 0;
+    li {
+      list-style-type: none;
+      padding: 0px;
+    }
+  }
 }
 
 md-toolbar.mat-toolbar {
@@ -48,12 +82,12 @@ aio-search-box input {
     transition: width 0.4s ease-in-out;
     &:focus {
       width: 50%;
-    }  
+    }
   }
   @include bp(medium) {
     transition: width 0.4s ease-in-out;
     &:focus {
       width: 50%;
-    }  
+    }
   }
 }

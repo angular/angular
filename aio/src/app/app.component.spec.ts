@@ -171,7 +171,7 @@ describe('AppComponent', () => {
 
   describe('footer', () => {
     it('should have version number', () => {
-      const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer p.version-info')).nativeElement;
+      const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer p')).nativeElement;
       expect(versionEl.innerText).toContain(TestHttp.versionFull);
     });
   });
