@@ -1,0 +1,128 @@
+$unit: 8px;
+$metal: #536E7A;
+$snow: #FFFFFF;
+$steel: #253238;
+
+aio-contributor-list {
+  .grid-fluid {
+    margin: 0 auto;
+    margin-bottom: 6 * 8px;
+    *zoom: 1;
+  }
+  .grid-fluid aio-contributor {
+    display: inline;
+    float: left;
+    margin-right: 1.04167%;
+    margin-left: 1.04167%;
+    width: 22.91667%;
+    margin-bottom: 6 * 8px;
+  }
+  .grid-fluid:after, .grid-fluid:before {
+    content: '.';
+    clear: both;
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    font-size: 0;
+    line-height: 0;
+    width: 0;
+    height: 0;
+  }
+  @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
+  /* line 6, ../scss/_responsive.scss */
+    .grid-fluid{
+      width: auto;
+    }
+  }
+  @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
+    .grid-fluid{
+      margin-left: 20px;
+      margin-right: 20px;
+      float: none;
+      display: block;
+      width: auto;
+    }
+  }
+
+}
+
+aio-contributor {
+  margin: 0px 0px ($unit * 4) 0px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+  background: $snow;
+  transition: all .3s;
+  padding: 10px;
+
+  &:hover {
+    transform: translate3d(0,-3px,0);
+    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.4);
+
+    nav {
+      opacity: 1;
+    }
+  }
+
+
+  // HEADER
+
+  header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px 2px 0px 0px;
+
+    nav {
+      transition: opacity .5s;
+      position: absolute;
+      bottom: 3px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      padding: $unit;
+      background: rgba($steel, .4);
+      opacity: 0;
+
+      button {
+        font-size: 14px;
+        color: $snow;
+        text-transform: uppercase;
+        opacity: .87;
+        background: none;
+        border: none;
+      }
+
+      a {
+        color: $snow;
+        font-size: 20px;
+        text-decoration: none;
+        opacity: .87;
+        margin-right: $unit;
+        float: right;
+      }
+    }
+  }
+
+
+  // MAIN CONTENT
+
+  h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $metal;
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-bottom: $unit;
+  }
+
+  p {
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 24px;
+    margin: 0;
+    text-overflow: ellipsis;
+  }
+}
