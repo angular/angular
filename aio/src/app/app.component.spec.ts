@@ -17,6 +17,8 @@ import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -32,7 +34,8 @@ describe('AppComponent', () => {
         { provide: Http, useClass: TestHttp },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
         { provide: Logger, useClass: MockLogger },
-        { provide: SearchService, useClass: MockSearchService }
+        { provide: SearchService, useClass: MockSearchService },
+        { provide: SwUpdateNotificationsService, useClass: MockSwUpdateNotificationsService },
       ]
     });
     TestBed.compileComponents();
@@ -46,6 +49,13 @@ describe('AppComponent', () => {
 
   it('should create', () => {
     expect(component).toBeDefined();
+  });
+
+  describe('ServiceWorker update notifications', () => {
+    it('should be enabled', () => {
+      const swUpdateNotifications = TestBed.get(SwUpdateNotificationsService) as SwUpdateNotificationsService;
+      expect(swUpdateNotifications.enable).toHaveBeenCalled();
+    });
   });
 
   describe('is Hamburger Visible', () => {
