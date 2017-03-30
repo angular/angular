@@ -14,6 +14,7 @@ conditionally show a message below the list.
 
 The final UI looks like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/displaying-data/final.png" alt="Final UI">  </img>
 </figure>
@@ -48,6 +49,7 @@ changing the template and the body of the component.
 When you're done, it should look like this:
 
 
+
 <code-example path="displaying-data/src/app/app.component.1.ts">
 
 </code-example>
@@ -56,6 +58,7 @@ You added two properties to the formerly empty component: `title` and `myHero`.
 
 The revised template displays the two component properties using double curly brace
 interpolation:
+
 
 
 <code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -82,6 +85,7 @@ The CSS `selector` in the `@Component` !{_decorator} specifies an element named 
 That element is a placeholder in the body of your `index.html` file:
 
 
+
 <code-example path="displaying-data/src/index.html" linenums="false" title="src/index.html (body)" region="body">
 
 </code-example>
@@ -91,6 +95,7 @@ in the `index.html`, finds it, instantiates an instance of `AppComponent`, and r
 inside the `<my-app>` tag.
 
 Now run the app. It should display the title and hero name:
+
 <figure class='image-display'>
   <img src="assets/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero">  </img>
 </figure>
@@ -114,12 +119,14 @@ In either style, the template data bindings have the same access to the componen
 To display a list of heroes, begin by adding !{_an} !{_array} of hero names to the component and redefine `myHero` to be the first name in the !{_array}.
 
 
+
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
 
 </code-example>
 
 Now use the Angular `ngFor` directive in the template to display
 each item in the `heroes` list.
+
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -129,6 +136,7 @@ each item in the `heroes` list.
 This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
 in the `<li>` element is the Angular "repeater" directive.
 It marks that `<li>` element (and its children) as the "repeater template":
+
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (li)" region="li">
@@ -164,6 +172,7 @@ repeat items for any [iterable](guide/!{_iterableUrl}) object.
 
 Now the heroes appear in an unordered list.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor">  </img>
 </figure>
@@ -183,6 +192,7 @@ of hero names into !{_an} !{_array} of `Hero` objects. For that you'll need a `H
 Create a new file in the `!{_appDir}` folder called  <ngio-ex path="hero.ts"></ngio-ex> with the following code:
 
 
+
 <code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (excerpt)">
 
 </code-example>
@@ -194,6 +204,7 @@ It might not look like the class has properties, but it does.
 The declaration of the constructor parameters takes advantage of a TypeScript shortcut.
 
 Consider the first parameter:
+
 
 
 <code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (id)" region="id">
@@ -211,6 +222,7 @@ After importing the `Hero` class, the `AppComponent.heroes` property can return 
 of `Hero` objects:
 
 
+
 <code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (heroes)" region="heroes">
 
 </code-example>
@@ -218,6 +230,7 @@ of `Hero` objects:
 Next, update the template.
 At the moment it displays the hero's `id` and `name`.
 Fix that to display only the hero's `name` property.
+
 
 
 <code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -234,6 +247,7 @@ Let's change the example to display a message if there are more than three heroe
 
 The Angular `ngIf` directive inserts or removes an element based on a !{_boolean} condition.
 To see it in action, add the following paragraph at the bottom of the template:
+
 
 
 <code-example path="displaying-data/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (message)" region="message">
@@ -282,11 +296,14 @@ Here's the final code:
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.ts" path="displaying-data/src/app/app.component.ts" region="final">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/hero.ts" path="displaying-data/src/app/hero.ts">
@@ -294,9 +311,11 @@ Here's the final code:
   </code-pane>
 
 
+
   <code-pane title="src/app/app.module.ts" path="displaying-data/src/app/app.module.ts">
 
   </code-pane>
+
 
 
   <code-pane title="main.ts" path="displaying-data/src/main.ts">

@@ -21,17 +21,23 @@ When you're done, the app should look like this <live-example></live-example>.
 Before getting started on this page, verify that you have the following structure from earlier in the Tour of Heroes.
 If not, go back to the previous pages.
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-tour-of-heroes
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -42,9 +48,11 @@ If not, go back to the previous pages.
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -52,14 +60,17 @@ If not, go back to the previous pages.
       </aio-file>
 
 
+
       <aio-file>
         styles.css
       </aio-file>
 
 
+
       <aio-file>
         systemjs.config.js
       </aio-file>
+
 
 
       <aio-file>
@@ -70,9 +81,11 @@ If not, go back to the previous pages.
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>
@@ -106,6 +119,7 @@ The `HeroDetailComponent` class goes in the `hero-detail.component.ts` file.
 Start writing the `HeroDetailComponent` as follows:
 
 
+
 <code-example path="toh-3/app/hero-detail.component.1.ts" region="v1" linenums="false">
 
 </code-example>
@@ -131,6 +145,7 @@ Replace the word, "selectedHero", with the word, "hero", everywhere in the templ
 When you're done, the new template should look like this:
 
 
+
 <code-example path="toh-3/src/app/hero-detail.component.ts" region="template" linenums="false">
 
 </code-example>
@@ -139,6 +154,7 @@ When you're done, the new template should look like this:
 
 The `HeroDetailComponent` template binds to the component's `hero` property.
 Add that property to the `HeroDetailComponent` class like this:
+
 
 <code-example path="toh-3/app/hero-detail.component.1.ts" region="hero">
 
@@ -152,12 +168,14 @@ The Angular [style guide](guide/style-guide) recommends one class per file anywa
 Move the `Hero` class from `app.component.ts` to its own `hero.ts` file.
 
 
+
 <code-example path="toh-3/src/app/hero.ts" linenums="false">
 
 </code-example>
 
 Now that the `Hero` class is in its own file, the `AppComponent` and the `HeroDetailComponent` have to import it.
 Add the following `import` statement near the top of _both_ the `app.component.ts` and the `hero-detail.component.ts` files.
+
 
 <code-example path="toh-3/app/hero-detail.component.1.ts" region="hero-import">
 
@@ -170,6 +188,7 @@ the parent `AppComponent` will tell the child `HeroDetailComponent` which hero t
 by binding its `selectedHero` to the `hero` property of the `HeroDetailComponent`.
 The binding will look like this:
 
+
 <code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" linenums="false">
 
 </code-example>
@@ -181,12 +200,14 @@ Otherwise, Angular rejects the binding and throws an error.
 
 First, amend the `@angular/core` import statement to include the `Input` symbol.
 
+
 <code-example path="toh-3/src/app/hero-detail.component.ts" region="import-input" linenums="false">
 
 </code-example>
 
 Then declare that `hero` is an *input* property by
 preceding it with the `@Input` decorator that you imported earlier.
+
 
 <code-example path="toh-3/src/app/hero-detail.component.ts" region="hero" linenums="false">
 
@@ -204,6 +225,7 @@ Read more about _input_ properties in the
 
 That's it. The `hero` property is the only thing in the `HeroDetailComponent` class.
 
+
 <code-example path="toh-3/src/app/hero-detail.component.ts" region="class" linenums="false">
 
 </code-example>
@@ -211,6 +233,7 @@ That's it. The `hero` property is the only thing in the `HeroDetailComponent` cl
 All it does is receive a hero object through its `hero` input property and then bind to that property with its template.
 
 Here's the complete `HeroDetailComponent`.
+
 
 <code-example path="toh-3/src/app/hero-detail.component.ts">
 
@@ -222,11 +245,13 @@ Every component must be declared in one&mdash;and only one&mdash;Angular module.
 
 Open `app.module.ts` in your editor and import the `HeroDetailComponent` so you can refer to it.
 
+
 <code-example path="toh-3/src/app/app.module.ts" region="hero-detail-import">
 
 </code-example>
 
 Add `HeroDetailComponent` to the module's `declarations` array.
+
 
 
 <code-example path="toh-3/src/app/app.module.ts" region="declarations" linenums="false">
@@ -264,6 +289,7 @@ Coordinate the master `AppComponent` with the `HeroDetailComponent`
 by binding the `selectedHero` property of the `AppComponent`
 to the `hero` property of the `HeroDetailComponent`.
 
+
 <code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" linenums="false">
 
 </code-example>
@@ -271,6 +297,7 @@ to the `hero` property of the `HeroDetailComponent`.
 Now every time the `selectedHero` changes, the `HeroDetailComponent` gets a new hero to display.
 
 The revised `AppComponent` template should look like this:
+
 
 
 <code-example path="toh-3/src/app/app.component.ts" region="hero-detail-template" linenums="false">
@@ -297,17 +324,23 @@ without touching the parent `AppComponent`.
 ### Review the app structure
 Verify that you have the following structure:
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-tour-of-heroes
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -315,9 +348,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -328,9 +363,11 @@ Verify that you have the following structure:
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -338,14 +375,17 @@ Verify that you have the following structure:
       </aio-file>
 
 
+
       <aio-file>
         styles.css
       </aio-file>
 
 
+
       <aio-file>
         systemjs.config.js
       </aio-file>
+
 
 
       <aio-file>
@@ -356,9 +396,11 @@ Verify that you have the following structure:
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>
@@ -374,11 +416,14 @@ Verify that you have the following structure:
 Here are the code files discussed in this page.
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/hero-detail.component.ts" path="toh-3/src/app/hero-detail.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.component.ts" path="toh-3/src/app/app.component.ts">
@@ -386,9 +431,11 @@ Here are the code files discussed in this page.
   </code-pane>
 
 
+
   <code-pane title="src/app/hero.ts" path="toh-3/src/app/hero.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.module.ts" path="toh-3/src/app/app.module.ts">

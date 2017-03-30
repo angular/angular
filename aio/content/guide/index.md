@@ -15,11 +15,14 @@ The documentation is divided into major thematic sections, each
 a collection of pages devoted to that theme.
 
 
+
 <table width="100%">
+
 
   <col width="15%">
 
   </col>
+
 
 
   <col>
@@ -27,11 +30,14 @@ a collection of pages devoted to that theme.
   </col>
 
 
+
   <tr style=top>
+
 
     <td>
       <b><a href="../quickstart.html">QuickStart</a></b>
     </td>
+
 
 
     <td>
@@ -43,11 +49,14 @@ a collection of pages devoted to that theme.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <b>Guide</b>
     </td>
+
 
 
     <td>
@@ -60,11 +69,14 @@ a collection of pages devoted to that theme.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <b><a href="../api/">API Reference</a></b>
     </td>
+
 
 
     <td>
@@ -75,11 +87,14 @@ a collection of pages devoted to that theme.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <b><a href="../tutorial/">Tutorial</a></b>
     </td>
+
 
 
     <td>
@@ -91,11 +106,14 @@ a collection of pages devoted to that theme.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       <b><a href="      ">Advanced</a></b>
     </td>
+
 
 
     <td>
@@ -106,11 +124,14 @@ a collection of pages devoted to that theme.
   </tr>
 
 
+
   <tr style=top if-docs="ts">
+
 
     <td>
       <b><a href="../cookbook/">Cookbook</a></b>
     </td>
+
 
 
     <td>

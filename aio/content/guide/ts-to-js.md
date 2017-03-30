@@ -86,11 +86,14 @@ through the global `ng` object.
 Anything you can import from `@angular` is a nested member of this `ng` object:
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/app.module.ts" region="ng2import">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/app.module.es6" region="ng2import">
@@ -98,9 +101,11 @@ Anything you can import from `@angular` is a nested member of this `ng` object:
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/app.module.es6" region="ng2import">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/app.module.js" region="ng2import">
@@ -138,11 +143,14 @@ to limit unintentional leaking of private symbols into the global scope.
 Here is a `HeroComponent` as it might be defined and "exported" in each of the four language variants.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero.component.ts" region="appexport">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="appexport">
@@ -150,9 +158,11 @@ Here is a `HeroComponent` as it might be defined and "exported" in each of the f
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero.component.es6" region="appexport">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero.component.js" region="appexport">
@@ -169,11 +179,14 @@ In _TypeScript_ and _ES6_ apps, you `import` things that have been exported from
 In _ES5_ you use the shared namespace object to access "exported" entities from other files.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/app.module.ts" region="appimport">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/app.module.es6" region="appimport">
@@ -181,9 +194,11 @@ In _ES5_ you use the shared namespace object to access "exported" entities from 
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/app.module.es6" region="appimport">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/app.module.js" region="appimport">
@@ -235,11 +250,14 @@ _ES5_ JavaScript has no classes.
 Use the constructor function pattern instead, adding methods to the prototype.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero.component.ts" region="class">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="class">
@@ -247,9 +265,11 @@ Use the constructor function pattern instead, adding methods to the prototype.
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero.component.es6" region="class">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero.component.js" region="constructorproto">
@@ -275,11 +295,14 @@ In _ES5_, you also provide an `annotations` array but you attach it to the _cons
 See these variations side-by-side:
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero.component.ts" region="metadata">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="metadata">
@@ -287,9 +310,11 @@ See these variations side-by-side:
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero.component.es6" region="metadata">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero.component.js" region="metadata">
@@ -303,17 +328,21 @@ See these variations side-by-side:
 
 A large component template is often kept in a separate template file.
 
+
 <code-example path="cb-ts-to-js/ts/src/app/hero-title.component.html" linenums="false">
 
 </code-example>
 
 The component (`HeroTitleComponent` in this case) then references the template file in its metadata `templateUrl` property:
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-title.component.ts" region="templateUrl">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-title.component.es6" region="templateUrl">
@@ -321,9 +350,11 @@ The component (`HeroTitleComponent` in this case) then references the template f
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-title.component.es6" region="templateUrl">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-title.component.js" region="templateUrl">
@@ -354,11 +385,14 @@ Here is an example of the `HeroComponent`, re-written with the DSL,
 next to the original _ES5_ version for comparison:
 
 
+
 <code-tabs>
+
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero.component.js" region="dsl">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero.component.js">
@@ -371,6 +405,7 @@ next to the original _ES5_ version for comparison:
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -391,6 +426,7 @@ _TypeScript_ and _ES6_ support with getters and setters.
 Here's an example of a read-only _TypeScript_ property with a getter
 that prepares a toggle-button label for the next clicked state:
 
+
 <code-example path="cb-ts-to-js/ts/src/app/hero-queries.component.ts" region="defined-property" linenums="false">
 
 </code-example>
@@ -402,6 +438,7 @@ The _ES5 DSL_ does not support _defined properties_ directly
 but you can still create them by extracting the "class" prototype and
 adding the _defined property_ in raw JavaScript like this:
 
+
 <code-example path="cb-ts-to-js/js/src/app/hero-queries.component.js" region="defined-property" linenums="false">
 
 </code-example>
@@ -409,6 +446,7 @@ adding the _defined property_ in raw JavaScript like this:
 ### DSL for other classes
 There are similar DSLs for other decorated classes. 
 You can define a directive with `ng.core.Directive`: 
+
 
 <code-example>
   app.MyDirective = ng.core.Directive({  
@@ -419,6 +457,7 @@ You can define a directive with `ng.core.Directive`:
 </code-example>
 
 and a pipe with `ng.core.Pipe`:
+
 <code-example>
   app.MyPipe = ng.core.Pipe({  
       name: 'myPipe'  
@@ -444,11 +483,14 @@ They have no physical manifestation in the generated JavaScript code.
 Just implement the methods and ignore interfaces when translating code samples from _TypeScript_ to JavaScript.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-lifecycle.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-lifecycle.component.es6">
@@ -456,14 +498,17 @@ Just implement the methods and ignore interfaces when translating code samples f
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-lifecycle.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-lifecycle.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-lifecycle.component.js" region="dsl">
@@ -495,11 +540,14 @@ But note that what would have been _separate_ `@Input` and `@Output` property de
 combined in the metadata `inputs` and `outputs` _arrays_.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/confirm.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/confirm.component.es6">
@@ -507,14 +555,17 @@ combined in the metadata `inputs` and `outputs` _arrays_.
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/confirm.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/confirm.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/confirm.component.js" region="dsl">
@@ -567,11 +618,14 @@ last parameter is the class constructor itself.
 This format should be familiar to AngularJS developers.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-di.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-di.component.es6">
@@ -579,14 +633,17 @@ This format should be familiar to AngularJS developers.
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-di.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-di.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-di.component.js" region="dsl">
@@ -615,11 +672,14 @@ When writing with _ES5 DSL_, set the `Class.constructor` property to a function 
 array as before. Create a new instance of `ng.core.Inject(token)` for each parameter. 
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-di-inject.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-di-inject.component.es6">
@@ -627,14 +687,17 @@ array as before. Create a new instance of `ng.core.Inject(token)` for each param
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-di-inject.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-di-inject.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-di-inject.component.js" region="dsl">
@@ -665,11 +728,14 @@ When writing with _ES5 DSL_, set the `Class.constructor` property to a function 
 array as before. Use a nested array to define a parameter's complete injection specification.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-title.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-title.component.es6">
@@ -677,14 +743,17 @@ array as before. Use a nested array to define a parameter's complete injection s
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-title.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-title.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-title.component.js" region="dsl">
@@ -733,11 +802,14 @@ The  `host` value is an object whose properties are host property and listener b
 * Each value identifies the corresponding component property or method.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-host.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-host.component.es6">
@@ -745,14 +817,17 @@ The  `host` value is an object whose properties are host property and listener b
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-host.component.es6">
 
   </code-pane>
 
 
+
   <code-pane title="ES5 JavaScript" path="cb-ts-to-js/js/src/app/hero-host.component.js">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-host.component.js" region="dsl">
@@ -771,11 +846,14 @@ The following re-implementation of the `HeroComponent` reminds us that _any prop
 can be expressed as component or directive metadata in both _TypeScript_ and _ES6-with-decorators_.
 These particular _TypeScript_ and _ES6_ code snippets happen to be identical.
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-host-meta.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-host-meta.component.es6">
@@ -815,11 +893,14 @@ The `queries` property value is a hash map.
 * each _value_ is a new instance of either `ViewChild` or `ViewChildren`.
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-queries.component.ts" region="view">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="view">
@@ -827,9 +908,11 @@ The `queries` property value is a hash map.
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-queries.component.es6" region="view">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-queries.component.js" region="view">
@@ -848,11 +931,14 @@ They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-dec
 [`@ViewChildren`](api/core/index/ViewChildren-decorator).
 
 
+
 <code-tabs>
+
 
   <code-pane title="TypeScript" path="cb-ts-to-js/ts/src/app/hero-queries.component.ts" region="content">
 
   </code-pane>
+
 
 
   <code-pane title="ES6 JavaScript with decorators" path="cb-ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="content">
@@ -860,9 +946,11 @@ They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-dec
   </code-pane>
 
 
+
   <code-pane title="ES6 JavaScript" path="cb-ts-to-js/js-es6/src/app/hero-queries.component.es6" region="content">
 
   </code-pane>
+
 
 
   <code-pane title="ES5 JavaScript with DSL" path="cb-ts-to-js/js/src/app/hero-queries.component.js" region="content">

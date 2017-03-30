@@ -15,16 +15,20 @@ Files _outside_ those folders condition the development environment.
 They rarely change and you may never view or modify them.
 If you do, this page can help you understand their purpose.
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="10%">
 
   </col>
+
 
 
   <col width="90%">
@@ -32,11 +36,14 @@ If you do, this page can help you understand their purpose.
   </col>
 
 
+
   <tr>
+
 
     <th>
       File
     </th>
+
 
 
     <th>
@@ -47,11 +54,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>src/app/</code>
     </td>
+
 
 
     <td>
@@ -70,11 +80,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>e2e/</code>
     </td>
+
 
 
     <td>
@@ -90,11 +103,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>node_modules/</code>
     </td>
+
 
 
     <td>
@@ -105,7 +121,9 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>      .editorconfig<br>      
@@ -113,6 +131,7 @@ If you do, this page can help you understand their purpose.
             .gitignore<br>      
             .travis.yml      </code>
     </td>
+
 
 
     <td>
@@ -124,11 +143,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>CHANGELOG.md</code>
     </td>
+
 
 
     <td>
@@ -140,11 +162,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>favicon.ico</code>
     </td>
+
 
 
     <td>
@@ -155,11 +180,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>index.html</code>
     </td>
+
 
 
     <td>
@@ -175,11 +203,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>karma.conf.js</code>
     </td>
+
 
 
     <td>
@@ -191,11 +222,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>karma-test-shim.js</code>
     </td>
+
 
 
     <td>
@@ -207,11 +241,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>non-essential-files.txt</code>
     </td>
+
 
 
     <td>
@@ -226,11 +263,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>LICENSE</code>
     </td>
+
 
 
     <td>
@@ -241,11 +281,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>package.json</code>
     </td>
+
 
 
     <td>
@@ -261,11 +304,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>protractor.config.js</code>
     </td>
+
 
 
     <td>
@@ -278,11 +324,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>README.md</code>
     </td>
+
 
 
     <td>
@@ -294,11 +343,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>styles.css</code>
     </td>
+
 
 
     <td>
@@ -310,16 +362,20 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>systemjs<br>.config.js</code>
     </td>
 
 
+
     <td>
       Tells the **SystemJS** module loader where to find modules      
             referenced in JavaScript `import` statements. For example:
+
       <code-example language="ts">
         import { Component } from '@angular/core;
       </code-example>
@@ -331,11 +387,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>systemjs<br>.config.extras.js</code>
     </td>
+
 
 
     <td>
@@ -348,11 +407,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>tsconfig.json</code>
     </td>
+
 
 
     <td>
@@ -364,11 +426,14 @@ If you do, this page can help you understand their purpose.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>tslint.json</code>
     </td>
+
 
 
     <td>

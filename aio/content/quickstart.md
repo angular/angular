@@ -4,6 +4,7 @@ Angular applications are made up of _components_.
   A _component_ is the combination of an HTML template and a component class that controls a portion of the screen. Here is an example of a component that displays a simple string:
 
 
+
 <code-example path="quickstart/src/app/app.component.ts" linenums="false">
 
 </code-example>
@@ -25,6 +26,7 @@ Every component begins with an `@Component` [!{_decorator}](glossary)
 <span if-docs="ts">takes a _metadata_ object. The metadata object</span> describes how the HTML template and component class work together.
 
 The `selector` property tells Angular to display the component inside a custom `<my-app>` tag in the `index.html`.
+
 
 <code-example path="quickstart/src/index.html" region="my-app" linenums="false">
 

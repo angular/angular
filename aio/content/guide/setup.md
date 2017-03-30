@@ -32,6 +32,7 @@ Then ...
 
 Perform the _clone-to-launch_ steps with these terminal commands.
 
+
 <code-example language="sh" class="code-shell">
   git clone   .git quickstart  
     cd quickstart  
@@ -55,6 +56,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 ### Download
 <a href="!{_qsRepoZip}" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
+
 
 <code-example language="sh" class="code-shell">
   cd quickstart  
@@ -92,6 +94,7 @@ Do this only in the beginning to avoid accidentally deleting your own tests and 
 Open a terminal window in the project folder and enter the following commands for your environment:
 
 ### OS/X (bash)
+
 <code-example language="sh" class="code-shell">
   xargs rm -rf &lt; non-essential-files.osx.txt  
     rm src/app/*.spec*.ts  
@@ -100,6 +103,7 @@ Open a terminal window in the project folder and enter the following commands fo
 </code-example>
 
 ### Windows
+
 <code-example language="sh" class="code-shell">
   for /f %i in (non-essential-files.txt) do del %i /F /S /Q  
     rd .git /s /q  
@@ -123,15 +127,20 @@ most of which you can [learn about later](guide/setup-systemjs-anatomy).
 {@a app-files}
 Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
+
 <aio-filetree>
+
 
   <aio-folder>
     src
+
     <aio-folder>
       app
+
       <aio-file>
         app.component.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -140,6 +149,7 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 
     </aio-folder>
+
 
 
     <aio-file>
@@ -154,16 +164,20 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.ts" path="setup/src/app/app.component.ts">
 
   </code-pane>
 
 
+
   <code-pane title="src/app/app.module.ts" path="setup/src/app/app.module.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/main.ts" path="setup/src/main.ts">
@@ -185,16 +199,20 @@ unless told to do otherwise.
 
 The following are all in `src/`
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="20%">
 
   </col>
+
 
 
   <col width="80%">
@@ -202,11 +220,14 @@ The following are all in `src/`
   </col>
 
 
+
   <tr>
+
 
     <th>
       File
     </th>
+
 
 
     <th>
@@ -217,11 +238,14 @@ The following are all in `src/`
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <ngio-ex>app/app.component.ts</ngio-ex>
     </td>
+
 
 
     <td>
@@ -234,11 +258,14 @@ The following are all in `src/`
   </tr>
 
 
+
   <tr if-docs="ts">
+
 
     <td>
       <code>app/app.module.ts</code>
     </td>
+
 
 
     <td>
@@ -251,11 +278,14 @@ The following are all in `src/`
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <ngio-ex>main.ts</ngio-ex>
     </td>
+
 
 
     <td>

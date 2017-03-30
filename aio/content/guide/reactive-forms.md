@@ -159,6 +159,7 @@ You'll need a `hero` class and some hero data.
 Create a new `data-model.ts` file in the `app` directory and copy the content below into it.
 
 
+
 <code-example path="reactive-forms/src/app/data-model.ts" linenums="false">
 
 </code-example>
@@ -175,11 +176,13 @@ Make a new file called
 `hero-detail.component.ts` in the `app` directory and import these symbols:
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-1.component.ts" region="imports" linenums="false">
 
 </code-example>
 
 Now enter the `@Component` decorator that specifies the `HeroDetailComponent` metadata:
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="metadata" linenums="false">
@@ -189,6 +192,7 @@ Now enter the `@Component` decorator that specifies the `HeroDetailComponent` me
 Next, create an exported `HeroDetailComponent` class with a `FormControl`. 
 `FormControl` is a directive that allows you to create and manage 
 a `FormControl` instance directly.
+
 
 
 
@@ -221,6 +225,7 @@ read the [Form Validation](cookbook/form-validation) cookbook.
 ## Create the template
 
 Now create the component's template, `src/app/hero-detail.component.html`, with the following markup.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-1.component.html" region="simple-control" linenums="false">
@@ -259,6 +264,7 @@ the `ReactiveFormsModule` and the `HeroDetailComponent`.
 1. Add `HeroDetailComponent` to the declarations array.
 
 
+
 <code-example path="reactive-forms/src/app/app.module.ts" region="v1" linenums="false">
 
 </code-example>
@@ -269,6 +275,7 @@ the `ReactiveFormsModule` and the `HeroDetailComponent`.
 
 ## Display the _HeroDetailComponent_
 Revise the `AppComponent` template so it displays the `HeroDetailComponent`.
+
 
 <code-example path="reactive-forms/src/app/app.component.1.ts" linenums="false">
 
@@ -304,11 +311,13 @@ You used bootstrap CSS classes in the template HTML of both the `AppComponent` a
 Add the `bootstrap` _CSS stylesheet_ to the head of `index.html`:
 
 
+
 <code-example path="reactive-forms/src/index.html" region="bootstrap" linenums="false">
 
 </code-example>
 
 Now that everything is wired up, the browser should display something like this: 
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl">  </img>
@@ -324,11 +333,13 @@ This is simple to do. To add a `FormGroup`, add it to the imports section
 of `hero-detail.component.ts`:
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-2.component.ts" region="imports" linenums="false">
 
 </code-example>
 
 In the class, wrap the `FormControl` in a `FormGroup` called `heroForm` as follows:
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-2.component.ts" region="v2" linenums="false">
@@ -337,6 +348,7 @@ In the class, wrap the `FormControl` in a `FormGroup` called `heroForm` as follo
 
 Now that you've made changes in the class, they need to be reflected in the 
 template. Update `hero-detail.component.html` by replacing it with the following.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-2.component.html" region="basic-form" linenums="false">
@@ -390,12 +402,14 @@ To see the form model, add the following line after the
 closing `form` tag in the `hero-detail.component.html`:
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-3.component.html" region="form-value-json" linenums="false">
 
 </code-example>
 
 The `heroForm.value` returns the _form model_.
 Piping it through the `JsonPipe` renders the model as JSON in the browser:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/json-output.png" width="400px" alt="JSON output">  </img>
@@ -421,6 +435,7 @@ clutter by handling details of control creation for you.
 
 To use `FormBuilder`, you need to import it into `hero-detail.component.ts`:
 
+
 <code-example path="reactive-forms/src/app/hero-detail-3a.component.ts" region="imports" linenums="false">
 
 </code-example>
@@ -434,6 +449,7 @@ by following this plan:
 * Call `createForm` in the constructor.
 
 The revised `HeroDetailComponent` looks like this:
+
 
 <code-example path="reactive-forms/src/app/hero-detail-3a.component.ts" region="v3a" linenums="false">
 
@@ -454,6 +470,7 @@ demonstrates the simplicity of using `Validators.required` in reactive forms.
 
 First, import the `Validators` symbol.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-3.component.ts" region="imports" linenums="false">
 
 </code-example>
@@ -462,6 +479,7 @@ To make the `name` `FormControl` required, replace the `name`
 property in the `FormGroup` with an array. 
 The first item is the initial value for `name`;
 the second is the required validator, `Validators.required`.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-3.component.ts" region="required" linenums="false">
@@ -480,11 +498,13 @@ Configuring validation is harder in template-driven forms where you must wrap va
 Update the diagnostic message at the bottom of the template to display the form's validity status.
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-3.component.html" region="form-value-json" linenums="false">
 
 </code-example>
 
 The browser displays the following:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl">  </img>
@@ -506,11 +526,13 @@ A hero has an address, a super power and sometimes a sidekick too.
 The address has a state property. The user will select a state with a `<select>` box and you'll populate 
 the `<option>` elements with states. So import `states` from `data-model.ts`.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-4.component.ts" region="imports" linenums="false">
 
 </code-example>
 
 Declare the `states` property and add some address `FormControls` to the `heroForm` as follows. 
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-4.component.ts" region="v4" linenums="false">
@@ -519,6 +541,7 @@ Declare the `states` property and add some address `FormControls` to the `heroFo
 
 Then add corresponding markup in `hero-detail.component.html` 
 within the `form` element.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-4.component.html" linenums="false">
@@ -572,6 +595,7 @@ Let that be the parent `FormGroup`.
 Use `FormBuilder` again to create a child `FormGroup` that encapsulates the address controls;
 assign the result to a new `address` property of the parent `FormGroup`.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-5.component.ts" region="v5" linenums="false">
 
 </code-example>
@@ -587,12 +611,14 @@ To make this change visually obvious, slip in an `<h4>` header near the top with
 The new _address_ HTML looks like this:
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-5.component.html" region="add-group" linenums="false">
 
 </code-example>
 
 After these changes, the JSON output in the browser shows the revised _form model_
 with the nested address `FormGroup`: 
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/address-group.png" width="400px" alt="JSON output">  </img>
@@ -614,11 +640,13 @@ page by adding the following to the template,
 immediately after the `{{form.value | json}}` interpolation as follows: 
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-5.component.html" region="inspect-value" linenums="false">
 
 </code-example>
 
 To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notation to path to the control.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-5.component.html" region="inspect-child-control" linenums="false">
@@ -627,16 +655,20 @@ To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notat
 
 You can use this technique to display _any_ property of a `FormControl` 
 such as one of the following:
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="10%">
 
   </col>
+
 
 
   <col width="90%">
@@ -644,11 +676,14 @@ such as one of the following:
   </col>
 
 
+
   <tr>
+
 
     <th>
       Property
     </th>
+
 
 
     <th>
@@ -659,11 +694,14 @@ such as one of the following:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>myControl.value</code>
     </td>
+
 
 
     <td>
@@ -674,11 +712,14 @@ such as one of the following:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>myControl.status</code>
     </td>
+
 
 
     <td>
@@ -690,11 +731,14 @@ such as one of the following:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>myControl.pristine</code>
     </td>
+
 
 
     <td>
@@ -706,11 +750,14 @@ such as one of the following:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>myControl.untouched</code>
     </td>
+
 
 
     <td>
@@ -764,11 +811,13 @@ In this `HeroDetailComponent`, the two models are quite close.
 
 Recall the definition of `Hero` in `data-model.ts`:
 
+
 <code-example path="reactive-forms/src/app/data-model.ts" region="model-classes" linenums="false">
 
 </code-example>
 
 Here, again, is the component's `FormGroup` definition.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-6.component.ts" region="hero-form-model" linenums="false">
@@ -786,11 +835,13 @@ Nonetheless, the two models are pretty close in shape and you'll see in a moment
 to the _form model_ with the `patchValue` and `setValue` methods.
 Take a moment to refactor the _address_ `FormGroup` definition for brevity and clarity as follows:
 
+
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="address-form-group" linenums="false">
 
 </code-example>
 
 Also be sure to update the import from `data-model` so you can reference the `Hero` and `Address` classes:
+
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="import-address" linenums="false">
 
@@ -808,6 +859,7 @@ You can also initialize or reset the values _later_ with the
 ### _setValue_
 With **`setValue`**, you assign _every_ form control value _at once_
 by passing in a data object whose properties exactly match the _form model_ behind the `FormGroup`.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="set-value" linenums="false">
@@ -830,6 +882,7 @@ because its shape is similar to the component's `FormGroup` structure.
 You can only show the hero's first address and you must account for the possibility that the `hero` has no addresses at all.
 This explains the conditional setting of the `address` property in the data object argument:
 
+
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="set-value-address" linenums="false">
 
 </code-example>
@@ -839,6 +892,7 @@ With **`patchValue`**, you can assign values to specific controls in a `FormGrou
 by supplying an object of key/value pairs for just the controls of interest. 
 
 This example sets only the form's `name` control.
+
 
 <code-example path="reactive-forms/src/app/hero-detail-6.component.ts" region="patch-value" linenums="false">
 
@@ -859,6 +913,7 @@ When the user clicks on a hero, the list component passes the selected hero into
 by binding to its `hero` input property.
 
 
+
 <code-example path="reactive-forms/src/app/hero-list.component.1.html" linenums="false">
 
 </code-example>
@@ -872,17 +927,20 @@ as the following steps demonstrate.
 First, import the `OnChanges` and `Input` symbols in `hero-detail.component.ts`.
 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-6.component.ts" region="import-input" linenums="false">
 
 </code-example>
 
 Add the `hero` input property.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-6.component.ts" region="hero" linenums="false">
 
 </code-example>
 
 Add the `ngOnChanges` method to the class as follows:
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="ngOnChanges-1" linenums="false">
@@ -896,6 +954,7 @@ control values from the previous hero are cleared and
 status flags are restored to the _pristine_ state.
 You could call `reset` at the top of `ngOnChanges` like this.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="reset" linenums="false">
 
 </code-example>
@@ -903,6 +962,7 @@ You could call `reset` at the top of `ngOnChanges` like this.
 The `reset` method has an optional `state` value so you can reset the flags _and_ the control values at the same. 
 Internally, `reset` passes the argument to `setValue`. 
 A little refactoring and `ngOnChanges` becomes this:
+
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="ngOnChanges" linenums="false">
 
@@ -915,6 +975,7 @@ A little refactoring and `ngOnChanges` becomes this:
 
 The `HeroDetailComponent` is a nested sub-component of the `HeroListComponent` in a _master/detail_ view.
 Together they look a bit like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent">  </img>
@@ -962,6 +1023,7 @@ An Angular `FormArray` can display an array of _address_ `FormGroups`.
 
 To get access to the `FormArray` class, import it into `hero-detail.component.ts`:
 
+
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="imports" linenums="false">
 
 </code-example>
@@ -977,6 +1039,7 @@ let the user add or modify addresses (removing addresses is your homework).
 You’ll need to redefine the form model in the `HeroDetailComponent` constructor,
 which currently only displays the first hero address in an _address_ `FormGroup`. 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="address-form-group" linenums="false">
 
 </code-example>
@@ -986,6 +1049,7 @@ which currently only displays the first hero address in an _address_ `FormGroup`
 From the user's point of view, heroes don't have _addresses_.
 _Addresses_ are for mere mortals. Heroes have _secret lairs_!
 Replace the _address_ `FormGroup` definition with a _secretLairs_ `FormArray` definition:
+
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="secretLairs-form-array" linenums="false">
 
@@ -1017,6 +1081,7 @@ the parent `HeroListComponent` sets the `HeroListComponent.hero` input property 
 The following `setAddresses` method replaces the _secretLairs_ `FormArray` with a new `FormArray`,
 initialized by an array of hero address `FormGroups`.
 
+
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="set-addresses" linenums="false">
 
 </code-example>
@@ -1031,6 +1096,7 @@ The `HeroDetailComponent` should be able to display, add, and remove items from 
 
 Use the `FormGroup.get` method to acquire a reference to that `FormArray`.
 Wrap the expression in a `secretLairs` convenience property for clarity and re-use.
+
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="get-secret-lairs" linenums="false">
 
@@ -1058,11 +1124,13 @@ You'll re-use that index to compose a unique label for each address.
 
 Here's the skeleton for the _secret lairs_ section of the HTML template:
 
+
 <code-example path="reactive-forms/src/app/hero-detail-8.component.html" region="form-array-skeleton" linenums="false">
 
 </code-example>
 
 Here's the complete template for the _secret lairs_ section:
+
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.html" region="form-array">
 
@@ -1072,11 +1140,13 @@ Here's the complete template for the _secret lairs_ section:
 
 Add an `addLair` method that gets the _secretLairs_ `FormArray` and appends a new _address_ `FormGroup` to it. 
 
+
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="add-lair" linenums="false">
 
 </code-example>
 
 Place a button on the form so the user can add a new _secret lair_ and wire it to the component's `addLair` method.
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.html" region="add-lair" linenums="false">
@@ -1101,6 +1171,7 @@ You do not want to save changes when the user clicks the _Add a Secret Lair_ but
 
 Back in the browser, select the hero named "Magneta".
 "Magneta" doesn't have an address, as you can see in the diagnostic JSON at the bottom of the form.
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array">  </img>
@@ -1131,11 +1202,13 @@ You don't need to know much about RxJS `Observable` to monitor form control valu
 
 Add the following method to log changes to the value of the _name_ `FormControl`.
 
+
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="log-name-change" linenums="false">
 
 </code-example>
 
 Call it in the constructor, after creating the form.
+
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="ctor" linenums="false">
 
@@ -1143,6 +1216,7 @@ Call it in the constructor, after creating the form.
 
 The `logNameChange` method pushes name-change values into a `nameChangeLog` array.
 Display that array at the bottom of the component template with this `*ngFor` binding:
+
 
 <code-example path="reactive-forms/src/app/hero-detail.component.html" region="name-change-log" linenums="false">
 
@@ -1167,6 +1241,7 @@ In a real app, you'd probably save those hero changes.
 In a real app, you'd also be able to revert unsaved changes and resume editing.
 After you implement both features in this section, the form will look like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons">  </img>
 </figure>
@@ -1176,6 +1251,7 @@ In this sample application, when the user submits the form,
 the `HeroDetailComponent` will pass an instance of the hero _data model_
 to a save method on the injected `HeroService`.
 
+
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="on-submit" linenums="false">
 
 </code-example>
@@ -1183,6 +1259,7 @@ to a save method on the injected `HeroService`.
 This original `hero` had the pre-save values. The user's changes are still in the _form model_.
 So you create a new `hero` from a combination of original hero values (the `hero.id`)
 and deep copies of the changed form model values, using the `prepareSaveHero` helper. 
+
 
 
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="prepare-save-hero" linenums="false">
@@ -1210,12 +1287,14 @@ The user cancels changes and reverts the form to the original state by pressing 
 
 Reverting is easy. Simply re-execute the `ngOnChanges` method that built the _form model_ from the original, unchanged `hero` _data model_.
 
+
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="revert" linenums="false">
 
 </code-example>
 
 ### Buttons
 Add the "Save" and "Revert" buttons near the top of the component's template:
+
 
 <code-example path="reactive-forms/src/app/hero-detail.component.html" region="buttons" linenums="false">
 
@@ -1249,11 +1328,14 @@ This page covered:
 The key files of the final version are as follows:
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.ts" path="reactive-forms/src/app/app.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.module.ts" path="reactive-forms/src/app/app.module.ts">
@@ -1261,9 +1343,11 @@ The key files of the final version are as follows:
   </code-pane>
 
 
+
   <code-pane title="src/app/hero-detail.component.ts" path="reactive-forms/src/app/hero-detail.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/hero-detail.component.html" path="reactive-forms/src/app/hero-detail.component.html">
@@ -1271,9 +1355,11 @@ The key files of the final version are as follows:
   </code-pane>
 
 
+
   <code-pane title="src/app/hero-list.component.html" path="reactive-forms/src/app/hero-list.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/hero-list.component.ts" path="reactive-forms/src/app/hero-list.component.ts">
@@ -1281,9 +1367,11 @@ The key files of the final version are as follows:
   </code-pane>
 
 
+
   <code-pane title="src/app/data-model.ts" path="reactive-forms/src/app/data-model.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/hero.service.ts" path="reactive-forms/src/app/hero.service.ts">

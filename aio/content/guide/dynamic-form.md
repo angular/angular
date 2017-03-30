@@ -43,11 +43,14 @@ Reactive Forms belongs to a different `NgModule` called `ReactiveFormsModule`, s
 We bootstrap our `AppModule` in main.ts.
 
 
+
 <code-tabs>
+
 
   <code-pane title="app.module.ts" path="cb-dynamic-form/src/app/app.module.ts">
 
   </code-pane>
+
 
 
   <code-pane title="main.ts" path="cb-dynamic-form/src/main.ts">
@@ -67,6 +70,7 @@ The "question" is the most fundamental object in the model.
 We have created `QuestionBase` as the most fundamental question class.
 
 
+
 <code-example path="cb-dynamic-form/src/app/question-base.ts">
 
 </code-example>
@@ -77,11 +81,13 @@ The idea is that the form will be bound to specific question types and render th
 `TextboxQuestion` supports multiple html5 types like text, email, url etc via the `type` property.
 
 
+
 <code-example path="cb-dynamic-form/src/app/question-textbox.ts" linenums="false">
 
 </code-example>
 
 `DropdownQuestion` presents a list of choices in a select box.
+
 
 
 <code-example path="cb-dynamic-form/src/app/question-dropdown.ts" linenums="false">
@@ -92,6 +98,7 @@ Next we have defined `QuestionControlService`, a simple service for transforming
 In a nutshell, the form group consumes the metadata from the question model and allows us to specify default values and validation rules.
 
 
+
 <code-example path="cb-dynamic-form/src/app/question-control.service.ts" linenums="false">
 
 </code-example>
@@ -100,11 +107,14 @@ In a nutshell, the form group consumes the metadata from the question model and 
 Now that we have defined the complete model we are ready to create components to represent the dynamic form.
 `DynamicFormComponent` is the entry point and the main container for the form. 
 
+
 <code-tabs>
+
 
   <code-pane title="dynamic-form.component.html" path="cb-dynamic-form/src/app/dynamic-form.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="dynamic-form.component.ts" path="cb-dynamic-form/src/app/dynamic-form.component.ts">
@@ -119,11 +129,14 @@ The `<df-question>` tag matches the `DynamicFormQuestionComponent`,
 the component responsible for rendering the details of each _individual_ question based on values in the data-bound question object.  
 
 
+
 <code-tabs>
+
 
   <code-pane title="dynamic-form-question.component.html" path="cb-dynamic-form/src/app/dynamic-form-question.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="dynamic-form-question.component.ts" path="cb-dynamic-form/src/app/dynamic-form-question.component.ts">
@@ -150,11 +163,13 @@ underlying control objects, populated from the question model with display and v
  Questionnaire maintenance is a simple matter of adding, updating, and removing objects from the `questions` array.
  
 
+
 <code-example path="cb-dynamic-form/src/app/question.service.ts">
 
 </code-example>
 
 Finally, we display an instance of the form in the `AppComponent` shell.
+
 
 
 <code-example path="cb-dynamic-form/src/app/app.component.ts">
@@ -176,6 +191,7 @@ When the form is valid, we can click *Save* and the app renders the current form
 This proves that any user input is bound back to the data model.
 Saving and retrieving the data is an exercise for another time.
 The final form looks like this:
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/dynamic-form/dynamic-form.png" alt="Dynamic-Form">  </img>
 </figure>
