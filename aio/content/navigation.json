@@ -38,13 +38,13 @@
         },
 
         {
-          "url": "quickstart",
+          "url": "guide/quickstart",
           "title": "Basic Quickstart",
           "tooltip": "A quick look at an Angular app without tooling."
         },
 
         {
-          "url": "cli-quickstart",
+          "url": "guide/cli-quickstart",
           "title": "CLI Quickstart",
           "tooltip": "A quick look at an Angular app built with the Angular CLI."
         },
