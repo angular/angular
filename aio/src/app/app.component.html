@@ -1,9 +1,8 @@
 <md-toolbar color="primary" class="app-toolbar">
   <button class="hamburger" md-button
     (click)="sidenav.toggle()" title="Docs menu">
-    <md-icon>menu</md-icon>
+    <img src="assets/images/logos/standard/logo-nav-small.png" title="Home" alt="Home">
   </button>
-  <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox></aio-search-box>
   <span class="fill-remaining-space"></span>
