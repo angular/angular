@@ -24,6 +24,7 @@ You'll pursue these ends in the following high-level steps:
 And you can also <a href="/resources/zips/cli-quickstart/cli-quickstart.zip">download the example.</a>
 
 
+
 <h2 id='devenv'>
   Step 1. Set up the Development Environment
 </h2>
@@ -43,10 +44,12 @@ Older versions produce errors, but newer versions are fine.
 
 Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globally.
 
+
 <code-example language="sh" class="code-shell">
   npm install -g @angular/cli  
     
 </code-example>
+
 
 
 
@@ -56,6 +59,7 @@ Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globa
 
 Open a terminal window.
 Generate a new project and skeleton application by running the following commands:
+
 
 <code-example language="sh" class="code-shell">
   ng new my-app  
@@ -74,11 +78,13 @@ It takes time to set up a new project, most of it spent installing npm packages.
 
 
 
+
 <h2 id='serve'>
   Step 3: Serve the application
 </h2>
 
 Go to the project directory and launch the server.
+
 
 <code-example language="sh" class="code-shell">
   cd my-app  
@@ -94,9 +100,11 @@ on `http://localhost:4200/`.
 
 Your app greets you with a message:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/cli-quickstart/app-works.png' alt="The app works!">  </img>
 </figure>
+
 
 
 
@@ -110,6 +118,7 @@ You can find it in `./src/app/app.component.ts`.
 Open the component file and change the `title` property from _app works!_ to _My First Angular App_:
 
 
+
 <code-example path="cli-quickstart/src/app/app.component.ts" region="title" linenums="false">
 
 </code-example>
@@ -119,9 +128,11 @@ The browser reloads automatically with the revised title. That's nice, but it co
 Open `src/app/app.component.css` and give the component some style.
 
 
+
 <code-example path="cli-quickstart/src/app/app.component.css" linenums="false">
 
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -155,15 +166,20 @@ Your app lives in the `src` folder.
 All Angular components, templates, styles, images, and anything else your app needs go here.
 Any files outside of this folder are meant to support building your app.
 
+
 <aio-filetree>
+
 
   <aio-folder>
     src
+
     <aio-folder>
       app
+
       <aio-file>
         app.component.css
       </aio-file>
+
 
 
       <aio-file>
@@ -171,14 +187,17 @@ Any files outside of this folder are meant to support building your app.
       </aio-file>
 
 
+
       <aio-file>
         app.component.spec.ts
       </aio-file>
 
 
+
       <aio-file>
         app.component.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -189,8 +208,10 @@ Any files outside of this folder are meant to support building your app.
     </aio-folder>
 
 
+
     <aio-folder>
       assets
+
       <aio-file>
         .gitkeep
       </aio-file>
@@ -199,11 +220,14 @@ Any files outside of this folder are meant to support building your app.
     </aio-folder>
 
 
+
     <aio-folder>
       environments
+
       <aio-file>
         environment.prod.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -214,9 +238,11 @@ Any files outside of this folder are meant to support building your app.
     </aio-folder>
 
 
+
     <aio-file>
       favicon.ico
     </aio-file>
+
 
 
     <aio-file>
@@ -224,9 +250,11 @@ Any files outside of this folder are meant to support building your app.
     </aio-file>
 
 
+
     <aio-file>
       main.ts
     </aio-file>
+
 
 
     <aio-file>
@@ -234,9 +262,11 @@ Any files outside of this folder are meant to support building your app.
     </aio-file>
 
 
+
     <aio-file>
       styles.css
     </aio-file>
+
 
 
     <aio-file>
@@ -244,9 +274,11 @@ Any files outside of this folder are meant to support building your app.
     </aio-file>
 
 
+
     <aio-file>
       tsconfig.app.json
     </aio-file>
+
 
 
     <aio-file>
@@ -260,16 +292,20 @@ Any files outside of this folder are meant to support building your app.
 </aio-filetree>
 
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="20%">
 
   </col>
+
 
 
   <col width="80%">
@@ -277,11 +313,14 @@ Any files outside of this folder are meant to support building your app.
   </col>
 
 
+
   <tr>
+
 
     <th>
       File
     </th>
+
 
 
     <th>
@@ -292,11 +331,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>app/app.component.{ts,html,css,spec.ts}</code>
     </td>
+
 
 
     <td>
@@ -309,11 +351,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>app/app.module.ts</code>
     </td>
+
 
 
     <td>
@@ -326,11 +371,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>assets/*</code>
     </td>
+
 
 
     <td>
@@ -342,11 +390,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>environments/*</code>
     </td>
+
 
 
     <td>
@@ -363,11 +414,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>favicon.ico</code>
     </td>
+
 
 
     <td>
@@ -379,11 +433,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>index.html</code>
     </td>
+
 
 
     <td>
@@ -397,11 +454,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>main.ts</code>
     </td>
+
 
 
     <td>
@@ -416,11 +476,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>polyfills.ts</code>
     </td>
+
 
 
     <td>
@@ -434,11 +497,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>styles.css</code>
     </td>
+
 
 
     <td>
@@ -451,11 +517,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>test.ts</code>
     </td>
+
 
 
     <td>
@@ -468,11 +537,14 @@ Any files outside of this folder are meant to support building your app.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>tsconfig.{app|spec}.json</code>
     </td>
+
 
 
     <td>
@@ -494,20 +566,26 @@ The `src/` folder is just one of the items inside the project's root folder.
 Other files help you build, test, maintain, document, and deploy the app.
 These files go in the root folder next to `src/`.
 
+
 <aio-filetree>
+
 
   <aio-folder>
     my-app
+
     <aio-folder>
       e2e
+
       <aio-file>
         app.e2e-spec.ts
       </aio-file>
 
 
+
       <aio-file>
         app.po.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -518,9 +596,11 @@ These files go in the root folder next to `src/`.
     </aio-folder>
 
 
+
     <aio-file>
       node_modules/...
     </aio-file>
+
 
 
     <aio-file>
@@ -528,9 +608,11 @@ These files go in the root folder next to `src/`.
     </aio-file>
 
 
+
     <aio-file>
       .angular-cli.json
     </aio-file>
+
 
 
     <aio-file>
@@ -538,9 +620,11 @@ These files go in the root folder next to `src/`.
     </aio-file>
 
 
+
     <aio-file>
       .gitignore
     </aio-file>
+
 
 
     <aio-file>
@@ -548,9 +632,11 @@ These files go in the root folder next to `src/`.
     </aio-file>
 
 
+
     <aio-file>
       package.json
     </aio-file>
+
 
 
     <aio-file>
@@ -558,14 +644,17 @@ These files go in the root folder next to `src/`.
     </aio-file>
 
 
+
     <aio-file>
       README.md
     </aio-file>
 
 
+
     <aio-file>
       tsconfig.json
     </aio-file>
+
 
 
     <aio-file>
@@ -579,16 +668,20 @@ These files go in the root folder next to `src/`.
 </aio-filetree>
 
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="20%">
 
   </col>
+
 
 
   <col width="80%">
@@ -596,11 +689,14 @@ These files go in the root folder next to `src/`.
   </col>
 
 
+
   <tr>
+
 
     <th>
       File
     </th>
+
 
 
     <th>
@@ -611,11 +707,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>e2e/</code>
     </td>
+
 
 
     <td>
@@ -629,11 +728,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>node_modules/</code>
     </td>
+
 
 
     <td>
@@ -645,11 +747,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>.angular-cli.json</code>
     </td>
+
 
 
     <td>
@@ -663,11 +768,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>.editorconfig</code>
     </td>
+
 
 
     <td>
@@ -681,11 +789,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>.gitignore</code>
     </td>
+
 
 
     <td>
@@ -696,11 +807,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>karma.conf.js</code>
     </td>
+
 
 
     <td>
@@ -712,11 +826,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>package.json</code>
     </td>
+
 
 
     <td>
@@ -728,11 +845,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>protractor.conf.js</code>
     </td>
+
 
 
     <td>
@@ -744,11 +864,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>README.md</code>
     </td>
+
 
 
     <td>
@@ -761,11 +884,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>tsconfig.json</code>
     </td>
+
 
 
     <td>
@@ -776,11 +902,14 @@ These files go in the root folder next to `src/`.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       <code>tslint.json</code>
     </td>
+
 
 
     <td>

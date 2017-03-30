@@ -35,6 +35,7 @@ When you're done with this tutorial, the app will look like this <live-example n
 Here's a visual idea of where this tutorial leads, beginning with the "Dashboard"
 view and the most heroic heroes:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">  </img>
 </figure>
@@ -45,6 +46,7 @@ to navigate between this Dashboard view and a Heroes view.
 If you click the dashboard hero "Magneta," the router opens a "Hero Details" view
 where you can change the hero's name.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/hero-details-1.png' alt="Details of hero in app">  </img>
 </figure>
@@ -52,6 +54,7 @@ where you can change the hero's name.
 Clicking the "Back" button returns you to the Dashboard.
 Links at the top take you to either of the main views.
 If you click "Heroes," the app displays the "Heroes" master list view.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app">  </img>
@@ -64,11 +67,13 @@ editable details of the selected hero.
 
 The following diagram captures all of the navigation options.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
 </figure>
 
 Here's the app in action:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action">  </img>

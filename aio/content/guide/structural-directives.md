@@ -7,6 +7,7 @@ Angular has a powerful template engine that lets us easily manipulate the DOM st
 @description
 
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -49,6 +50,7 @@ Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
@@ -68,6 +70,7 @@ described in the [_Template Syntax_](guide/template-syntax) guide and seen in sa
 Here's an example of them in a template:
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (built-in)" region="built-in">
 
 </code-example>
@@ -77,6 +80,7 @@ and how to [write your own](guide/structural-directives#unless) structural direc
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -128,12 +132,14 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 It takes a boolean expression and makes an entire chunk of the DOM appear or disappear.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-true)" region="ngif-true">
 
 </code-example>
 
 The `ngIf` directive doesn't hide elements with CSS. It adds and removes them physically from the DOM.
 Confirm that fact using browser developer tools to inspect the DOM.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">  </img>
@@ -152,11 +158,13 @@ The component and DOM nodes can be garbage-collected and free up memory.
 A directive could hide the unwanted paragraph instead by setting its `display` style to `none`.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (display-none)" region="display-none">
 
 </code-example>
 
 While invisible, the element remains in the DOM. 
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">  </img>
@@ -196,6 +204,7 @@ and wondered why it is necessary and what it does.
 Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (asterisk)" region="asterisk">
 
 </code-example>
@@ -205,11 +214,13 @@ Internally, Angular desugars it in two stages.
 First, it translates the `*ngIf="..."` into a template _attribute_, `template="ngIf ..."`,&nbsp; like this.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template-attr)" region="ngif-template-attr">
 
 </code-example>
 
 Then it translates the template _attribute_ into a template _element_, wrapped around the host element, like this.
+
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
@@ -221,6 +232,7 @@ Then it translates the template _attribute_ into a template _element_, wrapped a
 
 None of these forms are actually rendered. 
 Only the finished product ends up in the DOM.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">  </img>
@@ -240,6 +252,7 @@ Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax thro
 template _attribute_ to template _element_. 
 
 Here's a full-featured application of `NgFor`, written all three ways:
+
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
@@ -351,6 +364,7 @@ The Angular _NgSwitch_ is actually a set of cooperating directives: `NgSwitch`, 
 Here's an example.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch)" region="ngswitch">
 
 </code-example>
@@ -381,11 +395,13 @@ As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault`
 can be desugared into the template _attribute_ form.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template-attr)" region="ngswitch-template-attr">
 
 </code-example>
 
 That, in turn, can be desugared into the `<template>` element form.
+
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
@@ -420,11 +436,13 @@ those elements disappear.
 That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (template-tag)" region="template-tag">
 
 </code-example>
 
 Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/template-rendering.png' width="350" alt="template tag rendering">  </img>
@@ -445,12 +463,14 @@ There's often a _root_ element that can and should host the structural directive
 The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngfor-li)" region="ngfor-li">
 
 </code-example>
 
 When there isn't a host element, you can usually wrap the content in a native HTML container element,
 such as a `<div>`, and attach the directive to that wrapper.
+
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
@@ -466,6 +486,7 @@ neither expect nor accommodate the new layout.
 For example, suppose you have the following paragraph layout.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-span)" region="ngif-span">
 
 </code-example>
@@ -473,11 +494,13 @@ For example, suppose you have the following paragraph layout.
 You also have a CSS style rule that happens to apply to a `<span>` within a `<p>`aragraph.
 
 
+
 <code-example path="structural-directives/src/app/app.component.css" linenums="false" title="src/app/app.component.css (p-span)" region="p-span">
 
 </code-example>
 
 The constructed paragraph renders strangely.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">  </img>
@@ -492,11 +515,13 @@ You can't wrap the _options_ in a conditional `<div>` or a `<span>`.
 When you try this,
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-span)" region="select-span">
 
 </code-example>
 
 the drop down is empty.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/bad-select.png' alt="spanned options don't work">  </img>
@@ -512,11 +537,13 @@ because Angular _doesn't put it in the DOM_.
 Here's the conditional paragraph again, this time using `<ng-container>`.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
 
 </code-example>
 
 It renders properly.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">  </img>
@@ -525,11 +552,13 @@ It renders properly.
 Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
 
 </code-example>
 
 The drop down works properly.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">  </img>
@@ -538,6 +567,7 @@ The drop down works properly.
 The `<ng-container>` is a syntax element recognized by the Angular parser.
 It's not a directive, component, class, or interface. 
 It's more like the curly braces in a JavaScript `if`-block:
+
 
 <code-example language="javascript">
   if (someCondition) {  
@@ -563,6 +593,7 @@ that does the opposite of `NgIf`.
 `UnlessDirective` displays the content when the condition is ***false***.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (myUnless-1)" region="myUnless-1">
 
 </code-example>
@@ -578,6 +609,7 @@ Creating a directive is similar to creating a component.
 * Set the CSS *attribute selector* that identifies the directive when applied to an element in a template.
 
 Here's how you might begin:
+
 
 
 <code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (skeleton)" region="skeleton">
@@ -611,6 +643,7 @@ and access the _view container_ through a
 You inject both in the directive constructor as private variables of the class.
 
 
+
 <code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (ctor)" region="ctor">
 
 </code-example>
@@ -627,6 +660,7 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax) guide.
 
 
 ~~~
+
 
 
 
@@ -648,6 +682,7 @@ Nobody reads the `myUnless` property so it doesn't need a getter.
 The completed directive code looks like this:
 
 
+
 <code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (excerpt)" region="no-docs">
 
 </code-example>
@@ -657,12 +692,14 @@ Add this directive to the `!{_declsVsDirectives}` !{_array} of the !{_AppModuleV
 Then create some HTML to try it.
 
 
+
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (myUnless)" region="myUnless">
 
 </code-example>
 
 When the `condition` is falsy, the top (A) paragraph appears and the bottom (B) paragraph disappears.
 When the `condition` is truthy, the top (A) paragraph is removed and the bottom (B) paragraph appears.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">  </img>
@@ -679,11 +716,14 @@ You can both try and download the source code for this guide in the <live-exampl
 Here is the source from the `src/app/` folder.
 
 
+
 <code-tabs>
+
 
   <code-pane title="app.component.ts" path="structural-directives/src/app/app.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="app.component.html" path="structural-directives/src/app/app.component.html">
@@ -691,9 +731,11 @@ Here is the source from the `src/app/` folder.
   </code-pane>
 
 
+
   <code-pane title="app.component.css" path="structural-directives/src/app/app.component.css">
 
   </code-pane>
+
 
 
   <code-pane title="app.module.ts" path="structural-directives/src/app/app.module.ts">
@@ -701,14 +743,17 @@ Here is the source from the `src/app/` folder.
   </code-pane>
 
 
+
   <code-pane title="hero.ts" path="structural-directives/src/app/hero.ts">
 
   </code-pane>
 
 
+
   <code-pane title="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
 
   </code-pane>
+
 
 
   <code-pane title="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">

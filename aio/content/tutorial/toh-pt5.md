@@ -15,6 +15,7 @@ There are new requirements for the Tour of Heroes app:
 
 When you’re done, users will be able to navigate the app like this:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
 </figure>
@@ -35,17 +36,23 @@ When you're done with this page, the app should look like this <live-example></l
 Before continuing with the Tour of Heroes, verify that you have the following structure.
 
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-tour-of-heroes
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -53,9 +60,11 @@ Before continuing with the Tour of Heroes, verify that you have the following st
         </aio-file>
 
 
+
         <aio-file>
           hero.service.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -63,9 +72,11 @@ Before continuing with the Tour of Heroes, verify that you have the following st
         </aio-file>
 
 
+
         <aio-file>
           hero-detail.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -76,9 +87,11 @@ Before continuing with the Tour of Heroes, verify that you have the following st
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -86,14 +99,17 @@ Before continuing with the Tour of Heroes, verify that you have the following st
       </aio-file>
 
 
+
       <aio-file>
         styles.css
       </aio-file>
 
 
+
       <aio-file>
         systemjs.config.js
       </aio-file>
+
 
 
       <aio-file>
@@ -104,9 +120,11 @@ Before continuing with the Tour of Heroes, verify that you have the following st
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>
@@ -123,6 +141,7 @@ Before continuing with the Tour of Heroes, verify that you have the following st
 ## Keep the app transpiling and running
 Enter the following command in the terminal window:
 
+
 <code-example language="sh" class="code-shell">
   npm start  
     
@@ -130,7 +149,6 @@ Enter the following command in the terminal window:
 
 This command runs the TypeScript compiler in "watch mode", recompiling automatically when the code changes.
 The command simultaneously launches the app in a browser and refreshes the browser when the code changes.
-
 You can keep building the Tour of Heroes without pausing to recompile or refresh the browser.
 
 ## Action plan
@@ -165,13 +183,14 @@ move the display of *Heroes* out of `AppComponent` and into its own `HeroesCompo
 ### *HeroesComponent*
 
 `AppComponent` is already dedicated to *Heroes*.
-Instead of moving the code out of `AppComponent`, rename it `HeroesComponent`
+Instead of moving the code out of `AppComponent`, rename it to `HeroesComponent`
 and create a separate `AppComponent` shell.
 
 Do the following:
-* Rename the <span ngio-ex>app.component.ts</span> file as <span ngio-ex>heroes.component.ts</span>.
-* Rename the `AppComponent` class as `HeroesComponent` (rename locally, _only_ in this file).
-* Rename the selector `my-app` as `my-heroes`.
+* Rename the <span ngio-ex>app.component.ts</span> file to <span ngio-ex>heroes.component.ts</span>.
+* Rename the `AppComponent` class to `HeroesComponent` (rename locally, _only_ in this file).
+* Rename the selector `my-app` to `my-heroes`.
+
 
 
 <code-example path="toh-pt5/src/app/heroes.component.ts" linenums="false" title="src/app/heroes.component.ts (showing renamings only)" region="renaming">
@@ -181,7 +200,7 @@ Do the following:
 ### Create *AppComponent*
 
 The new `AppComponent` is the application shell.
-It will have some navigation links at the top and a display area below for the pages users navigate to.
+It will have some navigation links at the top and a display area below.
 
 Perform these steps:
 
@@ -201,11 +220,14 @@ The first draft looks like this:
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.ts (v1)" path="toh-5/src/app/app.component.1.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.module.ts (v1)" path="toh-5/src/app/app.module.1.ts">
@@ -216,9 +238,9 @@ The first draft looks like this:
 </code-tabs>
 
 The app still runs and displays heroes.
-## Adding routing
+## Add routing
 
-Instead of  displaying automatically, heroes should display after users click a button.
+Instead of displaying automatically, heroes should display after users click a button.
 In other words, users should be able to navigate to the list of heroes.
 
 Use the Angular router to enable navigation.
@@ -234,6 +256,7 @@ Open `index.html` and ensure there is a `<base href="...">` element
 at the top of the `<head>` section.
 
 
+
 <code-example path="toh-pt5/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
 
 </code-example>
@@ -241,6 +264,7 @@ at the top of the `<head>` section.
 
 
 ~~~ {.callout.is-important}
+
 
 
 <header>
@@ -265,6 +289,7 @@ Create a configuration file for the app routes.
 pastes a URL into the browser address bar.
 
 Define the first route as a route to the heroes component.
+
 
 
 <code-example path="toh-pt5/src/app/" linenums="false" title="src/app/ (heroes)" region="heroes">
@@ -306,6 +331,7 @@ Instead, add an anchor tag to the template that, when clicked, triggers navigati
 The revised template looks like this:
 
 
+
 <code-example path="toh-pt5/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template-v2)" region="template-v2">
 
 </code-example>
@@ -345,6 +371,7 @@ and the list of heroes displays.
 `AppComponent` now looks like this:
 
 
+
 <code-example path="toh-pt5/src/app/app.component.1.ts" region="v2">
 
 </code-example>
@@ -356,6 +383,7 @@ this component type is called a *router component*.
 
 Routing only makes sense when multiple views exist.
 To add another view, create a placeholder `DashboardComponent`, which users can navigate to and from.
+
 
 
 <code-example path="toh-pt5/src/app/dashboard.component.1.ts" linenums="false" title="src/app/dashboard.component.ts (v1)" region="v1">
@@ -371,18 +399,20 @@ import the dashboard component and
 add the following route definition to the `!{_RoutesVsAtRouteConfig}` !{_array} of definitions.
 
 
+
 <code-example path="toh-pt5/_file + ' (Dashboard route)'" linenums="false" title="_file + ' (Dashboard route)' (dashboard)" region="dashboard">
 
 </code-example>
 
-### Add a redirect route
+### Add a !{_redirect} route
 
+Currently, the browser launches with `/` in the address bar.
 When the app starts, it should show the dashboard and
 display a `/dashboard` URL in the browser address bar.
-Currently, the browser launches with `/` in the address bar.
 
 To make this happen, use a redirect route. Add the following
 to the array of route definitions:
+
 
 
 <code-example path="toh-pt5/src/app/app.module.3.ts" linenums="false" title="src/app/app.module.ts (redirect)" region="redirect">
@@ -402,6 +432,7 @@ of the [Routing & Navigation](guide/router) page.
 ### Add navigation to the template
 
 Add a dashboard navigation link to the template, just above the *Heroes* link.
+
 
 
 <code-example path="toh-pt5/src/app/app.component" linenums="false" title="src/app/app.component (template-v3)" region="template-v3">
@@ -428,12 +459,14 @@ Replace the `template` metadata with a `templateUrl` property that points to a n
 template file.
 
 
+
 <code-example path="toh-pt5/src/app/dashboard.component.ts" linenums="false" title="src/app/dashboard.component.ts (metadata)" region="metadata">
 
 </code-example>
 
 
 Create that file with this content:
+
 
 
 <code-example path="toh-pt5/src/app/dashboard.component.1.html">
@@ -457,11 +490,13 @@ Angular injects `HeroService` and you can use it in the `DashboardComponent`.
 In <span ngio-ex>dashboard.component.ts</span>, add the following `import` statements.
 
 
+
 <code-example path="toh-pt5/src/app/dashboard.component.ts" linenums="false" title="src/app/dashboard.component.ts (imports)" region="imports">
 
 </code-example>
 
 Now create the `DashboardComponent` class like this:
+
 
 
 <code-example path="toh-pt5/src/app/dashboard.component.ts" linenums="false" title="src/app/dashboard.component.ts (class)" region="class">
@@ -472,9 +507,9 @@ This kind of logic is also used in the `HeroesComponent`:
 
 * Define a `heroes` !{_array} property.
 * Inject the `HeroService` in the constructor and hold it in a private `!{_priv}heroService` field.
-* Call the service to get heroes inside the Angular `ngOnInit` lifecycle hook.
+* Call the service to get heroes inside the Angular `ngOnInit()` lifecycle hook.
 
-In this dashboard you specify four heroes (2nd, 3rd, 4th, and 5th)<span if-docs="ts"> with the `Array.slice` method</span>.
+In this dashboard you specify four heroes (2nd, 3rd, 4th, and 5th)<span if-docs="ts"> with the `Array.slice()` method</span>.
 
 Refresh the browser to see four hero names in the new dashboard.
 
@@ -497,6 +532,7 @@ You didn't have to tell the `HeroesComponent` or the `DashboardComponent` anythi
 Currently, the parent `HeroesComponent` sets the component's `hero` property to a
 hero object with a binding like this:
 
+
 <code-example language="html">
   &lt;hero-detail [hero]="selectedHero">&lt;/hero-detail>  
     
@@ -509,6 +545,7 @@ But this binding won't work in any of the routing scenarios.
 You can add the hero's `id` to the URL. When routing to the hero whose `id` is 11,
 you could expect to see a URL such as this:
 
+
 <code-example format="nocode">
   /detail/11  
     
@@ -520,6 +557,7 @@ You need to represent the variable part of the route with a *parameter* (or *tok
 ### Configure a route with a parameter
 
 Use the following *route definition*.
+
 
 
 <code-example path="toh-pt5/_file + ' (hero detail)'" linenums="false" title="_file + ' (hero detail)' (hero-detail)" region="hero-detail">
@@ -542,6 +580,7 @@ is revised and ready to be navigated to.
 Here's what the `HeroDetailComponent` looks like now:
 
 
+
 <code-example path="toh-4/src/app/hero-detail.component.ts">
 
 </code-example>
@@ -555,12 +594,14 @@ in the `ActivatedRoute` service and use the `HeroService` to fetch the hero with
 Add the following imports:
 
 
+
 <code-example path="toh-pt5/src/app/hero-detail.component" linenums="false" title="src/app/hero-detail.component (added-imports)" region="added-imports">
 
 </code-example>
 
 Inject the `!{_ActivatedRoute}`, `HeroService`, and `Location` services
 into the constructor, saving their values in private fields:
+
 
 
 <code-example path="toh-pt5/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (constructor)" region="ctor">
@@ -570,14 +611,16 @@ into the constructor, saving their values in private fields:
 Tell the class to implement the `OnInit` interface.
 
 
+
 <code-example path="toh-pt5/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (implement)" region="implement">
 
 </code-example>
 
 
-Inside the `ngOnInit` lifecycle hook, use the `params` Observable to
+Inside the `ngOnInit()` lifecycle hook, use the `params` Observable to
 extract the `id` parameter value from the `ActivatedRoute` service
 and use the `HeroService` to fetch the hero with that `id`.
+
 
 
 <code-example path="toh-pt5/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (ngOnInit)" region="ngOnInit">
@@ -592,10 +635,11 @@ If a user re-navigates to this component while a `getHero` request is still proc
 `switchMap` cancels the old request and then calls `HeroService.getHero()` again.
 The hero `id` is a number. Route parameters are always strings.
 So the route parameter value is converted to a number with the !{_str2int}.
-### Add *HeroService.getHero*
+### Add *HeroService.getHero()*
 
 In the previous code snippet, `HeroService` doesn't have a `getHero()` method. To fix this issue,
-open `HeroService` and add a `getHero()` method that filters the heroes list from `getHeroes` by `id`.
+open `HeroService` and add a `getHero()` method that filters the heroes list from `getHeroes()` by `id`.
+
 
 
 <code-example path="toh-pt5/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (getHero)" region="getHero">
@@ -611,6 +655,7 @@ Now add a third option, a `goBack()` method that navigates backward one step in 
 using the `Location` service you injected previously.
 
 
+
 <code-example path="toh-pt5/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (goBack)" region="goBack">
 
 </code-example>
@@ -621,12 +666,13 @@ using the `Location` service you injected previously.
 
 Going back too far could take users out of the app.
 In a real app, you can prevent this issue with the !{_CanDeactivateGuard}.
-Read more on the [CanDeactivate](api/!{_CanDeactivateGuardUri}) page.
+Read more on the [CanDeactivate](api/router/index/CanDeactivate-interface) page.
 
 
 ~~~
 
 You'll wire this method with an event binding to a *Back* button that you'll add to the component template.
+
 
 
 <code-example path="toh-pt5/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (back-button)" region="back-button">
@@ -637,11 +683,13 @@ Migrate the template to its own file
 called <span ngio-ex>hero-detail.component.html</span>:
 
 
+
 <code-example path="toh-pt5/src/app/hero-detail.component.html">
 
 </code-example>
 
 Update the component metadata with a `templateUrl` pointing to the template file that you just created.
+
 
 
 
@@ -663,6 +711,7 @@ To achieve this effect, reopen `dashboard.component.html` and replace the repeat
 with `<a>` tags. Change the opening `<a>` tag to the following:
 
 
+
 <code-example path="toh-pt5/src/app/dashboard.component.html" region="click">
 
 </code-example>
@@ -681,35 +730,19 @@ token in the parameterized hero detail route definition that you added to
 `!{_appRoutingTsVsAppComp}` earlier:
 
 
+
 <code-example path="toh-pt5/_file + ' (hero detail)'" linenums="false" title="_file + ' (hero detail)' (hero-detail)" region="hero-detail">
 
 </code-example>
 
 Refresh the browser and select a hero from the dashboard; the app navigates to that hero’s details.
-Here is the revised `AppModule`, compared to its pre-refactor state:
-
-
-<code-tabs>
-
-  <code-pane title="src/app/app.module.ts (after)" path="toh-5/src/app/app.module.ts">
-
-  </code-pane>
-
-
-  <code-pane title="src/app/app.module.ts (before)" path="toh-5/src/app/app.module.3.ts">
-
-  </code-pane>
-
-
-</code-tabs>
-
-The revised and simplified `AppModule` is focused on identifying the key pieces of the app.
 
 ## Select a hero in the *HeroesComponent*
 
 In the `HeroesComponent`,
 the current template exhibits a "master/detail" style with the list of heroes
 at the top and details of the selected hero below.
+
 
 
 <code-example path="toh-4/src/app/app.component.ts" region="template" linenums="false">
@@ -731,11 +764,13 @@ Instead, they'll see a mini detail on *this* page and have to click a button to 
 Add the following HTML fragment at the bottom of the template where the `<hero-detail>` used to be:
 
 
+
 <code-example path="toh-pt5/src/app/heroes.component.html" linenums="false" title="src/app/heroes.component.html (mini-detail)" region="mini-detail">
 
 </code-example>
 
 After clicking a hero, users should see something like this below the hero list:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70">  </img>
@@ -745,6 +780,7 @@ After clicking a hero, users should see something like this below the hero list:
 
 The hero's name is displayed in capital letters because of the `uppercase` pipe
 that's included in the interpolation binding, right after the pipe operator ( | ).
+
 
 
 <code-example path="toh-pt5/src/app/heroes.component.html" linenums="false" title="src/app/heroes.component.html (pipe)" region="pipe">
@@ -781,11 +817,14 @@ styles contents into a new <span ngio-ex>heroes.component.css</span> file.
 The two new files should look like this:
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/heroes.component.html" path="toh-5/src/app/heroes.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/heroes.component.css" path="toh-5/src/app/heroes.component.css">
@@ -799,6 +838,7 @@ Now, back in the component metadata for `heroes.component.ts`,
 delete `template` and `styles`, replacing them with 
 `templateUrl` and `styleUrls` respectively.
 Set their properties to refer to the new files.
+
 
 
 
@@ -826,7 +866,8 @@ This approach requires the following changes to the component class:
 
 1. Import the `router` from the Angular router library.
 1. Inject the `router` in the constructor, along with the `HeroService`.
-1. Implement `gotoDetail()` by calling the `router.navigate()` method.
+1. Implement `gotoDetail()` by calling the router `navigate()` method.
+
 
 
 <code-example path="toh-pt5/src/app/heroes.component.ts" linenums="false" title="src/app/heroes.component.ts (gotoDetail)" region="gotoDetail">
@@ -834,10 +875,11 @@ This approach requires the following changes to the component class:
 </code-example>
 
 Note that you're passing a two-element *link parameters !{_array}*&mdash;a
-path and the route parameter&mdash;to
-the `router.navigate()` method, just as you did in the `[routerLink]` binding
+!{_pathVsName} and the route parameter&mdash;to
+the router `navigate()` method, just as you did in the `[routerLink]` binding
 back in the `DashboardComponent`.
 Here's the revised `HeroesComponent` class:
+
 
 
 <code-example path="toh-pt5/src/app/heroes.component.ts" linenums="false" title="src/app/heroes.component.ts (class)" region="class">
@@ -864,6 +906,7 @@ Add a <span ngio-ex>dashboard.component.css</span> file to the `!{_appDir}` fold
 that file in the component metadata's `styleUrls` !{_array} property like this:
 
 
+
 <code-example path="toh-pt5/src/app/dashboard.component.ts" linenums="false" title="src/app/dashboard.component.ts (styleUrls)" region="css">
 
 </code-example>
@@ -884,9 +927,11 @@ Here's the content for the component CSS files.
 
 <code-tabs>
 
+
   <code-pane title="src/app/hero-detail.component.css" path="toh-5/src/app/hero-detail.component.css">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/dashboard.component.css" path="toh-5/src/app/dashboard.component.css">
@@ -902,6 +947,7 @@ The provided CSS makes the navigation links in the `AppComponent` look more like
 You'll surround those links in `<nav>` tags.
 
 Add an <span ngio-ex>app.component.css</span> file to the `!{_appDir}` folder with the following content.
+
 
 
 <code-example path="toh-pt5/src/app/app.component.css" linenums="false" title="src/app/app.component.css (navigation styles)" region="navigation styles">
@@ -932,6 +978,7 @@ All you have to do is define the style for it.
 Add a `styleUrls` property that refers to this CSS file as follows:
 
 
+
 <code-example path="toh-pt5/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (styleUrls)" region="styleUrls">
 
 </code-example>
@@ -949,6 +996,7 @@ These correspond to the full set of master styles that you installed earlier dur
 Here's an excerpt:
 
 
+
 <code-example path="toh-pt5/src/styles.css" linenums="false" title="src/styles.css (excerpt)" region="toh">
 
 </code-example>
@@ -958,11 +1006,13 @@ Ensure that the file contains the [master styles provided here](tutorial/!{style
 Also edit <span ngio-ex>index.html</span> to refer to this stylesheet.
 
 
+
 <code-example path="toh-pt5/src/index.html" linenums="false" title="src/index.html (link ref)" region="css">
 
 </code-example>
 
 Look at the app now. The dashboard, heroes, and navigation links are styled.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/dashboard-top-heroes.png' alt="View navigations">  </img>
@@ -975,17 +1025,23 @@ Review the sample source code in the <live-example></live-example> for this page
 Verify that you have the following structure:
 
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-tour-of-heroes
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -993,9 +1049,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           app.module.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -1003,9 +1061,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           dashboard.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -1013,9 +1073,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           dashboard.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -1023,9 +1085,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -1033,9 +1097,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero-detail.component.html
         </aio-file>
+
 
 
         <aio-file>
@@ -1043,9 +1109,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           heroes.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -1053,9 +1121,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           heroes.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -1066,9 +1136,11 @@ Verify that you have the following structure:
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -1076,14 +1148,17 @@ Verify that you have the following structure:
       </aio-file>
 
 
+
       <aio-file>
         styles.css
       </aio-file>
 
 
+
       <aio-file>
         systemjs.config.js
       </aio-file>
+
 
 
       <aio-file>
@@ -1094,9 +1169,11 @@ Verify that you have the following structure:
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>

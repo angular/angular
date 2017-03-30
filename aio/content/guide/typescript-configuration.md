@@ -55,6 +55,7 @@ You can set a variable's type to `any` even when the `noImplicitAny` flag is `tr
 When the `noImplicitAny` flag is `true`, you may get *implicit index errors* as well.
 Most developers feel that *this particular error* is more annoying than helpful.
 You can suppress them with the following additional flag:
+
 <code-example format=".">
   "suppressImplicitAnyIndexErrors":true  
     
@@ -91,6 +92,7 @@ like `Promise` if the target is `es6`.
 
 Since the QuickStart is targeting `es5`, you can override the
 list of declaration files to be included:
+
 
 <code-example format=".">
   "lib": ["es2015", "dom"]  

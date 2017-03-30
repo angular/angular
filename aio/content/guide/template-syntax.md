@@ -7,6 +7,7 @@ Learn how to write templates that display data and consume user events with the 
 @description
 
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -55,6 +56,7 @@ This guide covers the basic elements of the Angular template syntax, elements yo
 The <live-example></live-example>
 demonstrates all of the syntax and code snippets described in this guide.
 
+
 <div class='l-hr'>
 
 </div>
@@ -80,6 +82,7 @@ In the following sections, you'll learn how to get and set DOM (Document Object 
 
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -92,11 +95,13 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 You met the double-curly braces of interpolation, `{{` and `}}`, early in your Angular education.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="first-interpolation" linenums="false">
 
 </code-example>
 
 You use interpolation to weave calculated strings into the text between HTML element tags and within attribute assignments.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="title+image" linenums="false">
@@ -111,11 +116,13 @@ More generally, the text between the braces is a **template expression** that An
 and then **converts to a string**. The following interpolation illustrates the point by adding the two numbers:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="sum-1" linenums="false">
 
 </code-example>
 
 The expression can invoke methods of the host component such as `getVal()`, seen here:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="sum-2" linenums="false">
@@ -133,6 +140,7 @@ Though this is not exactly true. Interpolation is a special syntax that Angular 
 
 But first, let's take a closer look at template expressions and statements.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -174,6 +182,7 @@ In the following snippets, the `title`  within double-curly braces and the
 `isUnchanged` in quotes refer to properties of the `AppComponent`.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-expression" linenums="false">
 
 </code-example>
@@ -181,6 +190,7 @@ In the following snippets, the `title`  within double-curly braces and the
 An expression may also refer to properties of the _template's_ context
 such as a [template input variable](guide/template-syntax#template-input-variable) (`let hero`)
 or a [template reference variable](guide/template-syntax#ref-vars) (`#heroInput`).
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var" linenums="false">
@@ -260,6 +270,7 @@ If an idempotent expression returns a string or a number, it returns the same st
 when called twice in a row. If the expression returns an object (including #{_an} `#{_Array}`),
 it returns the same object *reference* when called twice in a row.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -273,6 +284,7 @@ A template **statement** responds to an **event** raised by a binding target
 such as an element, component, or directive.
 You'll see template statements in the [event binding](guide/template-syntax#event-binding) section,
 appearing in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" linenums="false">
@@ -308,6 +320,7 @@ The *statement context* is typically the component instance.
 The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound component.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" linenums="false">
 
 </code-example>
@@ -317,6 +330,7 @@ In the following examples, the template `$event` object,
 a [template input variable](guide/template-syntax#template-input-variable) (`let hero`),
 and a [template reference variable](guide/template-syntax#ref-vars) (`#heroForm`)
 are passed to an event handling method of the component.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" linenums="false">
@@ -339,6 +353,7 @@ A method call or simple property assignment should be the norm.
 Now that you have a feel for template expressions and statements,
 you're ready to learn about the varieties of data binding syntax beyond interpolation.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -359,16 +374,20 @@ This guide covers most of them, after a high-level view of Angular data binding 
 Binding types can be grouped into three categories distinguished by the direction of data flow:
 from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="30%">
 
   </col>
+
 
 
   <col width="50%">
@@ -376,21 +395,26 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </col>
 
 
+
   <col width="20%">
 
   </col>
 
 
+
   <tr>
+
 
     <th>
       Data direction
     </th>
 
 
+
     <th>
       Syntax
     </th>
+
 
 
     <th>
@@ -401,14 +425,18 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </tr>
 
 
+
   <tr>
+
 
     <td>
       One-way<br>from data source<br>to view target
     </td>
 
 
+
     <td>
+
 
       <code-example>
         {{expression}}        
@@ -420,6 +448,7 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
     </td>
 
 
+
     <td>
       Interpolation<br>      
             Property<br>      
@@ -429,14 +458,18 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
     </td>
 
 
+
     <tr>
+
 
       <td>
         One-way<br>from view target<br>to data source
       </td>
 
 
+
       <td>
+
 
         <code-example>
           (target)="statement"          
@@ -447,6 +480,7 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
       </td>
 
 
+
       <td>
         Event
       </td>
@@ -455,14 +489,18 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
     </tr>
 
 
+
     <tr>
+
 
       <td>
         Two-way
       </td>
 
 
+
       <td>
+
 
         <code-example>
           [(target)]="expression"          
@@ -471,6 +509,7 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
 
 
       </td>
+
 
 
       <td>
@@ -505,6 +544,7 @@ In the normal course of HTML development, you create a visual structure with HTM
 you modify those elements by setting element attributes with string constants.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="img+button" linenums="false">
 
 </code-example>
@@ -515,6 +555,7 @@ Then you learn to create new elements with components that encapsulate HTML
 and drop them into templates as if they were native HTML elements.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" linenums="false">
 
 </code-example>
@@ -522,6 +563,7 @@ and drop them into templates as if they were native HTML elements.
 That's HTML Plus.
 
 Then you learn about data binding. The first binding you meet might look like this:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" linenums="false">
@@ -590,6 +632,7 @@ This fact bears repeating:
 ~~~ {.callout.is-helpful}
 
 
+
 <header>
   A world without attributes
 </header>
@@ -611,16 +654,20 @@ Depending on the binding type, the target can be an
 (element | component | directive) event, or (rarely) an attribute name.
 The following table summarizes:
 
+
 <style>
   td, th {vertical-align: top}
 </style>
 
 
+
 <table width="100%">
+
 
   <col width="10%">
 
   </col>
+
 
 
   <col width="15%">
@@ -628,21 +675,26 @@ The following table summarizes:
   </col>
 
 
+
   <col width="75%">
 
   </col>
 
 
+
   <tr>
+
 
     <th>
       Type
     </th>
 
 
+
     <th>
       Target
     </th>
+
 
 
     <th>
@@ -653,11 +705,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Property
     </td>
+
 
 
     <td>
@@ -667,9 +722,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -681,11 +738,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Event
     </td>
+
 
 
     <td>
@@ -695,9 +755,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -709,11 +771,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Two-way
     </td>
+
 
 
     <td>
@@ -721,9 +786,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -735,11 +802,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Attribute
     </td>
+
 
 
     <td>
@@ -748,9 +818,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -762,11 +834,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Class
     </td>
+
 
 
     <td>
@@ -774,9 +849,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -788,11 +865,14 @@ The following table summarizes:
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Style
     </td>
+
 
 
     <td>
@@ -800,9 +880,11 @@ The following table summarizes:
     </td>
 
 
+
     <td>
       
       
+
       <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" linenums="false">
 
       </code-example>
@@ -818,6 +900,7 @@ The following table summarizes:
 
 With this broad view in mind, you're ready to look at binding types in detail.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -834,11 +917,13 @@ The most common property binding sets an element property to a component propert
 binding the `src` property of an image element to a component's `heroImageUrl` property:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" linenums="false">
 
 </code-example>
 
 Another example is disabling a button when the component says that it `isUnchanged`:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" linenums="false">
@@ -848,12 +933,14 @@ Another example is disabling a button when the component says that it `isUnchang
 Another is setting a property of a directive:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" linenums="false">
 
 </code-example>
 
 Yet another is setting the model property of a custom component (a great way
 for parent and child components to communicate):
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" linenums="false">
@@ -890,11 +977,13 @@ An element property between enclosing square brackets identifies the target prop
 The target property in the following code is the image element's `src` property.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" linenums="false">
 
 </code-example>
 
 Some people prefer the `bind-` prefix alternative, known as the *canonical form*:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" linenums="false">
@@ -907,6 +996,7 @@ You see `src` and may think it's the name of an attribute. No. It's the name of 
 Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" linenums="false">
@@ -950,6 +1040,7 @@ Return an object if the target property expects an object.
 The `hero` property of the `HeroDetail` component expects a `Hero` object, which is exactly what you're sending in the property binding:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" linenums="false">
 
 </code-example>
@@ -962,6 +1053,7 @@ and *initializes the target property* with that string.
 It does *not* evaluate the string!
 
 Don't make the following mistake:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" linenums="false">
@@ -984,6 +1076,7 @@ The following example initializes the `prefix` property of the `HeroDetailCompon
 not a template expression. Angular sets it and forgets about it.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" linenums="false">
 
 </code-example>
@@ -994,6 +1087,7 @@ The `[hero]` binding, on the other hand, remains a live binding to the component
 
 You often have a choice between interpolation and property binding.
 The following binding pairs do the same thing:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" linenums="false">
@@ -1013,6 +1107,7 @@ When setting an element property to a non-string data value, you must use _prope
 Imagine the following *malicious content*.
 
 
+
 <code-example path="template-syntax/src/app/app.component.ts" region="evil-title" linenums="false">
 
 </code-example>
@@ -1023,6 +1118,7 @@ It **will not** allow HTML with script tags to leak into the browser, neither wi
 nor property binding.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" linenums="false">
 
 </code-example>
@@ -1030,14 +1126,17 @@ nor property binding.
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'>  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1077,12 +1176,14 @@ There are no property targets to bind to.
 
 This fact becomes painfully obvious when you write something like this.
 
+
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;  
     
 </code-example>
 
 And you get this error:
+
 
 <code-example format="nocode">
   Template parse errors:  
@@ -1104,6 +1205,7 @@ You then set the attribute value, using an expression that resolves to a string.
 Bind `[attr.colspan]` to a calculated value:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" linenums="false">
 
 </code-example>
@@ -1119,11 +1221,13 @@ One of the primary use cases for attribute binding
 is to set ARIA attributes, as in this example:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" linenums="false">
 
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1141,11 +1245,13 @@ The following examples show how to add and remove the application's "special" cl
 with class bindings.  Here's how to set the attribute without binding:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" linenums="false">
 
 </code-example>
 
 You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" linenums="false">
@@ -1155,6 +1261,7 @@ You can replace that with a binding to a string of the desired class names; this
 Finally, you can bind to a specific class name.
 Angular adds the class when the template expression evaluates to #{_truthy}.
 It removes the class when the expression is #{_falsy}.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" linenums="false">
@@ -1172,6 +1279,7 @@ the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1185,12 +1293,14 @@ Instead of an element property between brackets, start with the prefix `style`,
 followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" linenums="false">
 
 </code-example>
 
 Some style binding styles have a unit extension.
 The following example conditionally sets the font size in  “em” and “%” units .
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" linenums="false">
@@ -1219,6 +1329,7 @@ Note that a _style property_ name can be written in either
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1245,6 +1356,7 @@ The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" linenums="false">
 
 </code-example>
@@ -1255,11 +1367,13 @@ A **name between parentheses** &mdash; for example, `(click)` &mdash;
 identifies the target event. In the following example, the target is the button's click event.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" linenums="false">
 
 </code-example>
 
 Some people prefer the `on-` prefix alternative, known as the **canonical form**:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-2" linenums="false">
@@ -1268,6 +1382,7 @@ Some people prefer the `on-` prefix alternative, known as the **canonical form**
 
 Element events may be the more common targets, but Angular looks first to see if the name matches an event property
 of a known directive, as it does in the following example:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" linenums="false">
@@ -1307,6 +1422,7 @@ with properties such as `target` and `target.value`.
 Consider this example:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" linenums="false">
 
 </code-example>
@@ -1340,9 +1456,11 @@ The best it can do is raise an event reporting the user's delete request.
 Here are the pertinent excerpts from that `HeroDetailComponent`:
 
 
+
 <code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (template)" region="template-1">
 
 </code-example>
+
 
 
 
@@ -1355,6 +1473,7 @@ When the user clicks *delete*, the component invokes the `delete()` method,
 telling the `EventEmitter` to emit a `Hero` object.
 
 Now imagine a hosting parent component that binds to the `HeroDetailComponent`'s `deleteRequest` event.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
@@ -1373,6 +1492,7 @@ Deleting the hero updates the model, perhaps triggering other changes
 including queries and saves to a remote server.
 These changes percolate through the system and are ultimately displayed in this and other views.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1395,6 +1515,7 @@ of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
 ~~~ {.callout.is-important}
 
 
+
 <header>
   [( )] = banana in a box
 </header>
@@ -1410,6 +1531,7 @@ Here's a `SizerComponent` that fits the pattern.
 It has a `size` value property and a companion `sizeChange` event:
 
 
+
 <code-example path="template-syntax/src/app/sizer.component.ts">
 
 </code-example>
@@ -1419,6 +1541,7 @@ Clicking the buttons increases or decreases the `size`, within min/max values co
 and then raises (_emits_) the `sizeChange` event with the adjusted size.
 
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-1)" region="two-way-1">
@@ -1432,6 +1555,7 @@ making the displayed text bigger or smaller.
 
 The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
 Angular _desugars_ the `SizerComponent` binding into this:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-2)" region="two-way-2">
@@ -1448,6 +1572,7 @@ However, no native HTML element follows the `x` value and `xChange` event patter
 
 Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1466,6 +1591,7 @@ You can often achieve the same results with the more capable and expressive Angu
 Why create a directive to handle a click when you can write a simple binding such as this?
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" linenums="false">
 
 </code-example>
@@ -1476,6 +1602,7 @@ You'll write your own directives, just not as many.
 
 This segment reviews some of the most frequently used built-in directives,
 classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
+
 
 <div class='l-hr'>
 
@@ -1499,6 +1626,7 @@ This section is an introduction to the most commonly used attribute directives:
 * [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
 * [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1515,6 +1643,7 @@ You can bind to the `ngClass` to add or remove several classes simultaneously.
 A [class binding](guide/template-syntax#class-binding) is a good way to add or remove a *single* class.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" linenums="false">
 
 </code-example>
@@ -1529,11 +1658,13 @@ Consider a `setCurrentClasses` component method that sets a component property,
 `true`/`false` state of three other component properties:
 
 
+
 <code-example path="template-syntax/src/app/app.component.ts" region="setClasses" linenums="false">
 
 </code-example>
 
 Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" linenums="false">
@@ -1550,6 +1681,7 @@ It's up to you to call `setCurrentClassess()`, both initially and when the depen
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1565,6 +1697,7 @@ With `NgStyle` you can set many inline styles simultaneously.
 A [style binding](guide/template-syntax#style-binding) is an easy way to set a *single* style value.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" linenums="false">
 
 </code-example>
@@ -1578,11 +1711,13 @@ Consider a `setCurrentStyles` component method that sets a component property, `
 with an object that defines three styles, based on the state of three other component propertes:
 
 
+
 <code-example path="template-syntax/src/app/app.component.ts" region="setStyles" linenums="false">
 
 </code-example>
 
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" linenums="false">
@@ -1599,6 +1734,7 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1614,6 +1750,7 @@ update that property when the user makes changes.
 Two-way data binding with the `NgModel` directive makes that easy. Here's an example:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (NgModel-1)" region="NgModel-1">
 
 </code-example>
@@ -1625,6 +1762,7 @@ you could have achieved the same result with separate bindings to
 the `<input>` element's  `value` property and `input` event.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" linenums="false">
 
 </code-example>
@@ -1634,6 +1772,7 @@ How do you extract the currently displayed text from the input box so you can up
 Who wants to look that up each time?
 
 That `ngModel` directive hides these onerous details behind its own  `ngModel` input and `ngModelChange` output properties.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" linenums="false">
@@ -1673,6 +1812,7 @@ the component's data property and set it
 with a single declaration, which it can with the `[(ngModel)]` syntax:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" linenums="false">
 
 </code-example>
@@ -1685,20 +1825,24 @@ If you need to do something more or something different, you can write the expan
 The following contrived example forces the input value to uppercase:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" linenums="false">
 
 </code-example>
 
 Here are all variations in action, including the uppercase version:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/ng-model-anim.gif' alt="NgModel variations">  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1731,6 +1875,7 @@ _This_ section is an introduction to the common structural directives:
 * [`NgFor`](guide/template-syntax#ngFor) - repeat a template for each item in a list
 * [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
 
+
 <div class='l-hr'>
 
 </div>
@@ -1743,6 +1888,7 @@ _This_ section is an introduction to the common structural directives:
 You can add or remove an element from the DOM by applying an `NgIf` directive to
 that element (called the _host elment_).
 Bind the directive to a condition expression like `isActive` in this example.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" linenums="false">
@@ -1766,6 +1912,7 @@ from the DOM, destroying that component and all of its sub-components.
 
 You can control the visibility of an element with a
 [class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" linenums="false">
@@ -1798,6 +1945,7 @@ The `currentHero` name will appear only when there is a `currentHero`.
 The `nullHero` will never be displayed.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" linenums="false">
 
 </code-example>
@@ -1814,6 +1962,7 @@ described below.
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1830,11 +1979,13 @@ You tell Angular to use that block as a template for rendering each item in the 
 Here is an example of `NgFor` applied to a simple `<div>`:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" linenums="false">
 
 </code-example>
 
 You can also apply an `NgFor` to a component element, as in this example:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" linenums="false">
@@ -1886,6 +2037,7 @@ Here it is referenced first in an interpolation
 and then passed in a binding to the `hero` property of the `<hero-detail>` component.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" linenums="false">
 
 </code-example>
@@ -1899,6 +2051,7 @@ The `index` property of the `NgFor` directive context  returns the zero-based in
 You can capture the `index` in a template input variable and use it in the template.
 
 The next example captures the `index` in a variable named `i` and displays it with the hero name like this.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" linenums="false">
@@ -1935,11 +2088,13 @@ Add a method to the component that returns the value `NgFor` _should_ track.
 In this case, that value is the hero's `id`.
 
 
+
 <code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" linenums="false">
 
 </code-example>
 
 In the microsyntax expression, set `trackBy` to this method.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="trackBy" linenums="false">
@@ -1952,14 +2107,17 @@ Here is an illustration of the _trackBy_ effect.
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy">  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1979,9 +2137,11 @@ Angular puts only the *selected* element into the DOM.
 `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as seen in this example.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" linenums="false">
 
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -2012,11 +2172,13 @@ Switch directives work as well with native elements and web components too.
 For example, you could replace the `<confused-hero>` switch case with the following.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" linenums="false">
 
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2039,6 +2201,7 @@ Use the hash symbol (#) to declare a reference variable.
 The `#phone` declares a `phone` variable on an `<input>` element.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="ref-var" linenums="false">
 
 </code-example>
@@ -2046,6 +2209,7 @@ The `#phone` declares a `phone` variable on an `<input>` element.
 You can refer to a template reference variable _anywhere_ in the template.
 The `phone` variable declared on this `<input>` is
 consumed in a `<button>` on the other side of the template
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="ref-phone" linenums="false">
@@ -2061,6 +2225,7 @@ But a directive can change that behavior and set the value to something else, su
 The `NgForm` directive does that.
 
 The following is a *simplified* version of the form example in the [Forms](guide/forms) guide.
+
 
 
 <code-example path="template-syntax/src/app/hero-form.component.html" linenums="false">
@@ -2095,11 +2260,13 @@ You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="ref-fax" linenums="false">
 
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2150,6 +2317,7 @@ In the following snippet, `iconUrl` and `onSave` are data-bound members of the `
 and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="io-1" linenums="false">
 
 </code-example>
@@ -2159,6 +2327,7 @@ The targets are the native `<img>` and `<button>` elements.
 
 Now look at a another snippet in which the `HeroDetailComponent`
 is the **target** of a binding on the _left_ of the equals&nbsp;(`=`).
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="io-2" linenums="false">
@@ -2176,6 +2345,7 @@ Target properties must be explicitly marked as inputs or outputs.
 In the `HeroDetailComponent`, such properties are marked as input or output properties using decorators.
 
 
+
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" linenums="false">
 
 </code-example>
@@ -2186,6 +2356,7 @@ In the `HeroDetailComponent`, such properties are marked as input or output prop
 
 Alternatively, you can identify members in the `inputs` and `outputs` #{_array}s
 of the directive metadata, as in this example:
+
 
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" linenums="false">
@@ -2205,6 +2376,7 @@ Don't do both!
 
 The terms _input_ and _output_ reflect the perspective of the target directive.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/input-output.png' alt="Inputs and outputs">  </img>
 </figure>
@@ -2214,6 +2386,7 @@ because data flows *into* that property from a template binding expression.
 
 `HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
 because events stream *out* of that property and toward the handler in a template binding statement.
+
 
 <h3 id='aliasing-io'>
   Aliasing input/output properties
@@ -2225,6 +2398,7 @@ This is frequently the case with [attribute directives](guide/attribute-directiv
 Directive consumers expect to bind to the name of the directive.
 For example, when you apply a directive with a `myClick` selector to a `<div>` tag,
 you expect to bind to an event property that is also called `myClick`.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="myClick" linenums="false">
@@ -2243,6 +2417,7 @@ the directive's own `clicks` property.
 You can specify the alias for the property name by passing it into the input/output decorator like this:
 
 
+
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" linenums="false">
 
 </code-example>
@@ -2256,6 +2431,7 @@ You write a colon-delimited (`:`) string with
 the directive property name on the *left* and the public alias on the *right*:
 
 
+
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" linenums="false">
 
 </code-example>
@@ -2265,6 +2441,7 @@ the directive property name on the *left* and the public alias on the *right*:
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2289,6 +2466,7 @@ Pipes are simple functions that accept an input value and return a transformed v
 They're easy to apply within template expressions, using the **pipe operator (`|`)**:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-1" linenums="false">
 
 </code-example>
@@ -2298,11 +2476,13 @@ The pipe operator passes the result of an expression on the left to a pipe funct
 You can chain expressions through multiple pipes:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-2" linenums="false">
 
 </code-example>
 
 And you can also [apply parameters](guide/pipes) to a pipe:
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-3" linenums="false">
@@ -2312,11 +2492,13 @@ And you can also [apply parameters](guide/pipes) to a pipe:
 The `json` pipe is particularly helpful for debugging bindings:
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (pipes-json)" region="pipes-json">
 
 </code-example>
 
 The generated output would look something like this
+
 
 <code-example language="json">
   { "id": 0, "name": "Hercules", "emotion": "happy",  
@@ -2327,6 +2509,7 @@ The generated output would look something like this
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2341,11 +2524,13 @@ guard against null and undefined values in property paths.
 Here it is, protecting against a view render failure if the `currentHero` is null.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="safe-2" linenums="false">
 
 </code-example>
 
 What happens when the following data bound `title` property is null?
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-1" linenums="false">
@@ -2358,12 +2543,14 @@ That is reasonable behavior. At least the app doesn't crash.
 Suppose the template expression involves a property path, as in this next example
 that displays the `name` of a null hero.
 
+
 <code-example language="html">
   The null hero's name is {{nullHero.name}}  
     
 </code-example>
 
 JavaScript throws a null reference error, and so does Angular:
+
 
 <code-example format="nocode">
   TypeError: Cannot read property 'name' of null in [null].  
@@ -2388,6 +2575,7 @@ Unfortunately, the app crashes when the `currentHero` is null.
 You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="safe-4" linenums="false">
 
 </code-example>
@@ -2395,6 +2583,7 @@ You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
 
 You could try to chain parts of the property path with `&&`, knowing that the expression bails out
 when it encounters the first null.
+
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-5" linenums="false">
@@ -2409,12 +2598,14 @@ The expression bails out when it hits the first null value.
 The display is blank, but the app keeps rolling without errors.
 
 
+
 <code-example path="template-syntax/src/app/app.component.html" region="safe-6" linenums="false">
 
 </code-example>
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>

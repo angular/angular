@@ -1,4 +1,4 @@
-# _boilerplate files
+# boilerplate files
 **/src/styles.css
 **/src/systemjs-angular-loader.js
 **/src/systemjs.config.js
@@ -23,12 +23,18 @@ protractor-helpers.js
 dist/
 
 # special
-!_boilerplate/
 !/*
-!systemjs.config.*.js
 !*.1.*
 !*.2.*
 !*.3.*
+*.1.js
+*.2.js
+*.3.js
+*.1.js.map
+*.2.js.map
+*.3.js.map
+!systemjs.config.*.js
+!karma-test-shim.*.js
 
 # AngularJS files
 !**/*.ajs.js

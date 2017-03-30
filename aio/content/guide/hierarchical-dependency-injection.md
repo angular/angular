@@ -45,6 +45,7 @@ The `HeroesListComponent` holds and manages multiple instances of the `HeroTaxRe
 The following diagram represents the state of the this guide's three-level component tree when there are three instances of `HeroTaxReturnComponent`
 open simultaneously.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600">  </img>
 </figure>
@@ -100,6 +101,7 @@ That's not supposed to happen but providing the service in the root `AppModule` 
 Instead, provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
 
 
+
 <code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
 
 </code-example>
@@ -128,6 +130,7 @@ Each tax return component has the following characteristics:
 * Can change a tax return without affecting a return in another component.
 * Has the ability to save the changes to its tax return or cancel them.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action">  </img>
 </figure>
@@ -142,11 +145,13 @@ It caches a single `HeroTaxReturn`, tracks changes to that return, and can save 
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 
+
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts">
 
 </code-example>
 
 Here is the `HeroTaxReturnComponent` that makes use of it.
+
 
 
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts">
@@ -164,6 +169,7 @@ Each component would overwrite the tax return that belonged to another hero.
 What a mess!
 
 Look closely at the metadata for the `HeroTaxReturnComponent`. Notice the `providers` property.
+
 
 
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" title="src/app/hero-tax-return.component.ts (providers)" region="providers">
@@ -200,6 +206,7 @@ that have special capabilites suitable for whatever is going on in component (B)
 
 Component (B) is the parent of another component (C) that defines its own, even _more specialized_ provider for `CarService`.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/dependency-injection/car-components.png" alt="car components" width="220">  </img>
 </figure>
@@ -209,6 +216,7 @@ Behind the scenes, each component sets up its own injector with zero, one, or mo
 When you resolve an instance of `Car` at the deepest component (C),
 its injector produces an instance of `Car` resolved by injector (C) with an `Engine` resolved by injector (B) and
 `Tires` resolved by the root injector (A).
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/dependency-injection/injector-tree.png" alt="car injector tree" width="600">  </img>

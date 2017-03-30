@@ -108,12 +108,14 @@ Load the few files you need from the web instead.
 with versions that load from the web. It might look like this.
 
 
+
 <code-example path="deployment/src/index.html" region="node-module-scripts" linenums="false">
 
 </code-example>
 
 (2) Replace the `systemjs.config.js` script with a script that 
 loads `systemjs.config.server.js`.
+
 
 <code-example path="deployment/src/index.html" region="systemjs-config" linenums="false">
 
@@ -127,6 +129,7 @@ Modify `systemjs.config.server.js` as necessary to stay in sync with changes
 you make to `systemjs.config.js`.
 
 Notice the `paths` key:
+
 
 
 <code-example path="deployment/src/systemjs.config.server.js" region="paths" linenums="false">
@@ -150,11 +153,14 @@ Then change the config's  `'npm'` path to point to that folder.
 The following trivial router sample app shows these changes.
 
 
+
 <code-tabs>
+
 
   <code-pane title="index.html" path="deployment/src/index.html">
 
   </code-pane>
+
 
 
   <code-pane title="systemjs.config.server.js" path="deployment/src/systemjs.config.server.js">
@@ -162,9 +168,11 @@ The following trivial router sample app shows these changes.
   </code-pane>
 
 
+
   <code-pane title="main.ts" path="deployment/src/main.ts">
 
   </code-pane>
+
 
 
   <code-pane title="app/app.module.ts" path="deployment/src/app/app.module.ts">
@@ -172,14 +180,17 @@ The following trivial router sample app shows these changes.
   </code-pane>
 
 
+
   <code-pane title="app/app.component.ts" path="deployment/src/app/app.component.ts">
 
   </code-pane>
 
 
+
   <code-pane title="app/crisis-list.component.ts" path="deployment/src/app/crisis-list.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="app/hero-list.component.ts" path="deployment/src/app/hero-list.component.ts">
@@ -369,6 +380,7 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 Angular apps run in development mode by default, as you can see by the following message on the browser
 console:
 
+
 <code-example format="nocode">
   Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.
 </code-example>
@@ -376,6 +388,7 @@ console:
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
 
 To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`. 
+
 
 
 <code-example path="deployment/src/main.ts" region="enableProdMode" linenums="false">
@@ -464,6 +477,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 - [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the 
 `historyApiFallback` entry in the dev server options as follows:
 
+
 <code-example>
   historyApiFallback: {  
       disableDotRule: true,  
@@ -478,6 +492,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
 to the `.htaccess` file as show 
 [here](https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
+
 <code-example format=".">
   RewriteEngine On    
     # If an existing asset or directory is requested go to it as it is  
@@ -494,6 +509,7 @@ to the `.htaccess` file as show
 [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
 
+
 <code-example format=".">
   try_files $uri $uri/ /index.html;  
     
@@ -501,6 +517,7 @@ modified to serve `index.html`:
 
 - [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
+
 <code-example format="." escape="html">
   <system.webServer>  
       <rewrite>  
@@ -531,6 +548,7 @@ and to
 
 - [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
+
 
 <code-example format=".">
   "rewrites": [ {  

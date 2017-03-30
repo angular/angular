@@ -50,6 +50,7 @@ otherwise wrestle with yourself.
 
 You'll learn to build a template-driven form that looks like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-1.png" width="400px" alt="Clean Form">  </img>
 </figure>
@@ -60,6 +61,7 @@ Every hero needs a job. It's the company mission to match the right hero with th
 Two of the three fields on this form are required. Required fields have a green bar on the left to make them easy to spot.
 
 If you delete the hero name, the form displays a validation error in an attention-grabbing style:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required">  </img>
@@ -103,6 +105,7 @@ and one optional field (`alterEgo`).
 In the `!{_appDir}` directory, create the following file with the given content:
 
 
+
 <code-example path="forms/src/app/hero.ts">
 
 </code-example>
@@ -117,6 +120,7 @@ The `alterEgo` is optional, so the constructor lets you omit it; note the questi
 You can create a new hero like this:
 
 
+
 <code-example path="forms/src/app/hero-form.component.ts" linenums="false" title="src/app/hero-form.component.ts (SkyDog)" region="SkyDog">
 
 </code-example>
@@ -129,6 +133,7 @@ to handle data and user interactions programmatically.
 Begin with the class because it states, in brief, what the hero editor can do.
 
 Create the following file with the given content:
+
 
 
 <code-example path="forms/src/app/hero-form.component.ts" linenums="false" title="src/app/hero-form.component.ts (v1)" region="v1">
@@ -175,6 +180,7 @@ Because template-driven forms are in their own module, you need to add the `Form
 
 Replace the contents of the "QuickStart" version with the following:
 
+
 <code-example path="forms/src/app/app.module.ts">
 
 </code-example>
@@ -214,6 +220,7 @@ If you wrote it and it should belong to this module, ​_do_​ declare it in th
 Replace the contents of the "QuickStart" version with the following:
 
 
+
 <code-example path="forms/src/app/app.component.ts">
 
 </code-example>
@@ -234,6 +241,7 @@ You've also dropped the `name` field from the class body.
 ## Create an initial HTML form template
 
 Create the template file with the following contents:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" region="start">
@@ -258,6 +266,7 @@ Bootstrap gives the form a little style.
 ~~~ {.callout.is-important}
 
 
+
 <header>
   Angular forms don't require a style library
 </header>
@@ -269,6 +278,7 @@ the styles of any external library. Angular apps can use any CSS library or none
 ~~~
 
 To add the stylesheet, open `index.html` and add the following link to the `<head>`:
+
 
 
 <code-example path="forms/src/index.html" linenums="false" title="src/index.html (bootstrap)" region="bootstrap">
@@ -288,6 +298,7 @@ a technique seen previously in the [Displaying Data](guide/displaying-data) page
 Add the following HTML *immediately below* the *Alter Ego* group:
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (powers)" region="powers">
 
 </code-example>
@@ -299,6 +310,7 @@ you display its name using the interpolation syntax.
 ## Two-way data binding with _ngModel_
 
 Running the app right now would be disappointing.
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-3.png" width="400px" alt="Early form with no binding">  </img>
@@ -317,6 +329,7 @@ instead you'll use the new `[(ngModel)]` syntax, which
 makes binding the form to the model easy.
 
 Find the `<input>` tag for *Name* and update it like this:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="ngModelName-1">
@@ -340,6 +353,7 @@ If you ran the app now and started typing in the *Name* input box,
 adding and deleting characters, you'd see them appear and disappear
 from the interpolated text.
 At some point it might look like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action">  </img>
@@ -382,6 +396,7 @@ Then you can confirm that two-way data binding works *for the entire hero model*
 After revision, the core of the form should look like this:
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="ngModel-2">
 
 </code-example>
@@ -398,6 +413,7 @@ to match the label to its input control.
 ~~~
 
 If you run the app now and change every hero model property, the form might display like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action">  </img>
@@ -416,18 +432,23 @@ you if the user touched the control, if the value changed, or if the value becam
 The *NgModel* directive doesn't just track state; it updates the control with special Angular CSS classes that reflect the state.
 You can leverage those class names to change the appearance of the control.
 
+
 <table>
 
+
   <tr>
+
 
     <th>
       State
     </th>
 
 
+
     <th>
       Class if true
     </th>
+
 
 
     <th>
@@ -438,16 +459,20 @@ You can leverage those class names to change the appearance of the control.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       The control has been visited.
     </td>
 
 
+
     <td>
       <code>ng-touched</code>
     </td>
+
 
 
     <td>
@@ -458,16 +483,20 @@ You can leverage those class names to change the appearance of the control.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       The control's value has changed.
     </td>
 
 
+
     <td>
       <code>ng-dirty</code>
     </td>
+
 
 
     <td>
@@ -478,16 +507,20 @@ You can leverage those class names to change the appearance of the control.
   </tr>
 
 
+
   <tr>
+
 
     <td>
       The control's value is valid.
     </td>
 
 
+
     <td>
       <code>ng-valid</code>
     </td>
+
 
 
     <td>
@@ -504,6 +537,7 @@ Temporarily add a [template reference variable](guide/template-syntax) named `sp
 to the _Name_ `<input>` tag and use it to display the input's CSS classes.
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="ngModelName-2">
 
 </code-example>
@@ -518,11 +552,13 @@ Follow these steps *precisely*:
 
 The actions and effects are as follows:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/control-state-transitions-anim.gif" alt="Control State Transition">  </img>
 </figure>
 
 You should see the following transitions and class names:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions">  </img>
@@ -539,6 +575,7 @@ To create such visual feedback, add definitions for the `ng-*` CSS classes.
 You can mark required fields and invalid data at the same time with a colored bar
 on the left of the input box:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form">  </img>
 </figure>
@@ -547,11 +584,13 @@ You achieve this effect by adding these class definitions to a new `forms.css` f
 that you add to the project as a sibling to `index.html`:
 
 
+
 <code-example path="forms/src/forms.css">
 
 </code-example>
 
 Update the `<head>` of `index.html` to include this style sheet:
+
 
 
 <code-example path="forms/src/index.html" linenums="false" title="src/index.html (styles)" region="styles">
@@ -566,6 +605,7 @@ Leverage the control's state to reveal a helpful message.
 
 When the user deletes the name, the form should look like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/name-required-error.png" width="400px" alt="Name required">  </img>
 </figure>
@@ -575,6 +615,7 @@ To achieve this effect, extend the `<input>` tag with the following:
 - The "*is required*" message in a nearby `<div>`, which you'll display only if the control is invalid.
 
 Here's an example of an error message added to the _name_ input box:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="name-with-error-msg">
@@ -597,6 +638,7 @@ You set `name` to `ngModel` because the `ngModel` directive's `exportAs` propert
 
 You control visibility of the name error message by binding properties of the `name`
 control to the message `<div>` element's `hidden` property.
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg">
@@ -626,9 +668,11 @@ Now you'll add a new hero in this form.
 Place a *New Hero* button at the bottom of the form and bind its click event to a `newHero` component method.
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" region="new-hero-button-no-reset">
 
 </code-example>
+
 
 
 
@@ -654,6 +698,7 @@ You have to clear all of the flags imperatively, which you can do
 by calling the form's `reset()` method after calling the `newHero()` method.
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" region="new-hero-button-form-reset">
 
 </code-example>
@@ -670,6 +715,7 @@ trigger a form submit because of its type (`type="submit"`).
 A "form submit" is useless at the moment.
 To make it useful, bind the form's `ngSubmit` event property
 to the hero form component's `onSubmit()` method:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="forms/ts/src/app/hero-form.component.html (ngSubmit)" region="ngSubmit">
@@ -703,6 +749,7 @@ control* is valid.
 You'll bind the form's overall validity via
 the `heroForm` variable to the button's `disabled` property
 using an event binding. Here's the code:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (submit-button)" region="submit-button">
@@ -747,6 +794,7 @@ Wrap the form in a `<div>` and bind
 its `hidden` property to the `HeroFormComponent.submitted` property.
 
 
+
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="edit-div">
 
 </code-example>
@@ -754,6 +802,7 @@ its `hidden` property to the `HeroFormComponent.submitted` property.
 The main form is visible from the start because the
 `submitted` property is false until you submit the form,
 as this fragment from the `HeroFormComponent` shows:
+
 
 
 <code-example path="forms/src/app/hero-form.component.ts" linenums="false" title="src/app/hero-form.component.ts (submitted)" region="submitted">
@@ -765,6 +814,7 @@ as planned.
 
 Now the app needs to show something else while the form is in the submitted state.
 Add the following HTML below the `<div>` wrapper you just wrote:
+
 
 
 <code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="submitted">
@@ -796,17 +846,23 @@ framework features to provide support for data modification, validation, and mor
 
 The final project folder structure should look like this:
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-forms
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -814,14 +870,17 @@ The final project folder structure should look like this:
         </aio-file>
 
 
+
         <aio-file>
           hero.ts
         </aio-file>
 
 
+
         <aio-file>
           hero-form.component.html
         </aio-file>
+
 
 
         <aio-file>
@@ -832,14 +891,17 @@ The final project folder structure should look like this:
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
 
 
+
       <aio-file>
         tsconfig.json
       </aio-file>
+
 
 
       <aio-file>
@@ -850,9 +912,11 @@ The final project folder structure should look like this:
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>
@@ -868,11 +932,14 @@ The final project folder structure should look like this:
 Here’s the code for the final version of the application:
 
 
+
 <code-tabs>
+
 
   <code-pane title="hero-form.component.ts" path="forms/src/app/hero-form.component.ts" region="final">
 
   </code-pane>
+
 
 
   <code-pane title="hero-form.component.html" path="forms/src/app/hero-form.component.html" region="final">
@@ -880,9 +947,11 @@ Here’s the code for the final version of the application:
   </code-pane>
 
 
+
   <code-pane title="hero.ts" path="forms/src/app/hero.ts">
 
   </code-pane>
+
 
 
   <code-pane title="app.module.ts" path="forms/src/app/app.module.ts">
@@ -890,9 +959,11 @@ Here’s the code for the final version of the application:
   </code-pane>
 
 
+
   <code-pane title="app.component.ts" path="forms/src/app/app.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="main.ts" path="forms/src/main.ts">
@@ -900,9 +971,11 @@ Here’s the code for the final version of the application:
   </code-pane>
 
 
+
   <code-pane title="index.html" path="forms/src/index.html">
 
   </code-pane>
+
 
 
   <code-pane title="forms.css" path="forms/src/forms.css">

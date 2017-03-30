@@ -14,6 +14,7 @@ The [setup](guide/setup) instructions produce a new project with the following m
 You'll evolve this module as your application grows.
 
 
+
 <code-example path="setup/src/app/app.module.ts" linenums="false">
 
 </code-example>
@@ -119,6 +120,7 @@ Which brings us to the _bootstrapping_ process itself.
 
 {@a main}
 
+
 <l-main-section>
 
 </l-main-section>
@@ -134,6 +136,7 @@ and you'll run it in a browser. You can learn about other options later.
 The recommended place to bootstrap a JIT-compiled browser application is in a separate file 
 in the `src` folder named `src/main.ts`
 
+
 <code-example path="setup/src/main.ts" linenums="false">
 
 </code-example>
@@ -148,6 +151,7 @@ creates an instance of the component and inserts it within the element tag ident
 The `AppComponent` selector &mdash; here and in most documentation samples &mdash; is `my-app` 
 so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
 
+
 <code-example path="setup/src/index.html" region="my-app" linenums="false">
 
 </code-example>
@@ -155,6 +159,7 @@ so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
 ... and displays the `AppComponent` there.
 
 This file is very stable. Once you've set it up, you may never change it again.
+
 
 <l-main-section>
 

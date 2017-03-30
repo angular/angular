@@ -53,6 +53,7 @@ The `package.json` includes two sets of packages,
 The *dependencies* are essential to *running* the application.
 The *devDependencies* are only necessary to *develop* the application.
 You can exclude them from production installations by adding `--production` to the install command, as follows:
+
 <code-example format="." language="bash">
   npm install my-application --production  
     
