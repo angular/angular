@@ -1,0 +1,15 @@
+{
+  "short_name": "Angular Docs",
+  "name": "Angular Docs",
+  "icons": [
+    {
+      "src":"assets/images/favicons/favicon-194x194.png",
+      "sizes": "194x194",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=homescreen",
+  "background_color": "#fafafa",
+  "theme_color": "#1976d2",
+  "display": "standalone"
+}
