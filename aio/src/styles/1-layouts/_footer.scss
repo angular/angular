@@ -2,15 +2,27 @@ footer {
   position: relative;
   line-height: 24px;
   flex: 1;
-  padding: 20px;
-  z-index: 10;
+  padding: 48px;
+  z-index: 0;
   background-color: $blue;
   color: $offwhite;
   font-weight: 300;
 
+  aio-footer {
+    position: relative;
+    z-index: 0;
+  }
+
+  .footer-block {
+    margin: 0 24px;
+    vertical-align: top;
+  }
+
   a {
       color: $offwhite;
       text-decoration: none;
+      z-index: 20;
+      position: relative;
       &:hover {
         text-decoration: underline;
       }
@@ -22,7 +34,10 @@ footer {
     cursor: pointer;
   }
   h3 {
-    font-size: 130%;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin: 0 0 16px;
   }
   p {
     text-align: center;
@@ -34,23 +49,10 @@ footer {
     display: -webkit-flex;
     display: flex;
 
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-
-    -webkit-justify-content: space-around;
-    -ms-flex-pack: distribute;
-    justify-content: space-around;
-
-    -webkit-align-items: flex-start;
-    -ms-flex-align: start;
-    align-items: flex-start;
-
-    -webkit-align-content: flex-start;
-    -ms-flex-line-pack: start;
-    align-content: flex-start;
+    justify-content: center;
 
     text-align: left;
+    margin: 0 0 40px;
 
     ul {
       list-style-position: inside;
@@ -78,7 +80,7 @@ footer {
 }
 
 footer::after {
-    // content: "";
+    content: "";
     position: absolute;
     z-index: 10;
     top: 0;
@@ -98,6 +100,6 @@ footer::after {
         url('../src/assets/images/logos/angular/angular_whiteTransparent.png') top 80px left 1512px repeat-y,
         url('../src/assets/images/logos/angular/angular_whiteTransparent.png') top left 1680px repeat-y,
         url('../src/assets/images/logos/angular/angular_whiteTransparent.png') top 80px left 1848px repeat-y;
-    opacity: 0.1;
+    opacity: 0.05;
     background-size: 160px auto;
 }
