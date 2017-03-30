@@ -47,8 +47,15 @@
       font-size: 18px;
       font-weight: 500;
       margin: 8px 0px;
-      text-transform: uppercase;
     }
+
+    h6 {
+      color: $mediumgray;
+      font-size: 18px;
+      font-weight: 400;
+      margin: 8px 0px;
+    }
+
 
     .mat-tab-body-wrapper h2 {
       margin-top: 0;
