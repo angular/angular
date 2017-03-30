@@ -11,7 +11,8 @@
         "assets",
         "content",
         "app/search/search-worker.js",
-        "favicon.ico"
+        "favicon.ico",
+        "pwa-manifest.json"
       ],
       "index": "index.html",
       "main": "main.ts",
