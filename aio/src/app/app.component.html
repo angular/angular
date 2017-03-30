@@ -3,7 +3,7 @@
     (click)="sidenav.toggle()" title="Docs menu">
     <md-icon>menu</md-icon>
   </button>
-  <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
+  <a class="nav-link home" href="/"><img class="home-logo-link" src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox></aio-search-box>
   <span class="fill-remaining-space"></span>
