@@ -904,6 +904,13 @@ export class PreActivation {
   }
 
   private runCanDeactivateChecks(): Observable<boolean> {
+    if (this.canDeactivateChecks.length === 0) {
+      return of (true);
+    }
+    if (this.canDeactivateChecks.length === 1) {
+      const check = this.canDeactivateChecks[0];
+      return this.runCanDeactivate(check.component, check.route);
+    }
     const checks$ = from(this.canDeactivateChecks);
     const runningChecks$ = mergeMap.call(
         checks$, (check: CanDeactivate) => this.runCanDeactivate(check.component, check.route));
@@ -911,6 +918,14 @@ export class PreActivation {
   }
 
   private runCanActivateChecks(): Observable<boolean> {
+    if (this.canActivateChecks.length === 0) {
+      return of (true);
+    }
+    if (this.canActivateChecks.length === 1) {
+      const check = this.canActivateChecks[0];
+      return andObservables(
+          from([this.runCanActivateChild(check.path), this.runCanActivate(check.route)]));
+    }
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = mergeMap.call(
         checks$, (check: CanActivate) => andObservables(from(
