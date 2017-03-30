@@ -9,7 +9,7 @@ describe('rho: renderMarkdown service', () => {
   it('should convert markdown to HTML', () => {
     const content = '# heading 1\n' +
         '\n' +
-        'A paragraph with *bold* and _italic_.\n' +
+        'A paragraph with **bold** and _italic_.\n' +
         '\n' +
         '* List item 1\n' +
         '* List item 2';
