@@ -1,0 +1,25 @@
+<footer>
+  <div class="grid-fluid">
+    <div *ngFor="let node of nodes">
+      <h3>{{node.title}}</h3>
+      <ul>
+        <li *ngFor="let item of node.children">
+          <a *ngIf="item.url" class="link" [href]="item.url"
+            [title]="item.tooltip || item.title">{{ item.title }}</a>
+          <a *ngIf="!item.url" class="action" (click)="action(item)"
+            [title]="item.tooltip || item.title"
+            [attr.aria-label]="item.tooltip || item.title">{{ item.title}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    Powered by Google ©2010-2017.
+    Code licensed under an <a href="license" title="License text" >MIT-style License</a>.
+    Documentation licensed under
+    <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+    Version {{versionInfo?.full}}.
+  </p>
+  <!-- TODO: twitter widget (but only on pages that use twitter) -->
+</footer>
