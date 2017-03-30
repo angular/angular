@@ -53,7 +53,7 @@ export function serializeSummaries(
   // (in a minimal way).
   types.forEach((typeSummary) => {
     serializer.addOrMergeSummary(
-        {symbol: typeSummary.type.reference, metadata: {__symbolic: 'class'}, type: typeSummary});
+        {symbol: typeSummary.type.reference, metadata: null, type: typeSummary});
     if (typeSummary.summaryKind === CompileSummaryKind.NgModule) {
       const ngModuleSummary = <CompileNgModuleSummary>typeSummary;
       ngModuleSummary.exportedDirectives.concat(ngModuleSummary.exportedPipes).forEach((id) => {
@@ -94,10 +94,21 @@ class Serializer extends ValueTransformer {
   addOrMergeSummary(summary: Summary<StaticSymbol>) {
     let symbolMeta = summary.metadata;
     if (symbolMeta && symbolMeta.__symbolic === 'class') {
-      // For classes, we only keep their statics and arity, but not the metadata
-      // of the class itself as that has been captured already via other summaries
-      // (e.g. DirectiveSummary, ...).
-      symbolMeta = {__symbolic: 'class', statics: symbolMeta.statics, arity: symbolMeta.arity};
+      // For classes, we keep everything except their class decorators.
+      // We need to keep e.g. the ctor args, method names, method decorators
+      // so that the class can be extended in another compilation unit.
+      // We don't keep the class decorators as
+      // 1) they refer to data
+      //   that should not cause a rebuild of downstream compilation units
+      //   (e.g. inline templates of @Component, or @NgModule.declarations)
+      // 2) their data is already captured in TypeSummaries, e.g. DirectiveSummary.
+      const clone: {[key: string]: any} = {};
+      Object.keys(symbolMeta).forEach((propName) => {
+        if (propName !== 'decorators') {
+          clone[propName] = symbolMeta[propName];
+        }
+      });
+      symbolMeta = clone;
     }
 
     let processedSummary = this.processedSummaryBySymbol.get(summary.symbol);

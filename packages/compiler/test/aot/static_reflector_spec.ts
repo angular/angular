@@ -24,9 +24,10 @@ describe('StaticReflector', () => {
       errorRecorder?: (error: any, fileName: string) => void, collectorOptions?: CollectorOptions) {
     const symbolCache = new StaticSymbolCache();
     host = new MockStaticSymbolResolverHost(testData, collectorOptions);
-    symbolResolver =
-        new StaticSymbolResolver(host, symbolCache, new MockSummaryResolver([]), errorRecorder);
-    reflector = new StaticReflector(symbolResolver, decorators, [], errorRecorder);
+    const summaryResolver = new MockSummaryResolver([]);
+    spyOn(summaryResolver, 'isLibraryFile').and.returnValue(false);
+    symbolResolver = new StaticSymbolResolver(host, symbolCache, summaryResolver, errorRecorder);
+    reflector = new StaticReflector(summaryResolver, symbolResolver, decorators, [], errorRecorder);
     noContext = reflector.getStaticSymbol('', '');
   }
 
