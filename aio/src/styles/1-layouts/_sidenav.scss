@@ -1,7 +1,3 @@
-/** STEF:  HELP WITH LOGO SPACING **/
-.nav-link.home {
-  margin: 0 20px 0 10px;
-}
 /** STEF:  MENU AT TOP OF SIDE-NAV HELP! **/
 aio-nav-menu.top-menu .vertical-menu-item  {
   background-color: $lightgray;
@@ -132,4 +128,17 @@ a.selected.level-1,
   @include bp(small) {
     max-width: 100%;
   }
+}
+
+.nav-link.home {
+  background-color: $blue;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  max-width: 260px;
+  padding-top: 10px;
+  padding-left: 20px;
+  text-decoration: none;
+  width: 100%;
+  // outline: none;
 }
