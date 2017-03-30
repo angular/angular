@@ -17,6 +17,8 @@ import { Platform } from '@angular/material/core';
 // crashes with "missing first" operator when SideNav.mode is "over"
 import 'rxjs/add/operator/first';
 
+import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
+
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
@@ -46,7 +48,8 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
     MdInputModule,
     MdToolbarModule,
     MdSidenavModule,
-    MdTabsModule
+    MdTabsModule,
+    SwUpdatesModule
   ],
   declarations: [
     AppComponent,

@@ -9,6 +9,8 @@ import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+
 
 const sideNavView = 'SideNav';
 
@@ -54,7 +56,8 @@ export class AppComponent implements OnInit {
     private autoScrollService: AutoScrollService,
     private documentService: DocumentService,
     private locationService: LocationService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    private swUpdateNotifications: SwUpdateNotificationsService
   ) { }
 
   ngOnInit() {
@@ -82,6 +85,8 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
+
+    this.swUpdateNotifications.enable();
 
     this.onResize(window.innerWidth);
   }
