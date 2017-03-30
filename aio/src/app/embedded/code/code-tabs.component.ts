@@ -19,9 +19,9 @@ export interface TabInfo {
   template: `
     <md-tab-group class="code-tab-group">
       <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-        <template md-tab-label>
+        <ng-template md-tab-label>
           <span class="{{tab.class}}">{{ tab.title }}</span>
-        </template>
+        </ng-template>
         <aio-code [code]="tab.code" [language]="tab.language" [linenums]="tab.linenums" class="{{ tab.class }}"></aio-code>
       </md-tab>
     </md-tab-group>

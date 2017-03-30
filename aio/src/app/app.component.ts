@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MdSidenav } from '@angular/material/sidenav';
+import { MdSidenav } from '@angular/material';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
