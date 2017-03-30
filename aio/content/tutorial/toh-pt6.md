@@ -24,6 +24,7 @@ That's the starting point for this page.
 ## Keep the app transpiling and running
 Enter the following command in the terminal window:
 
+
 <code-example language="sh" class="code-shell">
   npm start  
     
@@ -31,8 +32,8 @@ Enter the following command in the terminal window:
 
 This command runs the TypeScript compiler in "watch mode", recompiling automatically when the code changes.
 The command simultaneously launches the app in a browser and refreshes the browser when the code changes.
-
 You can keep building the Tour of Heroes without pausing to recompile or refresh the browser.
+
 
 
 <h1>
@@ -45,13 +46,14 @@ The `HttpModule` is not a core Angular module.
 and is shipped in a separate script file as part of the Angular npm package.
 
 You're ready to import from `@angular/http` because `systemjs.config` configured *SystemJS* to load that library when you need it.
-### Register for HTTP services
+## Register for HTTP services
 
 The app will depend on the Angular `http` service, which itself depends on other supporting services.
 The `HttpModule` from the `@angular/http` library holds providers for a complete set of HTTP services.
 
 To allow access to these services from anywhere in the app,
 add `HttpModule` to the `imports` list of the `AppModule`.
+
 
 
 <code-example path="toh-pt6/src/app/app.module.ts" region="v1">
@@ -62,18 +64,12 @@ Notice that you also supply `!{_HttpModule}` as part of the *imports* !{_array} 
 
 ## Simulate the web API
 
-We recommend registering app-wide services in the root
-`!{_AppModuleVsAppComp}` *providers*.  <span if-docs="dart">Here you're
-registering in `main` for a special reason.</span>
-
 Until you have a web server that can handle requests for hero data,
 the HTTP client will fetch and save data from
 a mock service, the *in-memory web API*.
-<span if-docs="dart"> The app itself doesn't need to know
-about this, so you can slip the in-memory web API into the
-configuration above the `AppComponent`.</span>
 
 Update <span ngio-ex>!{_appModuleTsVsMainTs}</span> with this version, which uses the mock service:
+
 
 
 <code-example path="toh-pt6/_appModuleTsVsMainTs" linenums="false" title="_appModuleTsVsMainTs (v2)" region="v2">
@@ -86,6 +82,7 @@ Rather than require a real API server, this example simulates communication with
 to the module `imports`, effectively  replacing the `Http` client's XHR backend service with an in-memory alternative.
 
 
+
 <code-example path="toh-pt6/_appModuleTsVsMainTs" linenums="false" title="_appModuleTsVsMainTs (in-mem-web-api)" region="in-mem-web-api">
 
 </code-example>
@@ -93,6 +90,7 @@ to the module `imports`, effectively  replacing the `Http` client's XHR backend 
 The `forRoot()` configuration method takes an `InMemoryDataService` class
 that primes the in-memory database.
 Add the file `in-memory-data.service.ts` in `!{_appDir}` with the following content:
+
 
 
 <code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" linenums="false">
@@ -122,6 +120,7 @@ section of the [HTTP Client](guide/server-communication) page.
 In the current `HeroService` implementation, a !{_Promise} resolved with mock heroes is returned.
 
 
+
 <code-example path="toh-4/src/app/hero.service.ts" linenums="false" title="toh-4/ts/src/app/hero.service.ts (old getHeroes)" region="get-heroes">
 
 </code-example>
@@ -132,11 +131,13 @@ fetching heroes with an HTTP client, which must be an asynchronous operation.
 Now convert `getHeroes()` to use HTTP.
 
 
+
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (updated getHeroes and new class members)" region="getHeroes">
 
 </code-example>
 
 Update the import statements as follows:
+
 
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (updated imports)" region="imports">
@@ -156,6 +157,7 @@ You'll read about [Observables](tutorial/toh-pt6#observables) later in this page
 For now, you've converted the `Observable` to a `Promise` using the `toPromise` operator.
 
 
+
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (to-promise)" region="to-promise">
 
 </code-example>
@@ -165,6 +167,7 @@ The Angular `Observable` doesn't have a `toPromise` operator out of the box.
 There are many operators like `toPromise` that extend `Observable` with useful capabilities.
 To use those capabilities, you have to add the operators themselves.
 That's as easy as importing them from the RxJS library like this:
+
 
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (rxjs)" region="rxjs">
@@ -184,6 +187,7 @@ You'll add more operators, and learn why you must do so, [later in this tutorial
 
 In the *Promise*'s `then()` callback, you call the `json` method of the HTTP `Response` to extract the
 data within the response.
+
 
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (to-data)" region="to-data">
@@ -212,6 +216,7 @@ It receives a !{_Promise} of *heroes* just as it did before.
 At the end of `getHeroes()`, you `catch` server failures and pass them to an error handler.
 
 
+
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (catch)" region="catch">
 
 </code-example>
@@ -220,11 +225,12 @@ This is a critical step.
 You must anticipate HTTP failures, as they happen frequently for reasons beyond your control.
 
 
+
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (handleError)" region="handleError">
 
 </code-example>
 
-In this demo service, you log the error to the console; in real life,
+This demo service logs the error to the console; in real life,
 you would handle the error in code. For a demo, this works.
 
 The code also includes an error to
@@ -239,13 +245,14 @@ filters for the one with the matching `id`.
 That's fine for a simulation, but it's wasteful to ask a real server for all heroes when you only want one.
 Most web APIs support a _get-by-id_ request in the form `api/hero/:id` (such as `api/hero/11`).
 
-Update the `HeroService.getHero` method to make a _get-by-id_ request:
+Update the `HeroService.getHero()` method to make a _get-by-id_ request:
+
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (getHero)" region="getHero">
 
 </code-example>
 
-This request is almost the same as `getHeroes`.
+This request is almost the same as `getHeroes()`.
 The hero id in the URL identifies which hero the server should update.
 
 Also, the `data` in the response is a single hero object rather than !{_an} !{_array}.
@@ -274,25 +281,28 @@ the server.
 ### Add the ability to save hero details
 
 At the end of the hero detail template, add a save button with a `click` event
-binding that invokes a new component method named `save`.
+binding that invokes a new component method named `save()`.
+
 
 
 <code-example path="toh-pt6/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (save)" region="save">
 
 </code-example>
 
-Add the following `save` method, which persists hero name changes using the hero service
-`update` method and then navigates back to the previous view.
+Add the following `save()` method, which persists hero name changes using the hero service
+`update()` method and then navigates back to the previous view.
+
 
 
 <code-example path="toh-pt6/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (save)" region="save">
 
 </code-example>
 
-### Add a hero service _update_ method
+### Add a hero service _update()_ method
 
-The overall structure of the `update` method is similar to that of
-`getHeroes`, but it uses an HTTP `put()` to persist server-side changes.
+The overall structure of the `update()` method is similar to that of
+`getHeroes()`, but it uses an HTTP `put()` to persist server-side changes.
+
 
 
 
@@ -317,12 +327,14 @@ Insert the following into the heroes component HTML, just after
 the heading:
 
 
+
 <code-example path="toh-pt6/src/app/heroes.component.html" linenums="false" title="src/app/heroes.component.html (add)" region="add">
 
 </code-example>
 
 In response to a click event, call the component's click handler and then
 clear the input field so that it's ready for another name.
+
 
 
 <code-example path="toh-pt6/src/app/heroes.component.ts" linenums="false" title="src/app/heroes.component.ts (add)" region="add">
@@ -332,7 +344,8 @@ clear the input field so that it's ready for another name.
 When the given name is non-blank, the handler delegates creation of the
 named hero to the hero service, and then adds the new hero to the !{_array}.
 
-Implement the `create` method in the `HeroService` class.
+Implement the `create()` method in the `HeroService` class.
+
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (create)" region="create">
 
@@ -345,7 +358,8 @@ Refresh the browser and create some heroes.
 Each hero in the heroes view should have a delete button.
 
 Add the following button element to the heroes component HTML, after the hero
-name in the repeated `<li>` tag.
+name in the repeated `<li>` element.
+
 
 
 <code-example path="toh-pt6/src/app/heroes.component.html" linenums="false" title="src/app/heroes.component.html (delete)" region="delete">
@@ -353,6 +367,7 @@ name in the repeated `<li>` tag.
 </code-example>
 
 The `<li>` element should now look like this:
+
 
 
 <code-example path="toh-pt6/src/app/heroes.component.html" linenums="false" title="src/app/heroes.component.html (li-element)" region="li-element">
@@ -367,6 +382,7 @@ select the hero that the user will delete.
 The logic of the `delete()` handler is a bit trickier:
 
 
+
 <code-example path="toh-pt6/src/app/heroes.component.ts" linenums="false" title="src/app/heroes.component.ts (delete)" region="delete">
 
 </code-example>
@@ -375,16 +391,18 @@ Of course you delegate hero deletion to the hero service, but the component
 is still responsible for updating the display: it removes the deleted hero
 from the !{_array} and resets the selected hero, if necessary.
 To place the delete button at the far right of the hero entry,
-add this additional CSS:
+add this CSS:
+
 
 
 <code-example path="toh-pt6/src/app/heroes.component.css" linenums="false" title="src/app/heroes.component.css (additions)" region="additions">
 
 </code-example>
 
-### Hero service `delete()` method
+### Hero service _delete()_ method
 
 Add the hero service's `delete()` method, which uses the `delete()` HTTP method to remove the hero from the server:
+
 
 
 <code-example path="toh-pt6/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (delete)" region="delete">
@@ -392,6 +410,7 @@ Add the hero service's `delete()` method, which uses the `delete()` HTTP method 
 </code-example>
 
 Refresh the browser and try the new delete functionality.
+
 
 <div id='observables'>
 
@@ -421,14 +440,15 @@ The calling component can easily consume a single result in the form of a Promis
 But requests aren't always done only once.
 You may start one request,
 cancel it, and make a different request before the server has responded to the first request.
-A *request-cancel-new-request* sequence is difficult to implement with *!{Promise}s*, but
-easy with *!{Observable}s*.
+A *request-cancel-new-request* sequence is difficult to implement with *!{_Promise}s*, but
+easy with *!{_Observable}s*.
 
 ### Add the ability to search by name
 You're going to add a *hero search* feature to the Tour of Heroes.
 As the user types a name into a search box, you'll make repeated HTTP requests for heroes filtered by that name.
 
 Start by creating `HeroSearchService` that sends search queries to the server's web API.
+
 
 
 <code-example path="toh-pt6/src/app/hero-search.service.ts">
@@ -442,9 +462,8 @@ in the `HeroService`, although the URL now has a query string.
 Instead you return the *Observable* from the the `htttp.get()`,
 after chaining it to another RxJS operator, <code>map()</code>,
 to extract heroes from the response data.
-
 RxJS operator chaining makes response processing easy and readable.
-See the [discussion below about operators](tutorial/toh-pt6#rxjs-imports).
+See the [discussion below about operators](tutorial/toh-pt6#rxjs-imports).</span>
 ### HeroSearchComponent
 
 Create a `HeroSearchComponent` that calls the new `HeroSearchService`.
@@ -452,11 +471,13 @@ Create a `HeroSearchComponent` that calls the new `HeroSearchService`.
 The component template is simple&mdash;just a text box and a list of matching search results.
 
 
+
 <code-example path="toh-pt6/src/app/hero-search.component.html">
 
 </code-example>
 
 Also, add styles for the new component.
+
 
 <code-example path="toh-pt6/src/app/hero-search.component.css">
 
@@ -474,13 +495,15 @@ The `async` pipe subscribes to the `!{_Observable}` and produces the !{_array} o
 Create the `HeroSearchComponent` class and metadata.
 
 
+
 <code-example path="toh-pt6/src/app/hero-search.component.ts">
 
 </code-example>
 
 #### Search terms
 
-Focus on the `!{_priv}searchTerms`:
+Focus on `!{_priv}searchTerms`:
+
 
 
 <code-example path="toh-pt6/src/app/hero-search.component.ts" linenums="false" title="src/app/hero-search.component.ts (searchTerms)" region="searchTerms">
@@ -500,6 +523,7 @@ You can turn the stream
 of search terms into a stream of `Hero` !{_array}s and assign the result to the `heroes` property.
 
 
+
 <code-example path="toh-pt6/src/app/hero-search.component.ts" linenums="false" title="src/app/hero-search.component.ts (search)" region="search">
 
 </code-example>
@@ -512,8 +536,8 @@ You'll make fewer calls to the `HeroSearchService` and still get timely results.
 
 * `debounceTime(300)` waits until the flow of new string events pauses for 300 milliseconds
 before passing along the latest string. You'll never make requests more frequently than 300ms.
-* `distinctUntilChanged` ensures that a request is sent only if the filter text changed.
-* `switchMap()` calls the search service for each search term that makes it through `debounce` and `distinctUntilChanged`.
+* `distinctUntilChanged()` ensures that a request is sent only if the filter text changed.
+* `switchMap()` calls the search service for each search term that makes it through `debounceTime()` and `distinctUntilChanged()`.
 It cancels and discards previous search observables, returning only the latest search service observable.
 
 
@@ -553,6 +577,7 @@ When you need more RxJS features, extend  `Observable` by *importing* the librar
 Here are all the RxJS imports that _this_ component needs:
 
 
+
 <code-example path="toh-pt6/src/app/hero-search.component.ts" region="rxjs-imports" linenums="false">
 
 </code-example>
@@ -568,6 +593,7 @@ loads and executes the library's script file which, in turn, adds the operator t
 Add the hero search HTML element to the bottom of the `DashboardComponent` template.
 
 
+
 <code-example path="toh-pt6/src/app/dashboard.component.html" linenums="false">
 
 </code-example>
@@ -577,12 +603,14 @@ Finally, import `HeroSearchComponent` from
 and add it to the `!{_declarations}` !{_array}.
 
 
+
 <code-example path="toh-pt6/declFile" linenums="false" title="declFile (search)" region="search">
 
 </code-example>
 
 Run the app again. In the Dashboard, enter some text in the search box.
 If you enter characters that match any existing hero names, you'll see something like this.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/toh-hero-search.png' alt="Hero Search Component">  </img>
@@ -595,17 +623,23 @@ Review the sample source code in the <live-example></live-example> for this page
 Verify that you have the following structure:
 
 
+
 <aio-filetree>
+
 
   <aio-folder>
     angular-tour-of-heroes
+
     <aio-folder>
       src
+
       <aio-folder>
         app
+
         <aio-file>
           app.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -613,9 +647,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           app.module.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -623,9 +659,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           dashboard.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -633,9 +671,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           dashboard.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -643,9 +683,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero-detail.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -653,9 +695,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero-detail.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -663,9 +707,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero-search.component.css (new)
         </aio-file>
+
 
 
         <aio-file>
@@ -673,9 +719,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           hero-search.service.ts (new)
         </aio-file>
+
 
 
         <aio-file>
@@ -683,9 +731,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           heroes.component.css
         </aio-file>
+
 
 
         <aio-file>
@@ -693,9 +743,11 @@ Verify that you have the following structure:
         </aio-file>
 
 
+
         <aio-file>
           heroes.component.ts
         </aio-file>
+
 
 
         <aio-file>
@@ -706,9 +758,11 @@ Verify that you have the following structure:
       </aio-folder>
 
 
+
       <aio-file>
         main.ts
       </aio-file>
+
 
 
       <aio-file>
@@ -716,14 +770,17 @@ Verify that you have the following structure:
       </aio-file>
 
 
+
       <aio-file>
         styles.css
       </aio-file>
 
 
+
       <aio-file>
         systemjs.config.js
       </aio-file>
+
 
 
       <aio-file>
@@ -734,9 +791,11 @@ Verify that you have the following structure:
     </aio-folder>
 
 
+
     <aio-file>
       node_modules ...
     </aio-file>
+
 
 
     <aio-file>
@@ -764,11 +823,14 @@ Here are the files you added or changed in this page.
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="app.comp...ts" path="toh-6/src/app/app.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="app.mod...ts" path="toh-6/src/app/app.module.ts">
@@ -776,9 +838,11 @@ Here are the files you added or changed in this page.
   </code-pane>
 
 
+
   <code-pane title="heroes.comp...ts" path="toh-6/src/app/heroes.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="heroes.comp...html" path="toh-6/src/app/heroes.component.html">
@@ -786,9 +850,11 @@ Here are the files you added or changed in this page.
   </code-pane>
 
 
+
   <code-pane title="heroes.comp...css" path="toh-6/src/app/heroes.component.css">
 
   </code-pane>
+
 
 
   <code-pane title="hero-detail.comp...ts" path="toh-6/src/app/hero-detail.component.ts">
@@ -796,14 +862,17 @@ Here are the files you added or changed in this page.
   </code-pane>
 
 
+
   <code-pane title="hero-detail.comp...html" path="toh-6/src/app/hero-detail.component.html">
 
   </code-pane>
 
 
+
   <code-pane title="hero.service.ts" path="toh-6/src/app/hero.service.ts">
 
   </code-pane>
+
 
 
   <code-pane title="in-memory-data.service.ts" path="toh-6/src/app/in-memory-data.service.ts">
@@ -815,11 +884,14 @@ Here are the files you added or changed in this page.
 
 
 
+
 <code-tabs>
+
 
   <code-pane title="hero-search.service.ts" path="toh-6/src/app/hero-search.service.ts">
 
   </code-pane>
+
 
 
   <code-pane title="hero-search.component.ts" path="toh-6/src/app/hero-search.component.ts">
@@ -827,9 +899,11 @@ Here are the files you added or changed in this page.
   </code-pane>
 
 
+
   <code-pane title="hero-search.component.html" path="toh-6/src/app/hero-search.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="hero-search.component.css" path="toh-6/src/app/hero-search.component.css">

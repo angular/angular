@@ -63,6 +63,7 @@ General
 * [What is the Angular compiler?](guide/ngmodule-faq#q-angular-compiler)
 * [Can you summarize the NgModule API?](guide/ngmodule-faq#q-ngmodule-api)
 
+
 <div class='l-hr'>
 
 </div>
@@ -78,6 +79,7 @@ Add [declarable](guide/ngmodule-faq#q-declarable) classes&mdash;components, dire
 Declare these classes in _exactly one_ module of the application.
 Declare them in _this_ module if they _belong_ to this module.
 
+
 <div class='l-hr'>
 
 </div>
@@ -91,6 +93,7 @@ Declare them in _this_ module if they _belong_ to this module.
 Declarables are the class types&mdash;components, directives, and pipes&mdash;that
 you can add to a module's `declarations` list.
 They're the _only_ classes that you can add to `declarations`.
+
 
 <div class='l-hr'>
 
@@ -112,6 +115,7 @@ For example, don't declare FORMS_DIRECTIVES from `@angular/forms`.
 * Service classes.
 * Non-Angular classes and objects, such as
 strings, numbers, functions, entity models, configurations, business logic, and helper classes.
+
 
 <div class='l-hr'>
 
@@ -135,6 +139,7 @@ Membership in one list doesn't imply membership in another list.
 * `HeroComponent` could be exported for inclusion in an external component's template
 as well as dynamically loaded in a pop-up dialog.
 
+
 <div class='l-hr'>
 
 </div>
@@ -152,6 +157,7 @@ For example, if "x" is `ngModel`, you probably haven't imported the `FormsModule
 
 Perhaps you declared "x" in an application sub-module but forgot to export it?
 The "x" class isn't visible to other modules until you add it to the `exports` list.
+
 
 <div class='l-hr'>
 
@@ -177,6 +183,7 @@ Import _shared_ and _feature_ modules when this module's components incorporate 
 components, directives, and pipes.
 
 Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+
 
 <div class='l-hr'>
 
@@ -209,6 +216,7 @@ They need the common directives. They don't need to re-install the app-wide prov
 
 Importing `CommonModule` also frees feature modules for use on _any_ target platform, not just browsers.
 
+
 <div class='l-hr'>
 
 </div>
@@ -228,6 +236,7 @@ then 'D' triggers the evaluation of 'C', which triggers the evaluation of 'B', w
 When Angular gets to the 'B' and 'A' in 'D', they're already cached and ready to go.
 
 Angular doesn't like modules with circular references, so don't let Module 'A' import Module 'B', which imports Module 'A'.
+
 
 <div class='l-hr'>
 
@@ -249,6 +258,7 @@ it's declared in this module or in an imported module.
 
 You _can_ re-export entire imported modules, which effectively re-exports all of their exported classes.
 A module can even export a module that it doesn't import.
+
 
 <div class='l-hr'>
 
@@ -272,6 +282,7 @@ While there's no harm in exporting them, there's also no benefit.
 For example, there's no point in re-exporting `HttpModule` because it doesn't export anything.
 It's only purpose is to add http service providers to the application as a whole.
 
+
 <div class='l-hr'>
 
 </div>
@@ -292,6 +303,7 @@ re-export them in a consolidated, convenience module.
 
 A module can re-export entire modules, which effectively re-exports all of their exported classes.
 Angular's own `BrowserModule` exports a couple of modules like this:
+
 <code-example>
   exports: [CommonModule, ApplicationModule]  
     
@@ -308,6 +320,7 @@ It's only purpose is to add http service providers to the application as a whole
 
 
 ~~~
+
 
 
 <div class='l-hr'>
@@ -344,6 +357,7 @@ configure services in root and feature modules respectively.
 Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
 
+
 <div class='l-hr'>
 
 </div>
@@ -375,6 +389,7 @@ If the `HeroModule` provides the `HeroService` and the root `AppModule` imports 
 any class that knows the `HeroService` _type_ can inject that service,
 not just the classes declared in the `HeroModule`.
 
+
 <div class='l-hr'>
 
 </div>
@@ -397,6 +412,7 @@ The router adds the lazy module's providers and the providers of its imported mo
 These providers are insulated from changes to application providers with the same lookup token.
 When the router creates a component within the lazy-loaded context,
 Angular prefers service instances created from these providers to the service instances of the application root injector.
+
 
 <div class='l-hr'>
 
@@ -422,6 +438,7 @@ that also provides a service for token 'X', then Module A's service definition "
 
 The service provided by the root `AppModule` takes precedence over services provided by imported modules.
 The `AppModule` always wins.
+
 
 <div class='l-hr'>
 
@@ -483,6 +500,7 @@ You can embed the child components in the top component's template.
 Alternatively, make the top component a routing host by giving it a `<router-outlet>`.
 Define child routes and let the router load module components into that outlet.
 
+
 <div class='l-hr'>
 
 </div>
@@ -524,6 +542,7 @@ In the NgModule page sample applications, if you had registered `UserService` in
 the `HeroComponent` couldn't inject it.
 The application  would fail the moment a user navigated to "Heroes".
 
+
 <div class='l-hr'>
 
 </div>
@@ -548,6 +567,7 @@ The changes that editor makes to heroes in its service don't touch the hero inst
 
 [Always register _application-wide_ services with the root `AppModule`](guide/ngmodule-faq#q-root-component-or-module),
 not the root `AppComponent`.
+
 
 <div class='l-hr'>
 
@@ -598,6 +618,7 @@ The username goes bonkers as the Angular creates a new `UserService` instance ea
 ~~~
 
 
+
 <div class='l-hr'>
 
 </div>
@@ -629,6 +650,7 @@ Angular must add the lazy-loaded module's providers to an injector somewhere.
 It can't added them to the app root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
 
+
 <div class='l-hr'>
 
 </div>
@@ -650,9 +672,11 @@ You can throw an error or take other remedial action.
 Certain NgModules (such as `BrowserModule`) implement such a guard,
 such as this `CoreModule` constructor from the NgModules page.
 
+
 <code-example path="ngmodule/src/app/core/core.module.ts" region="ctor" linenums="false">
 
 </code-example>
+
 
 
 <div class='l-hr'>
@@ -698,6 +722,7 @@ Angular automatically adds the following types of components to the module's `en
 
 You don't have to mention these components explicitly, although doing so is harmless.
 
+
 <div class='l-hr'>
 
 </div>
@@ -717,6 +742,7 @@ it should generate code to bootstrap the application with this component.
 
 There's no need to list a component in both the `bootstrap` and `entryComponent` lists,
 although doing so is harmless.
+
 
 <div class='l-hr'>
 
@@ -742,6 +768,7 @@ Although it's harmless to add components to this list,
 it's best to add only the components that are truly _entry components_.
 Don't include components that [are referenced](guide/ngmodule-faq#q-template-reference)
 in the templates of other components.
+
 
 <div class='l-hr'>
 
@@ -776,6 +803,7 @@ and every component reachable from an entry component.
 
 If a component isn't an _entry component_ or wasn't found in a template,
 the compiler omits it.
+
 
 
 <div class='l-hr'>
@@ -854,13 +882,17 @@ follow them unless you have a good reason to do otherwise.
 ~~~
 
 
+
 <table>
 
+
   <tr>
+
 
     <th style="vertical-align: top">
       Feature Module
     </th>
+
 
 
     <th style="vertical-align: top">
@@ -871,11 +903,14 @@ follow them unless you have a good reason to do otherwise.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <a id="domain-feature-module"></a>Domain
     </td>
+
 
 
     <td>
@@ -913,11 +948,14 @@ follow them unless you have a good reason to do otherwise.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <a id="routed-feature-module"></a>Routed
     </td>
+
 
 
     <td>
@@ -951,11 +989,14 @@ follow them unless you have a good reason to do otherwise.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <a id="routing-module"></a>Routing
     </td>
+
 
 
     <td>
@@ -1004,11 +1045,14 @@ follow them unless you have a good reason to do otherwise.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <a id="service-feature-module"></a>Service
     </td>
+
 
 
     <td>
@@ -1027,11 +1071,14 @@ follow them unless you have a good reason to do otherwise.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <a id="widget-feature-module"></a>Widget
     </td>
+
 
 
     <td>
@@ -1064,13 +1111,17 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
 ~~~
 
 
+
 <table>
 
+
   <tr>
+
 
     <th>
       Feature Module
     </th>
+
 
 
     <th>
@@ -1078,9 +1129,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </th>
 
 
+
     <th>
       Providers
     </th>
+
 
 
     <th>
@@ -1088,9 +1141,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </th>
 
 
+
     <th>
       Imported By
     </th>
+
 
 
     <th>
@@ -1101,11 +1156,14 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Domain
     </td>
+
 
 
     <td>
@@ -1113,9 +1171,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Rare
     </td>
+
 
 
     <td>
@@ -1123,9 +1183,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Feature, <code>AppModule</code>
     </td>
+
 
 
     <td>
@@ -1136,11 +1198,14 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Routed
     </td>
+
 
 
     <td>
@@ -1148,9 +1213,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Rare
     </td>
+
 
 
     <td>
@@ -1158,9 +1225,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Nobody
     </td>
+
 
 
     <td>
@@ -1171,11 +1240,14 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Routing
     </td>
+
 
 
     <td>
@@ -1183,9 +1255,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Yes (Guards)
     </td>
+
 
 
     <td>
@@ -1193,9 +1267,11 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Feature (for routing)
     </td>
+
 
 
     <td>
@@ -1206,16 +1282,20 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Service
     </td>
 
 
+
     <td>
       No
     </td>
+
 
 
     <td>
@@ -1223,14 +1303,17 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       No
     </td>
 
 
+
     <td>
       <code>AppModule</code>
     </td>
+
 
 
     <td>
@@ -1241,16 +1324,20 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
   </tr>
 
 
+
   <tr>
+
 
     <td>
       Widget
     </td>
 
 
+
     <td>
       Yes
     </td>
+
 
 
     <td>
@@ -1258,14 +1345,17 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
     </td>
 
 
+
     <td>
       Yes
     </td>
 
 
+
     <td>
       Feature
     </td>
+
 
 
     <td>
@@ -1277,6 +1367,7 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
 
 
 </table>
+
 
 
 <div class='l-hr'>
@@ -1295,12 +1386,14 @@ In modern JavaScript, every file is a _module_
 (see the [Modules](http://exploringjs.com/es6/ch_modules.html) page of the Exploring ES6 website).
 Within each file you write an `export` statement to make parts of the module public:
 
+
 <code-example format='.'>
   export class AppComponent { ... }  
     
 </code-example>
 
 Then you `import` a part in another module:
+
 
 <code-example format='.'>
   import { AppComponent }  from './app.component';  
@@ -1342,15 +1435,18 @@ They are available _everywhere_.
 
 Here's an _NgModule_ class with imports, exports, and declarations.
 
+
 <code-example path="ngmodule/src/app/contact/contact.module.2.ts" region="class" linenums="false">
 
 </code-example>
 
 Of course you use _JavaScript_ modules to write _Angular_ modules as seen in the complete `contact.module.ts` file:
 
+
 <code-example path="ngmodule/src/app/contact/contact.module.2.ts" linenums="false">
 
 </code-example>
+
 
 
 <div class='l-hr'>
@@ -1373,6 +1469,7 @@ The compiler finds a pipe if the pipe's *name* appears within the pipe syntax of
 
 Angular only matches selectors and pipe names for classes that are declared by this module
 or exported by a module that this module imports.
+
 
 <div class='l-hr'>
 
@@ -1405,6 +1502,7 @@ the Angular compiler incorporates them into compiled component code too.
 `@NgModule` metadata tells the Angular compiler what components to compile for this module and
 how to link this module with other modules.
 
+
 <div class='l-hr'>
 
 </div>
@@ -1416,13 +1514,17 @@ how to link this module with other modules.
 ## NgModule API
 
 The following table summarizes the `NgModule` metadata properties.
+
 <table>
 
+
   <tr>
+
 
     <th>
       Property
     </th>
+
 
 
     <th>
@@ -1433,11 +1535,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>declarations</code>
     </td>
+
 
 
     <td>
@@ -1459,11 +1564,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>providers</code>
     </td>
+
 
 
     <td>
@@ -1492,11 +1600,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>imports</code>
     </td>
+
 
 
     <td>
@@ -1521,11 +1632,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>exports</code>
     </td>
+
 
 
     <td>
@@ -1539,7 +1653,7 @@ The following table summarizes the `NgModule` metadata properties.
             Declarations are private by default.      
             If this module does _not_ export `HeroComponent`, no other module can see it.      
                   
-            Importing a module does _not_ automatically re-export the imported module's exports.      
+            Importing a module does _not_ automatically re-export the imported module's imports.      
             Module 'B' can't use `ngIf` just because it imported module `A` which imported `CommonModule`.      
             Module 'B' must import `CommonModule` itself.      
                   
@@ -1556,11 +1670,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>bootstrap</code>
     </td>
+
 
 
     <td>
@@ -1579,11 +1696,14 @@ The following table summarizes the `NgModule` metadata properties.
   </tr>
 
 
+
   <tr>
+
 
     <td style="vertical-align: top">
       <code>entryComponents</code>
     </td>
+
 
 
     <td>

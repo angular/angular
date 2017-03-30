@@ -27,6 +27,15 @@ Ahead-of-time compiled applications also benefit from decreased load time and in
 
 ~~~
 
+## Annotation
+
+~~~ {.l-sub-section}
+
+In practice, a synonym for [Decoration](glossary#decorator).
+
+
+~~~
+
 
 
 {@a attribute-directive}
@@ -58,7 +67,6 @@ binding an HTML object property to a data object property.
 
 Sometimes refers to a [dependency-injection](glossary#dependency-injection) binding
 between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [provider](glossary#provider).
-When using this more rare usage, be clear in context.
 
 
 ~~~
@@ -67,9 +75,12 @@ When using this more rare usage, be clear in context.
 
 ~~~ {.l-sub-section}
 
+You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`).
+Bootstrapping identifies an application's top level "root" [component](glossary#component),
+which is the first component that is loaded for the application.
+For more information, see the [Setup](!{docsLatest}/guide/setup) page.
 
-You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`). Bootstrapping identifies an application's top level "root" [component](glossary#component), which is the first component that is loaded for the application.
-For more information, see the [Setup](!{docsLatest}/guide/setup) page.You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
+You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
 
 ~~~
@@ -154,6 +165,48 @@ operations and supporting declaration syntax.
  * [Two-way data binding with ngModel](!{docsLatest}/guide/template-syntax).
 
 
+~~~
+
+
+
+{@a decorator}
+
+
+{@a decoration}
+## Decorator | decoration
+
+~~~ {.l-sub-section}
+
+A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
+
+Decorators are a JavaScript language [feature](https://github.com/wycats/javascript-decorators), implemented in TypeScript and proposed for ES2016 (also known as ES7).
+
+To apply a decorator, position it immediately above or to the left of the item it decorates.
+
+Angular has its own set of decorators to help it interoperate with your application parts.
+The following example is a `@Component` decorator that identifies a
+class as an Angular [component](glossary#component) and an `@Input` decorator applied to the `name` property
+of that component. The elided object argument to the `@Component` decorator would contain the pertinent component metadata.
+```
+@Component({...})
+export class AppComponent {
+  constructor(@Inject('SpecialFoo') public foo:Foo) {}
+  @Input() name:string;
+}
+```
+The scope of a decorator is limited to the language feature
+that it decorates. None of the decorations shown here will "leak" to other
+classes that follow it in the file.
+
+
+~~~ {.alert.is-important}
+
+Always include parentheses `()` when applying a decorator.
+
+
+~~~
+
+
 
 ~~~
 
@@ -226,7 +279,7 @@ Read more in the [Dependency Injection](!{docsLatest}/guide/dependency-injection
 An Angular class responsible for creating, reshaping, and interacting with HTML elements
 in the browser DOM. The directive is Angular's most fundamental feature.
 
-A directive is ususally associated with an HTML element or attribute.
+A directive is usually associated with an HTML element or attribute.
 This element or attribute is often referred to as the directive itself.
 
 When Angular finds a directive in an HTML template,
@@ -238,21 +291,19 @@ associate with your custom directives. You add this custom markup to HTML templa
 as if you were writing native HTML. In this way, directives become extensions of
 HTML itself.
 
-
 Directives fall into one of the following categories:
 
 * [Components](glossary#component) combine application logic with an HTML template to
 render application [views](glossary#view). Components are usually represented as HTML elements.
 They are the building blocks of an Angular application.
 
-1. [Attribute directives](glossary#attribute-directive) can listen to and modify the behavior of
+* [Attribute directives](glossary#attribute-directive) can listen to and modify the behavior of
 other HTML elements, attributes, properties, and components. They are usually represented
 as HTML attributes, hence the name.
 
-1. [Structural directives](glossary#structural-directive) are responsible for
+* [Structural directives](glossary#structural-directive) are responsible for
 shaping or reshaping HTML layout, typically by adding, removing, or manipulating
 elements and their children.
-
 
 
 ~~~
@@ -349,6 +400,7 @@ renders as text.  That text may be concatenated with neighboring text
 before it is assigned to an element property
 or displayed between element tags, as in this example.
 
+
 <code-example language="html" escape="html">
   <label>My current hero is {{hero.name}}</label>  
     
@@ -418,7 +470,6 @@ Read more in the [Lifecycle Hooks](!{docsLatest}/guide/lifecycle-hooks) page.
 ## Module
 
 ~~~ {.l-sub-section}
-
 
 
 
@@ -501,6 +552,7 @@ display in a [view](glossary#view).
 Here's an example that uses the built-in `currency` pipe to display
 a numeric value in the local currency.
 
+
 <code-example language="html" escape="html">
   <label>Price: </label>{{product.price | currency}}  
     
@@ -527,6 +579,24 @@ It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that c
 
 {@a Q}
 
+## Reactive forms
+
+~~~ {.l-sub-section}
+
+A technique for building Angular forms through code in a component.
+The alternative technique is [template-driven forms](glossary#template-driven-forms).
+
+When building reactive forms:
+- The "source of truth" is the component. The validation is defined using code in the component.
+- Each control is explicitly created in the component class with `new FormControl()` or with `FormBuilder`.
+- The template input elements do *not* use `ngModel`.
+- The associated Angular directives are all prefixed with `Form`, such as `FormGroup`, `FormControl`, and `FormControlName`.
+
+Reactive forms are powerful, flexible, and a good choice for more complex data-entry form scenarios, such as dynamic generation of form controls.
+
+
+~~~
+
 ## Router
 
 ~~~ {.l-sub-section}
@@ -541,6 +611,17 @@ of views.
 
 ~~~
 
+## Router module
+
+~~~ {.l-sub-section}
+
+A separate [Angular module](glossary#angular-module) that provides the necessary service providers and directives for navigating through application views.
+
+For more information, see the [Routing & Navigation](!{docsLatest}/guide/router) page.
+
+
+~~~
+
 ## Routing component
 
 ~~~ {.l-sub-section}
@@ -552,6 +633,30 @@ For more information, see the [Routing & Navigation](!{docsLatest}/guide/router)
 
 ~~~
 
+
+## Scoped package
+
+~~~ {.l-sub-section}
+
+A way to group related *npm* packages.
+Read more at the [npm-scope](https://docs.npmjs.com/misc/scope) page.
+
+Angular modules are delivered within *scoped packages* such as `@angular/core`,
+`@angular/common`, `@angular/platform-browser-dynamic`, `@angular/http`, and `@angular/router`.
+
+Import a scoped package the same way that you import a normal package.
+The only difference, from a consumer perspective,
+is that the scoped package name begins with the Angular *scope name*, `@angular`.
+
+
+
+<code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/ts/src/app/app.component.ts (import)" region="import">
+
+</code-example>
+
+
+
+~~~
 
 ## Service
 
@@ -579,9 +684,7 @@ For more information, see the [Services](!{docsLatest}/tutorial/toh-pt4) page of
 {@a snake-case}
 ## snake_case
 
-
 ~~~ {.l-sub-section}
-
 
 The practice of writing compound words or phrases such that an
 underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
@@ -603,7 +706,7 @@ A category of [directive](glossary#directive) that can
 shape or reshape HTML layout, typically by adding and removing elements in the DOM.
 The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive are well-known examples.
 
-Read more in the [_Structural Directives_](!{docsLatest}/guide/structural-directives) guide.
+Read more in the [Structural Directives](!{docsLatest}/guide/structural-directives) page.
 
 
 ~~~
@@ -617,6 +720,26 @@ A chunk of HTML that Angular uses to render a [view](glossary#view) with
 the support and guidance of an Angular [directive](glossary#directive),
 most notably a [component](glossary#component).
 
+
+~~~
+
+## Template-driven forms
+
+~~~ {.l-sub-section}
+
+A technique for building Angular forms using HTML forms and input elements in the view.
+The alternate technique is [Reactive Forms](glossary#reactive-forms).
+
+When building template-driven forms:
+- The "source of truth" is the template. The validation is defined using attributes on the individual input elements.
+- [Two-way binding](glossary#data-binding) with `ngModel` keeps the component model synchronized with the user's entry into the input elements.
+- Behind the scenes, Angular creates a new control for each input element, provided you have set up a `name` attribute and two-way binding for each input.
+- The associated Angular directives are all prefixed with `ng` such as `ngForm`, `ngModel`, and `ngModelGroup`.
+
+Template-driven forms are convenient, quick, and simple. They are a good choice for many basic data-entry form scenarios.
+
+Read about how to build template-driven forms
+in the [Forms](!{docsLatest}/guide/forms) page.
 
 
 ~~~
@@ -701,7 +824,6 @@ under the control of a [router](glossary#router).
 ## Zone
 
 ~~~ {.l-sub-section}
-
 
 A mechanism for encapsulating and intercepting
 a JavaScript application's asynchronous activity.

@@ -44,6 +44,7 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
 {@a live-example}
 **Try the live example to see and download the full cookbook source code.**
+
 <live-example name="cb-form-validation" embedded=true img="cookbooks/form-validation/plunker.png">
 
 </live-example>
@@ -70,6 +71,7 @@ whether the user has "touched" the control or made changes and if the control va
 In this first template validation example, 
 notice the HTML that reads the control state and updates the display appropriately.
 Here's an excerpt from the template HTML for a single input control bound to the hero name:
+
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template1.component.html" region="name-with-error-msg" linenums="false">
 
@@ -114,6 +116,7 @@ The component class manages the hero model used in the data binding
 as well as other code to support the view.
 
 
+
 <code-example path="cb-form-validation/src/app/template/hero-form-template1.component.ts" region="class">
 
 </code-example>
@@ -123,11 +126,14 @@ Use this template-driven validation technique when working with static forms wit
 Here are the complete files for the first version of `HeroFormTemplateCompononent` in the template-driven approach:
 
 
+
 <code-tabs>
+
 
   <code-pane title="template/hero-form-template1.component.html" path="cb-form-validation/src/app/template/hero-form-template1.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="template/hero-form-template1.component.ts" path="cb-form-validation/src/app/template/hero-form-template1.component.ts">
@@ -160,11 +166,14 @@ the template and component.
 Here's the hero name again, excerpted from the revised template 
 (Template 2), next to the original version:
 
+
 <code-tabs>
+
 
   <code-pane title="hero-form-template2.component.html (name #2)" path="cb-form-validation/src/app/template/hero-form-template2.component.html" region="name-with-error-msg">
 
   </code-pane>
+
 
 
   <code-pane title="hero-form-template1.component.html (name #1)" path="cb-form-validation/src/app/template/hero-form-template1.component.html" region="name-with-error-msg">
@@ -199,12 +208,14 @@ The first step is to acquire the form control that Angular created from the temp
 Look back at the top of the component template at the 
 `#heroForm` template variable in the `<form>` element:
 
+
 <code-example path="cb-form-validation/src/app/template/hero-form-template1.component.html" region="form-tag" linenums="false">
 
 </code-example>
 
 The `heroForm` variable is a reference to the control model that Angular derived from the template.
 Tell Angular to inject that model into the component class's `currentForm` property using a `@ViewChild` query:
+
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template2.component.ts" region="view-child" linenums="false">
 
@@ -224,6 +235,7 @@ That's the right time to see if there's a new `heroForm` object.
 
 - When there _is_ a new `heroForm` model, `formChanged()` subscribes to its `valueChanges` _Observable_ property.
 The `onValueChanged` handler looks for validation errors after every keystroke.  
+
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template2.component.ts" region="handler" linenums="false">
 
@@ -245,6 +257,7 @@ For each field, the `onValueChanged` handler does the following:
 
 Next, the component needs some error messages of course&mdash;a set for each validated property with 
 one message per validation rule:
+
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template2.component.ts" region="messages" linenums="false">
 
@@ -288,6 +301,7 @@ from the same `@angular/forms` library package.
 
 You've been reviewing the "Template-driven" approach which requires the `FormsModule`.
 Here's how you imported it in the `HeroFormTemplateModule`.
+
 
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template.module.ts" linenums="false">
@@ -336,6 +350,7 @@ The following cookbook sample re-writes the hero form in _reactive forms_ style.
 The reactive forms classes and directives come from the Angular `ReactiveFormsModule`, not the `FormsModule`.
 The application module for the reactive forms feature in this sample looks like this:
 
+
 <code-example path="cb-form-validation/src/app/reactive/hero-form-reactive.module.ts" linenums="false">
 
 </code-example>
@@ -352,6 +367,7 @@ to the `heroForm` property in the component class.
 The `heroForm` is the control model that the component class builds and maintains.
 
 
+
 <code-example path="cb-form-validation/src/app/reactive/hero-form-reactive.component.html" region="form-tag" linenums="false">
 
 </code-example>
@@ -359,11 +375,14 @@ The `heroForm` is the control model that the component class builds and maintain
 Next, modify the template HTML elements to match the _reactive forms_ style.
 Here is the "name" portion of the template again, revised for reactive forms and compared with the template-driven version:
 
+
 <code-tabs>
+
 
   <code-pane title="hero-form-reactive.component.html (name #3)" path="cb-form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg">
 
   </code-pane>
+
 
 
   <code-pane title="hero-form-template1.component.html (name #2)" path="cb-form-validation/src/app/template/hero-form-template2.component.html" region="name-with-error-msg">
@@ -419,11 +438,14 @@ the help of the `FormBuilder` class.
 
 Here's the section of code devoted to that process, paired with the template-driven code it replaces:
 
+
 <code-tabs>
+
 
   <code-pane title="reactive/hero-form-reactive.component.ts (FormBuilder)" path="cb-form-validation/src/app/reactive/hero-form-reactive.component.ts" region="form-builder">
 
   </code-pane>
+
 
 
   <code-pane title="template/hero-form-template2.component.ts (ViewChild)" path="cb-form-validation/src/app/template/hero-form-template2.component.ts" region="view-child">
@@ -487,6 +509,7 @@ This sample updates the model twice:
 
 The `onSubmit()` method simply replaces the `hero` object with the combined values of the form:
 
+
 <code-example path="cb-form-validation/src/app/reactive/hero-form-reactive.component.ts" region="on-submit" linenums="false">
 
 </code-example>
@@ -502,6 +525,7 @@ correspond _exactly_ to the hero data object properties.
 
 The `addHero()` method discards pending changes and creates a brand new `hero` model object.
 
+
 <code-example path="cb-form-validation/src/app/reactive/hero-form-reactive.component.ts" region="add-hero" linenums="false">
 
 </code-example>
@@ -511,16 +535,20 @@ The `<form>` tag's `[formGroup]` binding refreshes the page with the new control
 
 Here's the complete reactive component file, compared to the two template-driven component files.
 
+
 <code-tabs>
+
 
   <code-pane title="reactive/hero-form-reactive.component.ts (#3)" path="cb-form-validation/src/app/reactive/hero-form-reactive.component.ts">
 
   </code-pane>
 
 
+
   <code-pane title="template/hero-form-template2.component.ts (#2)" path="cb-form-validation/src/app/template/hero-form-template2.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="template/hero-form-template1.component.ts (#1)" path="cb-form-validation/src/app/template/hero-form-template1.component.ts">
@@ -551,6 +579,7 @@ and declared in the `SharedModule`.
 
 Here's the `forbiddenNamevalidator()` function:
 
+
 <code-example path="cb-form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" linenums="false">
 
 </code-example>
@@ -574,12 +603,14 @@ and whose value is an arbitrary dictionary of values that you could insert into 
 In the reactive forms component, the `'name'` control's validator function list 
 has a `forbiddenNameValidator` at the bottom.
 
+
 <code-example path="cb-form-validation/src/app/reactive/hero-form-reactive.component.ts" region="name-validators" linenums="false">
 
 </code-example>
 
 In the _template-driven_ example, the `<input>` has the selector (`forbiddenName`)
 of a custom _attribute directive_, which rejects "bob".
+
 
 <code-example path="cb-form-validation/src/app/template/hero-form-template2.component.html" region="name-input" linenums="false">
 
@@ -590,11 +621,13 @@ The corresponding `ForbiddenValidatorDirective` is a wrapper around the `forbidd
 Angular `forms` recognizes the directive's role in the validation process because the directive registers itself
 with the `NG_VALIDATORS` provider, a provider with an extensible collection of validation directives.
 
+
 <code-example path="cb-form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" linenums="false">
 
 </code-example>
 
 Here is the rest of the directive to help you get an idea of how it all comes together:
+
 
 <code-example path="cb-form-validation/src/app/shared/forbidden-name.directive.ts" region="directive">
 

@@ -75,6 +75,7 @@ This page describes server communication with the help of the following demos:
 - [More fun with Observables](guide/server-communication#more-observables).
 The root `AppComponent` orchestrates these demos:
 
+
 <code-example path="server-communication/src/app/app.component.ts">
 
 </code-example>
@@ -97,6 +98,7 @@ Read about providers in the [Dependency Injection](guide/dependency-injection) p
 ~~~
 
 Register providers by importing other NgModules to the root NgModule in `app.module.ts`.
+
 
 
 <code-example path="server-communication/src/app/app.module.1.ts" linenums="false">
@@ -126,11 +128,13 @@ This version gets some heroes from the server, displays them in a list, lets the
 The app uses the !{_Angular_Http} client to communicate via **XMLHttpRequest (XHR)**.
 
 It works like this:
+
 <figure class='image-display'>
   <img src='assets/images/devguide/server-communication/http-toh.gif' alt="ToH mini app" width="250">  </img>
 </figure>
 
 This demo has a single component, the `HeroListComponent`.  Here's its template:
+
 
 <code-example path="server-communication/src/app/toh/hero-list.component.html">
 
@@ -153,6 +157,7 @@ Below the button is an area for an error message.
 {@a HeroListComponent}
 ### The *HeroListComponent* class
 Here's the component class:
+
 
 <code-example path="server-communication/src/app/toh/hero-list.component.ts" region="component">
 
@@ -197,11 +202,13 @@ With a basic understanding of the component, you're ready to look inside the `He
 In many of the previous samples the app faked the interaction with the server by
 returning mock heroes in a service like this one:
 
+
 <code-example path="toh-4/src/app/hero.service.ts" region="just-get-heroes" linenums="false">
 
 </code-example>
 
 You can revise that `HeroService` to get the heroes from the server using the !{_Angular_Http} client service:
+
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="v1">
 
@@ -210,11 +217,13 @@ You can revise that `HeroService` to get the heroes from the server using the !{
 Notice that the !{_Angular_Http} client service is
 [injected](guide/dependency-injection) into the `HeroService` constructor.
 
+
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="ctor">
 
 </code-example>
 
 Look closely at how to call `!{_priv}http.get`:
+
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="http-get" linenums="false">
 
@@ -228,6 +237,7 @@ You pass the resource URL to `get` and it calls the server which returns heroes.
 The server returns heroes once you've set up the [in-memory web api](guide/server-communication#in-mem-web-api)
 described in the appendix below.
 Alternatively, you can temporarily target a JSON file by changing the endpoint URL:
+
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="endpoint-json" linenums="false">
 
@@ -243,6 +253,7 @@ Alternatively, you can temporarily target a JSON file by changing the endpoint U
 {@a extract-data}
 ## Process the response object
 Remember that the `getHeroes()` method used an `!{_priv}extractData()` helper method to map the `!{_priv}http.get` response object to heroes:
+
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="extract-data" linenums="false">
 
@@ -314,6 +325,7 @@ but only if it says something that the user can understand and act upon.
 This simple app conveys that idea, albeit imperfectly, in the way it handles a `getHeroes` error.
 
 
+
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="error-handling" linenums="false">
 
 </code-example>
@@ -329,6 +341,7 @@ logs it to the console, and returns the message in a new, failed Observable via 
 
 {@a hero-list-component}
 
+
 <h3>
     <b>  HeroListComponent  </b>   error handling
 </h3>
@@ -337,6 +350,7 @@ logs it to the console, and returns the message in a new, failed Observable via 
 Back in the `HeroListComponent`, in `!{_priv}heroService.getHeroes()`,
 the `subscribe` function has a second function parameter to handle the error message.
 It sets an `errorMessage` variable that's bound conditionally in the `HeroListComponent` template.
+
 
 
 <code-example path="server-communication/src/app/toh/hero-list.component.ts" region="getHeroes" linenums="false">
@@ -365,6 +379,7 @@ You'll write a method for the `HeroListComponent` to call, a `create()` method, 
 just the name of a new hero and returns an `Observable` of `Hero`. It begins like this:
 
 
+
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="create-sig" linenums="false">
 
 </code-example>
@@ -378,6 +393,7 @@ It expects the new hero data to arrive in the body of the request,
 structured like a `Hero` entity but without the `id` property.
 The body of the request should look like this:
 
+
 <code-example format="." language="javascript">
   { "name": "Windstorm" }
 </code-example>
@@ -387,6 +403,7 @@ of the new hero including its generated id. The hero arrives tucked inside a res
 with its own `data` property.
 
 Now that you know how the API works, implement `create()` as follows:
+
 
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" linenums="false" title="src/app/toh/hero.service.ts (create)" region="create">
@@ -410,9 +427,11 @@ from the response.
 Back in the `HeroListComponent`, its `addHero()` method subscribes to the Observable returned by the service's `create()` method.
 When the data arrive it pushes the new hero object into its `heroes` array for presentation to the user.
 
+
 <code-example path="server-communication/src/app/toh/hero-list.component.ts" region="addHero" linenums="false">
 
 </code-example>
+
 
 
 <h2 id='cors'>
@@ -453,6 +472,7 @@ This [Stack Overflow answer](http://stackoverflow.com/questions/2067472/what-is-
 Here is a simple search that shows suggestions from Wikipedia as the user
 types in a text box:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/server-communication/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250">  </img>
 </figure>
@@ -463,6 +483,7 @@ The Angular `Jsonp` service both extends the `!{_Http}` service for JSONP and re
 All other HTTP methods throw an error because `JSONP` is a read-only facility.
 
 As always, wrap the interaction with an Angular data access client service inside a dedicated service, here called `WikipediaService`.
+
 
 
 <code-example path="server-communication/src/app/wiki/wikipedia.service.ts">
@@ -489,17 +510,20 @@ All of this happens under the hood.
 
 If you're looking for articles with the word "Angular", you could construct the query string by hand and call `jsonp` like this:
 
+
 <code-example path="server-communication/src/app/wiki/wikipedia.service.1.ts" region="query-string" linenums="false">
 
 </code-example>
 
 In more parameterized examples you could build the query string with the Angular `URLSearchParams` helper:
 
+
 <code-example path="server-communication/src/app/wiki/wikipedia.service.ts" region="search-parameters" linenums="false">
 
 </code-example>
 
 This time you call `jsonp` with *two* arguments: the `wikiUrl` and an options object whose `search` property is the `params` object.
+
 
 <code-example path="server-communication/src/app/wiki/wikipedia.service.ts" region="call-jsonp" linenums="false">
 
@@ -511,6 +535,7 @@ to the server.
 
 Now that you have a service that can query the Wikipedia API,
 turn your attention to the component (template and class) that takes user input and displays search results.
+
 
 <code-example path="server-communication/src/app/wiki/wiki.component.ts">
 
@@ -547,6 +572,7 @@ It is inefficient and potentially expensive on mobile devices with limited data 
 Presently, the code calls the server after every keystroke.
 It should only make requests when the user *stops typing*.
 Here's how it will work after refactoring:
+
 <figure class='image-display'>
   <img src='assets/images/devguide/server-communication/wiki-2.gif' alt="Wikipedia search app (v.2)" width="250">  </img>
 </figure>
@@ -580,11 +606,14 @@ with the help of some nifty Observable operators.
 Here's the `WikiSmartComponent`, shown next to the original `WikiComponent`:
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/wiki/wiki-smart.component.ts" path="server-communication/src/app/wiki/wiki-smart.component.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/wiki/wiki.component.ts" path="server-communication/src/app/wiki/wiki.component.ts">
@@ -608,12 +637,14 @@ The `WikiComponent` passes a new search term directly to the `WikipediaService` 
 The `WikiSmartComponent` class turns the user's keystrokes into an Observable _stream of search terms_
 with the help of a `Subject`, which you import from RxJS:
 
+
 <code-example path="server-communication/src/app/wiki/wiki-smart.component.ts" region="import-subject" linenums="false">
 
 </code-example>
 
 The component creates a `searchTermStream` as a `Subject` of type `string`.
 The `search()` method adds each new search box value to that stream via the subject's `next()` method.
+
 
 
 <code-example path="server-communication/src/app/wiki/wiki-smart.component.ts" region="subject" linenums="false">
@@ -627,6 +658,7 @@ The `search()` method adds each new search box value to that stream via the subj
 
 The `WikiSmartComponent` listens to the *stream of search terms* and 
 processes that stream _before_ calling the service.
+
 
 <code-example path="server-communication/src/app/wiki/wiki-smart.component.ts" region="observable-operators" linenums="false">
 
@@ -686,11 +718,13 @@ This sample creates a class that sets the default `Content-Type` header to JSON.
 It exports a constant with the necessary `RequestOptions` provider to simplify registration in `AppModule`.
 
 
+
 <code-example path="server-communication/src/app/default-request-options.service.ts" linenums="false">
 
 </code-example>
 
 Then it registers the provider in the root `AppModule`.
+
 
 <code-example path="server-communication/src/app/app.module.ts" region="provide-default-request-options" linenums="false">
 
@@ -705,6 +739,7 @@ Remember to include this provider during setup when unit testing the app's HTTP 
 ~~~
 
 After this change, the `header` option setting in `HeroService.create()` is no longer necessary,
+
 
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" linenums="false" title="src/app/toh/hero.service.ts (create)" region="create">
@@ -737,6 +772,7 @@ posed by top-level JSON arrays.
 
 You'd set the endpoint to the JSON file like this:
 
+
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="endpoint-json" linenums="false">
 
 </code-example>
@@ -767,11 +803,13 @@ are !{_array}s of objects in those collections.
 
 Here's the class for this sample, based on the JSON data:
 
+
 <code-example path="server-communication/src/app/hero-data.ts" linenums="false">
 
 </code-example>
 
 Ensure that the `HeroService` endpoint refers to the web API:
+
 
 <code-example path="server-communication/src/app/toh/hero.service.ts" region="endpoint" linenums="false">
 
@@ -781,6 +819,7 @@ Ensure that the `HeroService` endpoint refers to the web API:
 Finally, redirect client HTTP requests to the in-memory web API by
 adding the `InMemoryWebApiModule` to the `AppModule.imports` list.
 At the same time, call its `forRoot()` configuration method with the `HeroData` class.
+
 
 <code-example path="server-communication/src/app/app.module.ts" region="in-mem-web-api" linenums="false">
 
@@ -803,6 +842,7 @@ while setting the metadata for the root `AppModule`. Don't call it again.
 ~~~
 
 Here is the final, revised version of <span ngio-ex>src/app/app.module.ts</span>, demonstrating these steps.
+
 
 
 <code-example path="server-communication/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (excerpt)">

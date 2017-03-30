@@ -114,11 +114,14 @@ Take the <a href='../guide/setup.html'>Setup</a> as a starting point.
 A few minor changes to the lone `app.component` lead to these two class and HTML files:
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.html" path="cb-aot-compiler/src/app/app.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
@@ -129,6 +132,7 @@ A few minor changes to the lone `app.component` lead to these two class and HTML
 </code-tabs>
 
 Install a few new npm dependencies with the following command:
+
 <code-example language="none" class="code-shell">
   npm install @angular/compiler-cli @angular/platform-server --save
 </code-example>
@@ -141,6 +145,7 @@ instead of the TypeScript compiler (`tsc`).
 `ngc` requires its own `tsconfig.json` with AOT-oriented settings.
 Copy the original `src/tsconfig.json` to a file called `tsconfig-aot.json` on the project root,
 then modify it as follows.
+
 
 
 <code-example path="cb-aot-compiler/tsconfig-aot.json" linenums="false">
@@ -167,6 +172,7 @@ While JIT app URLs are more flexible, stick with _component-relative_ URLs for c
 ***Compiling the application***
 
 Initiate AOT compilation from the command line using the previously installed `ngc` compiler by executing:
+
 <code-example language="none" class="code-shell">
   node_modules/.bin/ngc -p tsconfig-aot.json
 </code-example>
@@ -176,6 +182,7 @@ Initiate AOT compilation from the command line using the previously installed `n
 ~~~ {.l-sub-section}
 
 Windows users should surround the `ngc` command in double quotes:
+
 <code-example format='.'>
   "node_modules/.bin/ngc" -p tsconfig-aot.json
 </code-example>
@@ -234,11 +241,14 @@ Switch from the `platformBrowserDynamic.bootstrap` used in JIT compilation to
 Here is AOT bootstrap in `main.ts` next to the original JIT version:
 
 
+
 <code-tabs>
+
 
   <code-pane title="src/main.ts" path="cb-aot-compiler/src/main.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/main-jit.ts" path="cb-aot-compiler/src/main-jit.ts">
@@ -290,6 +300,7 @@ What matters is that the code uses ES `import` and `export` statements rather th
 ~~~
 
 In the terminal window, install the Rollup dependencies with this command:
+
 <code-example language="none" class="code-shell">
   npm install rollup rollup-plugin-node-resolve rollup-plugin-commonjs rollup-plugin-uglify --save-dev
 </code-example>
@@ -297,6 +308,7 @@ In the terminal window, install the Rollup dependencies with this command:
 Next, create a configuration file (`rollup-config.js`)
 in the project root directory to tell Rollup how to process the application.
 The cookbook configuration file looks like this.
+
 
 
 <code-example path="cb-aot-compiler/rollup-config.js" linenums="false">
@@ -330,6 +342,7 @@ in the final bundle. Using it is straigthforward. Add the following to
 the `plugins` !{_array} in `rollup-config.js`:
 
 
+
 <code-example path="cb-aot-compiler/rollup-config.js" region="commonjs" linenums="false">
 
 </code-example>
@@ -339,6 +352,7 @@ the `plugins` !{_array} in `rollup-config.js`:
 Rollup tree shaking reduces code size considerably.  Minification makes it smaller still.
 This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code. 
 Add the following to the `plugins` !{_array}:
+
 
 
 <code-example path="cb-aot-compiler/rollup-config.js" region="uglify" linenums="false">
@@ -360,6 +374,7 @@ the code into an even smaller package going over the wire.
 {@a run-rollup}
 ### Run Rollup
 Execute the Rollup process with this command:
+
 <code-example language="none" class="code-shell">
   node_modules/.bin/rollup -c rollup-config.js
 </code-example>
@@ -369,6 +384,7 @@ Execute the Rollup process with this command:
 ~~~ {.l-sub-section}
 
 Windows users should surround the `rollup` command in double quotes:
+
 <code-example language="none" class="code-shell">
   "node_modules/.bin/rollup"  -c rollup-config.js
 </code-example>
@@ -388,6 +404,7 @@ Remove the scripts that concern SystemJS.
 Instead, load the bundle file using a single `<script>` tag **_after_** the `</body>` tag:
 
 
+
 <code-example path="cb-aot-compiler/src/index.html" region="bundle" linenums="false">
 
 </code-example>
@@ -400,6 +417,7 @@ Instead, load the bundle file using a single `<script>` tag **_after_** the `</b
 
 You'll need a web server to host the application.
 Use the same `lite-server` employed elsewhere in the documentation:
+
 <code-example language="none" class="code-shell">
   npm run lite
 </code-example>
@@ -413,11 +431,14 @@ The server starts, launches a browser, and the app should appear.
 
 Here's the pertinent source code:
 
+
 <code-tabs>
+
 
   <code-pane title="src/app/app.component.html" path="cb-aot-compiler/src/app/app.component.html">
 
   </code-pane>
+
 
 
   <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
@@ -425,9 +446,11 @@ Here's the pertinent source code:
   </code-pane>
 
 
+
   <code-pane title="src/main.ts" path="cb-aot-compiler/src/main.ts">
 
   </code-pane>
+
 
 
   <code-pane title="src/index.html" path="cb-aot-compiler/src/index.html">
@@ -435,9 +458,11 @@ Here's the pertinent source code:
   </code-pane>
 
 
+
   <code-pane title="tsconfig-aot.json" path="cb-aot-compiler/tsconfig-aot.json">
 
   </code-pane>
+
 
 
   <code-pane title="rollup-config.js" path="cb-aot-compiler/rollup-config.js">
@@ -457,6 +482,7 @@ You'll rebuild the AOT version of the application every time you make a change.
 Those _npm_ commands are long and difficult to remember.
 
 Add the following _npm_ convenience script to the `package.json` so you can compile and rollup in one command.Open a terminal window and try it.
+
 <code-example language="none" class="code-shell">
   npm run build:aot  
     
@@ -475,6 +501,7 @@ The same source code can be built both ways. Here's one way to do that.
 * Delete the script at the bottom of `index-jit.html` that loads `bundle.js`
 * Restore the SystemJS scripts like this:
 
+
 <code-example path="cb-aot-compiler/src/index-jit.html" region="jit" linenums="false">
 
 </code-example>
@@ -482,6 +509,7 @@ The same source code can be built both ways. Here's one way to do that.
 Notice the slight change to the `system.import` which now specifies `src/app/main-jit`.
 That's the JIT version of the bootstrap file that we preserved [above](guide/aot-compiler#bootstrap).
 Open a _different_ terminal window and enter `npm start`.
+
 <code-example language="none" class="code-shell">
   npm start
 </code-example>
@@ -526,11 +554,14 @@ The JIT and AOT apps require their own `index.html` files because they setup and
 Here they are for comparison:
 
 
+
 <code-tabs>
+
 
   <code-pane title="aot/index.html (AOT)" path="toh-6/aot/index.html">
 
   </code-pane>
+
 
 
   <code-pane title="src/index.html (JIT)" path="toh-6/src/index.html">
@@ -553,11 +584,14 @@ The key differences, covered in the [Bootstrap](guide/aot-compiler#bootstrap) se
 are evident in these `main` files which can and should reside in the same folder:
 
 
+
 <code-tabs>
+
 
   <code-pane title="main-aot.ts (AOT)" path="toh-6/src/main-aot.ts">
 
   </code-pane>
+
 
 
   <code-pane title="main.ts (JIT)" path="toh-6/src/main.ts">
@@ -576,11 +610,14 @@ AOT requires its own TypeScript configuration settings as well.
 You'll need separate TypeScript configuration files such as these:
 
 
+
 <code-tabs>
+
 
   <code-pane title="tsconfig-aot.json (AOT)" path="toh-6/tsconfig-aot.json">
 
   </code-pane>
+
 
 
   <code-pane title="src/tsconfig.json (JIT)" path="toh-6/src/tsconfig.1.json">
@@ -593,6 +630,7 @@ You'll need separate TypeScript configuration files such as these:
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -615,6 +653,7 @@ Edit your `tsconfig-aot.json` to fit your project's file structure.
 ### Tree shaking
 
 Rollup does the tree shaking as before.
+
 
 
 <code-example path="toh-6/rollup-config.js" linenums="false">
@@ -643,11 +682,14 @@ Run the JIT-compiled app with `npm start` as for all other JIT examples.
 
 Compiling with AOT presupposes certain supporting files, most of them discussed above.
 
+
 <code-tabs>
+
 
   <code-pane title="src/index.html" path="toh-6/src/index.html">
 
   </code-pane>
+
 
 
   <code-pane title="copy-dist-files.js" path="toh-6/copy-dist-files.js">
@@ -655,9 +697,11 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
   </code-pane>
 
 
+
   <code-pane title="rollup-config.js" path="toh-6/rollup-config.js">
 
   </code-pane>
+
 
 
   <code-pane title="tsconfig-aot.json" path="toh-6/tsconfig-aot.json">
@@ -668,6 +712,7 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
 </code-tabs>
 
 Extend the `scripts` section of the `package.json` with these npm scripts:Copy the AOT distribution files into the `/aot` folder with the node script:
+
 <code-example language="none" class="code-shell">
   node copy-dist-files
 </code-example>
@@ -681,6 +726,7 @@ You won't do that again until there are updates to `zone.js` or the `core-js` sh
 ~~~
 
 Now AOT-compile the app and launch it with the `lite-server`:
+
 <code-example language="none" class="code-shell">
   npm run build:aot && npm run serve:aot  
     
@@ -697,11 +743,13 @@ But the <a href="https://github.com/danvk/source-map-explorer/blob/master/README
 tool can be quite revealing.
 
 Install it:
+
 <code-example language="none" class="code-shell">
   npm install source-map-explorer --save-dev
 </code-example>
 
 Run the following command to generate the map.
+
 
 <code-example language="none" class="code-shell">
   node_modules/.bin/source-map-explorer aot/dist/build.js  
@@ -713,6 +761,7 @@ showing exactly which application and Angular modules and classes are included i
 
 Here's the map for _Tour of Heroes_.
 <a href="assets/images/cookbooks/aot-compiler/toh6-bundle.png" target="_blank" title="View larger image">
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/aot-compiler/toh6-bundle.png" alt="TOH-6-bundle">  </img>
 </figure>

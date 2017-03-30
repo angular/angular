@@ -31,23 +31,29 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 Templates are the user-facing part of an Angular application and are written in HTML.
 The following table lists some of the key AngularJS template features with their equivalent Angular template syntax.
 
+
 <table width="100%">
 
-  <col width="50%">
-
-  </col>
-
 
   <col width="50%">
 
   </col>
+
+
+
+  <col width="50%">
+
+  </col>
+
 
 
   <tr>
 
+
     <th>
       AngularJS
     </th>
+
 
 
     <th>
@@ -58,10 +64,13 @@ The following table lists some of the key AngularJS template features with their
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Bindings/interpolation
+
       <code-example>
         Your favorite hero is: {{vm.favoriteHero}}
       </code-example>
@@ -76,9 +85,11 @@ The following table lists some of the key AngularJS template features with their
     </td>
 
 
+
     <td>
       ### Bindings/interpolation      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="interpolation" linenums="false">
 
       </code-example>
@@ -96,10 +107,13 @@ The following table lists some of the key AngularJS template features with their
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Filters
+
       <code-example>
         &lt;td>{{movie.title | uppercase}}&lt;/td>
       </code-example>
@@ -110,9 +124,11 @@ The following table lists some of the key AngularJS template features with their
     </td>
 
 
+
     <td>
       ### Pipes      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="uppercase" linenums="false">
 
       </code-example>
@@ -128,10 +144,13 @@ The following table lists some of the key AngularJS template features with their
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Local variables
+
       <code-example format="">
         &lt;tr ng-repeat="movie in vm.movies">        
                   &lt;td>{{movie.title}}&lt;/td>        
@@ -142,9 +161,11 @@ The following table lists some of the key AngularJS template features with their
     </td>
 
 
+
     <td>
       ### Input variables      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="local" linenums="false">
 
       </code-example>
@@ -168,23 +189,29 @@ AngularJS provides more than seventy built-in directives for templates.
 Many of them aren't needed in Angular because of its more capable and expressive binding system.
 The following are some of the key AngularJS built-in directives and their equivalents in Angular.
 
+
 <table width="100%">
 
-  <col width="50%">
-
-  </col>
-
 
   <col width="50%">
 
   </col>
+
+
+
+  <col width="50%">
+
+  </col>
+
 
 
   <tr>
 
+
     <th>
       AngularJS
     </th>
+
 
 
     <th>
@@ -195,10 +222,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-app
+
       <code-example>
         &lt;body ng-app="movieHunter">
       </code-example>
@@ -211,15 +241,18 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Bootstrapping      
       
+
       <code-example path="cb-ajs-quick-reference/src/main.ts" linenums="false">
 
       </code-example>
 
       <br>      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.module.1.ts" linenums="false">
 
       </code-example>
@@ -236,10 +269,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-class
+
       <code-example format="">
         &lt;div ng-class="{active: isActive}">        
                 &lt;div ng-class="{active: isActive,        
@@ -257,9 +293,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### ngClass      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="ngClass" linenums="false">
 
       </code-example>
@@ -283,10 +321,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-click
+
       <code-example format="">
         &lt;button ng-click="vm.toggleImage()">        
                 &lt;button ng-click="vm.toggleImage($event)">
@@ -301,9 +342,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Bind to the `click` event      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="event-binding" linenums="false">
 
       </code-example>
@@ -332,10 +375,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-controller
+
       <code-example format="">
         &lt;div ng-controller="MovieListCtrl as vm">
       </code-example>
@@ -346,9 +392,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Component decorator      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="component" linenums="false">
 
       </code-example>
@@ -364,13 +412,16 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-hide      
             In AngularJS, the `ng-hide` directive shows or hides the associated HTML element based on      
             an expression. For more information, see [ng-show](guide/ajs-quick-reference#ng-show).
     </td>
+
 
 
     <td>
@@ -383,10 +434,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-href
+
       <code-example format="">
         &lt;a ng-href="angularDocsUrl">Angular Docs&lt;/a>
       </code-example>
@@ -396,6 +450,7 @@ The following are some of the key AngularJS built-in directives and their equiva
             fetches from that URL.      
                   
             In AngularJS, the `ng-href` is often used to activate a route as part of navigation.
+
       <code-example format="">
         &lt;a ng-href="#movies">Movies&lt;/a>
       </code-example>
@@ -404,9 +459,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Bind to the `href` property      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="href" linenums="false">
 
       </code-example>
@@ -419,6 +476,7 @@ The following are some of the key AngularJS built-in directives and their equiva
                   
             In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="router-link" linenums="false">
 
       </code-example>
@@ -432,10 +490,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-if
+
       <code-example format="">
         &lt;table ng-if="movies.length">
       </code-example>
@@ -447,9 +508,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### *ngIf      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngIf" linenums="false">
 
       </code-example>
@@ -467,10 +530,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-model
+
       <code-example format="">
         &lt;input ng-model="vm.favoriteHero"/>
       </code-example>
@@ -480,9 +546,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### ngModel      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngModel" linenums="false">
 
       </code-example>
@@ -499,10 +567,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-repeat
+
       <code-example format="">
         &lt;tr ng-repeat="movie in vm.movies">
       </code-example>
@@ -514,9 +585,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### *ngFor      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngFor" linenums="false">
 
       </code-example>
@@ -538,10 +611,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-show
+
       <code-example format="">
         &lt;h3 ng-show="vm.favoriteHero">        
                   Your favorite hero is: {{vm.favoriteHero}}        
@@ -555,9 +631,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Bind to the `hidden` property      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="hidden" linenums="false">
 
       </code-example>
@@ -578,10 +656,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-src
+
       <code-example format="">
         &lt;img ng-src="{{movie.imageurl}}">
       </code-example>
@@ -592,9 +673,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### Bind to the `src` property      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="src" linenums="false">
 
       </code-example>
@@ -610,10 +693,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-style
+
       <code-example format="">
         &lt;div ng-style="{color: colorPreference}">
       </code-example>
@@ -627,9 +713,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### ngStyle      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="ngStyle" linenums="false">
 
       </code-example>
@@ -651,10 +739,13 @@ The following are some of the key AngularJS built-in directives and their equiva
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### ng-switch
+
       <code-example format="">
         &lt;div ng-switch="vm.favoriteHero &&        
                                 vm.checkMovieHero(vm.favoriteHero)">        
@@ -680,9 +771,11 @@ The following are some of the key AngularJS built-in directives and their equiva
     </td>
 
 
+
     <td>
       ### ngSwitch      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch" linenums="false">
 
       </code-example>
@@ -718,23 +811,29 @@ Angular **pipes** provide formatting and transformation for data in the template
 Many of the built-in filters in AngularJS have corresponding pipes in Angular.
 For more information on pipes, see [Pipes](guide/pipes).
 
+
 <table width="100%">
 
-  <col width="50%">
-
-  </col>
-
 
   <col width="50%">
 
   </col>
+
+
+
+  <col width="50%">
+
+  </col>
+
 
 
   <tr>
 
+
     <th>
       AngularJS
     </th>
+
 
 
     <th>
@@ -745,10 +844,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### currency
+
       <code-example>
         &lt;td>{{movie.price | currency}}&lt;/td>
       </code-example>
@@ -757,9 +859,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### currency      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="currency" linenums="false">
 
       </code-example>
@@ -771,10 +875,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### date
+
       <code-example>
         &lt;td>{{movie.releaseDate | date}}&lt;/td>
       </code-example>
@@ -783,9 +890,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### date      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="date" linenums="false">
 
       </code-example>
@@ -798,16 +907,20 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### filter
+
       <code-example>
         &lt;tr ng-repeat="movie in movieList | filter: {title:listFilter}">
       </code-example>
 
       Selects a subset of items from the defined collection, based on the filter criteria.
     </td>
+
 
 
     <td>
@@ -820,10 +933,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### json
+
       <code-example>
         &lt;pre>{{movie | json}}&lt;/pre>
       </code-example>
@@ -832,9 +948,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### json      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="json" linenums="false">
 
       </code-example>
@@ -846,10 +964,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### limitTo
+
       <code-example>
         &lt;tr ng-repeat="movie in movieList | limitTo:2:0">
       </code-example>
@@ -859,9 +980,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### slice      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="slice" linenums="false">
 
       </code-example>
@@ -876,10 +999,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### lowercase
+
       <code-example>
         &lt;div>{{movie.title | lowercase}}&lt;/div>
       </code-example>
@@ -888,9 +1014,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### lowercase      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="lowercase" linenums="false">
 
       </code-example>
@@ -902,10 +1030,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### number
+
       <code-example>
         &lt;td>{{movie.starRating | number}}&lt;/td>
       </code-example>
@@ -914,9 +1045,11 @@ For more information on pipes, see [Pipes](guide/pipes).
     </td>
 
 
+
     <td>
       ### number      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="number" linenums="false">
 
       </code-example>
@@ -933,10 +1066,13 @@ For more information on pipes, see [Pipes](guide/pipes).
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### orderBy
+
       <code-example>
         &lt;tr ng-repeat="movie in movieList | orderBy : 'title'">
       </code-example>
@@ -944,6 +1080,7 @@ For more information on pipes, see [Pipes](guide/pipes).
       Displays the collection in the order specified by the expression.      
             In this example, the movie title orders the `movieList`.
     </td>
+
 
 
     <td>
@@ -973,23 +1110,29 @@ In Angular, you build a **component**.
 Because much AngularJS code is in JavaScript, JavaScript code is shown in the AngularJS column.
 The Angular code is shown using TypeScript.
 
+
 <table width="100%">
 
-  <col width="50%">
-
-  </col>
-
 
   <col width="50%">
 
   </col>
+
+
+
+  <col width="50%">
+
+  </col>
+
 
 
   <tr>
 
+
     <th>
       AngularJS
     </th>
+
 
 
     <th>
@@ -1000,10 +1143,13 @@ The Angular code is shown using TypeScript.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### IIFE
+
       <code-example>
         (function () {        
                   ...        
@@ -1014,6 +1160,7 @@ The Angular code is shown using TypeScript.
             keeps it out of the global namespace.      
             
     </td>
+
 
 
     <td>
@@ -1029,10 +1176,13 @@ The Angular code is shown using TypeScript.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Angular modules
+
       <code-example>
         angular.module("movieHunter", ["ngRoute"]);
       </code-example>
@@ -1042,9 +1192,11 @@ The Angular code is shown using TypeScript.
     </td>
 
 
+
     <td>
       ### Angular modules      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/app.module.1.ts" linenums="false">
 
       </code-example>
@@ -1060,10 +1212,13 @@ The Angular code is shown using TypeScript.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Controller registration
+
       <code-example>
         angular        
                   .module("movieHunter")        
@@ -1080,9 +1235,11 @@ The Angular code is shown using TypeScript.
     </td>
 
 
+
     <td>
       ### Component decorator      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="component" linenums="false">
 
       </code-example>
@@ -1101,10 +1258,13 @@ The Angular code is shown using TypeScript.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Controller function
+
       <code-example>
         function MovieListCtrl(movieService) {        
                 }
@@ -1114,9 +1274,11 @@ The Angular code is shown using TypeScript.
     </td>
 
 
+
     <td>
       ### Component class      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="class" linenums="false">
 
       </code-example>
@@ -1133,10 +1295,13 @@ The Angular code is shown using TypeScript.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Dependency injection
+
       <code-example>
         MovieListCtrl.$inject = ['MovieService'];        
                 function MovieListCtrl(movieService) {        
@@ -1151,9 +1316,11 @@ The Angular code is shown using TypeScript.
     </td>
 
 
+
     <td>
       ### Dependency injection      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="di" linenums="false">
 
       </code-example>
@@ -1184,23 +1351,29 @@ As the application grows over time, the styles for the many parts of the applica
 merge, which can cause unexpected results.
 In Angular, you can still define style sheets for your entire application. But now you can
 also encapsulate a style sheet within a specific component.
+
 <table width="100%">
 
-  <col width="50%">
-
-  </col>
-
 
   <col width="50%">
 
   </col>
+
+
+
+  <col width="50%">
+
+  </col>
+
 
 
   <tr>
 
+
     <th>
       AngularJS
     </th>
+
 
 
     <th>
@@ -1211,10 +1384,13 @@ also encapsulate a style sheet within a specific component.
   </tr>
 
 
+
   <tr style=top>
+
 
     <td>
       ### Link tag
+
       <code-example>
         &lt;link href="styles.css" rel="stylesheet" />
       </code-example>
@@ -1224,9 +1400,11 @@ also encapsulate a style sheet within a specific component.
     </td>
 
 
+
     <td>
       ### Link tag      
       
+
       <code-example path="cb-ajs-quick-reference/src/index.html" region="style" linenums="false">
 
       </code-example>
@@ -1236,6 +1414,7 @@ also encapsulate a style sheet within a specific component.
             In Angular, you can use the `styles` or `styleUrls` property of the `@Component` metadata to define      
             a style sheet for a particular component.      
       
+
       <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="style-url" linenums="false">
 
       </code-example>
