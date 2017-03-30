@@ -307,6 +307,17 @@ export class StaticSymbolResolver {
   private createResolvedSymbol(
       sourceSymbol: StaticSymbol, topLevelPath: string, topLevelSymbolNames: Set<string>,
       metadata: any): ResolvedStaticSymbol {
+    // For classes that don't have Angular summaries / metadata,
+    // we only keep their arity, but nothing else
+    // (e.g. their constructor parameters).
+    // We do this to prevent introducing deep imports
+    // as we didn't generate .ngfactory.ts files with proper reexports.
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && metadata &&
+        metadata['__symbolic'] === 'class') {
+      const transformedMeta = {__symbolic: 'class', arity: metadata.arity};
+      return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
+    }
+
     const self = this;
 
     class ReferenceTransformer extends ValueTransformer {

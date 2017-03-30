@@ -177,8 +177,8 @@ export class MockCompilerHost implements ts.CompilerHost {
 
   private angularSourcePath: string|undefined;
   private nodeModulesPath: string|undefined;
-  private overrides = new Map<string, string>();
-  private writtenFiles = new Map<string, string>();
+  public overrides = new Map<string, string>();
+  public writtenFiles = new Map<string, string>();
   private sourceFiles = new Map<string, ts.SourceFile>();
   private assumeExists = new Set<string>();
   private traces: string[] = [];

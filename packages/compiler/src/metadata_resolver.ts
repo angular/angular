@@ -933,14 +933,12 @@ export class CompileMetadataResolver {
     const dirMeta = this.getNonNormalizedDirectiveMetadata(dirType);
     if (dirMeta && dirMeta.metadata.isComponent) {
       return {componentType: dirType, componentFactory: dirMeta.metadata.componentFactory};
-    } else {
-      const dirSummary =
-          <cpl.CompileDirectiveSummary>this._loadSummary(dirType, cpl.CompileSummaryKind.Directive);
-      if (dirSummary && dirSummary.isComponent) {
-        return {componentType: dirType, componentFactory: dirSummary.componentFactory};
-      }
     }
-
+    const dirSummary =
+        <cpl.CompileDirectiveSummary>this._loadSummary(dirType, cpl.CompileSummaryKind.Directive);
+    if (dirSummary && dirSummary.isComponent) {
+      return {componentType: dirType, componentFactory: dirSummary.componentFactory};
+    }
     if (throwIfNotFound) {
       throw syntaxError(`${dirType.name} cannot be used as an entry component.`);
     }

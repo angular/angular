@@ -8,6 +8,7 @@
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler} from '@angular/compiler';
 import {RenderComponentType, ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
+import {NodeFlags} from '@angular/core/src/view/index';
 import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
@@ -368,6 +369,293 @@ describe('compiler (unbundled Angular)', () => {
 
        }));
   });
+
+  describe('inheritance with summaries', () => {
+    function compileWithSummaries(
+        libInput: MockData, appInput: MockData): Promise<GeneratedFile[]> {
+      const libHost = new MockCompilerHost(['/lib/base.ts'], libInput, angularFiles);
+      const libAotHost = new MockAotCompilerHost(libHost);
+      libAotHost.tsFilesOnly();
+      const appHost = new MockCompilerHost(['/app/main.ts'], appInput, angularFiles);
+      const appAotHost = new MockAotCompilerHost(appHost);
+      appAotHost.tsFilesOnly();
+      return compile(libHost, libAotHost, expectNoDiagnostics, expectNoDiagnosticsAndEmit)
+          .then(() => {
+            libHost.writtenFiles.forEach((value, key) => appHost.writeFile(key, value, false));
+            libHost.overrides.forEach((value, key) => appHost.override(key, value));
+
+            return compile(appHost, appAotHost, expectNoDiagnostics, expectNoDiagnosticsAndEmit);
+          });
+    }
+
+    function compileParentAndChild(
+        {parentClassDecorator, parentModuleDecorator, childClassDecorator, childModuleDecorator}: {
+          parentClassDecorator: string,
+          parentModuleDecorator: string,
+          childClassDecorator: string,
+          childModuleDecorator: string
+        }) {
+      const libInput: MockData = {
+        'lib': {
+          'base.ts': `
+              import {Injectable, Pipe, Directive, Component, NgModule} from '@angular/core';
+
+              ${parentClassDecorator}
+              export class Base {}
+
+              ${parentModuleDecorator}
+              export class BaseModule {}
+            `
+        }
+      };
+      const appInput: MockData = {
+        'app': {
+          'main.ts': `
+              import {Injectable, Pipe, Directive, Component, NgModule} from '@angular/core';
+              import {Base} from '../lib/base';
+
+              ${childClassDecorator}
+              export class Extends extends Base {}
+
+              ${childModuleDecorator}
+              export class MyModule {}
+            `
+        }
+      };
+
+      return compileWithSummaries(libInput, appInput)
+          .then((generatedFiles) => generatedFiles.find(gf => gf.srcFileUrl === '/app/main.ts'));
+    }
+
+    it('should inherit ctor and lifecycle hooks from classes in other compilation units',
+       async(() => {
+         const libInput: MockData = {
+           'lib': {
+             'base.ts': `
+            export class AParam {}
+
+            export class Base {
+              constructor(a: AParam) {}
+              ngOnDestroy() {}
+            }
+          `
+           }
+         };
+         const appInput: MockData = {
+           'app': {
+             'main.ts': `
+            import {NgModule, Component} from '@angular/core';
+            import {Base} from '../lib/base';
+
+            @Component({template: ''})
+            export class Extends extends Base {}
+
+            @NgModule({
+              declarations: [Extends]
+            })
+            export class MyModule {}
+          `
+           }
+         };
+
+         compileWithSummaries(libInput, appInput).then((generatedFiles) => {
+           const mainNgFactory = generatedFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+           const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
+           expect(mainNgFactory.source)
+               .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam]`);
+         });
+       }));
+
+    it('should inherit ctor and lifecycle hooks from classes in other compilation units over 2 levels',
+       async(() => {
+         const lib1Input: MockData = {
+           'lib1': {
+             'base.ts': `
+            export class AParam {}
+
+            export class Base {
+              constructor(a: AParam) {}
+              ngOnDestroy() {}
+            }
+          `
+           }
+         };
+
+         const lib2Input: MockData = {
+           'lib2': {
+             'middle.ts': `
+            import {Base} from '../lib1/base';
+            export class Middle extends Base {}
+          `
+           }
+         };
+
+
+         const appInput: MockData = {
+           'app': {
+             'main.ts': `
+            import {NgModule, Component} from '@angular/core';
+            import {Middle} from '../lib2/middle';
+
+            @Component({template: ''})
+            export class Extends extends Middle {}
+
+            @NgModule({
+              declarations: [Extends]
+            })
+            export class MyModule {}
+          `
+           }
+         };
+         const lib1Host = new MockCompilerHost(['/lib1/base.ts'], lib1Input, angularFiles);
+         const lib1AotHost = new MockAotCompilerHost(lib1Host);
+         lib1AotHost.tsFilesOnly();
+         const lib2Host = new MockCompilerHost(['/lib2/middle.ts'], lib2Input, angularFiles);
+         const lib2AotHost = new MockAotCompilerHost(lib2Host);
+         lib2AotHost.tsFilesOnly();
+         const appHost = new MockCompilerHost(['/app/main.ts'], appInput, angularFiles);
+         const appAotHost = new MockAotCompilerHost(appHost);
+         appAotHost.tsFilesOnly();
+         compile(lib1Host, lib1AotHost, expectNoDiagnostics, expectNoDiagnosticsAndEmit)
+             .then(() => {
+               lib1Host.writtenFiles.forEach((value, key) => lib2Host.writeFile(key, value, false));
+               lib1Host.overrides.forEach((value, key) => lib2Host.override(key, value));
+               return compile(
+                   lib2Host, lib2AotHost, expectNoDiagnostics, expectNoDiagnosticsAndEmit);
+             })
+             .then(() => {
+               lib2Host.writtenFiles.forEach((value, key) => appHost.writeFile(key, value, false));
+               lib2Host.overrides.forEach((value, key) => appHost.override(key, value));
+               return compile(appHost, appAotHost, expectNoDiagnostics, expectNoDiagnosticsAndEmit);
+             })
+             .then((generatedFiles) => {
+               const mainNgFactory = generatedFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+               const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
+               expect(mainNgFactory.source)
+                   .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam_2]`);
+             });
+       }));
+
+    describe('Injectable', () => {
+      it('should allow to inherit', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: '@Injectable()',
+             parentModuleDecorator: '@NgModule({providers: [Base]})',
+             childClassDecorator: '@Injectable()',
+             childModuleDecorator: '@NgModule({providers: [Extends]})',
+           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
+         }));
+
+      it('should error if the child class has no matching decorator', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: '@Injectable()',
+             parentModuleDecorator: '@NgModule({providers: [Base]})',
+             childClassDecorator: '',
+             childModuleDecorator: '@NgModule({providers: [Extends]})',
+           }).then(fail, (e) => {
+             expect(e.message).toContain(
+                 'Class Extends in /app/main.ts extends from a Injectable in another compilation unit without duplicating the decorator. ' +
+                 'Please add a Injectable or Pipe or Directive or Component or NgModule decorator to the class.');
+           });
+         }));
+    });
+
+    describe('Component', () => {
+      it('should allow to inherit', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Component({template: ''})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: `@Component({template: ''})`,
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
+         }));
+
+      it('should error if the child class has no matching decorator', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Component({template: ''})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: '',
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then(fail, (e) => {
+             expect(e.message).toContain(
+                 'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
+                 'Please add a Directive or Component decorator to the class.');
+           });
+         }));
+    });
+
+    describe('Directive', () => {
+      it('should allow to inherit', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Directive({selector: '[someDir]'})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: `@Directive({selector: '[someDir]'})`,
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
+         }));
+
+      it('should error if the child class has no matching decorator', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Directive({selector: '[someDir]'})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: '',
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then(fail, (e) => {
+             expect(e.message).toContain(
+                 'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
+                 'Please add a Directive or Component decorator to the class.');
+           });
+         }));
+    });
+
+    describe('Pipe', () => {
+      it('should allow to inherit', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Pipe({name: 'somePipe'})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: `@Pipe({name: 'somePipe'})`,
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
+         }));
+
+      it('should error if the child class has no matching decorator', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@Pipe({name: 'somePipe'})`,
+             parentModuleDecorator: '@NgModule({declarations: [Base]})',
+             childClassDecorator: '',
+             childModuleDecorator: '@NgModule({declarations: [Extends]})',
+           }).then(fail, (e) => {
+             expect(e.message).toContain(
+                 'Class Extends in /app/main.ts extends from a Pipe in another compilation unit without duplicating the decorator. ' +
+                 'Please add a Pipe decorator to the class.');
+           });
+         }));
+    });
+
+    describe('NgModule', () => {
+      it('should allow to inherit', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@NgModule()`,
+             parentModuleDecorator: '',
+             childClassDecorator: `@NgModule()`,
+             childModuleDecorator: '',
+           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
+         }));
+
+      it('should error if the child class has no matching decorator', async(() => {
+           compileParentAndChild({
+             parentClassDecorator: `@NgModule()`,
+             parentModuleDecorator: '',
+             childClassDecorator: '',
+             childModuleDecorator: '',
+           }).then(fail, (e) => {
+             expect(e.message).toContain(
+                 'Class Extends in /app/main.ts extends from a NgModule in another compilation unit without duplicating the decorator. ' +
+                 'Please add a NgModule decorator to the class.');
+           });
+         }));
+    });
+  });
 });
 
 describe('compiler (bundled Angular)', () => {
@@ -513,6 +801,11 @@ function expectNoDiagnostics(program: ts.Program) {
   expectNoDiagnostics(program.getSemanticDiagnostics());
 }
 
+function expectNoDiagnosticsAndEmit(program: ts.Program) {
+  expectNoDiagnostics(program);
+  program.emit();
+}
+
 function isDTS(fileName: string): boolean {
   return /\.d\.ts$/.test(fileName);
 }
@@ -544,7 +837,7 @@ function summaryCompile(
 function compile(
     host: MockCompilerHost, aotHost: AotCompilerHost, preCompile?: (program: ts.Program) => void,
     postCompile: (program: ts.Program) => void = expectNoDiagnostics,
-    options: AotCompilerOptions = {}) {
+    options: AotCompilerOptions = {}): Promise<GeneratedFile[]> {
   const scripts = host.scriptNames.slice(0);
   const program = ts.createProgram(scripts, settings, host);
   if (preCompile) preCompile(program);
