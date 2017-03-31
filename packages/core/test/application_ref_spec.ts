@@ -30,11 +30,11 @@ export function main() {
 
     beforeEach(() => { mockConsole = new MockConsole(); });
 
-    function createRootEl() {
+    function createRootEl(selector = 'bootstrap-app') {
       const doc = TestBed.get(DOCUMENT);
       const rootEl = <HTMLElement>getDOM().firstChild(
-          getDOM().content(getDOM().createTemplate(`<bootstrap-app></bootstrap-app>`)));
-      const oldRoots = getDOM().querySelectorAll(doc, 'bootstrap-app');
+          getDOM().content(getDOM().createTemplate(`<${selector}></${selector}>`)));
+      const oldRoots = getDOM().querySelectorAll(doc, selector);
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
       }
@@ -95,6 +95,34 @@ export function main() {
          const cmpFactory =
              module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
          const component = app.bootstrap(cmpFactory);
+
+         // The component should see the child module providers
+         expect(component.injector.get('hello')).toEqual('component');
+       })));
+
+    it('should bootstrap a component with a custom selector',
+       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
+
+         @NgModule({
+           providers: [{provide: 'hello', useValue: 'component'}],
+           declarations: [SomeComponent],
+           entryComponents: [SomeComponent],
+         })
+         class SomeModule {
+         }
+
+         createRootEl('custom-selector');
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory =
+             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+         const component = app.bootstrap(cmpFactory, 'custom-selector');
 
          // The component should see the child module providers
          expect(component.injector.get('hello')).toEqual('component');

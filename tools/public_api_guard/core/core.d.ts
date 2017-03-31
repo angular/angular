@@ -131,7 +131,7 @@ export declare abstract class ApplicationRef {
     readonly abstract isStable: Observable<boolean>;
     readonly abstract viewCount: number;
     abstract attachView(view: ViewRef): void;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
+    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     abstract detachView(view: ViewRef): void;
     abstract tick(): void;
 }
