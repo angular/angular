@@ -436,10 +436,6 @@
           "url": "https://github.com/angular/angular/issues",
           "title": "Report Issues",
           "tooltip": "Post issues and suggestions on github."
-        },
-        {
-          "title": "Site Feedback",
-          "tooltip": "Submit feedback on this page."
         }
       ]
     },
@@ -462,7 +458,7 @@
           "tooltip": "Twitter"
         },
         {
-          "url": "hhttps://github.com/angular/angular",
+          "url": "https://github.com/angular/angular",
           "title": "GitHub",
           "tooltip": "GitHub"
         },
