@@ -12,6 +12,8 @@ import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
@@ -1657,6 +1659,59 @@ describe('Integration', () => {
            })));
       });
 
+      describe('should wait for parent to complete', () => {
+        let log: string[];
+
+        beforeEach(() => {
+          log = [];
+          TestBed.configureTestingModule({
+            providers: [
+              {
+                provide: 'parentGuard',
+                useValue: () => {
+                  return delayPromise(10).then(() => {
+                    log.push('parent');
+                    return true;
+                  });
+                }
+              },
+              {
+                provide: 'childGuard',
+                useValue: () => {
+                  return delayPromise(5).then(() => {
+                    log.push('child');
+                    return true;
+                  });
+                }
+              }
+            ]
+          });
+        });
+
+        function delayPromise(delay: number): Promise<boolean> {
+          let resolve: () => void;
+          const promise = new Promise(res => resolve = res);
+          setTimeout(() => resolve(), delay);
+          return promise;
+        }
+
+        it('works', fakeAsync(inject([Router], (router: Router) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'parent',
+               canActivate: ['parentGuard'],
+               children: [
+                 {path: 'child', component: SimpleCmp, canActivate: ['childGuard']},
+               ]
+             }]);
+
+             router.navigateByUrl('/parent/child');
+             advance(fixture);
+             tick(15);
+             expect(log).toEqual(['parent', 'child']);
+           })));
+      });
     });
 
     describe('CanDeactivate', () => {
