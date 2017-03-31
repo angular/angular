@@ -5,8 +5,14 @@ code-tabs md-tab-body {
     border-radius: 5px;
     color: $darkgray;
     display: block;
-    padding: 8px;
+    padding: 8px 16px;
     margin: 16px auto;
+}
+
+// TERMINAL / SHELL TEXT STYLES
+
+code-example.code-shell, code-example[language=sh], code-example[language=bash] {
+  background-color: $darkgray;
 }
 
 code-example header {
@@ -43,7 +49,7 @@ code-tabs mat-tab-body-content .fadeIn {
 
 aio-code pre {
     display: flex;
-    padding: 0;
+    padding: 0 48px 0 0;
     white-space: pre-wrap;
 }
 
@@ -63,13 +69,18 @@ code ol {
 }
 
 .copy-button {
-  top: -16px;
-  right: -16px;
   color: $lightgray;
   background-color: transparent;
   border: none;
   &:hover {
     color: $mediumgray;
+  }
+}
+
+.lang-sh .copy-button, .lang-bash .copy-button {
+  color: $mediumgray;
+  &:hover {
+    color: $lightgray;
   }
 }
 
@@ -90,10 +101,7 @@ $blue-grey-900: #263238;
 
 $white: #FFFFFF;
 
-  /*
-  * Screen Colors
-  *
-  */
+/* SCREEN COLORS */
 
   .pnk,
   .blk {
@@ -140,11 +148,16 @@ $white: #FFFFFF;
     color: $blue;
   }
 
+/* SHELL / TERMINAL CODE BLOCKS */
 
-  /*
-  * Print Colors
-  *
-  */
+code-example.code-shell, code-example[language=sh], code-example[language=bash] {
+  & .pnk, .blk,.pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+    color: $codegreen;
+  }
+}
+
+/* PRINT COLORS */
+
 
   @media print {
     border: none;
