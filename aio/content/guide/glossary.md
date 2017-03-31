@@ -20,9 +20,24 @@ unexpected definitions.
 ~~~ {.l-sub-section}
 
 You can compile Angular applications at build time.
-By compiling your application<span if-docs="ts"> using the compiler-cli, `ngc`</span>, you can bootstrap directly
-to a<span if-docs="ts"> module</span> factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
+By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
+to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
+
+
+~~~
+
+## Angular module
+
+~~~ {.l-sub-section}
+
+Helps you organize an application into cohesive blocks of functionality.
+An Angular module identifies the components, directives, and pipes that the application uses along with the list of external Angular modules that the application needs, such as `FormsModule`.
+
+Every Angular application has an application root-module class. By convention, the class is
+called `AppModule` and resides in a file named `app.module.ts`.
+
+For details and examples, see the [Angular Modules (NgModule)](guide/ngmodule) page.
 
 
 ~~~
@@ -52,11 +67,67 @@ as HTML attributes, hence the name.
 
 For example, you can use the `ngClass` directive to add and remove CSS class names.
 
-Learn about them in the [_Attribute Directives_](guide/!{docsLatest}/guide/attribute-directives) guide.
+Learn about them in the [_Attribute Directives_](guide/attribute-directives) guide.
 
 
 ~~~
 
+
+## Barrel
+
+~~~ {.l-sub-section}
+
+A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
+The barrel itself is an ES2015 module file that re-exports *selected* exports of other ES2015 modules.
+
+For example, imagine three ES2015 modules in a `heroes` folder:
+
+<code-example>
+  // heroes/hero.component.ts  
+    export class HeroComponent {}  
+      
+    // heroes/hero.model.ts  
+    export class Hero {}  
+      
+    // heroes/hero.service.ts  
+    export class HeroService {}
+</code-example>
+
+Without a barrel, a consumer needs three import statements:
+
+<code-example>
+  import { HeroComponent } from '../heroes/hero.component.ts';  
+    import { Hero }          from '../heroes/hero.model.ts';  
+    import { HeroService }   from '../heroes/hero.service.ts';
+</code-example>
+
+You can add a barrel to the `heroes` folder (called `index`, by convention) that exports all of these items:
+
+<code-example>
+  export * from './hero.model.ts';   // re-export all of its exports  
+    export * from './hero.service.ts'; // re-export all of its exports  
+    export { HeroComponent } from './hero.component.ts'; // re-export the named thing
+</code-example>
+
+Now a consumer can import what it needs from the barrel.
+
+<code-example>
+  import { Hero, HeroService } from '../heroes'; // index is implied
+</code-example>
+
+The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel named `index`.
+
+
+~~~ {.alert.is-important}
+
+You can often achieve the same result using [Angular modules](guide/glossary#angular-module) instead.
+
+
+~~~
+
+
+
+~~~
 
 ## Binding
 
@@ -78,7 +149,7 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`).
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
 which is the first component that is loaded for the application.
-For more information, see the [Setup](guide/!{docsLatest}/guide/setup) page.
+For more information, see the [Setup](guide/setup) page.
 
 You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
@@ -113,7 +184,7 @@ An Angular class responsible for exposing data to a [view](guide/glossary#view) 
 The *component* is one of the most important building blocks in the Angular system.
 It is, in fact, an Angular [directive](guide/glossary#directive) with a companion [template](guide/glossary#template).
 
-Apply the `!{_at}Component` !{_decoratorLink} to
+Apply the `@Component` [decorator](guide/glossary#decorator) to
 the component class, thereby attaching to the class the essential component metadata
 that Angular needs to create a component instance and render the component with its template
 as a view.
@@ -132,8 +203,8 @@ the component in the role of "controller" or "view model".
 The practice of writing compound words or phrases such that each word is separated by a dash or hyphen (`-`).
 This form is also known as kebab-case.
 
-[Directive](guide/glossary#directive) selectors (like `my-app`) <span if-docs="ts">and
-the root of filenames (such as `hero-list.component.ts`)</span> are often
+[Directive](guide/glossary#directive) selectors (like `my-app`) and
+the root of filenames (such as `hero-list.component.ts`) are often
 spelled in dash-case.
 
 
@@ -155,14 +226,14 @@ updating application data values.
 Angular has a rich data-binding framework with a variety of data-binding
 operations and supporting declaration syntax.
 
- Read about the following forms of binding in the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page:
- * [Interpolation](guide/!{docsLatest}/guide/template-syntax).
- * [Property binding](guide/!{docsLatest}/guide/template-syntax).
- * [Event binding](guide/!{docsLatest}/guide/template-syntax).
- * [Attribute binding](guide/!{docsLatest}/guide/template-syntax).
- * [Class binding](guide/!{docsLatest}/guide/template-syntax).
- * [Style binding](guide/!{docsLatest}/guide/template-syntax).
- * [Two-way data binding with ngModel](guide/!{docsLatest}/guide/template-syntax).
+ Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
+ * [Interpolation](guide/template-syntax).
+ * [Property binding](guide/template-syntax).
+ * [Event binding](guide/template-syntax).
+ * [Attribute binding](guide/template-syntax).
+ * [Class binding](guide/template-syntax).
+ * [Style binding](guide/template-syntax).
+ * [Two-way data binding with ngModel](guide/template-syntax).
 
 
 ~~~
@@ -261,7 +332,7 @@ Registering providers is a critical preparatory step.
 Angular registers some of its own providers with every injector.
 You can register your own providers.
 
-Read more in the [Dependency Injection](guide/!{docsLatest}/guide/dependency-injection) page.
+Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 
 ~~~
@@ -381,11 +452,11 @@ with a registered [provider](guide/glossary#provider).
 ~~~ {.l-sub-section}
 
 A directive property that can be the *target* of a
-[property binding](guide/!{docsLatest}/guide/template-syntax) (explained in detail in the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page).
+[property binding](guide/template-syntax) (explained in detail in the [Template Syntax](guide/template-syntax) page).
 Data values flow *into* this property from the data source identified
 in the template expression to the right of the equal sign.
 
-See the [Input and output properties](guide/!{docsLatest}/guide/template-syntax) section of the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page.
+See the [Input and output properties](guide/template-syntax) section of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
@@ -406,8 +477,8 @@ or displayed between element tags, as in this example.
     
 </code-example>
 
-Read more about [interpolation](guide/!{docsLatest}/guide/template-syntax) in the
-[Template Syntax](guide/!{docsLatest}/guide/template-syntax) page.
+Read more about [interpolation](guide/template-syntax) in the
+[Template Syntax](guide/template-syntax) page.
 
 
 ~~~
@@ -420,7 +491,7 @@ Read more about [interpolation](guide/!{docsLatest}/guide/template-syntax) in th
 
 ~~~ {.l-sub-section}
 
-A bootstrapping method of compiling components<span if-docs="ts"> and modules</span> in the browser
+A bootstrapping method of compiling components and modules in the browser
 and launching the application dynamically. Just-in-time mode is a good choice during development.
 Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 
@@ -461,7 +532,7 @@ Angular calls these hook methods in the following order:
 * `ngAfterViewChecked`: after every check of a component's views.
 * `ngOnDestroy`: just before the directive is destroyed.
 
-Read more in the [Lifecycle Hooks](guide/!{docsLatest}/guide/lifecycle-hooks) page.
+Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 
 ~~~
@@ -477,7 +548,7 @@ Read more in the [Lifecycle Hooks](guide/!{docsLatest}/guide/lifecycle-hooks) pa
 
 Angular has the following types of modules:
 - [Angular modules](guide/glossary#angular-module).
-For details and examples, see the [Angular Modules](guide/!{docsLatest}/guide/ngmodule) page.
+For details and examples, see the [Angular Modules](guide/ngmodule) page.
 - ES2015 modules, as described in this section.
 
 
@@ -514,17 +585,31 @@ You rarely access Angular feature modules directly. You usually import them from
 
 {@a N}
 
+## Observable
+
+~~~ {.l-sub-section}
+
+An array whose items arrive asynchronously over time.
+Observables help you manage asynchronous data, such as data coming from a backend service.
+Observables are used within Angular itself, including Angular's event system and its HTTP client service.
+
+To use observables, Angular uses a third-party library called Reactive Extensions (RxJS).
+Observables are a proposed feature for ES2016, the next version of JavaScript.
+
+
+~~~
+
 ## Output
 
 ~~~ {.l-sub-section}
 
 A directive property that can be the *target* of event binding
-(read more in the [event binding](guide/!{docsLatest}/guide/template-syntax)
-section of the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page).
+(read more in the [event binding](guide/template-syntax)
+section of the [Template Syntax](guide/template-syntax) page).
 Events stream *out* of this property to the receiver identified
 in the template expression to the right of the equal sign.
 
-See the [Input and output properties](guide/!{docsLatest}/guide/template-syntax) section of the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page.
+See the [Input and output properties](guide/template-syntax) section of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
@@ -559,7 +644,7 @@ a numeric value in the local currency.
 </code-example>
 
 You can also write your own custom pipes.
-Read more in the page on [pipes](guide/!{docsLatest}/guide/pipes).
+Read more in the page on [pipes](guide/pipes).
 
 
 ~~~
@@ -609,6 +694,18 @@ replace one view with another.
 The Angular component router is a richly featured mechanism for configuring and managing the entire view navigation process, including the creation and destruction
 of views.
 
+In most cases, components become attached to a router by means
+of a `RouterConfig` that defines routes to views.
+
+A [routing component's](guide/glossary#routing-component) template has a `RouterOutlet` element
+where it can display views produced by the router.
+
+Other views in the application likely have anchor tags or buttons with `RouterLink`
+directives that users can click to navigate.
+
+For more information, see the [Routing & Navigation](guide/router) page.
+
+
 ~~~
 
 ## Router module
@@ -617,7 +714,7 @@ of views.
 
 A separate [Angular module](guide/glossary#angular-module) that provides the necessary service providers and directives for navigating through application views.
 
-For more information, see the [Routing & Navigation](guide/!{docsLatest}/guide/router) page.
+For more information, see the [Routing & Navigation](guide/router) page.
 
 
 ~~~
@@ -628,7 +725,7 @@ For more information, see the [Routing & Navigation](guide/!{docsLatest}/guide/r
 
 An Angular [component](guide/glossary#component) with a `RouterOutlet` that displays views based on router navigations.
 
-For more information, see the [Routing & Navigation](guide/!{docsLatest}/guide/router) page.
+For more information, see the [Routing & Navigation](guide/router) page.
 
 
 ~~~
@@ -647,7 +744,6 @@ Angular modules are delivered within *scoped packages* such as `@angular/core`,
 Import a scoped package the same way that you import a normal package.
 The only difference, from a consumer perspective,
 is that the scoped package name begins with the Angular *scope name*, `@angular`.
-
 
 
 <code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/ts/src/app/app.component.ts (import)" region="import">
@@ -674,7 +770,7 @@ provide shared data or logic across components, or encapsulate external interact
 
 Applications often require services such as a data service or a logging service.
 
-For more information, see the [Services](guide/!{docsLatest}/tutorial/toh-pt4) page of the [Tour of Heroes](guide/!{docsLatest}/tutorial/) tutorial.
+For more information, see the [Services](guide/.ial/toh-pt4) page of the [Tour of Heroes](guide/.ial/) tutorial.
 
 
 ~~~
@@ -706,7 +802,7 @@ A category of [directive](guide/glossary#directive) that can
 shape or reshape HTML layout, typically by adding and removing elements in the DOM.
 The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive are well-known examples.
 
-Read more in the [Structural Directives](guide/!{docsLatest}/guide/structural-directives) page.
+Read more in the [Structural Directives](guide/structural-directives) page.
 
 
 ~~~
@@ -739,7 +835,7 @@ When building template-driven forms:
 Template-driven forms are convenient, quick, and simple. They are a good choice for many basic data-entry form scenarios.
 
 Read about how to build template-driven forms
-in the [Forms](guide/!{docsLatest}/guide/forms) page.
+in the [Forms](guide/forms) page.
 
 
 ~~~
@@ -748,12 +844,12 @@ in the [Forms](guide/!{docsLatest}/guide/forms) page.
 
 ~~~ {.l-sub-section}
 
-A !{_Lang}-like syntax that Angular evaluates within
+A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
 
 Read about how to write template expressions
-in the [Template expressions](guide/!{docsLatest}/guide/template-syntax) section
-of the [Template Syntax](guide/!{docsLatest}/guide/template-syntax) page.
+in the [Template expressions](guide/template-syntax) section
+of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
