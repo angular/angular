@@ -55,7 +55,7 @@ module.exports =
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
 
-        .factory(require('./readers/navigation'))
+        .factory(require('./readers/json'))
 
         .config(function(checkAnchorLinksProcessor, log) {
           // TODO: re-enable
@@ -64,13 +64,13 @@ module.exports =
 
         // Where do we get the source files?
         .config(function(
-            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor, navigationFileReader) {
+            readTypeScriptModules, readFilesProcessor, collectExamples, generateKeywordsProcessor, jsonFileReader) {
 
           // API files are typescript
           readTypeScriptModules.basePath = API_SOURCE_PATH;
           readTypeScriptModules.ignoreExportsMatching = [/^_/];
           readTypeScriptModules.hidePrivateMembers = true;
-          readFilesProcessor.fileReaders.push(navigationFileReader)
+          readFilesProcessor.fileReaders.push(jsonFileReader);
           readTypeScriptModules.sourceFiles = [
             'common/index.ts',
             'common/testing/index.ts',
@@ -145,7 +145,12 @@ module.exports =
             {
               basePath: CONTENTS_PATH,
               include: CONTENTS_PATH + '/navigation.json',
-              fileReader: 'navigationFileReader'
+              fileReader: 'jsonFileReader'
+            },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/marketing/contributor.json',
+              fileReader: 'jsonFileReader'
             },
           ];
 
@@ -278,7 +283,8 @@ module.exports =
               getPath: (doc) => `${doc.id.replace(/\/index$/, '')}`,
               outputPathTemplate: '${path}.json'
             },
-            {docTypes: ['navigation-map'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+            {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+            {docTypes: ['contributor-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 

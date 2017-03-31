@@ -4,11 +4,11 @@ module.exports = function processNavigationMap(versionInfo, log) {
     $runBefore: ['rendering-docs'],
     $process: function(docs) {
 
-      const navigationDoc = docs.find(doc => doc.docType === 'navigation-map');
+      const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
 
       if (!navigationDoc) {
         throw new Error(
-          'Missing navigation map document (docType="navigation-map").' +
+          'Missing navigation map document (docType="navigation-json").' +
           'Did you forget to add it to the readFileProcessor?');
       }
 
