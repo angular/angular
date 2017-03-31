@@ -6,6 +6,8 @@ Angular's hierarchical dependency injection system supports nested injectors in 
 
 @description
 
+
+
 You learned the basics of Angular Dependency injection in the
 [Dependency Injection](guide/dependency-injection) guide.
 
@@ -16,6 +18,8 @@ You can reconfigure the injectors at any level of that component tree.
 This guide explores this system and how to use it to your advantage.
 
 Try the <live-example></live-example>.
+
+
 
 ## The injector tree
 
@@ -30,6 +34,8 @@ The tree of components parallels the tree of injectors.
 
 ~~~ {.l-sub-section}
 
+
+
 The component's injector may be a _proxy_ for an ancestor injector higher in the component tree.
 That's an implementation detail that improves efficiency.
 You won't notice the difference and
@@ -37,6 +43,8 @@ your mental model should be that every component has its own injector.
 
 
 ~~~
+
+
 
 Consider this guide's variation on the Tour of Heroes application.
 At the top is the `AppComponent` which has some sub-components.
@@ -47,8 +55,10 @@ open simultaneously.
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600">  </img>
+  <img src="assets/images/devguide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600"></img>
 </figure>
+
+
 
 ### Injector bubbling
 
@@ -61,12 +71,16 @@ If it runs out of ancestors, Angular throws an error.
 
 ~~~ {.l-sub-section}
 
+
+
 You can cap the bubbling. An intermediate component can declare that it is the "host" component.
 The hunt for providers will climb no higher than the injector for that host component.
 This is a topic for another day.
 
 
 ~~~
+
+
 
 ### Re-providing a service at different levels
 
@@ -80,6 +94,8 @@ It effectively "reconfigures" and "shadows" a provider at a higher level in the 
 
 If you only specify providers at the top level (typically the root `AppModule`), the tree of injectors appears to be flat.
 All requests bubble up to the root <code>NgModule</code> injector that you configured with the `bootstrapModule` method.
+
+
 
 ## Component injectors
 
@@ -104,6 +120,8 @@ Instead, provide the `VillainsService` in the `providers` metadata of the `Villa
 <code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
 
 </code-example>
+
+
 
 By providing `VillainsService` in the `VillainsListComponent` metadata and nowhere else,
 the service becomes available only in the `VillainsListComponent` and its sub-component tree.
@@ -131,8 +149,10 @@ Each tax return component has the following characteristics:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action">  </img>
+  <img src="assets/images/devguide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action"></img>
 </figure>
+
+
 
 One might suppose that the `HeroTaxReturnComponent` has logic to manage and restore changes.
 That would be a pretty easy task for a simple hero tax return.
@@ -144,16 +164,20 @@ It caches a single `HeroTaxReturn`, tracks changes to that return, and can save 
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts">
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts" title="src/app/hero-tax-return.service.ts">
 
 </code-example>
+
+
 
 Here is the `HeroTaxReturnComponent` that makes use of it.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts">
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" title="src/app/hero-tax-return.component.ts">
 
 </code-example>
+
+
 
 The _tax-return-to-edit_ arrives via the input property which is implemented with getters and setters.
 The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
@@ -172,6 +196,8 @@ Look closely at the metadata for the `HeroTaxReturnComponent`. Notice the `provi
 
 </code-example>
 
+
+
 The `HeroTaxReturnComponent` has its own provider of the `HeroTaxReturnService`.
 Recall that every component _instance_ has its own injector.
 Providing the service at the component level ensures that _every_ instance of the component gets its own, private instance of the service.
@@ -180,11 +206,15 @@ No tax return overwriting. No mess.
 
 ~~~ {.l-sub-section}
 
+
+
 The rest of the scenario code relies on other Angular features and techniques that you can learn about elsewhere in the documentation.
 You can review it and download it from the <live-example></live-example>.
 
 
 ~~~
+
+
 
 ### Scenario: specialized providers
 
@@ -204,8 +234,10 @@ Component (B) is the parent of another component (C) that defines its own, even 
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/dependency-injection/car-components.png" alt="car components" width="220">  </img>
+  <img src="assets/images/devguide/dependency-injection/car-components.png" alt="car components" width="220"></img>
 </figure>
+
+
 
 Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.
 
@@ -215,12 +247,14 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/dependency-injection/injector-tree.png" alt="car injector tree" width="600">  </img>
+  <img src="assets/images/devguide/dependency-injection/injector-tree.png" alt="car injector tree" width="600"></img>
 </figure>
 
 
 
 ~~~ {.l-sub-section}
+
+
 
 The code for this _cars_ scenario is in the `car.components.ts` and `car.services.ts` files of the sample
 which you can review and download from the <live-example></live-example>.

@@ -6,6 +6,8 @@ An annotated history of recent documentation improvements.
 
 @description
 
+
+
 The Angular documentation is a living document with continuous improvements.
 This log calls attention to recent significant changes.
 
@@ -41,6 +43,7 @@ Read about moving your existing project to this structure in
 the QuickStart repo update instructions</a>.
 
 Notably:
+
 * `app/main.ts` moved to `src/main.ts`.
 * `app/` moved to `src/app/`.
 * `index.html`, `styles.css` and `tsconfig.json` moved inside `src/`.
@@ -56,15 +59,18 @@ Remember also that you can use both techniques in the same app,
 choosing the approach that best fits each scenario.
 
 ## NEW: Deployment guide (2017-01-30)
+
 The new [Deployment](guide/deployment) guide describes techniques for putting your application on a server.
 It includes important advice on optimizing for production.
 
 ## Hierarchical Dependency Injection: refreshed (2017-01-13)
+
 [Hierarchical Dependency Injection](guide/hierarchical-dependency-injection) guide is significantly revised.
 Closes issue #3086.
 Revised samples are clearer and cover all topics discussed.
 
 ## Miscellaneous (2017-01-05)
+
 * [Setup](guide/setup) guide: 
 added (optional) instructions on how to remove _non-essential_ files. 
 * No longer consolidate RxJS operator imports in `rxjs-extensions` file; each file should import what it needs.
@@ -72,28 +78,34 @@ added (optional) instructions on how to remove _non-essential_ files.
 * [Style Guide](guide/style-guide): copy edits and revised rules.
 
 ## Router: more detail (2016-12-21)
+
 Added more information to the [Router](guide/router) guide 
 including sections named outlets, wildcard routes, and preload strategies.
 
 ## HTTP: how to set default request headers (and other request options) (2016-12-14)
+
 Added section on how to set default request headers (and other request options) to 
-[HTTP](guide/server-communication) guide.
+[HTTP](guide/server-communication#override-default-request-options) guide.
 
 ## Testing: added component test plunkers (2016-12-02)
+
 Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" plnkr="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" plnkr="banner-specs">another</live-example> for the Testing guide's `BannerComponent`. 
-Linked to these plunkers in [Testing](guide/testing) and [Setup anatomy](guide/setup-systemjs-anatomy) guides.
+Linked to these plunkers in [Testing](guide/testing#live-examples) and [Setup anatomy](guide/setup-systemjs-anatomy) guides.
 
 ## Internationalization: pluralization and _select_ (2016-11-30)
+
 The [Internationalization (i18n)](cookbook/i18n) guide explains how to handle pluralization and
 translation of alternative texts with `select`.
 The sample demonstrates these features too.
 
 ## Testing: karma file updates (2016-11-30)
+
 * `karma.config` + `karma-test-shim` can handle multiple spec source paths;
 see quickstart issue: [angular/quickstart#294](https://github.com/angular/quickstart/issues/294).
 * Displays Jasmine Runner output in the karma-launched browser.
 
 ## QuickStart Rewrite (2016-11-18)
+
 The QuickStart is completely rewritten so that it actually is quick.
 It references a minimal "Hello Angular" app running in Plunker.
 The new [Setup](guide/setup) page tells you how to install a local development environment
@@ -101,9 +113,11 @@ by downloading (or cloning) the QuickStart github repository.
 You are no longer asked to copy-and-paste code into setup files that were not explained anyway.
 
 ## Sync with Angular v.2.2.0 (2016-11-14)
+
 Docs and code samples updated and tested with Angular v.2.2.0.
 
 ## UPDATE: NgUpgrade Guide for the AOT friendly _upgrade/static_ module (2016-11-14)
+
 The updated [NgUpgrade Guide](guide/upgrade) guide covers the 
 new AOT friendly `upgrade/static` module 
 released in v.2.2.0, which is the recommended
@@ -111,15 +125,18 @@ facility for migrating from AngularJS to Angular.
 The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
+
 The updated [TypeScript to JavaScript](cookbook/ts-to-js) cookbook 
 now explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
 
 ## Sync with Angular v.2.1.1 (2016-10-21)
+
 Docs and code samples updated and tested with Angular v.2.1.1.
 
 ## npm _@types_ packages replace _typings_ (2016-10-20)
+
 Documentation samples now get TypeScript type information for 3rd party libraries
 from npm `@types` packages rather than with the _typings_ tooling.
 The `typings.json` file is gone.
@@ -129,34 +146,41 @@ The `package.json` installs `@types/angular` and several `@types/angular-...`
 packages in support of upgrade; these are not needed for pure Angular development.
 
 ## "Template Syntax" explains two-way data binding syntax (2016-10-20)
+
 Demonstrates how to two-way data bind to a custom Angular component and
 re-explains `[(ngModel)]` in terms of the basic `[()]` syntax.
 
 ## BREAKING CHANGE: `in-memory-web-api` (v.0.1.11) delivered as esm umd (2016-10-19)
+
 This change supports ES6 developers and aligns better with typical Angular libraries.
 It does not affect the module's API but it does affect how you load and import it.
 See the <a href="https://github.com/angular/in-memory-web-api/blob/master/CHANGELOG.md#0113-2016-10-20" target="_blank">change note</a>
 in the `in-memory-web-api` repo.
 
 ## "Router" _preload_ syntax and _:enter_/_:leave_ animations (2016-10-19)
+
 The router can lazily _preload_ modules _after_ the app starts and
 _before_ the user navigates to them for improved perceived performance.
 
 New `:enter` and `:leave` aliases make animation more natural. 
 
 ## Sync with Angular v.2.1.0 (2016-10-12)
+
 Docs and code samples updated and tested with Angular v.2.1.0.
 
 ## NEW "Ahead of time (AOT) Compilation" cookbook (2016-10-11)
+
 The NEW [Ahead of time (AOT) Compilation](cookbook/aot-compiler) cookbook
 explains what AOT compilation is and why you'd want it.
 It demonstrates the basics with a QuickStart app
 followed by the more advanced considerations of compiling and bundling the Tour of Heroes.
 
 ## Sync with Angular v.2.0.2 (2016-10-6)
+
 Docs and code samples updated and tested with Angular v.2.0.2.
 
 ## "Routing and Navigation" guide with the _Router Module_ (2016-10-5)
+
 The [Routing and Navigation](guide/router) guide now locates route configuration
 in a _Routing Module_. 
 The _Routing Module_ replaces the previous _routing object_ involving the `ModuleWithProviders`.
