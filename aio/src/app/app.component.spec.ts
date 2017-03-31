@@ -64,7 +64,7 @@ describe('AppComponent', () => {
 
   describe('onResize', () => {
     it('should update `isSideBySide` accordingly', () => {
-      component.onResize(1000);
+      component.onResize(1033);
       expect(component.isSideBySide).toBe(true);
       component.onResize(500);
       expect(component.isSideBySide).toBe(false);
@@ -168,7 +168,7 @@ describe('AppComponent', () => {
     it('should be called when a document has been rendered', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
-      component.onDocRendered(null);
+      component.onDocRendered();
       expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
     });
   });
