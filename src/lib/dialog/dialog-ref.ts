@@ -1,4 +1,5 @@
-import {OverlayRef} from '../core';
+import {OverlayRef, GlobalPositionStrategy} from '../core';
+import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MdDialogContainer, MdDialogContainerAnimationState} from './dialog-container';
@@ -50,5 +51,45 @@ export class MdDialogRef<T> {
    */
   afterClosed(): Observable<any> {
     return this._afterClosed.asObservable();
+  }
+
+  /**
+   * Updates the dialog's position.
+   * @param position New dialog position.
+   */
+  updatePosition(position?: DialogPosition): this {
+    let strategy = this._getPositionStrategy();
+
+    if (position && (position.left || position.right)) {
+      position.left ? strategy.left(position.left) : strategy.right(position.right);
+    } else {
+      strategy.centerHorizontally();
+    }
+
+    if (position && (position.top || position.bottom)) {
+      position.top ? strategy.top(position.top) : strategy.bottom(position.bottom);
+    } else {
+      strategy.centerVertically();
+    }
+
+    this._overlayRef.updatePosition();
+
+    return this;
+  }
+
+  /**
+   * Updates the dialog's width and height.
+   * @param width New width of the dialog.
+   * @param height New height of the dialog.
+   */
+  updateSize(width = 'auto', height = 'auto'): this {
+    this._getPositionStrategy().width(width).height(height);
+    this._overlayRef.updatePosition();
+    return this;
+  }
+
+  /** Fetches the position strategy object from the overlay ref. */
+  private _getPositionStrategy(): GlobalPositionStrategy {
+    return this._overlayRef.getState().positionStrategy as GlobalPositionStrategy;
   }
 }

@@ -50,6 +50,7 @@ export {
   OverlayOrigin,
   OverlayModule,
 } from './overlay/overlay-directives';
+export * from './overlay/position/global-position-strategy';
 export * from './overlay/position/connected-position-strategy';
 export * from './overlay/position/connected-position';
 export {ScrollDispatcher} from './overlay/scroll/scroll-dispatcher';
