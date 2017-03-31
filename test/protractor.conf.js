@@ -42,7 +42,7 @@ if (process.env['TRAVIS']) {
   config.capabilities = {
     'browserName': 'chrome',
     'version': 'latest',
-    "chromedriverVersion": "2.26",
+    "chromedriverVersion": "2.28",
     'tunnel-identifier': process.env['TRAVIS_JOB_ID'],
     'build': process.env['TRAVIS_JOB_ID'],
     'name': 'Material E2E Tests',
