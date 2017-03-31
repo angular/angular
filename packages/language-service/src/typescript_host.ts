@@ -74,7 +74,6 @@ export class DummyResourceLoader extends ResourceLoader {
 export class TypeScriptServiceHost implements LanguageServiceHost {
   private _resolver: CompileMetadataResolver;
   private _staticSymbolCache = new StaticSymbolCache();
-  private _summaryResolver: AotSummaryResolver;
   private _staticSymbolResolver: StaticSymbolResolver;
   private _reflector: StaticReflector;
   private _reflectorHost: ReflectorHost;
@@ -408,7 +407,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private get staticSymbolResolver(): StaticSymbolResolver {
     let result = this._staticSymbolResolver;
     if (!result) {
-      this._summaryResolver = new AotSummaryResolver(
+      const summaryResolver = new AotSummaryResolver(
           {
             loadSummary(filePath: string) { return null; },
             isSourceFile(sourceFilePath: string) { return true; },
@@ -416,7 +415,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(
-          this.reflectorHost, this._staticSymbolCache, this._summaryResolver,
+          this.reflectorHost, this._staticSymbolCache, summaryResolver,
           (e, filePath) => this.collectError(e, filePath));
     }
     return result;
@@ -425,9 +424,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private get reflector(): StaticReflector {
     let result = this._reflector;
     if (!result) {
-      const ssr = this.staticSymbolResolver;
       result = this._reflector = new StaticReflector(
-          this._summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath));
+          this.staticSymbolResolver, [], [], (e, filePath) => this.collectError(e, filePath));
     }
     return result;
   }
