@@ -24,12 +24,14 @@ of creating and maintaining a single root `AppModule` for the entire application
 This page covers NgModules in greater depth.
 
 ## Table of Contents
-<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent: 
+
+<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent:
 - some are titled "Contents" while others are titled "Table of Contents" (should probably be sentence case as it's an H2
 - some headings are H2, some are H3
 - some pages don't have tables of contents
-I didn't make changes here as I'm not sure what the correct style is. 
---> 
+I didn't make changes here as I'm not sure what the correct style is.
+-->
+
 * [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
 * [The application root module](guide/ngmodule#root-module "The startup module that every app requires")
 * [Bootstrap](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
@@ -37,7 +39,7 @@ I didn't make changes here as I'm not sure what the correct style is.
 * [Providers](guide/ngmodule#providers "Extend the app with additional services")
 * [Imports](guide/ngmodule#imports "Import components, directives, and pipes for use in component templates")
 * [Resolve conflicts](guide/ngmodule#resolve-conflicts "When two directives have the same selector")
-<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. --> 
+<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. -->
 * [Feature modules](guide/ngmodule#feature-modules "Partition the app into feature modules")
 * [Lazy loaded modules](guide/ngmodule#lazy-load "Load modules asynchronously") with the router
 * [Shared modules](guide/ngmodule#shared-module "Create modules for commonly used components, directives, and pipes")
@@ -123,7 +125,6 @@ By convention, the *root module* class is called `AppModule` and it exists in a 
 
 The `AppModule` from the QuickStart seed on the [Setup](guide/setup) page is as minimal as possible:
 
-
 <code-example path="setup/src/app/app.module.ts" linenums="false">
 
 </code-example>
@@ -141,7 +142,6 @@ The `declarations` list identifies the application's only component,
 the _root component_, the top of the app's rather bare component tree.
 
 The example `AppComponent` simply displays a data-bound title:
-
 
 <code-example path="ngmodule/src/app/app.component.0.ts" linenums="false">
 
@@ -165,7 +165,6 @@ In the first, _dynamic_ option, the [Angular compiler](cookbook/ngmodule-faq)
 compiles the application in the browser and then launches the app.
 
 
-
 <code-example path="ngmodule/src/main.ts" linenums="false">
 
 </code-example>
@@ -186,7 +185,6 @@ Among them is the `AppModuleNgFactory`.
 
 The syntax for bootstrapping the pre-compiled `AppModuleNgFactory` is similar to
 the dynamic version that bootstraps the `AppModule` class.
-
 
 
 <code-example path="ngmodule/src/main-static.ts" linenums="false">
@@ -224,13 +222,11 @@ As the app evolves,
 the first addition is a `HighlightDirective`, an [attribute directive](guide/attribute-directives)
 that sets the background color of the attached element.
 
-
 <code-example path="ngmodule/src/app/highlight.directive.ts" linenums="false">
 
 </code-example>
 
 Update the `AppComponent` template to attach the directive to the title:
-
 
 <code-example path="ngmodule/src/app/app.component.1.ts" region="template" linenums="false">
 
@@ -241,7 +237,6 @@ You must declare the directive in `AppModule`.
 
 Import the `HighlightDirective` class and add it to the module's `declarations` like this:
 
-
 <code-example path="ngmodule/src/app/app.module.1.ts" region="directive" linenums="false">
 
 </code-example>
@@ -251,11 +246,9 @@ Import the `HighlightDirective` class and add it to the module's `declarations` 
 Refactor the title into its own `TitleComponent`.
 The component's template binds to the component's `title` and `subtitle` properties like this:
 
-
 <code-example path="ngmodule/src/app/title.component.html" region="v1" linenums="false">
 
 </code-example>
-
 
 
 
@@ -266,14 +259,12 @@ The component's template binds to the component's `title` and `subtitle` propert
 Rewrite the `AppComponent` to display the new `TitleComponent` in the `<app-title>` element,
 using an input binding to set the `subtitle`.
 
-
 <code-example path="ngmodule/src/app/app.component.1.ts" linenums="false">
 
 </code-example>
 
 Angular won't recognize the `<app-title>` tag until you declare it in `AppModule`.
 Import the `TitleComponent` class and add it to the module's `declarations`:
-
 
 <code-example path="ngmodule/src/app/app.module.1.ts" region="component" linenums="false">
 
@@ -300,14 +291,12 @@ accessible through a user service.
 This sample application has a dummy implementation of such a `UserService`.
 
 
-
 <code-example path="ngmodule/src/app/user.service.ts" linenums="false">
 
 </code-example>
 
 The sample application should display a welcome message to the logged-in user just below the application title.
 Update the `TitleComponent` template to show the welcome message below the application title.
-
 
 <code-example path="ngmodule/src/app/title.component.html" linenums="false">
 
@@ -316,14 +305,12 @@ Update the `TitleComponent` template to show the welcome message below the appli
 Update the `TitleComponent` class with a constructor that injects the `UserService`
 and sets the component's `user` property from the service.
 
-
 <code-example path="ngmodule/src/app/title.component.ts" linenums="false">
 
 </code-example>
 
 You've defined and used the service. Now to _provide_ it for all components to use,
 add it to a `providers` property in the `AppModule` metadata:
-
 
 <code-example path="ngmodule/src/app/app.module.1.ts" region="providers" linenums="false">
 
@@ -338,7 +325,6 @@ add it to a `providers` property in the `AppModule` metadata:
 In the revised `TitleComponent`, an `*ngIf` directive guards the message.
 There is no message if there is no user.
 
-
 <code-example path="ngmodule/src/app/title.component.html" region="ngIf" linenums="false">
 
 </code-example>
@@ -348,7 +334,6 @@ How can that be? The Angular compiler should either ignore or complain about unr
 
 Angular does recognize `NgIf` because you imported it earlier.
 The initial version of `AppModule` imports `BrowserModule`.
-
 
 <code-example path="ngmodule/src/app/app.module.0.ts" region="imports" linenums="false">
 
@@ -390,7 +375,7 @@ implemented with Angular forms in the [template-driven form](guide/forms) style.
 You can write Angular form components in
 template-driven or
 [reactive](cookbook/dynamic-form) style.
-<!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? --> 
+<!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? -->
 
 The following sample imports the `FormsModule` from `@angular/forms` because
 the `ContactComponent` is written in _template-driven_ style.
@@ -403,7 +388,6 @@ import the `ReactiveFormsModule`.
 The `ContactComponent` selector matches an element named `<app-contact>`.
 Add an element with that name to the `AppComponent` template, just below the `<app-title>`:
 
-
 <code-example path="ngmodule/src/app/app.component.1b.ts" region="template" linenums="false">
 
 </code-example>
@@ -415,44 +399,31 @@ and an alternative version of the `HighlightDirective`.
 To make it manageable, place all contact-related material in an `src/app/contact` folder
 and break the component into three constituent HTML, TypeScript, and css files:
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/contact/contact.component.html" path="ngmodule/src/app/contact/contact.component.html">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/contact.component.ts" path="ngmodule/src/app/contact/contact.component.3.ts">
 
   </code-pane>
-
-
 
   <code-pane title="src/app/contact/contact.component.css" path="ngmodule/src/app/contact/contact.component.css">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/contact.service.ts" path="ngmodule/src/app/contact/contact.service.ts">
 
   </code-pane>
-
-
 
   <code-pane title="src/app/contact/awesome.pipe.ts" path="ngmodule/src/app/contact/awesome.pipe.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -472,7 +443,6 @@ form features such as validation aren't yet available.
 
 Add the `FormsModule` to the `AppModule` metadata's `imports` list.
 
-
 <code-example path="ngmodule/src/app/app.module.1.ts" region="imports" linenums="false">
 
 </code-example>
@@ -483,7 +453,7 @@ once you declare the new component, pipe, and directive.
 
 ~~~ {.alert.is-critical}
 
-*Do not* add `NgModel`&mdash;or the `FORMS_DIRECTIVES`&mdash;to 
+*Do not* add `NgModel`&mdash;or the `FORMS_DIRECTIVES`&mdash;to
 the `AppModule` metadata's declarations.
 These directives belong to the `FormsModule`.
 
@@ -502,7 +472,6 @@ Components, directives, and pipes belong to _one module only_.
 The application won't compile until you declare the contact component, directive, and pipe.
 Update the `declarations` in the  `AppModule` accordingly:
 
-
 <code-example path="ngmodule/src/app/app.module.1.ts" region="declarations" linenums="false">
 
 </code-example>
@@ -518,13 +487,12 @@ There are two directives with the same name, both called `HighlightDirective`.
 
 To work around this, create an alias for the contact version using the `as` JavaScript import keyword.
 
-
 <code-example path="ngmodule/src/app/app.module.1b.ts" region="import-alias" linenums="false">
 
 </code-example>
 
 This solves the immediate issue of referencing both directive _types_ in the same file but
-leaves another issue unresolved. 
+leaves another issue unresolved.
 You'll learn more about that issue later in this page, in [Resolve directive conflicts](guide/ngmodule#resolve-conflicts).
 
 
@@ -540,7 +508,6 @@ but then the service would be scoped to this component only.
 You want to share this service with other contact-related components that you'll surely add later.
 
 In this app, add `ContactService` to the `AppModule` metadata's `providers` list:
-
 
 <code-example path="ngmodule/src/app/app.module.1b.ts" region="providers" linenums="false">
 
@@ -587,71 +554,49 @@ The app file structure looks like this:
 
 <aio-filetree>
 
-
   <aio-folder>
     app
-
     <aio-file>
       app.component.ts
     </aio-file>
-
-
 
     <aio-file>
       app.module.ts
     </aio-file>
 
-
-
     <aio-file>
       highlight.directive.ts
     </aio-file>
-
-
 
     <aio-file>
       title.component.(html|ts)
     </aio-file>
 
-
-
     <aio-file>
       user.service.ts
     </aio-file>
 
-
-
     <aio-folder>
       contact
-
       <aio-file>
         awesome.pipe.ts
       </aio-file>
-
-
 
       <aio-file>
         contact.component.(css|html|ts)
       </aio-file>
 
-
-
       <aio-file>
         contact.service.ts
       </aio-file>
-
-
 
       <aio-file>
         highlight.directive.ts
       </aio-file>
 
-
     </aio-folder>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -663,7 +608,7 @@ Try the example:
 
 ## Resolve directive conflicts
 <!-- CF: This section describes directive conflicts in detail, but doesn't describe how to resolve them.
- This section seems like more of an introduction to the next section, "Feature modules". 
+ This section seems like more of an introduction to the next section, "Feature modules".
  Consider moving this section to be a child section of "Feature modules", or striking "Resolve" from this title. -->
 
 An issue arose [earlier](guide/ngmodule#import-name-conflict) when you declared the contact's `HighlightDirective` because
@@ -671,20 +616,15 @@ you already had a `HighlightDirective` class at the application level.
 
 The selectors of the two directives both highlight the attached element with a different color.
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/highlight.directive.ts" path="ngmodule/src/app/highlight.directive.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -755,7 +695,7 @@ or collection of related utilities.
 
 While you can do everything within the root module,
 feature modules help you partition the app into areas of specific interest and purpose.
-<!-- CF: Is this paragraph just restating the previous paragraph? 
+<!-- CF: Is this paragraph just restating the previous paragraph?
 If so, I recommend removing it or merging the two -->
 
 A feature module collaborates with the root module and with other modules
@@ -782,7 +722,6 @@ It's easy to refactor the contact material into a contact feature module.
 
 Here's the new `ContactModule`:
 
-
 <code-example path="ngmodule/src/app/contact/contact.module.2.ts">
 
 </code-example>
@@ -801,7 +740,7 @@ Before `ContactComponent` can bind with `[(ngModel)]`, its `ContactModule` must 
 ~~~
 
 You also replaced `BrowserModule` by `CommonModule`, for reasons explained in the
-[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq) 
+[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq)
 section of the [NgModule FAQs](cookbook/ngmodule-faq) page.
 
 You _declare_ the contact component, directive, and pipe in the module `declarations`.
@@ -825,20 +764,15 @@ Then import the `ContactModule` so the app can continue to display the exported 
 
 Here's the refactored version of the `AppModule` along with the previous version.
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/app.module.ts (v2)" path="ngmodule/src/app/app.module.2.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.module.ts (v1)" path="ngmodule/src/app/app.module.1b.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -868,7 +802,7 @@ Their specifics aren't important to the story and this page doesn't discuss ever
 
 ~~~ {.l-sub-section}
 
-Examine and download the complete source for this version from 
+Examine and download the complete source for this version from
 the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
 
 ~~~
@@ -885,7 +819,6 @@ Some facets of the current application merit discussion are as follows:
 The new `AppComponent` template has
 a title, three links, and a `<router-outlet>`.
 
-
 <code-example path="ngmodule/src/app/app.component.3.ts" region="template" linenums="false">
 
 </code-example>
@@ -893,7 +826,6 @@ a title, three links, and a `<router-outlet>`.
 The `<app-contact>` element is gone; you're routing to the _Contact_ page now.
 
 The `AppModule` has changed modestly:
-
 
 <code-example path="ngmodule/src/app/app.module.3.ts">
 
@@ -906,7 +838,7 @@ The `AppModule` has changed modestly:
 Some file names bear a `.3` extension that indicates
 a difference with prior or future versions.
 The significant differences will be explained in due course.
-<!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? --> 
+<!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? -->
 
 
 ~~~
@@ -921,7 +853,6 @@ The `AppRoutingModule` is a [routing module](guide/router)
 that handles the app's routing concerns.
 
 ### App routing
-
 
 <code-example path="ngmodule/src/app/app-routing.module.ts" linenums="false">
 
@@ -941,7 +872,6 @@ It's standard practice for feature modules with routing components to define the
 You'll get to that file in a moment.
 
 The remaining two routes use lazy loading syntax to tell the router where to find the modules:
-
 
 <code-example path="ngmodule/src/app/app-routing.module.ts" region="lazy-routes" linenums="false">
 
@@ -963,7 +893,6 @@ the latter separated from the former by a `#`.
 The `forRoot` static class method of the `RouterModule` with the provided configuration and
 added to the `imports` array provides the routing concerns for the module.
 
-
 <code-example path="ngmodule/src/app/app-routing.module.ts" region="forRoot" linenums="false">
 
 </code-example>
@@ -983,7 +912,6 @@ Never call `RouterModule.forRoot` in a feature-routing module.
 Back in the root `AppModule`, add the `AppRoutingModule` to its `imports` list,
 and the app is ready to navigate.
 
-
 <code-example path="ngmodule/src/app/app.module.3.ts" region="imports" linenums="false">
 
 </code-example>
@@ -991,7 +919,6 @@ and the app is ready to navigate.
 ### Routing to a feature module
 The `src/app/contact` folder holds a new file, `contact-routing.module.ts`.
 It defines the `contact` route mentioned earlier and provides a `ContactRoutingModule` as follows:
-
 
 <code-example path="ngmodule/src/app/contact/contact-routing.module.ts" region="routing" linenums="false">
 
@@ -1024,20 +951,15 @@ that has both shared [declarables](cookbook/ngmodule-faq) and services.
 
 `ContactModule` has changed in two small but important ways.
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/contact/contact.module.3.ts" path="ngmodule/src/app/contact/contact.module.3.ts" region="class">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/contact.module.2.ts" path="ngmodule/src/app/contact/contact.module.2.ts" region="class">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1062,57 +984,41 @@ a more interesting and useful example. Its file structure is as follows:
 
 <aio-filetree>
 
-
   <aio-folder>
     hero
-
     <aio-file>
       hero-detail.component.ts
     </aio-file>
-
-
 
     <aio-file>
       hero-list.component.ts
     </aio-file>
 
-
-
     <aio-file>
       hero.component.ts
     </aio-file>
-
-
 
     <aio-file>
       hero.module.ts
     </aio-file>
 
-
-
     <aio-file>
       hero-routing.module.ts
     </aio-file>
-
-
 
     <aio-file>
       hero.service.ts
     </aio-file>
 
-
-
     <aio-file>
       highlight.directive.ts
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
-This is the child routing scenario familiar to readers of the 
+This is the child routing scenario familiar to readers of the
 [Child routing component](guide/router) section of the
 [Routing & Navigation](guide/router) page.
 The `HeroComponent` is the feature's top component and routing host.
@@ -1124,7 +1030,6 @@ Yet another `HighlightDirective` colors elements in yet a different shade.
 In the next section, [Shared modules](guide/ngmodule#shared-module "Shared modules"), you'll resolve the repetition and inconsistencies.
 
 The `HeroModule` is a feature module like any other.
-
 
 <code-example path="ngmodule/src/app/hero/hero.module.3.ts" region="class" linenums="false">
 
@@ -1156,7 +1061,6 @@ and share them with the modules that need them.
 * Update other feature modules to import `SharedModule`.
 
 Here is the `SharedModule`:
-
 
 <code-example path="ngmodule/src/app/shared/shared.module.ts">
 
@@ -1203,7 +1107,7 @@ and only one provider of it.
 `UserService` is an application-wide singleton.
 You don't want each module to have its own separate instance.
 Yet there is [a real danger](cookbook/ngmodule-faq) of that happening
-<!-- CF: This link goes to the top of the NgModule FAQs page. 
+<!-- CF: This link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 if the `SharedModule` provides the `UserService`.
 
@@ -1226,7 +1130,7 @@ and `TitleComponent` that only appear in the root `AppComponent`.
 You didn't include them in the `SharedModule` for reasons just explained.
 
 Instead, gather them in a single `CoreModule` that you import once when the app starts
-and never import anywhere else. 
+and never import anywhere else.
 
 Perform the following steps:
 
@@ -1236,7 +1140,6 @@ Perform the following steps:
 * Update the `AppRoot` module to  import `CoreModule`.
 
 Most of this work is familiar. The interesting part is the `CoreModule`.
-
 
 <code-example path="ngmodule/src/app/core/core.module.ts" region="v4">
 
@@ -1280,8 +1183,8 @@ Yet they're too big and messy to leave loose in the root folder.
 Apps often have many singleton services like this sample's `UserService`.
 Each must be registered exactly once, in the app root injector, when the application starts.
 
-While many components inject such services in their constructors&mdash;and 
-therefore require JavaScript `import` statements to import their symbols&mdash;no 
+While many components inject such services in their constructors&mdash;and
+therefore require JavaScript `import` statements to import their symbols&mdash;no
 other component or module should define or re-create the services themselves.
 Their _providers_ aren't shared.
 
@@ -1299,20 +1202,15 @@ Having refactored to a `CoreModule` and a `SharedModule`, it's time to clean up 
 
 Here is the updated `AppModule` paired with version 3 for comparison:
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/app.module.ts (v4)" path="ngmodule/src/app/app.module.ts" region="v4">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.module.ts (v3)" path="ngmodule/src/app/app.module.3.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1325,20 +1223,15 @@ Here is the updated `AppModule` paired with version 3 for comparison:
 ### A trimmer _ContactModule_
 Here is the new `ContactModule` paired with the prior version:
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/contact/contact.module.ts (v4)" path="ngmodule/src/app/contact/contact.module.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/contact/contact.module.ts (v3)" path="ngmodule/src/app/contact/contact.module.3.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1382,20 +1275,17 @@ Add a `CoreModule.forRoot` method that configures the core `UserService`.
 You've extended the core `UserService` with an optional, injected `UserServiceConfig`.
 If a `UserServiceConfig` exists, the `UserService` sets the user name from that config.
 
-
 <code-example path="ngmodule/src/app/core/user.service.ts" region="ctor" linenums="false">
 
 </code-example>
 
 Here's `CoreModule.forRoot` that takes a `UserServiceConfig` object:
 
-
 <code-example path="ngmodule/src/app/core/core.module.ts" region="for-root" linenums="false">
 
 </code-example>
 
 Lastly, call it within the `imports` list of the `AppModule`.
-
 
 <code-example path="ngmodule/src/app/app.module.ts" region="import-for-root" linenums="false">
 
@@ -1429,12 +1319,11 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 
 Only the root `AppModule` should import the `CoreModule`.
 [Bad things happen](cookbook/ngmodule-faq) if a lazy-loaded module imports it.
-<!-- CF: Again, this link goes to the top of the NgModule FAQs page. 
+<!-- CF: Again, this link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 
 You could hope that no developer makes that mistake.
 Or you can guard against it and fail fast by adding the following `CoreModule` constructor.
-
 
 <code-example path="ngmodule/src/app/core/core.module.ts" region="ctor" linenums="false">
 

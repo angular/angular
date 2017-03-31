@@ -23,7 +23,6 @@ in which two or more components share information.
 typically adorned with [@Input decorations](guide/template-syntax).
 
 
-
 <code-example path="cb-component-communication/src/app/hero-child.component.ts">
 
 </code-example>
@@ -33,7 +32,6 @@ The second `@Input` aliases the child component property name `masterName` as `'
 The `HeroParentComponent` nests the child `HeroChildComponent` inside an `*ngFor` repeater,
 binding its `master` string property to the child's `master` alias,
 and each iteration's `hero` instance to the child's `hero` property.
-
 
 
 <code-example path="cb-component-communication/src/app/hero-parent.component.ts">
@@ -52,7 +50,6 @@ The running application displays three heroes:
 E2E test that all children were instantiated and displayed as expected:
 
 
-
 <code-example path="cb-component-communication/e2e-spec.ts" region="parent-to-child">
 
 </code-example>
@@ -67,13 +64,11 @@ The setter of the `name` input property in the child `NameChildComponent`
 trims the whitespace from a name and replaces an empty value with default text.
 
 
-
 <code-example path="cb-component-communication/src/app/name-child.component.ts">
 
 </code-example>
 
 Here's the `NameParentComponent` demonstrating name variations including a name with all spaces:
-
 
 
 <code-example path="cb-component-communication/src/app/name-parent.component.ts">
@@ -89,7 +84,6 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 ### Test it
 
 E2E tests of input property setter with empty and non-empty names:
-
 
 
 <code-example path="cb-component-communication/e2e-spec.ts" region="parent-to-child-setter">
@@ -113,13 +107,11 @@ Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chap
 This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
 
 
-
 <code-example path="cb-component-communication/src/app/version-child.component.ts">
 
 </code-example>
 
 The `VersionParentComponent` supplies the `minor` and `major` values and binds buttons to methods that change them.
-
 
 
 <code-example path="cb-component-communication/src/app/version-parent.component.ts">
@@ -139,7 +131,6 @@ Test that ***both*** input properties are set initially and that button clicks t
 the expected `ngOnChanges` calls and values:
 
 
-
 <code-example path="cb-component-communication/e2e-spec.ts" region="parent-to-child-onchanges">
 
 </code-example>
@@ -156,7 +147,6 @@ The child's `EventEmitter` property is an ***output property***,
   as seen in this `VoterComponent`:
 
 
-
 <code-example path="cb-component-communication/src/app/voter.component.ts">
 
 </code-example>
@@ -165,7 +155,6 @@ Clicking a button triggers emission of a `true` or `false`, the boolean *payload
 
 The parent `VoteTakerComponent` binds an event handler called `onVoted()` that responds to the child event
 payload `$event` and updates a counter.
-
 
 
 <code-example path="cb-component-communication/src/app/votetaker.component.ts">
@@ -183,7 +172,6 @@ and the method processes it:
 ### Test it
 
 Test that clicking the *Agree* and *Disagree* buttons update the appropriate counters:
-
 
 
 <code-example path="cb-component-communication/e2e-spec.ts" region="child-to-parent">
@@ -205,13 +193,11 @@ The following is a child `CountdownTimerComponent` that repeatedly counts down t
 It has `start` and `stop` methods that control the clock and it displays a
 countdown status message in its own template.
 
-
 <code-example path="cb-component-communication/src/app/countdown-timer.component.ts">
 
 </code-example>
 
 The `CountdownLocalVarParentComponent` that hosts the timer component is as follows:
-
 
 
 <code-example path="cb-component-communication/src/app/countdown-parent.component.ts" region="lv">
@@ -245,7 +231,6 @@ match the seconds displayed in the child's status message.
 Test also that clicking the *Stop* button pauses the countdown timer:
 
 
-
 <code-example path="cb-component-communication/e2e-spec.ts" region="countdown-timer-tests">
 
 </code-example>
@@ -277,7 +262,6 @@ is solely for the purpose of demonstration.
 ~~~
 
 Here is the parent, `CountdownViewChildParentComponent`:
-
 
 <code-example path="cb-component-communication/src/app/countdown-parent.component.ts" region="vc">
 
@@ -322,7 +306,6 @@ Components outside this component subtree have no access to the service or their
 This `MissionService` connects the `MissionControlComponent` to multiple `AstronautComponent` children.
 
 
-
 <code-example path="cb-component-communication/src/app/mission.service.ts">
 
 </code-example>
@@ -331,14 +314,12 @@ The `MissionControlComponent` both provides the instance of the service that it 
 (through the `providers` metadata array) and injects that instance into itself through its constructor:
 
 
-
 <code-example path="cb-component-communication/src/app/missioncontrol.component.ts">
 
 </code-example>
 
 The `AstronautComponent` also injects the service in its constructor.
 Each `AstronautComponent` is a child of the `MissionControlComponent` and therefore receives its parent's service instance:
-
 
 
 <code-example path="cb-component-communication/src/app/astronaut.component.ts">
@@ -372,7 +353,6 @@ facilitated by the service:
 
 Tests click buttons of both the parent `MissionControlComponent` and the `AstronautComponent` children
 and verify that the history meets expectations:
-
 
 
 <code-example path="cb-component-communication/e2e-spec.ts" region="bidirectional-service">
