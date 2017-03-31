@@ -61,8 +61,7 @@ export function main() {
               metadata: {
                 __symbolic: 'class',
                 members: {'aMethod': {__symbolic: 'function'}},
-                statics: {aStatic: true},
-                decorators: ['aDecoratorData']
+                statics: {aStatic: true}
               }
             }
           ],
@@ -89,12 +88,8 @@ export function main() {
       });
 
       expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/some_service.d.ts', 'SomeService'));
-      // serialization should drop class decorators
-      expect(summaries[1].metadata).toEqual({
-        __symbolic: 'class',
-        members: {aMethod: {__symbolic: 'function'}},
-        statics: {aStatic: true}
-      });
+      // serialization should only keep the statics...
+      expect(summaries[1].metadata).toEqual({__symbolic: 'class', statics: {aStatic: true}});
       expect(summaries[1].type.type.reference)
           .toBe(symbolCache.get('/tmp/some_service.d.ts', 'SomeService'));
     });

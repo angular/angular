@@ -94,7 +94,7 @@ export class Extractor {
     const symbolCache = new StaticSymbolCache();
     const summaryResolver = new AotSummaryResolver(host, symbolCache);
     const staticSymbolResolver = new StaticSymbolResolver(host, symbolCache, summaryResolver);
-    const staticReflector = new StaticReflector(summaryResolver, staticSymbolResolver);
+    const staticReflector = new StaticReflector(staticSymbolResolver);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
     const config =
