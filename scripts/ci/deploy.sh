@@ -71,7 +71,7 @@ case ${CI_MODE} in
                 ;;
               0)
                 # Preconditions met: Deploy
-                yarn run deploy-preview
+                yarn deploy-preview
                 ;;
             esac
           fi
@@ -82,7 +82,7 @@ case ${CI_MODE} in
       else
         # This is upstream master: Deploy to staging
         travisFoldStart "deploy.aio.staging"
-          yarn run deploy-staging
+          yarn deploy-staging
         travisFoldEnd "deploy.aio.staging"
       fi
     )
