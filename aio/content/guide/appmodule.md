@@ -5,6 +5,8 @@ AppModule: the root module
 Tell Angular how to construct and bootstrap the app in the root "AppModule".
 
 @description
+
+
 An Angular module class describes how the application parts fit together.
 Every application has at least one Angular module, the _root_ module 
 that you [bootstrap](guide/appmodule#main) to launch the application.
@@ -14,12 +16,14 @@ The [setup](guide/setup) instructions produce a new project with the following m
 You'll evolve this module as your application grows.
 
 
-<code-example path="setup/src/app/app.module.ts" linenums="false">
+<code-example path="setup/src/app/app.module.ts" title="src/app/app.module.ts" linenums="false">
 
 </code-example>
 
+
+
 After the `import` statements, you come to a class adorned with the
-**`@NgModule`** [_decorator_](guide/glossary).
+**`@NgModule`** [_decorator_](guide/glossary#decorator '"Decorator" explained').
 
 The `@NgModule` decorator identifies `AppModule` as an Angular module class (also called an `NgModule` class).
 `@NgModule` takes a _metadata_ object that tells Angular how to compile and launch the application.
@@ -33,6 +37,8 @@ All you need to know at the moment is a few basics about these three properties.
 
 
 {@a imports}
+
+
 ### The _imports_ array
 
 Angular modules are a way to consolidate features that belong together into discrete units.
@@ -50,6 +56,8 @@ Other guide and cookbook pages will tell you when you need to add additional mod
 
 ~~~ {.alert.is-important}
 
+
+
 **Only `NgModule` classes** go in the `imports` array. Do not put any other kind of class in `imports`.
 
 
@@ -58,6 +66,8 @@ Other guide and cookbook pages will tell you when you need to add additional mod
 
 
 ~~~ {.l-sub-section}
+
+
 
 The `import` statements at the top of the file and the Angular module's `imports` array
 are unrelated and have completely different jobs.
@@ -76,6 +86,8 @@ that the application needs to function properly.
 
 
 {@a declarations}
+
+
 ### The _declarations_ array
 
 You tell Angular which components belong to the `AppModule` by listing it in the module's `declarations` array.
@@ -91,6 +103,8 @@ that you must also add to the `declarations` array.
 
 ~~~ {.alert.is-important}
 
+
+
 **Only _declarables_** &mdash; _components_, _directives_ and _pipes_ &mdash; belong in the `declarations` array. 
 Do not put any other kind of class in `declarations`; _not_ `NgModule` classes, _not_ service classes, _not_ model classes.
 
@@ -100,6 +114,8 @@ Do not put any other kind of class in `declarations`; _not_ `NgModule` classes, 
 
 
 {@a bootstrap-array}
+
+
 ### The _bootstrap_ array
 
 You launch the application by [_bootstrapping_](guide/appmodule#main) the root `AppModule`. 
@@ -124,6 +140,8 @@ Which brings us to the _bootstrapping_ process itself.
 
 </l-main-section>
 
+
+
 ## Bootstrap in _main.ts_
 
 There are many ways to bootstrap an application.
@@ -135,9 +153,11 @@ and you'll run it in a browser. You can learn about other options later.
 The recommended place to bootstrap a JIT-compiled browser application is in a separate file 
 in the `src` folder named `src/main.ts`
 
-<code-example path="setup/src/main.ts" linenums="false">
+<code-example path="setup/src/main.ts" title="src/main.ts" linenums="false">
 
 </code-example>
+
+
 
 This code creates a browser platform for dynamic (JIT) compilation and
 bootstraps the `AppModule` described above.
@@ -149,9 +169,11 @@ creates an instance of the component and inserts it within the element tag ident
 The `AppComponent` selector &mdash; here and in most documentation samples &mdash; is `my-app` 
 so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
 
-<code-example path="setup/src/index.html" region="my-app" linenums="false">
+<code-example path="setup/src/index.html" region="my-app" title="setup/src/index.html" linenums="false">
 
 </code-example>
+
+
 
 ... and displays the `AppComponent` there.
 
@@ -161,6 +183,8 @@ This file is very stable. Once you've set it up, you may never change it again.
 <l-main-section>
 
 </l-main-section>
+
+
 
 ## More about Angular Modules
 

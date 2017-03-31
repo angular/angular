@@ -6,6 +6,8 @@ The Tour of Heroes tutorial takes you through the steps of creating an Angular a
 
 @description
 
+
+
 The grand plan for this tutorial is to build an app that helps a staffing agency manage its stable of heroes.
 
 The Tour of Heroes app covers the core fundamentals of Angular. You'll build a basic app that
@@ -30,6 +32,8 @@ to pages with greater depth.
 When you're done with this tutorial, the app will look like this <live-example name="toh-6"></live-example>.
 
 
+
+
 ## The end game
 
 Here's a visual idea of where this tutorial leads, beginning with the "Dashboard"
@@ -37,8 +41,10 @@ view and the most heroic heroes:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">  </img>
+  <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard"></img>
 </figure>
+
+
 
 You can click the two links above the dashboard ("Dashboard" and "Heroes") 
 to navigate between this Dashboard view and a Heroes view.
@@ -48,8 +54,10 @@ where you can change the hero's name.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/hero-details-1.png' alt="Details of hero in app">  </img>
+  <img src='assets/images/devguide/toh/hero-details-1.png' alt="Details of hero in app"></img>
 </figure>
+
+
 
 Clicking the "Back" button returns you to the Dashboard.
 Links at the top take you to either of the main views.
@@ -57,8 +65,10 @@ If you click "Heroes," the app displays the "Heroes" master list view.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app"></img>
 </figure>
+
+
 
 When you click a different hero name, the read-only mini detail beneath the list reflects the new choice.
 
@@ -69,15 +79,19 @@ The following diagram captures all of the navigation options.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations">  </img>
+  <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations"></img>
 </figure>
+
+
 
 Here's the app in action:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action">  </img>
+  <img src='assets/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action"></img>
 </figure>
+
+
 
 
 ## Up next
