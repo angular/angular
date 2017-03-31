@@ -7,84 +7,60 @@ Build a simple hero editor.
 @description
 ## Setup to develop locally
 Follow the [setup](guide/setup) instructions for creating a new project
-named <ngio-ex path="angular-tour-of-heroes"></ngio-ex>.
+named <code>angular-tour-of-heroes</code>.
 
 The file structure should look like this:
 
 
 <aio-filetree>
 
-
   <aio-folder>
     angular-tour-of-heroes
-
     <aio-folder>
       src
-
       <aio-folder>
         app
-
         <aio-file>
           app.component.ts
         </aio-file>
-
-
 
         <aio-file>
           app.module.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
-
       <aio-file>
         index.html
       </aio-file>
-
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -111,13 +87,11 @@ Add two properties to the `AppComponent`: a `title` property for the app name an
 for a hero named "Windstorm."
 
 
-
 <code-example path="toh-1/app/app.component.1.ts" region="app-component-1" linenums="false">
 
 </code-example>
 
 Now update the template in the `@Component` decorator with data bindings to these new properties.
-
 
 
 <code-example path="toh-1/app/app.component.1.ts" region="show-hero" linenums="false">
@@ -147,7 +121,6 @@ Create a `Hero` class with `id` and `name` properties.
 Add these properties near the top of the `app.component.ts` file, just below the import statement.
 
 
-
 <code-example path="toh-1/src/app/app.component.ts" region="hero-class-1" linenums="false">
 
 </code-example>
@@ -156,14 +129,12 @@ In the `Hero` class, refactor the component's `hero` property to be of type `Her
 then initialize it with an `id` of `1` and the name `Windstorm`.
 
 
-
 <code-example path="toh-1/src/app/app.component.ts" region="hero-property-1" linenums="false">
 
 </code-example>
 
 Because you changed the hero from a string to an object,
 update the binding in the template to refer to the hero's `name` property.
-
 
 
 <code-example path="toh-1/app/app.component.1.ts" region="show-hero-2">
@@ -184,7 +155,6 @@ thanks to the <i>template literals</i> feature in ES2015 and TypeScript. For mor
 
 
 
-
 <code-example path="toh-1/app/app.component.1.ts" region="multi-line-strings" linenums="false">
 
 </code-example>
@@ -201,7 +171,6 @@ You need a two-way binding between the `<input>` form element and the `hero.name
 ### Two-way binding
 
 Refactor the hero name in the template so it looks like this:
-
 
 <code-example path="toh-1/app/app.component.1.ts" region="name-input" linenums="false">
 
@@ -227,7 +196,6 @@ Then add the `FormsModule` to the `@NgModule` metadata's `imports` array, which 
 of external modules that the app uses.
 
 The updated `AppModule` looks like this:
-
 
 <code-example path="toh-1/src/app/app.module.ts">
 
@@ -262,7 +230,6 @@ using the built-in `ngModel` directive. This binding both displays the hero's na
 Your app should look like this <live-example></live-example>.
 
 Here's the complete `app.component.ts` as it stands now:
-
 
 
 <code-example path="toh-1/src/app/app.component.ts">

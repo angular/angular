@@ -13,6 +13,7 @@ the focus is on testing applications written with Angular.
 
 {@a top}
 # Contents
+
 * [Live examples](guide/testing#live-examples "Live examples of the tests in this guide")
 <br><br>
 * [Introduction to Angular testing](guide/testing#testing-intro)
@@ -147,45 +148,31 @@ This guide describes specific choices that are known to work well.
 
 <table width="100%">
 
-
   <col width="20%">
 
   </col>
-
-
 
   <col width="80%">
 
   </col>
 
-
-
   <tr>
-
 
     <th>
       Technology
     </th>
 
-
-
     <th>
       Purpose
     </th>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td style="vertical-align: top">
       Jasmine
     </td>
-
-
 
     <td>
       The [Jasmine test framework](http://jasmine.github.io/2.4/introduction.html)      
@@ -193,19 +180,13 @@ This guide describes specific choices that are known to work well.
             It ships with an HTML test runner that executes tests in the browser.
     </td>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td style="vertical-align: top">
       Angular testing utilities
     </td>
-
-
 
     <td>
       Angular testing utilities create a test environment      
@@ -214,19 +195,13 @@ This guide describes specific choices that are known to work well.
             interact _within_ the Angular environment.
     </td>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td style="vertical-align: top">
       Karma
     </td>
-
-
 
     <td>
       The [karma test runner](https://karma-runner.github.io/1.0/index.html)      
@@ -235,19 +210,13 @@ This guide describes specific choices that are known to work well.
             This guide describes how to set up and run tests with karma.
     </td>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td style="vertical-align: top">
       Protractor
     </td>
-
-
 
     <td>
       Use protractor to write and run _end-to-end_ (e2e) tests.      
@@ -258,9 +227,7 @@ This guide describes specific choices that are known to work well.
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -336,7 +303,6 @@ The `karma.conf.js` tells karma to look for spec files there,
 for reasons explained [below](guide/testing#q-spec-file-location).
 
 Add the following code to `src/app/1st.spec.ts`.
-
 
 <code-example path="testing/src/app/1st.spec.ts" linenums="false">
 
@@ -463,7 +429,6 @@ The `BannerComponent` in `src/app/banner-inline.component.ts` is the simplest co
 a good place to start.
 It presents the application title at the top of the screen within an `<h1>` tag.
 
-
 <code-example path="testing/src/app/banner-inline.component.ts" linenums="false">
 
 </code-example>
@@ -478,7 +443,6 @@ for reasons explained in the [FAQ](guide/testing#faq) answer to
 
 Start with ES6 import statements to get access to symbols referenced in the spec.
 
-
 <code-example path="testing/src/app/banner-inline.component.spec.ts" region="imports" linenums="false">
 
 </code-example>
@@ -487,7 +451,6 @@ Start with ES6 import statements to get access to symbols referenced in the spec
 
 {@a configure-testing-module}
 Here's the `describe` and the `beforeEach` that precedes the tests:
-
 
 <code-example path="testing/src/app/banner-inline.component.spec.ts" region="setup" linenums="false">
 
@@ -591,7 +554,6 @@ The tests assert that `el` contains the expected title text.
 
 Jasmine runs the `beforeEach` function before each of these tests
 
-
 <code-example path="testing/src/app/banner-inline.component.spec.ts" region="tests" linenums="false">
 
 </code-example>
@@ -617,7 +579,6 @@ The `TestBed.createComponent` does _not_ trigger change detection.
 The fixture does not automatically push the component's `title` property value into the data bound element,
 a fact demonstrated in the following test:
 
-
 <code-example path="testing/src/app/banner-inline.component.spec.ts" region="test-w-o-detect-changes" linenums="false">
 
 </code-example>
@@ -642,20 +603,17 @@ Some testers prefer that the Angular test environment run change detection autom
 That's possible by configuring the `TestBed` with the `ComponentFixtureAutoDetect` provider.
 First import it from the testing utility library:
 
-
 <code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" linenums="false">
 
 </code-example>
 
 Then add it to the `providers` array of the testing module configuration:
 
-
 <code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect" linenums="false">
 
 </code-example>
 
 Here are three tests that illustrate how automatic change detection works.
-
 
 <code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect-tests" linenums="false">
 
@@ -692,7 +650,6 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 The application's actual `BannerComponent` behaves the same as the version above but is implemented differently.
 It has _external_ template and css files, specified in `templateUrl` and `styleUrls` properties.
 
-
 <code-example path="testing/src/app/banner.component.ts" linenums="false">
 
 </code-example>
@@ -716,7 +673,6 @@ The logic in the `beforeEach` of the previous spec is split into two `beforeEach
 The first `beforeEach` handles asynchronous compilation.
 
 
-
 <code-example path="testing/src/app/banner.component.spec.ts" region="async-before-each" linenums="false">
 
 </code-example>
@@ -724,7 +680,6 @@ The first `beforeEach` handles asynchronous compilation.
 Notice the `async` function called as the argument to `beforeEach`.
 The `async` function is one of the Angular testing utilities and
 has to be imported.
-
 
 <code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-async" linenums="false">
 
@@ -785,7 +740,6 @@ nor any of the `override...` methods. The `TestBed` throws an error if you try.
 A _synchronous_ `beforeEach` containing the remaining setup steps follows the asynchronous `beforeEach`.
 
 
-
 <code-example path="testing/src/app/banner.component.spec.ts" region="sync-before-each" linenums="false">
 
 </code-example>
@@ -839,14 +793,12 @@ Components often have service dependencies.
 The `WelcomeComponent` displays a welcome message to the logged in user.
 It knows who the user is based on a property of the injected `UserService`:
 
-
 <code-example path="testing/src/app/welcome.component.ts" linenums="false">
 
 </code-example>
 
 The `WelcomeComponent` has decision logic that interacts with the service, logic that makes this component worth testing.
 Here's the testing module configuration for the spec file, `src/app/welcome.component.spec.ts`:
-
 
 <code-example path="testing/src/app/welcome.component.spec.ts" region="config-test-module" linenums="false">
 
@@ -874,7 +826,6 @@ It is far easier and safer to create and register a test double in place of the 
 This particular test suite supplies a minimal `UserService` stub that satisfies the needs of the `WelcomeComponent`
 and its tests:
 
-
 <code-example path="testing/src/app/welcome.component.spec.ts" region="user-service-stub" linenums="false">
 
 </code-example>
@@ -893,7 +844,6 @@ The safest way to get the injected service, the way that **_always works_**,
 is to **get it from the injector of the _component-under-test_**.
 The component injector is a property of the fixture's `DebugElement`.
 
-
 <code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" linenums="false">
 
 </code-example>
@@ -908,7 +858,6 @@ This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 Fortunately, in this test suite, the _only_ provider of `UserService` is the root testing module,
 so it is safe to call `TestBed.get` as follows:
-
 
 <code-example path="testing/src/app/welcome.component.spec.ts" region="inject-from-testbed" linenums="false">
 
@@ -937,7 +886,6 @@ that's provided to the testing module in the body of your test.
 The `userService` instance injected into the component is a completely _different_ object,
 a clone of the provided `userServiceStub`.
 
-
 <code-example path="testing/src/app/welcome.component.spec.ts" region="stub-not-injected" linenums="false">
 
 </code-example>
@@ -948,13 +896,11 @@ a clone of the provided `userServiceStub`.
 ### Final setup and tests
 Here's the complete `beforeEach` using `TestBed.get`:
 
-
 <code-example path="testing/src/app/welcome.component.spec.ts" region="setup" linenums="false">
 
 </code-example>
 
 And here are some tests:
-
 
 <code-example path="testing/src/app/welcome.component.spec.ts" region="tests" linenums="false">
 
@@ -993,7 +939,6 @@ The `TwainComponent` handles the display, delegating the server request to the `
 Both are in the `src/app/shared` folder because the author intends to display Twain quotes on other pages someday.
 Here is the `TwainComponent`.
 
-
 <code-example path="testing/src/app/shared/twain.component.ts" region="component" linenums="false">
 
 </code-example>
@@ -1003,7 +948,6 @@ It is sufficient to see within `ngOnInit` that `twainService.getQuote` returns a
 
 In general, tests should not make calls to remote servers.
 They should emulate such calls. The setup in this `src/app/shared/twain.component.spec.ts` shows one way to do that:
-
 
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="setup" linenums="false">
 
@@ -1017,7 +961,6 @@ They should emulate such calls. The setup in this `src/app/shared/twain.componen
 This setup is similar to the [`welcome.component.spec` setup](guide/testing#welcome-spec-setup).
 But instead of creating a stubbed service object, it injects the _real_ service (see the testing module `providers`) and
 replaces the critical `getQuote` method with a Jasmine spy.
-
 
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="spy" linenums="false">
 
@@ -1040,7 +983,6 @@ You can _stub and spy_ at the same time, as shown in [an example below](guide/te
 ~~~
 
 Here are the tests with commentary to follow:
-
 
 
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="tests">
@@ -1066,7 +1008,6 @@ value becomes available. The test must become _asynchronous_.
 ### The _async_ function in _it_
 
 Notice the `async` in the third test.
-
 
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="async-test" linenums="false">
 
@@ -1116,7 +1057,6 @@ The `getQuote` helper method extracts the display element text and the expectati
 ### The _fakeAsync_ function
 
 The fourth test verifies the same component behavior in a different way.
-
 
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="fake-async-test" linenums="false">
 
@@ -1172,7 +1112,6 @@ Now you are responsible for chaining promises, handling errors, and calling `don
 
 Here is a `done` version of the previous two tests:
 
-
 <code-example path="testing/src/app/shared/twain.component.spec.ts" region="done-test" linenums="false">
 
 </code-example>
@@ -1208,7 +1147,6 @@ Clicking that hero tells the `DashboardComponent` that the user has selected the
 
 The `DashboardHeroComponent` is embedded in the `DashboardComponent` template like this:
 
-
 <code-example path="testing/src/app/dashboard/dashboard.component.html" region="dashboard-hero" linenums="false">
 
 </code-example>
@@ -1217,7 +1155,6 @@ The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each co
 to the looping value and listens for the component's `selected` event.
 
 Here's the component's definition:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.ts" region="component" linenums="false">
 
@@ -1230,7 +1167,6 @@ You can use one of these approaches:
 - Test it as used by a substitute for `DashboardComponent`.
 
 A quick look at the `DashboardComponent` constructor discourages the first approach:
-
 
 <code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" linenums="false">
 
@@ -1256,7 +1192,6 @@ so, try the second and third options.
 
 Here's the spec file setup.
 
-
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="setup" linenums="false">
 
 </code-example>
@@ -1270,7 +1205,6 @@ the way the `DashboardComponent` would set it via the property binding in its re
 
 The first test follows:
 
-
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="name-test" linenums="false">
 
 </code-example>
@@ -1278,7 +1212,6 @@ The first test follows:
 It verifies that the hero name is propagated to template with a binding.
 Because the template passes the hero name through the Angular `UpperCasePipe`,
 the test must match the element value with the uppercased name:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.html" linenums="false">
 
@@ -1298,7 +1231,6 @@ low cost and without resorting to much slower and more complicated end-to-end te
 
 The second test verifies click behavior. Clicking the hero should raise a `selected` event that the
 host component (`DashboardComponent` presumably) can hear:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test" linenums="false">
 
@@ -1323,7 +1255,6 @@ The second parameter is the event object passed to the handler.
 In this example, the test triggers a "click" event with a null event object.
 
 
-
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler" linenums="false">
 
 </code-example>
@@ -1342,7 +1273,6 @@ This directive throws an error if the event object doesn't do this correctly.
 Clicking a button, an anchor, or an arbitrary HTML element is a common test task.
 
 Make that easy by encapsulating the _click-triggering_ process in a helper such as the `click` function below:
-
 
 <code-example path="testing/src/testing/index.ts" region="click-event" linenums="false">
 
@@ -1371,7 +1301,6 @@ If you like it, add it to your own collection of helpers.
 
 Here's the previous test, rewritten using this click helper.
 
-
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test-2" linenums="false">
 
 </code-example>
@@ -1393,7 +1322,6 @@ But does the `DashboardHeroComponent` work correctly when properly data-bound to
 Testing with the actual `DashboardComponent` host is doable but seems more trouble than its worth.
 It's easier to emulate the `DashboardComponent` host with a _test host_ like this one:
 
-
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host" linenums="false">
 
 </code-example>
@@ -1408,7 +1336,6 @@ in its `selectedHero` property. Later, the tests check that property to verify t
 `DashboardHeroComponent.selected` event emitted the right hero.
 
 The setup for the test-host tests is similar to the setup for the stand-alone tests:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" linenums="false">
 
@@ -1426,7 +1353,6 @@ The query for the hero element (`heroEl`) still finds it in the test DOM,
 albeit at greater depth in the element tree than before.
 
 The tests themselves are almost identical to the stand-alone version:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-tests" linenums="false">
 
@@ -1447,7 +1373,6 @@ really does find its way up through the event binding to the host component.
 
 Testing the actual `DashboardComponent` seemed daunting because it injects the `Router`.
 
-
 <code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" linenums="false">
 
 </code-example>
@@ -1456,7 +1381,6 @@ It also injects the `HeroService`, but faking that is a [familiar story](guide/t
 The `Router` has a complicated API and is entwined with other services and application preconditions.
 
 Fortunately, the `DashboardComponent` isn't doing much with the `Router`
-
 
 <code-example path="testing/src/app/dashboard/dashboard.component.ts" region="goto-detail" linenums="false">
 
@@ -1467,7 +1391,6 @@ As a rule you test the component, not the router,
 and care only if the component navigates with the right address under the given conditions.
 Stubbing the router with a test implementation is an easy option. This should do the trick:
 
-
 <code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="router-stub" linenums="false">
 
 </code-example>
@@ -1475,13 +1398,11 @@ Stubbing the router with a test implementation is an easy option. This should do
 Now set up the testing module with the test stubs for the `Router` and `HeroService`, and
 create a test instance of the `DashboardComponent` for subsequent testing.
 
-
 <code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="compile-and-create-body" linenums="false">
 
 </code-example>
 
 The following test clicks the displayed hero and confirms (with the help of a spy) that `Router.navigateByUrl` is called with the expected url.
-
 
 <code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="navigate-test" linenums="false">
 
@@ -1493,7 +1414,6 @@ The following test clicks the displayed hero and confirms (with the help of a sp
 ### The _inject_ function
 
 Notice the `inject` function in the second `it` argument.
-
 
 <code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="inject" linenums="false">
 
@@ -1525,7 +1445,6 @@ This example injects the `Router` from the current `TestBed` injector.
 That's fine for this test because the `Router` is, and must be, provided by the application root injector.
 
 If you need a service provided by the component's _own_ injector,  call `fixture.debugElement.injector.get` instead:
-
 
 <code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" linenums="false">
 
@@ -1566,13 +1485,11 @@ Angular injects the `ActivatedRoute` into the `HeroDetailComponent`,
 and the component extracts the `id` so it can fetch the corresponding hero via the `HeroDetailService`.
 Here's the `HeroDetailComponent` constructor:
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" linenums="false">
 
 </code-example>
 
 `HeroDetailComponent`  subscribes to `ActivatedRoute.params` changes in its `ngOnInit` method.
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ng-on-init" linenums="false">
 
@@ -1609,7 +1526,6 @@ The `hero-detail.component.spec.ts` relies on an `ActivatedRouteStub` to set `Ac
 This is a cross-application, re-usable _test helper class_.
 Consider placing such helpers in a `testing` folder sibling to the `app` folder.
 This sample keeps `ActivatedRouteStub` in `testing/router-stubs.ts`:
-
 
 
 <code-example path="testing/src/testing/router-stubs.ts" region="activated-route-stub" linenums="false">
@@ -1651,7 +1567,6 @@ The router stubs in this guide are meant to inspire you. Create your own stubs t
 ### Testing with the _Observable_ test double
 Here's a test demonstrating the component's behavior when the observed `id` refers to an existing hero:
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" linenums="false">
 
 </code-example>
@@ -1669,7 +1584,6 @@ When the `id` cannot be found, the component should re-route to the `HeroListCom
 The test suite setup provided the same `RouterStub` [described above](guide/testing#routed-component) which spies on the router without actually navigating.
 This test supplies a "bad" id and expects the component to try to navigate.
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" linenums="false">
 
 </code-example>
@@ -1679,7 +1593,6 @@ The component should do something reasonable when there is no `id`.
 
 In this implementation, the component should create and display a new hero.
 New heroes have `id=0` and a blank `name`. This test confirms that the component behaves as expected:
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-no-id" linenums="false">
 
@@ -1713,7 +1626,6 @@ The `HeroDetailComponent` is a simple view with a title, two hero fields, and tw
 
 But there's already plenty of template complexity.
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.html" linenums="false">
 
 </code-example>
@@ -1729,7 +1641,6 @@ Even a small form such as this one can produce a mess of tortured conditional se
 Tame the madness with a `Page` class that simplifies access to component properties and encapsulates the logic that sets them.
 Here's the `Page` class for the `hero-detail.component.spec.ts`
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="page" linenums="false">
 
 </code-example>
@@ -1738,7 +1649,6 @@ Now the important hooks for component manipulation and inspection are neatly org
 
 
 A `createComponent` method creates a `page` object and fills in the blanks once the `hero` arrives.
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="create-component" linenums="false">
 
@@ -1749,7 +1659,6 @@ keep the tests short and _on message_.
 There are no distractions: no waiting for promises to resolve and no searching the DOM for element values to compare.
 
 Here are a few more `HeroDetailComponent` tests to drive the point home.
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="selected-tests" linenums="false">
 
@@ -1766,7 +1675,6 @@ Here are a few more `HeroDetailComponent` tests to drive the point home.
 {@a import-module}
 ## Setup with module imports
 Earlier component tests configured the testing module with a few `declarations` like this:
-
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="compile-components" linenums="false">
 
@@ -1790,7 +1698,6 @@ In addition to the support it receives from the default testing module `CommonMo
 
 One approach is to configure the testing module from the individual pieces as in this example:
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-forms-module" linenums="false">
 
 </code-example>
@@ -1798,7 +1705,6 @@ One approach is to configure the testing module from the individual pieces as in
 Because many app components need the `FormsModule` and the `TitleCasePipe`, the developer created
 a `SharedModule` to combine these and other frequently requested parts.
 The test configuration can use the `SharedModule` too as seen in this alternative setup:
-
 
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-shared-module" linenums="false">
@@ -1814,7 +1720,6 @@ It's a bit tighter and smaller, with fewer import statements (not shown).
 The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/ngmodule) that aggregates more of the interdependent pieces
 including the `SharedModule`.
 Try a test configuration that imports the `HeroModule` like this one:
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" linenums="false">
 
@@ -1852,7 +1757,6 @@ especially when the feature module is small and mostly self-contained, as featur
 
 The `HeroDetailComponent` provides its own `HeroDetailService`.
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" linenums="false">
 
 </code-example>
@@ -1876,7 +1780,6 @@ There might not be a remote server to call.
 Fortunately, the `HeroDetailService` delegates responsibility for remote data access to an injected `HeroService`.
 
 
-
 <code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" linenums="false">
 
 </code-example>
@@ -1894,7 +1797,6 @@ The `TestBed.overrideComponent` method can replace the component's `providers` w
 as seen in the following setup variation:
 
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" linenums="false">
 
 </code-example>
@@ -1906,7 +1808,6 @@ Notice that `TestBed.configureTestingModule` no longer provides a (fake) `HeroSe
 ### The _overrideComponent_ method
 
 Focus on the `overrideComponent` method.
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" linenums="false">
 
@@ -1955,7 +1856,6 @@ were called by spying on the service methods.
 Accordingly, the stub implements its methods as spies:
 
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="hds-spy" linenums="false">
 
 </code-example>
@@ -1967,7 +1867,6 @@ Accordingly, the stub implements its methods as spies:
 
 Now the tests can control the component's hero directly by manipulating the spy-stub's `testHero`
 and confirm that service methods were called.
-
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" linenums="false">
 
@@ -1999,13 +1898,11 @@ It also displays a navigation bar with anchors and their `RouterLink` directives
 {@a app-component-html}
 
 
-
 <code-example path="testing/src/app/app.component.html" linenums="false">
 
 </code-example>
 
 The component class does nothing.
-
 
 <code-example path="testing/src/app/app.component.ts" linenums="false">
 
@@ -2019,7 +1916,6 @@ See why this is worth doing [below](guide/testing#why-stubbed-routerlink-tests).
 ### Stubbing unneeded components
 
 The test setup should look familiar.
-
 
 
 <code-example path="testing/src/app/app.component.spec.ts" region="setup-stubs" linenums="false">
@@ -2047,7 +1943,6 @@ and throws an error.
 The `RouterLinkStubDirective` contributes substantively to the test:
 
 
-
 <code-example path="testing/src/testing/router-stubs.ts" region="router-link" linenums="false">
 
 </code-example>
@@ -2066,7 +1961,6 @@ Tests can inspect that property to confirm the expected _click-to-navigation_ be
 
 A little more setup triggers the initial data binding and gets references to the navigation links:
 
-
 <code-example path="testing/src/app/app.component.spec.ts" region="test-setup" linenums="false">
 
 </code-example>
@@ -2081,7 +1975,6 @@ Angular always adds attached directives to the component's injector.
 
 {@a app-component-tests}
 Here are some tests that leverage this setup:
-
 
 <code-example path="testing/src/app/app.component.spec.ts" region="tests" linenums="false">
 
@@ -2157,20 +2050,15 @@ These tests are ***shallow*** because they only "go deep" into the components yo
 
 Here is a setup, with `import` statements, that demonstrates the improved simplicity of _shallow_ tests, relative to the stubbing setup.
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/app.component.spec.ts (NO_ERRORS_SCHEMA)" path="testing/src/app/app.component.spec.ts" region="setup-schemas">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.component.spec.ts (Stubs)" path="testing/src/app/app.component.spec.ts" region="setup-stubs-w-imports">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2207,13 +2095,11 @@ based on either a data bound color or a default color (lightgray).
 It also sets a custom property of the element (`customProperty`) to `true`
 for no reason other than to show that it can.
 
-
 <code-example path="testing/src/app/shared/highlight.directive.ts" linenums="false">
 
 </code-example>
 
 It's used throughout the application, perhaps most simply in the `AboutComponent`:
-
 
 <code-example path="testing/src/app/about.component.ts" linenums="false">
 
@@ -2221,7 +2107,6 @@ It's used throughout the application, perhaps most simply in the `AboutComponent
 
 Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the
 techniques explored above (in particular the ["Shallow test"](guide/testing#shallow-component-test) approach).
-
 
 <code-example path="testing/src/app/about.component.spec.ts" region="tests" linenums="false">
 
@@ -2236,7 +2121,6 @@ Isolated unit tests don't touch the DOM and, therefore,
 do not inspire confidence in the directive's efficacy.
 
 A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
-
 
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" linenums="false">
@@ -2259,7 +2143,6 @@ The initial value is the word "cyan" which should be the background color of the
 ~~~
 
 Here are some tests of this component:
-
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests">
 
@@ -2329,7 +2212,6 @@ Here are some synchronous and asynchronous unit tests of the `FancyService`
 written without assistance from Angular testing utilities.
 
 
-
 <code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="FancyService">
 
 </code-example>
@@ -2340,20 +2222,15 @@ The benefit comes from reduced setup and code complexity.
 
 Compare these equivalent tests of `FancyService.getTimeoutValue`.
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/bag/bag.no-testbed.spec.ts (Isolated)" path="testing/src/app/bag/bag.no-testbed.spec.ts" region="getTimeoutValue">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/bag/bag.spec.ts (with Angular testing utilities)" path="testing/src/app/bag/bag.spec.ts" region="getTimeoutValue">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2375,7 +2252,6 @@ In many cases, it's easier to create and _inject_ dependencies by hand.
 
 The `DependentService` is a simple example:
 
-
 <code-example path="testing/src/app/bag/bag.ts" region="DependentService" linenums="false">
 
 </code-example>
@@ -2383,7 +2259,6 @@ The `DependentService` is a simple example:
 It delegates its only method, `getValue`, to the injected `FancyService`.
 
 Here are several ways to test it.
-
 
 <code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="DependentService">
 
@@ -2414,14 +2289,12 @@ metadata and an interface.
 Consider a `TitleCasePipe` that capitalizes the first letter of each word.
 Here's a naive implementation with a regular expression.
 
-
 <code-example path="testing/src/app/shared/title-case.pipe.ts" linenums="false">
 
 </code-example>
 
 Anything that uses a regular expression is worth testing thoroughly.
 Use simple Jasmine to explore the expected cases and the edge cases.
-
 
 
 <code-example path="testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt">
@@ -2437,7 +2310,6 @@ They can't tell if the `TitleCasePipe` is working properly as applied in the app
 
 Consider adding component tests such as this one:
 
-
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe">
 
 </code-example>
@@ -2452,14 +2324,12 @@ The Angular testing utilities are specifically designed to facilitate such tests
 
 Consider this `ButtonComp` component.
 
-
 <code-example path="testing/src/app/bag/bag.ts" region="ButtonComp" linenums="false">
 
 </code-example>
 
 The following Angular test demonstrates that clicking a button in the template leads
 to an update of the on-screen message.
-
 
 <code-example path="testing/src/app/bag/bag.spec.ts" region="ButtonComp" linenums="false">
 
@@ -2474,7 +2344,6 @@ exploring many more conditions with less effort.
 
 Here are a set of unit tests that verify the component's outputs in the face of a variety of
 component inputs.
-
 
 <code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="ButtonComp" linenums="false">
 
@@ -2508,71 +2377,49 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
 <table>
 
-
   <tr>
-
 
     <th>
       Function
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>async</code>
     </td>
-
-
 
     <td>
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.      
             See [discussion above](guide/testing#async).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>fakeAsync</code>
     </td>
-
-
 
     <td>
       Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling      
             a linear control flow coding style. See [discussion above](guide/testing#fake-async).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>tick</code>
     </td>
-
-
 
     <td>
       Simulates the passage of time and the completion of pending asynchronous activities      
@@ -2594,19 +2441,13 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
        <code>inject</code>
     </td>
-
-
 
     <td>
       Injects one or more services from the current `TestBed` injector into a test function.      
@@ -2614,19 +2455,13 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>discardPeriodicTasks</code>
     </td>
-
-
 
     <td>
       When a `fakeAsync` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),      
@@ -2638,19 +2473,13 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>flushMicrotasks</code>
     </td>
-
-
 
     <td>
       When a `fakeAsync` test ends with pending _micro-tasks_ such as unresolved promises,      
@@ -2662,38 +2491,26 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>ComponentFixtureAutoDetect</code>
     </td>
-
-
 
     <td>
       A provider token for a service that turns on [automatic change detection](guide/testing#automatic-change-detection).      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>getTestBed</code>
     </td>
-
-
 
     <td>
       Gets the current instance of the `TestBed`.      
@@ -2703,9 +2520,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -2768,33 +2583,23 @@ Here are the most important static methods, in order of likely utility.
 
 <table>
 
-
   <tr>
-
 
     <th>
       Methods
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>configureTestingModule</code>
     </td>
-
-
 
     <td>
       The testing shims (`karma-test-shim`, `browser-test-shim`)      
@@ -2805,19 +2610,13 @@ Here are the most important static methods, in order of likely utility.
             by adding and removing imports, declarations (of components, directives, and pipes), and providers.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>compileComponents</code>
     </td>
-
-
 
     <td>
       Compile the testing module asynchronously after you've finished configuring it.      
@@ -2829,38 +2628,26 @@ Here are the most important static methods, in order of likely utility.
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>createComponent<T></code>
     </td>
-
-
 
     <td>
       Create an instance of a component of type `T` based on the current `TestBed` configuration.      
             After calling `compileComponent`, the `TestBed` configuration is frozen for the duration of the current spec.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>overrideModule</code>
     </td>
-
-
 
     <td>
       Replace metadata for the given `NgModule`. Recall that modules can import other modules.      
@@ -2868,77 +2655,53 @@ Here are the most important static methods, in order of likely utility.
             modify one of these inner modules.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>overrideComponent</code>
     </td>
-
-
 
     <td>
       Replace metadata for the given component class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>overrideDirective</code>
     </td>
-
-
 
     <td>
       Replace metadata for the given directive class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>overridePipe</code>
     </td>
-
-
 
     <td>
       Replace metadata for the given pipe class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <a id="testbed-get"></a>      
             <code>get</code>
     </td>
-
-
 
     <td>
       Retrieve a service from the current `TestBed` injector.      
@@ -2950,31 +2713,22 @@ Here are the most important static methods, in order of likely utility.
                   
             The `TestBed.get` method takes an optional second parameter,      
             the object to return if Angular can't find the provider      
-            (`null` in this example):      
-      
-
+            (`null` in this example):
       <code-example path="testing/src/app/bag/bag.spec.ts" region="testbed-get" linenums="false">
 
       </code-example>
-
       After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <a id="testbed-initTestEnvironment"></a>      
             <code>initTestEnvironment</code>
     </td>
-
-
 
     <td>
       Initialize the testing environment for the entire test run.      
@@ -2990,28 +2744,20 @@ Here are the most important static methods, in order of likely utility.
             `@angular/platform-<platform_name>/testing/<platform_name>`.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>resetTestEnvironment</code>
     </td>
-
-
 
     <td>
       Reset the initial test environment, including the default testing module.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3038,51 +2784,35 @@ Here are the most important properties for testers, in order of likely utility.
 
 <table>
 
-
   <tr>
-
 
     <th>
       Properties
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>componentInstance</code>
     </td>
 
-
-
     <td>
       The instance of the component class created by `TestBed.createComponent`.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>debugElement</code>
     </td>
-
-
 
     <td>
       The `DebugElement` associated with the root element of the component.      
@@ -3091,37 +2821,25 @@ Here are the most important properties for testers, in order of likely utility.
             It's a critical property for testers. The most interesting members are covered [below](guide/testing#debug-element-details).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>nativeElement</code>
     </td>
 
-
-
     <td>
       The native DOM element at the root of the component.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>changeDetectorRef</code>
     </td>
-
-
 
     <td>
       The `ChangeDetectorRef` for the component.      
@@ -3132,9 +2850,7 @@ Here are the most important properties for testers, in order of likely utility.
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3150,33 +2866,23 @@ Here are the most useful methods for testers.
 
 <table>
 
-
   <tr>
-
 
     <th>
       Methods
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>detectChanges</code>
     </td>
-
-
 
     <td>
       Trigger a change detection cycle for the component.      
@@ -3190,19 +2896,13 @@ Here are the most useful methods for testers.
             called as `detectChanges(false)`;
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>autoDetectChanges</code>
     </td>
-
-
 
     <td>
       Set this to `true` when you want the fixture to detect changes automatically.      
@@ -3218,57 +2918,39 @@ Here are the most useful methods for testers.
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>checkNoChanges</code>
     </td>
-
-
 
     <td>
       Do a change detection run to make sure there are no pending changes.      
             Throws an exceptions if there are.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>isStable</code>
     </td>
-
-
 
     <td>
       If the fixture is currently _stable_, returns `true`.      
             If there are async tasks that have not completed, returns `false`.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>whenStable</code>
     </td>
-
-
 
     <td>
       Returns a promise that resolves when the fixture is stable.      
@@ -3278,28 +2960,20 @@ Here are the most useful methods for testers.
             See [above](guide/testing#when-stable).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>destroy</code>
     </td>
-
-
 
     <td>
       Trigger component destruction.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3318,126 +2992,86 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
 <table>
 
-
   <tr>
-
 
     <th>
       Member
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>nativeElement</code>
     </td>
 
-
-
     <td>
       The corresponding DOM element in the browser (null for WebWorkers).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>query</code>
     </td>
-
-
 
     <td>
       Calling `query(predicate: Predicate<DebugElement>)` returns the first `DebugElement`      
             that matches the [predicate](guide/testing#query-predicate) at any depth in the subtree.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>queryAll</code>
     </td>
-
-
 
     <td>
       Calling `queryAll(predicate: Predicate<DebugElement>)` returns all `DebugElements`      
             that matches the [predicate](guide/testing#query-predicate) at any depth in subtree.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>injector</code>
     </td>
-
-
 
     <td>
       The host dependency injector.      
             For example, the root element's component instance injector.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>componentInstance</code>
     </td>
 
-
-
     <td>
       The element's own component instance, if it has one.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>context</code>
     </td>
-
-
 
     <td>
       An object that provides parent context for this element.      
@@ -3448,19 +3082,13 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
             For example, the `hero` in `*ngFor="let hero of heroes"`.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>children</code>
     </td>
-
-
 
     <td>
       The immediate `DebugElement` children. Walk the tree by descending through `children`.      
@@ -3477,57 +3105,39 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>parent</code>
     </td>
-
-
 
     <td>
       The `DebugElement` parent. Null if this is the root element.      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>name</code>
     </td>
-
-
 
     <td>
       The element tag name, if it is an element.      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>triggerEventHandler</code>
     </td>
-
-
 
     <td>
       Triggers the event by its name if there is a corresponding listener      
@@ -3540,76 +3150,52 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>listeners</code>
     </td>
-
-
 
     <td>
       The callbacks attached to the component's `@Output` properties and/or the element's event properties.      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>providerTokens</code>
     </td>
-
-
 
     <td>
       This component's injector lookup tokens.      
             Includes the component itself plus the tokens that the component lists in its `providers` metadata.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>source</code>
     </td>
-
-
 
     <td>
       Where to find this element in the source component template.      
             
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>references</code>
     </td>
-
-
 
     <td>
       Dictionary of objects associated with template local variables (e.g. `#foo`),      
@@ -3617,9 +3203,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3632,7 +3216,6 @@ predicate that filters the source element's subtree for matching `DebugElement`.
 The predicate is any method that takes a `DebugElement` and returns a _truthy_ value.
 The following example finds all `DebugElements` with a reference to a template local variable named "content":
 
-
 <code-example path="testing/src/app/bag/bag.spec.ts" region="custom-predicate" linenums="false">
 
 </code-example>
@@ -3641,7 +3224,6 @@ The Angular `By` class has three static methods for common predicates:
 * `By.all` - return all elements.
 * `By.css(selector)` - return elements with matching CSS selectors.
 * `By.directive(directive)` - return elements that Angular matched to an instance of the directive class.
-
 
 
 <code-example path="testing/src/app/hero/hero-list.component.spec.ts" region="by" linenums="false">
@@ -3676,45 +3258,31 @@ is a topic beyond the scope of this guide .
 
 <table width="100%">
 
-
   <col width="20%">
 
   </col>
-
-
 
   <col width="80%">
 
   </col>
 
-
-
   <tr>
-
 
     <th>
       File
     </th>
 
-
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>karma.conf.js</code>
     </td>
-
-
 
     <td>
       The karma configuration file that specifies which plug-ins to use,      
@@ -3727,19 +3295,13 @@ is a topic beyond the scope of this guide .
             * `karma-test-shim.js`
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>karma-test-shim.js</code>
     </td>
-
-
 
     <td>
       This shim prepares karma specifically for the Angular test environment      
@@ -3747,19 +3309,13 @@ is a topic beyond the scope of this guide .
             It loads the `systemjs.config.js` file as part of that process.
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>systemjs.config.js</code>
     </td>
-
-
 
     <td>
       [SystemJS](https://github.com/systemjs/systemjs/blob/master/README.md)      
@@ -3768,19 +3324,13 @@ is a topic beyond the scope of this guide .
             It's the same version of `systemjs.config.js` you installed during [setup](guide/testing#setup).
     </td>
 
-
   </tr>
 
-
-
   <tr>
-
 
     <td style="vertical-align: top">
       <code>systemjs.config.extras.js</code>
     </td>
-
-
 
     <td>
       An optional file that supplements the SystemJS configuration in `systemjs.config.js` with      
@@ -3793,28 +3343,19 @@ is a topic beyond the scope of this guide .
             to the SystemJs `packages` configuration.
     </td>
 
-
   </tr>
-
-
 
   <tr>
 
-
     <td colspan="2">
-      
-      
 
       <code-example path="testing/src/systemjs.config.extras.js" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3828,11 +3369,9 @@ They're installed when you run `npm install`.
 
 <div class='l' class='hr'>
 
-
   <div id='faq'>
 
   </div>
-
   
     ## FAQ: Frequently Asked Questions
 </div>

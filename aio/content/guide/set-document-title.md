@@ -14,9 +14,7 @@ This cookbook explains how to do it.**See the <live-example name="cb-set-documen
 
 <table>
 
-
   <tr>
-
 
     <td>
       To see the browser title bar change in the live example,      
@@ -24,15 +22,11 @@ This cookbook explains how to do it.**See the <live-example name="cb-set-documen
             then pop out the preview window by clicking the blue 'X' button in the upper right corner.
     </td>
 
-
-
     <td>
       <img src='assets/images/devguide/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right">      </img>      <br>      </br>      <img src='assets/images/devguide/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right">      </img>
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -72,7 +66,6 @@ for getting and setting the current HTML document title:
 Let's inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
-
 <code-example path="cb-set-document-title/src/app/app.component.ts" region="class" linenums="false">
 
 </code-example>
@@ -86,26 +79,19 @@ We bind that method to three anchor tags and, voilà!
 Here's the complete solution
 
 
-
 <code-tabs>
-
 
   <code-pane title="src/main.ts" path="cb-set-document-title/src/main.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.module.ts" path="cb-set-document-title/src/app/app.module.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.component.ts" path="cb-set-document-title/src/app/app.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

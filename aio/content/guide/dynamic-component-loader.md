@@ -37,7 +37,6 @@ Before components can be added we have to define an anchor point to mark where c
 The ad banner uses a helper directive called `AdDirective` to mark valid insertion points in the template.
 
 
-
 <code-example path="cb-dynamic-component-loader/src/app/ad.directive.ts" linenums="false">
 
 </code-example>
@@ -51,45 +50,33 @@ The next step is to implement the ad banner. Most of the implementation is in `A
 We start by adding a `template` element with the `AdDirective` directive applied.
 
 
-
 <code-tabs>
-
 
   <code-pane title="ad-banner.component.ts" path="cb-dynamic-component-loader/src/app/ad-banner.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="ad.service.ts" path="cb-dynamic-component-loader/src/app/ad.service.ts">
 
   </code-pane>
-
-
 
   <code-pane title="ad-item.ts" path="cb-dynamic-component-loader/src/app/ad-item.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app.module.ts" path="cb-dynamic-component-loader/src/app/app.module.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app.component" path="cb-dynamic-component-loader/src/app/app.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
 The `template` element decorated with the `ad-host` directive marks where dynamically loaded components will be added.
 
 Using a `template` element is recommended since it doesn't render any additional output.
-
 
 
 <code-example path="cb-dynamic-component-loader/src/app/ad-banner.component.ts" region="ad-host" linenums="false">
@@ -115,7 +102,6 @@ Generally the compiler will generate a component factory for any component refer
 With dynamically loaded components there are no selector references in the templates since components are loaded at runtime. In order to ensure that the compiler will still generate a factory, dynamically loaded components have to be added to their `NgModule`'s `entryComponents` array.   
 
 
-
 <code-example path="cb-dynamic-component-loader/src/app/app.module.ts" region="entry-components" linenums="false">
 
 </code-example>
@@ -129,26 +115,19 @@ In the Ad banner, all components implement a common `AdComponent` interface to s
 Two sample components and the `AdComponent` interface are shown below:
 
 
-
 <code-tabs>
-
 
   <code-pane title="hero-job-ad.component.ts" path="cb-dynamic-component-loader/src/app/hero-job-ad.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="hero-profile.component.ts" path="cb-dynamic-component-loader/src/app/hero-profile.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="ad.component.ts" path="cb-dynamic-component-loader/src/app/ad.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

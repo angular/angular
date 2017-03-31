@@ -14,7 +14,7 @@ Using a separate service keeps components lean and focused on supporting the vie
 and makes it easy to unit-test components with a mock service.
 
 Because data services are invariably asynchronous,
-you'll finish the page with a *!{_Promise}*-based version of the data service.
+you'll finish the page with a *Promise*-based version of the data service.
 
 When you're done with this page, the app should look like this <live-example></live-example>.
 
@@ -25,89 +25,61 @@ If not, go back to the previous pages.
 
 <aio-filetree>
 
-
   <aio-folder>
     angular-tour-of-heroes
-
     <aio-folder>
       src
-
       <aio-folder>
         app
-
         <aio-file>
           app.component.ts
         </aio-file>
-
-
 
         <aio-file>
           app.module.ts
         </aio-file>
 
-
-
         <aio-file>
           hero.ts
         </aio-file>
-
-
 
         <aio-file>
           hero-detail.component.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
-
       <aio-file>
         index.html
       </aio-file>
-
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -151,7 +123,6 @@ For example, the filename for `SpecialSuperHeroService` is `special-super-hero.s
 Name the class `HeroService` and export it for others to import.
 
 
-
 <code-example path="toh-4/src/app/hero.service.1.ts" region="empty-class" linenums="false">
 
 </code-example>
@@ -175,7 +146,6 @@ consistency and future-proofing.
 Add a `getHeroes()` method stub.
 
 
-
 <code-example path="toh-4/src/app/hero.service.1.ts" region="getHeroes-stub" linenums="false">
 
 </code-example>
@@ -191,7 +161,6 @@ Cut the `HEROES` array from `app.component.ts` and paste it to a new file in the
 Additionally, copy the `import {Hero} ...` statement because the heroes array uses the `Hero` class.
 
 
-
 <code-example path="toh-4/src/app/mock-heroes.ts">
 
 </code-example>
@@ -201,7 +170,6 @@ The `HEROES` constant is exported so it can be imported elsewhere, such as the `
 In `app.component.ts`, where you cut the `HEROES` array,
 add an uninitialized `heroes` property:
 
-
 <code-example path="toh-4/src/app/app.component.1.ts" region="heroes-prop" linenums="false">
 
 </code-example>
@@ -209,7 +177,6 @@ add an uninitialized `heroes` property:
 ### Return mocked hero data
 Back in the `HeroService`, import the mock `HEROES` and return it from the `getHeroes()` method.
 The `HeroService` looks like this:
-
 
 <code-example path="toh-4/src/app/hero.service.1.ts" region="full" linenums="false">
 
@@ -220,7 +187,6 @@ You're ready to use the `HeroService` in other components, starting with `AppCom
 
 Import the `HeroService` so that you can reference it in the code.
 
-
 <code-example path="toh-4/src/app/app.component.ts" linenums="false" title="toh-4/ts/src/app/app.component.ts (hero-service-import)" region="hero-service-import">
 
 </code-example>
@@ -229,7 +195,6 @@ Import the `HeroService` so that you can reference it in the code.
 How should the `AppComponent` acquire a runtime concrete `HeroService` instance?
 
 You could create a new instance of the `HeroService` with `new` like this:
-
 
 <code-example path="toh-4/src/app/app.component.1.ts" region="new-service" linenums="false">
 
@@ -256,7 +221,6 @@ Instead of using the *new* line, you'll add two lines.
  * Add to the component's `providers` metadata.
 
 Add the constructor:
-
 
 <code-example path="toh-4/src/app/app.component.1.ts" region="ctor">
 
@@ -285,7 +249,6 @@ in the `@Component` call.
 
 
 
-
 <code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/ts/src/app/app.component.ts (providers)" region="providers">
 
 </code-example>
@@ -299,13 +262,11 @@ The service is in a `heroService` private variable.
 
 You could call the service and get the data in one line.
 
-
 <code-example path="toh-4/src/app/app.component.1.ts" region="get-heroes" linenums="false">
 
 </code-example>
 
 You don't really need a dedicated method to wrap one line.  Write it anyway:
-
 
 
 <code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/ts/src/app/app.component.ts (getHeroes)" region="getHeroes">
@@ -334,7 +295,6 @@ Read more about lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) 
 
 Here's the essential outline for the `OnInit` interface (don't copy this into your code):
 
-
 <code-example path="toh-4/src/app/app.component.1.ts" region="on-init" linenums="false">
 
 </code-example>
@@ -348,17 +308,15 @@ Add the implementation for the `OnInit` interface to your export statement:
 Write an `ngOnInit` method with the initialization logic inside. Angular will call it
 at the right time. In this case, initialize by calling `getHeroes()`.
 
-
 <code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/ts/src/app/app.component.ts (ng-on-init)" region="ng-on-init">
 
 </code-example>
 
 The app should run as expected, showing a list of heroes and a hero detail view
 when you click on a hero name.
-<a id="async"></a>## Async services and !{_Promise}s
+<a id="async"></a>## Async services and Promises
 The `HeroService` returns a list of mock heroes immediately;
 its `getHeroes()` signature is synchronous.
-
 
 <code-example path="toh-4/src/app/app.component.1.ts" region="get-heroes" linenums="false">
 
@@ -368,12 +326,12 @@ Eventually, the hero data will come from a remote server.
 When using a remote server, users don't have to wait for the server to respond;
 additionally, you aren't able to block the UI during the wait.
 To coordinate the view with the response, 
-you can use *!{_Promise}s*, which is an asynchronous 
+you can use *Promises*, which is an asynchronous 
 technique that changes the signature of the `getHeroes()` method.
 
-### The hero service makes a !{_Promise}
+### The hero service makes a Promise
 
-A *!{_Promise}* essentially promises to call back when the results are ready.
+A *Promise* essentially promises to call back when the results are ready.
 You ask an asynchronous service to do some work and give it a callback function.
 The service does that work and eventually calls the function with the results or an error.
 
@@ -386,30 +344,27 @@ This is a simplified explanation. Read more about ES2015 Promises in the
 
 ~~~
 
-Update the `HeroService` with this !{_Promise}-returning `getHeroes()` method:
-
+Update the `HeroService` with this Promise-returning `getHeroes()` method:
 
 <code-example path="toh-4/src/app/hero.service.ts" region="get-heroes" linenums="false">
 
 </code-example>
 
 You're still mocking the data. You're simulating the behavior of an ultra-fast, zero-latency server,
-by returning an *immediately resolved !{_Promise}* with the mock heroes as the result.
+by returning an *immediately resolved Promise* with the mock heroes as the result.
 
-### Act on the !{_Promise}
+### Act on the Promise
 
-As a result of the change to `HeroService`, `this.heroes` is now set to a !{_Promise} rather than an array of heroes.
-
+As a result of the change to `HeroService`, `this.heroes` is now set to a `Promise` rather than an array of heroes.
 
 <code-example path="toh-4/src/app/app.component.1.ts" region="getHeroes" linenums="false">
 
 </code-example>
 
-You have to change the implementation to *act on the !{_Promise} when it resolves*.
-When the !{_Promise} resolves successfully, you'll have heroes to display.
+You have to change the implementation to *act on the `Promise` when it resolves*.
+When the `Promise` resolves successfully, you'll have heroes to display.
 
-Pass the callback function as an argument to the !{_Promise}'s `then()` method:
-
+Pass the callback function as an argument to the Promise's `then()` method:
 
 <code-example path="toh-4/src/app/app.component.ts" region="get-heroes" linenums="false">
 
@@ -442,127 +397,88 @@ Verify that you have the following structure after all of your refactoring:
 
 <aio-filetree>
 
-
   <aio-folder>
     angular-tour-of-heroes
-
     <aio-folder>
       src
-
       <aio-folder>
         app
-
         <aio-file>
           app.component.ts
         </aio-file>
-
-
 
         <aio-file>
           app.module.ts
         </aio-file>
 
-
-
         <aio-file>
           hero.ts
         </aio-file>
-
-
 
         <aio-file>
           hero-detail.component.ts
         </aio-file>
 
-
-
         <aio-file>
           hero.service.ts
         </aio-file>
-
-
 
         <aio-file>
           mock-heroes.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
-
       <aio-file>
         index.html
       </aio-file>
-
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
 Here are the code files discussed in this page.
 
 
-
 <code-tabs>
-
 
   <code-pane title="src/app/hero.service.ts" path="toh-4/src/app/hero.service.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/app.component.ts" path="toh-4/src/app/app.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="src/app/mock-heroes.ts" path="toh-4/src/app/mock-heroes.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -573,7 +489,7 @@ Here's what you achieved in this page:
 * You used the `ngOnInit` lifecycle hook to get the hero data when the `AppComponent` activates.
 * You defined the `HeroService` as a provider for the `AppComponent`.
 * You created mock hero data and imported them into the service.
-* You designed the service to return a !{_Promise} and the component to get the data from the !{_Promise}.
+* You designed the service to return a Promise and the component to get the data from the Promise.
 
 Your app should look like this <live-example></live-example>.
 
@@ -588,13 +504,12 @@ Read about the Angular component router and navigation among the views in the [n
 To simulate a slow connection,
 import the `Hero` symbol and add the following `getHeroesSlowly()` method to the `HeroService`.
 
-
 <code-example path="toh-4/src/app/hero.service.ts" region="get-heroes-slowly" linenums="false">
 
 </code-example>
 
-Like `getHeroes()`, it also returns a !{_Promise}.
-But this !{_Promise} waits two seconds before resolving the !{_Promise} with mock heroes.
+Like `getHeroes()`, it also returns a `Promise`.
+But this Promise waits two seconds before resolving the Promise with mock heroes.
 
 Back in the `AppComponent`, replace `getHeroes()` with `getHeroesSlowly()`
 and see how the app behaves.

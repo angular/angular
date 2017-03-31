@@ -33,9 +33,8 @@ but also the CSS styles that go with that template,
 specifying any selectors, rules, and media queries that you need.
 
 One way to do this is to set the `styles` property in the component metadata.
-The `styles` property takes #{_an} #{_array} of strings that contain CSS code.
+The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
-
 
 
 <code-example path="component-styles/src/app/hero-app.component.ts" linenums="false">
@@ -74,7 +73,6 @@ Use the `:host` pseudo-class selector to target styles in the element that *host
 targeting elements *inside* the component's template).
 
 
-
 <code-example path="component-styles/src/app/hero-details.component.css" region="host" linenums="false">
 
 </code-example>
@@ -87,7 +85,6 @@ Use the *function form* to apply host styles conditionally by
 including another selector inside parentheses after `:host`.
 
 The next example targets the host element again, but only when it also has the `active` CSS class.
-
 
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" linenums="false">
@@ -108,7 +105,6 @@ The following example applies a `background-color` style to all `<h2>` elements 
 if some ancestor element has the CSS class `theme-light`.
 
 
-
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" linenums="false">
 
 </code-example>
@@ -123,7 +119,6 @@ children and content children of the component.
 
 The following example targets all `<h3>` elements, from the host element down 
 through this component to all of its child elements in the DOM. 
-
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="deep" linenums="false">
 
@@ -156,9 +151,8 @@ The scoping rules outlined earlier apply to each of these loading patterns.
 
 ### Styles in metadata
 
-You can add a `styles` #{_array} property to the `@Component` #{_decorator}.
-Each string in the #{_array} (usually just one string) defines the CSS.
-
+You can add a `styles` array property to the `@Component` decorator.
+Each string in the array (usually just one string) defines the CSS.
 
 
 <code-example path="component-styles/src/app/hero-app.component.ts">
@@ -168,14 +162,12 @@ Each string in the #{_array} (usually just one string) defines the CSS.
 ### Style URLs in metadata
 
 You can load styles from external CSS files by adding a `styleUrls` attribute
-into a component's `@Component` #{_decorator}:
-
+into a component's `@Component` decorator:
 
 
 <code-example path="component-styles/src/app/hero-details.component.ts" region="styleurls">
 
 </code-example>
-
 
 
 
@@ -189,7 +181,6 @@ To specify a URL relative to the component file, see [Appendix 2](guide/componen
 
 
 ~~~
-
 
 
 
@@ -215,7 +206,6 @@ You can embed styles directly into the HTML template by putting them
 inside `<style>` tags.
 
 
-
 <code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles">
 
 </code-example>
@@ -228,7 +218,6 @@ As with `styleUrls`, the link tag's `href` URL is relative to the
 application root, not the component file.
 
 
-
 <code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink">
 
 </code-example>
@@ -238,9 +227,7 @@ application root, not the component file.
 You can also import CSS files into the CSS files using the standard CSS `@import` rule.
 For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
 on the [MDN](https://developer.mozilla.org) site.
-
 In this case, the URL is relative to the CSS file into which you're importing.
-
 
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="import">
@@ -274,7 +261,6 @@ Choose from the following modes:
   This is essentially the same as pasting the component's styles into the HTML.
   
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
-
 
 
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" linenums="false">
@@ -355,9 +341,7 @@ It's common practice to split a component's code, HTML, and CSS into three separ
 You include the template and CSS files by setting the `templateUrl` and `styleUrls` metadata properties respectively.
 Because these files are co-located with the component,
 it would be nice to refer to them by name without also having to specify a path back to the root of the application.
-
 You can use a relative URL by prefixing your filenames with `./`:
-
 
 
 <code-example path="component-styles/src/app/quest-summary.component.ts">

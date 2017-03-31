@@ -12,6 +12,15 @@ scripting attacks. It doesn't cover application-level security, such as authenti
 this user?_) and authorization (_What can this user do?_).
 
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
+
+# Contents
+
+* [Reporting vulnerabilities](guide/security#report-issues).
+* [Best practices](guide/security#best-practices).
+* [Preventing cross-site scripting (XSS)](guide/security#xss).
+* [Trusting safe values](guide/security#bypass-security-apis).
+* [HTTP-Level vulnerabilities](guide/security#http).
+* [Auditing Angular applications](guide/security#code-review).
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
 
@@ -97,7 +106,6 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 content, and once by binding it to the `innerHTML` property of an element:
 
 
-
 <code-example path="security/src/app/inner-html-binding.component.html">
 
 </code-example>
@@ -110,11 +118,9 @@ a value that an attacker might control into `innerHTML` normally causes an XSS
 vulnerability. For example, code contained in a `<script>` tag is executed:
 
 
-
 <code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" title="src/app/inner-html-binding.component.ts (class)" region="class">
 
 </code-example>
-
 
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `<script>`
 tag but keeps safe content such as the text content of the `<script>` tag and the `<b>` element.
@@ -160,7 +166,6 @@ carries a high risk of introducing template-injection vulnerabilities.
 
 
 
-
 <h2 id='bypass-security-apis'>
   Trusting safe values
 </h2>
@@ -186,7 +191,6 @@ your intended use of the value. Imagine that the following template needs to bin
 `javascript:alert(...)` call:
 
 
-
 <code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (URL)" region="URL">
 
 </code-example>
@@ -194,7 +198,6 @@ your intended use of the value. Imagine that the following template needs to bin
 Normally, Angular automatically sanitizes the URL, disables the dangerous code, and
 in development mode, logs this action to the console. To prevent
 this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
-
 
 
 <code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
@@ -215,18 +218,15 @@ could execute. So call a method on the controller to construct a trusted video U
 Angular to allow binding into `<iframe src>`:
 
 
-
 <code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (iframe)" region="iframe">
 
 </code-example>
 
 
 
-
 <code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
 
 </code-example>
-
 
 
 

@@ -79,7 +79,7 @@ Thus, a provider in an intermediate injector intercepts a request for a service 
 It effectively "reconfigures" and "shadows" a provider at a higher level in the tree.
 
 If you only specify providers at the top level (typically the root `AppModule`), the tree of injectors appears to be flat.
-All requests bubble up to the root <span if-docs="ts"><code>NgModule</code></span> injector that you configured with the `!{_bootstrapModule}` method.
+All requests bubble up to the root <code>NgModule</code> injector that you configured with the `bootstrapModule` method.
 
 ## Component injectors
 
@@ -99,7 +99,6 @@ If you later modified the `VillainsService`, you could break something in a hero
 That's not supposed to happen but providing the service in the root `AppModule` creates that risk.
 
 Instead, provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
-
 
 
 <code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
@@ -145,13 +144,11 @@ It caches a single `HeroTaxReturn`, tracks changes to that return, and can save 
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 
-
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts">
 
 </code-example>
 
 Here is the `HeroTaxReturnComponent` that makes use of it.
-
 
 
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts">
@@ -169,7 +166,6 @@ Each component would overwrite the tax return that belonged to another hero.
 What a mess!
 
 Look closely at the metadata for the `HeroTaxReturnComponent`. Notice the `providers` property.
-
 
 
 <code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" title="src/app/hero-tax-return.component.ts (providers)" region="providers">
