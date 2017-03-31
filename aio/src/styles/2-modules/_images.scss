@@ -1,3 +1,9 @@
+img {
+  @media (max-width: 600px) {
+    max-width: 100%;
+    float: none !important;
+  }
+}
 
 .image-display {
   border-radius: 4px;
@@ -12,4 +18,8 @@
     display: inline-block;
     max-width: 100%;
   }
+}
+
+.home-row .promo-img-container img {
+  max-width: 90%;
 }

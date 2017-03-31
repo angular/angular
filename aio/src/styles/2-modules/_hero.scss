@@ -1,0 +1,113 @@
+/*
+* Hero Module
+*
+* A hero banner located at the top of each page that displays the
+* title of the page and sometimes a decorative background.
+*
+*/
+
+
+/*
+* Class
+*/
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 48px 48px 32px 48px;
+  position: relative;
+
+  @media (max-width: 480px) {
+    height: auto;
+    padding-top: 40px;
+  }
+
+  h1:after {
+   content: none;
+  }
+
+  .hero-title {
+    display: inline-block;
+    font-size: 28px;
+    font-weight: 400;
+    float: left;
+    line-height: 48px;
+    margin: 0 $unit 0 0;
+    text-transform: uppercase;
+
+    &.is-standard-case {
+      text-transform: none;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: $unit * 3;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+
+  // CTA BUTTONS
+  .button {
+    margin: 0px $unit;
+
+    // @include respond-to('mobile') {
+    //   margin: 16px 0;
+    //   display: block;
+    // }
+  }
+
+  button {
+    // Override md-button from angular material to align language select with hero title.
+    margin: 0 !important;
+  }
+
+
+  /*
+  * Large Banner
+  */
+
+  &.is-large {
+    padding-top: 32px;
+    text-align: center;
+
+    // @include respond-to('mobile') {
+    //   height: auto;
+    // }
+
+    // LARGE SHEILD LOGO
+    .hero-logo {
+      filter: drop-shadow(0 2px 2px rgba($black, 0.24));
+      margin-bottom: 8px;
+      opacity: 1;
+      padding: 0;
+      width: 240px;
+
+    //   @include respond-to('mobile') {
+    //     width: 192px;
+    //   }
+    }
+
+    .hero-cta,
+    .hero-cta.md-button {
+      background: rgba($white, .87);
+      border-radius: 2px;
+      color: $blue;
+      font-weight: 500;
+      padding: 0 64px;
+      margin: 40px 0;
+      transition: all .3s;
+
+      &:hover {
+        background: $white;
+        box-shadow: 0 8px 8px rgba($black, 0.24), 0 0 8px rgba($black, 0.12);
+        color: $blue;
+      }
+    }
+  }
+}

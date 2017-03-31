@@ -17,16 +17,22 @@ aio-search-results {
     background-color: $darkgray;
     border: 24px solid $darkgray;
 
-    @include bp(tiny) {
+    @media (max-width: 480px) {
         display: block;
-        max-height: 60%;
+        max-height: 70%;
+        box-sizing: border-box;
+        .search-area {
+            display: block;
+            margin: 16px 16px;
+        }
     }
 }
 
 .search-area {
     display: flex;
     flex-direction: column;
-    margin: 0 10px;
+    margin: 16px 16px;
+    height: 100%;
     h2 {
         font-size: 16px;
         margin: 10px 0px 5px;

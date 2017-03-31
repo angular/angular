@@ -10,6 +10,20 @@ aio-nav-menu.top-menu .vertical-menu-item  {
   min-width: 260px;
 }
 
+md-sidenav-container.sidenav-container {
+    height: auto;
+    transform: none;
+  }
+
+// md-sidenav.sidenav.mat-sidenav.mat-sidenav-side.mat-sidenav-opened {
+//   position: fixed;
+//   padding-top: 72px;
+// }
+
+md-sidenav-container div.mat-sidenav-content {
+    height: auto;
+}
+
 .vertical-menu-item {
   box-sizing: border-box;
   color: $darkgray;
