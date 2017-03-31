@@ -1789,6 +1789,59 @@ describe('Integration', () => {
            })));
       });
 
+      describe('should wait for parent to complete', () => {
+        let log: string[];
+
+        beforeEach(() => {
+          log = [];
+          TestBed.configureTestingModule({
+            providers: [
+              {
+                provide: 'parentGuard',
+                useValue: () => {
+                  return delayPromise(10).then(() => {
+                    log.push('parent');
+                    return true;
+                  });
+                }
+              },
+              {
+                provide: 'childGuard',
+                useValue: () => {
+                  return delayPromise(5).then(() => {
+                    log.push('child');
+                    return true;
+                  });
+                }
+              }
+            ]
+          });
+        });
+
+        function delayPromise(delay: number): Promise<boolean> {
+          let resolve: (val: boolean) => void;
+          const promise = new Promise(res => resolve = res);
+          setTimeout(() => resolve(true), delay);
+          return promise;
+        }
+
+        it('works', fakeAsync(inject([Router], (router: Router) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'parent',
+               canActivate: ['parentGuard'],
+               children: [
+                 {path: 'child', component: SimpleCmp, canActivate: ['childGuard']},
+               ]
+             }]);
+
+             router.navigateByUrl('/parent/child');
+             advance(fixture);
+             tick(15);
+             expect(log).toEqual(['parent', 'child']);
+           })));
+      });
     });
 
     describe('CanDeactivate', () => {
