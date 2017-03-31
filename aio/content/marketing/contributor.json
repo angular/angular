@@ -1,0 +1,533 @@
+{
+  "misko": {
+    "name": "Miško Hevery",
+    "picture": "misko.jpg",
+    "twitter": "mhevery",
+    "website": "http://misko.hevery.com",
+    "bio": "Miško Hevery is the creator of AngularJS framework. He has passion for making complex things simple. He currently works at Google, but has previously worked at Adobe, Sun Microsystems, Intel, and Xerox, where he became an expert in building web applications in web related technologies such as Java, JavaScript, Flex and ActionScript.",
+    "group": "Lead"
+  },
+
+  "igor": {
+    "name": "Igor Minar",
+    "picture": "igor-minar.jpg",
+    "twitter": "IgorMinar",
+    "website": "https://google.com/+IgorMinar",
+    "bio": "Igor is a software engineer at Google. He is a lead on the Angular project, practitioner of test driven development, open source enthusiast, hacker. In his free time, Igor enjoys spending time with his wife and two kids, doing outdoor activities (including but not limited to sports, gardening and building retaining walls).",
+    "group": "Lead"
+  },
+
+  "naomi": {
+    "name": "Naomi Black",
+    "picture": "naomi.jpg",
+    "twitter": "naomitraveller",
+    "website": "http://google.com/+NaomiBlack",
+    "bio": "Naomi is Angular's TPM generalist and jack-of-all-trades. She supports Angular's internal Google users and solves hard-to-define problems. She's been at Google since 2006, as a technical program manager on projects ranging from Accessibility to Google Transit. She fights daleks in her spare time.",
+    "group": "Lead"
+  },
+
+  "brad": {
+    "name": "Brad Green",
+    "picture": "brad-green.jpg",
+    "twitter": "bradlygreen",
+    "website": "https://plus.google.com/+BradGreen",
+    "bio": "Brad Green works at Google as an engineering director. Brad manages the Google Sales Platform suite of projects as well as the AngularJS framework. Prior to Google, Brad worked on the early mobile web at AvantGo, founded and sold startups, and spent a few hard years toiling as a caterer. Brad's first job out of school was as lackey to Steve Jobs at NeXT Computer writing demo software and designing his slide presentations. Brad enjoys throwing dinner parties with his wife Heather and putting on plays with his children.",
+    "group": "Lead"
+  },
+
+  "juleskremer": {
+    "name": "Jules Kremer",
+    "picture": "juleskremer.jpg",
+    "twitter": "jules_kremer",
+    "website": "https://plus.google.com/+JulesKremer",
+    "bio": "Jules is Head of Angular Developer Relations at Google.  When not working with developers, Jules is often bending into pretzel-like shapes, climbing mountains or drinking really awesome beer.",
+    "group": "Lead"
+  },
+
+  "jelbourn": {
+    "name": "Jeremy Elbourn",
+    "picture": "jelbourn.jpg",
+    "twitter": "jelbourn",
+    "website": "https://plus.google.com/+JeremyElbourn/",
+    "bio": "Angular Material Team Lead. FE Engineer @ Google specializing in AngularJS, component design, and the cleanest of code.",
+    "group": "Lead"
+  },
+
+  "pete": {
+    "name": "Pete Bacon Darwin",
+    "picture": "pete.jpg",
+    "twitter": "petebd",
+    "website": "http://www.bacondarwin.com",
+    "bio": "AngularJS for JS Team Lead. Pete has been working on the core team since 2012 and became the team lead for the AngularJS for JS branch in November 2014. He has co-authored a book on AngularJS and regularly talks about and teaches Angular.",
+    "group": "Lead"
+  },
+
+  "thomas": {
+    "name": "Thomas Burleson",
+    "picture": "thomas.jpg",
+    "twitter": "ThomasBurleson",
+    "website": "http://www.solutionOptimist.com",
+    "bio": "AngularJS Material and @angular/flex-layout Team Lead. Thomas joined the core team in 2014. He leads a team of developers working on UX components for AngularJS.",
+    "group": "Lead"
+  },
+  "stephenfluin": {
+    "name": "Stephen Fluin",
+    "picture": "stephenfluin.jpg",
+    "twitter": "stephenfluin",
+    "website": "https://plus.google.com/+stephenfluin",
+    "bio": "Stephen is a Developer Advocate working on the Angular team. Before joining Google, he was a Google Expert. Stephen loves to help enterprises use technology more effectively.",
+    "group": "Google"
+  },
+  "robwormald": {
+    "name": "Rob Wormald",
+    "picture": "rob-wormald.jpg",
+    "twitter": "robwormald",
+    "website": "http://github.com/robwormald",
+    "bio": "Rob is a Developer Advocate on the Angular team at Google. He's the Angular team's resident reactive programming geek and founded the Reactive Extensions for Angular project, ngrx.",
+    "group": "Google"
+  },
+  "aaronzhang": {
+    "name": "Aaron Zhang (章小飞)",
+    "picture": "xiaofei.jpg",
+    "twitter": "",
+    "website": "http://github.com/damoqiongqiu",
+    "bio": "Aaron is Angular's developer PM in China. He is the lead for angular.cn and social channels in China, and helps developers in China's enterprise and open source communities to be successful with Angular. One of the earliest Angular developers in China since Angular 2012, he translated the first books on Angular into Chinese. Aaron joined the Google team in 2016.",
+    "group": "Google"
+  },
+  "tobias": {
+    "name": "Tobias Bosch",
+    "picture": "tobias.jpg",
+    "twitter": "tbosch1009",
+    "website": "https://plus.google.com/+TobiasBosch",
+    "bio": "Tobias Bosch is a software engineer at Google. He is part of the Angular core team and works on Angular.",
+    "group": "Google"
+  },
+
+  "rado": {
+    "name": "Rado Kirov",
+    "picture": "rado.jpg",
+    "twitter": "radokirov",
+    "website": "https://plus.sandbox.google.com/+RadoslavKirov",
+    "bio": "Rado has been on the Angular Core team since Summer 2014. Before Angular, he worked on the Adsense serving stack, responsible for serving billions of ads daily. Being passionate about open source, he made contributions to Angular as a Google-20% project, before making the fulltime jump. He is a recovering academic; ask him about error-correcting codes from algebraic curves (or don't).",
+    "group": "Google"
+  },
+
+  "davideast": {
+    "name": "David East",
+    "picture": "david-east.jpg",
+    "twitter": "_davideast",
+    "website":"https://github.com/davideast",
+    "bio": "David East is a Developer Programs Engineer at Google. He works full-time on the Firebase team and part-time on the Angular core team.",
+    "group": "Google"
+  },
+  "alexeagle": {
+    "name": "Alex Eagle",
+    "picture": "alex-eagle.jpg",
+    "twitter": "jakeherringbone",
+    "website": "http://google.com/+alexeagle",
+    "bio": "Alex works on language tooling for JavaScript and TypeScript. Previously Alex spent five years in Google's developer testing tools. He has developed systems including Google's continuous integration service, capturing build&test failures, and explaining them to developers. Before Google, Alex worked at startups including Opower, and consulted for large government IT. In his 20% time, he created the Error-Prone static analysis tool, which detects common Java programming mistakes and reports them as compile errors.",
+    "group": "Google"
+  },
+
+  "martinprobst": {
+    "name": "Martin Probst",
+    "picture": "martin-probst.jpg",
+    "twitter": "martin_probst",
+    "website": "http://probst.io",
+    "bio": "Martin is a software engineer at Google in the AngularJS team. He holds a MSc in Software Engineering from HPI in Potsdam, Germany. Before joining the AngularJS team at Google, he worked at a database startup in the Netherlands, at EMC, at SAP, and as a freelancer. In his free time, he likes to cook and sail, not necessarily at the same time.",
+    "group": "Google"
+  },
+
+  "julieralph": {
+    "name": "Julie Ralph",
+    "picture": "julie-ralph.jpg",
+    "twitter": "SomeJulie",
+    "website": "https://plus.google.com/+JulieRalph",
+    "bio": "Julie Ralph works as a Software Engineer in Test at Google in Seattle and is the lead developer on the Angular end-to-end testing framework Protractor.",
+    "group": "Google"
+  },
+
+  "alexrickabaugh": {
+    "name": "Alex Rickabaugh",
+    "picture": "alex-rickabaugh.jpg",
+    "twitter": "synalx",
+    "website": "https://plus.google.com/+AlexRickabaugh/about",
+    "bio": "Core team member working to optimize the Angular platform for the next generation of applications, including mobile. Before joining the Angular team, Alex worked in the Google sales organization where he helped build the first large Angular application within Google.",
+    "group": "Google"
+  },
+
+  "berlinjohnson": {
+    "name": "Ali Johnson",
+    "picture": "ali.jpg",
+    "twitter": "berlinjohnson",
+    "website": "http://www.berlinjohnson.com/",
+    "bio": "I am a designer, illustrator, and biomedical engineer who loves combining creativity and science. Previously, I worked as a Cardiovascular Modeling and Simulation engineer where I built complex 3D and computational models of the human cardiovascular system based on patient-specific medical imaging data.",
+    "group": "Google"
+  },
+
+  "matias": {
+    "name": "Matias Niemela",
+    "picture": "matias.jpg",
+    "twitter": "yearofmoo",
+    "website": "http://yearofmoo.com",
+    "bio": "Matias Niemela is a fullstack web developer who has been programming & building websites for over 10 years, and a core team member of AngularJS for two years. In the spring of 2015 Matias joined Angular full time at Google. In his free time Matias loves to build complex things and is always up for public speaking, travelling and tweaking his current Vim setup.",
+    "group": "Google"
+  },
+
+  "hansl": {
+    "name": "Hans Larsen",
+    "picture": "hansl.jpg",
+    "twitter": "hanslatwork",
+    "website": "http://www.codingatwork.com/",
+    "bio": "Hans is a software engineer at Google on the Angular team and was previously at Slack. He works everyday to help make it easier for everyone to create beautiful, consistent web applications using Angular, using Material Design components and the CLI tool.",
+    "group": "Google"
+  },
+
+  "victorsavkin": {
+    "name": "Victor Savkin",
+    "picture": "victor.jpg",
+    "twitter": "victorsavkin",
+    "website": "http://victorsavkin.com/",
+    "bio": "Victor has been on the Angular team since the inception of Angular. While at Google, Victor developed dependency injection, change detection, forms, and the router. Today he is a co-founder at nrwl.io.",
+    "group": "Community"
+  },
+  "jeffcross": {
+    "name": "Jeff Cross",
+    "picture": "jeff-cross.jpg",
+    "twitter": "jeffbcross",
+    "website": "https://twitter.com/jeffbcross",
+    "bio": "Jeff was one of the earliest core team members on AngularJS. He developed the Angular http and AngularFire modules, contributed to RxJS 5, and was most recently the Tech Lead of the Angular Mobile team at Google. Jeff is a former Googler and co-founder at nrwl.io.",
+    "group": "Community"
+  },
+  "alexwolfe": {
+    "name": "Alex Wolfe",
+    "picture": "alex-wolfe.jpg",
+    "twitter": "alexwolfe",
+    "website": "https://github.com/alexwolfe",
+    "bio": "Alex built and designed the original angular.io website, and the reboot of the Angular logo. An X-Googler, Alex has been designing and building products for over 15 years and helped grow over 10 startups in the valley. Alex is an avid tennis player and a former Street Fighter 2 World Champion.",
+    "group": "Community"
+  },
+
+  "marcy": {
+    "name": "Marcy Sutton",
+    "picture": "marcy.jpg",
+    "twitter": "marcysutton",
+    "website": "http://marcysutton.com",
+    "bio": "Marcy Sutton is a senior front-end engineer at Deque Systems, where she works on the axe-core team focusing on accessibility test integrations. Marcy is passionate about making the web accessible for everyone. She is a core team member to Angular Material, where she regularly brings her accessibility expertise to the table–she is also a primary contributor to the ngAria module as well as an accessibility plugin for Protractor. She's in love with riding bicycles and snowboards and can often be found outside.",
+    "group": "Community"
+  },
+
+  "shahar": {
+    "name": "Shahar Talmi",
+    "picture": "shahar.jpg",
+    "twitter": "shahata",
+    "website": "https://plus.google.com/+ShaharTalmi",
+    "bio": "Shahar is a full-stack architect at Wix, leading Wix Angular and client infrastructure. He has been writing software ranging between kernel drivers, massive servers and casual games for the better part of his life. In the last couple of years he's developed a major crush on web applications development and specifically on Angular. Shahar is a big fan of TDD and is doing his best to promote it within the JavaScript community.",
+    "group": "Community"
+  },
+
+  "lucas": {
+    "name": "Lucas Mirelmann",
+    "picture": "lucas.jpg",
+    "twitter": "lgalfaso",
+    "website": "https://github.com/lgalfaso",
+    "bio": "Lucas works as a Software Engineer at Google and is a core Angular contributor.",
+    "group": "Google"
+  },
+
+  "kathy": {
+    "name": "Kathy Walrath",
+    "picture": "kathy.jpg",
+    "twitter": "kwalrath",
+    "website": "https://plus.google.com/+KathyWalrath",
+    "bio": "Kathy writes and edits docs about Dart and related technologies. Before Google, she worked at Sun, NeXT, and HP. Long ago, Kathy co-created and maintained The Java Tutorial.",
+    "group": "Google"
+  },
+
+  "kara": {
+    "name": "Kara Erickson",
+    "picture": "kara-erickson.jpg",
+    "twitter": "karaforthewin",
+    "website": "https://github.com/kara",
+    "bio": "Kara is a software engineer on the Angular team at Google and a co-organizer of the Angular-SF Meetup. Prior to Google, she helped build UI components in Angular for guest management systems at OpenTable.  She enjoys snacking indiscriminately and probably other things too.",
+    "group": "Google"
+  },
+
+  "chuckj": {
+    "name": "Chuck Jazdzewski",
+    "picture": "chuckj.jpg",
+    "twitter": "chuckjaz",
+    "website": "http://removingalldoubt.com",
+    "bio": "Chuck is a Software Engineer on the Angular team at Google. He is a programming language geek, UI framework and component library veteran, and has a passion for simplifying the task of programming. Before Google, he worked at Microsoft and Borland.",
+    "group": "Google"
+  },
+  "vikram": {
+    "name": "Vikram Subramanian",
+    "picture": "vikram.jpg",
+    "twitter": "vikerman",
+    "bio": "Vikram is a Software Engineer on the Angular team focused on Engineering Productivity. That means he makes sure people on the team can move fast and not break things. Vikram enjoys doing Yoga and going on walks with his daughter.",
+    "group": "Google"
+  },
+  "maxsills": {
+    "name": "Max Sills",
+    "picture": "max-sills.jpg",
+    "twitter": "angularjs",
+    "website": "http://google-opensource.blogspot.com/",
+    "bio": "Max Sills is Angular's Open Source lawyer.",
+    "group": "Google"
+  },
+  "shannon": {
+    "name": "Shannon Ayres",
+    "picture": "shannon.jpg",
+    "bio": "Shannon is a technical editor in Developer Relations at Google. She loves movies, especially Sunset Boulevard, and her favorite TV show is The Walking Dead. Her mission: Righting wrong writing!",
+    "group": "Google"
+  },
+
+  "pawel": {
+    "name": "Pawel Kozlowski",
+    "picture": "pawel.jpg",
+    "twitter": "pkozlowski_os",
+    "bio": "Open source hacker, AngularJS book author, AngularUI lead developer. Pawel is an software-development addict who believes in free, open source software. He is a core contributor to the AngularJS framework, AngularUI, Karma-runner and several other projects. He is the co-author of the \"Mastering Web Application Development with AngularJS\" book. When not coding, Pawel can be spotted speaking at various software development conferences.",
+    "group": "Community"
+  },
+
+  "michal": {
+    "name": "Michał Gołębiowski",
+    "picture": "michal.jpg",
+    "twitter": "m_gol",
+    "website": "https://plus.google.com/u/0/103101124310040612163/",
+    "bio": "Front-end developer at Laboratorium EE, core contributor to Angular & jQuery. Makes sure AngularJS & jQuery work fine together. Interested in new JavaScript standards.",
+    "group": "Community"
+  },
+
+  "jbedard": {
+    "name": "Jason Bedard",
+    "picture": "jbedard.jpg",
+    "bio": "Jason Bedard is a software engineer at Allocadia Software where he leads the front end development using Angular. In his spare time Jason enjoys contributing to projects such as Angular, drinking coffee and being in the outdoors with his wife.",
+    "group": "Community"
+  },
+
+  "elad": {
+    "name": "Elad Bezalel",
+    "picture": "eladbezalel.jpg",
+    "website": "https://github.com/EladBezalel",
+    "bio": "Elad is a fullstack developer with a very strong love for design. Since 8 years old, he's been designing in Photoshop and later on fell in love with programing. This strong bond between design and computer programming gave birth to a new kind of love. And he is currently doing the combination of both, as a core member of the ngMaterial project.",
+    "group": "Community"
+  },
+
+  "marclaval": {
+    "name": "Marc Laval",
+    "picture": "marclaval.jpg",
+    "twitter": "marclaval",
+    "website": "https://github.com/mlaval",
+    "bio": "Marc is a manager at Amadeus where he leads the team in charge of developing and recommending UI frameworks for the company. He is also an open source developer and a contributor to Angular.",
+    "group": "Community"
+  },
+
+  "jeffwhelpley": {
+    "name": "Jeff Whelpley",
+    "picture": "jeffwhelpley.jpg",
+    "twitter": "jeffwhelpley",
+    "website": "https://medium.com/@jeffwhelpley",
+    "bio": "Chief Architect at GetHuman, panelist on Angular Air, co-organizer of the Boston Angular Meetup, full-stack JavaScript developer, soccer enthusiast and Boston College grad.",
+    "group": "Community"
+  },
+
+  "patrickjs": {
+    "name": "Patrick Stapleton",
+    "picture": "patrick-stapleton.jpg",
+    "twitter": "gdi2290",
+    "website": "https://angularclass.com",
+    "bio": "Also know as PatrickJS where JS stands for his middle and last names. Patrick is very active in Open-Source with over 4,300+ contributions in the last year alone on projects such as Angular, AngularJS, FalcorJS, Docker, Bootstrap, gulp, and redis to name a few. He is also working on the development of Angular server-side rendering as Universal Angular and teaching Modern Web Development at AngularClass. He was previously the CTO of Keychain Logistics, a HackReactor Instructor and Alum.",
+    "group": "Community"
+  },
+
+  "pascalprecht": {
+    "name": "Pascal Precht",
+    "picture": "pascalprecht.jpg",
+    "website": "https://github.com/PascalPrecht",
+    "bio": "Pascal is a front-end engineer, trainer and Google Developer Expert for Angular with a love for semantic markup and evolving technologies in the open web. He loves contributing to open source and is the creator of the popular angular-translate module. Pascal loves to travel the world and speaks at conferences and meetups. When he's not busy preparing the next workshop or conference talk, you might find him outside with his skateboard.",
+    "group": "Community"
+  },
+
+  "wardbell": {
+      "name": "Ward Bell",
+      "picture": "wardbell.jpg",
+      "website": "https://github.com/wardbell",
+      "twitter": "wardbell",
+      "bio": "Ward is an all-around developer with JavaScript, node, and .net chops. He's a frequent conference speaker and podcaster, trainer, Google Developer Expert for Angular, Microsoft MVP, and PluralSight author. He is also president of IdeaBlade, an enterprise software consulting firm and the makers of breeze.js. He would like to get more sleep and spend more time in the mountains.",
+      "group": "Community"
+  },
+
+  "johnpapa": {
+    "name": "John Papa",
+    "picture": "john-papa.jpg",
+    "twitter": "john_papa",
+    "website": "https://github.com/johnpapa",
+    "bio": "John is a Google Developer Expert, Microsoft Regional Director and MVP, frequent author of courses for Pluralsight, a former technology Evangelist for Microsoft front end teams, and author of the popular Angular Style Guide. He can often be found speaking around the world at keynotes and sessions for many conferences. You can always find John at johnpapa.net or on twitter at @john_papa.",
+    "group": "Community"
+  },
+
+  "martinstaffa": {
+    "name": "Martin Staffa",
+    "picture": "martinstaffa.jpg",
+    "twitter": "Narretz",
+    "bio": "Martin is an English major turned web developer who loves frontend stuff. He's been part of the AngularJS team since 2014. If you can't find him roaming the Github issue queues, he's probably out with his camera somewhere.",
+    "group": "Community"
+  },
+
+  "topherfangio": {
+    "name": "Topher Fangio",
+    "picture": "topherfangio.jpg",
+    "twitter": "topherfangio",
+    "website": "http://github.com/topherfangio",
+    "bio": "Topher loves the web and how it empowers new forms of creativity, connection and business. He is currently a core contributor on the Angular Material project and sometimes blogs about random things.",
+    "group": "Community"
+  },
+
+  "filipesilva": {
+    "name": "Filipe Silva",
+    "picture": "filipe-silva.jpg",
+    "twitter": "filipematossilv",
+    "website": "http://github.com/filipesilva",
+    "bio": "Filipe is a passion-driven developer that always strives for the most elegant solution for each problem. He is currently an author for Angular.io, a core contributor for Angular-CLI and senior front end engineer at KonnectAgain. When not busy going through PRs, you can find him scouring reddit for new dinner recipes to cook or enjoying a craft beer in Dublin.",
+    "group": "Community"
+  },
+
+  "teropa": {
+    "name": "Tero Parviainen",
+    "picture": "teropa.jpg",
+    "twitter": "teropa",
+    "website": "http://teropa.info/",
+    "bio": "Tero is an independent software developer and writer. He's been building web applications for his whole professional career, and has almost figured out how to do vertical centering in CSS.",
+    "group": "Community"
+  },
+
+  "deborah": {
+    "name": "Deborah Kurata",
+    "picture": "deborah.jpg",
+    "twitter": "deborahkurata",
+    "website": "http://blogs.msmvps.com/deborahk/",
+    "bio": "Deborah is an independent software developer and author. She is author of several Pluralsight courses including: 'Angular 2: Getting Started'",
+    "group": "Community"
+  },
+
+  "jesusrodriguez": {
+    "name": "Jesús Rodríguez",
+    "picture": "jesus-rodriguez.jpg",
+    "twitter": "foxandxss",
+    "website": "http://angular-tips.com",
+    "bio": "Jesus is an open source lover, a book author and editor, and AngularUI lead developer. He is currently a core contributor to the UI Bootstrap project.",
+    "group": "Community"
+  },
+
+  "torgeirhelgevold": {
+    "name": "Torgeir Helgevold",
+    "picture": "torgeirhelgevold.jpg",
+    "twitter": "helgevold",
+    "website": "http://www.syntaxsuccess.com",
+    "bio": "Torgeir (Tor) is a front-end architect with a passion for JavaScript development. He is also an author for angular.io and an active tech blogger.",
+    "group": "Community"
+  },
+
+  "fatimaremtullah": {
+    "name": "Fatima Remtullah",
+    "picture": "fatima.jpg",
+    "twitter": "amitafr",
+    "website": "http://www.amitafremtullah.com",
+    "bio": "Fatima is a Product Designer and Front-End Developer. When she is not nerding out she is probably eating an abundance of cookies.",
+    "group": "Community"
+  },
+
+  "eric": {
+    "name": "Eric Jimenez",
+    "picture": "eric.jpg",
+    "twitter": "_ericjim",
+    "website": "http://eric.to/",
+    "bio": "Eric is a gamer, writer, and programmer.",
+    "group": "Community"
+  },
+
+  "mikeryan": {
+    "name": "Mike Ryan",
+    "picture": "mikeryan.jpg",
+    "twitter": "mikeryan52",
+    "website": "https://medium.com/@MikeRyan52",
+    "bio": "Mike Ryan is a Software Engineer at Synapse Wireless, working on solving challenging problems in the internet-of-things space. He is an advocate of reactive programming and a core contributor to the ngrx project.",
+    "group": "Community"
+  },
+
+  "rex": {
+    "name": "Rex Ye",
+    "picture": "rex.jpg",
+    "twitter": "rexebin",
+    "bio": "Rex is a full-stack developer. He maintains the Angular.cn website with his old pal Ralph Wang and he plays a key role in bridging between the Chinese Angular community and the world-wide community. He loves playing with flashy new technologies and enjoys the challenge of mastering new skills. His biggest challenge to date is figuring out how to sooth a crying 4-month-old baby.",
+    "group": "Community"
+  },
+
+  "ralph": {
+    "name": "Ralph Wang",
+    "picture": "ralph.jpg",
+    "twitter": "ralph_wang_gde",
+    "bio": "Ralph(Zhicheng Wang) is a senior consultant at ThoughWorks and also a GDE. He is a technology enthusiast and he is a passionate advocate of “Simplicity, Professionalism and Sharing”. In his eighteen years of R&D career, he worked as tester, R&D engineer, project manager, product manager and CTO. He is looking forward to the birth of his baby.",
+    "group": "Community"
+  },
+
+  "brandonroberts": {
+    "name": "Brandon Roberts",
+    "picture": "brandonroberts.jpg",
+    "twitter": "brandontroberts",
+    "website": "https://github.com/brandonroberts",
+    "bio": "Brandon is a front-end developer for a game studio developing web applications for STEM-based learning games. He is also a natural born troubleshooter who helps solve Angular issues on Github and Gitter support channels, particularly dealing with routing. He is also a member of the Angular docs team.",
+    "group": "Community"
+  },
+
+  "crisbeto": {
+    "name": "Kristiyan Kostadinov",
+    "picture": "crisbeto.jpg",
+    "website": "http://crisbeto.com/",
+    "bio": "Kristiyan is a front-end developer, passionate open-source contributor and a core team member on Angular Material.",
+    "group": "Community"
+  },
+
+  "gkalpak": {
+    "name": "Georgios Kalpakas",
+    "picture": "gkalpak.jpg",
+    "twitter": "gkalpakas",
+    "website": "https://github.com/gkalpak",
+    "bio": "George is a Software Engineer with a passion for chess, robotics and automating stuff. He has a strong need to know how things work (so if you already know, he'd love to have a talk with you). He has been a member of the AngularJS team since 2014. When not doing geeky stuff, he is probably trying to convince his wife and kids to apply programming principles in real life. (Or is it the other way around?)",
+    "group": "Community"
+  },
+
+  "kapunahelewong": {
+    "name": "Kapunahele Wong",
+    "picture": "kapunahelewong.jpg",
+    "website": " https://github.com/kapunahelewong",
+    "twitter": "kapunahele",
+    "bio": "Kapunahele is a front-end developer and contributor to angular.io. She loves just about anything to do with JavaScript, Angular and electronics. She enjoys mapping Hawaiian star names and constellations to Western ones and loves dancing native Hawaiian hula.",
+    "group": "Community"
+  },
+
+  "devversion": {
+    "name": "Paul Gschwendtner",
+    "picture": "devversion.jpg",
+    "website": "http://github.com/DevVersion/",
+    "twitter": "DevVersion",
+    "bio": "Paul is a 16-year-old developer living in Germany. While he attends school, Paul works as a core team member on Angular Material. Paul focuses on tooling and building components for Angular.",
+    "group": "Community"
+  },
+
+  "mmalerba": {
+    "name": "Miles Malerba",
+    "picture": "mmalerba.jpg",
+    "bio": "Miles is a software engineer on the Angular Material team at Google. In addition to Javascripting he enjoys eating food and ogling cute puppies.",
+    "group": "Google"
+  },
+
+  "jasonaden": {
+    "name": "Jason Aden",
+    "picture": "jasonaden.jpg",
+    "bio": "Jason is a software engineer at Google on the Angular Core team. He is enthusiastic about Angular and application development in the modern age. In his free time Jason enjoys spending time with his wife and four children and doing outdoor activities (hiking, fishing, snowboarding, etc.).",
+    "group": "Google"
+  }
+}
