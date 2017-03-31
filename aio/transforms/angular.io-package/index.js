@@ -102,7 +102,7 @@ module.exports =
             },
             {
               basePath: CONTENTS_PATH + '/marketing',
-              include: CONTENTS_PATH + '/marketing/**/*.html',
+              include: CONTENTS_PATH + '/marketing/**/*.{html,md}',
               fileReader: 'contentFileReader'
             },
             {
