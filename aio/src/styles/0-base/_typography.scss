@@ -65,6 +65,9 @@
       font-size: 14px;
       line-height: 24px;
       letter-spacing: 0.30px;
+      & > em {
+        letter-spacing: 0.30px;
+      }
     }
 
     ol li {
@@ -117,7 +120,7 @@
       text-align: left;
     }
 
-    p > code {
+    p > code, li > code, table code {
       font-family: $code-font;
       font-size: 90%;
       color: $blue;
