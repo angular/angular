@@ -135,7 +135,6 @@ defines the `Hero` model object, and loads heroes from the server all in the sam
 *Don't do this*.
 
 
-
 <code-example path="style-guide/src/01-01/app/heroes/hero.component.avoid.ts">
 
 </code-example>
@@ -144,50 +143,35 @@ It is a better practice to redistribute the component and its
 supporting classes into their own, dedicated files.
 
 
-
 <code-tabs>
-
 
   <code-pane title="main.ts" path="style-guide/src/01-01/main.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/app.module.ts" path="style-guide/src/01-01/app/app.module.ts">
 
   </code-pane>
-
-
 
   <code-pane title="app/app.component.ts" path="style-guide/src/01-01/app/app.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/01-01/app/heroes/heroes.component.ts">
 
   </code-pane>
-
-
 
   <code-pane title="app/heroes/shared/hero.service.ts" path="style-guide/src/01-01/app/heroes/shared/hero.service.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/shared/hero.model.ts" path="style-guide/src/01-01/app/heroes/shared/hero.model.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/shared/mock-heroes.ts" path="style-guide/src/01-01/app/heroes/shared/mock-heroes.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -423,235 +407,161 @@ Invent additional type names if you must but take care not to create too many.
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Component({ ... })        
                 export class AppComponent { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       app.component.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Component({ ... })        
                 export class HeroesComponent { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       heroes.component.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Component({ ... })        
                 export class HeroListComponent { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       hero-list.component.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Component({ ... })        
                 export class HeroDetailComponent { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       hero-detail.component.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Directive({ ... })        
                 export class ValidationDirective { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       validation.directive.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class AppModule
       </code-example>
 
-
     </td>
-
-
 
     <td>
       app.module.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Pipe({ name: 'initCaps' })        
                 export class InitCapsPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       init-caps.pipe.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Injectable()        
                 export class UserProfileService { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       user-profile.service.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -709,110 +619,76 @@ As always, strive for consistency.
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Injectable()        
                 export class HeroDataService { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       hero-data.service.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Injectable()        
                 export class CreditService { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       credit.service.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Injectable()        
                 export class Logger { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       logger.service.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -859,7 +735,6 @@ As always, strive for consistency.
   **Why?** Follows a familiar convention from other technology platforms.  
     
 </div>
-
 
 
 
@@ -948,11 +823,9 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-
 <code-example path="style-guide/src/02-07/app/heroes/hero.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -962,11 +835,9 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-
 <code-example path="style-guide/src/02-07/app/heroes/hero.component.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -1010,11 +881,9 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-
 <code-example path="style-guide/src/02-08/app/shared/validate.directive.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -1045,85 +914,59 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Pipe({ name: 'ellipsis' })        
                 export class EllipsisPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       ellipsis.pipe.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @Pipe({ name: 'initCaps' })        
                 export class InitCapsPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       init-caps.pipe.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1166,89 +1009,61 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td>
       Components
     </td>
 
-
-
     <td>
       heroes.component.spec.ts      hero-list.component.spec.ts      hero-detail.component.spec.ts
     </td>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td>
       Services
     </td>
 
-
-
     <td>
       logger.service.spec.ts      hero.service.spec.ts      filter-text.service.spec.ts
     </td>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td>
       Pipes
     </td>
 
-
-
     <td>
       ellipsis.pipe.spec.ts      init-caps.pipe.spec.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1282,53 +1097,37 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
 
-
-
   <tr style=top>
-
 
     <td>
       End-to-End Tests
     </td>
 
-
-
     <td>
       app.e2e-spec.ts      heroes.e2e-spec.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1412,160 +1211,110 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <table width="100%">
 
-
   <col width="50%">
 
   </col>
 
-
-
   <col width="50%">
 
   </col>
-
-
 
   <tr>
-
 
     <th>
       Symbol Name
     </th>
 
-
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class AppModule { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       app.module.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class HeroesModule { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       heroes.module.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class VillainsModule { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       villains.module.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class AppRoutingModule { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       app-routing.module.ts
     </td>
 
-
   </tr>
-
-
 
   <tr style=top>
 
-
     <td>
-
 
       <code-example>
         @NgModule({ ... })        
                 export class HeroesRoutingModule { }
       </code-example>
 
-
     </td>
-
-
 
     <td>
       heroes-routing.module.ts        
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1602,11 +1351,9 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-
 <code-example path="style-guide/src/03-01/app/core/exception.service.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -1687,7 +1434,6 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-
 <code-example path="style-guide/src/03-02/app/core/data.service.ts">
 
 </code-example>
@@ -1753,11 +1499,9 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-
 <code-example path="style-guide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -1809,11 +1553,9 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-
 <code-example path="style-guide/src/03-04/app/core/toast.service.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -1867,11 +1609,9 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-
 <code-example path="style-guide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -2134,257 +1874,173 @@ Here is a compliant folder and file structure:
 
 <aio-filetree>
 
-
   <aio-folder>
     &lt;project root&gt;
-
     <aio-folder>
       src
-
       <aio-folder>
         app
-
         <aio-folder>
           core
-
           <aio-file>
             core.module.ts
           </aio-file>
-
-
 
           <aio-file>
             exception.service.ts|spec.ts
           </aio-file>
 
-
-
           <aio-file>
             user-profile.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
-
 
         <aio-folder>
           heroes
-
           <aio-folder>
             hero
-
             <aio-file>
               hero.component.ts|html|css|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-folder>
             hero-list
-
             <aio-file>
               hero-list.component.ts|html|css|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-folder>
             shared
-
             <aio-file>
               hero-button.component.ts|html|css|spec.ts
             </aio-file>
-
-
 
             <aio-file>
               hero.model.ts
             </aio-file>
 
-
-
             <aio-file>
               hero.service.ts|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-file>
             heroes.component.ts|html|css|spec.ts
           </aio-file>
 
-
-
           <aio-file>
             heroes.module.ts
           </aio-file>
-
-
 
           <aio-file>
             heroes-routing.module.ts
           </aio-file>
 
-
         </aio-folder>
-
-
 
         <aio-folder>
           shared
-
           <aio-file>
             shared.module.ts
           </aio-file>
-
-
 
           <aio-file>
             init-caps.pipe.ts|spec.ts
           </aio-file>
 
-
-
           <aio-file>
             text-filter.component.ts|spec.ts
           </aio-file>
-
-
 
           <aio-file>
             text-filter.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
-
 
         <aio-folder>
           villains
-
           <aio-folder>
             villain
-
             <aio-file>
               ...
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-folder>
             villain-list
-
             <aio-file>
               ...
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-folder>
             shared
-
             <aio-file>
               ...
             </aio-file>
 
-
           </aio-folder>
-
-
 
           <aio-file>
             villains.component.ts|html|css|spec.ts
           </aio-file>
 
-
-
           <aio-file>
             villains.module.ts
           </aio-file>
-
-
 
           <aio-file>
             villains-routing.module.ts
           </aio-file>
 
-
         </aio-folder>
-
-
 
         <aio-file>
           app.component.ts|html|css|spec.ts
         </aio-file>
 
-
-
         <aio-file>
           app.module.ts
         </aio-file>
-
-
 
         <aio-file>
           app-routing.module.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
-
       <aio-file>
         index.html
       </aio-file>
-
-
 
       <aio-file>
         ...
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       node_modules/...
     </aio-file>
 
-
-
     <aio-file>
       ...
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -2508,7 +2164,6 @@ for example, in `/src/app`.
   **Why?** Makes it easier to locate and identify the root module.  
     
 </div>
-
 
 
 
@@ -2716,126 +2371,87 @@ for example, `CommonModule` and `FormsModule`.
 
 <aio-filetree>
 
-
   <aio-folder>
     src
-
     <aio-folder>
       app
-
       <aio-folder>
         shared
-
         <aio-file>
           shared.module.ts
         </aio-file>
-
-
 
         <aio-file>
           init-caps.pipe.ts|spec.ts
         </aio-file>
 
-
-
         <aio-file>
           text-filter.component.ts|spec.ts
         </aio-file>
-
-
 
         <aio-file>
           text-filter.service.ts|spec.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         app.component.ts|html|css|spec.ts
       </aio-file>
 
-
-
       <aio-file>
         app.module.ts
       </aio-file>
-
-
 
       <aio-file>
         app-routing.module.ts
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       main.ts
     </aio-file>
 
-
-
     <aio-file>
       index.html
     </aio-file>
 
-
   </aio-folder>
-
-
 
   <aio-file>
     ...
   </aio-file>
 
-
 </aio-filetree>
-
 
 
 
 <code-tabs>
 
-
   <code-pane title="app/shared/shared.module.ts" path="style-guide/src/04-10/app/shared/shared.module.ts">
 
   </code-pane>
-
-
 
   <code-pane title="app/shared/init-caps.pipe.ts" path="style-guide/src/04-10/app/shared/init-caps.pipe.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/shared/filter-text/filter-text.component.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.component.ts">
 
   </code-pane>
-
-
 
   <code-pane title="app/shared/filter-text/filter-text.service.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.service.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/04-10/app/heroes/heroes.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/04-10/app/heroes/heroes.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2976,156 +2592,107 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 
 <aio-filetree>
 
-
   <aio-folder>
     src
-
     <aio-folder>
       app
-
       <aio-folder>
         core
-
         <aio-file>
           core.module.ts
         </aio-file>
-
-
 
         <aio-file>
           logger.service.ts|spec.ts
         </aio-file>
 
-
-
         <aio-folder>
           nav
-
           <aio-file>
             nav.component.ts|html|css|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
-
 
         <aio-folder>
           spinner
-
           <aio-file>
             spinner.component.ts|html|css|spec.ts
           </aio-file>
-
-
 
           <aio-file>
             spinner.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         app.component.ts|html|css|spec.ts
       </aio-file>
 
-
-
       <aio-file>
         app.module.ts
       </aio-file>
-
-
 
       <aio-file>
         app-routing.module.ts
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       main.ts
     </aio-file>
 
-
-
     <aio-file>
       index.html
     </aio-file>
 
-
   </aio-folder>
-
-
 
   <aio-file>
     ...
   </aio-file>
 
-
 </aio-filetree>
-
 
 
 
 <code-tabs>
 
-
   <code-pane title="app/app.module.ts" path="style-guide/src/04-11/app/app.module.ts" region="example">
 
   </code-pane>
-
-
 
   <code-pane title="app/core/core.module.ts" path="style-guide/src/04-11/app/core/core.module.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/core/logger.service.ts" path="style-guide/src/04-11/app/core/logger.service.ts">
 
   </code-pane>
-
-
 
   <code-pane title="app/core/nav/nav.component.ts" path="style-guide/src/04-11/app/core/nav/nav.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/core/nav/nav.component.html" path="style-guide/src/04-11/app/core/nav/nav.component.html">
 
   </code-pane>
-
-
 
   <code-pane title="app/core/spinner/spinner.component.ts" path="style-guide/src/04-11/app/core/spinner/spinner.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/core/spinner/spinner.component.html" path="style-guide/src/04-11/app/core/spinner/spinner.component.html">
 
   </code-pane>
 
-
-
   <code-pane title="app/core/spinner/spinner.service.ts" path="style-guide/src/04-11/app/core/spinner/spinner.service.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3170,20 +2737,15 @@ Only the root `AppModule` should import the `CoreModule`.
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/core/module-import-guard.ts" path="style-guide/src/04-12/app/core/module-import-guard.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/core/core.module.ts" path="style-guide/src/04-12/app/core/core.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3250,27 +2812,21 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
 
 </code-example>
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-02/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3304,11 +2860,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3318,20 +2872,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-03/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3407,33 +2956,25 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-04/app/heroes/heroes.component.avoid.ts" region="example">
 
 </code-example>
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/05-04/app/heroes/heroes.component.ts" region="example">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/05-04/app/heroes/heroes.component.html">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/heroes.component.css" path="style-guide/src/05-04/app/heroes/heroes.component.css">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3491,11 +3032,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3532,11 +3071,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3546,26 +3083,19 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="style-guide/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="style-guide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-13/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3600,11 +3130,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-14/app/shared/toast/toast.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3663,11 +3191,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-15/app/heroes/hero-list/hero-list.component.avoid.ts">
 
 </code-example>
-
 
 
 
@@ -3712,11 +3238,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-16/app/heroes/hero.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3726,20 +3250,15 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/heroes/hero.component.ts" path="style-guide/src/05-16/app/heroes/hero.component.ts" region="example">
 
   </code-pane>
 
-
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-16/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3771,11 +3290,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/05-17/app/heroes/hero-list/hero-list.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3813,11 +3330,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/06-01/app/shared/highlight.directive.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -3859,7 +3374,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
-
 <code-example path="style-guide/src/06-03/app/shared/validator.directive.ts">
 
 </code-example>
@@ -3871,7 +3385,6 @@ Compare with the less preferred `host` metadata alternative.
   **Why?** The `host` metadata is only one term to remember and doesn't require extra ES imports.  
     
 </div>
-
 
 
 
@@ -3906,7 +3419,6 @@ Compare with the less preferred `host` metadata alternative.
   **Why?** Services are ideal for sharing stateful in-memory data.  
     
 </div>
-
 
 
 
@@ -3992,20 +3504,15 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-
 <code-tabs>
-
 
   <code-pane title="app/app.component.ts" path="style-guide/src/07-03/app/app.component.ts">
 
   </code-pane>
 
-
-
   <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="style-guide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -4038,11 +3545,9 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-
 <code-example path="style-guide/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts" region="example">
 
 </code-example>
-
 
 
 
@@ -4126,11 +3631,9 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 
-
 <code-example path="style-guide/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example">
 
 </code-example>
-
 
 
 

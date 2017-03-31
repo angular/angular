@@ -18,77 +18,53 @@ If your structure doesn't match, go back to that page to figure out what you mis
 
 <aio-filetree>
 
-
   <aio-folder>
     angular-tour-of-heroes
-
     <aio-folder>
       src
-
       <aio-folder>
         app
-
         <aio-file>
           app.component.ts
         </aio-file>
-
-
 
         <aio-file>
           app.module.ts
         </aio-file>
 
-
       </aio-folder>
-
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
-
       <aio-file>
         index.html
       </aio-file>
-
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -113,7 +89,6 @@ To display a list of heroes, you'll add heroes to the view's template.
 Create an array of ten heroes.
 
 
-
 <code-example path="toh-2/src/app/app.component.ts" region="hero-array">
 
 </code-example>
@@ -124,7 +99,6 @@ you can display mock heroes.
 
 ### Expose heroes
 Create a public property in `AppComponent` that exposes the heroes for binding.
-
 
 
 
@@ -149,7 +123,6 @@ insert the following chunk of HTML below the title and above the hero details.
 
 
 
-
 <code-example path="toh-2/app/app.component.1.html" region="heroes-template-1" linenums="false">
 
 </code-example>
@@ -162,7 +135,6 @@ The goal is to bind the array of `heroes` in the component to the template, iter
 and display them individually.
 
 Modify the `<li>` tag by adding the built-in directive `*ngFor`.
-
 
 
 <code-example path="toh-2/app/app.component.1.html" region="heroes-ngfor-1">
@@ -198,7 +170,6 @@ that uses the `hero` template variable to display the hero's properties.
 
 
 
-
 <code-example path="toh-2/app/app.component.1.html" region="ng-for" linenums="false">
 
 </code-example>
@@ -210,7 +181,6 @@ Users should get a visual cue of which hero they are hovering over and which her
 
 To add styles to your component, set the `styles` property on the `@Component` decorator
 to the following CSS classes:
-
 
 
 <code-example path="toh-2/src/app/app.component.ts" region="styles" linenums="false">
@@ -225,7 +195,6 @@ When you assign styles to a component, they are scoped to that specific componen
 These styles apply only to the `AppComponent` and don't affect the outer HTML.
 
 The template for displaying heroes should look like this:
-
 
 
 
@@ -246,7 +215,6 @@ which is bound to a click event.
 
 ### Add a click event
 Add a click event binding to the `<li>` like this:
-
 
 
 
@@ -275,7 +243,6 @@ But the user will be able to select one of the heroes by clicking on it.
 So replace the `hero` property with this simple `selectedHero` property:
 
 
-
 <code-example path="toh-2/src/app/app.component.ts" region="selected-hero">
 
 </code-example>
@@ -285,14 +252,12 @@ you won't initialize the `selectedHero` as you did with `hero`.
 
 Add an `onSelect` method that sets the `selectedHero` property to the `hero` that the user clicks.
 
-
 <code-example path="toh-2/src/app/app.component.ts" region="on-select" linenums="false">
 
 </code-example>
 
 The template still refers to the old `hero` property.
 Bind to the new selectedHero property instead as follows:
-
 
 
 
@@ -317,7 +282,6 @@ you must keep the hero detail out of the DOM until there is a selected hero.
 
 Wrap the HTML hero detail content of the template with a `<div>`.
 Then add the `ngIf` built-in directive and set it to the `selectedHero` property of the component.
-
 
 
 <code-example path="toh-2/app/app.component.1.html" region="ng-if" linenums="false">
@@ -368,7 +332,6 @@ like this:
 
 In the template, add the following `[class.selected]` binding to  the `<li>`:
 
-
 <code-example path="toh-2/app/app.component.1.html" region="class-selected-1" linenums="false">
 
 </code-example>
@@ -387,7 +350,6 @@ Read more about the `[class]` binding in the [Template Syntax](guide/template-sy
 
 The final version of the `<li>` looks like this:
 
-
 <code-example path="toh-2/app/app.component.1.html" region="class-selected-2" linenums="false">
 
 </code-example>
@@ -400,7 +362,6 @@ After clicking "Magneta", the list should look like this:
 </figure>
 
 Here's the complete `app.component.ts` as of now:
-
 
 
 <code-example path="toh-2/src/app/app.component.ts">
