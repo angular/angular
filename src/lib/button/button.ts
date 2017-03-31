@@ -125,7 +125,7 @@ export class MdButton implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.unmonitor(this._elementRef.nativeElement);
+    this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
   }
 
   /** The color of the button. Can be `primary`, `accent`, or `warn`. */

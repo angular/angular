@@ -456,12 +456,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.unmonitor(this._inputElement.nativeElement);
-
-    if (this._focusOriginMonitorSubscription) {
-      this._focusOriginMonitorSubscription.unsubscribe();
-      this._focusOriginMonitorSubscription = null;
-    }
+    this._focusOriginMonitor.stopMonitoring(this._inputElement.nativeElement);
   }
 
   /** Dispatch change event with current value. */

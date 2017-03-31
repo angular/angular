@@ -6,21 +6,10 @@ import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './index
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
-import {FocusOriginMonitor, FocusOrigin} from '../core';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '../core/ripple/ripple-renderer';
-import {Subject} from 'rxjs/Subject';
 
 
 describe('MdRadio', () => {
-  let fakeFocusOriginMonitorStream = new Subject<FocusOrigin>();
-  let fakeFocusOriginMonitor = {
-    monitor: () => fakeFocusOriginMonitorStream.asObservable(),
-    unmonitor: () => {},
-    focusVia: (element: HTMLElement, renderer: any, origin: FocusOrigin) => {
-      element.focus();
-      fakeFocusOriginMonitorStream.next(origin);
-    }
-  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,8 +21,7 @@ describe('MdRadio', () => {
         StandaloneRadioButtons,
       ],
       providers: [
-        {provide: ViewportRuler, useClass: FakeViewportRuler},
-        {provide: FocusOriginMonitor, useValue: fakeFocusOriginMonitor}
+        {provide: ViewportRuler, useClass: FakeViewportRuler}
       ]
     });
 
@@ -47,6 +35,7 @@ describe('MdRadio', () => {
     let radioDebugElements: DebugElement[];
     let radioNativeElements: HTMLElement[];
     let radioLabelElements: HTMLLabelElement[];
+    let radioInputElements: HTMLInputElement[];
     let groupInstance: MdRadioGroup;
     let radioInstances: MdRadioButton[];
     let testComponent: RadiosInsideRadioGroup;
@@ -67,6 +56,8 @@ describe('MdRadio', () => {
 
       radioLabelElements = radioDebugElements
         .map(debugEl => debugEl.query(By.css('label')).nativeElement);
+      radioInputElements = radioDebugElements
+        .map(debugEl => debugEl.query(By.css('input')).nativeElement);
     }));
 
     it('should set individual radio names based on the group name', () => {
@@ -140,9 +131,7 @@ describe('MdRadio', () => {
     });
 
     it('should check a radio upon interaction with the underlying native radio button', () => {
-      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
-
-      nativeRadioInput.click();
+      radioInputElements[0].click();
       fixture.detectChanges();
 
       expect(radioInstances[0].checked).toBe(true);
@@ -194,13 +183,15 @@ describe('MdRadio', () => {
       expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
           .toBe(0, 'Expected no ripples on init.');
 
-      fakeFocusOriginMonitorStream.next('keyboard');
+      dispatchFakeEvent(radioInputElements[0], 'keydown');
+      dispatchFakeEvent(radioInputElements[0], 'focus');
+
       tick(RIPPLE_FADE_IN_DURATION);
 
       expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
           .toBe(1, 'Expected one ripple after keyboard focus.');
 
-      dispatchFakeEvent(radioNativeElements[0].querySelector('input'), 'blur');
+      dispatchFakeEvent(radioInputElements[0], 'blur');
       tick(RIPPLE_FADE_OUT_DURATION);
 
       expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)

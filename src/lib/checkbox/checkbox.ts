@@ -206,12 +206,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.unmonitor(this._inputElement.nativeElement);
-
-    if (this._focusedSubscription) {
-      this._focusedSubscription.unsubscribe();
-      this._focusedSubscription = null;
-    }
+    this._focusOriginMonitor.stopMonitoring(this._inputElement.nativeElement);
   }
 
   /**

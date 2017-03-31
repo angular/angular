@@ -101,7 +101,7 @@ export class FocusOriginMonitor {
    * Stops monitoring an element and removes all focus classes.
    * @param element The element to stop monitoring.
    */
-  unmonitor(element: Element): void {
+  stopMonitoring(element: Element): void {
     let elementInfo = this._elementInfo.get(element);
 
     if (elementInfo) {
@@ -296,7 +296,7 @@ export class CdkMonitorFocus implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.unmonitor(this._elementRef.nativeElement);
+    this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
   }
 }
 

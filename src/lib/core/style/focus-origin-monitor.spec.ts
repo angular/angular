@@ -218,7 +218,7 @@ describe('FocusOriginMonitor', () => {
     }, 0);
   }));
 
-  it('should remove classes on unmonitor', async(() => {
+  it('should remove classes on stopMonitoring', async(() => {
     buttonElement.focus();
     fixture.detectChanges();
 
@@ -228,7 +228,7 @@ describe('FocusOriginMonitor', () => {
       expect(buttonElement.classList.length)
           .toBe(2, 'button should have exactly 2 focus classes');
 
-      focusOriginMonitor.unmonitor(buttonElement);
+      focusOriginMonitor.stopMonitoring(buttonElement);
       fixture.detectChanges();
 
       expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
