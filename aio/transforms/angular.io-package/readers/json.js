@@ -1,18 +1,18 @@
 /**
- * Read in the navigation JSON
+ * Read in JSON files
  */
-module.exports = function navigationFileReader() {
+module.exports = function jsonFileReader() {
   return {
-    name: 'navigationFileReader',
+    name: 'jsonFileReader',
     getDocs: function(fileInfo) {
 
       // We return a single element array because content files only contain one document
       return [{
-        docType: 'navigation-map',
+        docType: fileInfo.baseName + '-json',
         data: JSON.parse(fileInfo.content),
         template: 'json-doc.template.json',
-        id: 'navigation',
-        aliases: ['navigation', 'navigation.json']
+        id: fileInfo.baseName,
+        aliases: [fileInfo.baseName, fileInfo.relativePath]
       }];
     }
   };
