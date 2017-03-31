@@ -9,33 +9,39 @@ Angular has a powerful template engine that lets us easily manipulate the DOM st
 
 
 <style>
-  h4 {font-size: 17px !important; text-transform: none !important;}  
-    .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
-    
+  h4 {font-size: 17px !important; text-transform: none !important;}
+  .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }
+
 </style>
+
+
 
 This guide looks at how Angular manipulates the DOM with **structural directives** and 
 how you can write your own structural directives to do the same thing.
 
 ### Table of contents
 
-- [What are structural directives?](guide/structural-directives#definition)
-- [*NgIf* case study](guide/structural-directives#ngIf)
-- [The asterisk (*) prefix](guide/structural-directives#asterisk)
-- [Inside *NgFor*](guide/structural-directives#ngFor)
-  - [microsyntax](guide/structural-directives#microsyntax)
-  - [template input variables](guide/structural-directives#template-input-variable)
-  - [one structural directive per element](guide/structural-directives#one-per-element)
-- [Inside the *NgSwitch* directives](guide/structural-directives#ngSwitch)
-- [Prefer the (*) prefix](guide/structural-directives#prefer-asterisk)
-- [The &lt;template> element](guide/structural-directives#template)
-- [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
-- [Write a structural directive](guide/structural-directives#unless)
+* [What are structural directives?](guide/structural-directives#definition)
+* [*NgIf* case study](guide/structural-directives#ngIf)
+* [The asterisk (*) prefix](guide/structural-directives#asterisk)
+* [Inside *NgFor*](guide/structural-directives#ngFor)
+
+  * [microsyntax](guide/structural-directives#microsyntax)
+  * [template input variables](guide/structural-directives#template-input-variable)
+  * [one structural directive per element](guide/structural-directives#one-per-element)
+
+* [Inside the *NgSwitch* directives](guide/structural-directives#ngSwitch)
+* [Prefer the (*) prefix](guide/structural-directives#prefer-asterisk)
+* [The &lt;template> element](guide/structural-directives#template)
+* [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
+* [Write a structural directive](guide/structural-directives#unless)
 
 Try the <live-example></live-example>.
 
 
 {@a definition}
+
+
 
 ## What are structural directives?
 
@@ -54,17 +60,19 @@ An asterisk (*) precedes the directive attribute name as in this example.
 
 </code-example>
 
+
+
 No brackets. No parentheses. Just `*ngIf` set to a string.
 
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
-[template expression](guide/template-syntax).
+[template expression](guide/template-syntax#template-expressions).
 Angular desugars this notation into a marked-up `<template>` that surrounds the
 host element and its descendents. 
 Each structural directive does something different with that template.
 
-Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax), 
-[NgFor](guide/template-syntax), and [NgSwitch...](guide/template-syntax)&mdash;are 
+Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax#ngIf), 
+[NgFor](guide/template-syntax#ngFor), and [NgSwitch...](guide/template-syntax#ngSwitch)&mdash;are 
 described in the [_Template Syntax_](guide/template-syntax) guide and seen in samples throughout the Angular documentation. 
 Here's an example of them in a template:
 
@@ -72,6 +80,8 @@ Here's an example of them in a template:
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (built-in)" region="built-in">
 
 </code-example>
+
+
 
 This guide won't repeat how to _use_ them. But it does explain _how they work_
 and how to [write your own](guide/structural-directives#unless) structural directive.
@@ -84,6 +94,8 @@ and how to [write your own](guide/structural-directives#unless) structural direc
 <header>
   Directive spelling
 </header>
+
+
 
 Throughout this guide, you'll see a directive spelled in both _UpperCamelCase_ and _lowerCamelCase_.
 Already you've seen `NgIf` and `ngIf`.
@@ -103,6 +115,8 @@ you apply the directive to an element in the HTML template.
 
 ~~~ {.l-sub-section}
 
+
+
 There are two other kinds of Angular directives, described extensively elsewhere:
 (1)&nbsp;components and (2)&nbsp;attribute directives.
 
@@ -111,7 +125,7 @@ Technically it's a directive with a template.
 
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](guide/template-syntax) directive
+For example, the built-in [`NgStyle`](guide/template-syntax#ngStyle) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
@@ -124,6 +138,8 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 
 {@a ngIf}
 
+
+
 ## NgIf case study
 
 `NgIf` is the simplest structural directive and the easiest to understand.
@@ -134,13 +150,17 @@ It takes a boolean expression and makes an entire chunk of the DOM appear or dis
 
 </code-example>
 
+
+
 The `ngIf` directive doesn't hide elements with CSS. It adds and removes them physically from the DOM.
 Confirm that fact using browser developer tools to inspect the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">  </img>
+  <img src='assets/images/devguide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM"></img>
 </figure>
+
+
 
 The top paragraph is in the DOM. The bottom, disused paragraph is not; 
 in its place is a comment about "template bindings" (more about that [later](guide/structural-directives#asterisk)).
@@ -159,12 +179,16 @@ A directive could hide the unwanted paragraph instead by setting its `display` s
 
 </code-example>
 
+
+
 While invisible, the element remains in the DOM. 
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">  </img>
+  <img src='assets/images/devguide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM"></img>
 </figure>
+
+
 
 The difference between hiding and removing doesn't matter for a simple paragraph. 
 It does matter when the host element is attached to a resource intensive component.
@@ -192,6 +216,8 @@ to consider the consequences of adding and removing elements and of creating and
 
 {@a asterisk}
 
+
+
 ## The asterisk (*) prefix
 
 Surely you noticed the asterisk (*) prefix to the directive name
@@ -204,6 +230,8 @@ Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 </code-example>
 
+
+
 The asterisk is "syntactic sugar" for something a bit more complicated.
 Internally, Angular desugars it in two stages.
 First, it translates the `*ngIf="..."` into a template _attribute_, `template="ngIf ..."`,&nbsp; like this.
@@ -213,12 +241,16 @@ First, it translates the `*ngIf="..."` into a template _attribute_, `template="n
 
 </code-example>
 
+
+
 Then it translates the template _attribute_ into a template _element_, wrapped around the host element, like this.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
 
 </code-example>
+
+
 
 * The `*ngIf` directive moved to the `<template>` element where it became a property binding,`[ngIf]`.
 * The rest of the `<div>`, including its class attribute, moved inside the `<template>` element.
@@ -228,8 +260,10 @@ Only the finished product ends up in the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">  </img>
+  <img src='assets/images/devguide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM"></img>
 </figure>
+
+
 
 Angular consumed the `<template>` content during its actual rendering and 
 replaced the `<template>` with a diagnostic comment.
@@ -238,6 +272,8 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 
 
 {@a ngFor}
+
+
 
 ## Inside _*ngFor_
 
@@ -251,6 +287,8 @@ Here's a full-featured application of `NgFor`, written all three ways:
 
 </code-example>
 
+
+
 This is manifestly more complicated than `ngIf` and rightly so.
 The `NgFor` directive has more features, both required and optional, than the `NgIf` shown in this guide.
 At minimum `NgFor` needs a looping variable (`let hero`) and a list (`heroes`).
@@ -259,6 +297,8 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 
 
 ~~~ {.alert.is-helpful}
+
+
 
 Everything _outside_ the `ngFor` string stays with the host element 
 (the `<div>`) as it moves inside the `<template>`. 
@@ -270,6 +310,8 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 
 
 {@a microsyntax}
+
+
 ### Microsyntax
 
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
@@ -296,7 +338,7 @@ It's intended source is implicit.
 Angular sets `let-hero` to the value of the context's `$implicit` property
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](api/common/index/NgFor-directive) 
+* The [API guide](api/common/index/NgFor-directive "API: NgFor") 
 describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
@@ -308,6 +350,8 @@ Studying the source code for `NgIf` and `NgFor` is a great way to learn more.
 
 
 {@a template-input-variables}
+
+
 ### Template input variable
 
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
@@ -315,7 +359,7 @@ There are several such variables in this example: `hero`, `i`, and `odd`.
 All are preceded by the keyword `let`.
 
 A _template input variable_ is **_not_** the same as a 
-[template _reference_ variable](guide/template-syntax),
+[template _reference_ variable](guide/template-syntax#ref-vars),
 neither _semantically_ nor _syntactically_.
 
 You declare a template _input_ variable using the `let` keyword (`let hero`). 
@@ -331,6 +375,8 @@ variable as the `hero` declared as `#hero`.
 
 
 {@a one-per-element}
+
+
 ### One structural directive per host element
 
 Someday you'll want to repeat a block of HTML but only when a particular condition is true.
@@ -349,6 +395,8 @@ One or both elements can be an [`ng-container`](guide/structural-directives#ngco
 
 {@a ngSwitch}
 
+
+
 ## Inside _NgSwitch_ directives
 
 The Angular _NgSwitch_ is actually a set of cooperating directives: `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault`.
@@ -359,6 +407,8 @@ Here's an example.
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch)" region="ngswitch">
 
 </code-example>
+
+
 
 The switch value assigned to `NgSwitch` (`hero.emotion`) determines which
 (if any) of the switch cases are displayed.
@@ -375,12 +425,16 @@ The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` m
 
 ~~~ {.l-sub-section}
 
+
+
 The element to which you apply a directive is its _host_ element. 
 The `<happy-hero>` is the host element for the happy `*ngSwitchCase`.
 The `<unknown-hero>` is the host element for the `*ngSwitchDefault`.
 
 
 ~~~
+
+
 
 As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault` 
 can be desugared into the template _attribute_ form.
@@ -389,6 +443,8 @@ can be desugared into the template _attribute_ form.
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template-attr)" region="ngswitch-template-attr">
 
 </code-example>
+
+
 
 That, in turn, can be desugared into the `<template>` element form.
 
@@ -400,6 +456,8 @@ That, in turn, can be desugared into the `<template>` element form.
 
 
 {@a prefer-asterisk}
+
+
 ## Prefer the asterisk (*) syntax.
 
 The asterisk (*) syntax is more clear than the other desugared forms.
@@ -412,6 +470,8 @@ You'll refer to the `<template>` when you [write your own structural directive](
 
 
 {@a template}
+
+
 
 ## The *&lt;template&gt;*
 
@@ -429,12 +489,16 @@ That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
 </code-example>
 
+
+
 Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/template-rendering.png' width="350" alt="template tag rendering">  </img>
+  <img src='assets/images/devguide/structural-directives/template-rendering.png' width="350" alt="template tag rendering"></img>
 </figure>
+
+
 
 A structural directive puts a `<template>` to work
 as you'll see when you [write your own structural directive](guide/structural-directives#unless).
@@ -444,6 +508,8 @@ as you'll see when you [write your own structural directive](guide/structural-di
 
 
 {@a ng-container}
+
+
 
 ## Group sibling elements with &lt;ng-container&gt;
 
@@ -455,6 +521,8 @@ The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 
 </code-example>
 
+
+
 When there isn't a host element, you can usually wrap the content in a native HTML container element,
 such as a `<div>`, and attach the directive to that wrapper.
 
@@ -462,6 +530,8 @@ such as a `<div>`, and attach the directive to that wrapper.
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
+
+
 
 Introducing another container element&mdash;typically a `<span>` or `<div>`&mdash;to 
 group the elements under a single _root_ is usually harmless. 
@@ -476,6 +546,8 @@ For example, suppose you have the following paragraph layout.
 
 </code-example>
 
+
+
 You also have a CSS style rule that happens to apply to a `<span>` within a `<p>`aragraph.
 
 
@@ -483,12 +555,16 @@ You also have a CSS style rule that happens to apply to a `<span>` within a `<p>
 
 </code-example>
 
+
+
 The constructed paragraph renders strangely.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">  </img>
+  <img src='assets/images/devguide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style"></img>
 </figure>
+
+
 
 The `p span` style, intended for use elsewhere, was inadvertently applied here.
 
@@ -503,12 +579,16 @@ When you try this,
 
 </code-example>
 
+
+
 the drop down is empty.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/bad-select.png' alt="spanned options don't work">  </img>
+  <img src='assets/images/devguide/structural-directives/bad-select.png' alt="spanned options don't work"></img>
 </figure>
+
+
 
 The browser won't display an `<option>` within a `<span>`.
 
@@ -524,12 +604,16 @@ Here's the conditional paragraph again, this time using `<ng-container>`.
 
 </code-example>
 
+
+
 It renders properly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">  </img>
+  <img src='assets/images/devguide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style"></img>
 </figure>
+
+
 
 Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
@@ -538,12 +622,16 @@ Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
 </code-example>
 
+
+
 The drop down works properly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">  </img>
+  <img src='assets/images/devguide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly"></img>
 </figure>
+
+
 
 The `<ng-container>` is a syntax element recognized by the Angular parser.
 It's not a directive, component, class, or interface. 
@@ -551,13 +639,15 @@ It's more like the curly braces in a JavaScript `if`-block:
 
 
 <code-example language="javascript">
-  if (someCondition) {  
-      statement1;  
-      statement2;  
-      statement3;  
-    }   
-    
+  if (someCondition) {
+    statement1;
+    statement2;
+    statement3;
+  } 
+
 </code-example>
+
+
 
 Without those braces, JavaScript would only execute the first statement
 when you intend to conditionally execute all of them as a single block.
@@ -565,6 +655,8 @@ The `<ng-container>` satisfies a similar need in Angular templates.
 
 
 {@a unless}
+
+
 
 ## Write a structural directive
 
@@ -577,6 +669,8 @@ that does the opposite of `NgIf`.
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (myUnless-1)" region="myUnless-1">
 
 </code-example>
+
+
 
 Creating a directive is similar to creating a component.
 
@@ -595,6 +689,8 @@ Here's how you might begin:
 
 </code-example>
 
+
+
 The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[myUnless]`.
 The brackets define a CSS
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" target="_blank" title="MDN: Attribute selectors">attribute selector</a>.
@@ -603,21 +699,23 @@ The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin w
 Don't use `ng`. That prefix belongs to Angular.
 Pick something short that fits you or your company.
 In this example, the prefix is `my`.
-The directive _class_ name ends in `Directive` per the [style guide](guide/style-guide).
+
+
+The directive _class_ name ends in `Directive` per the [style guide](guide/style-guide#02-03 "Angular Style Guide").
 Angular's own directives do not.
 
 ### _TemplateRef_ and _ViewContainerRef_
 
 A simple structural directive like this one creates an 
-[_embedded view_](api/core/index/EmbeddedViewRef-class)
+[_embedded view_](api/core/index/EmbeddedViewRef-class "API: EmbeddedViewRef")
 from the Angular-generated `<template>` and inserts that view in a 
-[_view container_](api/core/index/ViewContainerRef-class)
+[_view container_](api/core/index/ViewContainerRef-class "API: ViewContainerRef")
 adjacent to the directive's original `<p>` host element.
 
 You'll acquire the `<template>` contents with a
-[`TemplateRef`](api/core/index/TemplateRef-class)
+[`TemplateRef`](api/core/index/TemplateRef-class "API: TemplateRef")
 and access the _view container_ through a
-[`ViewContainerRef`](api/core/index/ViewContainerRef-class).
+[`ViewContainerRef`](api/core/index/ViewContainerRef-class "API: ViewContainerRef").
 
 You inject both in the directive constructor as private variables of the class.
 
@@ -625,6 +723,8 @@ You inject both in the directive constructor as private variables of the class.
 <code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (ctor)" region="ctor">
 
 </code-example>
+
+
 
 ### The _myUnless_ property
 
@@ -634,7 +734,9 @@ That means the directive needs a `myUnless` property, decorated with `@Input`
 
 ~~~ {.l-sub-section}
 
-Read about `@Input` in the [_Template Syntax_](guide/template-syntax) guide.
+
+
+Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outputs) guide.
 
 
 ~~~
@@ -644,6 +746,8 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax) guide.
 <code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (set)" region="set">
 
 </code-example>
+
+
 
 Angular sets the  `myUnless` property whenever the value of the condition changes.
 Because the `myUnless` property does work, it needs a setter.
@@ -663,6 +767,8 @@ The completed directive code looks like this:
 
 </code-example>
 
+
+
 Add this directive to the `declarations` array of the AppModule.
 
 Then create some HTML to try it.
@@ -672,17 +778,21 @@ Then create some HTML to try it.
 
 </code-example>
 
+
+
 When the `condition` is falsy, the top (A) paragraph appears and the bottom (B) paragraph disappears.
 When the `condition` is truthy, the top (A) paragraph is removed and the bottom (B) paragraph appears.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">  </img>
+  <img src='assets/images/devguide/structural-directives/unless-anim.gif' alt="UnlessDirective in action"></img>
 </figure>
 
 
 
 {@a summary}
+
+
 
 ## Summary
 
@@ -722,6 +832,8 @@ Here is the source from the `src/app/` folder.
   </code-pane>
 
 </code-tabs>
+
+
 
 You learned
 

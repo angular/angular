@@ -1,0 +1,9 @@
+{
+  "description": "Dynamic Component Loader",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["cookbook component"]
+}

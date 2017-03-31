@@ -1,5 +1,7 @@
 @description
 
+
+
 Angular has its own vocabulary.
 Most Angular terms are common English words
 with a specific meaning within the Angular system.
@@ -15,9 +17,13 @@ unexpected definitions.
 
 
 {@a aot}
+
+
 ## Ahead-of-time (AOT) compilation
 
 ~~~ {.l-sub-section}
+
+
 
 You can compile Angular applications at build time.
 By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
@@ -27,9 +33,13 @@ Ahead-of-time compiled applications also benefit from decreased load time and in
 
 ~~~
 
+
+
 ## Angular module
 
 ~~~ {.l-sub-section}
+
+
 
 Helps you organize an application into cohesive blocks of functionality.
 An Angular module identifies the components, directives, and pipes that the application uses along with the list of external Angular modules that the application needs, such as `FormsModule`.
@@ -42,9 +52,13 @@ For details and examples, see the [Angular Modules (NgModule)](guide/ngmodule) p
 
 ~~~
 
+
+
 ## Annotation
 
 ~~~ {.l-sub-section}
+
+
 
 In practice, a synonym for [Decoration](guide/glossary#decorator).
 
@@ -57,9 +71,13 @@ In practice, a synonym for [Decoration](guide/glossary#decorator).
 
 
 {@a attribute-directives}
+
+
 ## Attribute directives
 
 ~~~ {.l-sub-section}
+
+
 
 A category of [directive](guide/glossary#directive) that can listen to and modify the behavior of
 other HTML elements, attributes, properties, and components. They are usually represented
@@ -73,9 +91,13 @@ Learn about them in the [_Attribute Directives_](guide/attribute-directives) gui
 ~~~
 
 
+
+
 ## Barrel
 
 ~~~ {.l-sub-section}
+
+
 
 A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
 The barrel itself is an ES2015 module file that re-exports *selected* exports of other ES2015 modules.
@@ -83,31 +105,37 @@ The barrel itself is an ES2015 module file that re-exports *selected* exports of
 For example, imagine three ES2015 modules in a `heroes` folder:
 
 <code-example>
-  // heroes/hero.component.ts  
-    export class HeroComponent {}  
-      
-    // heroes/hero.model.ts  
-    export class Hero {}  
-      
-    // heroes/hero.service.ts  
-    export class HeroService {}
+  // heroes/hero.component.ts
+  export class HeroComponent {}
+
+  // heroes/hero.model.ts
+  export class Hero {}
+
+  // heroes/hero.service.ts
+  export class HeroService {}
 </code-example>
+
+
 
 Without a barrel, a consumer needs three import statements:
 
 <code-example>
-  import { HeroComponent } from '../heroes/hero.component.ts';  
-    import { Hero }          from '../heroes/hero.model.ts';  
-    import { HeroService }   from '../heroes/hero.service.ts';
+  import { HeroComponent } from '../heroes/hero.component.ts';
+  import { Hero }          from '../heroes/hero.model.ts';
+  import { HeroService }   from '../heroes/hero.service.ts';
 </code-example>
+
+
 
 You can add a barrel to the `heroes` folder (called `index`, by convention) that exports all of these items:
 
 <code-example>
-  export * from './hero.model.ts';   // re-export all of its exports  
-    export * from './hero.service.ts'; // re-export all of its exports  
-    export { HeroComponent } from './hero.component.ts'; // re-export the named thing
+  export * from './hero.model.ts';   // re-export all of its exports
+  export * from './hero.service.ts'; // re-export all of its exports
+  export { HeroComponent } from './hero.component.ts'; // re-export the named thing
 </code-example>
+
+
 
 Now a consumer can import what it needs from the barrel.
 
@@ -115,10 +143,14 @@ Now a consumer can import what it needs from the barrel.
   import { Hero, HeroService } from '../heroes'; // index is implied
 </code-example>
 
+
+
 The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel named `index`.
 
 
 ~~~ {.alert.is-important}
+
+
 
 You can often achieve the same result using [Angular modules](guide/glossary#angular-module) instead.
 
@@ -129,9 +161,13 @@ You can often achieve the same result using [Angular modules](guide/glossary#ang
 
 ~~~
 
+
+
 ## Binding
 
 ~~~ {.l-sub-section}
+
+
 
 Usually refers to [data binding](guide/glossary#data-binding) and the act of
 binding an HTML object property to a data object property.
@@ -142,9 +178,13 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ~~~
 
+
+
 ## Bootstrap
 
 ~~~ {.l-sub-section}
+
+
 
 You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`).
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
@@ -157,9 +197,13 @@ You can bootstrap multiple apps in the same `index.html`, each app with its own 
 ~~~
 
 
+
+
 ## camelCase
 
 ~~~ {.l-sub-section}
+
+
 
 The practice of writing compound words or phrases such that each word or abbreviation begins with a capital letter
 _except the first letter, which is lowercase_.
@@ -175,9 +219,13 @@ In Angular documentation, "camelCase" always means *lower camel case*.
 
 
 {@a component}
+
+
 ## Component
 
 ~~~ {.l-sub-section}
+
+
 
 An Angular class responsible for exposing data to a [view](guide/glossary#view) and handling most of the view’s display and user-interaction logic.
 
@@ -196,9 +244,13 @@ the component in the role of "controller" or "view model".
 ~~~
 
 
+
+
 ## dash-case
 
 ~~~ {.l-sub-section}
+
+
 
 The practice of writing compound words or phrases such that each word is separated by a dash or hyphen (`-`).
 This form is also known as kebab-case.
@@ -210,9 +262,13 @@ spelled in dash-case.
 
 ~~~
 
+
+
 ## Data binding
 
 ~~~ {.l-sub-section}
+
+
 
 Applications display data values to a user and respond to user
 actions (such as clicks, touches, and keystrokes).
@@ -227,13 +283,14 @@ Angular has a rich data-binding framework with a variety of data-binding
 operations and supporting declaration syntax.
 
  Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
- * [Interpolation](guide/template-syntax).
- * [Property binding](guide/template-syntax).
- * [Event binding](guide/template-syntax).
- * [Attribute binding](guide/template-syntax).
- * [Class binding](guide/template-syntax).
- * [Style binding](guide/template-syntax).
- * [Two-way data binding with ngModel](guide/template-syntax).
+
+ * [Interpolation](guide/template-syntax#interpolation).
+ * [Property binding](guide/template-syntax#property-binding).
+ * [Event binding](guide/template-syntax#event-binding).
+ * [Attribute binding](guide/template-syntax#attribute-binding).
+ * [Class binding](guide/template-syntax#class-binding).
+ * [Style binding](guide/template-syntax#style-binding).
+ * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
 
 
 ~~~
@@ -244,9 +301,13 @@ operations and supporting declaration syntax.
 
 
 {@a decoration}
+
+
 ## Decorator | decoration
 
 ~~~ {.l-sub-section}
+
+
 
 A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
@@ -272,6 +333,8 @@ classes that follow it in the file.
 
 ~~~ {.alert.is-important}
 
+
+
 Always include parentheses `()` when applying a decorator.
 
 
@@ -281,9 +344,13 @@ Always include parentheses `()` when applying a decorator.
 
 ~~~
 
+
+
 ## Dependency injection
 
 ~~~ {.l-sub-section}
+
+
 
 A design pattern and mechanism
 for creating and delivering parts of an application to other
@@ -311,7 +378,7 @@ into other application parts where and when needed.
 At the core, an [`injector`](guide/glossary#injector) returns dependency values on request.
 The expression `injector.get(token)` returns the value associated with the given token.
 
-A token is an Angular type (`OpaqueToken`). You rarely need to work with tokens directly; most
+A token is an Angular type (`InjectionToken`). You rarely need to work with tokens directly; most
 methods accept a class name (`Foo`) or a string ("foo") and Angular converts it
 to a token. When you write `injector.get(Foo)`, the injector returns
 the value associated with the token for the `Foo` class, typically an instance of `Foo` itself.
@@ -343,9 +410,13 @@ Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 
 {@a directives}
+
+
 ## Directive
 
 ~~~ {.l-sub-section}
+
+
 
 An Angular class responsible for creating, reshaping, and interacting with HTML elements
 in the browser DOM. The directive is Angular's most fundamental feature.
@@ -380,9 +451,13 @@ elements and their children.
 ~~~
 
 
+
+
 ## ECMAScript
 
 ~~~ {.l-sub-section}
+
+
 
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
@@ -401,25 +476,37 @@ Angular developers can write in ES5 directly.
 
 ~~~
 
+
+
 ## ES2015
 
 ~~~ {.l-sub-section}
+
+
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 ~~~
 
+
+
 ## ES5
 
 ~~~ {.l-sub-section}
+
+
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 5, the version of JavaScript run by most modern browsers.
 
 ~~~
 
+
+
 ## ES6
 
 ~~~ {.l-sub-section}
+
+
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
@@ -436,9 +523,13 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 {@a H}
 
+
+
 ## Injector
 
 ~~~ {.l-sub-section}
+
+
 
 An object in the Angular [dependency-injection system](guide/glossary#dependency-injection)
 that can find a named dependency in its cache or create a dependency
@@ -447,23 +538,31 @@ with a registered [provider](guide/glossary#provider).
 
 ~~~
 
+
+
 ## Input
 
 ~~~ {.l-sub-section}
 
+
+
 A directive property that can be the *target* of a
-[property binding](guide/template-syntax) (explained in detail in the [Template Syntax](guide/template-syntax) page).
+[property binding](guide/template-syntax#property-binding) (explained in detail in the [Template Syntax](guide/template-syntax) page).
 Data values flow *into* this property from the data source identified
 in the template expression to the right of the equal sign.
 
-See the [Input and output properties](guide/template-syntax) section of the [Template Syntax](guide/template-syntax) page.
+See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
 
+
+
 ## Interpolation
 
 ~~~ {.l-sub-section}
+
+
 
 A form of [property data binding](guide/glossary#data-binding) in which a
 [template expression](guide/glossary#template-expression) between double-curly braces
@@ -473,11 +572,13 @@ or displayed between element tags, as in this example.
 
 
 <code-example language="html" escape="html">
-  <label>My current hero is {{hero.name}}</label>  
-    
+  <label>My current hero is {{hero.name}}</label>
+
 </code-example>
 
-Read more about [interpolation](guide/template-syntax) in the
+
+
+Read more about [interpolation](guide/template-syntax#interpolation) in the
 [Template Syntax](guide/template-syntax) page.
 
 
@@ -487,9 +588,13 @@ Read more about [interpolation](guide/template-syntax) in the
 
 
 {@a jit}
+
+
 ## Just-in-time (JIT) compilation
 
 ~~~ {.l-sub-section}
+
+
 
 A bootstrapping method of compiling components and modules in the browser
 and launching the application dynamically. Just-in-time mode is a good choice during development.
@@ -499,9 +604,13 @@ Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 ~~~
 
 
+
+
 ## kebab-case
 
 ~~~ {.l-sub-section}
+
+
 
 See [dash-case](guide/glossary#dash-case).
 
@@ -509,9 +618,13 @@ See [dash-case](guide/glossary#dash-case).
 ~~~
 
 
+
+
 ## Lifecycle hooks
 
 ~~~ {.l-sub-section}
+
+
 
 [Directives](guide/glossary#directive) and [components](guide/glossary#component) have a lifecycle
 managed by Angular as it creates, updates, and destroys them.
@@ -523,6 +636,7 @@ Each interface has a single hook method whose name is the interface name prefixe
 For example, the `OnInit` interface has a hook method named `ngOnInit`.
 
 Angular calls these hook methods in the following order:
+
 * `ngOnChanges`: when an [input](guide/glossary#input)/[output](guide/glossary#output) binding value changes.
 * `ngOnInit`: after the first `ngOnChanges`.
 * `ngDoCheck`: developer's custom change detection.
@@ -538,6 +652,8 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 ~~~
 
 
+
+
 ## Module
 
 ~~~ {.l-sub-section}
@@ -546,13 +662,18 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 ~~~ {.alert.is-important}
 
+
+
 Angular has the following types of modules:
-- [Angular modules](guide/glossary#angular-module).
+
+* [Angular modules](guide/glossary#angular-module).
 For details and examples, see the [Angular Modules](guide/ngmodule) page.
-- ES2015 modules, as described in this section.
+* ES2015 modules, as described in this section.
 
 
 ~~~
+
+
 
 A cohesive block of code dedicated to a single purpose.
 
@@ -585,9 +706,13 @@ You rarely access Angular feature modules directly. You usually import them from
 
 {@a N}
 
+
+
 ## Observable
 
 ~~~ {.l-sub-section}
+
+
 
 An array whose items arrive asynchronously over time.
 Observables help you manage asynchronous data, such as data coming from a backend service.
@@ -599,25 +724,33 @@ Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 ~~~
 
+
+
 ## Output
 
 ~~~ {.l-sub-section}
 
+
+
 A directive property that can be the *target* of event binding
-(read more in the [event binding](guide/template-syntax)
+(read more in the [event binding](guide/template-syntax#event-binding)
 section of the [Template Syntax](guide/template-syntax) page).
 Events stream *out* of this property to the receiver identified
 in the template expression to the right of the equal sign.
 
-See the [Input and output properties](guide/template-syntax) section of the [Template Syntax](guide/template-syntax) page.
+See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
 
 
+
+
 ## PascalCase
 
 ~~~ {.l-sub-section}
+
+
 
 The practice of writing individual words, compound words, or phrases such that each word or abbreviation begins with a capital letter.
 Class names are typically spelled in PascalCase. For example, `Person` and `HeroDetailComponent`.
@@ -628,9 +761,13 @@ In this documentation, "PascalCase" means *upper camel case* and  "camelCase" me
 
 ~~~
 
+
+
 ## Pipe
 
 ~~~ {.l-sub-section}
+
+
 
 An Angular pipe is a function that transforms input values to output values for
 display in a [view](guide/glossary#view).
@@ -639,9 +776,11 @@ a numeric value in the local currency.
 
 
 <code-example language="html" escape="html">
-  <label>Price: </label>{{product.price | currency}}  
-    
+  <label>Price: </label>{{product.price | currency}}
+
 </code-example>
+
+
 
 You can also write your own custom pipes.
 Read more in the page on [pipes](guide/pipes).
@@ -649,9 +788,13 @@ Read more in the page on [pipes](guide/pipes).
 
 ~~~
 
+
+
 ## Provider
 
 ~~~ {.l-sub-section}
+
+
 
 A _provider_ creates a new instance of a dependency for the
 [dependency injection](guide/glossary#dependency-injection) system.
@@ -664,27 +807,36 @@ It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that c
 
 {@a Q}
 
+
+
 ## Reactive forms
 
 ~~~ {.l-sub-section}
+
+
 
 A technique for building Angular forms through code in a component.
 The alternative technique is [template-driven forms](guide/glossary#template-driven-forms).
 
 When building reactive forms:
-- The "source of truth" is the component. The validation is defined using code in the component.
-- Each control is explicitly created in the component class with `new FormControl()` or with `FormBuilder`.
-- The template input elements do *not* use `ngModel`.
-- The associated Angular directives are all prefixed with `Form`, such as `FormGroup`, `FormControl`, and `FormControlName`.
+
+* The "source of truth" is the component. The validation is defined using code in the component.
+* Each control is explicitly created in the component class with `new FormControl()` or with `FormBuilder`.
+* The template input elements do *not* use `ngModel`.
+* The associated Angular directives are all prefixed with `Form`, such as `FormGroup`, `FormControl`, and `FormControlName`.
 
 Reactive forms are powerful, flexible, and a good choice for more complex data-entry form scenarios, such as dynamic generation of form controls.
 
 
 ~~~
 
+
+
 ## Router
 
 ~~~ {.l-sub-section}
+
+
 
 Most applications consist of many screens or [views](guide/glossary#view).
 The user navigates among them by clicking links and buttons,
@@ -708,9 +860,13 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 ~~~
 
+
+
 ## Router module
 
 ~~~ {.l-sub-section}
+
+
 
 A separate [Angular module](guide/glossary#angular-module) that provides the necessary service providers and directives for navigating through application views.
 
@@ -719,9 +875,13 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 ~~~
 
+
+
 ## Routing component
 
 ~~~ {.l-sub-section}
+
+
 
 An Angular [component](guide/glossary#component) with a `RouterOutlet` that displays views based on router navigations.
 
@@ -731,9 +891,13 @@ For more information, see the [Routing & Navigation](guide/router) page.
 ~~~
 
 
+
+
 ## Scoped package
 
 ~~~ {.l-sub-section}
+
+
 
 A way to group related *npm* packages.
 Read more at the [npm-scope](https://docs.npmjs.com/misc/scope) page.
@@ -746,7 +910,7 @@ The only difference, from a consumer perspective,
 is that the scoped package name begins with the Angular *scope name*, `@angular`.
 
 
-<code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/ts/src/app/app.component.ts (import)" region="import">
+<code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/src/app/app.component.ts (import)" region="import">
 
 </code-example>
 
@@ -754,9 +918,13 @@ is that the scoped package name begins with the Angular *scope name*, `@angular`
 
 ~~~
 
+
+
 ## Service
 
 ~~~ {.l-sub-section}
+
+
 
 For data or logic that is not associated
 with a specific view or that you want to share across components, build services.
@@ -778,9 +946,13 @@ For more information, see the [Services](guide/.ial/toh-pt4) page of the [Tour o
 
 
 {@a snake-case}
+
+
 ## snake_case
 
 ~~~ {.l-sub-section}
+
+
 
 The practice of writing compound words or phrases such that an
 underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
@@ -794,9 +966,13 @@ underscore (`_`) separates one word from the next. This form is also known as *u
 
 
 {@a structural-directives}
+
+
 ## Structural directives
 
 ~~~ {.l-sub-section}
+
+
 
 A category of [directive](guide/glossary#directive) that can
 shape or reshape HTML layout, typically by adding and removing elements in the DOM.
@@ -808,9 +984,13 @@ Read more in the [Structural Directives](guide/structural-directives) page.
 ~~~
 
 
+
+
 ## Template
 
 ~~~ {.l-sub-section}
+
+
 
 A chunk of HTML that Angular uses to render a [view](guide/glossary#view) with
 the support and guidance of an Angular [directive](guide/glossary#directive),
@@ -819,18 +999,23 @@ most notably a [component](guide/glossary#component).
 
 ~~~
 
+
+
 ## Template-driven forms
 
 ~~~ {.l-sub-section}
+
+
 
 A technique for building Angular forms using HTML forms and input elements in the view.
 The alternate technique is [Reactive Forms](guide/glossary#reactive-forms).
 
 When building template-driven forms:
-- The "source of truth" is the template. The validation is defined using attributes on the individual input elements.
-- [Two-way binding](guide/glossary#data-binding) with `ngModel` keeps the component model synchronized with the user's entry into the input elements.
-- Behind the scenes, Angular creates a new control for each input element, provided you have set up a `name` attribute and two-way binding for each input.
-- The associated Angular directives are all prefixed with `ng` such as `ngForm`, `ngModel`, and `ngModelGroup`.
+
+* The "source of truth" is the template. The validation is defined using attributes on the individual input elements.
+* [Two-way binding](guide/glossary#data-binding) with `ngModel` keeps the component model synchronized with the user's entry into the input elements.
+* Behind the scenes, Angular creates a new control for each input element, provided you have set up a `name` attribute and two-way binding for each input.
+* The associated Angular directives are all prefixed with `ng` such as `ngForm`, `ngModel`, and `ngModelGroup`.
 
 Template-driven forms are convenient, quick, and simple. They are a good choice for many basic data-entry form scenarios.
 
@@ -840,23 +1025,31 @@ in the [Forms](guide/forms) page.
 
 ~~~
 
+
+
 ## Template expression
 
 ~~~ {.l-sub-section}
+
+
 
 A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
 
 Read about how to write template expressions
-in the [Template expressions](guide/template-syntax) section
+in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
 
+
+
 ## Transpile
 
 ~~~ {.l-sub-section}
+
+
 
 The process of transforming code written in one form of JavaScript
 (such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
@@ -864,9 +1057,13 @@ The process of transforming code written in one form of JavaScript
 
 ~~~
 
+
+
 ## TypeScript
 
 ~~~ {.l-sub-section}
+
+
 
 A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#es2015)
 language features such as [decorators](guide/glossary#decorator).
@@ -888,9 +1085,13 @@ Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org
 
 {@a U}
 
+
+
 ## View
 
 ~~~ {.l-sub-section}
+
+
 
 A portion of the screen that displays information and responds
 to user actions such as clicks, mouse moves, and keystrokes.
@@ -917,9 +1118,13 @@ under the control of a [router](guide/glossary#router).
 
 {@a Y}
 
+
+
 ## Zone
 
 ~~~ {.l-sub-section}
+
+
 
 A mechanism for encapsulating and intercepting
 a JavaScript application's asynchronous activity.
