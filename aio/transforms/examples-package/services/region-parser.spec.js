@@ -153,6 +153,16 @@ describe('regionParser service', () => {
     expect(output.regions['A']).toEqual(t('jkl', '/* ... elided ... */', 'pqr'));
   });
 
+  it('should remove the plaster altogether if the current plaster string is ""', () => {
+    const output = regionParser(
+        t('/* #docregion */', 'abc', '/* #enddocregion */', 'def', '/* #docregion */', 'ghi',
+          '/* #enddocregion */', '/* #docplaster */', '/* #docregion A */', 'jkl',
+          '/* #enddocregion A */', 'mno', '/* #docregion A */', 'pqr', '/* #enddocregion A */'),
+        'test-type');
+    expect(output.regions['']).toEqual(t('abc', '/* . . . */', 'ghi'));
+    expect(output.regions['A']).toEqual(t('jkl', 'pqr'));
+  });
+
   it('should parse multiple region names separated by commas', () => {
     const output = regionParser(
         t('/* #docregion , A, B */', 'abc', '/* #enddocregion B */', '/* #docregion C */', 'xyz',
