@@ -5,6 +5,7 @@
   "extends": "./tsconfig-build",
   "compilerOptions": {
     "experimentalDecorators": true,
+    "outDir": ".",
     "paths": {
       "@angular/material": ["./material"]
     }
