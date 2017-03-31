@@ -363,7 +363,7 @@ describe('MdCheckbox', () => {
       expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected no ripples to be present.');
 
-      fakeFocusOriginMonitorSubject.next('program');
+      dispatchFakeEvent(inputElement, 'focus');
       tick(RIPPLE_FADE_IN_DURATION);
 
       expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
