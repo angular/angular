@@ -2,6 +2,24 @@ $metal: #536E7A;
 $snow: #FFFFFF;
 $steel: #253238;
 
+// .bio-card {
+//     margin: 0 0 32px 0;
+//     position: relative;
+//     cursor: pointer;
+//     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+//     background: $white;
+//     transition: all .3s;
+
+//   &:hover {
+//     transform: translate3d(0,-3px,0);
+//     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4);
+
+//     nav {
+//       opacity: 1;
+//     }
+//   }
+
+
 aio-contributor-list {
   .grid-fluid {
     margin: 0 auto;
@@ -69,7 +87,15 @@ aio-contributor {
   header {
     position: relative;
     overflow: hidden;
-    border-radius: 2px 2px 0px 0px;
+    border-radius: 4px;
+
+    img {
+      box-sizing: border-box;
+      display: flex;
+      flex: 0 0 auto;
+      width: 100%;
+      height: auto;
+    }
 
     nav {
       transition: opacity .5s;
@@ -78,13 +104,13 @@ aio-contributor {
       left: 0;
       right: 0;
       z-index: 1;
-      padding: $unit;
+      padding: 8px;
       background: rgba($steel, .4);
       opacity: 0;
 
       button {
         font-size: 14px;
-        color: $snow;
+        color: $white;
         text-transform: uppercase;
         opacity: .87;
         background: none;
@@ -92,16 +118,15 @@ aio-contributor {
       }
 
       a {
-        color: $snow;
+        color: $white;
         font-size: 20px;
         text-decoration: none;
         opacity: .87;
-        margin-right: $unit;
+        margin-right: 8px;
         float: right;
       }
     }
   }
-
 
   // MAIN CONTENT
 

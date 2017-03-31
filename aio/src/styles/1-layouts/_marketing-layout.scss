@@ -1,12 +1,128 @@
-.hero {
+#home {
+  padding: 0rem 0rem 3rem;
+
+  @media (max-width: 800px) {
+    article {
+      padding: 0 30px;
+    }
+  }
+}
+
+div[layout=row]{
+    display: flex;
+    box-sizing: border-box;
+
+    @media (max-width: 480px) {
+      display: block;
+  }
+}
+
+.layout-row {
+    flex-direction: row;
+}
+
+.home-rows {
+    margin-top: 112px;
+}
+
+.home-row .promo-image-container, .home-row .text-container {
+    max-width: 50%;
+}
+
+.background-superhero-paper {
+    background: url('assets/images/backgrounds/super-hero-large.png') no-repeat bottom center , $bluegradient;
+    background-blend-mode: multiply;
+    background-size: 100%;
+}
+
+.background-sky {
+  background-color: $blue;
+  background: $bluegradient;
+  color: $white;
+}
+
+header.bckground-sky.l-relative {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    h1:after {
-        display: none;
+}
+
+.home-rows {
+  // NOTE (ericjim): if a banner is placed on the homescreen, add this margin.
+  margin-top: 112px;
+}
+
+.home-row {
+  max-width: 920px;
+  margin: 0 0 60px 0;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (max-width: 480px) {
+      display: block;
+  }
+
+  h3.text-headline {
+    font-size: 28px;
+    margin-top: 10px;
+  }
+
+  // NOTE (ericjim): remove if graphic changes.
+  .promo-3 {
+    margin-top: 15px;
+
+    @media(max-width: 599px) {
+      margin-top: 0;
     }
+  }
+
+  // -- Utility margins for promos
+  .promo-1-desc, .promo-3-desc {
+    padding-left: 5px;
+  }
+
+  // -- Reset margins for the utility margins
+  @media(max-width: 599px) {
+    .promo-1, .promo-2, .promo-3, .promo-4 {
+      margin: 0;
+    }
+  }
+
+  .text-block {
+    padding-right: 15%;
+
+    @media(max-width: 599px) {
+      padding: 0;
+    }
+  }
+
+  @media(max-width: 599px) {
+    .promo-image-container, .text-container {
+      max-width: 100%;
+    }
+
+    &:nth-child(even) {
+      flex-direction: column-reverse;
+    }
+  }
+
+  .promo-img-container {
+
+    @media (max-width: 375px) {
+      text-align: initial;
+    }
+
+    p {
+      margin: 0 20px;
+    }
+
     img {
-        max-width: 200px;
+      max-width: 90%;
+
+
+      @media (max-width: 599px) {
+        max-width: 100%;
+        float: initial !important;
+      }
     }
+  }
 }

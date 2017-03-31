@@ -42,6 +42,10 @@ footer {
   p {
     text-align: center;
     margin: 10px 0px 5px;
+    
+    @media (max-width: 480px) {
+      text-align: left;
+    }
   }
 
   div.grid-fluid {
@@ -65,7 +69,17 @@ footer {
         text-align: left;
       }
     }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      .footer-block {
+        margin: 8px 24px;
+      }
+    }
   }
+
+  
+
 
   @media (max-width: 700px) {
     h3 {

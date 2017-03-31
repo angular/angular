@@ -28,7 +28,9 @@ export class AppComponent implements OnInit {
   isSideBySide = false;
   private isSideNavDoc = false;
   private previousNavView: string;
-  private readonly sideBySideWidth = 600;
+  // Set to 1032 to account for computed html window size
+  private readonly sideBySideWidth = 1032;
+
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   versionInfo: VersionInfo;

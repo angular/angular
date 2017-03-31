@@ -35,6 +35,11 @@ export class SitePage {
     return browser.executeScript('return arguments[0].innerHTML;', element);
   }
 
+  setWindowWidth(newWidth: number) {
+    const win = browser.driver.manage().window();
+    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
+  }
+
   /**
    * Replace the ambient Google Analytics tracker with homebrew spy
    * don't send commands to GA during e2e testing!

@@ -6,6 +6,7 @@ describe('site App', function() {
 
   beforeEach(() => {
     page = new SitePage();
+    page.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
     page.navigateTo();
   });
 

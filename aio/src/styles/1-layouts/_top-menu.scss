@@ -85,7 +85,7 @@ aio-search-box input {
       width: 50%;
     }
   }
-  @include bp(medium) {
+  @media (max-width: 480px) {
     transition: width 0.4s ease-in-out;
     &:focus {
       width: 50%;
