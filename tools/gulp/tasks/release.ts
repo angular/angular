@@ -98,11 +98,10 @@ task(':package:theming', [':bundle:theming-scss'],
 
 /** Bundles all scss requires for theming into a single scss file in the root of the package. */
 task(':bundle:theming-scss', execNodeTask(
-    'scss-bundle',
-    'scss-bundle', [
-    '-e', themingEntryPointPath,
-    '-d', themingBundlePath,
-]));
+  'scss-bundle', 'scss-bundle', ['-e', themingEntryPointPath, '-d', themingBundlePath], {
+    silentStdout: true
+  }
+));
 
 /** Make sure we're logged in. */
 task(':publish:whoami', execTask('npm', ['whoami'], {

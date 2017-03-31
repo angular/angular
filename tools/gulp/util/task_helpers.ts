@@ -54,8 +54,10 @@ export function sassBuildTask(dest: string, root: string, minify = false) {
 
 /** Options that can be passed to execTask or execNodeTask. */
 export interface ExecTaskOptions {
-  // Whether to output to STDERR and STDOUT.
+  // Whether STDOUT and STDERR messages should be printed.
   silent?: boolean;
+  // Whether STDOUT messages should be printed.
+  silentStdout?: boolean;
   // If an error happens, this will replace the standard error.
   errMessage?: string;
 }
@@ -65,14 +67,12 @@ export function execTask(binPath: string, args: string[], options: ExecTaskOptio
   return (done: (err?: string) => void) => {
     const childProcess = child_process.spawn(binPath, args);
 
-    if (!options.silent) {
-      childProcess.stdout.on('data', (data: string) => {
-        process.stdout.write(data);
-      });
+    if (!options.silentStdout && !options.silent) {
+      childProcess.stdout.on('data', (data: string) => process.stdout.write(data));
+    }
 
-      childProcess.stderr.on('data', (data: string) => {
-        process.stderr.write(data);
-      });
+    if (!options.silent) {
+      childProcess.stderr.on('data', (data: string) => process.stderr.write(data));
     }
 
     childProcess.on('close', (code: number) => {
