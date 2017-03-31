@@ -5,10 +5,14 @@ Npm Packages
 Recommended npm packages, and how to specify package dependencies.
 
 @description
+
+
 Angular applications and Angular itself depend upon features and functionality provided by a variety of third-party packages.
 These packages are maintained and installed with the Node Package Manager (<a href="https://docs.npmjs.com/" target="_blank">npm</a>).
 
 ~~~ {.l-sub-section}
+
+
 
 Node.js and npm are essential to Angular development.
 
@@ -26,6 +30,8 @@ you already have projects running on your machine that use other versions of nod
 
 ~~~
 
+
+
 During [Setup](guide/setup), a <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a>
 file is installed with a comprehensive starter set of
 packages as specified in the `dependencies` and `devDependencies` sections.
@@ -36,15 +42,21 @@ everything you need to build and run the sample applications in this series.
 
 ~~~ {.l-sub-section}
 
+
+
 Note: A cookbook or guide page may require an additional library such as *jQuery*.
 
 ~~~
+
+
 
 You'll install more than you need for the QuickStart guide.
 No worries!
 You only serve to the client those packages that the application actually requests.
 
 This page explains what each package does. You can make substitutions later to suit your tastes and experience.
+
+
 
 ## *dependencies* and *devDependencies*
 The `package.json` includes two sets of packages,
@@ -55,13 +67,15 @@ The *devDependencies* are only necessary to *develop* the application.
 You can exclude them from production installations by adding `--production` to the install command, as follows:
 
 <code-example format="." language="bash">
-  npm install my-application --production  
-    
+  npm install my-application --production
+
 </code-example>
 
 
 
 {@a dependencies}
+
+
 
 ## *dependencies*
 The `dependencies` section of `package.json` contains:
@@ -71,6 +85,8 @@ The `dependencies` section of `package.json` contains:
 * ***Polyfills***: Polyfills plug gaps in the browser's JavaScript implementation.
 
 * ***Other***: Other libraries that support the application such as `bootstrap` for HTML widgets and styling.
+
+
 
 ### Feature Packages
 
@@ -89,7 +105,7 @@ This package also includes the `bootstrapStatic()` method
 for bootstrapping applications for production builds that pre-compile templates offline.
 
 ***@angular/platform-browser-dynamic***: Includes [Providers](api/core/index/Provider-type-alias)
-and a [bootstrap](guide/ngmodule) method for applications that
+and a [bootstrap](guide/ngmodule#bootstrap) method for applications that
 compile templates on the client. Don’t use offline compilation.
 Use this package for bootstrapping during development and for bootstrapping plunker samples.
 
@@ -110,6 +126,8 @@ HTML controls, themes, data access, and various utilities.
 
 {@a polyfills}
 
+
+
 ### Polyfill packages
 
 Angular requires certain [polyfills](https://en.wikipedia.org/wiki/Polyfill) in the application environment.
@@ -120,9 +138,13 @@ You must list these packages in the `dependencies` section of your own `package.
 
 ~~~ {.l-sub-section}
 
+
+
 For background on this requirement, see [Why peerDependencies?](guide/npm-packages#why-peer-dependencies).
 
 ~~~
+
+
 
 ***core-js***: Patches the global context (window) with essential features of ES2015 (ES6).
  You may substitute an alternative polyfill that provides the same core APIs.
@@ -141,18 +163,22 @@ without waiting for Angular updates.
 
 {@a other}
 
+
+
 ### Other helper libraries
 
 ***angular-in-memory-web-api***: An Angular-supported library that simulates a remote server's web api
 without requiring an actual server or real HTTP calls.
 Good for demos, samples, and early stage development (before you even have a server).
-Read about it in the [HTTP Client](guide/server-communication) page.
+Read about it in the [HTTP Client](guide/server-communication#in-mem-web-api) page.
 
 ***bootstrap***: [Bootstrap](http://getbootstrap.com/) is a popular HTML and CSS framework for designing responsive web apps.
 Some of the samples improve their appearance with *bootstrap*.
 
 
 {@a dev-dependencies}
+
+
 
 ## *devDependencies*
 The packages listed in the *devDependencies* section of the `package.json` help you develop the application.
@@ -169,11 +195,13 @@ with excellent support for Angular apps that use routing.
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
 ***@types/\****: TypeScript definition files.
-Learn more about it in the [TypeScript Configuration](guide/typescript-configuration) guide.
+Learn more about it in the [TypeScript Configuration](guide/typescript-configuration#typings) guide.
 
 
 
 {@a why-peer-dependencies}
+
+
 ## Why *peerDependencies*?
 
 There isn't a [*peerDependencies*](https://nodejs.org/en/blog/npm/peer-dependencies/) section in the QuickStart `package.json`.
@@ -229,6 +257,8 @@ It is your responsibility to list all *peer dependency* packages **among your ow
 
 
 ~~~ {.l-sub-section}
+
+
 
 #### The future of *peerDependencies*
 

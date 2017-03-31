@@ -1,7 +1,7 @@
 // #docregion token
-import { OpaqueToken } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 
-export let APP_CONFIG = new OpaqueToken('app.config');
+export let APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 // #enddocregion token
 
 // #docregion config

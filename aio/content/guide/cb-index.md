@@ -5,6 +5,8 @@ Cookbook
 A collection of recipes for common Angular application scenarios.
 
 @description
+
+
 The *Cookbook* offers answers to common implementation questions.
 
 Each cookbook page is a collection of recipes focused on a particular Angular feature or application challenge
@@ -13,10 +15,14 @@ such as data binding, cross-component interaction, and communicating with a remo
 
 ~~~ {.l-sub-section}
 
+
+
 The cookbook is just getting started. Many more recipes are on the way.
 
 
 ~~~
+
+
 
 Each cookbook links to a live sample with every recipe included.
 

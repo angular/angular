@@ -5,10 +5,14 @@ Deployment
 Learn how to deploy your Angular app.
 
 @description
+
+
 This page describes tools and techniques for deploy and optimize your Angular application.
 
 
 {@a toc}
+
+
 ## Table of contents
 
 * [Overview](guide/deployment#overview)
@@ -30,6 +34,8 @@ This page describes tools and techniques for deploy and optimize your Angular ap
 
 {@a overview}
 
+
+
 ## Overview
 
 This guide describes techniques for preparing and deploying an Angular application to a server running remotely.
@@ -39,10 +45,10 @@ The techniques progress from _easy but suboptimal_ to _more optimal and more inv
 
 * [_Ahead of Time_ compilation (AOT)](guide/deployment#aot "AOT Compilation") is the first of
 [several optimization strategies](guide/deployment#optimize).
-You'll also want to read the [detailed instructions in the AOT Cookbook](cookbook/aot-compiler).
+You'll also want to read the [detailed instructions in the AOT Cookbook](cookbook/aot-compiler "AOT Cookbook").
 
 * [Webpack](guide/deployment#webpack "Webpack Optimization") is a popular general purpose packaging tool with a rich ecosystem, including plugins for AOT.
-The Angular [webpack guide](guide/webpack) can get you started and
+The Angular [webpack guide](guide/webpack "Webpack: an introduction") can get you started and
 _this_ page provides additional optimization advice, but you'll probably have to learn more about webpack on your own.
 
 * The [Angular configuration](guide/deployment#angular-configuration "Angular configuration") section calls attention to
@@ -54,6 +60,8 @@ server-side changes that may be necessary, _no matter how you deploy the applica
 
 
 {@a dev-deploy}
+
+
 ## Simplest deployment possible
 
 The simplest way to deploy the app is to publish it to a web server
@@ -82,6 +90,8 @@ That's the simplest deployment you can do.
 
 ~~~ {.alert.is-helpful}
 
+
+
 This is _not_ a production deployment. It's not optimized and it won't be fast for users.
 It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders.
 Be sure to read about [optimizing for production](guide/deployment#optimize "Optimizing for production") below.
@@ -93,6 +103,8 @@ Be sure to read about [optimizing for production](guide/deployment#optimize "Opt
 
 
 {@a node-modules}
+
+
 ### Load npm package files from the web (SystemJS)
 
 The `node_modules` folder of _npm packages_ contains much more code
@@ -113,12 +125,16 @@ with versions that load from the web. It might look like this.
 
 </code-example>
 
+
+
 (2) Replace the `systemjs.config.js` script with a script that
 loads `systemjs.config.server.js`.
 
 <code-example path="deployment/src/index.html" region="systemjs-config" linenums="false">
 
 </code-example>
+
+
 
 (3) Add `systemjs.config.server.js` (shown in the code sample below) to the `src/` folder.
 This alternative version configures _SystemJS_ to load _UMD_ versions of Angular
@@ -133,6 +149,8 @@ Notice the `paths` key:
 <code-example path="deployment/src/systemjs.config.server.js" region="paths" linenums="false">
 
 </code-example>
+
+
 
 In the standard SystemJS config, the `npm` path points to the `node_modules/`.
 In this server config, it points to
@@ -183,9 +201,11 @@ The following trivial router sample app shows these changes.
 
 </code-tabs>
 
+
+
 Practice with this sample before attempting these techniques on your application.
 
-1. Follow the [setup instructions](guide/setup) for creating a new project
+1. Follow the [setup instructions](guide/setup "Angular QuickStart setup") for creating a new project
 named <code>simple-deployment</code>.
 
 1. Add the "Simple deployment" sample files shown above.
@@ -204,6 +224,8 @@ When you have that working, try the same process on your application.
 
 
 {@a optimize}
+
+
 
 ## Optimize for production
 
@@ -226,14 +248,14 @@ Does it matter? That depends upon business and technical factors you must evalua
 
 If it _does_ matter, there are tools and techniques to reduce the number of requests and the size of responses.
 
-- Ahead-of-Time (AOT) Compilation: pre-compiles Angular component templates.
-- Bundling: concatenates modules into a single file (bundle).
-- Inlining: pulls template html and css into the components.
-- Minification: removes excess whitespace, comments, and optional tokens.
-- Uglification: rewrites code to use short, cryptic variable and function names.
-- Dead code elimination: removes unreferenced modules and unused code.
-- Pruned libraries: drop unused libraries and pare others down to the features you need.
-- Performance measurement: focus on optimizations that make a measurable difference.
+* Ahead-of-Time (AOT) Compilation: pre-compiles Angular component templates.
+* Bundling: concatenates modules into a single file (bundle).
+* Inlining: pulls template html and css into the components.
+* Minification: removes excess whitespace, comments, and optional tokens.
+* Uglification: rewrites code to use short, cryptic variable and function names.
+* Dead code elimination: removes unreferenced modules and unused code.
+* Pruned libraries: drop unused libraries and pare others down to the features you need.
+* Performance measurement: focus on optimizations that make a measurable difference.
 
 Each tool does something different.
 They work best in combination and are mutually reinforcing.
@@ -244,28 +266,33 @@ building for production is a single step.
 
 
 {@a aot}
+
+
 ### Ahead-of-Time (AOT) compilation
 
 The Angular _Ahead-of-Time_ compiler pre-compiles application components and their templates
 during the build process.
 
 Apps compiled with AOT launch faster for several reasons.
+
 * Application components execute immediately, without client-side compilation.
 * Templates are embedded as code within their components so there is no client-side request for template files.
 * You don't download the Angular compiler, which is pretty big on its own.
 * The compiler discards unused Angular directives that a tree-shaking tool can then exclude.
 
-Learn more about AOT Compilation in the [AOT Cookbook](cookbook/aot-compiler)
+Learn more about AOT Compilation in the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook")
 which describes running the AOT compiler from the command line
 and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglification and tree shaking.
 
 
 {@a webpack}
+
+
 ### Webpack (and AOT)
 
 <a href="https://webpack.js.org/" target="_blank" title="Webpack 2">Webpack 2</a> is another
 great option for inlining templates and style-sheets, for bundling, minifying, and uglifying the application.
-The "[Webpack: an introduction](guide/webpack)" guide will get you started
+The "[Webpack: an introduction](guide/webpack "Webpack: an introduction")" guide will get you started
 using webpack with Angular.
 
 Consider configuring _Webpack_ with the official
@@ -277,6 +304,8 @@ and performs AOT compilation &mdash; without any changes to the source code.
 
 
 {@a rollup}
+
+
 ### Dead code elimination with _rollup_
 
 Any code that you don't call is _dead code_.
@@ -294,6 +323,8 @@ this post</a> by rollup-creator, Rich Harris.
 
 
 {@a prune}
+
+
 ### Pruned libraries
 
 Don't count on automation to remove all dead code.
@@ -307,6 +338,8 @@ Other libraries let you import features _a la carte_.
 
 
 {@a measure}
+
+
 ### Measure performance first
 
 You can make better decisions about what to optimize and how when you have a clear and accurate understanding of
@@ -325,15 +358,19 @@ that can also help verify that your deployment was successful.
 
 {@a angular-configuration}
 
+
+
 ## Angular configuration
 
 Angular configuration can make the difference between whether the app launches quickly or doesn't load at all.
 
 
 {@a base-tag}
+
+
 ### The `base` tag
 
-The HTML [_&lt;base href="..."/&gt;_](https://angular.io/docs/ts/latest/guide/router.html#!#base-href)
+The HTML [_&lt;base href="..."/&gt;_](https://angular.io/docs/ts/latest/guide/router.html#!)
 specifies a base path for resolving relative URLs to assets such as images, scripts, and style sheets.
 For example, given the `<base href="/my/app/">`, the browser resolves a URL such as `some/place/foo.jpg`
 into a server request for `my/app/some/place/foo.jpg`.
@@ -342,9 +379,13 @@ During navigation, the Angular router uses the _base href_ as the base path to c
 
 ~~~ {.l-sub-section}
 
-See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let) alternative.
+
+
+See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let "API: APP_BASE_HREF") alternative.
 
 ~~~
+
+
 
 In development, you typically start the server in the folder that holds `index.html`.
 That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
@@ -358,6 +399,8 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 
 
 {@a enable-prod-mode}
+
+
 ### Enable production mode
 
 Angular apps run in development mode by default, as you can see by the following message on the browser
@@ -368,26 +411,30 @@ console:
   Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.
 </code-example>
 
+
+
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
 
 To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`.
 
 
-<code-example path="deployment/src/main.ts" region="enableProdMode" linenums="false">
+<code-example path="deployment/src/main.ts" region="enableProdMode" title="src/main.ts (enableProdMode)" linenums="false">
 
 </code-example>
 
 
 
 {@a lazy-loading}
+
+
 ### Lazy loading
 
 You can dramatically reduce launch time by only loading the application modules that
 absolutely must be present when the app starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
-[waiting until the app has launched](guide/router)
-or by [_lazy loading_](guide/router)
+[waiting until the app has launched](guide/router#preloading  "Preloading")
+or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 
 #### Don't eagerly import something from a lazy loaded module
@@ -411,12 +458,16 @@ automatically recognizes lazy loaded `NgModules` and creates separate bundles fo
 
 {@a server-configuration}
 
+
+
 ## Server configuration
 
 This section covers changes you may have make to the server or to files deployed to the server.
 
 
 {@a fallback}
+
+
 ### Routed apps must fallback to `index.html`
 
 Angular apps are perfect candidates for serving with a simple static HTML server.
@@ -428,6 +479,8 @@ to return the application's host page (`index.html`) when asked for a file that 
 
 
 {@a deep-link}
+
+
 A routed application should support "deep links".
 A _deep link_ is a URL that specifies a path to a component inside the app.
 For example, `http://www.mysite.com/heroes/42` is a _deep link_ to the hero detail page
@@ -453,72 +506,81 @@ The list is by no means exhaustive, but should provide you with a good starting 
 
 #### Development servers
 
-- [Lite-Server](https://github.com/johnpapa/lite-server): the default dev server installed with the
+* [Lite-Server](https://github.com/johnpapa/lite-server): the default dev server installed with the
 [Quickstart repo](https://github.com/angular/quickstart) is pre-configured to fallback to `index.html`.
 
-- [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the
+* [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the
 `historyApiFallback` entry in the dev server options as follows:
 
 
 <code-example>
-  historyApiFallback: {  
-      disableDotRule: true,  
-      htmlAcceptHeaders: ['text/html', 'application/xhtml+xml']  
-    }  
-    
+  historyApiFallback: {
+    disableDotRule: true,
+    htmlAcceptHeaders: ['text/html', 'application/xhtml+xml']
+  }
+
 </code-example>
+
+
 
 #### Production servers
 
-- [Apache](https://httpd.apache.org/): add a
+* [Apache](https://httpd.apache.org/): add a
 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
 to the `.htaccess` file as show
 [here](https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
 
+
 <code-example format=".">
-  RewriteEngine On  
-    # If an existing asset or directory is requested go to it as it is  
-    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]  
-    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d  
-    RewriteRule ^ - [L]  
-      
-    # If the requested resource doesn't exist, use index.html  
-    RewriteRule ^ /index.html  
-    
+  RewriteEngine On
+  # If an existing asset or directory is requested go to it as it is
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+  RewriteRule ^ - [L]
+
+  # If the requested resource doesn't exist, use index.html
+  RewriteRule ^ /index.html
+
 </code-example>
 
-- [NGinx](http://nginx.org/): use `try_files`, as described in
+
+
+* [NGinx](http://nginx.org/): use `try_files`, as described in
 [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
 
 
 <code-example format=".">
-  try_files $uri $uri/ /index.html;  
-    
+  try_files $uri $uri/ /index.html;
+
 </code-example>
 
-- [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
+
+
+* [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
 
-<code-example format="." escape="html">
-  <system.webServer>  
-      <rewrite>  
-        <rules>  
-          <rule name="Angular Routes" stopProcessing="true">  
-            <match url=".*" />  
-            <conditions logicalGrouping="MatchAll">  
-              <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />  
-              <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />  
-            </conditions>  
-            <action type="Rewrite" url="/" />  
-          </rule>  
-        </rules>  
-      </rewrite>  
-    </system.webServer>  
-    
+<code-example format='.'>
+  &lt;system.webServer&gt;
+    &lt;rewrite&gt;
+      &lt;rules&gt;
+        &lt;rule name="Angular Routes" stopProcessing="true"&gt;
+          &lt;match url=".*" /&gt;
+          &lt;conditions logicalGrouping="MatchAll"&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+          &lt;/conditions&gt;
+          &lt;action type="Rewrite" url="/src/" /&gt;
+        &lt;/rule&gt;
+      &lt;/rules&gt;
+    &lt;/rewrite&gt;
+  &lt;/system.webServer&gt;
+
 </code-example>
 
-- [GitHub Pages](https://pages.github.com/): you can't
+
+
+* [GitHub Pages](https://pages.github.com/): you can't
 [directly configure](https://github.com/isaacs/github/issues/408)
 the GitHub Pages server, but you can add a 404 page.
 Copy `index.html` into `404.html`.
@@ -528,21 +590,23 @@ It's also a good idea to
 and to
 [create a `.nojekyll` file](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)
 
-- [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
+* [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
 
 
 <code-example format=".">
-  "rewrites": [ {  
-      "source": "**",  
-      "destination": "/index.html"  
-    } ]  
-    
+  "rewrites": [ {
+    "source": "**",
+    "destination": "/index.html"
+  } ]
+
 </code-example>
 
 
 
 {@a cors}
+
+
 
 ### Requesting services from a different server (CORS)
 
@@ -560,6 +624,8 @@ Read about how to enable CORS for specific servers at
 
 {@a next-steps}
 
+
+
 ## Next steps
  If you want to go beyond the [simple _copy-deploy_](guide/deployment#dev-deploy "Simplest deployment possible") approach,
- read the [AOT Cookbook](cookbook/aot-compiler) next.
+ read the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook") next.

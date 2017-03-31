@@ -1,0 +1,62 @@
+{
+  "name": "toh-universal",
+  "version": "1.0.0",
+  "description": "Tour-of-Heroes application with ng-universal server-side rendering",
+  "scripts": {
+    "build": "tsc -p src/",
+    "build:watch": "tsc -w",
+    "build:aot": "webpack --config webpack.config.aot.js",
+    "build:uni": "webpack --config webpack.config.uni.js",
+
+    "serve": "lite-server -c=bs-config.json",
+    "serve:aot": "lite-server -c=bs-config.aot.js",
+    "serve:uni": "node src/dist/server.js",
+    "serve:uni2": "lite-server -c bs-config.uni.js",
+
+    "prestart": "npm run build",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
+
+    "lint": "tslint ./src/**/*.ts -t verbose",
+    "ngc": "ngc",
+    "clean": "rimraf src/dist && rimraf src/app/*.js* && rimraf src/uni/*.js* && rimraf src/main.js*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "angular/common-builds",
+    "@angular/compiler": "angular/compiler-builds",
+    "@angular/compiler-cli": "angular/compiler-cli-builds",
+    "@angular/core": "angular/core-builds",
+    "@angular/forms": "angular/forms-builds",
+    "@angular/http": "angular/http-builds",
+    "@angular/platform-browser": "angular/platform-browser-builds",
+    "@angular/platform-browser-dynamic": "angular/platform-browser-dynamic-builds",
+    "@angular/platform-server": "angular/platform-server-builds",
+    "@angular/router": "angular/router-builds",
+
+    "angular-in-memory-web-api": "^0.3.1",
+    "systemjs": "0.19.40",
+    "core-js": "^2.4.1",
+    "rxjs": "5.1.1",
+    "zone.js": "^0.7.7"
+  },
+  "devDependencies": {
+    "concurrently": "^3.2.0",
+    "lite-server": "^2.2.2",
+    "typescript": "~2.1.6",
+
+    "canonical-path": "0.0.2",
+    "tslint": "^3.15.1",
+    "lodash": "^4.16.4",
+    "rimraf": "^2.5.4",
+
+    "@types/node": "^6.0.46",
+
+    "@ngtools/webpack": "^1.2.11",
+    "@types/express": "^4.0.35",
+    "raw-loader": "^0.5.1",
+    "webpack": "^2.2.1"
+  },
+  "repository": {}
+}

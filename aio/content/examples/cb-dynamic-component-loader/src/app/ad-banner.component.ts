@@ -11,11 +11,12 @@ import { AdComponent } from './ad.component';
   template: `
               <div class="ad-banner">
                 <h3>Advertisements</h3>
-                <template ad-host></template>
+                <ng-template ad-host></ng-template>
               </div>
             `
-  // #enddocregion ad-host          
+  // #enddocregion ad-host
 })
+// #docregion class
 export class AdBannerComponent implements AfterViewInit, OnDestroy {
   @Input() ads: AdItem[];
   currentAddIndex: number = -1;
@@ -53,3 +54,4 @@ export class AdBannerComponent implements AfterViewInit, OnDestroy {
     }, 3000);
   }
 }
+// #enddocregion class

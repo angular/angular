@@ -5,10 +5,14 @@ Master/Detail
 Build a master/detail page with a list of heroes.
 
 @description
+
+
 In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
 allow users to select a hero and display the hero's details.
 
 When you're done with this page, the app should look like this <live-example></live-example>.
+
+
 
 ## Where you left off
 Before you continue with this page of the Tour of Heroes,
@@ -68,19 +72,25 @@ If your structure doesn't match, go back to that page to figure out what you mis
 
 </aio-filetree>
 
+
+
 ## Keep the app transpiling and running
 Enter the following command in the terminal window:
 
 
 <code-example language="sh" class="code-shell">
-  npm start  
-    
+  npm start
+
 </code-example>
+
+
 
 This command runs the TypeScript compiler in "watch mode", recompiling automatically when the code changes.
 The command simultaneously launches the app in a browser and refreshes the browser when the code changes.
 
 You can keep building the Tour of Heroes without pausing to recompile or refresh the browser.
+
+
 
 ## Displaying heroes
 To display a list of heroes, you'll add heroes to the view's template.
@@ -89,9 +99,11 @@ To display a list of heroes, you'll add heroes to the view's template.
 Create an array of ten heroes.
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="hero-array">
+<code-example path="toh-2/src/app/app.component.ts" region="hero-array" title="src/app/app.component.ts (hero array)">
 
 </code-example>
+
+
 
 The `HEROES` array is of type `Hero`, the class defined in the previous page.
 Eventually this app will fetch the list of heroes from a web service, but for now
@@ -102,14 +114,18 @@ Create a public property in `AppComponent` that exposes the heroes for binding.
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="hero-array-1">
+<code-example path="toh-2/src/app/app.component.1.html" region="hero-array-1" title="app.component.ts (hero array property)">
 
 </code-example>
+
+
 
 The `heroes` type isn't defined because TypeScript infers it from the `HEROES` array.
 
 
 ~~~ {.l-sub-section}
+
+
 
 The hero data is separated from the class implementation
 because ultimately the hero names will come from a data service.
@@ -117,15 +133,19 @@ because ultimately the hero names will come from a data service.
 
 ~~~
 
+
+
 ### Display hero names in a template
 To display the hero names in an unordered list,
 insert the following chunk of HTML below the title and above the hero details.
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="heroes-template-1" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="heroes-template-1" title="app.component.ts (heroes template)" linenums="false">
 
 </code-example>
+
+
 
 Now you can fill the template with hero names.
 
@@ -137,13 +157,15 @@ and display them individually.
 Modify the `<li>` tag by adding the built-in directive `*ngFor`.
 
 
-<code-example path="toh-2/app/app.component.1.html" region="heroes-ngfor-1">
+<code-example path="toh-2/src/app/app.component.1.html" region="heroes-ngfor-1" title="app.component.ts (ngFor)">
 
 </code-example>
 
 
 
 ~~~ {.l-sub-section}
+
+
 
 The (`*`) prefix to `ngFor` is a critical part of this syntax.
 It indicates that the `<li>` element and its children
@@ -157,22 +179,26 @@ which holds the current hero item for each iteration.
 You can reference this variable within the template to access the current hero's properties.
 
 Read more about `ngFor` and template input variables in the
-[Showing an array property with *ngFor](guide/displaying-data) section of the
+[Showing an array property with *ngFor](guide/displaying-data#ngFor) section of the
 [Displaying Data](guide/displaying-data) page and the
-[ngFor](guide/template-syntax) section of the
+[ngFor](guide/template-syntax#ngFor) section of the
 [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
+
+
 
 Within the `<li>` tags, add content
 that uses the `hero` template variable to display the hero's properties.
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="ng-for" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="ng-for" title="app.component.ts (ngFor template)" linenums="false">
 
 </code-example>
+
+
 
 When the browser refreshes, a list of heroes appears.
 
@@ -183,9 +209,11 @@ To add styles to your component, set the `styles` property on the `@Component` d
 to the following CSS classes:
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="styles" linenums="false">
+<code-example path="toh-2/src/app/app.component.ts" region="styles" title="src/app/app.component.ts (styles)" linenums="false">
 
 </code-example>
+
+
 
 Remember to use the backtick notation for multi-line strings.
 
@@ -198,9 +226,11 @@ The template for displaying heroes should look like this:
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="heroes-styled" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="heroes-styled" title="src/app/app.component.ts (styled heroes)" linenums="false">
 
 </code-example>
+
+
 
 
 ## Selecting a hero
@@ -218,9 +248,11 @@ Add a click event binding to the `<li>` like this:
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="selectedHero-click" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="selectedHero-click" title="app.component.ts (template excerpt)" linenums="false">
 
 </code-example>
+
+
 
 The parentheses identify the `<li>` element's  `click` event as the target.
 The `onSelect(hero)` expression calls the  `AppComponent` method, `onSelect()`,
@@ -229,13 +261,17 @@ That's the same `hero` variable you defined previously in the `ngFor` directive.
 
 ~~~ {.l-sub-section}
 
+
+
 Learn more about event binding at the
 [User Input](guide/user-input) page and the
-[Event binding](guide/template-syntax) section of the
+[Event binding](guide/template-syntax#event-binding) section of the
 [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
+
+
 
 ### Add a click handler to expose the selected hero
 You no longer need the `hero` property because you're no longer displaying a single hero; you're displaying a list of heroes.
@@ -243,27 +279,33 @@ But the user will be able to select one of the heroes by clicking on it.
 So replace the `hero` property with this simple `selectedHero` property:
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="selected-hero">
+<code-example path="toh-2/src/app/app.component.ts" region="selected-hero" title="src/app/app.component.ts (selectedHero)">
 
 </code-example>
+
+
 
 The hero names should all be unselected before the user picks a hero, so
 you won't initialize the `selectedHero` as you did with `hero`.
 
-Add an `onSelect` method that sets the `selectedHero` property to the `hero` that the user clicks.
+Add an `onSelect()` method that sets the `selectedHero` property to the `hero` that the user clicks.
 
-<code-example path="toh-2/src/app/app.component.ts" region="on-select" linenums="false">
+<code-example path="toh-2/src/app/app.component.ts" region="on-select" title="src/app/app.component.ts (onSelect)" linenums="false">
 
 </code-example>
+
+
 
 The template still refers to the old `hero` property.
 Bind to the new selectedHero property instead as follows:
 
 
 
-<code-example path="toh-2/app/app.component.1.html" region="selectedHero-details" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="selectedHero-details" title="app.component.ts (template excerpt)" linenums="false">
 
 </code-example>
+
+
 
 ### Hide the empty detail with ngIf
 
@@ -273,9 +315,11 @@ visible in the browser's console:
 
 
 <code-example format="nocode">
-  EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]  
-    
+  EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]
+
 </code-example>
+
+
 
 Although `selectedHero.name` is displayed in the template,
 you must keep the hero detail out of the DOM until there is a selected hero.
@@ -284,7 +328,7 @@ Wrap the HTML hero detail content of the template with a `<div>`.
 Then add the `ngIf` built-in directive and set it to the `selectedHero` property of the component.
 
 
-<code-example path="toh-2/app/app.component.1.html" region="ng-if" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="ng-if" title="src/app/app.component.ts (ngIf)" linenums="false">
 
 </code-example>
 
@@ -292,12 +336,18 @@ Then add the `ngIf` built-in directive and set it to the `selectedHero` property
 
 ~~~ {.alert.is-critical}
 
+
+
 Don't forget the asterisk (`*`) in front of `ngIf`.
 
 
 ~~~
 
+
+
 The app no longer fails and the list of names displays again in the browser.
+
+
 When there is no `selectedHero`, the `ngIf` directive removes the hero detail HTML from the DOM.
 There are no hero detail elements or bindings to worry about.
 
@@ -307,14 +357,18 @@ When the user picks a hero, `selectedHero` becomes defined and
 
 ~~~ {.l-sub-section}
 
+
+
 Read more about `ngIf` and `ngFor` in the
 [Structural Directives](guide/structural-directives) page and the
-[Built-in directives](guide/template-syntax) section of the
+[Built-in directives](guide/template-syntax#directives) section of the
 [Template Syntax](guide/template-syntax) page.
 
 
 
 ~~~
+
+
 
 ### Style the selected hero
 
@@ -327,14 +381,18 @@ like this:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-selected.png' alt="Selected hero">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-selected.png' alt="Selected hero"></img>
 </figure>
+
+
 
 In the template, add the following `[class.selected]` binding to  the `<li>`:
 
-<code-example path="toh-2/app/app.component.1.html" region="class-selected-1" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="class-selected-1" title="app.component.ts (setting the CSS class)" linenums="false">
 
 </code-example>
+
+
 
 When the expression (`hero === selectedHero`) is `true`, Angular adds the `selected` CSS class.
 When the expression is `false`, Angular removes the `selected` class.
@@ -343,33 +401,44 @@ When the expression is `false`, Angular removes the `selected` class.
 
 ~~~ {.l-sub-section}
 
-Read more about the `[class]` binding in the [Template Syntax](guide/template-syntax) guide.
+
+
+Read more about the `[class]` binding in the [Template Syntax](guide/template-syntax#ngClass "Template syntax: NgClass") guide.
 
 
 ~~~
 
+
+
 The final version of the `<li>` looks like this:
 
-<code-example path="toh-2/app/app.component.1.html" region="class-selected-2" linenums="false">
+<code-example path="toh-2/src/app/app.component.1.html" region="class-selected-2" title="app.component.ts (styling each hero)" linenums="false">
 
 </code-example>
+
+
 
 After clicking "Magneta", the list should look like this:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app">  </img>
+  <img src='assets/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app"></img>
 </figure>
+
+
 
 Here's the complete `app.component.ts` as of now:
 
 
-<code-example path="toh-2/src/app/app.component.ts">
+<code-example path="toh-2/src/app/app.component.ts" title="src/app/app.component.ts">
 
 </code-example>
 
 
+
+
 ## The road you've travelled
+
 Here's what you achieved in this page:
 
 * The Tour of Heroes app displays a list of selectable heroes.

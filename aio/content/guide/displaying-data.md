@@ -6,6 +6,8 @@ Property binding helps show app data in the UI.
 
 @description
 
+
+
 You can display data by binding controls in an HTML template to properties of an Angular component.
 
 In this page, you'll create a component with a list of heroes.
@@ -16,8 +18,10 @@ The final UI looks like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/final.png" alt="Final UI">  </img>
+  <img src="assets/images/devguide/displaying-data/final.png" alt="Final UI"></img>
 </figure>
+
+
 
 # Contents
 
@@ -28,11 +32,15 @@ The final UI looks like this:
 
 ~~~ {.l-sub-section}
 
+
+
 The <live-example></live-example> demonstrates all of the syntax and code
 snippets described in this page.
 
 
 ~~~
+
+
 
 
 ## Showing component properties with interpolation
@@ -49,9 +57,11 @@ changing the template and the body of the component.
 When you're done, it should look like this:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts">
+<code-example path="displaying-data/src/app/app.component.1.ts" title="src/app/app.component.ts">
 
 </code-example>
+
+
 
 You added two properties to the formerly empty component: `title` and `myHero`.
 
@@ -67,6 +77,8 @@ interpolation:
 
 ~~~ {.l-sub-section}
 
+
+
 The template is a multi-line string within ECMAScript 2015 backticks (<code>\`</code>).
 The backtick (<code>\`</code>)&mdash;which is *not* the same character as a single
 quote (`'`)&mdash;allows you to compose a string over several lines, which makes the
@@ -75,6 +87,8 @@ HTML more readable.
 
 ~~~
 
+
+
 Angular automatically pulls the value of the `title` and `myHero` properties from the component and
 inserts those values into the browser. Angular updates the display
 when these properties change.
@@ -82,11 +96,15 @@ when these properties change.
 
 ~~~ {.l-sub-section}
 
+
+
 More precisely, the redisplay occurs after some kind of asynchronous event related to
 the view, such as a keystroke, a timer completion, or a response to an HTTP request.
 
 
 ~~~
+
+
 
 Notice that you don't call **new** to create an instance of the `AppComponent` class.
 Angular is creating an instance for you. How?
@@ -99,6 +117,8 @@ That element is a placeholder in the body of your `index.html` file:
 
 </code-example>
 
+
+
 When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<my-app>`
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
 inside the `<my-app>` tag.
@@ -106,10 +126,14 @@ inside the `<my-app>` tag.
 Now run the app. It should display the title and hero name:
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero">  </img>
+  <img src="assets/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero"></img>
 </figure>
 
+
+
 The next few sections review some of the coding choices in the app.
+
+
 ## Template inline or template file?
 
 You can store your component's template in one of two places.
@@ -123,6 +147,8 @@ Here the app uses inline HTML because the template is small and the demo
 is simpler without the additional HTML file.
 
 In either style, the template data bindings have the same access to the component's properties.
+
+
 ## Constructor or variable initialization?
 
 Although this example uses variable assignment to initialize the components, you can instead declare and initialize the properties using a constructor:
@@ -132,7 +158,11 @@ Although this example uses variable assignment to initialize the components, you
 
 </code-example>
 
+
+
 This app uses more terse "variable assignment" style simply for brevity.
+
+
 
 ## Showing an array property with ***ngFor**
 
@@ -143,6 +173,8 @@ To display a list of heroes, begin by adding an array of hero names to the compo
 
 </code-example>
 
+
+
 Now use the Angular `ngFor` directive in the template to display
 each item in the `heroes` list.
 
@@ -150,6 +182,8 @@ each item in the `heroes` list.
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
 
 </code-example>
+
+
 
 This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
 in the `<li>` element is the Angular "repeater" directive.
@@ -164,15 +198,19 @@ It marks that `<li>` element (and its children) as the "repeater template":
 
 ~~~ {.alert.is-important}
 
+
+
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-For more information, see the [Template Syntax](guide/template-syntax) page.
+For more information, see the [Template Syntax](guide/template-syntax#ngFor) page.
 
 
 ~~~
 
+
+
 Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](guide/template-syntax) section of
+more about template input variables in the [microsyntax](guide/template-syntax#microsyntax) section of
 the [Template Syntax](guide/template-syntax) page.
 
 Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
@@ -182,17 +220,23 @@ context for the interpolation in the double curly braces.
 
 ~~~ {.l-sub-section}
 
+
+
 In this case, `ngFor` is displaying an array, but `ngFor` can
 repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) object.
 
 ~~~
 
+
+
 Now the heroes appear in an unordered list.
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor">  </img>
+  <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor"></img>
 </figure>
+
+
 
 
 ## Creating a class for the data
@@ -213,6 +257,8 @@ Create a new file in the `app` folder called  `hero.ts` with the following code:
 
 </code-example>
 
+
+
 You've defined a class with a constructor and two properties: `id` and `name`.
 
 It might not look like the class has properties, but it does.
@@ -225,10 +271,15 @@ Consider the first parameter:
 
 </code-example>
 
+
+
 That brief syntax does a lot:
+
 * Declares a constructor parameter and its type.
 * Declares a public property of the same name.
 * Initializes that property with the corresponding argument when creating an instance of the class.
+
+
 
 ## Using the Hero class
 
@@ -240,6 +291,8 @@ of `Hero` objects:
 
 </code-example>
 
+
+
 Next, update the template.
 At the moment it displays the hero's `id` and `name`.
 Fix that to display only the hero's `name` property.
@@ -249,7 +302,11 @@ Fix that to display only the hero's `name` property.
 
 </code-example>
 
+
+
 The display looks the same, but the code is clearer.
+
+
 
 ## Conditional display with NgIf
 
@@ -269,22 +326,28 @@ To see it in action, add the following paragraph at the bottom of the template:
 
 ~~~ {.alert.is-important}
 
+
+
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
-Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax) of the [Template Syntax](guide/template-syntax) page.
+Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf) of the [Template Syntax](guide/template-syntax) page.
 
 
 ~~~
+
+
 
 The template expression inside the double quotes,
 `*ngIf="heros.length > 3"`, looks and behaves much like TypeScript.
 When the component's list of heroes has more than three items, Angular adds the paragraph
 to the DOM and the message appears. If there are three or fewer items, Angular omits the
 paragraph, so no message appears. For more information,
-see the [template expressions](guide/template-syntax) section of the
+see the [template expressions](guide/template-syntax#template-expressions) section of the
 [Template Syntax](guide/template-syntax) page.
 
 
 ~~~ {.alert.is-helpful}
+
+
 
 Angular isn't showing and hiding the message. It is adding and removing the paragraph element from the DOM. That improves performance, especially in larger projects when conditionally including or excluding
 big chunks of HTML with many data bindings.
@@ -292,16 +355,21 @@ big chunks of HTML with many data bindings.
 
 ~~~
 
+
+
 Try it out. Because the array has four items, the message should appear.
 Go back into <code>app.component.ts"</code> and delete or comment out one of the elements from the hero array.
 The browser should refresh automatically and the message should disappear.
 
+
+
 ## Summary
 Now you know how to use:
-- **Interpolation** with double curly braces to display a component property.
-- **ngFor** to display an array of items.
-- A TypeScript class to shape the **model data** for your component and display properties of that model.
-- **ngIf** to conditionally display a chunk of HTML based on a boolean expression.
+
+* **Interpolation** with double curly braces to display a component property.
+* **ngFor** to display an array of items.
+* A TypeScript class to shape the **model data** for your component and display properties of that model.
+* **ngIf** to conditionally display a chunk of HTML based on a boolean expression.
 
 Here's the final code:
 

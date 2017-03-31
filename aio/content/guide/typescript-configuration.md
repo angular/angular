@@ -5,6 +5,8 @@ TypeScript Configuration
 TypeScript configuration for Angular developers.
 
 @description
+
+
 TypeScript is a primary language for Angular application development.
 It is a superset of JavaScript with design-time support for type safety and tooling.
 
@@ -20,20 +22,31 @@ that are important to Angular developers, including details about the following 
 
 {@a tsconfig}
 
+
+
 ## *tsconfig.json*
 Typically, you add a TypeScript configuration file called `tsconfig.json` to your project to
 guide the compiler as it generates JavaScript files.
 
 ~~~ {.l-sub-section}
 
+
+
 For details about `tsconfig.json`, see the official
 [TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
 ~~~
 
-The [Setup](guide/setup) guide uses the following `tsconfig.json`:This file contains options and flags that are essential for Angular applications.
 
-<a id="noImplicitAny"></a>
+
+The [Setup](guide/setup) guide uses the following `tsconfig.json`:
+
+This file contains options and flags that are essential for Angular applications.
+
+
+{@a noImplicitAny}
+
+
 ### *noImplicitAny* and *suppressImplicitAnyIndexErrors*
 
 TypeScript developers disagree about whether the `noImplicitAny` flag should be `true` or `false`.
@@ -57,14 +70,18 @@ Most developers feel that *this particular error* is more annoying than helpful.
 You can suppress them with the following additional flag:
 
 <code-example format=".">
-  "suppressImplicitAnyIndexErrors":true  
-    
+  "suppressImplicitAnyIndexErrors":true
+
 </code-example>
+
+
 
 The documentation setup sets this flag to `true` as well.
 
 
 {@a typings}
+
+
 
 ## TypeScript Typings
 Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular,
@@ -95,9 +112,11 @@ list of declaration files to be included:
 
 
 <code-example format=".">
-  "lib": ["es2015", "dom"]  
-    
+  "lib": ["es2015", "dom"]
+
 </code-example>
+
+
 
 Thanks to that, you have all the `es6` typings even when targeting `es5`.
 
@@ -111,6 +130,8 @@ You can install these typings via `npm` using the
 and Typescript, starting at 2.0, automatically recognizes them.
 
 For instance, to install typings for `jasmine` you could do `npm install @types/jasmine --save-dev`.
+
+
 QuickStart identifies two *typings*, or `d.ts`, files:
 
 * [jasmine](http://jasmine.github.io/) typings for the Jasmine test framework.

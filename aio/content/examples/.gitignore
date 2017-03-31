@@ -22,6 +22,7 @@ protractor-helpers.js
 **/js-es6*/**/*.js
 dist/
 
+
 # special
 !/*
 !*.1.*
@@ -62,3 +63,6 @@ dist/
 
 # style-guide
 !style-guide/src/systemjs.custom.js
+
+# plunkers
+*plnkr.no-link.html

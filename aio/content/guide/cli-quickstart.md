@@ -1,4 +1,6 @@
 @description
+
+
 Good tools make application development quicker and easier to maintain than
 if you did everything by hand.
 
@@ -29,6 +31,8 @@ And you can also <a href="/resources/zips/cli-quickstart/cli-quickstart.zip">dow
   Step 1. Set up the Development Environment
 </h2>
 
+
+
 You need to set up your development environment before you can do anything.
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
@@ -36,18 +40,22 @@ if they are not already on your machine.
 
 ~~~ {.l-sub-section}
 
+
+
 **Verify that you are running at least node `6.9.x` and npm `3.x.x`**
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors, but newer versions are fine.
 
 ~~~
 
+
+
 Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globally.
 
 
 <code-example language="sh" class="code-shell">
-  npm install -g @angular/cli  
-    
+  npm install -g @angular/cli
+
 </code-example>
 
 
@@ -57,18 +65,24 @@ Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globa
   Step 2. Create a new project
 </h2>
 
+
+
 Open a terminal window.
+
+
 Generate a new project and skeleton application by running the following commands:
 
 
 <code-example language="sh" class="code-shell">
-  ng new my-app  
-    
+  ng new my-app
+
 </code-example>
 
 
 
 ~~~ {.l-sub-section}
+
+
 
 Patience please.
 It takes time to set up a new project, most of it spent installing npm packages.
@@ -83,14 +97,18 @@ It takes time to set up a new project, most of it spent installing npm packages.
   Step 3: Serve the application
 </h2>
 
+
+
 Go to the project directory and launch the server.
 
 
 <code-example language="sh" class="code-shell">
-  cd my-app  
-    ng serve --open  
-    
+  cd my-app
+  ng serve --open
+
 </code-example>
+
+
 
 The `ng serve` command launches the server, watches your files,
 and rebuilds the app as you make changes to those files.
@@ -102,7 +120,7 @@ Your app greets you with a message:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/cli-quickstart/app-works.png' alt="The app works!">  </img>
+  <img src='assets/images/devguide/cli-quickstart/app-works.png' alt="The app works!"></img>
 </figure>
 
 
@@ -112,32 +130,42 @@ Your app greets you with a message:
   Step 4: Edit your first Angular component
 </h2>
 
+
+
 The CLI created the first Angular component for you.
 This is the _root component_ and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
+
+
 Open the component file and change the `title` property from _app works!_ to _My First Angular App_:
 
 
-<code-example path="cli-quickstart/src/app/app.component.ts" region="title" linenums="false">
+<code-example path="cli-quickstart/src/app/app.component.ts" region="title" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
+
+
 
 The browser reloads automatically with the revised title. That's nice, but it could look better.
 
 Open `src/app/app.component.css` and give the component some style.
 
 
-<code-example path="cli-quickstart/src/app/app.component.css" linenums="false">
+<code-example path="cli-quickstart/src/app/app.component.css" title="src/app/app.component.css" linenums="false">
 
 </code-example>
 
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app">  </img>
+  <img src='assets/images/devguide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app"></img>
 </figure>
 
+
+
 Looking good!
+
+
 
 ## What's next?
 That's about all you'd expect to do in a "Hello, World" app.
@@ -146,6 +174,8 @@ You're ready to take the [Tour of Heroes Tutorial](guide/tutorial) and build
 a small application that demonstrates the great things you can build with Angular.
 
 Or you can stick around a bit longer to learn about the files in your brand new project.
+
+
 
 ## Project file review
 
@@ -158,6 +188,8 @@ Whenever you want to know more about how Angular CLI works make sure to visit
 [Wiki](https://github.com/angular/angular-cli/wiki).
 
 Some of the generated files might be unfamiliar to you.
+
+
 
 ### The `src` folder
 Your app lives in the `src` folder.
@@ -286,9 +318,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      Defines the `AppComponent` along with an HTML template, CSS stylesheet, and a unit test.      
-            It is the **root** component of what will become a tree of nested components      
-            as the application evolves.
+
+
+      Defines the `AppComponent` along with an HTML template, CSS stylesheet, and a unit test.
+      It is the **root** component of what will become a tree of nested components
+      as the application evolves.
     </td>
 
   </tr>
@@ -300,9 +334,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      Defines `AppModule`, the [root module](guide/guide/appmodule) that tells Angular how to assemble the application.      
-            Right now it declares only the `AppComponent`.      
-            Soon there will be more components to declare.
+
+
+      Defines `AppModule`, the [root module](guide/guide/appmodule "AppModule: the root module") that tells Angular how to assemble the application.
+      Right now it declares only the `AppComponent`.
+      Soon there will be more components to declare.
     </td>
 
   </tr>
@@ -314,8 +350,10 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      A folder where you can put images and anything else to be copied wholesale      
-            when you build your application.
+
+
+      A folder where you can put images and anything else to be copied wholesale
+      when you build your application.
     </td>
 
   </tr>
@@ -327,13 +365,15 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      This folder contains one file for each of your destination environments,      
-            each exporting simple configuration variables to use in your application.      
-            The files are replaced on-the-fly when you build your app.      
-            You might use a different API endpoint for development than you do for production      
-            or maybe different analytics tokens.      
-            You might even use some mock services.      
-            Either way, the CLI has you covered.
+
+
+      This folder contains one file for each of your destination environments,
+      each exporting simple configuration variables to use in your application.
+      The files are replaced on-the-fly when you build your app.
+      You might use a different API endpoint for development than you do for production
+      or maybe different analytics tokens.
+      You might even use some mock services.
+      Either way, the CLI has you covered.
     </td>
 
   </tr>
@@ -345,8 +385,10 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      Every site wants to look good on the bookmark bar.      
-            Get started with your very own Angular icon.
+
+
+      Every site wants to look good on the bookmark bar.
+      Get started with your very own Angular icon.
     </td>
 
   </tr>
@@ -358,10 +400,12 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      The main HTML page that is served when someone visits your site.      
-            Most of the time you'll never need to edit it.      
-            The CLI automatically adds all `js` and `css` files when building your app so you      
-            never need to add any `<script>` or `<link>` tags here manually.
+
+
+      The main HTML page that is served when someone visits your site.
+      Most of the time you'll never need to edit it.
+      The CLI automatically adds all `js` and `css` files when building your app so you
+      never need to add any `&lt;script&gt;` or `&lt;link&gt;` tags here manually.
     </td>
 
   </tr>
@@ -373,11 +417,13 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      The main entry point for your app.      
-            Compiles the application with the [JIT compiler](guide/glossary)      
-            and bootstraps the application's root module (`AppModule`) to run in the browser.      
-            You can also use the [AOT compiler](guide/glossary)      
-            without changing any code by passing in `--aot` to `ng build` or `ng serve`.
+
+
+      The main entry point for your app.
+      Compiles the application with the [JIT compiler](guide/glossary#jit)
+      and bootstraps the application's root module (`AppModule`) to run in the browser.
+      You can also use the [AOT compiler](guide/glossary#ahead-of-time-aot-compilation)
+      without changing any code by passing in `--aot` to `ng build` or `ng serve`.
     </td>
 
   </tr>
@@ -389,10 +435,12 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      Different browsers have different levels of support of the web standards.      
-            Polyfills help normalize those differences.      
-            You should be pretty safe with `core-js` and `zone.js`, but be sure to check out      
-            the [Browser Support guide](guide/guide/browser-support) for more information.
+
+
+      Different browsers have different levels of support of the web standards.
+      Polyfills help normalize those differences.
+      You should be pretty safe with `core-js` and `zone.js`, but be sure to check out
+      the [Browser Support guide](guide/guide/browser-support) for more information.
     </td>
 
   </tr>
@@ -404,9 +452,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      Your global styles go here.      
-            Most of the time you'll want to have local styles in your components for easier maintenance,      
-            but styles that affect all of your app need to be in a central place.
+
+
+      Your global styles go here.
+      Most of the time you'll want to have local styles in your components for easier maintenance,
+      but styles that affect all of your app need to be in a central place.
     </td>
 
   </tr>
@@ -418,9 +468,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      This is the main entry point for your unit tests.      
-            It has some custom configuration that might be unfamiliar, but it's not something you'll      
-            need to edit.
+
+
+      This is the main entry point for your unit tests.
+      It has some custom configuration that might be unfamiliar, but it's not something you'll
+      need to edit.
     </td>
 
   </tr>
@@ -432,15 +484,19 @@ Any files outside of this folder are meant to support building your app.
     </td>
 
     <td>
-      TypeScript compiler configuration for the Angular app (`tsconfig.app.json`)      
-            and for the unit tests (`tsconfig.spec.json`).      
-                  
-            
+
+
+      TypeScript compiler configuration for the Angular app (`tsconfig.app.json`)
+      and for the unit tests (`tsconfig.spec.json`).
+
+
     </td>
 
   </tr>
 
 </table>
+
+
 
 
 ### The root folder
@@ -554,10 +610,12 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Inside `e2e/` live the End-to-End tests.      
-            They shouldn't be inside `src/` because e2e tests are really a separate app that      
-            just so happens to test your main app.      
-            That's also why they have their own `tsconfig.e2e.json`.
+
+
+      Inside `e2e/` live the End-to-End tests.
+      They shouldn't be inside `src/` because e2e tests are really a separate app that
+      just so happens to test your main app.
+      That's also why they have their own `tsconfig.e2e.json`.
     </td>
 
   </tr>
@@ -569,8 +627,10 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      `Node.js` creates this folder and puts all third party modules listed in      
-            `package.json` inside of it.
+
+
+      `Node.js` creates this folder and puts all third party modules listed in
+      `package.json` inside of it.
     </td>
 
   </tr>
@@ -582,10 +642,12 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Configuration for Angular CLI.      
-            In this file you can set several defaults and also configure what files are included      
-            when your project is build.      
-            Check out the official documentation if you want to know more.
+
+
+      Configuration for Angular CLI.
+      In this file you can set several defaults and also configure what files are included
+      when your project is build.
+      Check out the official documentation if you want to know more.
     </td>
 
   </tr>
@@ -597,10 +659,12 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Simple configuration for your editor to make sure everyone that uses your project      
-            has the same basic configuration.      
-            Most editors support an `.editorconfig` file.      
-            See http://editorconfig.org for more information.
+
+
+      Simple configuration for your editor to make sure everyone that uses your project
+      has the same basic configuration.
+      Most editors support an `.editorconfig` file.
+      See http://editorconfig.org for more information.
     </td>
 
   </tr>
@@ -612,6 +676,8 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
+
+
       Git configuration to make sure autogenerated files are not commited to source control.
     </td>
 
@@ -624,8 +690,10 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),      
-            used when running `ng test`.
+
+
+      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
+      used when running `ng test`.
     </td>
 
   </tr>
@@ -637,8 +705,10 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      `npm` configuration listing the third party packages your project uses.      
-            You can also add your own [custom scripts](https://docs.npmjs.com/misc/scripts) here.
+
+
+      `npm` configuration listing the third party packages your project uses.
+      You can also add your own [custom scripts](https://docs.npmjs.com/misc/scripts) here.
     </td>
 
   </tr>
@@ -650,8 +720,10 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      End-to-end test configuration for [Protractor](http://www.protractortest.org/),      
-            used when running `ng e2e`.
+
+
+      End-to-end test configuration for [Protractor](http://www.protractortest.org/),
+      used when running `ng e2e`.
     </td>
 
   </tr>
@@ -663,9 +735,11 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Basic documentation for your project, pre-filled with CLI command information.      
-            Make sure to enhance it with project documentation so that anyone      
-            checking out the repo can build your app!
+
+
+      Basic documentation for your project, pre-filled with CLI command information.
+      Make sure to enhance it with project documentation so that anyone
+      checking out the repo can build your app!
     </td>
 
   </tr>
@@ -677,6 +751,8 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
+
+
       TypeScript compiler configuration for your IDE to pick up and give you helpful tooling.
     </td>
 
@@ -689,10 +765,12 @@ These files go in the root folder next to `src/`.
     </td>
 
     <td>
-      Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with      
-            [Codelyzer](http://codelyzer.com/), used when running `ng lint`.      
-            Linting helps keep your code style consistent.      
-            
+
+
+      Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
+      [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
+      Linting helps keep your code style consistent.
+
     </td>
 
   </tr>
@@ -703,10 +781,12 @@ These files go in the root folder next to `src/`.
 
 ~~~ {.l-sub-section}
 
+
+
 ### Next Step
 
 If you're new to Angular, continue on the
-[learning path](guide/guide/learning-angular).
+[learning path](guide/guide/learning-angular "Angular learning path").
 You can skip the "Setup" step since you're already using the Angular CLI setup.
 
 ~~~

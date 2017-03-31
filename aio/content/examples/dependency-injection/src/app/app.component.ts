@@ -3,7 +3,7 @@
 // #docregion imports
 import { Component, Inject } from '@angular/core';
 
-import { APP_CONFIG, AppConfig }    from './app.config';
+import { APP_CONFIG, AppConfig } from './app.config';
 import { Logger } from './logger.service';
 import { UserService } from './user.service';
 // #enddocregion imports

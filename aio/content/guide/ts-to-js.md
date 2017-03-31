@@ -5,6 +5,8 @@ TypeScript to JavaScript
 Convert Angular TypeScript examples into ES6 and ES5 JavaScript.
 
 @description
+
+
 Anything you can do with Angular in _TypeScript_, you can also do
 in JavaScript. Translating from one language to the other is mostly a
 matter of changing the way you organize your code and access Angular APIs.
@@ -17,6 +19,8 @@ can read and write Angular apps in their preferred dialect.
 
 
 {@a toc}
+
+
 ## Table of contents
 
 * [_TypeScript_ to _ES6_ to _ES5_](guide/ts-to-js#from-ts)<br>
@@ -30,11 +34,13 @@ can read and write Angular apps in their preferred dialect.
 * [View and Child Decorators](guide/ts-to-js#view-child-decorators)<br>
 * [AOT compilation in _TypeScript_ Only](guide/ts-to-js#aot)<br>
 
-**Run and compare the live <live-example name="cb-ts-to-js">_TypeScript_</live-example> and <live-example name="cb-ts-to-js" lang="js">JavaScript</live-example>
+**Run and compare the live <live-example name="cb-ts-to-js">TypeScript</live-example> and <live-example name="cb-ts-to-js" lang="js">JavaScript</live-example>
 code shown in this cookbook.**
 
 
 {@a from-ts}
+
+
 
 ## _TypeScript_ to _ES6_ to _ES5_
 
@@ -44,6 +50,7 @@ _ES6 JavaScript_ is a superset of _ES5 JavaScript_. _ES5_ is the kind of JavaScr
 The transformation of _TypeScript_ code all the way down to _ES5_ code can be seen as "shedding" features.
 
 The downgrade progression is
+
 * _TypeScript_ to _ES6-with-decorators_
 * _ES6-with-decorators_ to _ES6-without-decorators_ ("_plain ES6_")
 * _ES6-without-decorators_ to _ES5_
@@ -75,13 +82,15 @@ To use decorators and annotations with Babel, install the
 
 {@a modularity}
 
+
+
 ## Importing and Exporting
 
 ### Importing Angular Code
 
 In both _TypeScript_ and _ES6_, you import Angular classes, functions, and other members with _ES6_ `import` statements.
 
-In _ES5_, you access the Angular entities of the [the Angular packages](glossary)
+In _ES5_, you access the Angular entities of the [the Angular packages](glossary#scoped-package)
 through the global `ng` object.
 Anything you can import from `@angular` is a nested member of this `ng` object:
 
@@ -106,6 +115,8 @@ Anything you can import from `@angular` is a nested member of this `ng` object:
 
 </code-tabs>
 
+
+
 ### Exporting Application Code
 
 Each file in a _TypeScript_ or _ES6_ Angular application constitutes an _ES6_ module.
@@ -116,10 +127,14 @@ In an Angular _ES5_ application, you load each file manually by adding a `<scrip
 
 ~~~ {.alert.is-important}
 
+
+
 The order of `<script>` tags is often significant.
 You must load a file that defines a public JavaScript entity before a file that references that entity.
 
 ~~~
+
+
 
 The best practice in _ES5_ is to create a form of modularity that avoids polluting the global scope.
 Add one application namespace object such as `app` to the global `document`.
@@ -154,6 +169,8 @@ Here is a `HeroComponent` as it might be defined and "exported" in each of the f
 
 </code-tabs>
 
+
+
 ### Importing Application Code
 
 In _TypeScript_ and _ES6_ apps, you `import` things that have been exported from other modules.
@@ -185,6 +202,8 @@ In _ES5_ you use the shared namespace object to access "exported" entities from 
 
 ~~~ {.alert.is-helpful}
 
+
+
 Alternatively, you can use a module loader such as Webpack or
 Browserify in an Angular JavaScript project. In such a project, you would
 use _CommonJS_ modules and the `require` function to load Angular framework code.
@@ -197,6 +216,8 @@ Then use `module.exports` and `require` to export and import application  code.
 
 
 {@a class-metadata}
+
+
 
 ## Classes and Class Metadata
 
@@ -243,6 +264,8 @@ Use the constructor function pattern instead, adding methods to the prototype.
 
 </code-tabs>
 
+
+
 ### Metadata
 
 When writing in _TypeScript_ or _ES6-with-decorators_,
@@ -279,13 +302,17 @@ See these variations side-by-side:
 
 </code-tabs>
 
+
+
 ***External Template file***
 
 A large component template is often kept in a separate template file.
 
-<code-example path="cb-ts-to-js/ts/src/app/hero-title.component.html" linenums="false">
+<code-example path="cb-ts-to-js/ts/src/app/hero-title.component.html" title="src/app/hero-title.component.html" linenums="false">
 
 </code-example>
+
+
 
 The component (`HeroTitleComponent` in this case) then references the template file in its metadata `templateUrl` property:
 
@@ -309,10 +336,14 @@ The component (`HeroTitleComponent` in this case) then references the template f
 
 </code-tabs>
 
+
+
 Note that both the _TypeScript_ and _ES6_ `templateUrl` properties identify the location of the template file _relative to the component module_.
 
 
 {@a dsl}
+
+
 
 ## _ES5_ DSL
 
@@ -352,6 +383,8 @@ next to the original _ES5_ version for comparison:
   Name the constructor
 </header>
 
+
+
 A **named** constructor displays clearly in the console log
 if the component throws a runtime error.
 An **unnamed** constructor displays as an anonymous function (e.g., `class0`)
@@ -360,15 +393,19 @@ which is impossible to find in the source code.
 
 ~~~
 
+
+
 ### Properties with getters and setters
 
 _TypeScript_ and _ES6_ support with getters and setters.
 Here's an example of a read-only _TypeScript_ property with a getter
 that prepares a toggle-button label for the next clicked state:
 
-<code-example path="cb-ts-to-js/ts/src/app/hero-queries.component.ts" region="defined-property" linenums="false">
+<code-example path="cb-ts-to-js/ts/src/app/hero-queries.component.ts" region="defined-property" title="ts/src/app/hero-queries.component.ts" linenums="false">
 
 </code-example>
+
+
 
 This _TypeScript_ "getter" property is transpiled to an _ES5_
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"
@@ -377,9 +414,11 @@ The _ES5 DSL_ does not support _defined properties_ directly
 but you can still create them by extracting the "class" prototype and
 adding the _defined property_ in raw JavaScript like this:
 
-<code-example path="cb-ts-to-js/js/src/app/hero-queries.component.js" region="defined-property" linenums="false">
+<code-example path="cb-ts-to-js/js/src/app/hero-queries.component.js" region="defined-property" title="js/src/app/hero-queries.component.ts" linenums="false">
 
 </code-example>
+
+
 
 ### DSL for other classes
 There are similar DSLs for other decorated classes.
@@ -387,27 +426,31 @@ You can define a directive with `ng.core.Directive`:
 
 
 <code-example>
-  app.MyDirective = ng.core.Directive({  
-      selector: '[myDirective]'  
-    }).Class({  
-      ...  
-    });
+  app.MyDirective = ng.core.Directive({
+    selector: '[myDirective]'
+  }).Class({
+    ...
+  });
 </code-example>
+
+
 
 and a pipe with `ng.core.Pipe`:
 
 <code-example>
-  app.MyPipe = ng.core.Pipe({  
-      name: 'myPipe'  
-    }).Class({  
-      ...  
-    });  
-    
+  app.MyPipe = ng.core.Pipe({
+    name: 'myPipe'
+  }).Class({
+    ...
+  });
+
 </code-example>
 
 
 
 {@a interfaces}
+
+
 
 ## Interfaces
 
@@ -449,12 +492,14 @@ Just implement the methods and ignore interfaces when translating code samples f
 
 {@a io-decorators}
 
+
+
 ## Input and Output Metadata
 
 ### Input and Output Decorators
 
 In _TypeScript_ and _ES6-with-decorators_, you often add metadata to class _properties_ with _property decorators_.
-For example, you apply [`@Input` and `@Output` property decorators](guide/template-syntax)
+For example, you apply [`@Input` and `@Output` property decorators](guide/template-syntax#inputs-outputs)
 to public class properties that will be the target of data binding expressions in parent components.
 
 There is no equivalent of a property decorator in _ES5_ or _plain ES6_.
@@ -491,6 +536,8 @@ combined in the metadata `inputs` and `outputs` _arrays_.
 
 </code-tabs>
 
+
+
 In the previous example, one of the public-facing binding names (`cancelMsg`)
 differs from the corresponding class property name (`notOkMsg`).
 That's OK but you must tell Angular about it so that it can map an external binding of `cancelMsg`
@@ -500,6 +547,8 @@ In _TypeScript_ and _ES6-with-decorators_,
 you specify the special binding name in the argument to the property decorator.
 
 In _ES5_ and _plain ES6_ code, convey this pairing with the `propertyName: bindingName` syntax in the class metadata.
+
+
 
 ## Dependency Injection
 Angular relies heavily on [Dependency Injection](guide/dependency-injection) to provide services to the objects it creates.
@@ -558,6 +607,8 @@ This format should be familiar to AngularJS developers.
 
 </code-tabs>
 
+
+
 ### Injection with the @Inject decorator
 
 Sometimes the dependency injection token isn't a class or constructor function.
@@ -601,12 +652,15 @@ array as before. Create a new instance of `ng.core.Inject(token)` for each param
 
 </code-tabs>
 
+
+
 ### Additional Injection Decorators
 
 You can qualify injection behavior with injection decorators from `@angular/core`.
 
 In _TypeScript_ and _ES6-with-decorators_,
 you precede the constructor parameters with injection qualifiers such as:
+
 * [`@Optional`](api/core/index/Optional-decorator) sets the parameter to `null` if the service is missing
 * [`@Attribute`](api/core/index/Attribute-interface) to inject a host element attribute value
 * [`@ContentChild`](api/core/index/ContentChild-decorator) to inject a content child
@@ -650,6 +704,8 @@ array as before. Use a nested array to define a parameter's complete injection s
 
 ~~~ {.l-sub-section}
 
+
+
 In the example above, there is no provider for the `'titlePrefix'` token.
 Without `Optional`, Angular would raise an error.
 With `Optional`, Angular sets the constructor parameter to `null`
@@ -661,6 +717,8 @@ and the component displays the title without a prefix.
 
 
 {@a host-binding}
+
+
 
 ## Host Binding
 Angular supports bindings to properties and events of the _host element_ which is the
@@ -709,6 +767,8 @@ The  `host` value is an object whose properties are host property and listener b
 
 </code-tabs>
 
+
+
 ### Host Metadata
 Some developers prefer to specify host properties and listeners
 in the component metadata.
@@ -734,6 +794,8 @@ These particular _TypeScript_ and _ES6_ code snippets happen to be identical.
 
 {@a view-child-decorators}
 
+
+
 ### View and Child Decorators
 
 Several _property_ decorators query a component's nested view and content components.
@@ -741,12 +803,16 @@ Several _property_ decorators query a component's nested view and content compon
 
 ~~~ {.l-sub-section}
 
+
+
 _View_ children are associated with element tags that appear _within_ the component's template.
 
 _Content_ children are associated with elements that appear _between_ the component's element tags;
 they are projected into an `<ng-content>` slot in the component's template.
 
 ~~~
+
+
 
 The [`@ViewChild`](api/core/index/ViewChild-decorator) and
 [`@ViewChildren`](api/core/index/ViewChildren-decorator) property decorators
@@ -779,6 +845,8 @@ The `queries` property value is a hash map.
   </code-pane>
 
 </code-tabs>
+
+
 
 The [`@ContentChild`](api/core/index/ContentChild-decorator) and
 [`@ContentChildren`](api/core/index/ContentChildren-decorator) property decorators
@@ -813,6 +881,8 @@ They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-dec
 
 ~~~ {.alert.is-helpful}
 
+
+
 In _TypeScript_ and _ES6-with-decorators_ you can also use the `queries` metadata
 instead of the `@ViewChild` and `@ContentChild` property decorators.
 
@@ -822,6 +892,8 @@ instead of the `@ViewChild` and `@ContentChild` property decorators.
 
 
 {@a aot}
+
+
 
 ## AOT Compilation in _TypeScript_ only
 

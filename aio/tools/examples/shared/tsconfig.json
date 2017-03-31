@@ -1,0 +1,24 @@
+// this tsconfig is used for protractor tests
+// see _boilerplate/tsconfig.json for the tsconfig used in examples
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["es2015", "dom"],
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
+  },
+  "files": [
+    "protractor-helpers.ts"
+  ],
+  "include": [
+    "*/e2e-spec.ts"
+  ]
+}
