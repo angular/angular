@@ -4,11 +4,8 @@
       <h3>{{node.title}}</h3>
       <ul>
         <li *ngFor="let item of node.children">
-          <a *ngIf="item.url" class="link" [href]="item.url"
+          <a class="link" [href]="item.url"
             [title]="item.tooltip || item.title">{{ item.title }}</a>
-          <a *ngIf="!item.url" class="action" (click)="action(item)"
-            [title]="item.tooltip || item.title"
-            [attr.aria-label]="item.tooltip || item.title">{{ item.title}}</a>
         </li>
       </ul>
     </div>
