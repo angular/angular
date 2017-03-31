@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import { MockSwUpdatesService } from 'testing/sw-updates.service';
+import { Global } from './global.value';
 import { SwUpdateNotificationsService } from './sw-update-notifications.service';
 import { SwUpdatesService } from './sw-updates.service';
 
@@ -26,6 +27,7 @@ describe('SwUpdateNotificationsService', () => {
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
+      { provide: Global, useClass: MockGlobal },
       { provide: MdSnackBar, useClass: MockMdSnackBar },
       { provide: SwUpdatesService, useClass: MockSwUpdatesService },
       SwUpdateNotificationsService
@@ -87,9 +89,21 @@ describe('SwUpdateNotificationsService', () => {
       activateUpdate(true);
 
       expect(snackBar.$$lastRef.$$message).toContain('Update activated successfully');
-      expect(snackBar.$$lastRef.$$action).toBeNull();
+      expect(snackBar.$$lastRef.$$action).toBe('Reload');
       expect(snackBar.$$lastRef.$$config.duration).toBeUndefined();
     }));
+
+    it('should reload the page when clicking on `Reload` (after a successful activation)',
+      fakeAsync(() => {
+        const global = injector.get(Global);
+
+        activateUpdate(true);
+        expect(global.location.reload).not.toHaveBeenCalled();
+
+        snackBar.$$lastRef.$$onActionSubj.next();
+        expect(global.location.reload).toHaveBeenCalled();
+      })
+    );
 
     it('should report a failed activation', fakeAsync(() => {
       activateUpdate(false);
@@ -158,6 +172,12 @@ describe('SwUpdateNotificationsService', () => {
 });
 
 // Mocks
+class MockGlobal {
+  location = {
+    reload: jasmine.createSpy('MockGlobal.reload')
+  };
+}
+
 class MockMdSnackBarRef {
   $$afterDismissedSubj = new Subject();
   $$onActionSubj = new Subject();

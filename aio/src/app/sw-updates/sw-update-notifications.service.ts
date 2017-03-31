@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { MdSnackBar, MdSnackBarConfig, MdSnackBarRef } from '@angular/material';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/filter';
 
+import { Global } from './global.value';
 import { SwUpdatesService } from './sw-updates.service';
 
 
@@ -29,7 +30,9 @@ export class SwUpdateNotificationsService {
   private snackBars: MdSnackBarRef<any>[] = [];
   private enabled = false;
 
-  constructor(private snackBarService: MdSnackBar, private swUpdates: SwUpdatesService) {
+  constructor(@Inject(Global) private global: any,
+              private snackBarService: MdSnackBar,
+              private swUpdates: SwUpdatesService) {
     this.onDisable.subscribe(() => this.snackBars.forEach(sb => sb.dismiss()));
   }
 
@@ -71,7 +74,9 @@ export class SwUpdateNotificationsService {
   }
 
   private onActivateSuccess() {
-    this.openSnackBar('Update activated successfully! Reload the page to see the latest content.');
+    const message = 'Update activated successfully! Reload the page to see the latest content.';
+    this.openSnackBar(message, 'Reload')
+        .onAction().subscribe(() => this.reloadPage());
   }
 
   private openSnackBar(message: string, action?: string, config?: MdSnackBarConfig): MdSnackBarRef<any> {
@@ -81,5 +86,12 @@ export class SwUpdateNotificationsService {
     this.snackBars.push(snackBar);
 
     return snackBar;
+  }
+
+  private reloadPage() {
+    const location = this.global && (this.global as Window).location;
+    if (location && location.reload) {
+      location.reload();
+    }
   }
 }
