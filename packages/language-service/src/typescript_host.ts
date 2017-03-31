@@ -1025,6 +1025,9 @@ class PipeSymbol implements Symbol {
               case 'EventEmitter':
                 resultType = getTypeParameterOf(parameterType.tsType, parameterType.name);
                 break;
+              default:
+                resultType = getBuiltinTypeFromTs(BuiltinType.Any, this.context);
+                break;
             }
             break;
           case 'slice':
