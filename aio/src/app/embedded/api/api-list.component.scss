@@ -57,7 +57,7 @@ $lightgrey: #F5F6F7;
 }
 
 .l-content-small {
-  padding: $unit * 6;
+  padding: 16px;
   max-width: 1100px;
   margin: 0;
 
@@ -66,40 +66,6 @@ $lightgrey: #F5F6F7;
   screen and (max-width: $tablet-breakpoint) {
     padding: 0;
     padding-top: ($unit * 3);
-  }
-}
-
-.l-flex-wrap {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/*
-* Banner
-*/
-.banner {
-  background: rgba($blue-grey-50, .24);
-  border-bottom: 1px solid $blue-grey-50;
-  box-sizing: border-box;
-  font-size: 18px;
-  font-weight: 200;
-  padding: ($unit * 4) ($unit * 6);
-  min-height: 97px;
-
-  include respond-to('mobile') {
-    padding: ($unit * 2);
-  }
-
-  &.is-plain {
-    background: $white;
-    height: auto;
-    overflow: visible;
-  }
-  p, .text-body {
-    color: $blue-grey-500;
-    font-size: 18px;
-    line-height: 32px;
-    margin: 0;
   }
 }
 
@@ -164,7 +130,6 @@ $form-select-width: 200px;
 
 .form-select-menu {
   position: relative;
-  width: $form-select-width;
 }
 
 .form-select-button {
