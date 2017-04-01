@@ -17,3 +17,8 @@ l-relative {
 .is-visible {
     display: block!important;
 }
+
+.l-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}

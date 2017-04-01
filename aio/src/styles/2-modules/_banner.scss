@@ -1,0 +1,30 @@
+/* Banner */
+
+.banner {
+    justify-content: center;
+    background: $white;
+    box-sizing: border-box;
+    font-size: 18px;
+    font-weight: 200;
+    padding: 16px;
+    min-height: 97px;
+
+
+    @media (max-width: 480px) {
+        padding: 16px;
+    }
+
+    &.is-plain {
+        background: $white;
+        height: auto;
+        overflow: visible;
+    }
+
+
+    p, .text-body {
+        color: $darkgray;
+        font-size: 18px;
+        line-height: 32px;
+        margin: 0;
+    }
+}
