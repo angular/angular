@@ -2110,13 +2110,24 @@ describe('Integration', () => {
     });
 
     describe('CanActivateChild', () => {
+      let activateChildCount = 0;
       describe('should be invoked when activating a child', () => {
         beforeEach(() => {
+          activateChildCount = 0;
           TestBed.configureTestingModule({
-            providers: [{
-              provide: 'alwaysFalse',
-              useValue: (a: any, b: any) => a.paramMap.get('id') === '22',
-            }]
+            providers: [
+              {
+                provide: 'alwaysFalse',
+                useValue: (a: any, b: any) => a.paramMap.get('id') === '22',
+              },
+              {
+                provide: 'activateChildGuardCounter',
+                useValue: (a: any, b: any) => {
+                  activateChildCount++;
+                  return true;
+                }
+              }
+            ]
           });
         });
 
@@ -2138,6 +2149,27 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/team/22');
+           })));
+
+        it('runs only once for a navigation',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: '',
+               canActivateChild: ['activateChildGuardCounter'],
+               children: [{
+                 path: 'wrapper/:id',
+                 component: WrapperCmp,
+                 children: [{path: 'simple', component: SimpleCmp}]
+               }]
+             }]);
+
+             router.navigateByUrl('/wrapper/22/simple');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/wrapper/22/simple');
+             expect(activateChildCount).toEqual(1);
            })));
       });
 
@@ -2361,6 +2393,11 @@ describe('Integration', () => {
               deps: [Logger]
             },
             {
+              provide: 'canActivateChild_team',
+              useFactory: (logger: Logger) => () => (logger.add('canActivateChild_team'), true),
+              deps: [Logger]
+            },
+            {
               provide: 'canDeactivate_team',
               useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
               deps: [Logger]
@@ -2380,8 +2417,10 @@ describe('Integration', () => {
                  children: [{
                    path: 'team/:id',
                    canActivate: ['canActivate_team'],
+                   canActivateChild: ['canActivateChild_team'],
                    canDeactivate: ['canDeactivate_team'],
-                   component: TeamCmp
+                   component: TeamCmp,
+                   children: [{path: '', component: SimpleCmp}]
                  }]
                }]);
 
@@ -2392,9 +2431,10 @@ describe('Integration', () => {
                advance(fixture);
 
                expect(logger.logs).toEqual([
-                 'canActivateChild_parent', 'canActivate_team',
+                 'canActivateChild_parent', 'canActivate_team', 'canActivateChild_team',
 
-                 'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
+                 'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team',
+                 'canActivateChild_team'
                ]);
              })));
     });
