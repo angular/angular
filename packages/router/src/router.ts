@@ -839,11 +839,10 @@ export class PreActivation {
 
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
-      if (this.shouldRunGuardsAndResolvers(
-              curr, future, future._routeConfig !.runGuardsAndResolvers)) {
+      const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
+          curr, future, future._routeConfig !.runGuardsAndResolvers);
+      if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
-        const outlet = context !.outlet !;
-        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       } else {
         // we need to set the data
         future.data = curr.data;
@@ -858,6 +857,11 @@ export class PreActivation {
         // if we have a componentless route, we recurse but keep the same outlet map.
       } else {
         this.traverseChildRoutes(futureNode, currNode, parentContexts, futurePath);
+      }
+
+      if (shouldRunGuardsAndResolvers) {
+        const outlet = context !.outlet !;
+        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       }
     } else {
       if (curr) {
