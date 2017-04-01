@@ -63,6 +63,6 @@ module.exports = function renderMarkdown() {
 
   function renderMarkdownImpl(content) {
     const rawHtml = new rho.BlockCompiler(rho.options).toHtml(content);
-    return prettyPrint(rawHtml, { indent_size: 2, unformatted: [...defaultUnformattedTags, ...renderMarkdownImpl.unformattedTags]});
+    return prettyPrint(rawHtml, { indent_size: 2, max_char: 0, unformatted: [...defaultUnformattedTags, ...renderMarkdownImpl.unformattedTags]});
   };
 };
