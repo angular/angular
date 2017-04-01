@@ -1,5 +1,3 @@
-var path = require('canonical-path');
-
 /**
  * @dgService
  * @description

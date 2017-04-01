@@ -1,5 +1,3 @@
-var path = require('canonical-path');
-var fs = require('fs');
 var entities = require('entities');
 
 /**
@@ -28,7 +26,7 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
       if (regionName === '\'\'') regionName = '';
       var title = tagArgs.title || (unnamedArgs.length > 2 ? unnamedArgs.slice(2).join(' ') : null);
       var linenums = tagArgs.linenums;
-      var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
+      // var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
 
       const sourceCode = getExampleRegion(doc, relativePath, regionName);
 

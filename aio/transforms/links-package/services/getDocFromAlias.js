@@ -4,7 +4,7 @@ var _ = require('lodash');
  * @dgService getDocFromAlias
  * @description Get an array of docs that match this alias, relative to the originating doc.
  */
-module.exports = function getDocFromAlias(aliasMap, log) {
+module.exports = function getDocFromAlias(aliasMap) {
 
   return function getDocFromAlias(alias, originatingDoc) {
     var docs = aliasMap.getDocs(alias);

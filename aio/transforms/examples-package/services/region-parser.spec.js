@@ -172,7 +172,7 @@ describe('regionParser service', () => {
     expect(output.regions['A']).toEqual(t('abc', 'xyz'));
     expect(output.regions['B']).toEqual(t('abc'));
     expect(output.regions['C']).toEqual(t('xyz'));
-  })
+  });
 });
 
 function t() {

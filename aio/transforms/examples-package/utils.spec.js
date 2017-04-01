@@ -71,6 +71,6 @@ describe('utils', () => {
       expect(() => parseAttributes('a="" b="two')).toThrowError(
         'Unterminated quoted attribute value in `a="" b="two`. Starting at 8. Expected a " but got "end of string".'
       );
-    })
+    });
   });
 });
