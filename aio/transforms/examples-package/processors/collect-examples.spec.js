@@ -8,7 +8,7 @@ describe('collectExampleRegions processor', () => {
   beforeEach(function() {
 
     regionParser = jasmine.createSpy('regionParser').and.callFake(function(contents, extension) {
-      return { contents: 'PARSED:' + contents, regions: {dummy: extension} }
+      return { contents: 'PARSED:' + contents, regions: {dummy: extension} };
     });
 
     const dgeni =
@@ -82,7 +82,7 @@ describe('collectExampleRegions processor', () => {
          createDoc('Other doc 2', 'other/b/c.js', 'content')
        ];
 
-       const processedDocs = processor.$process(docs);
+       processor.$process(docs);
 
        expect(regionParser).toHaveBeenCalledTimes(3);
        expect(regionParser).toHaveBeenCalledWith('Example A', 'js');

@@ -12,7 +12,7 @@ module.exports = function targetEnvironments() {
 
   var updateActiveCount = function() {
     _activeCount = 0;
-    for (target in _targets) {
+    for (let target in _targets) {
       if (_targets[target]) _activeCount++;
     }
   };

@@ -65,7 +65,7 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
 
 function createRegionDoc(folder, relativePath, regionName, regionContents) {
   const path = folder + '/' + relativePath;
-  const id = path + '#' + regionName
+  const id = path + '#' + regionName;
   return {
     docType: 'example-region',
     path: path,

@@ -5,7 +5,7 @@ module.exports = function convertToJsonProcessor() {
     $runBefore: ['writeFilesProcessor'],
     docTypes: [],
     $process: function(docs) {
-      const docTypes = this.docTypes
+      const docTypes = this.docTypes;
       docs.forEach((doc) => {
         if (docTypes.indexOf(doc.docType) !== -1) {
           const output = {
