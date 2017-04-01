@@ -24,7 +24,8 @@ const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'packages');
 const AIO_PATH = path.resolve(PROJECT_ROOT, 'aio');
 const CONTENTS_PATH = path.resolve(AIO_PATH, 'content');
 const TEMPLATES_PATH = path.resolve(AIO_PATH, 'transforms/templates');
-const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content/docs');
+const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content');
+const DOCS_OUTPUT_PATH = path.resolve(OUTPUT_PATH, 'docs');
 
 module.exports =
     new Package(
@@ -51,11 +52,12 @@ module.exports =
         .processor(require('./processors/filterIgnoredDocs'))
         .processor(require('./processors/fixInternalDocumentLinks'))
         .processor(require('./processors/processNavigationMap'))
+        .processor(require('./processors/copyContentAssets'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
-
         .factory(require('./readers/json'))
+        .factory(require('./services/copyFolder'))
 
         .config(function(checkAnchorLinksProcessor, log) {
           // TODO: re-enable
@@ -168,7 +170,7 @@ module.exports =
         })
 
         // Where do we write the output files?
-        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = OUTPUT_PATH; })
+        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = DOCS_OUTPUT_PATH; })
 
 
         // Target environments
@@ -292,6 +294,12 @@ module.exports =
           convertToJsonProcessor.docTypes = EXPORT_DOC_TYPES.concat([
             'content', 'decorator', 'directive', 'pipe', 'module'
           ]);
+        })
+
+        .config(function(copyContentAssetsProcessor) {
+          copyContentAssetsProcessor.assetMappings.push(
+            { from: path.resolve(CONTENTS_PATH, 'images'), to: path.resolve(OUTPUT_PATH, 'images') }
+          );
         });
 
 
