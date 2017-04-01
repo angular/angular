@@ -81,9 +81,9 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.navigationViews.subscribe(views => {
-      this.footerNodes  = views.Footer  || [];
-      this.sideNavNodes = views.SideNav || [];
-      this.topMenuNodes = views.TopBar  || [];
+      this.footerNodes  = views['Footer']  || [];
+      this.sideNavNodes = views['SideNav'] || [];
+      this.topMenuNodes = views['TopBar']  || [];
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
