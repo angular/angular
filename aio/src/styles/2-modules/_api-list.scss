@@ -1,0 +1,23 @@
+
+aio-api-list {
+    div.form-search i.material-icons {
+        width: 20px;
+        pointer-events: none;
+    }
+
+    .form-search input {
+        width: 182px;
+    }
+}
+
+aio-api-list > div {
+    display: flex;
+    margin: 32px auto;
+    @media (max-width: 600px) {
+        flex-direction: column;
+    }
+
+    > div {
+        margin: 8px;
+    }
+}
