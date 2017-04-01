@@ -2435,6 +2435,11 @@ describe('Integration', () => {
               provide: 'canDeactivate_team',
               useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
               deps: [Logger]
+            },
+            {
+              provide: 'canDeactivate_simple',
+              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_simple'), true),
+              deps: [Logger]
             }
           ]
         });
@@ -2467,6 +2472,31 @@ describe('Integration', () => {
 
                  'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
                ]);
+             })));
+
+      it('should call deactivate guards from bottom to top',
+         fakeAsync(inject(
+             [Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{
+                 path: '',
+                 children: [{
+                   path: 'team/:id',
+                   canDeactivate: ['canDeactivate_team'],
+                   children:
+                       [{path: '', component: SimpleCmp, canDeactivate: ['canDeactivate_simple']}],
+                   component: TeamCmp
+                 }]
+               }]);
+
+               router.navigateByUrl('/team/22');
+               advance(fixture);
+
+               router.navigateByUrl('/team/33');
+               advance(fixture);
+
+               expect(logger.logs).toEqual(['canDeactivate_simple', 'canDeactivate_team']);
              })));
     });
   });
