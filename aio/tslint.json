@@ -1,6 +1,7 @@
 {
   "rulesDirectory": [
-    "node_modules/codelyzer"
+    "node_modules/codelyzer",
+    "node_modules/vrsource-tslint-rules/rules"
   ],
   "rules": {
     "callable-types": true,
@@ -47,6 +48,7 @@
     "no-empty-interface": true,
     "no-eval": true,
     "no-inferrable-types": [true, "ignore-params"],
+    "no-jasmine-focus": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-string-throw": true,
