@@ -49,4 +49,17 @@ describe('rho: renderMarkdown service', () => {
     const output = renderMarkdown(content);
     expect(output).toEqual('<code-example>\n  abc\n  def\n</code-example>');
   });
+
+  it('should not remove spaces after anchor tags', () => {
+    var input =
+        'A aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaa aaaaaaaaaaa\n' +
+        '[foo](path/to/foo) bbb.';
+    var output =
+        '<p>' +
+        'A aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaa aaaaaaaaaaa\n' +
+        '<a href="path/to/foo">foo</a> bbb.' +
+        '</p>';
+
+    expect(renderMarkdown(input)).toEqual(output);
+  });
 });
