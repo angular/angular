@@ -1,5 +1,3 @@
-var _ = require('lodash');
-
 module.exports = function mergeDecoratorDocs(log) {
   return {
     $runAfter: ['processing-docs'],

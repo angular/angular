@@ -17,7 +17,7 @@ module.exports = {
    */
   parseAttributes(str) {
     const attrMap = {};
-    let index = 0, key, value;
+    let index = 0;
 
     skipSpace();
 
@@ -64,7 +64,7 @@ module.exports = {
 
     function tryQuote() {
       const quote = str[index];
-      if (['"', "'"].indexOf(quote) !== -1) {
+      if (['"', '\''].indexOf(quote) !== -1) {
         index++;
         return quote;
       }

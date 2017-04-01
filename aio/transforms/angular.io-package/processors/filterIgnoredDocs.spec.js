@@ -13,7 +13,7 @@ describe('filterIgnoredDocs processor', () => {
 
   it('should run before the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runBefore).toEqual(['computing-paths'])
+    expect(processor.$runBefore).toEqual(['computing-paths']);
   });
 
   it('should run after the correct processor', () => {
@@ -35,5 +35,5 @@ describe('filterIgnoredDocs processor', () => {
       { id: 'public1'},
       { id: 'public2'}
     ]);
-  })
+  });
 });

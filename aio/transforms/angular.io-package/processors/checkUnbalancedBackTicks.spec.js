@@ -1,6 +1,5 @@
 var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
-var path = require('canonical-path');
 
 describe('checkUnbalancedBackTicks', function() {
   var dgeni, injector, processor, log;

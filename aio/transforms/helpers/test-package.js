@@ -19,7 +19,7 @@ module.exports = function testPackage(packageName, mockTemplateEngine) {
 
   // overrides base packageInfo and returns the one for the 'angular/angular' repo.
   const PROJECT_ROOT = path.resolve(__dirname, '../../..');
-  pkg.factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
+  pkg.factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); });
 
 
   if (mockTemplateEngine) {

@@ -21,7 +21,7 @@ module.exports = new Package('content', [jsdocPackage, linksPackage])
                      })
 
                      // Configure ids and paths
-                     .config(function(computeIdsProcessor, computePathsProcessor) {
+                     .config(function(computeIdsProcessor) {
 
                        computeIdsProcessor.idTemplates.push({
                          docTypes: ['content'],

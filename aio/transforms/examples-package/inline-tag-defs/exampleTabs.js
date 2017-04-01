@@ -14,8 +14,7 @@ var fs = require('fs');
  * -titles="Hello app1, Hello app2" }
  * @kind function
  */
-module.exports = function exampleTabsInlineTagDef(
-    getLinkInfo, parseArgString, createDocMessage, log) {
+module.exports = function exampleTabsInlineTagDef(getLinkInfo, parseArgString) {
   return {
     name: 'exampleTabs',
     description:
@@ -32,9 +31,10 @@ module.exports = function exampleTabsInlineTagDef(
       }
 
       // TODO: not yet implemented here
-      var stylePatterns = tagArgs.stylePattern;
+      // var stylePatterns = tagArgs.stylePattern;
 
       var mixinPaths = relativePaths.map(function(relativePath, ix) {
+        // eslint-disable-next-line no-undef
         var fragFileName = getApiFragmentFileName(relativePath, regions && regions[ix]);
         if (!fs.existsSync(fragFileName)) {
           // TODO: log.warn(createDocMessage('Invalid example (unable to locate fragment file: ' +
@@ -43,7 +43,7 @@ module.exports = function exampleTabsInlineTagDef(
         return path.join('_api', relativePath);
       });
 
-      var comma = ', '
+      var comma = ', ';
       var pathsArg = quote(mixinPaths.join(','));
       var regionsArg = regions ? quote(regions.join(',')) : 'null';
       var titlesArg = titles ? quote(titles) : 'null';

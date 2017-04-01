@@ -47,12 +47,12 @@ module.exports = function parseArgString() {
               key = key.substr(1);
             }
           } else {
-            unnammedArgs.push(arg)
+            unnammedArgs.push(arg);
             key = null;
           }
         }
       }
     } while (match !== null);
     return args;
-  }
-}
+  };
+};

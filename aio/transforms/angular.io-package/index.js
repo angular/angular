@@ -29,8 +29,7 @@ const DOCS_OUTPUT_PATH = path.resolve(OUTPUT_PATH, 'docs');
 
 module.exports =
     new Package(
-        'angular.io',
-        [
+        'angular.io', [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
           gitPackage, targetPackage, contentPackage, rhoPackage
         ])
@@ -59,7 +58,7 @@ module.exports =
         .factory(require('./readers/json'))
         .factory(require('./services/copyFolder'))
 
-        .config(function(checkAnchorLinksProcessor, log) {
+        .config(function(checkAnchorLinksProcessor) {
           // TODO: re-enable
           checkAnchorLinksProcessor.$enabled = false;
         })
@@ -257,7 +256,6 @@ module.exports =
             generateKeywordsProcessor) {
 
           const API_SEGMENT = 'api';
-          const GUIDE_SEGMENT = 'guide';
           const APP_SEGMENT = 'app';
 
           generateApiListDoc.outputFolder = API_SEGMENT;

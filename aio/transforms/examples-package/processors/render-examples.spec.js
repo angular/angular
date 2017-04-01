@@ -1,9 +1,8 @@
 var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
-var path = require('path');
 
 describe('renderExamples processor', () => {
-  var injector, processor, exampleMap, regionParser, collectExamples, exampleMap;
+  var injector, processor, exampleMap, collectExamples;
 
   beforeEach(function() {
     const dgeni = new Dgeni([testPackage('examples-package', true)]);
@@ -24,7 +23,7 @@ describe('renderExamples processor', () => {
   });
 
   it('should run before the correct processor', () => {
-    expect(processor.$runBefore).toEqual(['writing-files'])
+    expect(processor.$runBefore).toEqual(['writing-files']);
   });
 
   it('should run after the correct processor', () => {

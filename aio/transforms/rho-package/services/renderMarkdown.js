@@ -55,7 +55,7 @@ module.exports = function renderMarkdown() {
 
     walk.startFrom(endIdx + 2);
     return true;
-  };
+  }
 
   renderMarkdownImpl.unformattedTags = [];
 
@@ -64,5 +64,5 @@ module.exports = function renderMarkdown() {
   function renderMarkdownImpl(content) {
     const rawHtml = new rho.BlockCompiler(rho.options).toHtml(content);
     return prettyPrint(rawHtml, { indent_size: 2, max_char: 0, unformatted: [...defaultUnformattedTags, ...renderMarkdownImpl.unformattedTags]});
-  };
+  }
 };

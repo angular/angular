@@ -9,5 +9,5 @@ module.exports = function filterIgnoredDocs() {
     $process: function(docs) {
       return docs.filter(doc => !this.ignore.some(regexp => regexp.test(doc.id)));
     }
-  }
+  };
 };
