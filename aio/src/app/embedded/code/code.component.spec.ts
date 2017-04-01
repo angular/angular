@@ -105,6 +105,22 @@ describe('CodeComponent', () => {
     expect(lis.length).toBe(0, 'should be no linenums');
   });
 
+  it('should trim whitespace from the code before rendering', () => {
+    hostComponent.linenums = false;
+    hostComponent.code = '\n\n\n' + multiLineCode + '\n\n\n';
+    fixture.detectChanges();
+    const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
+    expect(codeContent).toEqual(codeContent.trim());
+  });
+
+  it('should trim whitespace from code before computing whether to format linenums', () => {
+    hostComponent.code = '\n\n\n' + hostComponent.code + '\n\n\n';
+    fixture.detectChanges();
+    // `<li>`s are a tell-tale for line numbers
+    const lis = codeComponentDe.nativeElement.querySelectorAll('li');
+    expect(lis.length).toBe(0, 'should be no linenums');
+  });
+
   it('should call copier service when copy button clicked', () => {
     const copierService: TestCopierService = <any> codeComponentDe.injector.get(CopierService) ;
     const button = fixture.debugElement.query(By.css('button')).nativeElement;
