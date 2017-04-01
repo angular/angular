@@ -54,9 +54,9 @@
     "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
     "firebase-tools": "^3.2.1",
-    "html": "^1.0.0",
     "fs-extra": "^2.1.1",
     "globby": "^6.1.0",
+    "html": "^1.0.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
@@ -72,6 +72,7 @@
     "shelljs": "^0.7.7",
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
-    "typescript": "2.2.0"
+    "typescript": "2.2.0",
+    "vrsource-tslint-rules": "^4.0.1"
   }
 }
