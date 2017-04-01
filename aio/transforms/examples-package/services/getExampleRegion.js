@@ -26,6 +26,6 @@ module.exports = function getExampleRegion(exampleMap, createDocMessage, log, co
       return '';
     }
 
-    return sourceCodeDoc.renderedContent;
+    return sourceCodeDoc.renderedContent.trim();
   };
 };
