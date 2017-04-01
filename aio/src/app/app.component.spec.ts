@@ -104,6 +104,33 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('pageId', () => {
+    let locationService: MockLocationService;
+
+    beforeEach(() => {
+      locationService = fixture.debugElement.injector.get(LocationService) as any;
+    });
+
+    it('should set the id of the doc viewer container based on the current url', () => {
+      const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+
+      locationService.urlSubject.next('guide/pipes');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('guide-pipes');
+      expect(container.properties['id']).toEqual('guide-pipes');
+
+      locationService.urlSubject.next('news');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('news');
+      expect(container.properties['id']).toEqual('news');
+
+      locationService.urlSubject.next('');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('home');
+      expect(container.properties['id']).toEqual('home');
+    });
+  });
+
   describe('currentDocument', () => {
     console.log('PENDING: AppComponent currentDocument');
   });

@@ -16,7 +16,7 @@
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
   </md-sidenav>
 
-  <section class="sidenav-content">
+  <section class="sidenav-content" [id]="pageId">
     <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
   </section>
 
