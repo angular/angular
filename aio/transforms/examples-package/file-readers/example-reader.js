@@ -4,7 +4,7 @@
  * Later on we can extract the regions, via "shredding"; and we can also construct runnable examples
  * for passing to plunker and the like.
  */
-module.exports = function exampleFileReader(log) {
+module.exports = function exampleFileReader() {
   return {
     name: 'exampleFileReader',
     getDocs: function(fileInfo) {

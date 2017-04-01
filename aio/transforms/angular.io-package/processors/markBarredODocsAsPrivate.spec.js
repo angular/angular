@@ -18,7 +18,7 @@ describe('generateApiListDoc processor', () => {
     const docs = [
       { name: 'ɵPrivate' },
       { name: 'public' }
-    ]
+    ];
     processor.$process(docs);
 
     expect(docs[0].privateExport).toBeTruthy();

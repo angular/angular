@@ -73,6 +73,6 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
     }
 
     return linkInfo;
-  };
+  }
 
 };

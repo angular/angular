@@ -3,7 +3,6 @@ const html = require('./region-matchers/html');
 const inlineC = require('./region-matchers/inline-c');
 const inlineCOnly = require('./region-matchers/inline-c-only');
 const inlineHash = require('./region-matchers/inline-hash');
-const NO_NAME_REGION = '';
 const DEFAULT_PLASTER = '. . .';
 const {mapObject} = require('../utils');
 

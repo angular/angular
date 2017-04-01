@@ -2,7 +2,7 @@ const testPackage = require('../../helpers/test-package');
 const Dgeni = require('dgeni');
 const factory = require('./copyContentAssets');
 
-fdescribe('extractDecoratedClasses processor', function() {
+describe('extractDecoratedClasses processor', function() {
   let dgeni, injector, processor;
 
   beforeEach(function() {

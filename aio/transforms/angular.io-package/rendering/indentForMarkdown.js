@@ -1,4 +1,4 @@
-module.exports = function(encodeCodeBlock) {
+module.exports = function() {
   // var MIXIN_PATTERN = /\S*\+\S*\(.*/;
   return {
     name: 'indentForMarkdown',
@@ -57,6 +57,6 @@ module.exports = function(encodeCodeBlock) {
       str += ' ';
     }
     return str;
-  };
+  }
 
 };

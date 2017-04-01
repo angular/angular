@@ -2,13 +2,12 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('addNotYetDocumentedProperty', function() {
-  var dgeni, injector, processor, log;
+  var dgeni, injector, processor;
 
   beforeEach(function() {
     dgeni = new Dgeni([testPackage('angular.io-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('addNotYetDocumentedProperty');
-    log = injector.get('log');
   });
 
   it('should mark export docs with no description as "not yet documented"', function() {
