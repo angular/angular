@@ -95,7 +95,7 @@ export class NavigationService {
       (navMap, url) => {
         let urlKey = cleanUrl(url);
         urlKey = urlKey.startsWith('api/') ? 'api' : urlKey;
-        return navMap[urlKey] || { view: '', url, nodes: [] };
+        return navMap[urlKey] || { view: '', url: urlKey, nodes: [] };
       })
       .publishReplay(1);
     currentNode.connect();
