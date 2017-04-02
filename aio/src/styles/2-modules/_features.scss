@@ -1,0 +1,24 @@
+.feature-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+
+  h2.text-headline {
+    font-size: 28px;
+    margin-top: 10px;
+    color: #37474F;
+  }
+}
+
+.features-desc {
+  max-width: 920px;
+}
+
+.feature {
+  max-width: 350px;
+  margin-bottom: $unit * 4;
+}
