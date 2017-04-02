@@ -148,8 +148,8 @@ describe('NavigationService', () => {
       });
     });
 
-    it('should be undefined if no side navigation node matches the current location', () => {
-      location.urlSubject.next('g');
+    it('should be a plain object if no side navigation node matches the current location', () => {
+      location.urlSubject.next('g?search=moo#anchor-1');
       expect(currentNode).toEqual({
         url: 'g',
         view: '',
