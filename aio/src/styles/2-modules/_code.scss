@@ -56,12 +56,16 @@ aio-code pre {
 code ol {
   font-family: $main-font;
   color: $lightgray;
-  
+
   li {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
   }
+}
+
+.code-missing {
+  color: $darkred;
 }
 
 .prettyprint {

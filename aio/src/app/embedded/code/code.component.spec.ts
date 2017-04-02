@@ -121,9 +121,23 @@ describe('CodeComponent', () => {
     expect(lis.length).toBe(0, 'should be no linenums');
   });
 
+  it('should display error message when there is no code (after trimming)', () => {
+    hostComponent.code = ' \n ';
+    fixture.detectChanges();
+    const missing = codeComponentDe.nativeElement.querySelector('.code-missing') as HTMLElement;
+    expect(missing).not.toBeNull('should have element with "code-missing" class');
+    expect(missing.innerText).toContain('missing', 'error message');
+  });
+
+  it('should not display "code-missing" class when there is some code', () => {
+    fixture.detectChanges();
+    const missing = codeComponentDe.nativeElement.querySelector('.code-missing');
+    expect(missing).toBeNull('should not have element with "code-missing" class');
+  });
+
   it('should call copier service when copy button clicked', () => {
     const copierService: TestCopierService = <any> codeComponentDe.injector.get(CopierService) ;
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
     expect(copierService.copyText.calls.count()).toBe(0, 'before click');
     button.click();
     expect(copierService.copyText.calls.count()).toBe(1, 'after click');
@@ -131,7 +145,7 @@ describe('CodeComponent', () => {
 
   it('should copy code text when copy button clicked', () => {
     const copierService: TestCopierService = <any> codeComponentDe.injector.get(CopierService) ;
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
     button.click();
     expect(copierService.copyText.calls.argsFor(0)[0]).toEqual(oneLineCode, 'after click');
   });
