@@ -129,6 +129,23 @@ describe('AppComponent', () => {
       expect(component.pageId).toEqual('home');
       expect(container.properties['id']).toEqual('home');
     });
+
+    it('should not be affected by changes to the query or hash', () => {
+      const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+
+      locationService.urlSubject.next('guide/pipes');
+      fixture.detectChanges();
+
+      locationService.urlSubject.next('guide/other?search=http');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('guide-other');
+      expect(container.properties['id']).toEqual('guide-other');
+
+      locationService.urlSubject.next('guide/http#anchor-1');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('guide-http');
+      expect(container.properties['id']).toEqual('guide-http');
+    });
   });
 
   describe('currentDocument', () => {
