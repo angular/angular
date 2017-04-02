@@ -35,7 +35,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   private hostElement: HTMLElement;
 
   @Output()
-  docRendered = new EventEmitter<DocumentContents>();
+  docRendered = new EventEmitter();
 
   constructor(
     componentFactoryResolver: ComponentFactoryResolver,
@@ -60,7 +60,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     this.ngOnDestroy();
     if (newDoc) {
       this.build(newDoc);
-      this.docRendered.emit(newDoc);
+      this.docRendered.emit();
     }
   }
 

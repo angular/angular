@@ -22,6 +22,7 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { EmbeddedModule } from 'app/embedded/embedded.module';
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
@@ -54,6 +55,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   declarations: [
     AppComponent,
     DocViewerComponent,
+    DtComponent,
     FooterComponent,
     TopMenuComponent,
     NavMenuComponent,
