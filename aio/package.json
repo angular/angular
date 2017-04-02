@@ -23,8 +23,8 @@
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false",
     "pre~~deploy": "yarn build",
     "~~deploy": "firebase deploy --message \"Commit: $TRAVIS_COMMIT\" --non-interactive --token \"$FIREBASE_TOKEN\"",
-    "boilerplate:add": "node ./scripts/add-example-boilerplate add",
-    "boilerplate:remove": "node ./scripts/add-example-boilerplate remove"
+    "boilerplate:add": "node ./tools/examples/add-example-boilerplate add",
+    "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove"
   },
   "private": true,
   "dependencies": {

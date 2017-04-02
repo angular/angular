@@ -4,8 +4,9 @@ const path = require('path');
 const Q = require("q");
 const shelljs = require('shelljs');
 
-const EXAMPLES_PATH = path.join(__dirname, '/../content/examples');
-const BOILERPLATE_PATH = path.join(EXAMPLES_PATH, '_boilerplate');
+const EXAMPLES_PATH = path.join(__dirname, '/../../content/examples');
+const SHARED_PATH = path.join(__dirname, '/shared');
+const BOILERPLATE_PATH = path.join(SHARED_PATH, 'boilerplate');
 const EXAMPLES_TESTING_PATH = path.join(EXAMPLES_PATH, 'testing');
 
 const files = {
@@ -28,7 +29,7 @@ const files = {
 
 // requires admin access because it adds symlinks
 function add() {
-  const realPath = path.join(EXAMPLES_PATH, '/node_modules');
+  const realPath = path.join(SHARED_PATH, '/node_modules');
   const nodeModulesPaths = getNodeModulesPaths(EXAMPLES_PATH);
 
   // we install the examples modules first
@@ -122,7 +123,7 @@ function getUnitTestingPaths(basePath) {
 }
 
 function installNodeModules() {
-  shelljs.exec('yarn', {cwd: EXAMPLES_PATH});
+  shelljs.exec('yarn', {cwd: SHARED_PATH});
 }
 
 function remove() {
