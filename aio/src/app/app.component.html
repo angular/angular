@@ -17,7 +17,8 @@
   </md-sidenav>
 
   <section class="sidenav-content" [id]="pageId">
-    <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered($event)"></aio-doc-viewer>
+    <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
+    <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
 
 </md-sidenav-container>
