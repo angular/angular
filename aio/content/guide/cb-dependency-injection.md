@@ -34,7 +34,7 @@ In this cookbook we will explore many of the features of Dependency Injection (D
 [Provider token alternatives](guide/cb-dependency-injection#tokens)
 
 * [class-interface](guide/cb-dependency-injection#class-interface)
-* [OpaqueToken](guide/cb-dependency-injection#opaque-token)
+* [InjectionToken](guide/cb-dependency-injection#injection-token)
 
 [Inject into a derived class](guide/cb-dependency-injection#di-inheritance)
 
@@ -524,8 +524,8 @@ The `Hero` provider token is a class which makes sense because the value is a `H
 and the consumer of the injected hero would want the type information.
 
 The `TITLE` provider token is *not a class*.
-It's a special kind of provider lookup key called an [OpaqueToken](guide/cb-dependency-injection#opaquetoken).
-We often use an `OpaqueToken` when the dependency is a simple value like a string, a number, or a function.
+It's a special kind of provider lookup key called an [InjectionToken](guide/cb-dependency-injection#injectiontoken).
+We often use an `InjectionToken` when the dependency is a simple value like a string, a number, or a function.
 
 The value of a *value provider* must be defined *now*. We can't create the value later.
 Obviously the title string literal is immediately available.
@@ -669,7 +669,7 @@ for the full source code.
 
 {@a tokens}
 
-## Provider token alternatives: the *class-interface* and *OpaqueToken*
+## Provider token alternatives: the *class-interface* and *InjectionToken*
 
 Angular dependency injection is easiest when the provider *token* is a class
 that is also the type of the returned dependency object (what we usually call the *service*).
@@ -742,8 +742,8 @@ It never grows larger no matter how many members we add *as long as they are typ
 
 
 
-{@a opaque-token}
-### OpaqueToken
+{@a injection-token}
+### InjectionToken
 
 Dependency objects can be simple values like dates, numbers and strings or
 shapeless objects like arrays and functions.
@@ -753,17 +753,17 @@ They're better represented by a token that is both unique and symbolic,
 a JavaScript object that has a friendly name but won't conflict with
 another token that happens to have the same name.
 
-The `OpaqueToken` has these characteristics.
+The `InjectionToken` has these characteristics.
 We encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="provide-opaque-token" linenums="false">
+<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="provide-injection-token" linenums="false">
 
 </code-example>
 
 We created the `TITLE` token like this:
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="opaque-token" linenums="false">
+<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="injection-token" linenums="false">
 
 </code-example>
 

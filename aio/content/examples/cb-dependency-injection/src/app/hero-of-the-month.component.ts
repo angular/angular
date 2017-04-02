@@ -1,10 +1,10 @@
 /* tslint:disable:one-line:check-open-brace*/
 // #docplaster
-// #docregion opaque-token
-import { OpaqueToken } from '@angular/core';
+// #docregion injection-token
+import { InjectionToken } from '@angular/core';
 
-export const TITLE = new OpaqueToken('title');
-// #enddocregion opaque-token
+export const TITLE = new InjectionToken<string>('title');
+// #enddocregion injection-token
 
 // #docregion hero-of-the-month
 import { Component, Inject } from '@angular/core';
@@ -41,9 +41,9 @@ const template = `
   providers: [
     // #docregion use-value
     { provide: Hero,          useValue:    someHero },
-    // #docregion provide-opaque-token
+    // #docregion provide-injection-token
     { provide: TITLE,         useValue:   'Hero of the Month' },
-    // #enddocregion provide-opaque-token
+    // #enddocregion provide-injection-token
     // #enddocregion use-value
     // #docregion use-class
     { provide: HeroService,   useClass:    HeroService },
@@ -52,9 +52,9 @@ const template = `
     // #docregion use-existing
     { provide: MinimalLogger, useExisting: LoggerService },
     // #enddocregion use-existing
-    // #docregion provide-opaque-token, use-factory
+    // #docregion provide-injection-token, use-factory
     { provide: RUNNERS_UP,    useFactory:  runnersUpFactory(2), deps: [Hero, HeroService] }
-    // #enddocregion provide-opaque-token, use-factory
+    // #enddocregion provide-injection-token, use-factory
   ]
 })
 export class HeroOfTheMonthComponent {
