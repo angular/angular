@@ -45,10 +45,6 @@ export function flatten<T>(arr: T[][]): T[] {
   return Array.prototype.concat.apply([], arr);
 }
 
-export function first<T>(a: T[]): T {
-  return a.length > 0 ? a[0] : null;
-}
-
 export function last<T>(a: T[]): T {
   return a.length > 0 ? a[a.length - 1] : null;
 }
@@ -67,34 +63,26 @@ export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: strin
 
 export function waitForMap<A, B>(
     obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
-  const waitFor: Observable<B>[] = [];
+  if (Object.keys(obj).length === 0) {
+    return of ({})
+  }
+
+  const waitHead: Observable<B>[] = [];
+  const waitTail: Observable<B>[] = [];
   const res: {[k: string]: B} = {};
 
   forEach(obj, (a: A, k: string) => {
+    const mapped = map.call(fn(k, a), (r: B) => res[k] = r);
     if (k === PRIMARY_OUTLET) {
-      waitFor.push(map.call(fn(k, a), (_: B) => {
-        res[k] = _;
-        return _;
-      }));
+      waitHead.push(mapped);
+    } else {
+      waitTail.push(mapped);
     }
   });
 
-  forEach(obj, (a: A, k: string) => {
-    if (k !== PRIMARY_OUTLET) {
-      waitFor.push(map.call(fn(k, a), (_: B) => {
-        res[k] = _;
-        return _;
-      }));
-    }
-  });
-
-  if (waitFor.length > 0) {
-    const concatted$ = concatAll.call(of (...waitFor));
-    const last$ = l.last.call(concatted$);
-    return map.call(last$, () => res);
-  }
-
-  return of (res);
+  const concat$ = concatAll.call(of (...waitHead, ...waitTail));
+  const last$ = l.last.call(concat$);
+  return map.call(last$, () => res);
 }
 
 export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {

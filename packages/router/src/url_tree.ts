@@ -207,21 +207,13 @@ export class UrlSegment {
   toString(): string { return serializePath(this); }
 }
 
-export function equalSegments(a: UrlSegment[], b: UrlSegment[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i].path !== b[i].path) return false;
-    if (!shallowEqual(a[i].parameters, b[i].parameters)) return false;
-  }
-  return true;
+export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
+  return equalPath(as, bs) && as.every((a, i) => shallowEqual(a.parameters, bs[i].parameters));
 }
 
-export function equalPath(a: UrlSegment[], b: UrlSegment[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i].path !== b[i].path) return false;
-  }
-  return true;
+export function equalPath(as: UrlSegment[], bs: UrlSegment[]): boolean {
+  if (as.length !== bs.length) return false;
+  return as.every((a, i) => a.path === bs[i].path);
 }
 
 export function mapChildrenIntoArray<T>(
@@ -288,8 +280,8 @@ export class DefaultUrlSerializer implements UrlSerializer {
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
-    const fragment =
-        tree.fragment !== null && tree.fragment !== undefined ? `#${encodeURI(tree.fragment)}` : '';
+    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment)}` : '';
+
     return `${segment}${query}${fragment}`;
   }
 }
@@ -301,34 +293,35 @@ export function serializePaths(segment: UrlSegmentGroup): string {
 }
 
 function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
-  if (segment.hasChildren() && root) {
+  if (!segment.hasChildren()) {
+    return serializePaths(segment);
+  }
+
+  if (root) {
     const primary = segment.children[PRIMARY_OUTLET] ?
         serializeSegment(segment.children[PRIMARY_OUTLET], false) :
         '';
     const children: string[] = [];
+
     forEach(segment.children, (v: UrlSegmentGroup, k: string) => {
       if (k !== PRIMARY_OUTLET) {
         children.push(`${k}:${serializeSegment(v, false)}`);
       }
     });
-    if (children.length > 0) {
-      return `${primary}(${children.join('//')})`;
-    } else {
-      return `${primary}`;
-    }
 
-  } else if (segment.hasChildren() && !root) {
+    return children.length > 0 ? `${primary}(${children.join('//')})` : primary;
+
+  } else {
     const children = mapChildrenIntoArray(segment, (v: UrlSegmentGroup, k: string) => {
       if (k === PRIMARY_OUTLET) {
         return [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
-      } else {
-        return [`${k}:${serializeSegment(v, false)}`];
       }
-    });
-    return `${serializePaths(segment)}/(${children.join('//')})`;
 
-  } else {
-    return serializePaths(segment);
+      return [`${k}:${serializeSegment(v, false)}`];
+
+    });
+
+    return `${serializePaths(segment)}/(${children.join('//')})`;
   }
 }
 
@@ -360,7 +353,6 @@ function serializeQueryParams(params: {[key: string]: any}): string {
 
 const SEGMENT_RE = /^[^\/()?;=&#]+/;
 function matchSegments(str: string): string {
-  SEGMENT_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
@@ -368,7 +360,6 @@ function matchSegments(str: string): string {
 const QUERY_PARAM_RE = /^[^=?&#]+/;
 // Return the name of the query param at the start of the string or an empty string
 function matchQueryParams(str: string): string {
-  QUERY_PARAM_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
@@ -376,126 +367,101 @@ function matchQueryParams(str: string): string {
 const QUERY_PARAM_VALUE_RE = /^[^?&#]+/;
 // Return the value of the query param at the start of the string or an empty string
 function matchUrlQueryParamValue(str: string): string {
-  QUERY_PARAM_VALUE_RE.lastIndex = 0;
   const match = str.match(QUERY_PARAM_VALUE_RE);
   return match ? match[0] : '';
 }
 
 class UrlParser {
   private remaining: string;
+
   constructor(private url: string) { this.remaining = url; }
 
-  peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
-
-  capture(str: string): void {
-    if (!this.remaining.startsWith(str)) {
-      throw new Error(`Expected "${str}".`);
-    }
-    this.remaining = this.remaining.substring(str.length);
-  }
-
   parseRootSegment(): UrlSegmentGroup {
-    if (this.remaining.startsWith('/')) {
-      this.capture('/');
-    }
+    this.consumeOptional('/');
 
-    if (this.remaining === '' || this.remaining.startsWith('?') || this.remaining.startsWith('#')) {
+    if (this.remaining === '' || this.peekStartsWith('?') || this.peekStartsWith('#')) {
       return new UrlSegmentGroup([], {});
     }
 
+    // The root segment group never has segments
     return new UrlSegmentGroup([], this.parseChildren());
   }
 
-  parseChildren(): {[key: string]: UrlSegmentGroup} {
-    if (this.remaining.length == 0) {
+  parseQueryParams(): {[key: string]: any} {
+    const params: {[key: string]: any} = {};
+    if (this.consumeOptional('?')) {
+      do {
+        this.parseQueryParam(params);
+      } while (this.consumeOptional('&'));
+    }
+    return params;
+  }
+
+  parseFragment(): string { return this.consumeOptional('#') ? decodeURI(this.remaining) : null; }
+
+  private parseChildren(): {[outlet: string]: UrlSegmentGroup} {
+    if (this.remaining === '') {
       return {};
     }
 
-    if (this.peekStartsWith('/')) {
-      this.capture('/');
-    }
+    this.consumeOptional('/');
 
-    const paths: any[] = [];
+    const segments: UrlSegment[] = [];
     if (!this.peekStartsWith('(')) {
-      paths.push(this.parseSegments());
+      segments.push(this.parseSegment());
     }
 
     while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
       this.capture('/');
-      paths.push(this.parseSegments());
+      segments.push(this.parseSegment());
     }
 
-    let children: {[key: string]: UrlSegmentGroup} = {};
+    let children: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('/(')) {
       this.capture('/');
       children = this.parseParens(true);
     }
 
-    let res: {[key: string]: UrlSegmentGroup} = {};
+    let res: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('(')) {
       res = this.parseParens(false);
     }
 
-    if (paths.length > 0 || Object.keys(children).length > 0) {
-      res[PRIMARY_OUTLET] = new UrlSegmentGroup(paths, children);
+    if (segments.length > 0 || Object.keys(children).length > 0) {
+      res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
     }
 
     return res;
   }
 
-  parseSegments(): UrlSegment {
+  // parse a segment with its matrix parameters
+  // ie `name;k1=v1;k2`
+  private parseSegment(): UrlSegment {
     const path = matchSegments(this.remaining);
     if (path === '' && this.peekStartsWith(';')) {
       throw new Error(`Empty path url segment cannot have parameters: '${this.remaining}'.`);
     }
 
     this.capture(path);
-    let matrixParams: {[key: string]: any} = {};
-    if (this.peekStartsWith(';')) {
-      matrixParams = this.parseMatrixParams();
-    }
-    return new UrlSegment(decode(path), matrixParams);
+    return new UrlSegment(decode(path), this.parseMatrixParams());
   }
 
-  parseQueryParams(): {[key: string]: any} {
+  private parseMatrixParams(): {[key: string]: any} {
     const params: {[key: string]: any} = {};
-    if (this.peekStartsWith('?')) {
-      this.capture('?');
-      this.parseQueryParam(params);
-      while (this.remaining.length > 0 && this.peekStartsWith('&')) {
-        this.capture('&');
-        this.parseQueryParam(params);
-      }
-    }
-    return params;
-  }
-
-  parseFragment(): string {
-    if (this.peekStartsWith('#')) {
-      return decodeURI(this.remaining.substring(1));
-    }
-
-    return null;
-  }
-
-  parseMatrixParams(): {[key: string]: any} {
-    const params: {[key: string]: any} = {};
-    while (this.remaining.length > 0 && this.peekStartsWith(';')) {
-      this.capture(';');
+    while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
     return params;
   }
 
-  parseParam(params: {[key: string]: any}): void {
+  private parseParam(params: {[key: string]: any}): void {
     const key = matchSegments(this.remaining);
     if (!key) {
       return;
     }
     this.capture(key);
     let value: any = '';
-    if (this.peekStartsWith('=')) {
-      this.capture('=');
+    if (this.consumeOptional('=')) {
       const valueMatch = matchSegments(this.remaining);
       if (valueMatch) {
         value = valueMatch;
@@ -507,15 +473,14 @@ class UrlParser {
   }
 
   // Parse a single query parameter `name[=value]`
-  parseQueryParam(params: {[key: string]: any}): void {
+  private parseQueryParam(params: {[key: string]: any}): void {
     const key = matchQueryParams(this.remaining);
     if (!key) {
       return;
     }
     this.capture(key);
     let value: any = '';
-    if (this.peekStartsWith('=')) {
-      this.capture('=');
+    if (this.consumeOptional('=')) {
       const valueMatch = matchUrlQueryParamValue(this.remaining);
       if (valueMatch) {
         value = valueMatch;
@@ -540,10 +505,12 @@ class UrlParser {
     }
   }
 
-  parseParens(allowPrimary: boolean): {[key: string]: UrlSegmentGroup} {
+  // parse `(a/b//outlet_name:c/d)`
+  private parseParens(allowPrimary: boolean): {[outlet: string]: UrlSegmentGroup} {
     const segments: {[key: string]: UrlSegmentGroup} = {};
     this.capture('(');
-    while (!this.peekStartsWith(')') && this.remaining.length > 0) {
+
+    while (!this.consumeOptional(')') && this.remaining.length > 0) {
       const path = matchSegments(this.remaining);
 
       const next = this.remaining[path.length];
@@ -566,11 +533,26 @@ class UrlParser {
       const children = this.parseChildren();
       segments[outletName] = Object.keys(children).length === 1 ? children[PRIMARY_OUTLET] :
                                                                   new UrlSegmentGroup([], children);
-      if (this.peekStartsWith('//')) {
-        this.capture('//');
-      }
+      this.consumeOptional('//');
     }
-    this.capture(')');
+
     return segments;
+  }
+
+  private peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+
+  // Consumes the prefix when it is present and returns whether it has been consumed
+  private consumeOptional(str: string): boolean {
+    if (this.peekStartsWith(str)) {
+      this.remaining = this.remaining.substring(str.length);
+      return true;
+    }
+    return false;
+  }
+
+  private capture(str: string): void {
+    if (!this.consumeOptional(str)) {
+      throw new Error(`Expected "${str}".`);
+    }
   }
 }
