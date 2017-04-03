@@ -165,7 +165,7 @@ describe('CodeComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-      <aio-code [code]="code" [language]="language" [linenums]="linenums"></aio-code>
+      <aio-code md-no-ink [code]="code" [language]="language" [linenums]="linenums"></aio-code>
   `
 })
 class HostComponent {
