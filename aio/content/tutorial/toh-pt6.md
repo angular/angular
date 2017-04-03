@@ -427,7 +427,7 @@ The `http.get()` call in `HeroSearchService` is similar to the one
 in the `HeroService`, although the URL now has a query string.
 
 More importantly, you no longer call `toPromise()`.
-Instead you return the *Observable* from the the `htttp.get()`,
+Instead you return the *Observable* from the the `http.get()`,
 after chaining it to another RxJS operator, <code>map()</code>,
 to extract heroes from the response data.
 RxJS operator chaining makes response processing easy and readable.
