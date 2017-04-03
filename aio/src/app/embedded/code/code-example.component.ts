@@ -16,7 +16,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
   selector: 'code-example',
   template: `
     <header *ngIf="title">{{title}}</header>
-    <aio-code [code]="code" [language]="language" [linenums]="linenums"></aio-code>
+    <aio-code [ngClass]="{'headed-code':title, 'simple-code':!title}" [code]="code" [language]="language" [linenums]="linenums"></aio-code>
   `
 })
 export class CodeExampleComponent implements OnInit { // implements AfterViewInit {

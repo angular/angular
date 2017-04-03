@@ -26,7 +26,7 @@ code-example header {
   color: $offwhite;
   font-size: 16px;
   padding: 10px;
-  margin: -10px;
+  margin: -17px;
 }
 
 code-example.is-anti-pattern header {
@@ -57,7 +57,7 @@ aio-code pre {
     white-space: pre-wrap;
 
     code span, code ol li {
-      line-height: 18px;
+      line-height: 24px;
     }
 }
 
@@ -69,6 +69,12 @@ code ol {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
+  }
+}
+
+aio-code.headed-code {
+  pre.prettyprint {
+    margin-top: 32px;
   }
 }
 
@@ -87,6 +93,7 @@ code ol {
   &:hover {
     color: $mediumgray;
   }
+  
   @media (max-width: 480px) {
     top: 0;
     bottom: 0;
@@ -102,6 +109,7 @@ code ol {
 
 .code-tab-group div.mat-tab-body-content {
   height: auto;
+  transform: none;
 }
 
 $blue-grey-50: #ECEFF1;
@@ -175,41 +183,50 @@ code-example.code-shell, code-example[language=sh], code-example[language=bash] 
 /* PRINT COLORS */
 
 
-  @media print {
-    border: none;
-    box-shadow: none;
+@media print {
+  border: none;
+  box-shadow: none;
 
-    ol {
-      background: $white;
-    }
-
-    .kwd {
-      color: $darkgray;
-    }
-    .typ,
-    .tag {
-      color: $darkred;
-    }
-    .str,
-    .atv {
-      color: $blue;
-    }
-    .atn {
-      color: $blue;
-    }
-    .com {
-      color: $mediumgray;
-    }
-    .lit {
-      color: $blue;
-    }
-    .pun {
-      color: $blue-grey-700;
-    }
-    .pln {
-      color: $green-800;
-    }
-    .dec {
-      color: $blue;
-    }
+  ol {
+    background: $white;
   }
+
+  .kwd {
+    color: $darkgray;
+  }
+  .typ,
+  .tag {
+    color: $darkred;
+  }
+  .str,
+  .atv {
+    color: $blue;
+  }
+  .atn {
+    color: $blue;
+  }
+  .com {
+    color: $mediumgray;
+  }
+  .lit {
+    color: $blue;
+  }
+  .pun {
+    color: $blue-grey-700;
+  }
+  .pln {
+    color: $green-800;
+  }
+  .dec {
+    color: $blue;
+  }
+}
+
+// REMOVE RIPPLE EFFECT FROM MATERIAL TABS
+code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-list, code-tabs md-tab-gropu *.mat-tab-body-content {
+  transform: none !important;
+}
+
+[role="tabpanel"] {
+    transition: none;
+}
