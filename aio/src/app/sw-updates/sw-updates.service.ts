@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, Injector, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
@@ -36,9 +36,13 @@ export class SwUpdatesService implements OnDestroy {
   private onDestroy = new Subject();
   private checkForUpdateSubj = new Subject();
   private isUpdateAvailableSubj = new ReplaySubject<boolean>(1);
+  private sw: NgServiceWorker | NullServiceWorker = null;
   isUpdateAvailable = this.isUpdateAvailableSubj.distinctUntilChanged();
+  isServiceWorkAvailable = !!navigator['serviceWorker'];
 
-  constructor(private sw: NgServiceWorker) {
+  constructor(injector: Injector) {
+    this.sw = this.isServiceWorkAvailable ? injector.get(NgServiceWorker) : new NullServiceWorker();
+
     this.checkForUpdateSubj
         .debounceTime(this.checkInterval)
         .takeUntil(this.onDestroy)
@@ -73,4 +77,9 @@ export class SwUpdatesService implements OnDestroy {
         .concat(Observable.of(false)).take(1)
         .subscribe(v => this.isUpdateAvailableSubj.next(v));
   }
+}
+
+class NullServiceWorker {
+  checkForUpdate() { return Observable.of(false); }
+  activateUpdate(version: string) { return Observable.of(false); }
 }
