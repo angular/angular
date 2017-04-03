@@ -38,8 +38,7 @@ import {Tree, TreeNode} from './utils/tree';
  *
  * @description
  * RouterState is a tree of activated routes. Every node in this tree knows about the "consumed" URL
- * segments,
- * the extracted parameters, and the resolved data.
+ * segments, the extracted parameters, and the resolved data.
  *
  * See {@link ActivatedRoute} for more information.
  *
