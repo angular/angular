@@ -11,4 +11,5 @@ export class Contributor {
   website?: string;
   twitter?: string;
   bio?: string;
+  isFlipped?: boolean = false;
 }
