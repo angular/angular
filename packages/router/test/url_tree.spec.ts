@@ -11,6 +11,20 @@ import {DefaultUrlSerializer, containsTree} from '../src/url_tree';
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
+  describe('DefaultUrlSerializer', () => {
+    let serializer: DefaultUrlSerializer;
+
+    beforeEach(() => { serializer = new DefaultUrlSerializer(); });
+
+    it('should parse query parameters', () => {
+      const tree = serializer.parse('/path/to?k=v&k/(a;b)=c');
+      expect(tree.queryParams).toEqual({
+        'k': 'v',
+        'k/(a;b)': 'c',
+      });
+    });
+  });
+
   describe('containsTree', () => {
     describe('exact = true', () => {
       it('should return true when two tree are the same', () => {
