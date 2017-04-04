@@ -201,7 +201,6 @@ describe('diagnostics', () => {
       expect(diagnostic).toEqual([]);
     });
 
-
     it('should report an error for invalid providers', () => {
       addCode(
           `
@@ -218,6 +217,23 @@ describe('diagnostics', () => {
             expect(expected).toBeDefined();
             expect(notExpected).toBeUndefined();
           });
+    });
+
+    // Issue #15768
+    it('should be able to parse a template reference', () => {
+      addCode(
+          `
+        @Component({
+          selector: 'my-component',
+          template: \`
+            <div *ngIf="comps | async; let comps; else loading">
+            </div>
+            <ng-template #loading>Loading comps...</ng-template>            
+          \`
+        })
+        export class MyComponent {}
+      `,
+          fileName => onlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
     });
 
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
