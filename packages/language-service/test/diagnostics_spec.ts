@@ -201,6 +201,25 @@ describe('diagnostics', () => {
       expect(diagnostic).toEqual([]);
     });
 
+
+    it('should report an error for invalid providers', () => {
+      addCode(
+          `
+        @Component({
+          template: '',
+          providers: [null]
+       })
+       export class MyComponent {}
+      `,
+          fileName => {
+            const diagnostics = ngService.getDiagnostics(fileName);
+            const expected = diagnostics.find(d => d.message.startsWith('Invalid providers for'));
+            const notExpected = diagnostics.find(d => d.message.startsWith('Cannot read property'));
+            expect(expected).toBeDefined();
+            expect(notExpected).toBeUndefined();
+          });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);

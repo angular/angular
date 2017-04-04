@@ -529,6 +529,7 @@ export class CompileMetadataResolver {
             syntaxError(
                 `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringifyType(exportedId.reference)} from ${stringifyType(moduleType)} as it was neither declared nor imported!`),
             moduleType);
+        return;
       }
     });
 
@@ -627,6 +628,7 @@ export class CompileMetadataResolver {
               `Please consider moving ${stringifyType(type)} to a higher module that imports ${stringifyType(oldModule)} and ${stringifyType(moduleType)}. ` +
               `You can also create a new NgModule that exports and includes ${stringifyType(type)} then import that NgModule in ${stringifyType(oldModule)} and ${stringifyType(moduleType)}.`),
           moduleType);
+      return;
     }
     this._ngModuleOfTypes.set(type, moduleType);
   }
@@ -860,6 +862,7 @@ export class CompileMetadataResolver {
         } else if (provider === void 0) {
           this._reportError(syntaxError(
               `Encountered undefined provider! Usually this means you have a circular dependencies (might be caused by using 'barrel' index.ts files.`));
+          return;
         } else {
           const providersInfo =
               (<string[]>providers.reduce(
@@ -879,6 +882,7 @@ export class CompileMetadataResolver {
               syntaxError(
                   `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`),
               type);
+          return;
         }
         if (providerMeta.token === resolveIdentifier(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS)) {
           targetEntryComponents.push(...this._getEntryComponentsFromProvider(providerMeta, type));
@@ -1002,8 +1006,10 @@ export class CompileMetadataResolver {
             syntaxError(
                 `Can't construct a query for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the query selector wasn't defined.`),
             typeOrFunc);
+        selectors = [];
+      } else {
+        selectors = [this._getTokenMetadata(q.selector)];
       }
-      selectors = [this._getTokenMetadata(q.selector)];
     }
 
     return {
