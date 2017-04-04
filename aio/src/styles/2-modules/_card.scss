@@ -6,22 +6,14 @@
 }
 
 .card {
-  background: $white;
-  border-radius: 4px;
-  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
-  box-sizing: border-box;
-  height: 194px;
-  margin: 24px 8px;
+  @include card(194px, 30%);
   max-width: 340px;
   min-width: 262px;
+  margin: 24px 8px;
   padding-bottom: 48px;
   position: relative;
-  transition: box-shadow .5s;
-  width: 30%;
 
   &:hover {
-    // border: 2px solid $blue;
-    box-shadow: 0 8px 8px rgba($black, 0.24), 0 0 8px rgba($black, 0.12);
     text-decoration: none;
 
     h2 {

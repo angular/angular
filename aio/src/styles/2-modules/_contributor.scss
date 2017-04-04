@@ -1,56 +1,10 @@
-$metal: #536E7A;
-$snow: #FFFFFF;
-$steel: #253238;
-
-// .bio-card {
-//     margin: 0 0 32px 0;
-//     position: relative;
-//     cursor: pointer;
-//     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-//     background: $white;
-//     transition: all .3s;
-
-//   &:hover {
-//     transform: translate3d(0,-3px,0);
-//     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4);
-
-//     nav {
-//       opacity: 1;
-//     }
-//   }
-
-
 aio-contributor-list {
-  .grid-fluid {
-    margin: 0 auto;
-    margin-bottom: 6 * 8px;
-    *zoom: 1;
-  }
-  .grid-fluid aio-contributor {
-    display: inline;
-    float: left;
-    margin-right: 1.04167%;
-    margin-left: 1.04167%;
-    width: 22.91667%;
-    margin-bottom: 6 * 8px;
-  }
-  .grid-fluid:after, .grid-fluid:before {
-    content: '.';
-    clear: both;
-    display: block;
-    overflow: hidden;
-    visibility: hidden;
-    font-size: 0;
-    line-height: 0;
-    width: 0;
-    height: 0;
-  }
   @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
-  /* line 6, ../scss/_responsive.scss */
     .grid-fluid{
       width: auto;
     }
   }
+
   @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
     .grid-fluid{
       margin-left: 20px;
@@ -60,93 +14,132 @@ aio-contributor-list {
       width: auto;
     }
   }
+}
 
+.group-buttons {
+  margin: 32px auto;
+
+  a {
+    &.selected {
+      background-color: $blue;
+      color: white;
+    }
+  }
+}
+
+.contributor-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 aio-contributor {
-  margin: 0px 0px ($unit * 4) 0px;
+  background: $white;
+  margin: 8px;
   position: relative;
   cursor: pointer;
-  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
-  background: $snow;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
   transition: all .3s;
-  padding: 10px;
+  perspective: 800px;
 
   &:hover {
     transform: translate3d(0,-3px,0);
-    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
 
-    nav {
-      opacity: 1;
+    .contributor-image {
+      transform: scale(1.05);
     }
   }
 
+  .contributor-info {
+    height: 48px;
+    text-align: center;
+    padding: 16px 8px;
+    background: $blue;
 
-  // HEADER
+    a {
+      color: $white;
+      margin-right: 8px;
+      font-size: 14px;
 
-  header {
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
-
-    img {
-      box-sizing: border-box;
-      display: flex;
-      flex: 0 0 auto;
-      width: 100%;
-      height: auto;
-    }
-
-    nav {
-      transition: opacity .5s;
-      position: absolute;
-      bottom: 3px;
-      left: 0;
-      right: 0;
-      z-index: 1;
-      padding: 8px;
-      background: rgba($steel, .4);
-      opacity: 0;
-
-      button {
-        font-size: 14px;
-        color: $white;
-        text-transform: uppercase;
-        opacity: .87;
-        background: none;
-        border: none;
-      }
-
-      a {
-        color: $white;
+      .fa-2x {
         font-size: 20px;
-        text-decoration: none;
-        opacity: .87;
-        margin-right: 8px;
-        float: right;
+      }
+
+      &:hover {
+        opacity: 0.7;
+        color: rgba($white, 0.7);
       }
     }
   }
 
-  // MAIN CONTENT
+    div.contributor-card {
+      width: 240px;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      transform-style:preserve-3d;
+      transition:transform ease 500ms;
+
+      .card-front, .card-back {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card-front {
+        justify-content: space-between;
+      }
+
+      .card-back {
+        padding: 16px;
+        transform:rotateY(180deg);
+      }
+
+      &.flipped {
+        transform:rotateY(180deg);
+        .card-front {
+          display: none;
+        }
+      }
+    }
+
+  .contributor-image {
+    border-radius: 50%;
+    align-items: center;
+    height: 130px;
+    width: 130px;
+    background-size: cover;
+    background-position: center;
+    margin: 16px auto 0px;
+    border: 1px solid $lightgray;
+    transition: all .2s ease-in-out;
+    }
 
   h3 {
+    font-size: 16px;
+    padding: 0 16px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: $metal;
-    text-transform: uppercase;
-    font-size: 18px;
-    margin-bottom: $unit;
   }
 
   p {
-    white-space: nowrap;
-    overflow: hidden;
     cursor: pointer;
     font-size: 14px;
-    line-height: 24px;
-    margin: 0;
+    line-height: 18px;
+    margin: 8px 16px;
     text-overflow: ellipsis;
+    overflow: scroll;
+    font-weight: 400;
   }
 }
