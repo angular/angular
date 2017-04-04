@@ -360,7 +360,7 @@ function matchSegments(str: string): string {
 const QUERY_PARAM_RE = /^[^=?&#]+/;
 // Return the name of the query param at the start of the string or an empty string
 function matchQueryParams(str: string): string {
-  const match = str.match(SEGMENT_RE);
+  const match = str.match(QUERY_PARAM_RE);
   return match ? match[0] : '';
 }
 
