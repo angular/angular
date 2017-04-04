@@ -89,3 +89,18 @@ a.button.md-button {
     }
   }
 }
+
+a.filter-button {
+  width: 140px;
+  font-size: 14px;
+  padding: 0px 16px;
+  margin: 8px;
+  line-height: 48px;
+  border: 2px solid $blue;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: $blue;
+    color: white;
+  }
+}
