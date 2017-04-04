@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-rc.5",
+  "version": "4.1.0-beta.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -4637,7 +4637,7 @@
         },
         "mkdirp": {
           "version": "0.5.1",
-          "from": "mkdirp@>=0.5.1 <0.6.0",
+          "from": "mkdirp@>=0.5.0 <0.6.0",
           "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz"
         },
         "ms": {
@@ -4654,7 +4654,7 @@
         },
         "nopt": {
           "version": "3.0.6",
-          "from": "nopt@>=3.0.6 <3.1.0",
+          "from": "nopt@>=3.0.1 <3.1.0",
           "resolved": "https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz",
           "optional": true
         },
@@ -4722,7 +4722,7 @@
         },
         "rc": {
           "version": "1.1.6",
-          "from": "rc@>=1.1.6 <1.2.0",
+          "from": "rc@>=1.1.0 <1.2.0",
           "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz",
           "optional": true,
           "dependencies": {
@@ -4824,7 +4824,7 @@
         },
         "tar": {
           "version": "2.2.1",
-          "from": "tar@>=2.2.1 <2.3.0",
+          "from": "tar@>=2.2.0 <2.3.0",
           "resolved": "https://registry.npmjs.org/tar/-/tar-2.2.1.tgz"
         },
         "tar-pack": {
@@ -5255,7 +5255,7 @@
     },
     "gulp": {
       "version": "3.9.0",
-      "from": "gulp@>=3.8.8 <4.0.0",
+      "from": "https://registry.npmjs.org/gulp/-/gulp-3.9.0.tgz",
       "resolved": "https://registry.npmjs.org/gulp/-/gulp-3.9.0.tgz",
       "dev": true,
       "dependencies": {
@@ -9991,8 +9991,8 @@
     },
     "zone.js": {
       "version": "0.8.5",
-      "from": "zone.js@0.8.5",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.5.tgz"
+      "from": "git://github.com/JiaLiPassion/zone.js.git#debugstack",
+      "resolved": "git://github.com/JiaLiPassion/zone.js.git#4c15f4579aa5f7b67bbbac04ac8d71f58dae27df"
     }
   }
 }
