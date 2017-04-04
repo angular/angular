@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, Type} from '@angular/core';
+import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
-
 
 /**
  * @whatItDoes Represents router configuration.
@@ -359,11 +357,17 @@ export interface Route {
   children?: Routes;
   loadChildren?: LoadChildren;
   runGuardsAndResolvers?: RunGuardsAndResolvers;
+  /** @internal */
+  _loadedConfig?: LoadedRouterConfig;
+}
+
+export class LoadedRouterConfig {
+  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
 }
 
 export interface InternalRoute extends Route {
   // `LoadedRouterConfig` loaded via a Route `loadChildren`
-  _loadedConfig?: any;
+  _loadedConfig?: LoadedRouterConfig;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {

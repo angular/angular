@@ -354,7 +354,7 @@ export declare class RouterOutletMap {
 }
 
 /** @stable */
-export declare class RouterPreloader {
+export declare class RouterPreloader implements OnDestroy {
     constructor(router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy);
     ngOnDestroy(): void;
     preload(): Observable<any>;

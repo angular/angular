@@ -18,8 +18,8 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {InternalRoute, Route, Routes} from './config';
-import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
+import {InternalRoute, LoadedRouterConfig, Route, Routes} from './config';
+import {RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, waitForMap, wrapIntoObservable} from './utils/collection';
