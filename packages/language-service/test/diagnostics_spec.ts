@@ -236,6 +236,28 @@ describe('diagnostics', () => {
           fileName => onlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
     });
 
+    // Issue #15625
+    it('should not report errors for localization syntax', () => {
+      addCode(
+          `
+          @Component({
+            selector: 'my-component',
+            template: \`
+            <div>
+                {fieldCount, plural, =0 {no fields} =1 {1 field} other {{{fieldCount}} fields}}
+            </div>
+            \`
+          })
+          export class MyComponent {
+            fieldCount: number;
+          }
+      `,
+          fileName => {
+            const diagnostics = ngService.getDiagnostics(fileName);
+            onlyModuleDiagnostics(diagnostics);
+          });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
@@ -255,7 +277,7 @@ describe('diagnostics', () => {
       if (diagnostics.length > 1) {
         for (const diagnostic of diagnostics) {
           if (diagnostic.message.indexOf('MyComponent') >= 0) continue;
-          console.error(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
+          fail(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
         }
         return;
       }
