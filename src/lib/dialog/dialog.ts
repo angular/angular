@@ -27,11 +27,12 @@ export class MdDialog {
     return this._parentDialog ? this._parentDialog._openDialogs : this._openDialogsAtThisLevel;
   }
 
-  /** Subject for notifying the user that all open dialogs have finished closing. */
+  /** Subject for notifying the user that a dialog has opened. */
   get _afterOpen(): Subject<MdDialogRef<any>> {
     return this._parentDialog ? this._parentDialog._afterOpen : this._afterOpenAtThisLevel;
   }
-  /** Subject for notifying the user that a dialog has opened. */
+
+  /** Subject for notifying the user that all open dialogs have finished closing. */
   get _afterAllClosed(): Subject<void> {
     return this._parentDialog ?
       this._parentDialog._afterAllClosed : this._afterAllClosedAtThisLevel;
@@ -215,4 +216,3 @@ export class MdDialog {
 function _applyConfigDefaults(config: MdDialogConfig): MdDialogConfig {
   return extendObject(new MdDialogConfig(), config);
 }
-
