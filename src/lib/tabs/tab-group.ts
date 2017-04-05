@@ -79,7 +79,7 @@ export class MdTabGroup {
   @Input()
   headerPosition: MdTabHeaderPosition = 'above';
 
-  /** Output to enable support for two-way binding on `selectedIndex`. */
+  /** Output to enable support for two-way binding on ([selectedIndex]) */
   @Output() get selectedIndexChange(): Observable<number> {
     return this.selectChange.map(event => event.index);
   }
