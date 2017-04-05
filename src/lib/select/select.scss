@@ -125,9 +125,9 @@ $mat-select-trigger-font-size: 16px !default;
   padding-top: 0;
   padding-bottom: 0;
   max-height: $mat-select-panel-max-height;
+  min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
 
   @include cdk-high-contrast {
     outline: solid 1px;
   }
 }
-

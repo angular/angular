@@ -988,37 +988,43 @@ describe('MdSelect', () => {
         select.style.marginRight = '30px';
       });
 
-      it('should align the trigger and the selected option on the x-axis in ltr', () => {
+      it('should align the trigger and the selected option on the x-axis in ltr', async(() => {
         trigger.click();
         fixture.detectChanges();
 
-        const triggerLeft = trigger.getBoundingClientRect().left;
-        const firstOptionLeft =
-            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().left;
+        fixture.whenStable().then(() => {
+          const triggerLeft = trigger.getBoundingClientRect().left;
+          const firstOptionLeft = document.querySelector('.cdk-overlay-pane md-option')
+              .getBoundingClientRect().left;
 
-        // Each option is 32px wider than the trigger, so it must be adjusted 16px
-        // to ensure the text overlaps correctly.
-        expect(firstOptionLeft.toFixed(2))
-            .toEqual((triggerLeft - 16).toFixed(2),
-                `Expected trigger to align with the selected option on the x-axis in LTR.`);
-      });
+          // Each option is 32px wider than the trigger, so it must be adjusted 16px
+          // to ensure the text overlaps correctly.
+          expect(firstOptionLeft.toFixed(2)).toEqual((triggerLeft - 16).toFixed(2),
+              `Expected trigger to align with the selected option on the x-axis in LTR.`);
+        });
+      }));
 
-      it('should align the trigger and the selected option on the x-axis in rtl', () => {
+      it('should align the trigger and the selected option on the x-axis in rtl', async(() => {
         dir.value = 'rtl';
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+          trigger.click();
+          fixture.detectChanges();
 
-        const triggerRight = trigger.getBoundingClientRect().right;
-        const firstOptionRight =
-            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
+          fixture.whenStable().then(() => {
+            const triggerRight = trigger.getBoundingClientRect().right;
+            const firstOptionRight =
+                document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
 
-        // Each option is 32px wider than the trigger, so it must be adjusted 16px
-        // to ensure the text overlaps correctly.
-        expect(firstOptionRight.toFixed(2))
-            .toEqual((triggerRight + 16).toFixed(2),
-                `Expected trigger to align with the selected option on the x-axis in RTL.`);
-      });
+            // Each option is 32px wider than the trigger, so it must be adjusted 16px
+            // to ensure the text overlaps correctly.
+            expect(firstOptionRight.toFixed(2))
+                .toEqual((triggerRight + 16).toFixed(2),
+                    `Expected trigger to align with the selected option on the x-axis in RTL.`);
+          });
+        });
+      }));
     });
 
     describe('x-axis positioning in multi select mode', () => {
@@ -1450,13 +1456,13 @@ describe('MdSelect', () => {
     let testInstance: MultiSelect;
     let trigger: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       fixture = TestBed.createComponent(MultiSelect);
       testInstance = fixture.componentInstance;
       fixture.detectChanges();
 
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
-    });
+    }));
 
     it('should be able to select multiple values', () => {
       trigger.click();
@@ -1616,17 +1622,17 @@ describe('MdSelect', () => {
       expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
     });
 
-    it('should throw an exception when trying to set a non-array value', () => {
+    it('should throw an exception when trying to set a non-array value', async(() => {
       expect(() => {
         testInstance.control.setValue('not-an-array');
       }).toThrowError(wrappedErrorMessage(new MdSelectNonArrayValueError()));
-    });
+    }));
 
-    it('should throw an exception when trying to change multiple mode after init', () => {
+    it('should throw an exception when trying to change multiple mode after init', async(() => {
       expect(() => {
         testInstance.select.multiple = false;
       }).toThrowError(wrappedErrorMessage(new MdSelectDynamicMultipleError()));
-    });
+    }));
 
     it('should pass the `multiple` value to all of the option instances', async(() => {
       trigger.click();
