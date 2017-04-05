@@ -105,7 +105,7 @@ export class RouterPreloader {
       // we already have the config loaded, just recurse
       if (route.loadChildren && !route.canLoad && route._loadedConfig) {
         const childConfig = route._loadedConfig;
-        res.push(this.processRoutes(ngModule, childConfig.routes));
+        res.push(this.processRoutes(childConfig.module, childConfig.routes));
 
         // no config loaded, fetch the config
       } else if (route.loadChildren && !route.canLoad) {
