@@ -71,6 +71,7 @@ const MATERIAL_MODULES = [
   ObserveContentModule
 ];
 
+/** @deprecated */
 @NgModule({
   imports: [
     MdAutocompleteModule.forRoot(),
@@ -111,7 +112,7 @@ const MATERIAL_MODULES = [
 })
 export class MaterialRootModule { }
 
-
+/** @deprecated */
 @NgModule({
   imports: MATERIAL_MODULES,
   exports: MATERIAL_MODULES,
