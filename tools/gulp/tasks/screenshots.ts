@@ -8,6 +8,7 @@ import {
   openFirebaseScreenshotsDatabase,
   connectFirebaseScreenshots} from '../util/firebase';
 import {setGithubStatus} from '../util/github';
+import {isTravisPushBuild} from '../util/travis-ci';
 
 const imageDiff = require('image-diff');
 
@@ -23,7 +24,13 @@ const FIREBASE_FILELIST = 'screenshot/filenames';
 /** Task which upload screenshots generated from e2e test. */
 task('screenshots', () => {
   let prNumber = process.env['TRAVIS_PULL_REQUEST'];
-  if (prNumber) {
+  if (isTravisPushBuild()) {
+    // Only update golds and filenames for build
+    let database = openFirebaseScreenshotsDatabase();
+    uploadScreenshots()
+      .then(() => setScreenFilenames(database))
+      .then(() => database.goOffline(), () => database.goOffline());
+  } else if (prNumber) {
     let firebaseApp = connectFirebaseScreenshots();
     let database = firebaseApp.database();
 
@@ -36,12 +43,6 @@ task('screenshots', () => {
       .then(() => updateTravis(database, prNumber))
       .then(() => setScreenFilenames(database, prNumber))
       .then(() => database.goOffline(), () => database.goOffline());
-  } else if (process.env['TRAVIS']) {
-    // Only update golds and filenames for build
-    let database = openFirebaseScreenshotsDatabase();
-    uploadScreenshots()
-      .then(() => setScreenFilenames(database))
-      .then(() => database.goOffline(), () => database.goOffline());
   }
 });
 
@@ -51,7 +52,8 @@ function updateFileResult(database: firebase.database.Database, prNumber: string
 }
 
 function updateResult(database: firebase.database.Database, prNumber: string, result: boolean) {
-  return getPullRequestRef(database, prNumber).child('result').set(result).then(() => result);
+  return getPullRequestRef(database, prNumber).child('result')
+    .child(process.env['TRAVIS_PULL_REQUEST_SHA']).set(result).then(() => result);
 }
 
 function getPullRequestRef(database: firebase.database.Database | admin.database.Database,
