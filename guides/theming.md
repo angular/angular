@@ -26,6 +26,12 @@ single css file for Angular Material in your app.
 You can include a theme file directly into your application from
 `@angular/material/core/theming/prebuilt`
 
+Available pre-built themes:
+* `deeppurple-amber.css`
+* `indigo-pink.css`
+* `pink-bluegrey.css`
+* `purple-green.css`
+
 If you're using Angular CLI, this is as simple as including one line
 in your `styles.css`  file:
 ```css
@@ -133,3 +139,4 @@ For more details about theming your own components, see [theming-your-components
 ### Future work
 * Once CSS variables (custom properties) are available in all the browsers we support,
   we will explore how to take advantage of them to make theming even simpler.
+* More prebuilt themes will be added as development continues.
