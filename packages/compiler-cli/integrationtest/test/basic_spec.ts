@@ -22,6 +22,12 @@ describe('template codegen output', () => {
     expect(fs.readFileSync(jsOutput, {encoding: 'utf-8'})).not.toContain('Reflect.decorate');
   });
 
+  it('should preserve file-level JSDoc', () => {
+    const codegenOutput = path.join(outDir, 'basic.ngfactory.js');
+    expect(fs.existsSync(codegenOutput)).toBeTruthy();
+    expect(fs.readFileSync(codegenOutput, {encoding: 'utf-8'})).toContain('Copyright Google Inc');
+  });
+
   it('should produce metadata.json outputs', () => {
     const metadataOutput = path.join(outDir, 'basic.metadata.json');
     expect(fs.existsSync(metadataOutput)).toBeTruthy();
