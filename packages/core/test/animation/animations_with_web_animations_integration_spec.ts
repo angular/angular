@@ -10,12 +10,15 @@ import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {ɵDomAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser'
 import {Component, ViewChild} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {TestBed} from '../../testing';
 
 export function main() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined' || !ɵsupportsWebAnimations()) return;
+  // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
+  if (typeof Element == 'undefined' || !ɵsupportsWebAnimations() || browserDetection.isOldChrome)
+    return;
 
   describe('animation integration tests using web animations', function() {
 
