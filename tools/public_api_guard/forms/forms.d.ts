@@ -352,9 +352,25 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
     validate(c: AbstractControl): ValidationErrors | null;
 }
 
+/** @experimental */
+export declare class MaxValidator implements Validator, OnChanges {
+    max: string;
+    ngOnChanges(changes: SimpleChanges): void;
+    registerOnValidatorChange(fn: () => void): void;
+    validate(c: AbstractControl): ValidationErrors | null;
+}
+
 /** @stable */
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string;
+    ngOnChanges(changes: SimpleChanges): void;
+    registerOnValidatorChange(fn: () => void): void;
+    validate(c: AbstractControl): ValidationErrors | null;
+}
+
+/** @experimental */
+export declare class MinValidator implements Validator, OnChanges {
+    min: string;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(c: AbstractControl): ValidationErrors | null;
@@ -536,7 +552,9 @@ export declare class Validators {
     static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
     static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null;
     static email(control: AbstractControl): ValidationErrors | null;
+    static max(max: number): ValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;
+    static min(min: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
     static nullValidator(c: AbstractControl): ValidationErrors | null;
     static pattern(pattern: string | RegExp): ValidatorFn;
