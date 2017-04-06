@@ -63,6 +63,32 @@ const EMAIL_REGEXP =
  */
 export class Validators {
   /**
+   * Validator that requires controls to have a value greater than a number.
+   */
+  static min(min: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      const value = parseFloat(control.value);
+      return isNaN(value) || value < min ? {'min': {'min': min, 'actual': control.value}} : null;
+    };
+  }
+
+  /**
+   * Validator that requires controls to have a value less than a number.
+   */
+  static max(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      const value = parseFloat(control.value);
+      return isNaN(value) || value > max ? {'max': {'max': max, 'actual': control.value}} : null;
+    };
+  }
+
+  /**
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: AbstractControl): ValidationErrors|null {
