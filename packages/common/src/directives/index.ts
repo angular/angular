@@ -11,6 +11,7 @@ import {Provider} from '@angular/core';
 import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgFor, NgForOf, NgForOfContext} from './ng_for_of';
+import {NgLoopTo, NgLoopToContext} from './ng_loop_to';
 import {NgIf, NgIfContext} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
@@ -23,6 +24,8 @@ export {
   NgFor,
   NgForOf,
   NgForOfContext,
+  NgLoopTo,
+  NgLoopToContext,
   NgIf,
   NgIfContext,
   NgPlural,
@@ -44,6 +47,7 @@ export const COMMON_DIRECTIVES: Provider[] = [
   NgClass,
   NgComponentOutlet,
   NgForOf,
+  NgLoopTo,
   NgIf,
   NgTemplateOutlet,
   NgStyle,
