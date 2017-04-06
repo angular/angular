@@ -1,24 +1,26 @@
-import { Directive, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef, EmbeddedViewRef, isDevMode } from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef, isDevMode} from '@angular/core';
 
-export interface NgLoopToContext {
-  $implicit: number;
-}
+export interface NgLoopToContext { $implicit: number; }
 
 /**
- * The `NgLoopTo` directive instantiates a template multiple times following the pattern of a common loop.
- * It iterates starting at `from` until `to` incrementing each iteration by `by`. Both `from` and `to` are inclusive.
+ * The `NgLoopTo` directive instantiates a template multiple times following the pattern of a common
+ * loop.
+ * It iterates starting at `from` until `to` incrementing each iteration by `by`. Both `from` and
+ * `to` are inclusive.
  *
  * ### Inputs
  *
  * - `from`: (optional, default 0) starting value
  * - `to`: (mandatory) end value
  * - `by`: (optional, default 1) incremental value
- * - `precision`: (optional, default 2) precision define the number of decimal to use to round values. A precision of 2 will round 1.4499 into 1.45.
+ * - `precision`: (optional, default 2) precision define the number of decimal to use to round
+ * values. A precision of 2 will round 1.4499 into 1.45.
  * This is only used internally for boundary checks, returned value are not rounded.
  *
  * ### Local Variables
  *
- * `NgLoopTo` export the current value as `$implicit` and can be aliased to a local variable using `let-*`.
+ * `NgLoopTo` export the current value as `$implicit` and can be aliased to a local variable using
+ * `let-*`.
  *
  *
  * ### Change Propagation
@@ -49,7 +51,7 @@ export interface NgLoopToContext {
  *
  * @experimental
  */
-@Directive({ selector: '[ngLoop][ngLoopTo]'})
+@Directive({selector: '[ngLoop][ngLoopTo]'})
 
 export class NgLoopTo implements OnChanges {
   @Input() ngLoopFrom = 0;
@@ -59,15 +61,15 @@ export class NgLoopTo implements OnChanges {
   @Input() ngLoopPrecision = 2;
 
   constructor(
-    private templateRef: TemplateRef<NgLoopToContext>,
-    private viewContainer: ViewContainerRef) {}
+      private templateRef: TemplateRef<NgLoopToContext>, private viewContainer: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
     let viewIdx = 0;
 
-    //avoid infinite loop
-    if ( this.checkInputs() ) {
-      const length = decimalRound((this.ngLoopTo - this.ngLoopFrom) / this.ngLoopBy, this.ngLoopPrecision);
+    // avoid infinite loop
+    if (this.checkInputs()) {
+      const length =
+          decimalRound((this.ngLoopTo - this.ngLoopFrom) / this.ngLoopBy, this.ngLoopPrecision);
 
       for (let i = 0; i <= length; i++, viewIdx++) {
         const value = this.ngLoopFrom + i * this.ngLoopBy;
@@ -75,39 +77,32 @@ export class NgLoopTo implements OnChanges {
         if (viewIdx < this.viewContainer.length) {
           const viewRef = <EmbeddedViewRef<NgLoopToContext>>this.viewContainer.get(viewIdx);
           viewRef.context.$implicit = value;
-        }
-        else
-          this.viewContainer.createEmbeddedView(this.templateRef, {
-            $implicit: value
-          });
+        } else
+          this.viewContainer.createEmbeddedView(this.templateRef, {$implicit: value});
       }
-    }
-    else if (isDevMode()) {
+    } else if (isDevMode()) {
       throw `Infinite loop detected : from ${this.ngLoopFrom} to ${this.ngLoopTo} by ${this.ngLoopBy}. Loop aborted.`
     }
 
-    for (let i = this.viewContainer.length - 1; i >= viewIdx; i--)
-      this.viewContainer.remove(i);
+    for (let i = this.viewContainer.length - 1; i >= viewIdx; i--) this.viewContainer.remove(i);
   }
 
 
 
   checkInputs(): boolean {
-    if ( !Number.isInteger(this.ngLoopPrecision) || this.ngLoopPrecision <= 0)
+    if (!Number.isInteger(this.ngLoopPrecision) || this.ngLoopPrecision <= 0)
       throw 'Precision must be a positive integer';
 
     const length = this.ngLoopTo - this.ngLoopFrom;
 
     return this.ngLoopBy !== 0 &&
-      (
-        length === 0 ||
-        (length > 0 ? this.ngLoopBy > 0 : this.ngLoopBy < 0)
-      )
+        (length === 0 || (length > 0 ? this.ngLoopBy > 0 : this.ngLoopBy < 0))
   }
 }
 
 // from http://stackoverflow.com/a/19722641
-// which is a derivation of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Decimal_rounding
+// which is a derivation of
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Decimal_rounding
 function decimalRound(value: number, precision: number): number {
-  return +(Math.round( +(value + "e+" + precision) )  + "e-" + precision);
+  return +(Math.round(+(value + 'e+' + precision)) + 'e-' + precision);
 }
