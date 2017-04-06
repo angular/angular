@@ -71,4 +71,4 @@ Promise
       return Promise.all(
           allSpecFiles.map(function(moduleName) { return System.import(moduleName); }));
     })
-    .then(__karma__.start, (v) => console.error(v));
+    .then(__karma__.start, function(v) { console.error(v); });
