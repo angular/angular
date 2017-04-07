@@ -647,7 +647,7 @@ These files go in the root folder next to `src/`.
       Configuration for Angular CLI.
       In this file you can set several defaults and also configure what files are included
       when your project is build.
-      Check out the official documentation if you want to know more.
+      Check out the official documentation or [schema](https://github.com/angular/angular-cli/blob/master/docs/documentation/angular-cli.md) if you want to know more.
     </td>
 
   </tr>
