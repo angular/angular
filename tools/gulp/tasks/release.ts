@@ -1,10 +1,16 @@
 import {spawn} from 'child_process';
-import {existsSync, statSync, writeFileSync, readFileSync} from 'fs-extra';
-import {join, basename} from 'path';
-import {task, src, dest} from 'gulp';
+import {existsSync, readFileSync, statSync, writeFileSync} from 'fs-extra';
+import {basename, join} from 'path';
+import {dest, src, task} from 'gulp';
 import {execNodeTask, execTask, sequenceTask} from '../util/task_helpers';
 import {
-  DIST_RELEASE, DIST_BUNDLES, DIST_MATERIAL, COMPONENTS_DIR, LICENSE_BANNER, DIST_ROOT
+  COMPONENTS_DIR,
+  DIST_BUNDLES,
+  DIST_MATERIAL,
+  DIST_RELEASE,
+  DIST_ROOT,
+  LICENSE_BANNER,
+  PROJECT_ROOT,
 } from '../constants';
 import * as minimist from 'minimist';
 
@@ -40,7 +46,16 @@ task('build:release', sequenceTask(
 
 /** Task that combines intermediate build artifacts into the release package structure. */
 task(':package:release', sequenceTask(
-  [':package:typings', ':package:umd', ':package:fesm', ':package:assets', ':package:theming'],
+  // Run in parallel
+  [
+    ':package:typings',
+    ':package:umd',
+    ':package:fesm',
+    ':package:assets',
+    ':package:theming',
+    ':package:license'
+  ],
+  // Run in sequence
   ':inline-metadata-resources',
   ':package:metadata',
 ));
@@ -75,7 +90,11 @@ task(':inline-metadata-resources', () => {
   });
 });
 
+/** Copy static assets (package.json, README.md) to the release package. */
 task(':package:assets', () => src(assetsGlob).pipe(dest(DIST_RELEASE)));
+
+/** Copy the license to the release package. */
+task(':package:license', () => src(join(PROJECT_ROOT, 'LICENSE')).pipe(dest(DIST_RELEASE)));
 
 /** Copy all d.ts except the special flat typings from ngc to typings/ in the release package. */
 task(':package:typings', () => {
@@ -98,9 +117,11 @@ task(':package:theming', [':bundle:theming-scss'],
 
 /** Bundles all scss requires for theming into a single scss file in the root of the package. */
 task(':bundle:theming-scss', execNodeTask(
-  'scss-bundle', 'scss-bundle', ['-e', themingEntryPointPath, '-d', themingBundlePath], {
-    silentStdout: true
-  }
+  'scss-bundle',
+  'scss-bundle', [
+    '-e', themingEntryPointPath,
+    '-d', themingBundlePath
+  ], {silentStdout: true}
 ));
 
 /** Make sure we're logged in. */
