@@ -161,7 +161,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     if (!this._openedByMouse) {
       this.menu.focusFirstItem();
     }
-  };
+  }
 
   /**
    * This method resets the menu when it's closed, most importantly restoring

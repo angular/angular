@@ -109,7 +109,7 @@ function getLiveElement(): Element {
 
 @Component({template: `<button (click)="announceText('Test')">Announce</button>`})
 class TestApp {
-  constructor(public live: LiveAnnouncer) { };
+  constructor(public live: LiveAnnouncer) { }
 
   announceText(message: string) {
     this.live.announce(message);

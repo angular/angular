@@ -41,7 +41,7 @@ export class MdPseudoCheckbox {
 
   /** Color of the checkbox. */
   @Input()
-  get color(): string { return this._color; };
+  get color(): string { return this._color; }
   set color(value: string) {
     if (value) {
       let nativeElement = this._elementRef.nativeElement;

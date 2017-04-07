@@ -116,7 +116,7 @@ const textareaStyleReset = `
 
 @Component({
   template: `
-    <textarea mdTextareaAutosize [mdAutosizeMinRows]="minRows" [mdAutosizeMaxRows]="maxRows" 
+    <textarea mdTextareaAutosize [mdAutosizeMinRows]="minRows" [mdAutosizeMaxRows]="maxRows"
         #autosize="mdTextareaAutosize">
       {{content}}
     </textarea>`,

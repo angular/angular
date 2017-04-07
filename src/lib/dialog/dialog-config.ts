@@ -9,7 +9,7 @@ export interface DialogPosition {
   bottom?: string;
   left?: string;
   right?: string;
-};
+}
 
 /**
  * Configuration for opening a modal dialog with the MdDialog service.

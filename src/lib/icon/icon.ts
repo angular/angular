@@ -250,7 +250,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 export function ICON_REGISTRY_PROVIDER_FACTORY(
     parentRegistry: MdIconRegistry, http: Http, sanitizer: DomSanitizer) {
   return parentRegistry || new MdIconRegistry(http, sanitizer);
-};
+}
 
 export const ICON_REGISTRY_PROVIDER = {
   // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.

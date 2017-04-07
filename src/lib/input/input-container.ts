@@ -143,7 +143,7 @@ export class MdInputDirective {
 
   /** Unique id of the element. */
   @Input()
-  get id() { return this._id; };
+  get id() { return this._id; }
   set id(value: string) {this._id = value || this._uid; }
 
   /** Placeholder attribute of the element. */
@@ -299,7 +299,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
   set dividerColor(value) { this.color = value; }
 
   /** Whether the floating label should always float or not. */
-  get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; };
+  get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; }
 
   /** Whether the placeholder can float or not. */
   get _canPlaceholderFloat() { return this._floatPlaceholder !== 'never'; }

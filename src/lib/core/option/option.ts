@@ -172,7 +172,7 @@ export class MdOption {
   /** Emits the selection change event. */
   private _emitSelectionChangeEvent(isUserInput = false): void {
     this.onSelectionChange.emit(new MdOptionSelectionChange(this, isUserInput));
-  };
+  }
 
 }
 

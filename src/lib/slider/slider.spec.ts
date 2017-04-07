@@ -1263,8 +1263,8 @@ class SliderWithValueGreaterThanMax { }
   styles: [styles],
 })
 class SliderWithChangeHandler {
-  onChange() { };
-  onInput() { };
+  onChange() { }
+  onInput() { }
 }
 
 @Component({

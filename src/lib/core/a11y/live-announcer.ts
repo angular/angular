@@ -66,7 +66,7 @@ export class LiveAnnouncer {
 
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentDispatcher: LiveAnnouncer, liveElement: any) {
   return parentDispatcher || new LiveAnnouncer(liveElement);
-};
+}
 
 export const LIVE_ANNOUNCER_PROVIDER = {
   // If there is already a LiveAnnouncer available, use that. Otherwise, provide a new one.

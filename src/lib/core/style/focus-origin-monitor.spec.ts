@@ -464,7 +464,7 @@ class PlainButton {
   template: `<button cdkMonitorElementFocus (cdkFocusChange)="focusChanged($event)"></button>`
 })
 class ButtonWithFocusClasses {
-  focusChanged(origin: FocusOrigin) {};
+  focusChanged(origin: FocusOrigin) {}
 }
 
 
