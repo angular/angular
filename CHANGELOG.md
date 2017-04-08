@@ -44,7 +44,7 @@ imports only the set of components actually used in the application.
 * Angular Material now depends on Angular 4.
 * Now that animations have been refactored into a separate package, users of `@angular/material`
 need to explicitly import `BrowserAnimationsModule` (or `NoopAnimationsModule`) from
-`@angular/package-browser/animations` as well as installing `@angular/animations`.
+`@angular/platform-browser/animations` as well as installing `@angular/animations`.
 
 
 

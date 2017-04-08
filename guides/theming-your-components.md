@@ -14,7 +14,7 @@ All you need is to create a `@mixin` function in the custom-component-theme.scss
 
 ```scss
 // Import all the tools needed to customize the theme and extract parts of it
-@import '~@angular/material/core/theming/all-theme';
+@import '~@angular/material/theming';
 
 // Define a mixin that accepts a theme and outputs the color styles for the component.
 @mixin candy-carousel-theme($theme) {
@@ -33,7 +33,7 @@ Now you just have to call the `@mixin` function to apply the theme:
 
 ```scss
 // Import a pre-built theme
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 // Import your custom input theme file so you can call the custom-input-theme function
 @import 'app/candy-carousel/candy-carousel-theme.scss';
 
@@ -53,11 +53,12 @@ Styles that are affected by the theme should be placed in a separated theming fi
 
 
 ## Using colors from a palette
-You can consume the theming functions from the `@angular/material/core/theming/theming` and Material palette vars from `@angular/material/core/theming/palette`. You can use the `mat-color` function to extract a specific color from a palette. For example:
+You can consume the theming functions and Material palette variables from `@angular/material/theming`.
+You can use the `mat-color` function to extract a specific color from a palette. For example:
 
 ```scss
 // Import theming functions
-@import '~@angular/material/core/theming/theming';
+@import '~@angular/material/theming';
 // Import your custom theme
 @import 'src/unicorn-app-theme.scss';
 
