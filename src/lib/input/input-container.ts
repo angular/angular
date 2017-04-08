@@ -58,7 +58,7 @@ let nextUniqueId = 0;
 export class MdPlaceholder {}
 
 
-/** The hint directive, used to tag content as hint labels (going under the input). */
+/** Hint text to be shown underneath the input. */
 @Directive({
   selector: 'md-hint, mat-hint',
   host: {
@@ -75,7 +75,7 @@ export class MdHint {
   @Input() id: string = `md-input-hint-${nextUniqueId++}`;
 }
 
-/** Directive, used to display a single error message under the input. */
+/** Single error message to be shown underneath the input. */
 @Directive({
   selector: 'md-error, mat-error',
   host: {
@@ -84,21 +84,21 @@ export class MdHint {
 })
 export class MdErrorDirective { }
 
-/** The input prefix. */
+/** Prefix to be placed the the front of the input. */
 @Directive({
   selector: '[mdPrefix], [matPrefix], [md-prefix]'
 })
 export class MdPrefix {}
 
 
-/** The input suffix. */
+/** Suffix to be placed at the end of the input. */
 @Directive({
   selector: '[mdSuffix], [matSuffix], [md-suffix]'
 })
 export class MdSuffix {}
 
 
-/** The input directive, used to mark the input that `MdInputContainer` is wrapping. */
+/** Marker for the input element that `MdInputContainer` is wrapping. */
 @Directive({
   selector: `input[mdInput], textarea[mdInput], input[matInput], textarea[matInput]`,
   host: {
@@ -252,8 +252,7 @@ export class MdInputDirective {
 
 
 /**
- * Component that represents a text input. It encapsulates the <input> HTMLElement and
- * improve on its behaviour, along with styling it according to the Material Design.
+ * Container for text inputs that applies Material Design styling and behavior.
  */
 @Component({
   moduleId: module.id,

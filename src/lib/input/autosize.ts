@@ -15,27 +15,21 @@ import {Directive, ElementRef, Input, OnInit} from '@angular/core';
   },
 })
 export class MdTextareaAutosize implements OnInit {
-  /** Minimum number of rows for this textarea. */
+  /** @deprecated Use mdAutosizeMinRows */
   @Input() minRows: number;
 
-  get mdAutosizeMinRows(): number {
-    return this.minRows;
-  }
+  /** Minimum number of rows for this textarea. */
+  @Input()
+  get mdAutosizeMinRows(): number { return this.minRows; }
+  set mdAutosizeMinRows(value: number) { this.minRows = value; }
 
-  @Input() set mdAutosizeMinRows(value: number) {
-    this.minRows = value;
-  }
-
-  /** Maximum number of rows for this textarea. */
+  /** @deprecated Use mdAutosizeMaxRows */
   @Input() maxRows: number;
 
-  get mdAutosizeMaxRows(): number {
-    return this.maxRows;
-  }
-
-  @Input() set mdAutosizeMaxRows(value: number) {
-    this.maxRows = value;
-  }
+  /** Minimum number of rows for this textarea. */
+  @Input()
+  get mdAutosizeMaxRows(): number { return this.maxRows; }
+  set mdAutosizeMaxRows(value: number) { this.maxRows = value; }
 
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;

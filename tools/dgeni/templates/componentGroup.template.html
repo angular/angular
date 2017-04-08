@@ -19,30 +19,36 @@
   {% include 'class.template.html' %}
 {% endmacro %}
 
-<h1 class="docs-api-h1">{$ doc.name $}</h1>
-<h2 class="docs-api-h2">
-  Module: <code>{$ doc.ngModule.name $}</code>
-</h2>
+<div class="docs-api">
+  <h2>
+    API reference for Angular Material {$ doc.name $}
+  </h2>
+
+  <p class="docs-api-module-import">
+    <code>
+      import {{$ doc.ngModule.name $}} from '@angular/material';
+    </code>
+  </p>
+
+  {%- if doc.services.length -%}
+    <h3 class="docs-api-h3">Services</h3>
+    {% for service in doc.services %}
+      {$ class(service) $}
+    {% endfor %}
+  {%- endif -%}
 
 
-{%- if doc.services.length -%}
-  <h2 class="docs-api-h2">Services</h2>
-  {% for service in doc.services %}
-    {$ class(service) $}
-  {% endfor %}
-{%- endif -%}
+  {%- if doc.directives.length -%}
+    <h3 class="docs-api-h3">Directives</h3>
+    {% for directive in doc.directives %}
+      {$ class(directive) $}
+    {% endfor %}
+  {%- endif -%}
 
-
-{%- if doc.directives.length -%}
-  <h2>Directives</h2>
-  {% for directive in doc.directives %}
-    {$ class(directive) $}
-  {% endfor %}
-{%- endif -%}
-
-{%- if doc.additionalClasses.length -%}
-  <h2>Additional classes</h2>
-  {% for other in doc.additionalClasses %}
-    {$ class(other) $}
-  {% endfor %}
-{%- endif -%}
+  {%- if doc.additionalClasses.length -%}
+    <h3 class="docs-api-h3">Additional classes</h3>
+    {% for other in doc.additionalClasses %}
+      {$ class(other) $}
+    {% endfor %}
+  {%- endif -%}
+</div>

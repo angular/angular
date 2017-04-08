@@ -41,7 +41,9 @@ const MARKDOWN_TAGS_TO_CLASS_ALIAS = [
   'td',
   'th',
   'tr',
-  'ul'
+  'ul',
+  'pre',
+  'code',
 ];
 
 task('docs', ['markdown-docs', 'highlight-docs', 'api-docs', 'minify-html-docs']);
@@ -95,12 +97,12 @@ task('minify-html-docs', ['api-docs'], () => {
 function transformMarkdownFiles(buffer: Buffer, file: any): string {
   let content = buffer.toString('utf-8');
 
-  /* Replace <!-- example(..) --> comments with HTML elements. */
+  // Replace <!-- example(..) --> comments with HTML elements.
   content = content.replace(EXAMPLE_PATTERN, (match: string, name: string) =>
     `<div material-docs-example="${name}"></div>`
   );
 
-  /* Replaces the URL in anchor elements inside of compiled markdown files. */
+  // Replace the URL in anchor elements inside of compiled markdown files.
   content = content.replace(LINK_PATTERN, (match: string, head: string, link: string) =>
     // The head is the first match of the RegExp and is necessary to ensure that the RegExp matches
     // an anchor element. The head will be then used to re-create the existing anchor element.
@@ -108,7 +110,8 @@ function transformMarkdownFiles(buffer: Buffer, file: any): string {
     `${head} href="${fixMarkdownDocLinks(link, file.path)}"`
   );
 
-  return content;
+  // Finally, wrap the entire generated in a doc in a div with a specific class.
+  return `<div class="docs-markdown">${content}</div>`;
 }
 
 /** Fixes paths in the markdown files to work in the material-docs-io. */
