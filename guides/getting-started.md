@@ -65,7 +65,7 @@ Including a theme is **required** to apply all of the core and theme styles to y
 To get started with a prebuilt theme, include the following in your app's index.html:
 
 ```html
-<link href="node_modules/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+<link href="../node_modules/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
 ```
 
 Note that your app's project structure may have a different relative location for your node_modules.
