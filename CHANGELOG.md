@@ -37,7 +37,7 @@ possible, we're deprecating MaterialModule, to be removed in the a
 subsequent release.
 
 To replace `MaterialModule`, users can create their own "Material"
-modul within their application (e.g., `GmailMaterialModule`) that
+module within their application (e.g., `GmailMaterialModule`) that
 imports only the set of components actually used in the application.
 
 #### Angular 4
