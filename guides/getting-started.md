@@ -43,22 +43,36 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 export class PizzaPartyAppModule { }
 ```
 
-## Step 3: Import the Module
+## Step 3: Import the component modules
 
-Add MaterialModule as an import in your app's root NgModule.
+Import the NgModule for each component you want to use: 
 
 ```ts
-import {MaterialModule} from '@angular/material';
+import {MdButtonModule, MdCheckboxModule} from '@angular/material';
 
 @NgModule({
   ...
-  imports: [MaterialModule],
+  imports: [MdButtonModule, MdCheckboxModule],
   ...
 })
 export class PizzaPartyAppModule { }
 ```
 
-## Step 4: Include Theming
+Alternatively, you can create a separate NgModule that imports all of the 
+Angular Material components that you will use in your application. You can then
+include this module wherever you'd like to use the components.
+
+```ts
+import {MdButtonModule, MdCheckboxModule} from '@angular/material';
+
+@NgModule({
+  imports: [MdButtonModule, MdCheckboxModule],
+  exports: [MdButtonModule, MdCheckboxModule],
+})
+export class MyOwnCustomMaterialModule { }
+```
+
+## Step 4: Include a theme
 
 Including a theme is **required** to apply all of the core and theme styles to your application.
 
@@ -95,8 +109,8 @@ import 'hammerjs';
 
 ## Step 6 (Optional): Add Material Icons
 
-If you want your `md-icon` components to use [Material Icons](https://material.io/icons/),
-load the font in your `index.html`.
+If you want to use the `md-icon` component with the official 
+[Material Design Icons](https://material.io/icons/), load the icon font in your `index.html`.
 
 ```html
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -105,11 +119,10 @@ load the font in your `index.html`.
 For more information on using Material Icons, check out the
 [Material Icons Guide](https://google.github.io/material-design-icons/).
 
-Note that `md-icon` has support for any font or svg icons, so using Material Icons is
-just one option.
+Note that `md-icon` supports any font or svg icons; using Material Icons is one of many options.
 
 
-## Configuring SystemJS
+## Appendix: Configuring SystemJS
 
 If your project is using SystemJS for module loading, you will need to add `@angular/material`
 to the SystemJS configuration:
@@ -118,9 +131,9 @@ to the SystemJS configuration:
 System.config({
   // existing configuration options
   map: {
-    ...
+    // ...
     '@angular/material': 'npm:@angular/material/bundles/material.umd.js',
-    ...
+    // ...
   }
 });
 ```
