@@ -72,7 +72,31 @@ prefer sticking to a _single_ API for accomplishing something.
 
 ### 100 column limit 
 All code and docs in the repo should be 100 columns or fewer. This applies to TypeScript, SCSS,
- HTML, bash scripts, and markdown files.
+HTML, bash scripts, and markdown files.
+
+### API Design
+
+#### Boolean arguments
+Avoid adding boolean arguments to a method in cases where that argument means "do something extra".
+In these cases, prefer breaking the behavior up into different functions.
+
+```ts
+// AVOID
+function getTargetElement(createIfNotFound = false) {
+  // ...
+}
+```
+
+```ts
+// PREFER
+function getExistingTargetElement() {
+  // ...
+}
+
+function createTargetElement() {
+ // ...
+}
+```
 
 ### TypeScript
 
@@ -121,7 +145,7 @@ Properties should have a concise description of what the property means:
 ```ts
   /** The label position relative to the checkbox. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
-``` 
+```
 
 Methods blocks should describe what the function does and provide a description for each parameter
 and the return value:
