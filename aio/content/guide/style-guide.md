@@ -38,7 +38,7 @@ Each guideline describes either a good or bad practice, and all have a consisten
 The wording of each guideline indicates how strong the recommendation is.
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -48,11 +48,11 @@ Guidelines that literally should always be followed are extremely rare.
 On the other hand, you need a really unusual case for breaking a *Do* guideline.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -60,29 +60,29 @@ On the other hand, you need a really unusual case for breaking a *Do* guideline.
 If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** gives reasons for following the previous recommendations.
 
 
-~~~
+</div>
 
 
 
@@ -111,29 +111,29 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 #### <a href="#01-01">Style 01-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** define one thing, such as a service or component, per file.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** limiting files to 400 lines of code.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -141,28 +141,28 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 collisions with teams in source control.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** One component per file avoids hidden bugs that often arise when combining components in a file where they may share variables, create unwanted closures, or unwanted coupling with dependencies.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** A single component can be the default export for its file which facilitates lazy loading with the router.
 
-~~~
+</div>
 
 
 
@@ -226,80 +226,80 @@ As the app grows, this rule becomes even more important.
 #### <a href="#01-02">Style 01-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** define small functions
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** limiting to no more than 75 lines.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Small functions are easier to test, especially when they do one thing and serve one purpose.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Small functions promote reuse.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Small functions are easier to read.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Small functions are easier to maintain.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Small functions help avoid hidden bugs that come with large functions that share variables with external scope, create unwanted closures, or unwanted coupling with dependencies.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -315,58 +315,58 @@ Naming conventions are hugely important to maintainability and readability. This
 #### <a href="#02-01">Style 02-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use consistent names for all symbols.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** follow a pattern that describes the symbol's feature then its type. The recommended pattern is `feature.type.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The naming conventions should simply help find desired code faster and make it easier to understand.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Names of folders and files should clearly convey their intent. For example, `app/heroes/hero-list.component.ts` may contain a component that manages a list of heroes.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -376,40 +376,40 @@ Naming conventions are hugely important to maintainability and readability. This
 #### <a href="#02-02">Style 02-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use dashes to separate words in the descriptive name.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use dots to separate the descriptive name from the type.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use consistent type names for all components following a pattern that describes the component's feature then its type. A recommended pattern is `feature.type.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -417,33 +417,33 @@ Naming conventions are hugely important to maintainability and readability. This
 Invent additional type names if you must but take care not to create too many.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Type names provide a consistent way to quickly identify what is in the file.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Type names make it easy to find a specific file type using an editor or IDE's fuzzy search techniques.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -451,18 +451,18 @@ Invent additional type names if you must but take care not to create too many.
 Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Type names provide pattern matching for any automated tasks.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -472,40 +472,40 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 #### <a href="#02-03">Style 02-03</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use consistent names for all assets named after what they represent.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use upper camel case for class names.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** match the name of the symbol to the name of the file.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -513,22 +513,22 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 `Directive`, `Module`, `Pipe`, or `Service`) for a thing of that type.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** give the filename the conventional suffix (such as `.component.ts`, `.directive.ts`, 
 `.module.ts`, `.pipe.ts`, or `.service.ts`) for a file of that type.
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -536,7 +536,7 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 and reference assets of different types.
 
 
-~~~
+</div>
 
 
 
@@ -726,18 +726,18 @@ and reference assets of different types.
 #### <a href="#02-04">Style 02-04</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use consistent names for all services named after their feature.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -752,40 +752,40 @@ Decide if this exception is agreeable in your project.
 As always, strive for consistency.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Provides a consistent way to quickly identify and reference services.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Clear service names such as `Logger` do not require a suffix.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Service names such as `Credit` are nouns and require a suffix and should be named with a suffix when it is not obvious if it is a service or something else.
 
 
-~~~
+</div>
 
 
 
@@ -880,58 +880,58 @@ As always, strive for consistency.
 #### <a href="#02-05">Style 02-05</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** put bootstrapping and platform logic for the app in a file named `main.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** include error handling in the bootstrapping logic.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Follows a consistent convention for the startup logic of an app.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Follows a familiar convention from other technology platforms.
 
 
-~~~
+</div>
 
 
 
@@ -949,36 +949,36 @@ As always, strive for consistency.
 #### <a href="#02-06">Style 02-06</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** Use lower camel case for naming the selectors of directives.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -988,7 +988,7 @@ As always, strive for consistency.
 #### <a href="#02-07">Style 02-07</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -996,11 +996,11 @@ As always, strive for consistency.
 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -1008,51 +1008,51 @@ As always, strive for consistency.
 For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use a prefix that identifies the feature area or the app itself.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Prevents element name collisions with components in other apps and with native HTML elements.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Makes it easier to promote and share the component in other apps.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Components are easy to identify in the DOM.
 
 
-~~~
+</div>
 
 
 
@@ -1093,47 +1093,47 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 #### <a href="#02-08">Style 02-08</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use a custom prefix for the selector of directives (e.g, the prefix `toh` from **T**our **o**f **H**eroes).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** spell non-element selectors in lower camel case unless the selector is meant to match a native HTML attribute.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Prevents name collisions.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Directives are easily identified.
 
 
-~~~
+</div>
 
 
 
@@ -1159,25 +1159,25 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 #### <a href="#02-09">Style 02-09</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use consistent names for all pipes, named after their feature.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Provides a consistent way to quickly identify and reference pipes.
 
 
-~~~
+</div>
 
 
 
@@ -1253,47 +1253,47 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 #### <a href="#02-10">Style 02-10</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name test specification files the same as the component they test.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name test specification files with a suffix of `.spec`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Provides a consistent way to quickly identify tests.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
 
 
-~~~
+</div>
 
 
 
@@ -1391,36 +1391,36 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 #### <a href="#02-11">Style 02-11</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name end-to-end test specification files after the feature they test with a suffix of `.e2e-spec`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Provides a consistent way to quickly identify end-to-end tests.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Provides pattern matching for test runners and build automation.
 
 
-~~~
+</div>
 
 
 
@@ -1480,102 +1480,102 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 #### <a href="#02-12">Style 02-12</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** append the symbol name with the suffix `Module`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** give the file name the `.module.ts` extension.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name the module after the feature and folder it resides in.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Provides a consistent way to quickly identify and reference modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Upper camel case is conventional for identifying objects that can be instantiated using a constructor.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Easily identifies the module as the root of the same named feature.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** suffix a _RoutingModule_ class name with `RoutingModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** end the filename of a _RoutingModule_ with `-routing.module.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** A `RoutingModule` is a module dedicated exclusively to configuring the Angular router.
 A consistent class and file name convention make these modules easy to spot and verify.
 
-~~~
+</div>
 
 
 
@@ -1714,29 +1714,29 @@ Have a consistent set of coding, naming, and whitespace conventions.
 #### <a href="#03-01">Style 03-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use upper camel case when naming classes.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Follows conventional thinking for class names.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -1744,7 +1744,7 @@ Have a consistent set of coding, naming, and whitespace conventions.
 By convention, upper camel case indicates a constructable asset.
 
 
-~~~
+</div>
 
 
 
@@ -1770,29 +1770,29 @@ By convention, upper camel case indicates a constructable asset.
 #### <a href="#03-02">Style 03-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** declare variables with `const` if their values should not change during the application lifetime.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Conveys to readers that the value is invariant.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -1800,22 +1800,22 @@ By convention, upper camel case indicates a constructable asset.
 preventing subsequent re-assignment.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** spelling `const` variables in lower camel case.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -1823,11 +1823,11 @@ preventing subsequent re-assignment.
 than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -1836,22 +1836,22 @@ an era before the modern IDEs that quickly reveal the `const` declaration.
 TypeScript prevents accidental reassignment. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** tolerate _existing_ `const` variables that are spelled in UPPER_SNAKE_CASE.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -1860,7 +1860,7 @@ especially in third party modules.
 It is rarely worth the effort to change them at the risk of breaking existing code and documentation.
 
 
-~~~
+</div>
 
 
 
@@ -1878,40 +1878,40 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 #### <a href="#03-03">Style 03-03</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name an interface using upper camel case.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** naming an interface without an `I` prefix.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** using a class instead of an interface. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -1919,40 +1919,40 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 discourage the `I` prefix.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A class alone is less code than a _class-plus-interface_.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A class can act as an interface (use `implements` instead of `extends`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** An interface-class can be a provider lookup token in Angular dependency injection.
 
 
-~~~
+</div>
 
 
 
@@ -1978,58 +1978,58 @@ discourage the `I` prefix.
 #### <a href="#03-04">Style 03-04</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use lower camel case to name properties and methods.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** prefixing private properties and methods with an underscore.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Follows conventional thinking for properties and methods.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** JavaScript lacks a true private property or method.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** TypeScript tooling makes it easy to identify private vs. public properties and methods.
 
 
-~~~
+</div>
 
 
 
@@ -2055,58 +2055,58 @@ discourage the `I` prefix.
 #### <a href="#03-06">Style 03-06</a>
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** leaving one empty line between third party imports and application imports.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** listing import lines alphabetized by the module.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** listing destructured imported symbols alphabetically.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The empty line separates _your_ stuff from _their_ stuff.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Alphabetizing makes it easier to read and locate symbols.
 
 
-~~~
+</div>
 
 
 
@@ -2146,7 +2146,7 @@ Use the naming conventions for files in this guide.
 #### <a href="#04-01">Style 04-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2156,22 +2156,22 @@ keep the **F**lattest structure you can, and
 **T**ry to be DRY.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** define the structure to follow these four basic guidelines, listed in order of importance.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -2180,7 +2180,7 @@ To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2190,18 +2190,18 @@ _can I quickly open and start work in all of the related files for this feature_
 #### <a href="#04-02">Style 04-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** make locating code intuitive, simple and fast.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -2211,7 +2211,7 @@ Keeping related files near each other in an intuitive location saves time.
 A descriptive folder structure makes a world of difference to you and the people who come after you.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2221,40 +2221,40 @@ A descriptive folder structure makes a world of difference to you and the people
 #### <a href="#04-03">Style 04-03</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name the file such that you instantly know what it contains and represents.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** be descriptive with file names and keep the contents of the file to exactly one component.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** files with multiple components, multiple services, or a mixture.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -2262,11 +2262,11 @@ A descriptive folder structure makes a world of difference to you and the people
 Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2275,7 +2275,7 @@ you have a set of small, closely-related features that are better discovered and
 in a single file than as multiple files. Be wary of this loophole.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2285,40 +2285,40 @@ in a single file than as multiple files. Be wary of this loophole.
 #### <a href="#04-04">Style 04-04</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** keep a flat folder structure as long as possible.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** creating sub-folders when a folder reaches seven or more files.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** configuring the IDE to hide distracting, irrelevant files such as generated `.js` and `.js.map` files.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -2334,7 +2334,7 @@ Base your decision on your comfort level.
 Use a flatter structure until there is an obvious value to creating a new folder.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2344,29 +2344,29 @@ Use a flatter structure until there is an obvious value to creating a new folder
 #### <a href="#04-05">Style 04-05</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** be DRY (Don't Repeat Yourself).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** being so DRY that you sacrifice readability.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -2377,7 +2377,7 @@ with the `.html` extension, it is obviously a view.
 But if something is not obvious or departs from a convention, then spell it out.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2387,69 +2387,69 @@ But if something is not obvious or departs from a convention, then spell it out.
 #### <a href="#04-06">Style 04-06</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** start small but keep in mind where the app is heading down the road.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** have a near term view of implementation and a long term vision.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** put all of the app's code in a folder named `src`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** creating a folder for a component when it has multiple accompanying files (`.ts`, `.html`, `.css` and `.spec`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
 
 
-~~~
+</div>
 
 
 
@@ -2635,7 +2635,7 @@ Here is a compliant folder and file structure:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2645,7 +2645,7 @@ This adds up to four files to the existing folder, but also reduces the folder n
 Whatever you choose, be consistent.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2655,18 +2655,18 @@ Whatever you choose, be consistent.
 #### <a href="#04-07">Style 04-07</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** create folders named for the feature area they represent.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -2674,22 +2674,22 @@ Whatever you choose, be consistent.
 at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The LIFT guidelines are all covered.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -2697,11 +2697,11 @@ at a glance. The structure is as flat as it can be and there are no repetitive o
 content and keeping them aligned with the LIFT guidelines.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -2710,40 +2710,40 @@ locating them is easier with a consistent folder structure
 and more difficult in a flat structure.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** create an Angular module for each feature area.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Angular modules make it easy to lazy load routable features.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Angular modules make it easier to isolate, test, and re-use features.
 
 
-~~~
+</div>
 
 
 
@@ -2761,7 +2761,7 @@ and more difficult in a flat structure.
 #### <a href="#04-08">Style 04-08</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2769,40 +2769,40 @@ and more difficult in a flat structure.
 for example, in `/src/app`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Every app requires at least one root Angular module.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** naming the root module `app.module.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Makes it easier to locate and identify the root module.
 
 
-~~~
+</div>
 
 
 
@@ -2820,7 +2820,7 @@ for example, in `/src/app`.
 #### <a href="#04-09">Style 04-09</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2828,11 +2828,11 @@ for example, in `/src/app`.
 for example, a `Heroes` feature.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2840,11 +2840,11 @@ for example, a `Heroes` feature.
 for example, in `app/heroes`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2852,11 +2852,11 @@ for example, in `app/heroes`.
 and folder; for example, `app/heroes/heroes.module.ts`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2864,73 +2864,73 @@ and folder; for example, `app/heroes/heroes.module.ts`.
 area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `HeroesModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A feature module can expose or hide its implementation from other modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A feature module identifies distinct sets of related components that comprise the feature area. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A feature module can easily be routed to both eagerly and lazily. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A feature module defines clear boundaries between specific functionality and other application features. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A feature module helps clarify and make it easier to assign development responsibilities to different teams.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** A feature module can easily be isolated for testing.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -2940,7 +2940,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 #### <a href="#04-10">Style 04-10</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2948,11 +2948,11 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 for example, `app/shared/shared.module.ts` defines `SharedModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2960,11 +2960,11 @@ for example, `app/shared/shared.module.ts` defines `SharedModule`.
 items will be re-used and referenced by the components declared in other feature modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -2972,11 +2972,11 @@ items will be re-used and referenced by the components declared in other feature
 module are referenced across the entire application.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2985,11 +2985,11 @@ singletons that are provided once for the entire application or
 in a particular feature module.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -2997,11 +2997,11 @@ in a particular feature module.
 for example, `CommonModule` and `FormsModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -3010,66 +3010,66 @@ that may need features from another common module; for example,
 `ngFor` in `CommonModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** declare all components, directives, and pipes in the `SharedModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** export all symbols from the `SharedModule` that other feature modules need to use.  
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** `SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** specifying app-wide singleton providers in a `SharedModule`. Intentional singletons are OK. Take care.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesireable results.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -3077,7 +3077,7 @@ that may need features from another common module; for example,
 Yet there is a real danger of that happening if the `SharedModule` provides a service.
 
 
-~~~
+</div>
 
 
 
@@ -3179,7 +3179,7 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 #### <a href="#04-11">Style 04-11</a>
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -3187,11 +3187,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 to simplify the apparent structure of a feature module.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -3200,66 +3200,66 @@ Importing `CoreModule` into the root `AppModule` reduces its complexity
 and emphasizes its role as orchestrator of the application as a whole.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** create a feature module named `CoreModule` in a `core` folder (e.g. `app/core/core.module.ts` defines `CoreModule`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** put a singleton service whose instance will be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** import all modules required by the assets in the `CoreModule` (e.g. `CommonModule` and `FormsModule`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** `CoreModule` provides one or more singleton services. Angular registers the providers with the app root injector, making a singleton instance of each service available to any component that needs them, whether that component is eagerly or lazily loaded.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** `CoreModule` will contain singleton services. When a lazy loaded module imports these, it will get a new instance and not the intended app-wide singleton.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -3267,11 +3267,11 @@ and emphasizes its role as orchestrator of the application as a whole.
 Import it once (in the `AppModule`) when the app starts and never import it anywhere else. (e.g. `NavComponent` and `SpinnerComponent`).
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -3280,66 +3280,66 @@ They are not imported elsewhere so they're not shared in that sense.
 Yet they're too big and messy to leave loose in the root folder.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** importing the `CoreModule` anywhere except in the `AppModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesireable results.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services. 
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.  
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** `CoreModule` exists to make commonly used singleton services available for use in the many other modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -3349,7 +3349,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-~~~
+</div>
 
 
 
@@ -3465,7 +3465,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3475,7 +3475,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 `AppModule` is focused on its main task, orchestrating the app as a whole.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -3487,36 +3487,36 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 Only the root `AppModule` should import the `CoreModule`. 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** guard against reimporting of `CoreModule` and fail fast by adding guard logic.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Guards against reimporting of the `CoreModule`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Guards against creating multiple instances of assets intended to be singletons.
 
 
-~~~
+</div>
 
 
 
@@ -3544,7 +3544,7 @@ Only the root `AppModule` should import the `CoreModule`.
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -3552,18 +3552,18 @@ A distinct application feature or workflow may be *lazy loaded* or *loaded on de
 A typical *lazy loaded folder* contains a *routing component*, its child components, and their related assets and modules.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** The folder makes it easy to identify and isolate the feature content.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -3573,25 +3573,25 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 #### <a href="#04-14">Style 04-14</a>
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** allowing modules in sibling and parent folders to directly import a module in a *lazy loaded feature*.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Directly importing and using a module will load it immediately when the intention is to load it on demand.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -3603,25 +3603,25 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 #### <a href="#05-02">Style 05-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
 
 
-~~~
+</div>
 
 
 
@@ -3655,18 +3655,18 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 #### <a href="#05-03">Style 05-03</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** give components an _element_ selector, as opposed to _attribute_ or _class_ selectors.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -3675,18 +3675,18 @@ They display content.
 Developers place components on the page as they would native HTML elements and web components.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** It is easier to recognize that a symbol is a component by looking at the template's html.
 
 
-~~~
+</div>
 
 
 
@@ -3728,62 +3728,62 @@ Developers place components on the page as they would native HTML elements and w
 #### <a href="#05-04">Style 05-04</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** extract templates and styles into a separate file, when more than 3 lines.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name the template file `[component-name].component.html`, where [component-name] is the component name.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name the style file `[component-name].component.css`, where [component-name] is the component name.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** specify _component-relative_ URLs, prefixed with `./`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Large, inline templates and styles obscure the component's purpose and implementation, reducing readability and maintainability.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -3792,22 +3792,22 @@ The Angular TypeScript Language Service (forthcoming) promises to overcome this 
 in those editors that support it; it won't help with CSS styles.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** A _component relative_ URL requires no change when you move the component files, as long as the files stay together.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -3815,7 +3815,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
-~~~
+</div>
 
 
 
@@ -3853,7 +3853,7 @@ in those editors that support it; it won't help with CSS styles.
 #### <a href="#05-12">Style 05-12</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
@@ -3861,33 +3861,33 @@ in those editors that support it; it won't help with CSS styles.
 `@Directive` and `@Component` metadata:
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Consider** placing `@Input()` or `@Output()` on the same line as the property it decorates.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** It is easier and more readable to identify which properties in a class are inputs or outputs.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -3895,22 +3895,22 @@ in those editors that support it; it won't help with CSS styles.
 `@Input` or `@Output`, you can modify it in a single place.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The metadata declaration attached to the directive is shorter and thus more readable.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -3918,7 +3918,7 @@ in those editors that support it; it won't help with CSS styles.
 Put it on the line above when doing so is clearly more readable.
 
 
-~~~
+</div>
 
 
 
@@ -3944,29 +3944,29 @@ Put it on the line above when doing so is clearly more readable.
 #### <a href="#05-13">Style 05-13</a>
 
 
-~~~ {.s-rule.avoid}
+<div class="s-rule avoid">
 
 
 
 **Avoid** _input_ and _output_ aliases except when it serves an important purpose.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Two names for the same property (one private, one public) is inherently confusing.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -3974,7 +3974,7 @@ Put it on the line above when doing so is clearly more readable.
 and the directive name doesn't describe the property.
 
 
-~~~
+</div>
 
 
 
@@ -4020,29 +4020,29 @@ and the directive name doesn't describe the property.
 #### <a href="#05-14">Style 05-14</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** place properties up top followed by methods.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** place private members after public members, alphabetized.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -4050,7 +4050,7 @@ and the directive name doesn't describe the property.
 helps instantly identify which members of the component serve which purpose.
 
 
-~~~
+</div>
 
 
 
@@ -4076,69 +4076,69 @@ helps instantly identify which members of the component serve which purpose.
 #### <a href="#05-15">Style 05-15</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** limit logic in a component to only that required for the view. All other logic should be delegated to services.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** move reusable logic to services and keep components simple and focused on their intended purpose.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Logic may be reused by multiple components when placed within a service and exposed via a function.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Logic in a service can more easily be isolated in a unit test, while the calling logic in the component can be easily mocked.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Removes dependencies and hides implementation details from the component.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Keeps the component slim, trim, and focused.
 
 
-~~~
+</div>
 
 
 
@@ -4164,47 +4164,47 @@ helps instantly identify which members of the component serve which purpose.
 #### <a href="#05-16">Style 05-16</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name events without the prefix `on`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** name event handler methods with the prefix `on` followed by the event name.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** This is consistent with built-in events such as button clicks.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Angular allows for an [alternative syntax](guide/template-syntax#binding-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
 
 
-~~~
+</div>
 
 
 
@@ -4246,36 +4246,36 @@ helps instantly identify which members of the component serve which purpose.
 #### <a href="#05-17">Style 05-17</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** put presentation logic in the component class, and not in the template.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Logic will be contained in one place (the component class) instead of being spread in two places.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Keeping the component's presentation logic in the class instead of the template improves testability, maintainability, and reusability.
 
 
-~~~
+</div>
 
 
 
@@ -4305,36 +4305,36 @@ helps instantly identify which members of the component serve which purpose.
 #### <a href="#06-01">Style 06-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use attribute directives when you have presentation logic without a template.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Attribute directives don't have an associated template.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** An element may have more than one attribute directive applied.
 
 
-~~~
+</div>
 
 
 
@@ -4360,7 +4360,7 @@ helps instantly identify which members of the component serve which purpose.
 #### <a href="#06-03">Style 06-03</a>
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -4368,22 +4368,22 @@ helps instantly identify which members of the component serve which purpose.
 `host` property of the `@Directive` and `@Component` decorators.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** be consistent in your choice.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -4393,7 +4393,7 @@ If you use the `host` metadata property, you must modify both the property decla
 and the metadata associated with the directive.
 
 
-~~~
+</div>
 
 
 
@@ -4406,14 +4406,14 @@ and the metadata associated with the directive.
 Compare with the less preferred `host` metadata alternative.
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** The `host` metadata is only one term to remember and doesn't require extra ES imports.
 
 
-~~~
+</div>
 
 
 
@@ -4433,36 +4433,36 @@ Compare with the less preferred `host` metadata alternative.
 #### <a href="#07-01">Style 07-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use services as singletons within the same injector. Use them for sharing data and functionality.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** Services are ideal for sharing methods across a feature area or an app.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** Services are ideal for sharing stateful in-memory data.
 
 
-~~~
+</div>
 
 
 
@@ -4480,47 +4480,47 @@ Compare with the less preferred `host` metadata alternative.
 #### <a href="#07-02">Style 07-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** create services with a single responsibility that is encapsulated by its context.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** create a new service once the service begins to exceed that singular purpose.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** When a service has multiple responsibilities, it becomes difficult to test.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** When a service has multiple responsibilities, every component or service that injects it now carries the weight of them all.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -4530,29 +4530,29 @@ Compare with the less preferred `host` metadata alternative.
 #### <a href="#07-03">Style 07-03</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** provide services to the Angular injector at the top-most component where they will be shared.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The Angular injector is hierarchical.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -4560,29 +4560,29 @@ Compare with the less preferred `host` metadata alternative.
 that instance is shared and available to all child components of that top level component.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** This is ideal when a service is sharing methods or state.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** This is not ideal when two different components need different instances of a service. In this scenario it would be better to provide the service at the component level that needs the new and separate instance.
 
 
-~~~
+</div>
 
 
 
@@ -4608,18 +4608,18 @@ that instance is shared and available to all child components of that top level 
 #### <a href="#07-04">Style 07-04</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use the `@Injectable()` class decorator instead of the `@Inject` parameter decorator when using types as tokens for the dependencies of a service.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
@@ -4627,18 +4627,18 @@ that instance is shared and available to all child components of that top level 
 dependencies based on the declared types of that service's constructor parameters.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
 **Why?** When a service accepts only dependencies associated with type tokens, the `@Injectable()` syntax is much less verbose compared to using `@Inject()` on each individual constructor parameter.
 
 
-~~~
+</div>
 
 
 
@@ -4666,51 +4666,51 @@ dependencies based on the declared types of that service's constructor parameter
 #### <a href="#08-01">Style 08-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** refactor logic for making data operations and interacting with data to a service.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** make data services responsible for XHR calls, local storage, stashing in memory, or any other data operations.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** The component's responsibility is for the presentation and gathering of information for the view. It should not care how it gets the data, just that it knows who to ask for it. Separating the data services moves the logic on how to get it to the data service, and lets the component be simpler and more focused on the view.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why}
+<div class="s-why">
 
 
 
 **Why?** This makes it easier to test (mock or real) the data calls when testing a component that uses a data service.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -4723,7 +4723,7 @@ details inside the service without affecting its consumers. And it's
 easier to test the consumers with mock service implementations.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -4739,18 +4739,18 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 #### <a href="#09-01">Style 09-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** implement the lifecycle hook interfaces.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-why-last}
+<div class="s-why-last">
 
 
 
@@ -4758,7 +4758,7 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 signatures. use those signatures to flag spelling and syntax mistakes.
 
 
-~~~
+</div>
 
 
 
@@ -4790,25 +4790,25 @@ Useful tools and tips for Angular.
 #### <a href="#A-01">Style A-01</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use [codelyzer](https://www.npmjs.com/package/codelyzer) to follow this guide.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
 **Consider** adjusting the rules in codelyzer to suit your needs.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>
 
@@ -4818,18 +4818,18 @@ Useful tools and tips for Angular.
 #### <a href="#A-02">Style A-02</a>
 
 
-~~~ {.s-rule.do}
+<div class="s-rule do">
 
 
 
 **Do** use file templates or snippets to help follow consistent styles and patterns. Here are templates and/or snippets for some of the web development editors and IDEs.
 
 
-~~~
+</div>
 
 
 
-~~~ {.s-rule.consider}
+<div class="s-rule consider">
 
 
 
@@ -4846,6 +4846,6 @@ Useful tools and tips for Angular.
 **Consider** using [snippets](https://github.com/mhartington/vim-angular2-snippets) for [Vim](http://www.vim.org/) that follow these styles and guidelines.
 
 
-~~~
+</div>
 
 <a href="#toc">Back to top</a>

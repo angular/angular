@@ -96,7 +96,7 @@ Here, the directive's selector is `[myHighlight]`.
 Angular locates all elements in the template that have an attribute named `myHighlight`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -112,7 +112,7 @@ that prefix is reserved for Angular and using it could cause bugs that are diffi
 For a simple demo, the short prefix, `my`, helps distinguish your custom directive.
 
 
-~~~
+</div>
 
 
 
@@ -173,7 +173,7 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -198,7 +198,7 @@ After specifying `HighlightDirective` in the `declarations` array,
 Angular knows it can apply the directive to components declared in this module.
 
 
-~~~
+</div>
 
 
 
@@ -240,7 +240,7 @@ The `@HostListener` decorator lets you subscribe to events of the DOM
 element that hosts an attribute directive, the `<p>` in this case.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -252,7 +252,7 @@ There are at least three problems with _that_ approach:
 1. Talking to DOM API directly isn't a best practice.
 
 
-~~~
+</div>
 
 
 

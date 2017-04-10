@@ -54,18 +54,18 @@ So every such application includes the `BrowserModule` in its _root_ `AppModule`
 Other guide and cookbook pages will tell you when you need to add additional modules to this array.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 **Only `NgModule` classes** go in the `imports` array. Do not put any other kind of class in `imports`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -81,7 +81,7 @@ The _module's_ `imports` array appears _exclusively_ in the `@NgModule` metadata
 It tells Angular about specific _other_ Angular modules &mdash; all of them classes decorated with `@NgModule` &mdash;
 that the application needs to function properly.
 
-~~~
+</div>
 
 
 
@@ -101,7 +101,7 @@ You'll learn to create two other kinds of classes &mdash;
 that you must also add to the `declarations` array.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -109,7 +109,7 @@ that you must also add to the `declarations` array.
 Do not put any other kind of class in `declarations`; _not_ `NgModule` classes, _not_ service classes, _not_ model classes.
 
 
-~~~
+</div>
 
 
 

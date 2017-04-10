@@ -38,7 +38,7 @@ You need to set up your development environment before you can do anything.
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -46,7 +46,7 @@ if they are not already on your machine.
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors, but newer versions are fine.
 
-~~~
+</div>
 
 
 
@@ -80,7 +80,7 @@ Generate a new project and skeleton application by running the following command
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -88,7 +88,7 @@ Patience please.
 It takes time to set up a new project, most of it spent installing npm packages.
 
 
-~~~
+</div>
 
 
 
@@ -779,7 +779,7 @@ These files go in the root folder next to `src/`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -789,5 +789,5 @@ If you're new to Angular, continue on the
 [learning path](guide/guide/learning-angular "Angular learning path").
 You can skip the "Setup" step since you're already using the Angular CLI setup.
 
-~~~
+</div>
 

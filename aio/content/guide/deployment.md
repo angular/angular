@@ -88,7 +88,7 @@ Otherwise, leave it alone.
 That's the simplest deployment you can do.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -98,7 +98,7 @@ Be sure to read about [optimizing for production](guide/deployment#optimize "Opt
 
 
 
-~~~
+</div>
 
 
 
@@ -377,13 +377,13 @@ into a server request for `my/app/some/place/foo.jpg`.
 During navigation, the Angular router uses the _base href_ as the base path to component, template, and module files.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let "API: APP_BASE_HREF") alternative.
 
-~~~
+</div>
 
 
 

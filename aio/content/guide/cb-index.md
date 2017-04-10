@@ -13,14 +13,14 @@ Each cookbook page is a collection of recipes focused on a particular Angular fe
 such as data binding, cross-component interaction, and communicating with a remote server via HTTP.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The cookbook is just getting started. Many more recipes are on the way.
 
 
-~~~
+</div>
 
 
 

@@ -53,13 +53,13 @@ An Angular application consists largely of components and their HTML templates.
 Before the browser can render the application,
 the components and templates must be converted to executable JavaScript by the _Angular compiler_.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo" target="_blank">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
 
-~~~
+</div>
 
 
 
@@ -205,7 +205,7 @@ Initiate AOT compilation from the command line using the previously installed `n
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -217,7 +217,7 @@ Windows users should surround the `ngc` command in double quotes:
 
 
 
-~~~
+</div>
 
 
 
@@ -231,7 +231,7 @@ Each component factory creates an instance of the component at runtime by combin
 and a JavaScript representation of the component's template.
 Note that the original component class is still referenced internally by the generated factory.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -242,20 +242,20 @@ JIT compilation generates these same _NgFactories_ in memory where they are larg
 AOT compilation reveals them as separate, physical files.
 
 
-~~~
+</div>
 
 
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Do not edit the _NgFactories_! Re-compilation replaces these files and all edits will be lost.
 
 
-~~~
+</div>
 
 
 
@@ -330,7 +330,7 @@ It produces a final code _bundle_ that excludes code that is exported, but never
 
 Rollup can only tree shake `ES2015` modules which have `import` and `export` statements.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -338,7 +338,7 @@ Recall that `tsconfig-aot.json` is configured to produce `ES2015` modules.
 It's not important that the code itself be written with `ES2015` syntax such as `class` and `const`.
 What matters is that the code uses ES `import` and `export` statements rather than `require` statements.
 
-~~~
+</div>
 
 
 
@@ -409,7 +409,7 @@ Add the following to the `plugins` array:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -417,7 +417,7 @@ In a production setting, you would also enable gzip on the web server to compres
 the code into an even smaller package going over the wire.
 
 
-~~~
+</div>
 
 
 
@@ -433,7 +433,7 @@ Execute the Rollup process with this command:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -445,7 +445,7 @@ Windows users should surround the `rollup` command in double quotes:
 
 
 
-~~~
+</div>
 
 
 
@@ -683,7 +683,7 @@ You'll need separate TypeScript configuration files such as these:
 
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -701,7 +701,7 @@ In a more typical project, `node_modules` would be a sibling of `tsconfig-aot.js
 and `"typeRoots"` would be set to `"node_modules/@types/"`.
 Edit your `tsconfig-aot.json` to fit your project's file structure.
 
-~~~
+</div>
 
 
 
@@ -725,7 +725,7 @@ Rollup does the tree shaking as before.
 ### Running the application
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -737,7 +737,7 @@ github repository and prepared it for development as explained in the repo's REA
 
 The _Tour of Heroes_ source code is in the `public/docs/_examples/toh-6/ts` folder.
 
-~~~
+</div>
 
 
 
@@ -777,13 +777,13 @@ Copy the AOT distribution files into the `/aot` folder with the node script:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 You won't do that again until there are updates to `zone.js` or the `core-js` shim for old browsers.
 
-~~~
+</div>
 
 
 

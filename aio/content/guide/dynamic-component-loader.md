@@ -123,7 +123,7 @@ The `loadComponent()` method is doing a lot of the heavy lifting here.
 Take it step by step. First, it picks an ad.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -137,7 +137,7 @@ using the _remainder_ as the new `currentAddIndex` value. Then, it uses that
 value to select an `adItem` from the array.
 
 
-~~~
+</div>
 
 
 

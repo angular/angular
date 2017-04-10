@@ -133,7 +133,7 @@ The `Car` class no longer creates an `engine` or `tires`.
 It just consumes them.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -141,7 +141,7 @@ This example leverages TypeScript's constructor syntax for declaring
 parameters and properties simultaneously.
 
 
-~~~
+</div>
 
 
 
@@ -163,7 +163,7 @@ conform to the general API requirements of an `engine` or `tires`.
 Now, if someone extends the `Engine` class, that is not `Car`'s problem.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -181,7 +181,7 @@ The critical point is this: the `Car` class did not have to change.
 You'll take care of the consumer's problem shortly.
 
 
-~~~
+</div>
 
 
 
@@ -298,7 +298,7 @@ fix every other use of the `HEROES` mock data.
 It's better to make a service that hides how the app gets hero data.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -308,7 +308,7 @@ consider writing the service code in its own file.
 
 See [this note](guide/dependency-injection#one-class-per-file) for details.
 
-~~~
+</div>
 
 
 
@@ -324,7 +324,7 @@ the same mock data as before, but none of its consumers need to know that.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -332,11 +332,11 @@ The `@Injectable()` decorator above the service class is
 covered [shortly](guide/dependency-injection#injectable).
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -347,7 +347,7 @@ You'd also have to rewrite the way components consume the service.
 This is important in general, but not in this example.
 
 
-~~~
+</div>
 
 
 
@@ -435,7 +435,7 @@ feature area and nowhere else, it makes sense to register it in
 the `HeroesComponent`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -443,7 +443,7 @@ Also see *"Should I add app-wide providers to the root `AppModule` or
 the root `AppComponent`?"* in the [NgModule FAQ](cookbook/ngmodule-faq#q-root-component-or-module).
 
 
-~~~
+</div>
 
 
 
@@ -472,7 +472,7 @@ It's a small change:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -499,7 +499,7 @@ Angular injector to inject an instance of
 `HeroService` whenever it creates a new `HeroListComponent`.
 
 
-~~~
+</div>
 
 
 
@@ -562,14 +562,14 @@ under test:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Learn more in [Testing](guide/testing).
 
 
-~~~
+</div>
 
 
 
@@ -617,7 +617,7 @@ error when trying to instantiate a class that is not marked as
 `@Injectable()`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -628,11 +628,11 @@ You need it because Angular requires constructor parameter metadata
 in order to inject a `Logger`.
 
 
-~~~
+</div>
 
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -660,7 +660,7 @@ and, therefore, do not technically require it. Here's why:
 
 
 
-~~~
+</div>
 
 
 
@@ -676,7 +676,7 @@ fact `@Injectable()` decorators that
 identify a class as a target for instantiation by an injector.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -696,11 +696,11 @@ While any decorator will trigger this effect, mark the service class with the
 to make the intent clear.
 
 
-~~~
+</div>
 
 
 
-~~~ {.callout.is-critical}
+<div class="callout is-critical">
 
 
 
@@ -714,7 +714,7 @@ Always write `@Injectable()`, not just `@Injectable`.
 The application will fail mysteriously if you forget the parentheses.
 
 
-~~~
+</div>
 
 
 
@@ -1000,7 +1000,7 @@ and let the injector pass them along to the factory function:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1012,7 +1012,7 @@ The `Logger` and `UserService` classes serve as tokens for their own class provi
 The injector resolves these tokens and injects the corresponding services into the matching factory function parameters.
 
 
-~~~
+</div>
 
 
 
@@ -1108,7 +1108,7 @@ You don't have a class to serve as a token.
 There is no `AppConfig` class.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1137,7 +1137,7 @@ The TypeScript interface disappears from the generated JavaScript.
 There is no interface type information left for Angular to find at runtime.
 
 
-~~~
+</div>
 
 
 
@@ -1179,7 +1179,7 @@ the help of an `@Inject` decorator:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1187,7 +1187,7 @@ Although the `AppConfig` interface plays no role in dependency injection,
 it supports typing of the configuration object within the class.
 
 
-~~~
+</div>
 
 
 
@@ -1267,7 +1267,7 @@ You can call `get()` with a second parameter, which is the value to return if th
 is not found. Angular can't find the service if it's not registered with this or any ancestor injector.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1285,7 +1285,7 @@ Framework developers may take this approach when they
 must acquire services generically and dynamically.
 
 
-~~~
+</div>
 
 
 
@@ -1302,7 +1302,7 @@ If you define the component before the service,
 you'll get a runtime null reference error.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1311,5 +1311,5 @@ in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-referen
 But why flirt with trouble?
 Avoid the problem altogether by defining components and services in separate files.
 
-~~~
+</div>
 

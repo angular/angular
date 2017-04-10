@@ -103,7 +103,7 @@ Here's what the UI displays:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -117,7 +117,7 @@ for `event.target.value` in which case the same user input would produce:
 
 
 
-~~~
+</div>
 
 
 
@@ -186,7 +186,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -199,7 +199,7 @@ to the number 0, the shortest template statement possible.
 While the statement does nothing useful, 
 it satisfies Angular's requirement so that Angular will update the screen.
 
-~~~
+</div>
 
 
 

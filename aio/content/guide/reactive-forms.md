@@ -228,7 +228,7 @@ This simple control doesn't have data or validators.
 In real apps, most form controls have both. 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -236,7 +236,7 @@ This guide touches only briefly on `Validators`. For an in-depth look at them,
 read the [Form Validation](cookbook/form-validation) cookbook.
 
 
-~~~
+</div>
 
 
 
@@ -261,7 +261,7 @@ you need `[formControl]="name"` in the template on the `<input>`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -271,7 +271,7 @@ not Angular.
 It _styles_ the form but in no way impacts the logic of the form.
 
 
-~~~
+</div>
 
 
 
@@ -416,7 +416,7 @@ in the class. This syntax tells Angular to look for the parent
 to look for a `FormControl` called `name`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -428,7 +428,7 @@ but in no way impacts its logic.
 
 
 
-~~~
+</div>
 
 
 
@@ -543,14 +543,14 @@ the second is the required validator, `Validators.required`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Reactive validators are simple, composable functions.
 Configuring validation is harder in template-driven forms where you must wrap validators in a directive. 
 
-~~~
+</div>
 
 
 
@@ -617,7 +617,7 @@ within the `form` element.
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -629,7 +629,7 @@ They are the Angular directives that bind the HTML controls to the
 Angular `FormGroup` and `FormControl` properties in the component class.
 
 
-~~~
+</div>
 
 
 
@@ -637,7 +637,7 @@ The revised template includes more text inputs, a select box for the `state`, ra
 and a checkbox for the `sidekick`. 
 
 You must bind the option's value property with `[value]="state"`. 
-If you do not bind the value, the select shows the first option form the data model.
+If you do not bind the value, the select shows the first option from the data model.
 
 The component _class_ defines control properties without regard for their representation in the template.
 You define the `state`, `power`, and `sidekick` controls the same way you defined the `name` control.
@@ -1136,7 +1136,7 @@ Replace the _address_ `FormGroup` definition with a _secretLairs_ `FormArray` de
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1150,7 +1150,7 @@ _Presentation_ requirements often differ from _data_ requirements.
 The reactive forms approach both emphasizes and facilitates this distinction.
 
 
-~~~
+</div>
 
 
 
@@ -1242,7 +1242,7 @@ Place a button on the form so the user can add a new _secret lair_ and wire it t
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -1254,7 +1254,7 @@ might do something like save the current changes.
 You do not want to save changes when the user clicks the _Add a Secret Lair_ button.
 
 
-~~~
+</div>
 
 
 
@@ -1370,7 +1370,7 @@ and deep copies of the changed form model values, using the `prepareSaveHero` he
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1384,7 +1384,7 @@ A user's subsequent changes to a lair street would mutate an address street in t
 The `prepareSaveHero` method makes copies of the form model's `secretLairs` objects so that can't happen.
 
 
-~~~
+</div>
 
 
 

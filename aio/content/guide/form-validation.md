@@ -15,7 +15,7 @@ Improve overall data quality by validating user input for accuracy and completen
 This cookbook shows how to validate user input in the UI and display useful validation messages
 using first the template-driven forms and then the reactive forms approach.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -23,7 +23,7 @@ Read more about these choices in the [Forms](guide/forms)
 and the [Reactive Forms](guide/reactive-forms) guides.
 
 
-~~~
+</div>
 
 
 
@@ -120,7 +120,7 @@ The full template repeats this kind of layout for each data entry control on the
 {@a why-check}
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -131,7 +131,7 @@ The checks for `dirty` and `touched` prevent premature display of errors.
 
 Learn about `dirty` and `touched` in the [Forms](guide/forms) guide.
 
-~~~
+</div>
 
 
 
@@ -338,7 +338,7 @@ Here's how you imported it in the `HeroFormTemplateModule`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -348,7 +348,7 @@ form template in this cookbook.
 They're not germane to the validation story. Look at the [live example](guide/form-validation#live-example) if you're interested.
 
 
-~~~
+</div>
 
 
 
@@ -436,7 +436,7 @@ validating happens in code.
 but rather for css styling and accessibility.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -447,7 +447,7 @@ Until then, apply the `required` attribute _and_ add the `Validator.required` fu
 to the control model, as you'll see below.
 
 
-~~~
+</div>
 
 
 
@@ -459,13 +459,13 @@ The reactive approach does not use data binding to move data into and out of the
 That's all in code.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The retreat from data binding is a principle of the reactive paradigm rather than a technical limitation.
 
-~~~
+</div>
 
 
 
@@ -501,13 +501,13 @@ Here's the section of code devoted to that process, paired with the template-dri
 * Call a `buildForm` method in the `ngOnInit` [lifecycle hook method](guide/lifecycle-hooks#hooks-overview)
 because that's when you'll have the hero data. Call it again in the `addHero` method.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 A real app would retrieve the hero asynchronously from a data service, a task best performed in the `ngOnInit` hook.
 
-~~~
+</div>
 
 
 
@@ -534,14 +534,14 @@ The `forbiddenNames` validator on the `"name"` control is a custom validator,
 discussed in a separate [section below](guide/form-validation#custom-validation).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Learn more about `FormBuilder` in the [Introduction to FormBuilder](guide/reactive-forms#formbuilder) section of Reactive Forms guide.
 
 
-~~~
+</div>
 
 
 
@@ -567,14 +567,14 @@ The `onSubmit()` method simply replaces the `hero` object with the combined valu
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 This example is lucky in that the `heroForm.value` properties _just happen_ to
 correspond _exactly_ to the hero data object properties.
 
-~~~
+</div>
 
 
 
@@ -609,7 +609,7 @@ Here's the complete reactive component file, compared to the two template-driven
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -617,7 +617,7 @@ Run the [live example](guide/form-validation#live-example) to see how the reacti
 and to compare all of the files in this cookbook sample.
 
 
-~~~
+</div>
 
 
 
@@ -695,7 +695,7 @@ Here is the rest of the directive to help you get an idea of how it all comes to
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -712,13 +712,13 @@ Notice that you get a validation error. Now change from `useExisting` to `useCla
 This time, when you type “bob”, there's no "bob" error message.
 
 
-~~~
+</div>
 
 
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -726,7 +726,7 @@ For more information on attaching behavior to elements,
 see [Attribute Directives](guide/attribute-directives).
 
 
-~~~
+</div>
 
 
 

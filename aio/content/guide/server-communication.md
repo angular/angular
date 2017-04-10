@@ -10,14 +10,14 @@ Use an HTTP Client to talk to a remote server.
 
 [HTTP](https://tools.ietf.org/html/rfc2616) is the primary protocol for browser/server communication.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The [`WebSocket`](https://tools.ietf.org/html/rfc6455) protocol is another important communication technology;
 it isn't covered in this page.
 
-~~~
+</div>
 
 
 
@@ -113,7 +113,7 @@ The Angular <code>Http</code> client communicates with the server using a famili
 The `Http` client is one of a family of services in the Angular HTTP library.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -122,21 +122,21 @@ the Angular HTTP library
 because the `systemjs.config.js` file maps to that module name.
 
 
-~~~
+</div>
 
 
 
 Before you can use the `Http` client, you need to register it as a service provider with the dependency injection system.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read about providers in the [Dependency Injection](guide/dependency-injection) page.
 
 
-~~~
+</div>
 
 
 
@@ -155,7 +155,7 @@ The newcomers are the `HttpModule` and the `JsonpModule` from the Angular HTTP l
 
 To add these modules to the application, pass them to the `imports` array in the root `@NgModule`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -164,7 +164,7 @@ Though the `JsonpModule` isn't necessary for plain HTTP,
 there is a JSONP demo later in this page.
 Loading its module now saves time.
 
-~~~
+</div>
 
 
 
@@ -231,7 +231,7 @@ you **don't** call the service's `get` method in the component's constructor.
 Instead, call it inside the `ngOnInit` [lifecycle hook](guide/lifecycle-hooks)
 and rely on Angular to call `ngOnInit` when it instantiates this component.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -239,7 +239,7 @@ This is a *best practice*.
 Components are easier to test and debug when their constructors are simple, and all real work
 (especially calling a remote server) is handled in a separate method.
 
-~~~
+</div>
 
 
 
@@ -298,7 +298,7 @@ Look closely at how to call `http.get`:
 You pass the resource URL to `get` and it calls the server which returns heroes.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -312,7 +312,7 @@ Alternatively, you can temporarily target a JSON file by changing the endpoint U
 
 
 
-~~~
+</div>
 
 
 
@@ -384,7 +384,7 @@ The app must parse that string into JavaScript objects by calling `response.json
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -394,11 +394,11 @@ The Angular HTTP client follows the Fetch specification for the
 That spec defines a `json()` method that parses the response body into a JavaScript object.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -409,11 +409,11 @@ This is conventional web API behavior, driven by
 [security concerns](https://www.owasp.org/index.php/OWASP_AJAX_Security_Guidelines#Always_return_JSON_with_an_Object_on_the_outside).
 
 
-~~~
+</div>
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -421,7 +421,7 @@ Make no assumptions about the server API.
 Not all servers return an object with a `data` property.
 
 
-~~~
+</div>
 
 
 
@@ -436,7 +436,7 @@ The component that calls the `HeroService` only wants heroes and is kept separat
 from getting them, the code dealing with where they come from, and the response object.
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -452,7 +452,7 @@ which means that the request won't go out until something *subscribes* to the Ob
 That *something* is the [HeroListComponent](guide/server-communication#subscribe).
 
 
-~~~
+</div>
 
 
 
@@ -505,7 +505,7 @@ It sets an `errorMessage` variable that's bound conditionally in the `HeroListCo
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -513,7 +513,7 @@ Want to see it fail? In the `HeroService`, reset the api endpoint to a bad value
 
 
 
-~~~
+</div>
 
 {@a create}
 {@a update}
@@ -615,14 +615,14 @@ Although the Angular `http` client API returns an `Observable<Response>` you can
 It's easy to do, and in simple cases, a Promise-based version looks much
 like the Observable-based version.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 While Promises may be more familiar, Observables have many advantages.
 
 
-~~~
+</div>
 
 
 
@@ -674,7 +674,7 @@ You have to adjust the calling component to expect a `Promise` instead of an `Ob
 The only obvious difference is that you call `then()` on the returned Promise instead of `subscribe`.
 Both methods take the same functional arguments.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -692,7 +692,7 @@ watch [Ben Lesh's talk on Observables](https://www.youtube.com/watch?v=3LKMwkuK0
 or his video course on [egghead.io](https://egghead.io/lessons/rxjs-rxjs-observables-vs-promises).
 
 
-~~~
+</div>
 
 
 
@@ -710,7 +710,7 @@ The *origin* is the combination of URI scheme, hostname, and port number.
 This is called the [same-origin policy](https://en.wikipedia.org/wiki/Same-origin_policy).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -719,20 +719,20 @@ Modern browsers do allow `XHR` requests to servers from a different origin if th
 If the server requires user credentials, enable them in the [request headers](guide/server-communication#headers).
 
 
-~~~
+</div>
 
 
 
 Some servers do not support CORS but do support an older, read-only alternative called [JSONP](https://en.wikipedia.org/wiki/JSONP).
 Wikipedia is one such server.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 This [Stack Overflow answer](http://stackoverflow.com/questions/2067472/what-is-jsonp-all-about/2067584#2067584) covers many details of JSONP.
 
-~~~
+</div>
 
 
 
@@ -777,7 +777,7 @@ The keys are `search`, `action`, `format`, and `callback`.
 The value of the `search` key is the user-supplied search term to find in Wikipedia.
 The other three are the fixed values "opensearch", "json", and "JSONP_CALLBACK" respectively.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -785,7 +785,7 @@ The `JSONP` technique requires that you pass a callback function name to the ser
 The server uses that name to build a JavaScript wrapper function in its response, which Angular ultimately calls to extract the data.
 All of this happens under the hood.
 
-~~~
+</div>
 
 
 
@@ -838,7 +838,7 @@ the app forwards the Observable result to the template (via `items`) where the `
 in the `ngFor` handles the subscription. Read more about [async pipes](guide/pipes#async-pipe)
 in the [Pipes](guide/pipes) page.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -847,7 +847,7 @@ where the component has no need to interact with the data.
 
 `HeroListComponent` can't use the pipe because `addHero()` pushes newly created heroes into the list.
 
-~~~
+</div>
 
 
 
@@ -1034,13 +1034,13 @@ Then it registers the provider in the root `AppModule`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Remember to include this provider during setup when unit testing the app's HTTP services.
 
-~~~
+</div>
 
 
 
@@ -1072,7 +1072,7 @@ It might be wise to keep the `create` request header setting for extra safety.
 If the app only needed to retrieve data, you could get the heroes from a `heroes.json` file:
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1080,7 +1080,7 @@ You wrap the heroes array in an object with a `data` property for the same reaso
 to mitigate the [security risk](http://stackoverflow.com/questions/3503102/what-are-top-level-json-arrays-and-why-are-they-a-security-risk)
 posed by top-level JSON arrays.
 
-~~~
+</div>
 
 
 
@@ -1098,7 +1098,7 @@ Because there isn't a real server for this demo,
 it substitutes the Angular _in-memory web api_ simulator for the actual XHR backend service.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1112,7 +1112,7 @@ See the
 for configuration options, default behaviors, and limitations.
 
 
-~~~
+</div>
 
 
 
@@ -1156,14 +1156,14 @@ Using standard Angular provider registration techniques, the `InMemoryWebApiModu
 replaces the default `XHRBackend` service with its own in-memory alternative.
 At the same time, the `forRoot` method initializes the in-memory web API with the *seed data* from the mock hero dataset.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `forRoot()` method name is a strong reminder that you should only call the `InMemoryWebApiModule` _once_,
 while setting the metadata for the root `AppModule`. Don't call it again.
 
-~~~
+</div>
 
 
 
@@ -1176,14 +1176,14 @@ Here is the final, revised version of <code>src/app/app.module.ts</code>, demons
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Import the `InMemoryWebApiModule` _after_ the `HttpModule` to ensure that
 the `XHRBackend` provider of the `InMemoryWebApiModule` supersedes all others.
 
-~~~
+</div>
 
 
 
