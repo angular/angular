@@ -186,8 +186,8 @@ groups:
       files:
         - "packages/router/*"
     users:
-      - vicb #primary
-      # needs secondary
+      - jasonaden
+      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
