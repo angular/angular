@@ -67,7 +67,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     });
 
     const previousStyleProps = Object.keys(this.previousStyles);
-    if (previousStyleProps.length) {
+    if (previousStyleProps.length && keyframes.length) {
       let startingKeyframe = keyframes[0];
       let missingStyleProps: string[] = [];
       previousStyleProps.forEach(prop => {
