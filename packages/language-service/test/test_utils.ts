@@ -68,6 +68,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private scriptVersion = new Map<string, number>();
   private overrides = new Map<string, string>();
   private projectVersion = 0;
+  private options: ts.CompilerOptions;
 
   constructor(private scriptNames: string[], private data: MockData) {
     const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -77,6 +78,16 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     let distIndex = moduleFilename.indexOf('/dist/all');
     if (distIndex >= 0)
       this.nodeModulesPath = path.join(moduleFilename.substr(0, distIndex), 'node_modules');
+    this.options = {
+      target: ts.ScriptTarget.ES5,
+      module: ts.ModuleKind.CommonJS,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      emitDecoratorMetadata: true,
+      experimentalDecorators: true,
+      removeComments: false,
+      noImplicitAny: false,
+      lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
+    };
   }
 
   override(fileName: string, content: string) {
@@ -99,18 +110,12 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
 
   forgetAngular() { this.angularPath = undefined; }
 
-  getCompilationSettings(): ts.CompilerOptions {
-    return {
-      target: ts.ScriptTarget.ES5,
-      module: ts.ModuleKind.CommonJS,
-      moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      emitDecoratorMetadata: true,
-      experimentalDecorators: true,
-      removeComments: false,
-      noImplicitAny: false,
-      lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-    };
+  overrideOptions(cb: (options: ts.CompilerOptions) => ts.CompilerOptions) {
+    this.options = cb(this.options);
+    this.projectVersion++;
   }
+
+  getCompilationSettings(): ts.CompilerOptions { return this.options; }
 
   getProjectVersion(): string { return this.projectVersion.toString(); }
 

@@ -95,7 +95,7 @@ describe('diagnostics', () => {
       const code = '\n@Component({template: \'<form></form>\'}) export class MyComponent {}';
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics !);
+        expectOnlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -134,7 +134,7 @@ describe('diagnostics', () => {
           ` @Component({template: \`<div *ngIf="something === 'foo'"></div>\`}) export class MyComponent { something: 'foo' | 'bar'; }`;
       addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics !);
+        expectOnlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -155,7 +155,7 @@ describe('diagnostics', () => {
           ` @Component({template: \`<div *ngIf="something === undefined"></div>\`}) export class MyComponent { something = 'foo'; }})`;
       addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
-        onlyModuleDiagnostics(diagnostics !);
+        expectOnlyModuleDiagnostics(diagnostics !);
       });
     });
 
@@ -233,7 +233,7 @@ describe('diagnostics', () => {
         })
         export class MyComponent {}
       `,
-          fileName => onlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
+          fileName => expectOnlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
     });
 
     // Issue #15625
@@ -254,8 +254,31 @@ describe('diagnostics', () => {
       `,
           fileName => {
             const diagnostics = ngService.getDiagnostics(fileName);
-            onlyModuleDiagnostics(diagnostics);
+            expectOnlyModuleDiagnostics(diagnostics);
           });
+    });
+
+    // Issue #15885
+    it('should be able to remove null and undefined from a type', () => {
+      mockHost.overrideOptions(options => {
+        options.strictNullChecks = true;
+        return options;
+      });
+      addCode(
+          `
+        @Component({
+          selector: 'my-component',
+          template: \` {{test?.a}}
+          \`
+        })
+        export class MyComponent {
+          test: {a: number, b: number} | null = {
+            a: 1,
+            b: 2
+          };
+        }
+      `,
+          fileName => expectOnlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
     });
 
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
@@ -271,7 +294,7 @@ describe('diagnostics', () => {
       }
     }
 
-    function onlyModuleDiagnostics(diagnostics: Diagnostics) {
+    function expectOnlyModuleDiagnostics(diagnostics: Diagnostics) {
       // Expect only the 'MyComponent' diagnostic
       expect(diagnostics.length).toBe(1);
       if (diagnostics.length > 1) {

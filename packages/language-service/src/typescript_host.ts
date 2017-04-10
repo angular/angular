@@ -649,8 +649,14 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   }
 
   getNonNullableType(symbol: Symbol): Symbol {
-    // TODO: Replace with typeChecker API when available;
-    return symbol;
+    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType == 'function')) {
+      const tsType = symbol.tsType;
+      const nonNullableType = this.checker.getNonNullableType(tsType);
+      if (nonNullableType != tsType) {
+        return new TypeWrapper(nonNullableType, symbol.context);
+      }
+    }
+    return this.getBuiltinType(BuiltinType.Any);
   }
 
   getPipes(): SymbolTable {
