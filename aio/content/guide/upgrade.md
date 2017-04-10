@@ -477,14 +477,14 @@ We will import `UpgradeModule` inside our Angular module, and then use it for
 bootstrapping our AngularJS module. Let's see how.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Learn more about Angular modules at the [NgModule guide](guide/ngmodule).
 
 
-~~~
+</div>
 
 
 
@@ -613,14 +613,14 @@ Angular module.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 All Angular components, directives and pipes must be declared in an NgModule.
 
 
-~~~
+</div>
 
 
 
@@ -634,7 +634,7 @@ use like any other directive in our AngularJS templates.
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -644,7 +644,7 @@ An AngularJS element directive is matched based on its _name_.
 
 
 
-~~~
+</div>
 
 
 
@@ -682,7 +682,7 @@ attribute syntax to bind the inputs and outputs**. This is a requirement for dow
 components. The expressions themselves are still regular AngularJS expressions.
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -711,7 +711,7 @@ But when using them from AngularJS templates, we need to use kebab-case:
 
 
 
-~~~
+</div>
 
 
 
@@ -781,7 +781,7 @@ All that is left is to add it to `AppModule`'s `declarations` array.
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -791,7 +791,7 @@ component is just a directive - a tag - and Angular doesn't have to concern itse
 it's children. 
 
 
-~~~
+</div>
 
 
 
@@ -968,7 +968,7 @@ of the `<ng-content>` tag in Angular:
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -976,7 +976,7 @@ When AngularJS content gets projected inside an Angular component, it still
 remains in "AngularJS land" and is managed by the AngularJS framework.
 
 
-~~~
+</div>
 
 
 
@@ -1003,7 +1003,7 @@ point:
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1012,7 +1012,7 @@ It is on by default for component directives defined with the
 1.5 component API.
 
 
-~~~
+</div>
 
 
 
@@ -1076,7 +1076,7 @@ We can then inject it in Angular using it's class as a type annotation:
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1087,7 +1087,7 @@ checking. This is not required though, and any AngularJS service, factory, or
 provider can be upgraded.
 
 
-~~~
+</div>
 
 
 
@@ -1161,7 +1161,7 @@ Module Factory:
 And that's all we need to get the full benefit of AoT for Angular apps!
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1170,7 +1170,7 @@ so in order for upgraded components to work we needs to implement the lifecycle 
 on the upgraded component class and forward them to the `UpgradeComponent` parent.  
 
 
-~~~
+</div>
 
 
 
@@ -1539,7 +1539,7 @@ can verify we're calling their APIs with the correct kinds of arguments.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1555,7 +1555,7 @@ does not yet have type annotations. We could use it as a guide to inform
 us about how close we are to having a fully annotated project.
 
 
-~~~
+</div>
 
 
 
@@ -1618,11 +1618,11 @@ By the time we're done, we'll be able to remove AngularJS from the project
 completely, but the key is to do this piece by piece without breaking the application.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 The project also contains some animations, which we are not yet upgrading in this version of the guide. This will change in a later release.
 
-~~~
+</div>
 
 
 
@@ -1756,7 +1756,7 @@ exciting! We're not running any actual Angular components yet though,
 so let's do that next.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1779,7 +1779,7 @@ Instead we declare `angular` as `angular.IAngularStatic` to indicate it is a glo
 and still have full typing support.
 
 
-~~~
+</div>
 
 
 
@@ -1908,7 +1908,7 @@ In any case, what we've achieved is a migration of a service to Angular
 without having to yet migrate the components that use it.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1917,7 +1917,7 @@ Observables into Promises in the service. This can in many cases further
 reduce the amount of changes needed in the component controllers.
 
 
-~~~
+</div>
 
 
 
@@ -2260,14 +2260,14 @@ and let that directive construct the appropriate URL to the `PhoneDetailComponen
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 See the [Routing](guide/router) page for details.
 
 
-~~~
+</div>
 
 
 

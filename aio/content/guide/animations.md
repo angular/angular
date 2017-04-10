@@ -17,7 +17,7 @@ performance found in pure CSS animations. You can also tightly integrate your
 animation logic with the rest of your application code, for ease of control.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -30,7 +30,7 @@ add it to your page.
 
 
 
-~~~
+</div>
 
 
 
@@ -48,14 +48,14 @@ add it to your page.
 * [Animation callbacks](guide/animations#animation-callbacks).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The examples in this page are available as a <live-example></live-example>.
 
 
-~~~
+</div>
 
 
 
@@ -101,7 +101,7 @@ hero is active, the element appears in a slightly larger size and lighter color.
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -109,7 +109,7 @@ In this example, you are defining animation styles (color and transform) inline 
 animation metadata.
 
 
-~~~
+</div>
 
 
 
@@ -273,7 +273,7 @@ are different on enter and leave: the element enters from the left
 and leaves to the right.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -287,7 +287,7 @@ These two common animations have their own aliases:
 
 
 
-~~~
+</div>
 
 
 

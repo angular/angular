@@ -122,7 +122,7 @@ E2E tests of input property setter with empty and non-empty names:
 
 Detect and act upon changes to input property values with the `ngOnChanges()` method of the `OnChanges` lifecycle hook interface.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -130,7 +130,7 @@ You may prefer this approach to the property setter when watching multiple, inte
 
 Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
 
-~~~
+</div>
 
 
 
@@ -314,14 +314,14 @@ The following example illustrates this technique with the same
 Neither its appearance nor its behavior will change.
 The child [CountdownTimerComponent](guide/component-communication#countdown-timer-example) is the same as well.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The switch from the *local variable* to the *ViewChild* technique
 is solely for the purpose of demonstration.
 
-~~~
+</div>
 
 
 
@@ -402,7 +402,7 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -414,7 +414,7 @@ That *would not* always be true in a more complex application.
 You don't add this guard to the `MissionControlComponent` because, as the parent,
 it controls the lifetime of the `MissionService`.
 
-~~~
+</div>
 
 
 

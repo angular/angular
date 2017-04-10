@@ -21,7 +21,7 @@ unexpected definitions.
 
 ## Ahead-of-time (AOT) compilation
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -31,13 +31,13 @@ to a module factory, meaning you don't need to include the Angular compiler in y
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
 
-~~~
+</div>
 
 
 
 ## Angular module
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -50,20 +50,20 @@ called `AppModule` and resides in a file named `app.module.ts`.
 For details and examples, see the [Angular Modules (NgModule)](guide/ngmodule) page.
 
 
-~~~
+</div>
 
 
 
 ## Annotation
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 In practice, a synonym for [Decoration](guide/glossary#decorator).
 
 
-~~~
+</div>
 
 
 
@@ -75,7 +75,7 @@ In practice, a synonym for [Decoration](guide/glossary#decorator).
 
 ## Attribute directives
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -88,14 +88,14 @@ For example, you can use the `ngClass` directive to add and remove CSS class nam
 Learn about them in the [_Attribute Directives_](guide/attribute-directives) guide.
 
 
-~~~
+</div>
 
 
 
 
 ## Barrel
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -148,24 +148,24 @@ Now a consumer can import what it needs from the barrel.
 The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel named `index`.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 You can often achieve the same result using [Angular modules](guide/glossary#angular-module) instead.
 
 
-~~~
+</div>
 
 
 
-~~~
+</div>
 
 
 
 ## Binding
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -176,13 +176,13 @@ Sometimes refers to a [dependency-injection](guide/glossary#dependency-injection
 between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [provider](guide/glossary#provider).
 
 
-~~~
+</div>
 
 
 
 ## Bootstrap
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -194,14 +194,14 @@ For more information, see the [Setup](guide/setup) page.
 You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
 
-~~~
+</div>
 
 
 
 
 ## camelCase
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -214,7 +214,7 @@ camelCase is also known as *lower camel case* to distinguish it from *upper came
 In Angular documentation, "camelCase" always means *lower camel case*.
 
 
-~~~
+</div>
 
 
 
@@ -223,7 +223,7 @@ In Angular documentation, "camelCase" always means *lower camel case*.
 
 ## Component
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -241,14 +241,14 @@ Those familiar with "MVC" and "MVVM" patterns will recognize
 the component in the role of "controller" or "view model".
 
 
-~~~
+</div>
 
 
 
 
 ## dash-case
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -260,13 +260,13 @@ the root of filenames (such as `hero-list.component.ts`) are often
 spelled in dash-case.
 
 
-~~~
+</div>
 
 
 
 ## Data binding
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -293,7 +293,7 @@ operations and supporting declaration syntax.
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
 
 
-~~~
+</div>
 
 
 
@@ -305,7 +305,7 @@ operations and supporting declaration syntax.
 
 ## Decorator | decoration
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -331,24 +331,24 @@ that it decorates. None of the decorations shown here will "leak" to other
 classes that follow it in the file.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Always include parentheses `()` when applying a decorator.
 
 
-~~~
+</div>
 
 
 
-~~~
+</div>
 
 
 
 ## Dependency injection
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -402,7 +402,7 @@ You can register your own providers.
 Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 
-~~~
+</div>
 
 
 
@@ -414,7 +414,7 @@ Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 ## Directive
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -448,14 +448,14 @@ shaping or reshaping HTML layout, typically by adding, removing, or manipulating
 elements and their children.
 
 
-~~~
+</div>
 
 
 
 
 ## ECMAScript
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -474,44 +474,44 @@ to ES5 JavaScript.
 Angular developers can write in ES5 directly.
 
 
-~~~
+</div>
 
 
 
 ## ES2015
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
-~~~
+</div>
 
 
 
 ## ES5
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 5, the version of JavaScript run by most modern browsers.
 
-~~~
+</div>
 
 
 
 ## ES6
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 
-~~~
+</div>
 
 
 
@@ -527,7 +527,7 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 ## Injector
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -536,13 +536,13 @@ that can find a named dependency in its cache or create a dependency
 with a registered [provider](guide/glossary#provider).
 
 
-~~~
+</div>
 
 
 
 ## Input
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -554,13 +554,13 @@ in the template expression to the right of the equal sign.
 See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
 ## Interpolation
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -582,7 +582,7 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -592,7 +592,7 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 
 ## Just-in-time (JIT) compilation
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -601,28 +601,28 @@ and launching the application dynamically. Just-in-time mode is a good choice du
 Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 
 
-~~~
+</div>
 
 
 
 
 ## kebab-case
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 See [dash-case](guide/glossary#dash-case).
 
 
-~~~
+</div>
 
 
 
 
 ## Lifecycle hooks
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -649,18 +649,18 @@ Angular calls these hook methods in the following order:
 Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 
-~~~
+</div>
 
 
 
 
 ## Module
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -671,7 +671,7 @@ For details and examples, see the [Angular Modules](guide/ngmodule) page.
 * ES2015 modules, as described in this section.
 
 
-~~~
+</div>
 
 
 
@@ -700,7 +700,7 @@ class belongs to a feature module named `date_pipe` in the file `date_pipe.ts`.
 You rarely access Angular feature modules directly. You usually import them from an Angular [scoped package](guide/glossary#scoped-package) such as `@angular/core`.
 
 
-~~~
+</div>
 
 
 
@@ -710,7 +710,7 @@ You rarely access Angular feature modules directly. You usually import them from
 
 ## Observable
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -722,13 +722,13 @@ To use observables, Angular uses a third-party library called Reactive Extension
 Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 
-~~~
+</div>
 
 
 
 ## Output
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -741,14 +741,14 @@ in the template expression to the right of the equal sign.
 See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
 
 ## PascalCase
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -759,13 +759,13 @@ This form is also known as *upper camel case* to distinguish it from *lower came
 In this documentation, "PascalCase" means *upper camel case* and  "camelCase" means *lower camel case*.
 
 
-~~~
+</div>
 
 
 
 ## Pipe
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -786,13 +786,13 @@ You can also write your own custom pipes.
 Read more in the page on [pipes](guide/pipes).
 
 
-~~~
+</div>
 
 
 
 ## Provider
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -801,7 +801,7 @@ A _provider_ creates a new instance of a dependency for the
 It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that can create a dependency value.
 
 
-~~~
+</div>
 
 
 
@@ -811,7 +811,7 @@ It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that c
 
 ## Reactive forms
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -828,13 +828,13 @@ When building reactive forms:
 Reactive forms are powerful, flexible, and a good choice for more complex data-entry form scenarios, such as dynamic generation of form controls.
 
 
-~~~
+</div>
 
 
 
 ## Router
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -858,13 +858,13 @@ directives that users can click to navigate.
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
 ## Router module
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -873,13 +873,13 @@ A separate [Angular module](guide/glossary#angular-module) that provides the nec
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
 ## Routing component
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -888,14 +888,14 @@ An Angular [component](guide/glossary#component) with a `RouterOutlet` that disp
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
 
 ## Scoped package
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -916,13 +916,13 @@ is that the scoped package name begins with the Angular *scope name*, `@angular`
 
 
 
-~~~
+</div>
 
 
 
 ## Service
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -941,7 +941,7 @@ Applications often require services such as a data service or a logging service.
 For more information, see the [Services](guide/.ial/toh-pt4) page of the [Tour of Heroes](guide/.ial/) tutorial.
 
 
-~~~
+</div>
 
 
 
@@ -950,7 +950,7 @@ For more information, see the [Services](guide/.ial/toh-pt4) page of the [Tour o
 
 ## snake_case
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -958,7 +958,7 @@ The practice of writing compound words or phrases such that an
 underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
 
 
-~~~
+</div>
 
 
 
@@ -970,7 +970,7 @@ underscore (`_`) separates one word from the next. This form is also known as *u
 
 ## Structural directives
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -981,14 +981,14 @@ The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive 
 Read more in the [Structural Directives](guide/structural-directives) page.
 
 
-~~~
+</div>
 
 
 
 
 ## Template
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -997,13 +997,13 @@ the support and guidance of an Angular [directive](guide/glossary#directive),
 most notably a [component](guide/glossary#component).
 
 
-~~~
+</div>
 
 
 
 ## Template-driven forms
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1023,13 +1023,13 @@ Read about how to build template-driven forms
 in the [Forms](guide/forms) page.
 
 
-~~~
+</div>
 
 
 
 ## Template expression
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1041,13 +1041,13 @@ in the [Template expressions](guide/template-syntax#template-expressions) sectio
 of the [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
 ## Transpile
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1055,13 +1055,13 @@ The process of transforming code written in one form of JavaScript
 (such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
 
 
-~~~
+</div>
 
 
 
 ## TypeScript
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1079,7 +1079,7 @@ you can use other JavaScript dialects such as [ES5](guide/glossary#es5).
 Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
 
-~~~
+</div>
 
 
 
@@ -1089,7 +1089,7 @@ Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org
 
 ## View
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1106,7 +1106,7 @@ dynamically as the user navigates through the application, typically
 under the control of a [router](guide/glossary#router).
 
 
-~~~
+</div>
 
 
 
@@ -1122,7 +1122,7 @@ under the control of a [router](guide/glossary#router).
 
 ## Zone
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1145,5 +1145,5 @@ the information it displays via [data bindings](guide/glossary#data-binding).
 Learn more about zones in this
 [Brian Ford video](https://www.youtube.com/watch?v=3IqtmUscE_U).
 
-~~~
+</div>
 

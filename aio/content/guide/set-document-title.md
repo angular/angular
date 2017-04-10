@@ -55,7 +55,7 @@ The HTML `<title>` is in the document `<head>`, outside the body, making it inac
 We could grab the browser `document` object and set the title manually.
 That's dirty and undermines our chances of running the app outside of a browser someday.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -65,7 +65,7 @@ inside a Web Worker to improve your app's responsiveness by using multiple threa
 means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
 
 
-~~~
+</div>
 
 
 

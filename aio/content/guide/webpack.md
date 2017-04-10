@@ -156,7 +156,7 @@ and emits *two* bundle files, one called `app.js` containing only the applicatio
 another called `vendor.js` with all the vendor dependencies.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -164,7 +164,7 @@ The `[name]` in the output name is a *placeholder* that a Webpack plugin replace
 `app` and `vendor`. Plugins are [covered later](guide/webpack#commons-chunk-plugin) in the guide.
 
 
-~~~
+</div>
 
 
 
@@ -309,7 +309,7 @@ Add these files:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -321,7 +321,7 @@ Webpack, the plugins, and the loaders are also installed as packages.
 They are listed in the updated `packages.json`.
 
 
-~~~
+</div>
 
 
 
@@ -353,7 +353,7 @@ Add a `polyfills.ts` like this one to the `src/` folder.
 
 
 
-~~~ {.callout.is-critical}
+<div class="callout is-critical">
 
 
 
@@ -366,7 +366,7 @@ Add a `polyfills.ts` like this one to the `src/` folder.
 Load `zone.js` early within `polyfills.ts`, immediately after the other ES6 and metadata shims.
 
 
-~~~
+</div>
 
 
 
@@ -459,7 +459,7 @@ Tell Webpack to resolve extension-less file requests by looking for matching fil
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -467,7 +467,7 @@ If Webpack should resolve extension-less files for styles and HTML,
 add `.css` and `.html` to the list.
 
 
-~~~
+</div>
 
 
 
@@ -493,7 +493,7 @@ Rules tell Webpack which loaders to use for each file, or module:
 * CSS&mdash;the first pattern matches application-wide styles; the second handles 
 component-scoped styles (the ones specified in a component's `styleUrls` metadata property).
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -505,18 +505,18 @@ The second pattern filters for component-scoped styles and loads them as strings
 which is what Angular expects to do with styles specified in a `styleUrls` metadata property.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Multiple loaders can be chained using the array notation.
 
 
-~~~
+</div>
 
 
 
@@ -546,7 +546,7 @@ Of course the application code imports vendor code.
 On its own, Webpack is not smart enough to keep the vendor code out of the `app.js` bundle.
 The `CommonsChunkPlugin` does that job.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -555,7 +555,7 @@ Where Webpack finds that `app` has shared dependencies with `vendor`, it removes
 It would remove `polyfills` from `vendor` if they shared dependencies, which they don't.
 
 
-~~~
+</div>
 
 
 
