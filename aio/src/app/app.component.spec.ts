@@ -71,35 +71,76 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('shows/hide SideNav based on doc\'s navigation view', () => {
+  describe('SideNav when side-by-side', () => {
+    let hamburger: HTMLButtonElement;
+    let locationService: MockLocationService;
+    let sidenav: Element;
+
+    beforeEach(() => {
+      component.onResize(1033); // side-by-side
+      locationService = fixture.debugElement.injector.get(LocationService) as any;
+      hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
+      sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+    });
+
+    it('should open when nav to a guide page (guide/pipes)', () => {
+      locationService.urlSubject.next('guide/pipes');
+      fixture.detectChanges();
+      expect(sidenav.className).toMatch(/sidenav-open/);
+    });
+
+    it('should open when nav to an api page', () => {
+      locationService.urlSubject.next('api/a/b/c/d');
+      fixture.detectChanges();
+      expect(sidenav.className).toMatch(/sidenav-open/);
+    });
+
+    it('should be closed when nav to a marketing page (features)', () => {
+      locationService.urlSubject.next('features');
+      fixture.detectChanges();
+      expect(sidenav.className).toMatch(/sidenav-clos/);
+    });
+
+    describe('when manually closed', () => {
+
+      beforeEach(() => {
+        locationService.urlSubject.next('guide/pipes');
+        fixture.detectChanges();
+        hamburger.click();
+        fixture.detectChanges();
+      });
+
+      it('should be closed', () => {
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+    });
+  });
+
+  describe('SideNav when NOT side-by-side (mobile)', () => {
+    let sidenav: Element;
     let locationService: MockLocationService;
 
     beforeEach(() => {
+      component.onResize(1000); // NOT side-by-side
       locationService = fixture.debugElement.injector.get(LocationService) as any;
-      component.onResize(1000); // side-by-side
+      sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
     });
 
-    it('should have sidenav open when doc in the sidenav (guide/pipes)', () => {
+    it('should be closed when nav to a guide page (guide/pipes)', () => {
       locationService.urlSubject.next('guide/pipes');
-
       fixture.detectChanges();
-      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      expect(sidenav.className).toMatch(/sidenav-open/);
+      expect(sidenav.className).toMatch(/sidenav-clos/);
     });
 
-    it('should have sidenav open when doc is an api page', () => {
+    it('should be closed when nav to an api page', () => {
       locationService.urlSubject.next('api/a/b/c/d');
-
       fixture.detectChanges();
-      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      expect(sidenav.className).toMatch(/sidenav-open/);
+      expect(sidenav.className).toMatch(/sidenav-clos/);
     });
 
-    it('should have sidenav closed when doc not in the sidenav (features)', () => {
+    it('should be closed when nav to a marketing page (features)', () => {
       locationService.urlSubject.next('features');
-
       fixture.detectChanges();
-      const sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
       expect(sidenav.className).toMatch(/sidenav-clos/);
     });
   });
