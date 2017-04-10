@@ -181,14 +181,14 @@ Import what you need from it as you would from any other Angular package.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 You'll learn about more options in the [details below](guide/router#browser-url-styles).
 
 
-~~~
+</div>
 
 
 
@@ -628,7 +628,7 @@ Modern HTML5 browsers were the first to support `pushState` which is why many pe
 "HTML5 style" URLs.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -638,7 +638,7 @@ learn why HTML5 style is preferred, how to adjust its behavior, and how to switc
 older hash (#) style, if necessary.
 
 
-~~~
+</div>
 
 
 
@@ -659,7 +659,7 @@ set the `href` value in **`index.html`** *exactly* as shown here.
 
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -683,7 +683,7 @@ That's why the example code replaces the `<base href...>` with a script that wri
 You only need this trick for the live example, not production code.
 
 
-~~~
+</div>
 
 
 
@@ -738,7 +738,7 @@ Once the application is bootstrapped, the `Router` performs the initial navigati
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -748,7 +748,7 @@ and create a **[Routing Module](guide/router#routing-module)**, a special type o
 of routing in feature modules.
 
 
-~~~
+</div>
 
 
 
@@ -791,7 +791,7 @@ The `RouterOutlet` is a directive from the router library that marks
 the spot in the template where the router should display the views for that outlet.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -800,7 +800,7 @@ and subsequently inserts the navigated view element
 immediately _after_ the `<router-outlet>`.
 
 
-~~~
+</div>
 
 
 
@@ -821,14 +821,14 @@ or a URL fragment for jumping to different areas on the page. Query string param
 are provided through the `[queryParams]` binding which takes an object (e.g. `{ name: 'value' }`), while the URL fragment
 takes a single value bound to the `[fragment]` input binding.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Learn about the how you can also use the _link parameters array_ in the [appendix below](guide/router#link-parameters-array).
 
 
-~~~
+</div>
 
 
 
@@ -882,7 +882,7 @@ The router will select _this_ route if it can't match a route earlier in the con
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](guide/router#redirect) to an existing route.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -891,7 +891,7 @@ Wildcard routes are the least specific routes in the route configuration.
 Be sure it is the _last_ route in the configuration.
 
 
-~~~
+</div>
 
 
 
@@ -974,7 +974,7 @@ In this app, the router should select the route to the `HeroListComponent` only 
 so set the `pathMatch` value to `'full'`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1002,7 +1002,7 @@ Learn more in Victor Savkin's
 [post on redirects](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 
 
-~~~
+</div>
 
 
 
@@ -1179,7 +1179,7 @@ then replacing `RouterModule.forRoot` in the `imports` array with the `AppRoutin
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1187,7 +1187,7 @@ Later in this guide you will create [multiple routing modules](guide/router#hero
 you must import those routing modules [in the correct order](guide/router#routing-module-order).
 
 
-~~~
+</div>
 
 
 
@@ -1344,7 +1344,7 @@ using the same techniques you learned while creating the `AppRoutingModule`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1356,7 +1356,7 @@ It may seem like overkill early when the feature routes are simple.
 But routes have a tendency to grow more complex and consistency in patterns pays off over time.
 
 
-~~~
+</div>
 
 
 
@@ -1371,7 +1371,7 @@ In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method
 In a feature module you use the static **`forChild`** method.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1379,7 +1379,7 @@ Only call `RouterModule.forRoot` in the root `AppRoutingModule`
 (or the `AppModule` if that's where you register top level application routes). 
 In any other module, you must call the **`RouterModule.forChild`** method to register additional routes.
 
-~~~
+</div>
 
 
 
@@ -1485,7 +1485,7 @@ The wildcard route &mdash; which matches _every_ URL &mdash;
 will intercept the attempt to navigate to a hero route.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1495,7 +1495,7 @@ Learn about inspecting the runtime router configuration
 [below](guide/router#inspect-config "Inspect the router config").
 
 
-~~~
+</div>
 
 
 
@@ -1532,7 +1532,7 @@ If a user enters that URL into the browser address bar, the router should recogn
 pattern and go to the same "Magneta" detail view.
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -1549,7 +1549,7 @@ the value `15` in the path clearly distinguishes the route to "Magneta" from
 a route for some other hero.
 
 
-~~~
+</div>
 
 
 
@@ -1621,7 +1621,7 @@ The router composes the destination URL from the array like this:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1632,7 +1632,7 @@ The router extracts the route parameter (`id:15`) from the URL and supplies it t
 the `HeroDetailComponent` via the `ActivatedRoute` service.
 
 
-~~~
+</div>
 
 
 
@@ -1646,7 +1646,7 @@ The route path and parameters are available through an injected router service c
 It has a great deal of useful information including:
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1671,7 +1671,7 @@ It has a great deal of useful information including:
 **`children`**: contains all the [child routes](guide/router#child-routing-component) activated under the current route.
 
 
-~~~
+</div>
 
 
 
@@ -1710,7 +1710,7 @@ Later, in the `ngOnInit` method, you use the `ActivatedRoute` service to retriev
 pull the hero `id` from the parameters and retrieve the hero to display.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1721,7 +1721,7 @@ so the hero will be retrieved in time to use it.
 Learn more about the `ngOnInit` method and other component lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) guide.
 
 
-~~~
+</div>
 
 
 
@@ -1768,7 +1768,7 @@ You need a way to detect when the route parameters change from _within the same 
 The observable `params` property handles that beautifully.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1783,7 +1783,7 @@ The `Router` destroys a routed component when it is no longer needed and the inj
 Feel free to unsubscribe anyway. It is harmless and never a bad practice.  
 
 
-~~~
+</div>
 
 
 
@@ -1811,7 +1811,7 @@ It's much simpler to write and read:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1821,7 +1821,7 @@ could re-use the component.
 This sample stays with the observable `params` strategy just in case.
 
 
-~~~
+</div>
 
 
 
@@ -1966,7 +1966,7 @@ They are **separated by semicolons ";"**
 This is *matrix URL* notation &mdash; something you may not have seen before.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1982,7 +1982,7 @@ The syntax may seem strange to you but users are unlikely to notice or care
 as long as the URL can be emailed and pasted into a browser address bar
 as this one can.
 
-~~~
+</div>
 
 
 
@@ -1994,7 +1994,7 @@ as this one can.
 The list of heroes is unchanged. No hero row is highlighted.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2002,7 +2002,7 @@ The <live-example></live-example> *does* highlight the selected
 row because it demonstrates the final state of the application which includes the steps you're *about* to cover.
 At the moment this guide is describing the state of affairs *prior* to those steps.
 
-~~~
+</div>
 
 
 
@@ -2048,14 +2048,14 @@ when the user navigates to the component. In `ngOnInit` you subscribe to those v
 and get the heroes.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 All route/query parameters are strings.
 The (+) in front of the `params['id']` expression is a JavaScript trick to convert the string to an integer.
 
-~~~
+</div>
 
 
 
@@ -2152,7 +2152,7 @@ The other two `@HostBinding` properties style the display and position of the co
 The `HeroDetailComponent` will ease in from the left when routed to and will slide down when navigating away.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2160,7 +2160,7 @@ Applying route animations to individual components works for a simple demo, but 
 it is better to animate routes based on _route paths_.
 
 
-~~~
+</div>
 
 
 
@@ -2329,7 +2329,7 @@ You can leave *Heroes* in its current state as a contrast with the *Crisis Cente
 and decide later if the differences are worthwhile.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -2338,7 +2338,7 @@ In keeping with the
 changes to the *Crisis Center* won't affect the `AppModule` or
 any other feature's component.
 
-~~~
+</div>
 
 
 
@@ -2519,7 +2519,7 @@ Navigation _within_ the feature area remains intact even if you change the paren
 Here's an example:
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2534,7 +2534,7 @@ If you must navigate to a sibling route, you could use the `../<sibling>` conven
 one level, then over and down the sibling route path.
 
 
-~~~
+</div>
 
 
 
@@ -2545,14 +2545,14 @@ After the _link parameters array_, add an object with a `relativeTo` property se
 The router then calculates the target URL based on the active route's location.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 **Always** specify the complete _absolute_ path when calling router's `navigateByUrl` method.
 
 
-~~~
+</div>
 
 
 
@@ -2729,7 +2729,7 @@ In this case there is only the "popup" outlet property and its value is another 
 You are in effect saying, _when the user clicks this link, display the component associated with the `compose` route in the `popup` outlet_.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2746,7 +2746,7 @@ You're not actually doing that here.
 But to target a named outlet, you must use the richer, more verbose syntax.
 
 
-~~~
+</div>
 
 
 
@@ -2846,14 +2846,14 @@ A guard's return value controls the router's behavior:
 * If it returns `false`, the navigation process stops and the user stays put.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
 
 
-~~~
+</div>
 
 
 
@@ -2974,7 +2974,7 @@ feature module, a dashboard route and two unfinished components to manage crises
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2986,7 +2986,7 @@ Adding an additional binding to the `Dashboard` routerLink,
 the user navigates to the `/admin` URL and not when navigating to any of the child routes.
 
 
-~~~
+</div>
 
 
 
@@ -3151,7 +3151,7 @@ Import and add the `LoginRoutingModule` to the `AppModule` imports as well.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3160,7 +3160,7 @@ the Router access to retrieve these services from the `Injector` during the navi
 The same rule applies for feature modules loaded [asynchronously](guide/router#asynchronous-routing).
 
 
-~~~
+</div>
 
 
 
@@ -3262,7 +3262,7 @@ This demo does neither. Instead, it asks the user to make that choice explicitly
 in a confirmation dialog box that *waits asynchronously for the user's
 answer*.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3271,7 +3271,7 @@ The app will be more responsive&mdash;and can do other work&mdash;by
 waiting for the user's answer asynchronously. Waiting for the user asynchronously
 is like waiting for the server asynchronously.
 
-~~~
+</div>
 
 
 
@@ -3561,7 +3561,7 @@ You can use these persistent bits of information for things that need to be prov
 authentication tokens or session ids.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3569,7 +3569,7 @@ The `query params` and `fragment` can also be preserved using a `RouterLink` wit
 the `preserveQueryParams` and `preserveFragment` bindings respectively.
 
 
-~~~
+</div>
 
 
 
@@ -3631,7 +3631,7 @@ The lazy loading and re-configuration happen just once, when the route is _first
 the module and routes are available immediately for subsequent requests.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3639,7 +3639,7 @@ Angular provides a built-in module loader that supports SystemJS to load modules
 using another bundling tool, such as Webpack, you would use the Webpack mechanism for asynchronously loading modules.
 
 
-~~~
+</div>
 
 
 
@@ -4082,7 +4082,7 @@ making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -4090,7 +4090,7 @@ Learn about providers and the bootstrap process in the
 [Dependency Injection guide](guide/dependency-injection#bootstrap).
 
 
-~~~
+</div>
 
 
 

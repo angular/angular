@@ -46,7 +46,7 @@ The architecture diagram identifies the eight main building blocks of an Angular
 Learn these building blocks, and you're on your way.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -56,7 +56,7 @@ Learn these building blocks, and you're on your way.
 
 
 
-~~~
+</div>
 
 
 
@@ -84,7 +84,7 @@ a workflow, or a closely related set of capabilities.
 
 An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -94,7 +94,7 @@ what those classes mean and how they should work.
 <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0" target="_blank">
 Learn more</a> about decorators on the web.
 
-~~~
+</div>
 
 
 
@@ -121,13 +121,13 @@ Here's a simple root module:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module. 
 
-~~~
+</div>
 
 
 
@@ -165,13 +165,13 @@ Other JavaScript modules use *import statements* to access public objects from o
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 <a href="http://exploringjs.com/es6/ch_modules.html" target="_blank">Learn more about the JavaScript module system on the web.</a>
 
-~~~
+</div>
 
 
 
@@ -224,18 +224,18 @@ It's easy to confuse the two systems because they share the common vocabulary of
 Hang in there. The confusion yields to clarity with time and experience.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Learn more from the [Angular modules](guide/ngmodule) page.
 
 
-~~~
+</div>
 
 
 
----
+<hr/>
 
 
 
@@ -276,7 +276,7 @@ Angular creates, updates, and destroys components as the user moves through the 
 Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()` declared above.
 
 
----
+<hr/>
 
 
 
@@ -322,7 +322,7 @@ The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
 <br class="l-clear-both">
 
----
+<hr/>
 
 
 
@@ -395,7 +395,7 @@ The architectural takeaway is that you must add metadata to your code
 so that Angular knows what to do.
 
 
----
+<hr/>
 
 
 
@@ -470,7 +470,7 @@ between a template and its component.<br class="l-clear-both">
 
 Data binding is also important for communication between parent and child components.<br class="l-clear-both">
 
----
+<hr/>
 
 
 
@@ -492,14 +492,14 @@ a `@Component` decorator is actually a `@Directive` decorator extended with temp
 <br class="l-clear-both">
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 While **a component is technically a directive**,
 components are so distinctive and central to Angular applications that this architectural overview  separates components from directives.
 
-~~~
+</div>
 
 
 
@@ -548,7 +548,7 @@ Of course, you can also write your own directives. Components such as
 <!-- PENDING: link to where to learn more about other kinds! -->
 
 
----
+<hr/>
 
 
 
@@ -616,7 +616,7 @@ Angular does help you *follow* these principles by making it easy to factor your
 application logic into services and make those services available to components through *dependency injection*.
 
 
----
+<hr/>
 
 
 
@@ -707,7 +707,7 @@ Points to remember about dependency injection:
 * Register *providers* with injectors.
 
 
----
+<hr/>
 
 
 

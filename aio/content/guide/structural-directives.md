@@ -87,7 +87,7 @@ This guide won't repeat how to _use_ them. But it does explain _how they work_
 and how to [write your own](guide/structural-directives#unless) structural directive.
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -109,11 +109,11 @@ The guide refers to the _attribute name_ when describing how
 you apply the directive to an element in the HTML template.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -132,7 +132,7 @@ You can apply many _attribute_ directives to one host element.
 You can [only apply one](guide/structural-directives#one-per-element) _structural_ directive to a host element.
 
 
-~~~
+</div>
 
 
 
@@ -296,7 +296,7 @@ At minimum `NgFor` needs a looping variable (`let hero`) and a list (`heroes`).
 You enable these features in the string assigned to `ngFor`, which you write in Angular's [microsyntax](guide/structural-directives#microsyntax). 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -305,7 +305,7 @@ Everything _outside_ the `ngFor` string stays with the host element
 In this example, the `[ngClass]="odd"` stays on the `<div>`.
 
 
-~~~
+</div>
 
 
 
@@ -423,7 +423,7 @@ An `NgSwitchCase` displays its host element when its value matches the switch va
 The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` matches the switch value.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -432,7 +432,7 @@ The `<happy-hero>` is the host element for the happy `*ngSwitchCase`.
 The `<unknown-hero>` is the host element for the `*ngSwitchDefault`.
 
 
-~~~
+</div>
 
 
 
@@ -732,14 +732,14 @@ The directive consumer expects to bind a true/false condition to `[myUnless]`.
 That means the directive needs a `myUnless` property, decorated with `@Input` 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outputs) guide.
 
 
-~~~
+</div>
 
 
 

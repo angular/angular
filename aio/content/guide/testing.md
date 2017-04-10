@@ -141,7 +141,7 @@ The sample application and all tests in this guide are available as live example
 * <live-example plnkr="app-specs" embedded-style>All specs that test the sample application</live-example>.
 * <live-example plnkr="bag-specs" embedded-style>A grab bag of additional specs</live-example>.<a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -321,7 +321,7 @@ But first you should write a dummy test to verify that your test environment is 
 and to lock in a few basic testing skills.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -335,7 +335,7 @@ Start with a simple test to make sure that the setup works properly.
 Create a new file called `1st.spec.ts` in the application root folder, `src/app/`
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -344,7 +344,7 @@ Tests written in Jasmine are called _specs_ .
 the convention adhered to by  `karma.conf.js` and other tooling.
 
 
-~~~
+</div>
 
 
 
@@ -375,14 +375,14 @@ Compile and run it in karma from the command line using the following command:
 The command compiles the application and test code and starts karma.
 Both processes watch pertinent files, write messages to the console, and re-run when they detect changes.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The documentation setup defines the `test` command in the `scripts` section of npm's `package.json`.
 The Angular CLI has different commands to do the same thing. Adjust accordingly.
 
-~~~
+</div>
 
 
 
@@ -444,7 +444,7 @@ Restore the expectation from `false` back to `true`.
 Both processes detect the change, re-run, and karma reports complete success.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -452,7 +452,7 @@ The console log can be quite long. Keep your eye on the last line.
 When all is well, it reads `SUCCESS`.
 
 
-~~~
+</div>
 
 
 
@@ -487,7 +487,7 @@ You can also try this test as a <live-example plnkr="1st-specs" title="First spe
 All of the tests in this guide are available as [live examples](guide/testing#live-examples "Live examples of these tests").
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -561,14 +561,14 @@ The base state includes a default testing module configuration consisting of the
 declarables (components, directives, and pipes) and providers (some of them mocked)
 that almost everyone needs.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The testing shims mentioned [later](guide/testing#testbed-methods) initialize the testing module configuration
 to something like the `BrowserModule` from `@angular/platform-browser`.
 
-~~~
+</div>
 
 
 
@@ -588,14 +588,14 @@ In this example, `TestBed.createComponent` creates an instance of `BannerCompone
 returns a [_component test fixture_](guide/testing#component-fixture).
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Do not re-configure `TestBed` after calling `createComponent`.
 
 
-~~~
+</div>
 
 
 
@@ -620,7 +620,7 @@ The **`query`** method takes a predicate function and searches the fixture's ent
 _first_ element that satisfies the predicate.
 The result is a _different_ `DebugElement`, one associated with the matching DOM element.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -630,7 +630,7 @@ A _predicate_ is a function that returns a boolean.
 A query predicate receives a `DebugElement` and returns `true` if the element meets the selection criteria.
 
 
-~~~
+</div>
 
 
 
@@ -740,7 +740,7 @@ But a direct, synchronous update of the component property is invisible.
 The test must call `fixture.detectChanges()` manually to trigger another cycle of change detection.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -749,11 +749,11 @@ the samples in this guide _always call_ `detectChanges()` _explicitly_.
 There is no harm in calling `detectChanges()` more often than is strictly necessary.
 
 
-~~~
+</div>
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -832,14 +832,14 @@ In this example, the `BannerComponent` is the only component to compile.
 When `compileComponents` completes, the external templates and css files have been "inlined"
 and `TestBed.createComponent` can create new instances of `BannerComponent` synchronously.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 WebPack developers need not call `compileComponents` because it inlines templates and css
 as part of the automated build process that precedes running the test.
 
-~~~
+</div>
 
 
 
@@ -850,7 +850,7 @@ Any of these components might have external templates and css files.
 `TestBed.compileComponents` compiles all of the declared components asynchronously at one time.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -858,7 +858,7 @@ Do not configure the `TestBed` after calling `compileComponents`.
 Make `compileComponents` the last step
 before calling `TestBed.createComponent` to instantiate the _component-under-test_.
 
-~~~
+</div>
 
 
 
@@ -903,7 +903,7 @@ The two `beforeEach` calls are widely preferred.
 Take a moment to explore this component spec as a <live-example plnkr="banner-specs" title="Spec for component with external template" embedded-style></live-example>.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -916,11 +916,11 @@ in case you decide later to re-factor the template into a separate file.
 The tests in this guide only call `compileComponents` when necessary.
 
 
-~~~
+</div>
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -1015,7 +1015,7 @@ so it is safe to call `TestBed.get` as follows:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1026,7 +1026,7 @@ see the section [_Override a component's providers_](guide/testing#component-ove
 explains why you must get the service from the component's injector instead.
 
 
-~~~
+</div>
 
 
 
@@ -1068,7 +1068,7 @@ And here are some tests:
 
 The first is a sanity test; it confirms that the stubbed `UserService` is called and working.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1077,7 +1077,7 @@ If the expectation fails, Jasmine displays this addendum after the expectation f
 In a spec with multiple expectations, it can help clarify what went wrong and which expectation failed.
 
 
-~~~
+</div>
 
 
 
@@ -1086,7 +1086,7 @@ The second test validates the effect of changing the user name.
 The third test checks that the component displays the proper message when there is no logged-in user.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -1140,7 +1140,7 @@ The spy is designed such that any call to `getQuote` receives an immediately res
 The spy bypasses the actual `getQuote` method and therefore does not contact the server.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1152,7 +1152,7 @@ Spying on the real service isn't always easy, especially when the real service h
 You can _stub and spy_ at the same time, as shown in [an example below](guide/testing#spy-stub).
 
 
-~~~
+</div>
 
 
 
@@ -1200,14 +1200,14 @@ as [discussed earlier](guide/testing#async-in-before-each) when it was called in
 Although `async` does a great job of hiding asynchronous boilerplate,
 some functions called within a test (such as `fixture.whenStable`) continue to reveal their asynchronous behavior.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `fakeAsync` alternative, [covered below](guide/testing#fake-async), removes this artifact and affords a more linear coding experience.
 
 
-~~~
+</div>
 
 
 
@@ -1263,14 +1263,14 @@ There is no `then(...)` to disrupt the visible flow of control.
 The promise-returning `fixture.whenStable` is gone, replaced by `tick()`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 There _are_ limitations. For example, you cannot make an XHR call from within a `fakeAsync`.
 
 
-~~~
+</div>
 
 
 
@@ -1322,7 +1322,7 @@ code that involves the `intervalTimer`, as is common when
 testing async `Observable` methods.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -1379,13 +1379,13 @@ The `DashboardComponent` depends on the Angular router and the `HeroService`.
 You'd probably have to replace them both with test doubles, which is a lot of work.
 The router seems particularly challenging.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The [discussion below](guide/testing#routed-component) covers testing components that require the router.
 
-~~~
+</div>
 
 
 
@@ -1434,7 +1434,7 @@ the test must match the element value with the uppercased name:
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1444,7 +1444,7 @@ representation&mdash;something not possible with
 low cost and without resorting to much slower and more complicated end-to-end tests.
 
 
-~~~
+</div>
 
 
 
@@ -1513,7 +1513,7 @@ custom event object as the second parameter. The default is a (partial)
 accepted by many handlers including the `RouterLink` directive.
 
 
-~~~ {.callout.is-critical}
+<div class="callout is-critical">
 
 
 
@@ -1528,7 +1528,7 @@ It's a function defined in _this guide's sample code_.
 All of the sample tests use it.
 If you like it, add it to your own collection of helpers.
 
-~~~
+</div>
 
 
 
@@ -1540,7 +1540,7 @@ Here's the previous test, rewritten using this click helper.
 
 
 
----
+<hr/>
 
 
 
@@ -1602,7 +1602,7 @@ Only the selected event test differs. It confirms that the selected `DashboardHe
 really does find its way up through the event binding to the host component.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -1680,7 +1680,7 @@ The `inject` function has two parameters:
 1. A test function whose parameters correspond exactly to each item in the injection token array.
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -1694,7 +1694,7 @@ The `inject` function uses the current `TestBed` injector and can only return se
 It does not return services from component providers.
 
 
-~~~
+</div>
 
 
 
@@ -1709,14 +1709,14 @@ If you need a service provided by the component's _own_ injector,  call `fixture
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Use the component's own injector to get the service actually injected into the component.
 
 
-~~~
+</div>
 
 
 
@@ -1725,14 +1725,14 @@ You cannot call any more `TestBed` configuration methods, not `configureTestingM
 nor any of the `override...` methods. The `TestBed` throws an error if you try.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Do not configure the `TestBed` after calling `inject`.
 
 
-~~~
+</div>
 
 
 
@@ -1764,7 +1764,7 @@ Here's the `HeroDetailComponent` constructor:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1778,7 +1778,7 @@ If the`id` parameter is missing, the `pluck` operator fails and the `catch` trea
 
 The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.params` in more detail.
 
-~~~
+</div>
 
 
 
@@ -1821,24 +1821,24 @@ drives the stub's `params` _Observable_ and returns the same value to every `par
 
 * Setting the `testParams` property also updates the stub's internal value for the `snapshot` property to return.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The [_snapshot_](guide/router#snapshot "Router guide: snapshot") is another popular way for components to consume route parameters.
 
-~~~
+</div>
 
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
 The router stubs in this guide are meant to inspire you. Create your own stubs to fit your testing needs.
 
 
-~~~
+</div>
 
 
 
@@ -1854,14 +1854,14 @@ Here's a test demonstrating the component's behavior when the observed `id` refe
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `createComponent` method and `page` object are discussed [in the next section](guide/testing#page-object).
 Rely on your intuition for now.
 
-~~~
+</div>
 
 
 
@@ -1891,18 +1891,18 @@ New heroes have `id=0` and a blank `name`. This test confirms that the component
 
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
 Inspect and download _all_ of the guide's application test code with this <live-example plnkr="app-specs" embedded-style>live example</live-example>.
 
 
-~~~
+</div>
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -1968,7 +1968,7 @@ Here are a few more `HeroDetailComponent` tests to drive the point home.
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2040,7 +2040,7 @@ Try a test configuration that imports the `HeroModule` like this one:
 
 That's _really_ crisp. Only the _test doubles_ in the `providers` remain. Even the `HeroDetailComponent` declaration is gone.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2048,24 +2048,24 @@ In fact, if you try to declare it, Angular throws an error because
 `HeroDetailComponent` is declared in both the `HeroModule` and the `DynamicTestModule` (the testing module).
 
 
-~~~
+</div>
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
 Importing the component's feature module is often the easiest way to configure the tests,
 especially when the feature module is small and mostly self-contained, as feature modules should be.
 
-~~~
+</div>
 
 
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2093,7 +2093,7 @@ And `TestBed.configureTestingModule` can't configure them either.
 Angular has been creating new instances of the real `HeroDetailService` all along!
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2113,7 +2113,7 @@ The [previous test configuration](guide/testing#feature-module-import) replaces 
 that intercepts server requests and fakes their responses.
 
 
-~~~
+</div>
 
 
 
@@ -2224,7 +2224,7 @@ for digging into and replacing parts of these other classes.
 Explore the options and combinations on your own.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2341,7 +2341,7 @@ Here are some tests that leverage this setup:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2357,7 +2357,7 @@ This is a skill you may need to test a more sophisticated component, one that ch
 re-calculates parameters, or re-arranges navigation options when the user clicks the link.
 
 
-~~~
+</div>
 
 
 
@@ -2380,7 +2380,7 @@ A _different_ battery of tests can explore whether the application navigates as 
 in the presence of conditions that influence guards such as whether the user is authenticated and authorized.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -2388,11 +2388,11 @@ A future guide update will explain how to write such
 tests with the `RouterTestingModule`.
 
 
-~~~
+</div>
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2434,7 +2434,7 @@ that contributes actively to the tests.
 The [tests in this example](guide/testing#app-component-tests) are unchanged.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -2443,11 +2443,11 @@ However, the compiler no longer alerts you to mistakes
 such as misspelled or misused components and directives.
 
 
-~~~
+</div>
 
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2510,14 +2510,14 @@ A better solution is to create an artificial test component that demonstrates al
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `<input>` case binds the `HighlightDirective` to the name of a color value in the input box.
 The initial value is the word "cyan" which should be the background color of the input box.
 
-~~~
+</div>
 
 
 
@@ -2547,7 +2547,7 @@ and its `defaultColor`.
 * `DebugElement.properties` affords access to the artificial custom property that is set by the directive.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2576,7 +2576,7 @@ They follow patterns familiar to test developers everywhere:
 * Substitute test doubles (stubs, spys, and mocks) for the real dependencies.
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -2592,7 +2592,7 @@ Write _Angular_ tests to validate the part as it interacts with Angular,
 updates the DOM, and collaborates with the rest of the application.
 
 
-~~~
+</div>
 
 
 
@@ -2775,7 +2775,7 @@ properly bound to its template or even data bound at all.
 Use Angular tests for that.
 <a href="#top" class='to-top'>Back to top</a>
 
----
+<hr/>
 
 
 
@@ -2849,7 +2849,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
       
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2857,7 +2857,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       "<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/"
       target="_blank">_Tasks, microtasks, queues and schedules_</a>".      
 
-~~~
+</div>
 
 
 
@@ -2963,7 +2963,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
 
 
----
+<hr/>
 
 
 
@@ -3603,7 +3603,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       The immediate `DebugElement` children. Walk the tree by descending through `children`.
       
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3611,7 +3611,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       `DebugElement` derives from `DebugNode` objects and there are often
       more nodes than elements. Testers can usually ignore plain nodes.      
 
-~~~
+</div>
 
 
     </td>
@@ -3779,7 +3779,7 @@ The CLI delivers similar files with the same purpose.
 
 Here's a brief description of this guide's setup files:
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -3787,7 +3787,7 @@ The deep details of these files and how to reconfigure them for your needs
 is a topic beyond the scope of this guide .
 
 
-~~~
+</div>
 
 
 
@@ -3943,7 +3943,7 @@ as the application source code files that they test:
 * When you rename the source file (inevitable), you remember to rename the test file.
 
 
----
+<hr/>
 
 
 

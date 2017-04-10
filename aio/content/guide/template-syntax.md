@@ -68,7 +68,7 @@ The <live-example></live-example>
 demonstrates all of the syntax and code snippets described in this guide.
 
 
----
+<hr/>
 
 
 
@@ -94,7 +94,7 @@ In the following sections, you'll learn how to get and set DOM (Document Object 
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -156,7 +156,7 @@ Though this is not exactly true. Interpolation is a special syntax that Angular 
 But first, let's take a closer look at template expressions and statements.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -294,7 +294,7 @@ when called twice in a row. If the expression returns an object (including an `a
 it returns the same object *reference* when called twice in a row.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -380,7 +380,7 @@ Now that you have a feel for template expressions and statements,
 you're ready to learn about the varieties of data binding syntax beyond interpolation.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -566,7 +566,7 @@ In fact, once you start data binding, you are no longer working with HTML *attri
 You are setting the *properties* of DOM elements, components, and directives.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -612,7 +612,7 @@ The value of the *property* matters.
 **The HTML attribute and the DOM property are not the same thing, even when they have the same name.**
 
 
-~~~
+</div>
 
 
 
@@ -620,7 +620,7 @@ This fact bears repeating:
 **Template binding works with *properties* and *events*, not *attributes*.**
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -635,7 +635,7 @@ When you write a data binding, you're dealing exclusively with properties and ev
 HTML attributes effectively disappear.
 
 
-~~~
+</div>
 
 
 
@@ -818,7 +818,7 @@ The following table summarizes:
 With this broad view in mind, you're ready to look at binding types in detail.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -877,7 +877,7 @@ You cannot use property binding to pull values *out* of the target element.
 You can't bind to a property of the target element to _read_ it. You can only _set_ it.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -892,7 +892,7 @@ See the API reference for
 [ContentChild](api/core/index/ContentChild-decorator).
 
 
-~~~
+</div>
 
 
 
@@ -931,7 +931,7 @@ as it is in the following example:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -940,7 +940,7 @@ one of the property names listed in the directive's `inputs` array or a property
 Such inputs map to the directive's own properties.
 
 
-~~~
+</div>
 
 
 
@@ -1078,7 +1078,7 @@ content harmlessly.
 
 
 
----
+<hr/>
 
 
 
@@ -1094,7 +1094,7 @@ The template syntax provides specialized one-way bindings for scenarios less wel
 You can set the value of an attribute directly with an **attribute binding**.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1102,7 +1102,7 @@ This is the only exception to the rule that a binding sets a target property.
 This is the only binding that creates and sets an attribute.
 
 
-~~~
+</div>
 
 
 
@@ -1175,7 +1175,7 @@ is to set ARIA attributes, as in this example:
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1218,7 +1218,7 @@ It removes the class when the expression is falsy.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1226,11 +1226,11 @@ While this is a fine way to toggle a single class name,
 the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when managing multiple class names at the same time.
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1259,7 +1259,7 @@ The following example conditionally sets the font size in  “em” and “%” 
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1267,11 +1267,11 @@ While this is a fine way to set a single style,
 the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred when setting several inline styles at the same time.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1280,11 +1280,11 @@ Note that a _style property_ name can be written in either
 [camelCase](guide/glossary#camelcase), such as `fontSize`.
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1347,7 +1347,7 @@ of a known directive, as it does in the following example:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1355,7 +1355,7 @@ The `myClick` directive is further described in the section
 on [aliasing input/output properties](guide/template-syntax#aliasing-io).
 
 
-~~~
+</div>
 
 
 
@@ -1457,7 +1457,7 @@ including queries and saves to a remote server.
 These changes percolate through the system and are ultimately displayed in this and other views.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1476,7 +1476,7 @@ The `[(x)]` syntax combines the brackets
 of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -1489,7 +1489,7 @@ of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
 Visualize a *banana in a box* to remember that the parentheses go _inside_ the brackets.
 
 
-~~~
+</div>
 
 
 
@@ -1544,7 +1544,7 @@ However, no native HTML element follows the `x` value and `xChange` event patter
 Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1576,7 +1576,7 @@ This segment reviews some of the most frequently used built-in directives,
 classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
 
 
----
+<hr/>
 
 
 
@@ -1599,7 +1599,7 @@ This section is an introduction to the most commonly used attribute directives:
 * [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1648,18 +1648,18 @@ Adding an `ngClass` property binding to `currentClasses` sets the element's clas
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 It's up to you to call `setCurrentClassess()`, both initially and when the dependent properties change.
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1704,18 +1704,18 @@ Adding an `ngStyle` property binding to `currentStyles` sets the element's style
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -1778,7 +1778,7 @@ That `ngModel` directive hides these onerous details behind its own  `ngModel` i
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1802,7 +1802,7 @@ to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way) 
 The [`sizer` shown above](guide/template-syntax#two-way) is an example of this technique.
 
 
-~~~
+</div>
 
 
 
@@ -1848,7 +1848,7 @@ Here are all variations in action, including the uppercase version:
 
 
 
----
+<hr/>
 
 
 
@@ -1879,7 +1879,7 @@ _This_ section is an introduction to the common structural directives:
 * [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
 
 
----
+<hr/>
 
 
 
@@ -1899,14 +1899,14 @@ Bind the directive to a condition expression like `isActive` in this example.
 
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
 Don't forget the asterisk (`*`) in front of `ngIf`.
 
 
-~~~
+</div>
 
 
 
@@ -1958,7 +1958,7 @@ The `nullHero` will never be displayed.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1967,11 +1967,11 @@ See also the
 described below.
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -2002,14 +2002,14 @@ You can also apply an `NgFor` to a component element, as in this example:
 
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
 Don't forget the asterisk (`*`) in front of `ngFor`.
 
 
-~~~
+</div>
 
 
 
@@ -2076,7 +2076,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2084,7 +2084,7 @@ Learn about the other `NgFor` context values such as `last`, `even`,
 and `odd` in the [NgFor API reference](api/common/index/NgFor-directive).
 
 
-~~~
+</div>
 
 
 
@@ -2143,7 +2143,7 @@ Here is an illustration of the _trackBy_ effect.
 
 
 
----
+<hr/>
 
 
 
@@ -2202,7 +2202,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -2294,7 +2294,7 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -2312,18 +2312,18 @@ properties on the *left side of the binding declaration*.
 These directive properties must be declared as **inputs** or **outputs**.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Remember: All **components** are **directives**.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2342,7 +2342,7 @@ You have *limited* access to members of a **target** directive.
 You can only bind to properties that are explicitly identified as *inputs* and *outputs*.
 
 
-~~~
+</div>
 
 
 
@@ -2386,7 +2386,7 @@ In the `HeroDetailComponent`, such properties are marked as input or output prop
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2404,7 +2404,7 @@ You can specify an input/output property either with a decorator or in a metadat
 Don't do both!
 
 
-~~~
+</div>
 
 
 
@@ -2467,7 +2467,7 @@ You can specify the alias for the property name by passing it into the input/out
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -2482,11 +2482,11 @@ the directive property name on the *left* and the public alias on the *right*:
 
 
 
-~~~
+</div>
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -2560,7 +2560,7 @@ The generated output would look something like this
 
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 
@@ -2664,7 +2664,7 @@ The display is blank, but the app keeps rolling without errors.
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 <a href="#toc">back to top</a>
 
----
+<hr/>
 
 
 

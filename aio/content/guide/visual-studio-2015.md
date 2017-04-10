@@ -12,7 +12,7 @@ Some developers prefer Visual Studio as their Integrated Development Environment
 This cookbook describes the steps required to set up and use the
 Angular QuickStart files in **Visual Studio 2015 within an ASP.NET 4.x project**.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -20,7 +20,7 @@ There is no *live example* for this cookbook because it describes Visual Studio,
 the QuickStart application itself.
 
 
-~~~
+</div>
 
 
 {@a asp-net-4}
@@ -42,7 +42,7 @@ Visual Studio 2015, follow these steps:
 *  [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -52,7 +52,7 @@ then consider the _experimental_
 Note that the resulting code does not map to the docs. Adjust accordingly.   
 
 
-~~~
+</div>
 
 
 
@@ -66,7 +66,7 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -75,7 +75,7 @@ by running `node -v` and `npm -v` in a terminal window.
 Older versions produce errors.
 
 
-~~~
+</div>
 
 
 
@@ -163,7 +163,7 @@ Create the ASP.NET 4.x project in the usual way as follows:
 * Select the desired ASP.NET 4.5.2 template and click OK.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -171,7 +171,7 @@ This cookbook uses the `Empty` template with no added folders,
 no authentication, and no hosting. Pick the template and options appropriate for your project.
 
 
-~~~
+</div>
 
 
 
@@ -238,7 +238,7 @@ instead of `node_modules` without the slash.
 change the npm `path` to `/node_modules/` with a slash.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -246,7 +246,7 @@ After these changes, `npm start` no longer works.
 You must choose to configure _either_ for F5 with IIS _or_ for  `npm start` with the lite-server.
 
 
-~~~
+</div>
 
 
 
@@ -298,7 +298,7 @@ rewrite rules near the bottom of the `web.config`:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -309,20 +309,20 @@ The URL in `<action type="Rewrite" url="/src/"/>` should
 match the base href in `index.html`.
 
 
-~~~
+</div>
 
 
 
 Build and launch the app with debugger by clicking the **Run** button or by pressing `F5`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 It's faster to run without the debugger by pressing `Ctrl-F5`.
 
-~~~
+</div>
 
 
 

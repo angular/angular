@@ -45,7 +45,7 @@ from small, single-purpose parts.
 After reading the above sections, feel free to skip around among the other pages on this site.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -54,5 +54,5 @@ After reading the above sections, feel free to skip around among the other pages
 Try the [tutorial](tutorial "Tour of Heroes") if you're ready to start coding or
 visit the [Architecture](guide/architecture "Basic Concepts") page if you prefer to learn the basic concepts first.
 
-~~~
+</div>
 

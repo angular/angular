@@ -143,7 +143,7 @@ through this component to all of its child elements in the DOM.
 The `/deep/` selector also has the alias `>>>`. You can use either interchangeably.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -152,7 +152,7 @@ Emulated is the default and most commonly used view encapsulation. For more info
 [Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
 
 
-~~~
+</div>
 
 
 
@@ -194,7 +194,7 @@ into a component's `@Component` decorator:
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -205,11 +205,11 @@ That's why the example URL begins `src/app/`.
 To specify a URL relative to the component file, see [Appendix 2](guide/component-styles#relative-urls).
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -225,7 +225,7 @@ To Angular, it's as if you wrote the `styles` array by hand.
 For information on loading CSS in this manner, refer to the module bundler's documentation.
 
 
-~~~
+</div>
 
 
 

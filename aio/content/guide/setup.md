@@ -48,14 +48,14 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 `npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
 
 
-~~~
+</div>
 
 
 
@@ -76,14 +76,14 @@ and unzip it into your project folder. Then perform the remaining steps with the
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 `npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
 
 
-~~~
+</div>
 
 
 
@@ -97,14 +97,14 @@ You can quickly delete the _non-essential_ files that concern testing and QuickS
 (***including all git-related artifacts*** such as the `.git` folder and `.gitignore`!).
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Do this only in the beginning to avoid accidentally deleting your own tests and git setup!
 
 
-~~~
+</div>
 
 
 
@@ -294,7 +294,7 @@ The following are all in `src/`
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -303,7 +303,7 @@ The following are all in `src/`
 If you're new to Angular, we recommend staying on the [learning path](guide/learning-angular "Angular learning path").
 
 
-~~~
+</div>
 
 <br></br><br></br>
 

@@ -28,14 +28,14 @@ that are important to Angular developers, including details about the following 
 Typically, you add a TypeScript configuration file called `tsconfig.json` to your project to
 guide the compiler as it generates JavaScript files.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 For details about `tsconfig.json`, see the official
 [TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
-~~~
+</div>
 
 
 

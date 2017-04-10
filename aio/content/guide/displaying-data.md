@@ -30,7 +30,7 @@ The final UI looks like this:
 * [Conditional display with NgIf](guide/displaying-data#ngIf).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -38,7 +38,7 @@ The <live-example></live-example> demonstrates all of the syntax and code
 snippets described in this page.
 
 
-~~~
+</div>
 
 
 
@@ -75,7 +75,7 @@ interpolation:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -85,7 +85,7 @@ quote (`'`)&mdash;allows you to compose a string over several lines, which makes
 HTML more readable.
 
 
-~~~
+</div>
 
 
 
@@ -94,7 +94,7 @@ inserts those values into the browser. Angular updates the display
 when these properties change.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -102,7 +102,7 @@ More precisely, the redisplay occurs after some kind of asynchronous event relat
 the view, such as a keystroke, a timer completion, or a response to an HTTP request.
 
 
-~~~
+</div>
 
 
 
@@ -196,7 +196,7 @@ It marks that `<li>` element (and its children) as the "repeater template":
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -204,7 +204,7 @@ Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of t
 For more information, see the [Template Syntax](guide/template-syntax#ngFor) page.
 
 
-~~~
+</div>
 
 
 
@@ -218,14 +218,14 @@ to the item (the hero) in the current iteration. Angular uses that variable as t
 context for the interpolation in the double curly braces.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 In this case, `ngFor` is displaying an array, but `ngFor` can
 repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) object.
 
-~~~
+</div>
 
 
 
@@ -324,7 +324,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -332,7 +332,7 @@ Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of th
 Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf) of the [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -345,7 +345,7 @@ see the [template expressions](guide/template-syntax#template-expressions) secti
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -353,7 +353,7 @@ Angular isn't showing and hiding the message. It is adding and removing the para
 big chunks of HTML with many data bindings.
 
 
-~~~
+</div>
 
 
 

@@ -125,14 +125,14 @@ When you want to make something available to other modules, you `export` it.
 _ES5_ lacks native support for modules.
 In an Angular _ES5_ application, you load each file manually by adding a `<script>` tag to `index.html`.
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 The order of `<script>` tags is often significant.
 You must load a file that defines a public JavaScript entity before a file that references that entity.
 
-~~~
+</div>
 
 
 
@@ -200,7 +200,7 @@ In _ES5_ you use the shared namespace object to access "exported" entities from 
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -211,7 +211,7 @@ Then use `module.exports` and `require` to export and import application  code.
 
 
 
-~~~
+</div>
 
 
 
@@ -375,7 +375,7 @@ next to the original _ES5_ version for comparison:
 
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -391,7 +391,7 @@ An **unnamed** constructor displays as an anonymous function (e.g., `class0`)
 which is impossible to find in the source code.
 
 
-~~~
+</div>
 
 
 
@@ -702,7 +702,7 @@ array as before. Use a nested array to define a parameter's complete injection s
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -712,7 +712,7 @@ With `Optional`, Angular sets the constructor parameter to `null`
 and the component displays the title without a prefix.
 
 
-~~~
+</div>
 
 
 
@@ -801,7 +801,7 @@ These particular _TypeScript_ and _ES6_ code snippets happen to be identical.
 Several _property_ decorators query a component's nested view and content components.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -810,7 +810,7 @@ _View_ children are associated with element tags that appear _within_ the compon
 _Content_ children are associated with elements that appear _between_ the component's element tags;
 they are projected into an `<ng-content>` slot in the component's template.
 
-~~~
+</div>
 
 
 
@@ -879,7 +879,7 @@ They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-dec
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -887,7 +887,7 @@ In _TypeScript_ and _ES6-with-decorators_ you can also use the `queries` metadat
 instead of the `@ViewChild` and `@ContentChild` property decorators.
 
 
-~~~
+</div>
 
 
 

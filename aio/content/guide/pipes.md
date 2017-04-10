@@ -55,7 +55,7 @@ Inside the interpolation expression, you flow the component's `birthday` value t
 function on the right. All pipes work this way.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -70,7 +70,7 @@ Safari and other older browsers don't support it. You can add support with a pol
 
 
 
-~~~
+</div>
 
 
 
@@ -81,7 +81,7 @@ Angular comes with a stock of pipes such as
 They are all available for use in any template.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -91,7 +91,7 @@ Read more about these and many other built-in pipes in the [pipes topics](api/#!
 Angular doesn't have a `FilterPipe` or an `OrderByPipe` for reasons explained in the [Appendix](guide/pipes#no-filter-pipe) of this page.
 
 
-~~~
+</div>
 
 
 
@@ -150,7 +150,7 @@ As you click the button, the displayed date alternates between
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -158,7 +158,7 @@ Read more about the `DatePipe` format options in the [Date Pipe](api/common/inde
 API Reference page.
 
 
-~~~
+</div>
 
 
 
@@ -213,7 +213,7 @@ Your pipe has one such parameter: the `exponent`.
    Your pipe's name is `exponentialStrength`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -224,7 +224,7 @@ The `PipeTransform` *interface* defines that method and guides both tooling and 
 Technically, it's optional; Angular looks for and executes the `transform` method regardless.
 
 
-~~~
+</div>
 
 
 
@@ -248,7 +248,7 @@ Note the following:
 * You must include your pipe in the `declarations` array of the `AppModule`.
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -264,7 +264,7 @@ In the previous example, you didn't list the `DatePipe` because all
 Angular built-in pipes are pre-registered.
 
 
-~~~
+</div>
 
 
 
@@ -428,7 +428,7 @@ For this reason, a pure pipe is preferable when you can live with the change det
 When you can't, you *can* use the impure pipe.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -437,7 +437,7 @@ It may be better to pursue the pipe's purpose with a property of the component,
 a point that's discussed later in this page.
 
 
-~~~
+</div>
 
 
 
@@ -576,7 +576,7 @@ In the previous code sample, the second `fetch` pipe binding demonstrates more p
 It displays the same hero data in JSON format by chaining through to the built-in `JsonPipe`.
 
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
@@ -591,7 +591,7 @@ provides an easy way to diagnosis a mysteriously failing data binding or
 inspect an object for future binding.
 
 
-~~~
+</div>
 
 
 

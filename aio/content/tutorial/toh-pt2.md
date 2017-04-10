@@ -123,7 +123,7 @@ Create a public property in `AppComponent` that exposes the heroes for binding.
 The `heroes` type isn't defined because TypeScript infers it from the `HEROES` array.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -131,7 +131,7 @@ The hero data is separated from the class implementation
 because ultimately the hero names will come from a data service.
 
 
-~~~
+</div>
 
 
 
@@ -163,7 +163,7 @@ Modify the `<li>` tag by adding the built-in directive `*ngFor`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -185,7 +185,7 @@ Read more about `ngFor` and template input variables in the
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -259,7 +259,7 @@ The `onSelect(hero)` expression calls the  `AppComponent` method, `onSelect()`,
 passing the template input variable `hero`, as an argument.
 That's the same `hero` variable you defined previously in the `ngFor` directive.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -269,7 +269,7 @@ Learn more about event binding at the
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -334,14 +334,14 @@ Then add the `ngIf` built-in directive and set it to the `selectedHero` property
 
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
 Don't forget the asterisk (`*`) in front of `ngIf`.
 
 
-~~~
+</div>
 
 
 
@@ -355,7 +355,7 @@ When the user picks a hero, `selectedHero` becomes defined and
 `ngIf` puts the hero detail content into the DOM and evaluates the nested bindings.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -366,7 +366,7 @@ Read more about `ngIf` and `ngFor` in the
 
 
 
-~~~
+</div>
 
 
 
@@ -399,14 +399,14 @@ When the expression is `false`, Angular removes the `selected` class.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about the `[class]` binding in the [Template Syntax](guide/template-syntax#ngClass "Template syntax: NgClass") guide.
 
 
-~~~
+</div>
 
 
 

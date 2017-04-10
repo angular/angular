@@ -32,7 +32,7 @@ An Angular application is a tree of components. Each component instance has its 
 The tree of components parallels the tree of injectors.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -42,7 +42,7 @@ You won't notice the difference and
 your mental model should be that every component has its own injector.
 
 
-~~~
+</div>
 
 
 
@@ -69,7 +69,7 @@ The requests keep bubbling up until Angular finds an injector that can handle th
 If it runs out of ancestors, Angular throws an error.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -78,7 +78,7 @@ The hunt for providers will climb no higher than the injector for that host comp
 This is a topic for another day.
 
 
-~~~
+</div>
 
 
 
@@ -204,7 +204,7 @@ Providing the service at the component level ensures that _every_ instance of th
 No tax return overwriting. No mess.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -212,7 +212,7 @@ The rest of the scenario code relies on other Angular features and techniques th
 You can review it and download it from the <live-example></live-example>.
 
 
-~~~
+</div>
 
 
 
@@ -252,12 +252,12 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The code for this _cars_ scenario is in the `car.components.ts` and `car.services.ts` files of the sample
 which you can review and download from the <live-example></live-example>.
 
-~~~
+</div>
 

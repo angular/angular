@@ -73,7 +73,7 @@ offers answers to specific design and implementation questions.
 Read this page before reading those FAQs.
 
 
----
+<hr/>
 
 
 
@@ -225,7 +225,7 @@ Although the `AppModule` evolves as the app grows, the bootstrap code in `main.t
 This is the last time you'll look at `main.ts`.
 
 
----
+<hr/>
 
 
 
@@ -382,7 +382,7 @@ The initial version of `AppModule` imports `BrowserModule`.
 Importing `BrowserModule` made all of its public components, directives, and pipes visible
 to the component templates in `AppModule`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -393,7 +393,7 @@ More accurately, `NgIf` is declared in `CommonModule` from `@angular/common`.
 `BrowserModule` imports `CommonModule` and [re-exports](cookbook/ngmodule-faq#q-re-export) it.
 The net effect is that an importer of `BrowserModule` gets `CommonModule` directives automatically.
 
-~~~
+</div>
 
 
 
@@ -412,7 +412,7 @@ The `ContactComponent` presents a "contact editor,"
 implemented with Angular forms in the [template-driven form](guide/forms#template-driven) style.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -429,7 +429,7 @@ Modules with components written in the _reactive_ style
 import the `ReactiveFormsModule`.
 
 
-~~~
+</div>
 
 
 
@@ -506,7 +506,7 @@ Now `[(ngModel)]` binding will work and the user input will be validated by Angu
 once you declare the new component, pipe, and directive.
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
@@ -519,7 +519,7 @@ Components, directives, and pipes belong to _one module only_.
 *Never re-declare classes that belong to another module.*
 
 
-~~~
+</div>
 
 
 
@@ -540,7 +540,7 @@ Update the `declarations` in the  `AppModule` accordingly:
 {@a import-name-conflict}
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -559,7 +559,7 @@ leaves another issue unresolved.
 You'll learn more about that issue later in this page, in [Resolve directive conflicts](guide/ngmodule#resolve-conflicts).
 
 
-~~~
+</div>
 
 
 
@@ -586,7 +586,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 {@a application-scoped-providers}
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -614,7 +614,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
   of the [NgModule FAQs](cookbook/ngmodule-faq) page.
 
 
-~~~
+</div>
 
 
 
@@ -713,7 +713,7 @@ In this case, the contact's `HighlightDirective` makes the application title tex
 when it should stay gold.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -727,7 +727,7 @@ are not duplicates. Angular keeps both directives and
 they take turns modifying the same HTML element.
 
 
-~~~
+</div>
 
 
 
@@ -819,7 +819,7 @@ that concern the contact, and paste them into `ContactModule`.
 
 You _import_ the `FormsModule` because the contact component needs it.
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -827,7 +827,7 @@ Modules don't inherit access to the components, directives, or pipes that are de
 What `AppModule` imports is irrelevant to `ContactModule` and vice versa.
 Before `ContactComponent` can bind with `[(ngModel)]`, its `ContactModule` must import `FormsModule`.
 
-~~~
+</div>
 
 
 
@@ -902,14 +902,14 @@ It has two more modules, one for managing the heroes on staff and another for ma
 Both modules are in the early stages of development.
 Their specifics aren't important to the story and this page doesn't discuss every line of code.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Examine and download the complete source for this version from
 the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
 
-~~~
+</div>
 
 
 
@@ -941,7 +941,7 @@ The `AppModule` has changed modestly:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -951,7 +951,7 @@ The significant differences will be explained in due course.
 <!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? -->
 
 
-~~~
+</div>
 
 
 
@@ -993,7 +993,7 @@ The remaining two routes use lazy loading syntax to tell the router where to fin
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1002,7 +1002,7 @@ In this app, the string identifies both the module _file_ and the module _class_
 the latter separated from the former by a `#`.
 
 
-~~~
+</div>
 
 
 
@@ -1023,13 +1023,13 @@ and the dependency-injection providers that produce a configured `Router`.
 This `AppRoutingModule` is intended for the app _root_ module only.
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
 Never call `RouterModule.forRoot` in a feature-routing module.
 
-~~~
+</div>
 
 
 
@@ -1056,18 +1056,18 @@ This time you pass the route list to the `forChild` method of the `RouterModule`
 The route list is only responsible for providing additional routes and is intended for feature modules.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 Always call `RouterModule.forChild` in a feature-routing module.
 
 
-~~~
+</div>
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -1079,7 +1079,7 @@ Angular doesn't recognize them but Angular developers do.
 that has both shared [declarables](cookbook/ngmodule-faq#q-declarable) and services.
 
 
-~~~
+</div>
 
 
 
@@ -1262,7 +1262,7 @@ It looks like it is supposed to go to a specific question/section within the pag
 if the `SharedModule` provides the `UserService`.
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
@@ -1270,7 +1270,7 @@ Do *not* specify app-wide singleton `providers` in a shared module.
 A lazy-loaded module that imports that shared module makes its own copy of the service.
 
 
-~~~
+</div>
 
 
 
@@ -1301,14 +1301,14 @@ Most of this work is familiar. The interesting part is the `CoreModule`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 You're importing some extra symbols from the Angular core library that you're not using yet.
 They'll become relevant later in this page.
 
-~~~
+</div>
 
 
 
@@ -1322,7 +1322,7 @@ making a singleton instance of the `UserService` available to any component that
 whether that component is eagerly or lazily loaded.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1352,7 +1352,7 @@ We recommend collecting such single-use classes and hiding their details inside 
 A simplified root `AppModule` imports `CoreModule` in its capacity as orchestrator of the application as a whole.
 
 
-~~~
+</div>
 
 
 
@@ -1409,7 +1409,7 @@ Notice the following:
 * The new version is leaner and cleaner.
 
 
----
+<hr/>
 
 
 
@@ -1431,7 +1431,7 @@ a simple object with the following properties:
 
 The root `AppModule` imports the `CoreModule` and adds the `providers` to the `AppModule` providers.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1439,7 +1439,7 @@ More precisely, Angular accumulates all imported providers before appending the 
 This sequence ensures that whatever you add explicitly to the `AppModule` providers takes precedence
 over the providers of imported modules.
 
-~~~
+</div>
 
 
 
@@ -1473,7 +1473,7 @@ Lastly, call it within the `imports` list of the `AppModule`.
 The app displays "Miss Marple" as the user instead of the default "Sherlock Holmes".
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -1484,11 +1484,11 @@ is contrary to the intent and can produce a runtime error.
 Remember to _import_ the result; don't add it to any other `@NgModule` list.
 
 
-~~~
+</div>
 
 
 
----
+<hr/>
 
 
 

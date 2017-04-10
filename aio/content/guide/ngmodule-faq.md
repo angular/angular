@@ -15,14 +15,14 @@ from the most elementary `@NgModule` to a multi-faceted sample with lazy-loaded 
 
 This page answers the questions many developers ask about NgModule design and implementation.
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
 These FAQs assume that you have read the [NgModules](guide/ngmodule) page.
 
 
-~~~
+</div>
 
 
 
@@ -76,7 +76,7 @@ General
 * [Can you summarize the NgModule API?](guide/ngmodule-faq#q-ngmodule-api)
 
 
----
+<hr/>
 
 
 
@@ -92,7 +92,7 @@ Declare these classes in _exactly one_ module of the application.
 Declare them in _this_ module if they _belong_ to this module.
 
 
----
+<hr/>
 
 
 
@@ -107,7 +107,7 @@ you can add to a module's `declarations` list.
 They're the _only_ classes that you can add to `declarations`.
 
 
----
+<hr/>
 
 
 
@@ -130,7 +130,7 @@ For example, don't declare FORMS_DIRECTIVES from `@angular/forms`.
 strings, numbers, functions, entity models, configurations, business logic, and helper classes.
 
 
----
+<hr/>
 
 
 
@@ -153,7 +153,7 @@ Membership in one list doesn't imply membership in another list.
 as well as dynamically loaded in a pop-up dialog.
 
 
----
+<hr/>
 
 
 
@@ -172,7 +172,7 @@ Perhaps you declared "x" in an application sub-module but forgot to export it?
 The "x" class isn't visible to other modules until you add it to the `exports` list.
 
 
----
+<hr/>
 
 
 
@@ -198,7 +198,7 @@ components, directives, and pipes.
 Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
 
 
----
+<hr/>
 
 
 
@@ -221,20 +221,20 @@ _Do not import_ `BrowserModule` in any other module.
 *Feature modules* and *lazy-loaded modules* should import `CommonModule` instead.
 They need the common directives. They don't need to re-install the app-wide providers.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 `BrowserModule` throws an error if you try to lazy load  a module that imports it.
 
-~~~
+</div>
 
 
 
 Importing `CommonModule` also frees feature modules for use on _any_ target platform, not just browsers.
 
 
----
+<hr/>
 
 
 
@@ -255,7 +255,7 @@ When Angular gets to the 'B' and 'A' in 'D', they're already cached and ready to
 Angular doesn't like modules with circular references, so don't let Module 'A' import Module 'B', which imports Module 'A'.
 
 
----
+<hr/>
 
 
 
@@ -277,7 +277,7 @@ You _can_ re-export entire imported modules, which effectively re-exports all of
 A module can even export a module that it doesn't import.
 
 
----
+<hr/>
 
 
 
@@ -300,7 +300,7 @@ For example, there's no point in re-exporting `HttpModule` because it doesn't ex
 It's only purpose is to add http service providers to the application as a whole.
 
 
----
+<hr/>
 
 
 
@@ -330,7 +330,7 @@ Angular's own `BrowserModule` exports a couple of modules like this:
 
 A module can export a combination of its own declarations, selected imported classes, and imported modules.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -340,11 +340,11 @@ For example, there's no point in re-exporting `HttpModule` because it doesn't ex
 It's only purpose is to add http service providers to the application as a whole.
 
 
-~~~
+</div>
 
 
 
----
+<hr/>
 
 
 
@@ -362,7 +362,7 @@ Apps pass a `Routes` object to `RouterModule.forRoot` in order to configure the 
 You add that result to the `imports` list of the root `AppModule`.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -370,7 +370,7 @@ Only call and import a `.forRoot` result in the root application module, `AppMod
 Importing it in any other module, particularly in a lazy-loaded module,
 is contrary to the intent and will likely produce a runtime error.
 
-~~~
+</div>
 
 
 
@@ -383,7 +383,7 @@ Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
 
 
----
+<hr/>
 
 
 
@@ -415,7 +415,7 @@ any class that knows the `HeroService` _type_ can inject that service,
 not just the classes declared in the `HeroModule`.
 
 
----
+<hr/>
 
 
 
@@ -439,7 +439,7 @@ When the router creates a component within the lazy-loaded context,
 Angular prefers service instances created from these providers to the service instances of the application root injector.
 
 
----
+<hr/>
 
 
 
@@ -465,7 +465,7 @@ The service provided by the root `AppModule` takes precedence over services prov
 The `AppModule` always wins.
 
 
----
+<hr/>
 
 
 
@@ -483,7 +483,7 @@ Imported providers are easily replaced by providers from another imported module
 Such replacement might be by design. It could be unintentional and have adverse consequences.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -491,7 +491,7 @@ As a general rule, import modules with providers _exactly once_, preferably in t
 That's also usually the best place to configure, wrap, and override them.
 
 
-~~~
+</div>
 
 
 
@@ -530,7 +530,7 @@ Alternatively, make the top component a routing host by giving it a `<router-out
 Define child routes and let the router load module components into that outlet.
 
 
----
+<hr/>
 
 
 
@@ -572,7 +572,7 @@ the `HeroComponent` couldn't inject it.
 The application  would fail the moment a user navigated to "Heroes".
 
 
----
+<hr/>
 
 
 
@@ -598,7 +598,7 @@ The changes that editor makes to heroes in its service don't touch the hero inst
 not the root `AppComponent`.
 
 
----
+<hr/>
 
 
 
@@ -635,7 +635,7 @@ than the app-wide singleton version that Angular injected in one of the eagerly 
 
 That's almost certainly a mistake.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -646,11 +646,11 @@ The username goes bonkers as the Angular creates a new `UserService` instance ea
 <!-- CF: "goes bonkers" is jargon. Can you describe the behavior in plain English?  -->
 
 
-~~~
+</div>
 
 
 
----
+<hr/>
 
 
 
@@ -682,7 +682,7 @@ It can't added them to the app root injector because that injector is closed to 
 So Angular creates a new child injector for the lazy-loaded module context.
 
 
----
+<hr/>
 
 
 
@@ -709,7 +709,7 @@ such as this `CoreModule` constructor from the NgModules page.
 
 
 
----
+<hr/>
 
 
 
@@ -754,7 +754,7 @@ Angular automatically adds the following types of components to the module's `en
 You don't have to mention these components explicitly, although doing so is harmless.
 
 
----
+<hr/>
 
 
 
@@ -775,7 +775,7 @@ There's no need to list a component in both the `bootstrap` and `entryComponent`
 although doing so is harmless.
 
 
----
+<hr/>
 
 
 
@@ -801,7 +801,7 @@ Don't include components that [are referenced](guide/ngmodule-faq#q-template-ref
 in the templates of other components.
 
 
----
+<hr/>
 
 
 
@@ -837,7 +837,7 @@ the compiler omits it.
 
 
 
----
+<hr/>
 
 
 
@@ -851,7 +851,7 @@ Every app is different. Developers have various levels of experience and comfort
 Some suggestions and guidelines appear to have wide appeal.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -859,7 +859,7 @@ The following is preliminary guidance based on early experience using NgModules 
 Read with appropriate caution and reflection.
 
 
-~~~
+</div>
 
 
 
@@ -887,7 +887,7 @@ Never import `CoreModule` in any other module.
 Consider making `CoreModule` a [pure services module](guide/ngmodule-faq#service-feature-module) with no `declarations`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -896,7 +896,7 @@ only used within the root `AppComponent` declared by `AppModule`.
 Someone following this guideline strictly would have declared these components in the `AppModule` instead.
 
 
-~~~
+</div>
 
 
 
@@ -912,7 +912,7 @@ Feature modules tend to fall into one of the following groups:
   * [Widget feature modules](guide/ngmodule-faq#widget-feature-module).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -921,7 +921,7 @@ These guidelines are not laws;
 follow them unless you have a good reason to do otherwise.
 
 
-~~~
+</div>
 
 
 
@@ -968,14 +968,14 @@ follow them unless you have a good reason to do otherwise.
       They might be imported by the root `AppModule` of a small application that lacks routing.
       
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
       For an example, see the [Make _Contact_ a feature module](guide/ngmodule#contact-module-v1)
       section of the [NgModules](guide/ngmodule) page, before routing is introduced.      
 
-~~~
+</div>
 
 
     </td>
@@ -1059,7 +1059,7 @@ follow them unless you have a good reason to do otherwise.
 
       The `AppRoutingModule`, `ContactRoutingModule`, and `HeroRoutingModule` are good examples.      
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1067,7 +1067,7 @@ follow them unless you have a good reason to do otherwise.
       [Routing & Navigation](guide/router) page.
       
 
-~~~
+</div>
 
 
     </td>
@@ -1127,13 +1127,13 @@ follow them unless you have a good reason to do otherwise.
 
 The following table summarizes the key characteristics of each _feature module_ group.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Real-world modules are often hybrids that knowingly deviate from these guidelines.
 
-~~~
+</div>
 
 
 
@@ -1311,7 +1311,7 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
 
 
 
----
+<hr/>
 
 
 
@@ -1370,7 +1370,7 @@ by adding providers to the `@NgModule.providers` list.
 <!-- CF: Should this sentence be a bullet point in the list above? -->
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -1378,7 +1378,7 @@ The provided services don't belong to the module nor are they scoped to the decl
 They are available _everywhere_.
 
 
-~~~
+</div>
 
 
 
@@ -1398,7 +1398,7 @@ Of course you use _JavaScript_ modules to write _Angular_ modules as seen in the
 
 
 
----
+<hr/>
 
 
 
@@ -1420,7 +1420,7 @@ Angular only matches selectors and pipe names for classes that are declared by t
 or exported by a module that this module imports.
 
 
----
+<hr/>
 
 
 
@@ -1452,7 +1452,7 @@ the Angular compiler incorporates them into compiled component code too.
 how to link this module with other modules.
 
 
----
+<hr/>
 
 
 
