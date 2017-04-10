@@ -136,6 +136,8 @@ export declare class NgClass implements DoCheck {
 
 /** @experimental */
 export declare class NgComponentOutlet implements OnChanges, OnDestroy {
+    createEvents: EventEmitter<any>;
+    destroyEvents: EventEmitter<void>;
     ngComponentOutlet: Type<any>;
     ngComponentOutletContent: any[][];
     ngComponentOutletInjector: Injector;

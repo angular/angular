@@ -19,8 +19,8 @@ export function main() {
 
     it('should do nothing if component is null', async(() => {
          const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
+         const fixture =
+             TestBed.overrideTemplate(TestComponent, template).createComponent(TestComponent);
 
          fixture.componentInstance.currentComponent = null;
          fixture.detectChanges();
@@ -29,7 +29,7 @@ export function main() {
        }));
 
     it('should insert content specified by a component', async(() => {
-         let fixture = TestBed.createComponent(TestComponent);
+         const fixture = TestBed.createComponent(TestComponent);
 
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('');
@@ -38,6 +38,31 @@ export function main() {
 
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('foo');
+       }));
+
+    it(`should emit an event when a component gets created and destroyed`, async(() => {
+         const template =
+             '<ng-template [ngComponentOutlet]="currentComponent" (create)="onCreate($event)" (destroy)="onDestroy()"></ng-template>';
+         const fixture =
+             TestBed.overrideTemplate(TestComponent, template).createComponent(TestComponent);
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('');
+         expect(fixture.componentInstance.eventLog.length).toBe(0);
+
+         fixture.componentInstance.currentComponent = InjectedComponent;
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('foo');
+         expect(fixture.componentInstance.eventLog.length).toBe(1);
+         expect(fixture.componentInstance.eventLog[0]).toBeAnInstanceOf(InjectedComponent);
+
+         fixture.componentInstance.currentComponent = null;
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('');
+         expect(fixture.componentInstance.eventLog.length).toBe(2);
+         expect(fixture.componentInstance.eventLog[1]).toBe('destroyed');
        }));
 
     it('should emit a ComponentRef once a component was created', async(() => {
@@ -159,7 +184,6 @@ export function main() {
        }));
 
     it('should clean up moduleRef, if supplied', async(() => {
-         let destroyed = false;
          const compiler = TestBed.get(Compiler) as Compiler;
          const fixture = TestBed.createComponent(TestComponent);
          fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
@@ -228,6 +252,7 @@ class TestComponent {
   injector: Injector;
   projectables: any[][];
   module: NgModuleFactory<any>;
+  eventLog: any[] = [];
 
   get cmpRef(): ComponentRef<any> { return this.ngComponentOutlet['_componentRef']; }
   set cmpRef(value: ComponentRef<any>) { this.ngComponentOutlet['_componentRef'] = value; }
@@ -236,6 +261,10 @@ class TestComponent {
   @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
+
+  onCreate(cmp: any): void { this.eventLog.push(cmp); }
+
+  onDestroy(): void { this.eventLog.push('destroyed'); }
 }
 
 @NgModule({

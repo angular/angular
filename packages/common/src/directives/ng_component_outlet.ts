@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, Provider, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
+import {ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, Output, Provider, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
 
 /**
  * Instantiates a single {@link Component} type and inserts its Host View into current View.
@@ -73,14 +73,16 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
   @Input() ngComponentOutletContent: any[][];
   @Input() ngComponentOutletNgModuleFactory: NgModuleFactory<any>;
 
+  @Output('create') createEvents = new EventEmitter<any>();
+  @Output('destroy') destroyEvents = new EventEmitter<void>();
+
   private _componentRef: ComponentRef<any> = null;
   private _moduleRef: NgModuleRef<any> = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    this._viewContainerRef.clear();
-    this._componentRef = null;
+  ngOnChanges(changes: SimpleChanges): void {
+    this._destroyComponent();
 
     if (this.ngComponentOutlet) {
       const elInjector = this.ngComponentOutletInjector || this._viewContainerRef.parentInjector;
@@ -105,10 +107,19 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
       this._componentRef = this._viewContainerRef.createComponent(
           componentFactory, this._viewContainerRef.length, elInjector,
           this.ngComponentOutletContent);
+      this.createEvents.emit(this._componentRef.instance);
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this._moduleRef) this._moduleRef.destroy();
+  }
+
+  private _destroyComponent(): void {
+    if (this._componentRef) {
+      this._viewContainerRef.clear();
+      this._componentRef = null;
+      this.destroyEvents.emit();
+    }
   }
 }
