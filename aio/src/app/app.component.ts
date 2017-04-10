@@ -76,11 +76,11 @@ export class AppComponent implements OnInit {
       this.currentNode = currentNode;
       this.pageId = this.currentNode.url.replace('/', '-') || 'home';
 
-      // Toggle the sidenav if the kind of view changed
+      // Toggle the sidenav if side-by-side and the kind of view changed
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
-      this.sideNavToggle(this.isSideNavDoc);
+      this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
     this.navigationService.navigationViews.subscribe(views => {
