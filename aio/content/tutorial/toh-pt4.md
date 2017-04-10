@@ -120,7 +120,7 @@ share that service with all components that need the data.
 ### Create the HeroService
 Create a file in the `app` folder called `hero.service.ts`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -128,7 +128,7 @@ The naming convention for service files is the service name in lowercase followe
 For a multi-word service name, use lower [dash-case](guide/glossary#!).
 For example, the filename for `SpecialSuperHeroService` is `special-super-hero.service.ts`.
 
-~~~
+</div>
 
 
 
@@ -144,13 +144,13 @@ Name the class `HeroService` and export it for others to import.
 ### Injectable services
 Notice that you imported the Angular `Injectable` function and applied that function as an `@Injectable()` decorator.
 
-~~~ {.callout.is-helpful}
+<div class="callout is-helpful">
 
 
 
 Don't forget the parentheses. Omitting them leads to an error that's difficult to diagnose.
 
-~~~
+</div>
 
 
 
@@ -267,13 +267,13 @@ defines a private `heroService` property and identifies it as a `HeroService` in
 Now Angular knows to supply an instance of the `HeroService` when it creates an `AppComponent`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about dependency injection in the [Dependency Injection](guide/dependency-injection) page.
 
-~~~
+</div>
 
 
 
@@ -338,13 +338,13 @@ at creation, after each change, and at its eventual destruction.
 
 Each interface has a single method. When the component implements that method, Angular calls it at the appropriate time.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
-~~~
+</div>
 
 
 
@@ -402,7 +402,7 @@ A *Promise* essentially promises to call back when the results are ready.
 You ask an asynchronous service to do some work and give it a callback function.
 The service does that work and eventually calls the function with the results or an error.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -411,7 +411,7 @@ This is a simplified explanation. Read more about ES2015 Promises in the
 [Exploring ES6](http://http://exploringjs.com/es6.html).
 
 
-~~~
+</div>
 
 
 
@@ -447,7 +447,7 @@ Pass the callback function as an argument to the Promise's `then()` method:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -455,7 +455,7 @@ As described in [Arrow functions](https://developer.mozilla.org/en-US/docs/Web/J
 the ES2015 arrow function
 in the callback is more succinct than the equivalent function expression and gracefully handles `this`.
 
-~~~
+</div>
 
 
 
@@ -464,13 +464,13 @@ The callback sets the component's `heroes` property to the array of heroes retur
 The app is still running, showing a list of heroes, and
 responding to a name selection with a detail view.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 At the end of this page, [Appendix: take it slow](tutorial/toh-pt4#slow) describes what the app might be like with a poor connection.
 
-~~~
+</div>
 
 
 

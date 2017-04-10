@@ -475,14 +475,14 @@ The sequence of log messages follows the prescribed hook calling order:
 `AfterViewInit`, `AfterViewChecked`&nbsp;(3x), and `OnDestroy`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The constructor isn't an Angular hook *per se*.
 The log confirms that input properties (the `name` property in this case) have no assigned values at construction.
 
-~~~
+</div>
 
 
 
@@ -505,7 +505,7 @@ This is the perfect infiltration job for a directive.
 The heroes will never know they're being watched.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -520,7 +520,7 @@ But you can watch both with a directive.
 
 
 
-~~~
+</div>
 
 
 
@@ -574,7 +574,7 @@ Use `ngOnInit()` for two main reasons:
 
 Experienced developers agree that components should be cheap and safe to construct.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -583,7 +583,7 @@ Misko Hevery, Angular team lead,
 you should avoid complex constructor logic.
 
 
-~~~
+</div>
 
 
 
@@ -601,7 +601,7 @@ Remember also that a directive's data-bound input properties are not set until _
 That's a problem if you need to initialize the directive based on those properties.
 They'll have been set when `ngOnInit()` runs.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -609,7 +609,7 @@ The `ngOnChanges()` method is your first opportunity to access those properties.
 Angular calls `ngOnChanges()` before `ngOnInit()` and many times after that.
 It only calls `ngOnInit()` once.
 
-~~~
+</div>
 
 
 
@@ -694,13 +694,13 @@ The hero object *reference* didn't change so, from Angular's perspective, there 
 ## _DoCheck()_
 Use the `DoCheck` hook to detect and act upon changes that Angular doesn't catch on its own.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Use this method to detect a change that Angular overlooked.
 
-~~~
+</div>
 
 
 
@@ -821,14 +821,14 @@ The *AfterContent* sample explores the `AfterContentInit()` and `AfterContentChe
 into the component's template in a designated spot.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 AngularJS developers know this technique as *transclusion*.
 
 
-~~~
+</div>
 
 
 
@@ -866,7 +866,7 @@ In this case, the projected content is the `<my-child>` from the parent.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -876,7 +876,7 @@ The telltale signs of *content projection* are twofold:
   * The presence of `<ng-content>` tags in the component's template.
 
 
-~~~
+</div>
 
 
 

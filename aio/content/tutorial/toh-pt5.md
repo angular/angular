@@ -27,14 +27,14 @@ When you’re done, users will be able to navigate the app like this:
 To satisfy these requirements, you'll add Angular’s router to the app.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 For more information about the router, read the [Routing and Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
@@ -145,14 +145,14 @@ Here's the plan:
 * Tie the *Dashboard* into the navigation structure.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 *Routing* is another name for *navigation*. The router is the mechanism for navigating from view to view.
 
 
-~~~
+</div>
 
 
 
@@ -254,7 +254,7 @@ at the top of the `<head>` section.
 
 
 
-~~~ {.callout.is-important}
+<div class="callout is-important">
 
 
 
@@ -269,7 +269,7 @@ section of the [Routing and Navigation](guide/router) page.
 
 
 
-~~~
+</div>
 
 
 
@@ -302,14 +302,14 @@ This route definition has the following parts:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about defining routes with `Routes` in the [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
@@ -324,7 +324,7 @@ Import the `RouterModule` and add it to the `AppModule` imports array.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -333,7 +333,7 @@ The `forRoot()` method supplies the Router service providers and directives need
 performs the initial navigation based on the current browser URL.
 
 
-~~~
+</div>
 
 
 
@@ -367,7 +367,7 @@ that tells the router where to navigate when the user clicks the link.
 Since the link is not dynamic, a routing instruction is defined with a one-time binding to the route path.
 Looking back at the route configuration, you can confirm that `'/heroes'` is the path of the route to the `HeroesComponent`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -376,14 +376,14 @@ in the [Appendix: Link Parameters Array](guide/router#link-parameters-array) sec
 [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
 Refresh the browser. The browser displays the app title and heroes link, but not the heroes list.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -392,7 +392,7 @@ The route path to `HeroesComponent` is `/heroes`, not `/`.
 Soon you'll add a route that matches the path `/`.
 
 
-~~~
+</div>
 
 
 
@@ -466,7 +466,7 @@ to the array of route definitions:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -474,7 +474,7 @@ Read more about *redirects* in the [Redirecting routes](guide/router#!) section
 of the [Routing & Navigation](guide/router) page.
 
 
-~~~
+</div>
 
 
 
@@ -489,14 +489,14 @@ Add a dashboard navigation link to the template, just above the *Heroes* link.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 The `<nav>` tags don't do anything yet, but they'll be useful later when you style the links.
 
 
-~~~
+</div>
 
 
 
@@ -630,14 +630,14 @@ The colon (:) in the path indicates that `:id` is a placeholder for a specific h
 when navigating to the `HeroDetailComponent`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Be sure to import the hero detail component before creating this route.
 
 
-~~~
+</div>
 
 
 
@@ -731,7 +731,7 @@ The hero `id` is a number. Route parameters are always strings.
 So the route parameter value is converted to a number with the JavaScript (+) operator.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -744,7 +744,7 @@ the subscriptions. The subscriptions are cleaned up when the component is destro
 memory leaks, so you don't need to unsubscribe from the route `params` `Observable`.
 
 
-~~~
+</div>
 
 
 
@@ -775,7 +775,7 @@ using the `Location` service you injected previously.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -784,7 +784,7 @@ In a real app, you can prevent this issue with the <em>CanDeactivate</em> guard.
 Read more on the [CanDeactivate](api/router/index/CanDeactivate-interface) page.
 
 
-~~~
+</div>
 
 
 
@@ -978,14 +978,14 @@ Pipes are a good way to format strings, currency amounts, dates and other displa
 Angular ships with several pipes and you can write your own.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about pipes on the [Pipes](guide/pipes) page.
 
 
-~~~
+</div>
 
 
 
@@ -1034,7 +1034,7 @@ Set their properties to refer to the new files.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1042,7 +1042,7 @@ The `styleUrls` property is an array of style file names (with paths).
 You could list multiple style files from different locations if you needed them.
 
 
-~~~
+</div>
 
 
 
@@ -1147,7 +1147,7 @@ Add an <code>app.component.css</code> file to the `app` folder with the followin
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1158,7 +1158,7 @@ add a class to the HTML navigation element whose route matches the active route.
 All you have to do is define the style for it.
 
 
-~~~
+</div>
 
 
 

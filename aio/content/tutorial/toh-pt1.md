@@ -119,14 +119,14 @@ These interpolation bindings present the component's `title` and `hero` property
 as strings, inside the HTML header tags.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about interpolation in the [Displaying Data](guide/displaying-data) page.
 
 
-~~~
+</div>
 
 
 
@@ -231,7 +231,7 @@ The updated `AppModule` looks like this:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -242,7 +242,7 @@ Read more about `FormsModule` and `ngModel` in the
 [Template Syntax](guide/template-syntax) guide.
 
 
-~~~
+</div>
 
 
 

@@ -205,7 +205,7 @@ preceding it with the `@Input` decorator that you imported earlier.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -213,7 +213,7 @@ Read more about _input_ properties in the
 [Attribute Directives](guide/attribute-directives#why-input) page.
 
 
-~~~
+</div>
 
 
 
@@ -260,14 +260,14 @@ In general, the `declarations` array contains a list of application components, 
 A component must be declared in a module before other components can reference it.
 This module declares only the two application components, `AppComponent` and `HeroDetailComponent`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule) guide.
 
 
-~~~
+</div>
 
 
 

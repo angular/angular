@@ -76,7 +76,7 @@ All of these services are implemented as classes.
 Service classes can act as their own providers which is why listing them in the `providers` array
 is all the registration you need.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -85,7 +85,7 @@ Angular creates a service instance from a class provider by using `new`.
 Read more about providers in the [Dependency Injection](guide/dependency-injection#!)
 guide.
 
-~~~
+</div>
 
 
 
@@ -199,7 +199,7 @@ and add `@Injectable()` to fix it. Add `@Injectable()` from the start for the sa
 of consistency and to avoid future pain.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -207,11 +207,11 @@ Although this site recommends applying `@Injectable()` to all service classes, d
 Some developers prefer to add it only where needed and that's a reasonable policy too.
 
 
-~~~
+</div>
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -221,7 +221,7 @@ In Angular with TypeScript, a *single* decorator&mdash;*any* decorator&mdash;is 
 
 
 
-~~~
+</div>
 
 {@a service-scope}
 
@@ -261,7 +261,7 @@ that is visible only to the component and its children, if any.
 You could also provide the `HeroService` to a *different* component elsewhere in the application.
 That would result in a *different* instance of the service, living in a *different* injector.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -270,12 +270,12 @@ including the `HeroBiosComponent`, `HeroOfTheMonthComponent`, and `HeroesBaseCom
 Each of these components has its own `HeroService` instance managing its own independent collection of heroes.
 
 
-~~~
+</div>
 
 
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -284,7 +284,7 @@ This much Dependency Injection knowledge may be all that many Angular developers
 ever need to build their applications. It doesn't always have to be more complicated.
 
 
-~~~
+</div>
 
 {@a multiple-service-instances}
 
@@ -527,7 +527,7 @@ It may already have that value in its internal container.
 If it doesn't, it may be able to make one with the help of a ***provider***.
 A *provider* is a recipe for delivering a service associated with a *token*.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -536,7 +536,7 @@ to its parent injector, where the process repeats until there are no more inject
 If the search is futile, the injector throws an error&mdash;unless the request was [optional](guide/cb-dependency-injection#optional).
 
 
-~~~
+</div>
 
 
 
@@ -668,14 +668,14 @@ The second provider substitutes the `DateLoggerService` for the `LoggerService`.
 The `LoggerService` is already registered at the `AppComponent` level.
 When _this component_ requests the `LoggerService`, it receives the `DateLoggerService` instead.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 This component and its tree of child components receive the `DateLoggerService` instance.
 Components outside the tree continue to receive the original `LoggerService` instance.
 
-~~~
+</div>
 
 
 
@@ -736,7 +736,7 @@ The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `Mini
 Behind the scenes, Angular actually sets the `logger` parameter to the full service registered under the `LoggingService` token which happens to be the `DateLoggerService` that was [provided above](guide/cb-dependency-injection#useclass).
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -748,7 +748,7 @@ The following image, which displays the logging date, confirms the point:
 
 
 
-~~~
+</div>
 
 
 
@@ -798,7 +798,7 @@ After some undisclosed work, the function returns the string of names
 and Angular injects it into the `runnersUp` parameter of the `HeroOfTheMonthComponent`.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -808,7 +808,7 @@ Look at the <live-example name="cb-dependency-injection"></live-example>
 for the full source code.
 
 
-~~~
+</div>
 
 
 
@@ -860,7 +860,7 @@ A ***class-interface*** should define *only* the members that its consumers are 
 Such a narrowing interface helps decouple the concrete class from its consumers.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -887,7 +887,7 @@ The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for 
 Notice that it doesn't have a single member. It never grows no matter how many members you add to the class *as long as those members are typed but not implemented*. Look again at the TypeScript `MinimalLogger` class to confirm that it has no implementation.
 
 
-~~~
+</div>
 
 
 
@@ -957,7 +957,7 @@ and displays them in the order they arrive from the database.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -966,7 +966,7 @@ This rule makes the component safe to construct under test without fear that it 
 That's why you call the `HeroService` from within the `ngOnInit` rather than the constructor.
 
 
-~~~
+</div>
 
 
 
@@ -1073,7 +1073,7 @@ If you're lucky, they all implement the same base class
 whose API your `NewsComponent` understands.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1082,7 +1082,7 @@ That's not possible because TypeScript interfaces disappear
 from the transpiled JavaScript, which doesn't support interfaces. 
 There's no artifact to look for.
 
-~~~
+</div>
 
 
 
@@ -1256,7 +1256,7 @@ its class signature doesn't mention `Parent`:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -1264,7 +1264,7 @@ The `AlexComponent` *should* implement `Parent` as a matter of proper style.
 It doesn't in this example *only* to demonstrate that the code will compile and run without the interface
 
 
-~~~
+</div>
 
 
 
