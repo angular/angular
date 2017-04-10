@@ -1,7 +1,7 @@
 import {task, src, dest} from 'gulp';
 import {Dgeni} from 'dgeni';
 import * as path from 'path';
-import {HTML_MINIFIER_OPTIONS} from '../constants';
+import {DIST_ROOT, HTML_MINIFIER_OPTIONS, SOURCE_ROOT} from '../constants';
 
 // There are no type definitions available for these imports.
 const markdown = require('gulp-markdown');
@@ -12,6 +12,8 @@ const flatten = require('gulp-flatten');
 const htmlmin = require('gulp-htmlmin');
 const hljs = require('highlight.js');
 const dom  = require('gulp-dom');
+
+const DIST_DOCS = path.join(DIST_ROOT, 'docs');
 
 // Our docs contain comments of the form `<!-- example(...) -->` which serve as placeholders where
 // example code should be inserted. We replace these comments with divs that have a
@@ -46,8 +48,17 @@ const MARKDOWN_TAGS_TO_CLASS_ALIAS = [
   'code',
 ];
 
-task('docs', ['markdown-docs', 'highlight-docs', 'api-docs', 'minify-html-docs']);
 
+/** Generate all docs content. */
+task('docs', [
+  'markdown-docs',
+  'highlight-examples',
+  'api-docs',
+  'minified-api-docs',
+  'plunker-example-assets',
+]);
+
+/** Generates html files from the markdown overviews and guides. */
 task('markdown-docs', () => {
   return src(['src/lib/**/*.md', 'guides/*.md'])
       .pipe(markdown({
@@ -67,7 +78,11 @@ task('markdown-docs', () => {
       .pipe(dest('dist/docs/markdown'));
 });
 
-task('highlight-docs', () => {
+/**
+ * Creates syntax-highlighted html files from the examples to be used for the source view of
+ * live examples on the docs site.
+ */
+task('highlight-examples', () => {
   // rename files to fit format: [filename]-[filetype].html
   const renameFile = (path: any) => {
     const extension = path.extname.slice(1);
@@ -81,16 +96,24 @@ task('highlight-docs', () => {
       .pipe(dest('dist/docs/examples'));
 });
 
+/** Generates API docs from the source JsDoc using dgeni. */
 task('api-docs', () => {
   const docsPackage = require(path.resolve(__dirname, '../../dgeni'));
   const docs = new Dgeni([docsPackage]);
   return docs.generate();
 });
 
-task('minify-html-docs', ['api-docs'], () => {
+/** Generates minified html api docs. */
+task('minified-api-docs', ['api-docs'], () => {
   return src('dist/docs/api/*.html')
     .pipe(htmlmin(HTML_MINIFIER_OPTIONS))
     .pipe(dest('dist/docs/api/'));
+});
+
+/** Copies example sources to be used as plunker assets for the docs site. */
+task('plunker-example-assets', () => {
+  src(path.join(SOURCE_ROOT, 'examples', '**/*'))
+      .pipe(dest(path.join(DIST_DOCS, 'plunker', 'examples')));
 });
 
 /** Updates the markdown file's content to work inside of the docs app. */

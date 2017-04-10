@@ -32,8 +32,9 @@ mkdir $repoPath/overview
 mkdir $repoPath/guides
 mkdir $repoPath/api
 mkdir $repoPath/examples
+mkdir $repoPath/plunker
 
-# Move api files over to $repoPath/api
+# Copy api files over to $repoPath/api
 cp -r $docsPath/api/* $repoPath/api
 
 # Flatten the markdown docs structure and move it into $repoPath/overview
@@ -52,7 +53,7 @@ do
   fi
 done
 
-# Move guide files over to $repoPath/guides
+# Copy guide files over to $repoPath/guides
 for filename in $overviewFiles*
 do
   if [ -f $filename ]; then
@@ -60,8 +61,11 @@ do
   fi
 done
 
-# Move highlighted examples into $repoPath
+# Copy highlighted examples into $repoPath
 cp -r $examplesSource/* $repoPath/examples
+
+# Copy example plunker assets
+rsync -a $docsPath/plunker $repoPath/plunker
 
 # Copies assets over to the docs-content repository.
 cp LICENSE $repoPath/
