@@ -70,7 +70,7 @@ export class CodeComponent implements OnChanges {
     private logger: Logger) {}
 
   ngOnChanges() {
-    this.code = this.code && this.code.trim();
+    this.code = this.code && leftAlign(this.code);
 
     if (!this.code) {
       this.setCodeHtml('<p class="code-missing">The code sample is missing.</p>');
@@ -117,4 +117,16 @@ export class CodeComponent implements OnChanges {
     return linenums == null || linenums === NaN ?
       (this.code.match(/\n/g) || []).length > 1 : linenums;
   }
+}
+
+function leftAlign(text) {
+  let indent = Number.MAX_VALUE;
+  const lines = text.split('\n');
+  lines.forEach(line => {
+    const lineIndent = line.search(/\S/);
+    if (lineIndent !== -1) {
+      indent = Math.min(lineIndent, indent);
+    }
+  });
+  return lines.map(line => line.substr(indent)).join('\n').trim();
 }
