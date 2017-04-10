@@ -105,6 +105,14 @@ describe('CodeComponent', () => {
     expect(lis.length).toBe(0, 'should be no linenums');
   });
 
+  it('should remove common indentation from the code before rendering', () => {
+    hostComponent.linenums = false;
+    hostComponent.code = '  abc\n   def\n  ghi\n\n  jkl\n';
+    fixture.detectChanges();
+    const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
+    expect(codeContent).toEqual('abc\n def\nghi\n\njkl');
+  });
+
   it('should trim whitespace from the code before rendering', () => {
     hostComponent.linenums = false;
     hostComponent.code = '\n\n\n' + multiLineCode + '\n\n\n';
