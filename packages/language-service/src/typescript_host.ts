@@ -1097,7 +1097,9 @@ function findTsConfig(fileName: string): string {
   while (fs.existsSync(dir)) {
     const candidate = path.join(dir, 'tsconfig.json');
     if (fs.existsSync(candidate)) return candidate;
-    dir = path.dirname(dir);
+    const parentDir = path.dirname(dir);
+    if (parentDir === dir) break;
+    dir = parentDir;
   }
 }
 
