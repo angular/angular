@@ -70,9 +70,9 @@ describe('MdSnackBar', () => {
      let snackBarRef = snackBar.open('Snack time!', 'CHEW');
      viewContainerFixture.detectChanges();
 
-     let messageElement = overlayContainerElement.querySelector('.mat-simple-snackbar-message');
-     expect(messageElement.textContent)
-         .toBe('Snack time!', 'Expected snack bar to show a message without a ViewContainerRef');
+     let messageElement = overlayContainerElement.querySelector('snack-bar-container');
+     expect(messageElement.textContent).toContain('Snack time!',
+         'Expected snack bar to show a message without a ViewContainerRef');
 
      snackBarRef.dismiss();
      viewContainerFixture.detectChanges();
@@ -95,10 +95,9 @@ describe('MdSnackBar', () => {
     expect(snackBarRef.instance.snackBarRef)
       .toBe(snackBarRef, 'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('span.mat-simple-snackbar-message');
-    expect(messageElement.tagName).toBe('SPAN', 'Expected snack bar message element to be <span>');
+    let messageElement = overlayContainerElement.querySelector('snack-bar-container');
     expect(messageElement.textContent)
-        .toBe(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
+        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
 
     let buttonElement = overlayContainerElement.querySelector('button.mat-simple-snackbar-action');
     expect(buttonElement.tagName)
@@ -120,10 +119,9 @@ describe('MdSnackBar', () => {
     expect(snackBarRef.instance.snackBarRef)
       .toBe(snackBarRef, 'Expected the snack bar reference to be placed in the component instance');
 
-    let messageElement = overlayContainerElement.querySelector('span.mat-simple-snackbar-message');
-    expect(messageElement.tagName).toBe('SPAN', 'Expected snack bar message element to be <span>');
+    let messageElement = overlayContainerElement.querySelector('snack-bar-container');
     expect(messageElement.textContent)
-        .toBe(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
+        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
     expect(overlayContainerElement.querySelector('button.mat-simple-snackbar-action'))
         .toBeNull('Expected the query selection for action label to be null');
   });

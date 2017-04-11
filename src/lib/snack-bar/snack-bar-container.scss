@@ -2,7 +2,6 @@
 @import '../core/a11y/a11y';
 
 $mat-snack-bar-padding: 14px 24px !default;
-$mat-snack-bar-height: 20px !default;
 $mat-snack-bar-min-width: 288px !default;
 $mat-snack-bar-max-width: 568px !default;
 
@@ -13,10 +12,8 @@ $mat-snack-bar-max-width: 568px !default;
   border-radius: 2px;
   box-sizing: content-box;
   display: block;
-  height: $mat-snack-bar-height;
   max-width: $mat-snack-bar-max-width;
   min-width: $mat-snack-bar-min-width;
-  overflow: hidden;
   padding: $mat-snack-bar-padding;
   // Initial transformation is applied to start snack bar out of view.
   transform: translateY(100%);

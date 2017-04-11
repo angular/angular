@@ -2,6 +2,8 @@
 @import '../core/style/button-common';
 @import '../core/style/list-common';
 
+$mat-snack-bar-button-margin: 48px !default;
+
 :host {
   display: flex;
   justify-content: space-between;
@@ -13,20 +15,15 @@
   }
 }
 
-.mat-simple-snackbar-message {
-  @include mat-truncate-line;
-}
-
 .mat-simple-snackbar-action {
   @include mat-button-reset;
 
   background: none;
-  margin: -5px 0 0;
-  padding: 5px;
   text-transform: uppercase;
   color: inherit;
-  line-height: inherit;
+  line-height: 1;
   flex-shrink: 0;
+  margin-left: $mat-snack-bar-button-margin;
   font: {
     family: inherit;
     size: inherit;
