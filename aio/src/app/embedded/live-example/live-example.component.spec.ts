@@ -1,9 +1,9 @@
-/* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Component, DebugElement, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 
+import { DeviceService } from 'app/shared/device.service';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example.component';
 
 const defaultTestPath = '/test';
@@ -17,6 +17,13 @@ describe('LiveExampleComponent', () => {
   let liveExampleContent: string;
 
   //////// test helpers ////////
+  class TestDeviceService {
+    isMobile = false;
+  }
+
+  class TestMobileDeviceService {
+    isMobile = true;
+  }
 
   @Component({
     selector: 'aio-host-comp',
@@ -54,7 +61,10 @@ describe('LiveExampleComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ HostComponent, LiveExampleComponent, EmbeddedPlunkerComponent ],
-      providers: [ {provide: Location, useClass: TestLocation }]
+      providers: [
+        { provide: DeviceService, useClass: TestDeviceService },
+        { provide: Location, useClass: TestLocation }
+      ]
     })
     // Disable the <iframe> within the EmbeddedPlunkerComponent
     .overrideComponent(EmbeddedPlunkerComponent, {set: {template: 'NO IFRAME'}});
@@ -204,7 +214,7 @@ describe('LiveExampleComponent', () => {
       it('should have hidden, embedded plunker', async(() => {
         setHostTemplate('<live-example embedded></live-example>');
         testComponent(() => {
-          expect(liveExampleComponent.isEmbedded).toBe(true, 'component.isEmbedded');
+          expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
           expect(liveExampleComponent.showEmbedded).toBe(false, 'component.showEmbedded');
           expect(getEmbeddedPlunkerComponent()).toBeNull('no EmbeddedPlunkerComponent');
         });
@@ -254,7 +264,7 @@ describe('LiveExampleComponent', () => {
         setHostTemplate('<live-example embedded></live-example>');
         testComponent(() => {
           clickImg();
-          expect(liveExampleComponent.isEmbedded).toBe(true, 'component.isEmbedded');
+          expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
           expect(liveExampleComponent.showEmbedded).toBe(true, 'component.showEmbedded');
           expect(getEmbeddedPlunkerComponent()).toBeDefined('has EmbeddedPlunkerComponent');
         });
@@ -262,4 +272,28 @@ describe('LiveExampleComponent', () => {
 
     });
   });
+
+  describe('when mobile', () => {
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [{ provide: DeviceService, useClass: TestMobileDeviceService }]
+      });
+    });
+
+    it('should say that live example is not available on mobile', async(() => {
+      testPath = '/tutorial/toh-pt1';
+      testComponent(() => {
+        expect(liveExampleDe.nativeElement.innerText).toContain('not available on mobile');
+      });
+    }));
+
+    it('should say that the embedded live example is not available on mobile', async(() => {
+      setHostTemplate('<live-example embedded></live-example>');
+      testComponent(() => {
+        expect(liveExampleDe.nativeElement.innerText).toContain('not available on mobile');
+      });
+    }));
+  });
 });
+
