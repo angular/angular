@@ -2459,177 +2459,229 @@ But if something is not obvious or departs from a convention, then spell it out.
 Here is a compliant folder and file structure:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     &lt;project root&gt;
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-folder>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           core
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             core.module.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             exception.service.ts|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             user-profile.service.ts|spec.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           heroes
-          <aio-folder>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             hero
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               hero.component.ts|html|css|spec.ts
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-folder>
+          <div class='file'>
             hero-list
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               hero-list.component.ts|html|css|spec.ts
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-folder>
+          <div class='file'>
             shared
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               hero-button.component.ts|html|css|spec.ts
-            </aio-file>
+            </div>
 
-            <aio-file>
+            <div class='file'>
               hero.model.ts
-            </aio-file>
+            </div>
 
-            <aio-file>
+            <div class='file'>
               hero.service.ts|spec.ts
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             heroes.component.ts|html|css|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             heroes.module.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             heroes-routing.module.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           shared
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             shared.module.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             init-caps.pipe.ts|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             text-filter.component.ts|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             text-filter.service.ts|spec.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           villains
-          <aio-folder>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             villain
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               ...
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-folder>
+          <div class='file'>
             villain-list
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               ...
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-folder>
+          <div class='file'>
             shared
-            <aio-file>
+          </div>
+
+          <div class='children'>
+
+            <div class='file'>
               ...
-            </aio-file>
+            </div>
 
-          </aio-folder>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             villains.component.ts|html|css|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             villains.module.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             villains-routing.module.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.component.ts|html|css|spec.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app-routing.module.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         ...
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules/...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       ...
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -3081,61 +3133,73 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     src
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       app
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         shared
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           shared.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           init-caps.pipe.ts|spec.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           text-filter.component.ts|spec.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           text-filter.service.ts|spec.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.component.ts|html|css|spec.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.module.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app-routing.module.ts
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       main.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       index.html
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-  <aio-file>
+  <div class='file'>
     ...
-  </aio-file>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -3353,73 +3417,93 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     src
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       app
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         core
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           core.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           logger.service.ts|spec.ts
-        </aio-file>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           nav
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             nav.component.ts|html|css|spec.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           spinner
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             spinner.component.ts|html|css|spec.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             spinner.service.ts|spec.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.component.ts|html|css|spec.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.module.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app-routing.module.ts
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       main.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       index.html
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-  <aio-file>
+  <div class='file'>
     ...
-  </aio-file>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
