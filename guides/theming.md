@@ -50,35 +50,27 @@ Finally, if your app's content **is not** placed inside of a `md-sidenav-contain
 need to add the `mat-app-background` class to your wrapper element (for example the `body`). This
 ensures that the proper theme background is applied to your page.
 
-#### Theming overlay-based components
-Since certain components (e.g. `dialog`) are inside of a global overlay container, your theme may
-not be applied to them. In order to define the theme that will be used for overlay components, you
-have to specify it on the global `OverlayContainer` instance:
-
-```ts
-import {OverlayContainer} from '@angular/material';
-
-@NgModule({
-  // misc config goes here
-})
-export class YourAppModule {
-  constructor(overlayContainer: OverlayContainer) {
-    overlayContainer.themeClass = 'your-theme';
-  }
-}
-```
-
 ### Defining a custom theme
 When you want more customization than a pre-built theme offers, you can create your own theme file.
 
-A theme file is a simple Sass file that defines your palettes and passes them to mixins that output
-the corresponding styles. A typical theme file will look something like this:
+A custom theme file does two things:
+1. Imports the `mat-core()` sass mixin. This includes all common styles that are used by multiple
+components. **This should only be included once in your application.** If this mixin is included
+multiple times, your application will end up with multiple copies of these common styles.
+2. Defines a **theme** data structure as the composition of multiple palettes. This object can be 
+created with either the `mat-light-theme` function or the `mat-dark-theme` function. The output of 
+this function is then passed to the  `angular-material-theme` mixin, which will output all of the
+corresponding styles for the theme.
+
+
+A typical theme file will look something like this:
 ```scss
 @import '~@angular/material/theming';
 // Plus imports for other components in your app.
 
-// Include the base styles for Angular Material core. We include this here so that you only
+// Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
 @include mat-core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
@@ -110,28 +102,117 @@ as gulp-sass or grunt-sass). The simplest approach is to use the `node-sass` CLI
 ```
 node-sass src/unicorn-app-theme.scss dist/unicorn-app-theme.css
 ```
-and then include the output file in your application.
+and then include the output file in your index.html.
+
+The theme file **should not** be imported into other SCSS files. This will cause duplicate styles
+to be written into your CSS output. If you want to consume the theme definition object 
+(e.g., `$candy-app-theme`) in other SCSS files, then the definition of the theme object should be
+broken into its own file, separate from the inclusion of the `mat-core` and
+`angular-material-theme` mixins.
 
 The theme file can be concatenated and minified with the rest of the application's css.
 
+Note that if you include the generated theme file in the `styleUrls` of an Angular component, those
+styles will be subject to that component's [view encapsulation](https://angular.io/docs/ts/latest/guide/component-styles.html#!#view-encapsulation).
+
 #### Multiple themes
-You can extend the example above to define a second (or third or fourth) theme that is gated by
-some selector. For example, we could append the following to the example above to define a
-secondary dark theme:
+You can create multiple themes for your application by including the `angular-material-theme` mixin
+multiple times, where each inclusion is gated by an additional CSS class.
+
+Remember to only ever include the `@mat-core` mixin only once; it should not be included for each 
+theme. 
+
+##### Example of defining multiple themes:
 ```scss
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// **Be sure that you only ever include this mixin once!**
+@include mat-core();
+
+// Define the default theme (same as the example above).
+$candy-app-primary: mat-palette($mat-indigo);
+$candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
+$candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
+
+// Include the default theme styles.
+@include angular-material-theme($candy-app-theme);
+
+
+// Define an alternate dark theme.
+$dark-primary: mat-palette($mat-blue-grey);
+$dark-accent:  mat-palette($mat-amber, A200, A100, A400);
+$dark-warn:    mat-palette($mat-deep-orange);
+$dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+// Include the alternative theme styles inside of a block with a CSS class. You can make this
+// CSS class whatever you want. In this example, any component inside of an element with 
+// `.unicorn-dark-theme` will be affected by this alternate dark theme instead of the default theme. 
 .unicorn-dark-theme {
-  $dark-primary: mat-palette($mat-blue-grey);
-  $dark-accent:  mat-palette($mat-amber, A200, A100, A400);
-  $dark-warn:    mat-palette($mat-deep-orange);
-
-  $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
-
   @include angular-material-theme($dark-theme);
 }
 ```
 
-With this, any element inside of a parent with the `unicorn-dark-theme` class will use this
-dark theme.
+In the above example, any component inside of a parent with the `unicorn-dark-theme` class will use 
+the dark theme, while other components will fall back to the default `$candy-app-theme`.
+
+You can include as many themes as you like in this manner. You can also `@include` the 
+`angular-material-theme` in separate files and then lazily load them based on an end-user 
+interaction (how to lazily load the CSS assets will vary based on your application).
+
+It's important to remember, however, that the `mat-core` mixin should only ever be included _once_.
+
+##### Multiple themes and overlay-based components
+Since certain components (e.g. `dialog`) are inside of a global overlay container, the css class
+that determines the theme (such as the `.unicorn-dark-theme` example above), an additional step is
+needed to affect overlay-based components (menu, select, dialog, etc.).
+
+To do this, you can specify a `themeClass` on the global overlay container. For the example above,
+this would look like:
+```ts
+import {OverlayContainer} from '@angular/material';
+
+@NgModule({
+  // ...
+})
+export class UnicornCandyAppModule {
+  constructor(overlayContainer: OverlayContainer) {
+    overlayContainer.themeClass = 'unicorn-dark-theme';
+  }
+}
+```
+
+The `themeClass` of the `OverlayContainer` can be changed at any time to change the active theme
+class.
+
+#### Theming only certain components
+The `angular-material-theme` mixin will output styles for [all components in the library](https://github.com/angular/material2/blob/master/src/lib/core/theming/_all-theme.scss).
+If you are only using a subset of the components (or if you want to change the theme for specific
+components), you can include component-specific theme mixins. You also will need to include
+the `mat-core-theme` mixin as well, which contains theme-specific styles for common behaviors
+(such as ripples).
+
+ ```scss
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// **Be sure that you only ever include this mixin once!**
+@include mat-core();
+
+// Define the theme.
+$candy-app-primary: mat-palette($mat-indigo);
+$candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
+$candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
+
+// Include the theme styles for only specified components.
+@include mat-core-theme($theme);
+@include mat-button-theme($theme);
+@include mat-checkbox-theme($theme);
+```
 
 ### Theming your own components
 For more details about theming your own components, 
