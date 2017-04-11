@@ -17,7 +17,7 @@ const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
 const contentPackage = require('../content-package');
-const rhoPackage = require('../rho-package');
+const remarkPackage = require('../remark-package');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'packages');
@@ -31,7 +31,7 @@ module.exports =
     new Package(
         'angular.io', [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
-          gitPackage, targetPackage, contentPackage, rhoPackage
+          gitPackage, targetPackage, contentPackage, remarkPackage
         ])
 
         // Register the processors
