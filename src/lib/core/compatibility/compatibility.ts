@@ -190,7 +190,7 @@ export class CompatibilityModule {
   }
 
   private _checkTheme(): void {
-    if (this._document) {
+    if (this._document && typeof getComputedStyle === 'function') {
       const testElement = this._document.createElement('div');
 
       testElement.classList.add('mat-theme-loaded-marker');
