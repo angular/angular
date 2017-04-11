@@ -3,10 +3,12 @@ import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
 import { By } from '@angular/platform-browser';
 
+import { BehaviorSubject} from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { DeviceService } from 'app/shared/device.service';
 import { GaService } from 'app/shared/ga.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
@@ -36,6 +38,7 @@ describe('AppComponent', () => {
       imports: [ AppModule ],
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' },
+        { provide: DeviceService, useClass: TestDeviceService },
         { provide: GaService, useClass: TestGaService },
         { provide: Http, useClass: TestHttp },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
@@ -329,6 +332,14 @@ describe('AppComponent', () => {
 });
 
 //// test helpers ////
+
+class TestDeviceService {
+  // Show sidenav next to the main doc when display width on current device is greater than this.
+  readonly sideBySideWidth = 1032;
+  // Default to "wide", desktop browser.
+  displayWidth = new BehaviorSubject(this.sideBySideWidth + 1);
+  isMobile = false;
+}
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');

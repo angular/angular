@@ -2,6 +2,8 @@
 import { Component, ElementRef, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 
+import { DeviceService } from 'app/shared/device.service';
+
 const defaultPlnkrImg = 'plunker/placeholder.png';
 const imageBase  = 'assets/images/';
 const liveExampleBase = 'content/live-examples/';
@@ -10,7 +12,7 @@ const zipBase = 'content/zips/';
 /**
 * Angular.io Live Example Embedded Component
 *
-* Renders a link to a live/host example of the doc page.
+* Renders a link to a live/host example of the doc page (except on mobile).
 *
 * All attributes and the text content are optional
 *
@@ -66,14 +68,18 @@ const zipBase = 'content/zips/';
 export class LiveExampleComponent implements OnInit {
 
   enableDownload = true;
-  isEmbedded = false;
+  mode: string;
   plnkr: string;
   plnkrImg: string;
   showEmbedded = false;
   title: string;
   zip: string;
 
-  constructor(private elementRef: ElementRef, location: Location ) {
+  constructor(
+    deviceService: DeviceService,
+    private elementRef: ElementRef,
+    location: Location ) {
+
     const attrs = this.getAttrs();
 
     let exampleDir = attrs.name;
@@ -85,8 +91,8 @@ export class LiveExampleComponent implements OnInit {
 
     let plnkrStyle = 'eplnkr';
 
-    this.isEmbedded = boolFromAtty(attrs.embedded);
-    if (!this.isEmbedded) {
+    const isEmbedded = boolFromAtty(attrs.embedded);
+    if (!isEmbedded) {
       // Not embedded in doc page; determine if is embedded- or flat-style in another browser tab.
       // External plunker is embedded style by default.
       // Make flat style with `flat-style` or `embedded-style="false`
@@ -98,6 +104,8 @@ export class LiveExampleComponent implements OnInit {
 
       plnkrStyle = isEmbeddedStyle ? 'eplnkr' : 'plnkr';
     }
+
+    this.mode = deviceService.isMobile ? 'mobile' : isEmbedded ? 'embedded' : 'default';
 
     const plnkrName = attrs.plnkr ? attrs.plnkr.trim() + '.' : '';
 

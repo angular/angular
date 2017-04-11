@@ -4,13 +4,13 @@ import { MdSidenav } from '@angular/material';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { DeviceService } from 'app/shared/device.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
-
 
 const sideNavView = 'SideNav';
 
@@ -28,8 +28,6 @@ export class AppComponent implements OnInit {
   isSideBySide = false;
   private isSideNavDoc = false;
   private previousNavView: string;
-  // Set to 1032 to account for computed html window size
-  private readonly sideBySideWidth = 1032;
 
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
@@ -58,6 +56,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private autoScrollService: AutoScrollService,
+    private deviceService: DeviceService,
     private documentService: DocumentService,
     private locationService: LocationService,
     private navigationService: NavigationService,
@@ -93,7 +92,7 @@ export class AppComponent implements OnInit {
 
     this.swUpdateNotifications.enable();
 
-    this.onResize(window.innerWidth);
+    this.deviceService.displayWidth.subscribe(width => this.onResize(width));
   }
 
   // Scroll to the anchor in the hash fragment.
@@ -107,9 +106,8 @@ export class AppComponent implements OnInit {
     this.autoScroll();
   }
 
-  @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
-    this.isSideBySide = width > this.sideBySideWidth;
+    this.isSideBySide = width > this.deviceService.sideBySideWidth;
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
