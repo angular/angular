@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {InternalRoute, LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -1168,7 +1168,7 @@ function advanceActivatedRouteNodeAndItsChildren(node: TreeNode<ActivatedRoute>)
 
 function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
   for (let s = snapshot.parent; s; s = s.parent) {
-    const route: InternalRoute = s._routeConfig;
+    const route = s._routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
     if (route && route.component) return null;
   }
@@ -1180,7 +1180,7 @@ function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConf
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {
-    const route: InternalRoute = s._routeConfig;
+    const route = s._routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
   }
 

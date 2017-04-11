@@ -3049,7 +3049,7 @@ describe('Integration', () => {
                router.navigateByUrl('/blank');
                advance(fixture);
 
-               const config: any = router.config;
+               const config = router.config;
                const firstConfig = config[1]._loadedConfig;
 
                expect(firstConfig).toBeDefined();

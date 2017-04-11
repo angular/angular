@@ -357,17 +357,15 @@ export interface Route {
   children?: Routes;
   loadChildren?: LoadChildren;
   runGuardsAndResolvers?: RunGuardsAndResolvers;
-  /** @internal */
+  /**
+   * Filled for routes with `loadChildren` once the module has been loaded
+   * @internal
+   */
   _loadedConfig?: LoadedRouterConfig;
 }
 
 export class LoadedRouterConfig {
   constructor(public routes: Route[], public module: NgModuleRef<any>) {}
-}
-
-export interface InternalRoute extends Route {
-  // `LoadedRouterConfig` loaded via a Route `loadChildren`
-  _loadedConfig?: LoadedRouterConfig;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
