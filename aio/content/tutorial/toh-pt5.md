@@ -47,73 +47,85 @@ Before continuing with the Tour of Heroes, verify that you have the following st
 
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.service.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           mock-heroes.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -1223,113 +1235,125 @@ Review the sample source code in the <live-example></live-example> for this page
 Verify that you have the following structure:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app-routing.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.service.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           mock-heroes.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 

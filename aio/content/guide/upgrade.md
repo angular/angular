@@ -1258,153 +1258,193 @@ and apply the steps as we go.
 In terms of project structure, this is where our work begins:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-phonecat
-    <aio-file>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       bower.json
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       karma.conf.js
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-    <aio-folder>
+    <div class='file'>
       app
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         core
-        <aio-folder>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           checkmark
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             checkmark.filter.js
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             checkmark.filter.spec.js
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-folder>
+        <div class='file'>
           phone
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             phone.module.js
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             phone.service.js
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             phone.service.spec.js
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           core.module.js
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-folder>
+      <div class='file'>
         phone-detail
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           phone-detail.component.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-detail.component.spec.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-detail.module.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-detail.template.html
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-folder>
+      <div class='file'>
         phone-list
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           phone-list.component.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-list.component.spec.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-list.module.js
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           phone-list.template.html
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-folder>
+      <div class='file'>
         img
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
            ...
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-folder>
+      <div class='file'>
         phones
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
            ...
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.animations.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.module.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-folder>
+    <div class='file'>
       e2e-tests
-      <aio-file>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         protractor-conf.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         scenarios.js
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 

@@ -153,29 +153,37 @@ most of which you can [learn about later](guide/setup-systemjs-anatomy "Setup An
 Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     src
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       app
-      <aio-file>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app.component.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         app.module.ts
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       main.ts
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 

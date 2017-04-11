@@ -623,53 +623,61 @@ Everything is in place to run the application with its contact editor.
 
 The app file structure looks like this:
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     app
-    <aio-file>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       app.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       app.module.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       highlight.directive.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       title.component.(html|ts)
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       user.service.ts
-    </aio-file>
+    </div>
 
-    <aio-folder>
+    <div class='file'>
       contact
-      <aio-file>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         awesome.pipe.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         contact.component.(css|html|ts)
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         contact.service.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         highlight.directive.ts
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -1120,41 +1128,45 @@ The `HeroModule` is a bit more complex than the `CrisisModule`, which makes it
 a more interesting and useful example. Its file structure is as follows:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     hero
-    <aio-file>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       hero-detail.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero-list.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero.module.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero-routing.module.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero.service.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       highlight.directive.ts
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
