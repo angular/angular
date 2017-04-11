@@ -23,21 +23,21 @@
   }
 }
 
-@mixin _mat-button-ripple-color($theme) {
+@mixin _mat-button-ripple-color($theme, $hue, $opacity: 0.2) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
   &.mat-primary .mat-ripple-element {
-    background-color: mat-color($primary, 0.26);
+    background-color: mat-color($primary, $hue, $opacity);
   }
 
   &.mat-accent .mat-ripple-element {
-    background-color: mat-color($accent, 0.26);
+    background-color: mat-color($accent, $hue, $opacity);
   }
 
   &.mat-warn .mat-ripple-element {
-    background-color: mat-color($warn, 0.26);
+    background-color: mat-color($warn, $hue, $opacity);
   }
 }
 
@@ -75,19 +75,16 @@
   $foreground: map-get($theme, foreground);
 
   .mat-button, .mat-icon-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    // Appy color to focus overlay.
+    // Apply color to focus overlay.
     // The focus overlay will be visible when any button type is focused or when
     // flat buttons or icon buttons are hovered.
     @include _mat-button-focus-color($theme);
   }
 
   .mat-button, .mat-icon-button {
-    @include _mat-button-theme-color($theme, 'color');
     background: transparent;
-  }
 
-  .mat-icon-button {
-    @include _mat-button-ripple-color($theme);
+    @include _mat-button-theme-color($theme, 'color');
   }
 
   .mat-raised-button, .mat-fab, .mat-mini-fab {
@@ -97,11 +94,32 @@
 
     @include _mat-button-theme-color($theme, 'color', default-contrast);
     @include _mat-button-theme-color($theme, 'background-color');
+
+    // Add ripple effect with contrast color to buttons that don't have a focus overlay.
+    @include _mat-button-ripple-color($theme, default-contrast);
+  }
+  
+  // Add ripple effect with default color to flat buttons, which also have a focus overlay.
+  .mat-button {
+    @include _mat-button-ripple-color($theme, default, 0.1);
   }
 
+  // Add ripple effect with default color to the icon button. Ripple color needs to be stronger
+  // since the icon button doesn't have a focus overlay.
+  .mat-icon-button {
+    @include _mat-button-ripple-color($theme, default);
+  }
+
+  // TODO(devversion): The color class accent should be just set from TS code. No need for this.
   .mat-fab, .mat-mini-fab {
     background-color: mat-color($accent);
     color: mat-color($accent, default-contrast);
+
+    // Button fab elements are using the accent palette by default. The color classes won't
+    // be set on the element. To have a proper ripple color for those, we set the ripple color.
+    .mat-ripple-element {
+      background-color: mat-color($accent, default-contrast, 0.2);
+    }
   }
 }
 

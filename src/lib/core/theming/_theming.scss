@@ -44,7 +44,7 @@
 // @param $hue The hue from the palette to use. If this is a value between 0 and 1, it will
 //     be treated as opacity.
 // @param $opacity The alpha channel value for the color.
-@function mat-color($palette, $hue: default, $opacity: 1) {
+@function mat-color($palette, $hue: default, $opacity: null) {
   // If hueKey is a number between zero and one, then it actually contains an
   // opacity value, so recall this function with the default hue and that given opacity.
   @if type-of($hue) == number and $hue >= 0 and $hue <= 1 {
@@ -52,7 +52,7 @@
   }
 
   $color: map-get($palette, $hue);
-  $opacity: if(opacity($color) < 1, opacity($color), $opacity);
+  $opacity: if($opacity == null, opacity($color), $opacity);
 
   @return rgba($color, $opacity);
 }
