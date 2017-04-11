@@ -16,7 +16,7 @@ import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-import {InternalRoute, LoadedRouterConfig, Route, Routes} from './config';
+import {LoadedRouterConfig, Route, Routes} from './config';
 import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
@@ -100,8 +100,7 @@ export class RouterPreloader implements OnDestroy {
 
   private processRoutes(ngModule: NgModuleRef<any>, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];
-    for (const r of routes) {
-      const route: InternalRoute = r;
+    for (const route of routes) {
       // we already have the config loaded, just recurse
       if (route.loadChildren && !route.canLoad && route._loadedConfig) {
         const childConfig = route._loadedConfig;
@@ -119,7 +118,7 @@ export class RouterPreloader implements OnDestroy {
     return mergeAll.call(from(res));
   }
 
-  private preloadConfig(ngModule: NgModuleRef<any>, route: InternalRoute): Observable<void> {
+  private preloadConfig(ngModule: NgModuleRef<any>, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
       const loaded$ = this.loader.load(ngModule.injector, route);
       return mergeMap.call(loaded$, (config: LoadedRouterConfig) => {
