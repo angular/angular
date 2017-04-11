@@ -238,7 +238,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     this._placeholder = value;
 
     // Must wait to record the trigger width to ensure placeholder width is included.
-    Promise.resolve(null).then(() => this._triggerWidth = this._getWidth());
+    Promise.resolve(null).then(() => this._setTriggerWidth());
   }
 
   /** Whether the component is disabled. */
@@ -352,6 +352,11 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     if (this.disabled || !this.options.length) {
       return;
     }
+
+    if (!this._triggerWidth) {
+      this._setTriggerWidth();
+    }
+
     this._calculateOverlayPosition();
     this._placeholderState = this._floatPlaceholderState();
     this._panelOpen = true;
@@ -443,11 +448,12 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     return this._dir ? this._dir.value === 'rtl' : false;
   }
 
-  /** The width of the trigger element. This is necessary to match
+  /**
+   * Sets the width of the trigger element. This is necessary to match
    * the overlay width to the trigger width.
    */
-  _getWidth(): number {
-    return this._getTriggerRect().width;
+  private _setTriggerWidth(): void {
+    this._triggerWidth = this._getTriggerRect().width;
   }
 
   /** Ensures the panel opens if activated by the keyboard. */
