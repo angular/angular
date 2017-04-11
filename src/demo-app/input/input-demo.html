@@ -222,6 +222,15 @@
       </md-input-container>
     </p>
     <p>
+      <md-input-container style="margin-bottom: 4em">
+        <textarea mdInput #longHint placeholder="Enter text to count"></textarea>
+        <md-hint>
+          Enter some text to count how many characters are in it. The character count is shown on the right.
+        </md-hint>
+        <md-hint align="end" style="white-space: nowrap">Length: {{longHint.value.length}}</md-hint>
+      </md-input-container>
+    </p>
+    <p>
       <md-checkbox [(ngModel)]="color">Check to change the color:</md-checkbox>
       <md-input-container [color]="color ? 'primary' : 'accent'">
         <input mdInput [placeholder]="color ? 'Primary color' : 'Accent color'">

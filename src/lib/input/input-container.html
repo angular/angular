@@ -44,7 +44,9 @@
     <div class="mat-input-hint-wrapper" *ngSwitchCase="'hint'"
       [@transitionMessages]="_subscriptAnimationState">
       <div *ngIf="hintLabel" [id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
-      <ng-content select="md-hint, mat-hint"></ng-content>
+      <ng-content select="md-hint:not([align='end']), mat-hint:not([align='end'])"></ng-content>
+      <div class="mat-input-hint-spacer"></div>
+      <ng-content select="md-hint[align='end'], mat-hint[align='end']"></ng-content>
     </div>
   </div>
 </div>
