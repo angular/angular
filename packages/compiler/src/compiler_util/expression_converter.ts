@@ -388,7 +388,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this.visit(ast, mode)); }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
-    throw new Error('Quotes are not supported for evaluation!');
+    throw new Error(`Quotes are not supported for evaluation!
+        Statement: ${ast.uninterpretedExpression} located at ${ast.location}`);
   }
 
   private visit(ast: cdAst.AST, mode: _Mode): any {
