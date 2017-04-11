@@ -1,16 +1,11 @@
 .feature-row {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   flex-wrap: wrap;
+  margin: 24px 0 0;
 
   @media (max-width: 600px) {
     flex-direction: column;
-  }
-
-  h2.text-headline {
-    font-size: 28px;
-    margin-top: 10px;
-    color: #37474F;
   }
 }
 
@@ -19,6 +14,6 @@
 }
 
 .feature {
-  max-width: 350px;
-  margin-bottom: $unit * 4;
+  max-width: 300px;
+  margin: 0 24px 32px 0;  
 }
