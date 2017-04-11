@@ -65,7 +65,7 @@ export class MdDialog {
     let dialogRef =
         this._attachDialogContent(componentOrTemplateRef, dialogContainer, overlayRef, config);
 
-    if (!this._openDialogs.length && !this._parentDialog) {
+    if (!this._openDialogs.length) {
       document.addEventListener('keydown', this._boundKeydown);
     }
 
@@ -199,10 +199,9 @@ export class MdDialog {
    */
   private _handleKeydown(event: KeyboardEvent): void {
     let topDialog = this._openDialogs[this._openDialogs.length - 1];
+    let canClose = topDialog ? !topDialog._containerInstance.dialogConfig.disableClose : false;
 
-    if (event.keyCode === ESCAPE && topDialog &&
-      !topDialog._containerInstance.dialogConfig.disableClose) {
-
+    if (event.keyCode === ESCAPE && canClose) {
       topDialog.close();
     }
   }

@@ -127,7 +127,6 @@ describe('MdDialog', () => {
     });
   }));
 
-
   it('should close a dialog via the escape key', async(() => {
     dialog.open(PizzaMsg, {
       viewContainerRef: testViewContainerRef
@@ -585,6 +584,17 @@ describe('MdDialog with a parent MdDialog', () => {
             .toBe('', 'Expected closeAll on parent MdDialog to close dialog opened by child');
       });
     }));
+
+  it('should close the top dialog via the escape key', async(() => {
+    childDialog.open(PizzaMsg);
+
+    dispatchKeyboardEvent(document, 'keydown', ESCAPE);
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
+    });
+  }));
 });
 
 
