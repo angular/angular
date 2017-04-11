@@ -4,7 +4,6 @@
 
 $mat-list-side-padding: 16px;
 $mat-list-avatar-size: 40px;
-$mat-list-icon-size: 24px;
 
 // Normal list variables
 $mat-list-top-padding: 8px;
@@ -17,6 +16,7 @@ $mat-list-avatar-height: 56px;
 // spec requires two- and three-line lists be taller
 $mat-list-two-line-height: 72px;
 $mat-list-three-line-height: 88px;
+$mat-list-icon-size: 24px;
 
 // Dense list variables
 $mat-dense-top-padding: 4px;
@@ -25,11 +25,12 @@ $mat-dense-base-height: 40px;
 $mat-dense-avatar-height: 48px;
 $mat-dense-two-line-height: 60px;
 $mat-dense-three-line-height: 76px;
+$mat-dense-list-icon-size: 20px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
 @mixin mat-list-item-base($font-size, $base-height, $avatar-height,
-  $two-line-height, $three-line-height) {
+  $two-line-height, $three-line-height, $icon-size) {
 
   // Prevents the wrapper `mat-list-item-content` from collapsing due to it
   // being `inline` by default.
@@ -84,8 +85,9 @@ $mat-dense-three-line-height: 76px;
   }
 
   .mat-list-icon {
-    width: $mat-list-icon-size;
-    height: $mat-list-icon-size;
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
     border-radius: 50%;
     padding: 4px;
   }
@@ -128,7 +130,8 @@ $mat-dense-three-line-height: 76px;
       $mat-list-base-height,
       $mat-list-avatar-height,
       $mat-list-two-line-height,
-      $mat-list-three-line-height
+      $mat-list-three-line-height,
+      $mat-list-icon-size
     );
 
     @include mat-line-base($mat-list-secondary-font);
@@ -154,7 +157,8 @@ $mat-dense-three-line-height: 76px;
       $mat-dense-base-height,
       $mat-dense-avatar-height,
       $mat-dense-two-line-height,
-      $mat-dense-three-line-height
+      $mat-dense-three-line-height,
+      $mat-dense-list-icon-size
     );
 
     @include mat-line-base($mat-dense-font-size);
