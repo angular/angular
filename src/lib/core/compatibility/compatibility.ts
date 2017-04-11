@@ -6,13 +6,28 @@ import {
   Inject,
   Optional,
   isDevMode,
+  ElementRef,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
+import {MdError} from '../errors/error';
 
 /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
 let hasDoneGlobalChecks = false;
 
 export const MATERIAL_COMPATIBILITY_MODE = new OpaqueToken('md-compatibility-mode');
+
+/**
+ * Exception thrown if the consumer has used an invalid Material prefix on a component.
+ * @docs-private
+ */
+export class MdCompatibilityInvalidPrefixError extends MdError {
+  constructor(prefix: string, nodeName: string) {
+    super(
+      `The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
+      `It was used on an "${nodeName.toLowerCase()}" element.`
+    );
+  }
+}
 
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MAT_ELEMENTS_SELECTOR = `
@@ -137,9 +152,12 @@ export const MD_ELEMENTS_SELECTOR = `
 /** Directive that enforces that the `mat-` prefix cannot be used. */
 @Directive({selector: MAT_ELEMENTS_SELECTOR})
 export class MatPrefixRejector {
-  constructor(@Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean) {
+  constructor(
+    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean,
+    elementRef: ElementRef) {
+
     if (!isCompatibilityMode) {
-      throw Error('The "mat-" prefix cannot be used out of ng-material v1 compatibility mode.');
+      throw new MdCompatibilityInvalidPrefixError('mat', elementRef.nativeElement.nodeName);
     }
   }
 }
@@ -147,9 +165,12 @@ export class MatPrefixRejector {
 /** Directive that enforces that the `md-` prefix cannot be used. */
 @Directive({selector: MD_ELEMENTS_SELECTOR})
 export class MdPrefixRejector {
-  constructor(@Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean) {
+  constructor(
+    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean,
+    elementRef: ElementRef) {
+
     if (isCompatibilityMode) {
-      throw Error('The "md-" prefix cannot be used in ng-material v1 compatibility mode.');
+      throw new MdCompatibilityInvalidPrefixError('md', elementRef.nativeElement.nodeName);
     }
   }
 }

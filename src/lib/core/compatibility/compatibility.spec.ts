@@ -4,8 +4,10 @@ import {MdCheckboxModule} from '../../checkbox/index';
 import {
   NoConflictStyleCompatibilityMode,
   MAT_ELEMENTS_SELECTOR,
-  MD_ELEMENTS_SELECTOR
+  MD_ELEMENTS_SELECTOR,
+  MdCompatibilityInvalidPrefixError,
 } from './compatibility';
+import {wrappedErrorMessage} from '../testing/wrapped-error-message';
 
 
 describe('Style compatibility', () => {
@@ -32,9 +34,11 @@ describe('Style compatibility', () => {
     }));
 
     it('should throw an error when trying to use the "mat-" prefix', () => {
+      const expectedError = new MdCompatibilityInvalidPrefixError('mat', 'mat-checkbox');
+
       expect(() => {
         TestBed.createComponent(ComponentWithMatCheckbox);
-      }).toThrowError(/The "mat-" prefix cannot be used out of ng-material v1 compatibility mode/);
+      }).toThrowError(wrappedErrorMessage(expectedError));
     });
   });
 
@@ -53,9 +57,11 @@ describe('Style compatibility', () => {
     });
 
     it('should throw an error when trying to use the "md-" prefix', () => {
+      const expectedError = new MdCompatibilityInvalidPrefixError('md', 'md-checkbox');
+
       expect(() => {
         TestBed.createComponent(ComponentWithMdCheckbox);
-      }).toThrowError(/The "md-" prefix cannot be used in ng-material v1 compatibility mode/);
+      }).toThrowError(wrappedErrorMessage(expectedError));
     });
   });
 
@@ -69,9 +75,11 @@ describe('Style compatibility', () => {
     }));
 
     it('should throw an error when using the "md-" prefix', () => {
-       expect(() => {
+      const expectedError = new MdCompatibilityInvalidPrefixError('md', 'md-checkbox');
+
+      expect(() => {
         TestBed.createComponent(ComponentWithMdCheckbox);
-      }).toThrowError(/The "md-" prefix cannot be used in ng-material v1 compatibility mode/);
+      }).toThrowError(wrappedErrorMessage(expectedError));
     });
 
     it('should not throw an error when using the "mat-" prefix', () => {
