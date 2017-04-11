@@ -28,4 +28,9 @@
   cursor: -webkit-grab;
   cursor: grab;
 }
+
+@mixin cursor-grabbing {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
 /* stylelint-enable */

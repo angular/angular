@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
 
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
@@ -97,7 +98,20 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 }
 
+%_mat-slider-cursor {
+  .mat-slider:not(.mat-slider-disabled) & {
+    @include cursor-grab;
+  }
+
+  .mat-slider:not(.mat-slider-disabled) &:active,
+  .mat-slider-sliding:not(.mat-slider-disabled) & {
+    @include cursor-grabbing;
+  }
+}
+
 .mat-slider-thumb {
+  @extend %_mat-slider-cursor;
+
   position: absolute;
   right: -$mat-slider-thumb-size / 2;
   bottom: -$mat-slider-thumb-size / 2;
@@ -113,6 +127,8 @@ $mat-slider-focus-ring-size: 30px !default;
 }
 
 .mat-slider-thumb-label {
+  @extend %_mat-slider-cursor;
+
   display: none;
   align-items: center;
   justify-content: center;
