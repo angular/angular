@@ -1027,65 +1027,77 @@ Here are the details for readers inclined to build the sample through to this mi
 The starter app's structure looks like this:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     router-sample
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           crisis-list.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-list.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           not-found.component.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -1287,29 +1299,33 @@ Follow these steps:
 When you're done, you'll have these *hero management* files:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     src/app/heroes
-    <aio-file>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       hero-detail.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero-list.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       hero.service.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       heroes.module.ts
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -2180,85 +2196,105 @@ You've learned how to do the following:
 After these changes, the folder structure looks like this:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     router-sample
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-folder>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           heroes
-          <aio-file>
+        </div>
+
+        <div class='children'>
+
+          <div class='file'>
             hero-detail.component.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             hero-list.component.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             hero.service.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             heroes.module.ts
-          </aio-file>
+          </div>
 
-          <aio-file>
+          <div class='file'>
             heroes-routing.module.ts
-          </aio-file>
+          </div>
 
-        </aio-folder>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app-routing.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           crisis-list.component.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+  <Here>
+    are the relevant files for this version of the sample application.
+  </Here>
+
+</div>
 
 
 
@@ -2910,37 +2946,41 @@ Create an `admin` folder with a feature module file, a routing configuration fil
 The admin feature file structure looks like this:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     src/app/admin
-    <aio-file>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       admin-dashboard.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       admin.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       admin.module.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       admin-routing.module.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       manage-crises.component.ts
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       manage-heroes.component.ts
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
