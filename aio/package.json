@@ -72,6 +72,8 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "lodash": "^4.17.4",
     "protractor": "~5.1.0",
+    "remark": "^7.0.0",
+    "remark-html": "^6.0.0",
     "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.7",
