@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, InternalRoute, ResolveData, Route, Routes} from './config';
+import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
@@ -154,7 +154,7 @@ function sortActivatedRouteSnapshots(nodes: TreeNode<ActivatedRouteSnapshot>[]):
   });
 }
 
-function getChildConfig(route: InternalRoute): Route[] {
+function getChildConfig(route: Route): Route[] {
   if (route.children) {
     return route.children;
   }
