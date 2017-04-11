@@ -1,37 +1,38 @@
-.filetree {
+aio-filetree {
   background: $offwhite;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, .2);
   border: 4px solid $lightgray;
   margin: 0 0 5px 0;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-  .file {
-    display: block;
-    font-family: $main-font;
-    line-height: 32px;
-    color: $darkgray;
-  }
-
-  .children {
-    padding-left: 5px;
+aio-folder {
+    padding-left: 24px;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 
-    .file {
-      position: relative;
+aio-file {
+    display: block;
+    position: relative;
+    line-height: 32px;
+    padding-left: 5px;
 
-      &:before {
-        content: '';
-        left: -18px;
-        bottom: 16px;
-        width: 5px;
-        height: 9999px;
-        position: absolute;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: $lightgray;
-        border-radius: 0 0 0 3px;
-      }
+    &:before {
+      content: '';
+      left: -18px;
+      bottom: 16px;
+      width: 5px;
+      height: 9999px;
+      position: absolute;
+      border-width: 0 0 1px 1px;
+      border-style: solid;
+      border-color: $lightgray;
+      border-radius: 0 0 0 3px;
     }
-  }
 }
