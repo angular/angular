@@ -5,8 +5,9 @@
   <div class="mat-radio-container">
     <div class="mat-radio-outer-circle"></div>
     <div class="mat-radio-inner-circle"></div>
-    <div md-ripple *ngIf="!_isRippleDisabled()" class="mat-radio-ripple"
+    <div md-ripple class="mat-radio-ripple"
          [mdRippleTrigger]="label"
+         [mdRippleDisabled]="_isRippleDisabled()"
          [mdRippleCentered]="true"></div>
   </div>
 
@@ -18,7 +19,6 @@
           [attr.aria-label]="ariaLabel"
           [attr.aria-labelledby]="ariaLabelledby"
           (change)="_onInputChange($event)"
-          (blur)="_onInputBlur()"
           (click)="_onInputClick($event)">
 
   <!-- The label content for radio control. -->

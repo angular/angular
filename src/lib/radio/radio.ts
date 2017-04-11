@@ -23,9 +23,9 @@ import {
   UniqueSelectionDispatcher,
   MdRipple,
   FocusOriginMonitor,
+  FocusOrigin,
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
-import {Subscription} from 'rxjs/Subscription';
 
 
 /**
@@ -405,11 +405,8 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   /** The child ripple instance. */
   @ViewChild(MdRipple) _ripple: MdRipple;
 
-  /** Stream of focus event from the focus origin monitor. */
-  private _focusOriginMonitorSubscription: Subscription;
-
   /** Reference to the current focus ripple. */
-  private _focusedRippleRef: RippleRef;
+  private _focusRipple: RippleRef;
 
   /** The native `<input type=radio>` element */
   @ViewChild('input') _inputElement: ElementRef;
@@ -446,13 +443,9 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this._focusOriginMonitorSubscription = this._focusOriginMonitor
+    this._focusOriginMonitor
       .monitor(this._inputElement.nativeElement, this._renderer, false)
-      .subscribe(focusOrigin => {
-        if (focusOrigin === 'keyboard' && !this._focusedRippleRef) {
-          this._focusedRippleRef = this._ripple.launch(0, 0, { persistent: true, centered: true });
-        }
-      });
+      .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 
   ngOnDestroy() {
@@ -469,17 +462,6 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
   _isRippleDisabled() {
     return this.disableRipple || this.disabled;
-  }
-
-  _onInputBlur() {
-    if (this._focusedRippleRef) {
-      this._focusedRippleRef.fadeOut();
-      this._focusedRippleRef = null;
-    }
-
-    if (this.radioGroup) {
-      this.radioGroup._touch();
-    }
   }
 
   _onInputClick(event: Event) {
@@ -512,6 +494,22 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
       this.radioGroup._touch();
       if (groupValueChanged) {
         this.radioGroup._emitChangeEvent();
+      }
+    }
+  }
+
+  /** Function is called whenever the focus changes for the input element. */
+  private _onInputFocusChange(focusOrigin: FocusOrigin) {
+    if (!this._focusRipple && focusOrigin === 'keyboard') {
+      this._focusRipple = this._ripple.launch(0, 0, {persistent: true, centered: true});
+    } else if (!focusOrigin) {
+      if (this.radioGroup) {
+        this.radioGroup._touch();
+      }
+
+      if (this._focusRipple) {
+        this._focusRipple.fadeOut();
+        this._focusRipple = null;
       }
     }
   }

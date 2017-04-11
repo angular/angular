@@ -228,33 +228,47 @@ describe('MdRadio', () => {
       expect(radioInstances.every(radio => !radio.checked)).toBe(true);
     });
 
-    it('should not have a ripple on disabled radio buttons', () => {
-      let rippleElement = radioNativeElements[0].querySelector('[md-ripple]');
-      expect(rippleElement).toBeTruthy('Expected an enabled radio button to have a ripple');
-
+    it('should not show ripples on disabled radio buttons', () => {
       radioInstances[0].disabled = true;
       fixture.detectChanges();
 
-      rippleElement = radioNativeElements[0].querySelector('[md-ripple]');
-      expect(rippleElement).toBeFalsy('Expected a disabled radio button not to have a ripple');
+      dispatchFakeEvent(radioLabelElements[0], 'mousedown');
+      dispatchFakeEvent(radioLabelElements[0], 'mouseup');
+
+      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+        .toBe(0, 'Expected a disabled radio button to not show ripples');
+
+      radioInstances[0].disabled = false;
+      fixture.detectChanges();
+
+      dispatchFakeEvent(radioLabelElements[0], 'mousedown');
+      dispatchFakeEvent(radioLabelElements[0], 'mouseup');
+
+      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+        .toBe(1, 'Expected an enabled radio button to show ripples');
     });
 
-    it('should remove ripple if mdRippleDisabled input is set', async(() => {
-      fixture.detectChanges();
-      for (let radioNativeElement of radioNativeElements)
-      {
-        expect(radioNativeElement.querySelectorAll('[md-ripple]').length)
-          .toBe(1, 'Expect [md-ripple] in radio buttons');
-      }
-
+    it('should not show ripples if mdRippleDisabled input is set', () => {
       testComponent.disableRipple = true;
       fixture.detectChanges();
-      for (let radioNativeElement of radioNativeElements)
-      {
-        expect(radioNativeElement.querySelectorAll('[md-ripple]').length)
-          .toBe(0, 'Expect no [md-ripple] in radio buttons');
+
+      for (let radioLabel of radioLabelElements) {
+        dispatchFakeEvent(radioLabel, 'mousedown');
+        dispatchFakeEvent(radioLabel, 'mouseup');
+
+        expect(radioLabel.querySelectorAll('.mat-ripple-element').length).toBe(0);
       }
-    }));
+
+      testComponent.disableRipple = false;
+      fixture.detectChanges();
+
+      for (let radioLabel of radioLabelElements) {
+        dispatchFakeEvent(radioLabel, 'mousedown');
+        dispatchFakeEvent(radioLabel, 'mouseup');
+
+        expect(radioLabel.querySelectorAll('.mat-ripple-element').length).toBe(1);
+      }
+    });
 
     it(`should update the group's selected radio to null when unchecking that radio
         programmatically`, () => {

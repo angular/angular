@@ -359,23 +359,6 @@ describe('MdCheckbox', () => {
           .toBe(0, 'Expected no ripple after element is blurred.');
     }));
 
-    it('should show a ripple when focused programmatically', fakeAsync(() => {
-      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected no ripples to be present.');
-
-      dispatchFakeEvent(inputElement, 'focus');
-      tick(RIPPLE_FADE_IN_DURATION);
-
-      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(1, 'Expected focus ripple to be present.');
-
-      dispatchFakeEvent(checkboxInstance._inputElement.nativeElement, 'blur');
-      tick(RIPPLE_FADE_OUT_DURATION);
-
-      expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected focus ripple to be removed.');
-    }));
-
     describe('ripple elements', () => {
 
       it('should show ripples on label mousedown', () => {
@@ -387,30 +370,41 @@ describe('MdCheckbox', () => {
         expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
       });
 
-      it('should not have a ripple when disabled', () => {
-        let rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
-        expect(rippleElement).toBeTruthy('Expected an enabled checkbox to have a ripple');
-
+      it('should not show ripples when disabled', () => {
         testComponent.isDisabled = true;
         fixture.detectChanges();
 
-        rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
-        expect(rippleElement).toBeFalsy('Expected a disabled checkbox not to have a ripple');
+        dispatchFakeEvent(labelElement, 'mousedown');
+        dispatchFakeEvent(labelElement, 'mouseup');
+
+        expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+        testComponent.isDisabled = false;
+        fixture.detectChanges();
+
+        dispatchFakeEvent(labelElement, 'mousedown');
+        dispatchFakeEvent(labelElement, 'mouseup');
+
+        expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
       });
 
-      it('should remove ripple if mdRippleDisabled input is set', async(() => {
+      it('should remove ripple if mdRippleDisabled input is set', () => {
         testComponent.disableRipple = true;
         fixture.detectChanges();
 
-        expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
-          .toBe(0, 'Expect no [md-ripple] in checkbox');
+        dispatchFakeEvent(labelElement, 'mousedown');
+        dispatchFakeEvent(labelElement, 'mouseup');
+
+        expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
         testComponent.disableRipple = false;
         fixture.detectChanges();
 
-        expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
-          .toBe(1, 'Expect [md-ripple] in checkbox');
-      }));
+        dispatchFakeEvent(labelElement, 'mousedown');
+        dispatchFakeEvent(labelElement, 'mouseup');
+
+        expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+      });
     });
 
     describe('color behaviour', () => {

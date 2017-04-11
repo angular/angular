@@ -204,7 +204,7 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
 
   /** Focuses the slide-toggle. */
   focus() {
-    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'program');
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
   }
 
   /** Whether the slide-toggle is checked. */

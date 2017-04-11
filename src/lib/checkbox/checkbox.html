@@ -12,11 +12,11 @@
            [indeterminate]="indeterminate"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
-           (blur)="_onInputBlur()"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
-    <div md-ripple *ngIf="!_isRippleDisabled()" class="mat-checkbox-ripple"
+    <div md-ripple class="mat-checkbox-ripple"
          [mdRippleTrigger]="label"
+         [mdRippleDisabled]="_isRippleDisabled()"
          [mdRippleCentered]="true"></div>
     <div class="mat-checkbox-frame"></div>
     <div class="mat-checkbox-background">
