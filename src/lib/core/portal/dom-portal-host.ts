@@ -64,6 +64,7 @@ export class DomPortalHost extends BasePortalHost {
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     let viewContainer = portal.viewContainerRef;
     let viewRef = viewContainer.createEmbeddedView(portal.templateRef);
+    viewRef.detectChanges();
 
     // The method `createEmbeddedView` will add the view as a child of the viewContainer.
     // But for the DomPortalHost the view can be added everywhere in the DOM (e.g Overlay Container)

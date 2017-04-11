@@ -11,6 +11,7 @@ import {
   Injector,
   ApplicationRef,
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {TemplatePortalDirective, PortalHostDirective, PortalModule} from './portal-directives';
 import {Portal, ComponentPortal} from './portal';
 import {DomPortalHost} from './dom-portal-host';
@@ -121,6 +122,28 @@ describe('Portals', () => {
 
       // Expect the new value to be reflected in the rendered output.
       expect(hostContainer.textContent).toContain('Mango');
+    });
+
+    it('should load a <ng-template> portal with an inner template', () => {
+      let testAppComponent = fixture.debugElement.componentInstance;
+
+      // Detect changes initially so that the component's ViewChildren are resolved.
+      fixture.detectChanges();
+
+      // Set the selectedHost to be a TemplatePortal.
+      testAppComponent.selectedPortal = testAppComponent.portalWithTemplate;
+      fixture.detectChanges();
+
+      // Expect that the content of the attached portal is present.
+      let hostContainer = fixture.nativeElement.querySelector('.portal-container');
+      expect(hostContainer.textContent).toContain('Pineapple');
+
+      // When updating the binding value.
+      testAppComponent.fruits = ['Mangosteen'];
+      fixture.detectChanges();
+
+      // Expect the new value to be reflected in the rendered output.
+      expect(hostContainer.textContent).toContain('Mangosteen');
     });
 
     it('should change the attached portal', () => {
@@ -258,6 +281,15 @@ describe('Portals', () => {
       expect(someDomElement.textContent).toContain('Cake');
     });
 
+    it('should render a template portal with an inner template', () => {
+      let fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
+
+      fixture.componentInstance.portalWithTemplate.attach(host);
+
+      expect(someDomElement.textContent).toContain('Durian');
+    });
+
     it('should attach and detach a template portal with a binding', () => {
       let fixture = TestBed.createComponent(PortalTestApp);
 
@@ -384,14 +416,21 @@ class ArbitraryViewContainerRefComponent {
   <ng-template cdk-portal>Cake</ng-template>
 
   <div *cdk-portal>Pie</div>
+  <ng-template cdk-portal> {{fruit}} </ng-template>
 
-  <ng-template cdk-portal> {{fruit}} </ng-template>`,
+  <ng-template cdk-portal>
+    <ul>
+      <li *ngFor="let fruitName of fruits"> {{fruitName}} </li>
+    </ul>
+  </ng-template>
+  `,
 })
 class PortalTestApp {
   @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;
   @ViewChild(PortalHostDirective) portalHost: PortalHostDirective;
   selectedPortal: Portal<any>;
   fruit: string = 'Banana';
+  fruits = ['Apple', 'Pineapple', 'Durian'];
 
   constructor(public injector: Injector) { }
 
@@ -406,13 +445,17 @@ class PortalTestApp {
   get portalWithBinding() {
     return this.portals.toArray()[2];
   }
+
+  get portalWithTemplate() {
+    return this.portals.toArray()[3];
+  }
 }
 
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
 const TEST_COMPONENTS = [PortalTestApp, ArbitraryViewContainerRefComponent, PizzaMsg];
 @NgModule({
-  imports: [PortalModule],
+  imports: [CommonModule, PortalModule],
   exports: TEST_COMPONENTS,
   declarations: TEST_COMPONENTS,
   entryComponents: TEST_COMPONENTS,

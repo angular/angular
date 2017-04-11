@@ -10,6 +10,10 @@
   Pasta 3
 </button>
 
+<button cdk-overlay-origin #tortelliniOrigin="cdkOverlayOrigin" (click)="openTortelliniPanel()">
+  Pasta 4
+</button>
+
 
 <button cdk-overlay-origin #trigger="cdkOverlayOrigin" (click)="isMenuOpen = !isMenuOpen">
   Open menu
@@ -25,6 +29,10 @@
 <!-- Template to load into an overlay. -->
 <ng-template cdk-portal>
   <p class="demo-fusilli"> Fusilli </p>
+</ng-template>
+
+<ng-template cdk-portal #tortelliniTemplate="cdkPortal">
+  <ul class="demo-tortellini"><li *ngFor="let filling of tortelliniFillings">{{filling}}</li></ul>
 </ng-template>
 
 <button (click)="openPanelWithBackdrop()">Backdrop panel</button>

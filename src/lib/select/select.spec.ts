@@ -1040,34 +1040,38 @@ describe('MdSelect', () => {
         select.style.marginRight = '20px';
       });
 
-      it('should adjust for the checkbox in ltr', () => {
+      it('should adjust for the checkbox in ltr', async(() => {
         trigger.click();
         multiFixture.detectChanges();
 
-        const triggerLeft = trigger.getBoundingClientRect().left;
-        const firstOptionLeft =
-            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().left;
+        multiFixture.whenStable().then(() => {
+          const triggerLeft = trigger.getBoundingClientRect().left;
+          const firstOptionLeft =
+              document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().left;
 
-        // 48px accounts for the checkbox size, margin and the panel's padding.
-        expect(firstOptionLeft.toFixed(2))
-            .toEqual((triggerLeft - 48).toFixed(2),
-                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
-      });
+          // 48px accounts for the checkbox size, margin and the panel's padding.
+          expect(firstOptionLeft.toFixed(2))
+              .toEqual((triggerLeft - 48).toFixed(2),
+                  `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+        });
+      }));
 
-      it('should adjust for the checkbox in rtl', () => {
+      it('should adjust for the checkbox in rtl', async(() => {
         dir.value = 'rtl';
         trigger.click();
         multiFixture.detectChanges();
 
-        const triggerRight = trigger.getBoundingClientRect().right;
-        const firstOptionRight =
-            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
+        multiFixture.whenStable().then(() => {
+          const triggerRight = trigger.getBoundingClientRect().right;
+          const firstOptionRight =
+              document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
 
-        // 48px accounts for the checkbox size, margin and the panel's padding.
-        expect(firstOptionRight.toFixed(2))
-            .toEqual((triggerRight + 48).toFixed(2),
-                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
-      });
+          // 48px accounts for the checkbox size, margin and the panel's padding.
+          expect(firstOptionRight.toFixed(2))
+              .toEqual((triggerRight + 48).toFixed(2),
+                  `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+          });
+      }));
     });
 
   });
