@@ -83,7 +83,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
     }
   }
 
-  /** Mode of the sidenav; whether 'over' or 'side'. */
+  /** Mode of the sidenav; one of 'over', 'push' or 'side'. */
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
   /** Whether the sidenav can be closed with the escape key or not. */
