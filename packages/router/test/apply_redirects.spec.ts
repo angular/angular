@@ -162,12 +162,12 @@ describe('applyRedirects', () => {
           return of (loadedConfig);
         }
       };
-      const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
+      const config: Routes = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
             compareTrees(r, tree('/a/b'));
-            expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+            expect(config[0]._loadedConfig).toBe(loadedConfig);
           });
     });
 
@@ -289,12 +289,12 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
-      const config =
+      const config: Routes =
           [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         compareTrees(r, tree('a'));
-        expect((<any>config[1])._loadedConfig).toBe(loadedConfig);
+        expect(config[1]._loadedConfig).toBe(loadedConfig);
       });
     });
 
@@ -310,7 +310,7 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config = [{path: 'a', loadChildren: 'children'}];
+      const config: Routes = [{path: 'a', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a?k1'), config)
           .subscribe(r => {});
@@ -319,7 +319,7 @@ describe('applyRedirects', () => {
           .subscribe(
               r => {
                 compareTrees(r, tree('a?k2'));
-                expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+                expect(config[0]._loadedConfig).toBe(loadedConfig);
               },
               (e) => { throw 'Should not reach'; });
     });
@@ -329,10 +329,10 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
-      const config = [{path: '**', loadChildren: 'children'}];
+      const config: Routes = [{path: '**', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((<any>config[0])._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
@@ -340,11 +340,11 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
-      const config =
+      const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((<any>config[0])._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
@@ -352,11 +352,11 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
-      const config =
+      const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((<any>config[0])._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
     });
   });
 
