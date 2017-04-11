@@ -26,16 +26,17 @@ describe('NavigationService', () => {
   });
 
   it('should be creatable', () => {
-    const service: NavigationService = injector.get(NavigationService);
-    expect(service).toBeTruthy();
+    const navService: NavigationService = injector.get(NavigationService);
+    expect(navService).toBeTruthy();
   });
 
   describe('navigationViews', () => {
-    let service: NavigationService, backend: MockBackend;
+    let backend: MockBackend;
+    let navService: NavigationService;
 
     beforeEach(() => {
       backend = injector.get(ConnectionBackend);
-      service = injector.get(NavigationService);
+      navService = injector.get(NavigationService);
     });
 
     it('should make a single connection to the server', () => {
@@ -45,7 +46,7 @@ describe('NavigationService', () => {
 
     it('should expose the server response', () => {
       const viewsEvents: NavigationViews[] = [];
-      service.navigationViews.subscribe(views => viewsEvents.push(views));
+      navService.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
       backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
@@ -55,10 +56,10 @@ describe('NavigationService', () => {
 
     it('should return the same object to all subscribers', () => {
       let views1: NavigationViews;
-      service.navigationViews.subscribe(views => views1 = views);
+      navService.navigationViews.subscribe(views => views1 = views);
 
       let views2: NavigationViews;
-      service.navigationViews.subscribe(views => views2 = views);
+      navService.navigationViews.subscribe(views => views2 = views);
 
       backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ url: 'a' }] }));
 
@@ -66,7 +67,7 @@ describe('NavigationService', () => {
       backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ url: 'error 1' }] }));
 
       let views3: NavigationViews;
-      service.navigationViews.subscribe(views => views3 = views);
+      navService.navigationViews.subscribe(views => views3 = views);
 
       expect(views2).toBe(views1);
       expect(views3).toBe(views1);
@@ -77,8 +78,9 @@ describe('NavigationService', () => {
   });
 
   describe('currentNode', () => {
-    let service: NavigationService, location: MockLocationService;
     let currentNode: CurrentNode;
+    let locationService: MockLocationService;
+    let navService: NavigationService;
 
     const topBarNodes: NavigationNode[] = [{ url: 'features', title: 'Features' }];
     const sideNavNodes: NavigationNode[] = [
@@ -100,17 +102,17 @@ describe('NavigationService', () => {
 
 
     beforeEach(() => {
-      location = injector.get(LocationService);
+      locationService = injector.get(LocationService);
 
-      service = injector.get(NavigationService);
-      service.currentNode.subscribe(selected => currentNode = selected);
+      navService = injector.get(NavigationService);
+      navService.currentNode.subscribe(selected => currentNode = selected);
 
       const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse(navJson));
     });
 
     it('should list the side navigation node that matches the current location, and all its ancestors', () => {
-      location.urlSubject.next('b');
+      locationService.go('b');
       expect(currentNode).toEqual({
         url: 'b',
         view: 'SideNav',
@@ -120,7 +122,7 @@ describe('NavigationService', () => {
         ]
       });
 
-      location.urlSubject.next('d');
+      locationService.go('d');
       expect(currentNode).toEqual({
         url: 'd',
         view: 'SideNav',
@@ -131,7 +133,7 @@ describe('NavigationService', () => {
         ]
       });
 
-      location.urlSubject.next('f');
+      locationService.go('f');
       expect(currentNode).toEqual({
         url: 'f',
         view: 'SideNav',
@@ -140,7 +142,7 @@ describe('NavigationService', () => {
     });
 
     it('should be a TopBar selected node if the current location is a top menu node', () => {
-      location.urlSubject.next('features');
+      locationService.go('features');
       expect(currentNode).toEqual({
         url: 'features',
         view: 'TopBar',
@@ -149,7 +151,7 @@ describe('NavigationService', () => {
     });
 
     it('should be a plain object if no side navigation node matches the current location', () => {
-      location.urlSubject.next('g?search=moo#anchor-1');
+      locationService.go('g?search=moo#anchor-1');
       expect(currentNode).toEqual({
         url: 'g',
         view: '',
@@ -168,29 +170,29 @@ describe('NavigationService', () => {
         ]
       };
 
-      location.urlSubject.next('c');
+      locationService.go('c');
       expect(currentNode).toEqual(cnode, 'location: c');
 
-      location.urlSubject.next('c/');
+      locationService.go('c/');
       expect(currentNode).toEqual(cnode, 'location: c/');
 
-      location.urlSubject.next('c#foo');
+      locationService.go('c#foo');
       expect(currentNode).toEqual(cnode, 'location: c#foo');
 
-      location.urlSubject.next('c?foo=1');
+      locationService.go('c?foo=1');
       expect(currentNode).toEqual(cnode, 'location: c?foo=1');
 
-      location.urlSubject.next('c#foo?bar=1&baz=2');
+      locationService.go('c#foo?bar=1&baz=2');
       expect(currentNode).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
     });
   });
 
   describe('versionInfo', () => {
-    let service: NavigationService, versionInfo: VersionInfo;
+    let navService: NavigationService, versionInfo: VersionInfo;
 
     beforeEach(() => {
-      service = injector.get(NavigationService);
-      service.versionInfo.subscribe(info => versionInfo = info);
+      navService = injector.get(NavigationService);
+      navService.versionInfo.subscribe(info => versionInfo = info);
 
       const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse({

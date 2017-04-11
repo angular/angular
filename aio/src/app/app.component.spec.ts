@@ -23,6 +23,12 @@ import { MockSwUpdateNotificationsService } from 'testing/sw-update-notification
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+
+  let docViewer: HTMLElement;
+  let hamburger: HTMLButtonElement;
+  let locationService: MockLocationService;
+  let sidenav: HTMLElement;
+
   const initialUrl = 'a/b';
 
   beforeEach(async(() => {
@@ -45,6 +51,11 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
+    hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
+    locationService = fixture.debugElement.injector.get(LocationService) as any;
+    sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
   });
 
   it('should create', () => {
@@ -58,10 +69,6 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('is Hamburger Visible', () => {
-    console.log('PENDING: AppComponent');
-  });
-
   describe('onResize', () => {
     it('should update `isSideBySide` accordingly', () => {
       component.onResize(1033);
@@ -71,32 +78,26 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('SideNav when side-by-side', () => {
-    let hamburger: HTMLButtonElement;
-    let locationService: MockLocationService;
-    let sidenav: Element;
+  describe('SideNav when side-by-side (wide)', () => {
 
     beforeEach(() => {
       component.onResize(1033); // side-by-side
-      locationService = fixture.debugElement.injector.get(LocationService) as any;
-      hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
-      sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
     });
 
     it('should open when nav to a guide page (guide/pipes)', () => {
-      locationService.urlSubject.next('guide/pipes');
+      locationService.go('guide/pipes');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-open/);
     });
 
     it('should open when nav to an api page', () => {
-      locationService.urlSubject.next('api/a/b/c/d');
+      locationService.go('api/a/b/c/d');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-open/);
     });
 
     it('should be closed when nav to a marketing page (features)', () => {
-      locationService.urlSubject.next('features');
+      locationService.go('features');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-clos/);
     });
@@ -104,7 +105,7 @@ describe('AppComponent', () => {
     describe('when manually closed', () => {
 
       beforeEach(() => {
-        locationService.urlSubject.next('guide/pipes');
+        locationService.go('guide/pipes');
         fixture.detectChanges();
         hamburger.click();
         fixture.detectChanges();
@@ -113,59 +114,110 @@ describe('AppComponent', () => {
       it('should be closed', () => {
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
+
+      it('should stay closed when nav to another guide page', () => {
+        locationService.go('guide/bags');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      it('should stay closed when nav to api page', () => {
+        locationService.go('api');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      it('should reopen when nav to market page and back to guide page', () => {
+        locationService.go('features');
+        fixture.detectChanges();
+        locationService.go('guide/bags');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-open/);
+      });
     });
   });
 
-  describe('SideNav when NOT side-by-side (mobile)', () => {
-    let sidenav: Element;
-    let locationService: MockLocationService;
+  describe('SideNav when NOT side-by-side (narrow)', () => {
 
     beforeEach(() => {
       component.onResize(1000); // NOT side-by-side
-      locationService = fixture.debugElement.injector.get(LocationService) as any;
-      sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
     });
 
     it('should be closed when nav to a guide page (guide/pipes)', () => {
-      locationService.urlSubject.next('guide/pipes');
+      locationService.go('guide/pipes');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-clos/);
     });
 
     it('should be closed when nav to an api page', () => {
-      locationService.urlSubject.next('api/a/b/c/d');
+      locationService.go('api/a/b/c/d');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-clos/);
     });
 
     it('should be closed when nav to a marketing page (features)', () => {
-      locationService.urlSubject.next('features');
+      locationService.go('features');
       fixture.detectChanges();
       expect(sidenav.className).toMatch(/sidenav-clos/);
+    });
+
+    describe('when manually opened', () => {
+
+      beforeEach(() => {
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        hamburger.click();
+        fixture.detectChanges();
+      });
+
+      it('should be open', () => {
+        expect(sidenav.className).toMatch(/sidenav-open/);
+      });
+
+      it('should close when click in gray content area overlay', () => {
+        const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
+        sidenavBackdrop.click();
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      it('should stay open when nav to another guide page', () => {
+        locationService.go('guide/bags');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-open/);
+      });
+
+      it('should stay open when nav to api page', () => {
+        locationService.go('api');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-open/);
+      });
+
+      it('should close again when nav to market page', () => {
+        locationService.go('features');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
     });
   });
 
   describe('pageId', () => {
-    let locationService: MockLocationService;
-
-    beforeEach(() => {
-      locationService = fixture.debugElement.injector.get(LocationService) as any;
-    });
 
     it('should set the id of the doc viewer container based on the current url', () => {
       const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
-      locationService.urlSubject.next('guide/pipes');
+      locationService.go('guide/pipes');
       fixture.detectChanges();
       expect(component.pageId).toEqual('guide-pipes');
       expect(container.properties['id']).toEqual('guide-pipes');
 
-      locationService.urlSubject.next('news');
+      locationService.go('news');
       fixture.detectChanges();
       expect(component.pageId).toEqual('news');
       expect(container.properties['id']).toEqual('news');
 
-      locationService.urlSubject.next('');
+      locationService.go('');
       fixture.detectChanges();
       expect(component.pageId).toEqual('home');
       expect(container.properties['id']).toEqual('home');
@@ -174,15 +226,15 @@ describe('AppComponent', () => {
     it('should not be affected by changes to the query or hash', () => {
       const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
-      locationService.urlSubject.next('guide/pipes');
+      locationService.go('guide/pipes');
       fixture.detectChanges();
 
-      locationService.urlSubject.next('guide/other?search=http');
+      locationService.go('guide/other?search=http');
       fixture.detectChanges();
       expect(component.pageId).toEqual('guide-other');
       expect(container.properties['id']).toEqual('guide-other');
 
-      locationService.urlSubject.next('guide/http#anchor-1');
+      locationService.go('guide/http#anchor-1');
       fixture.detectChanges();
       expect(component.pageId).toEqual('guide-http');
       expect(container.properties['id']).toEqual('guide-http');
@@ -190,19 +242,32 @@ describe('AppComponent', () => {
   });
 
   describe('currentDocument', () => {
-    console.log('PENDING: AppComponent currentDocument');
-  });
 
-  describe('navigationViews', () => {
-    console.log('PENDING: AppComponent navigationViews');
+    it('should display a guide page (guide/pipes)', () => {
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      expect(docViewer.innerText).toMatch(/Pipes/i);
+    });
+
+    it('should display the api page', () => {
+      locationService.go('api');
+      fixture.detectChanges();
+      expect(docViewer.innerText).toMatch(/API/i);
+    });
+
+    it('should display a marketing page', () => {
+      locationService.go('features');
+      fixture.detectChanges();
+      expect(docViewer.innerText).toMatch(/Test Doc/i);
+    });
+
   });
 
   describe('autoScrolling', () => {
     it('should AutoScrollService.scroll when the url changes', () => {
-      const locationService: MockLocationService = fixture.debugElement.injector.get(LocationService) as any;
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
-      locationService.urlSubject.next('some/url#fragment');
+      locationService.go('some/url#fragment');
       expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
     });
 
@@ -234,9 +299,9 @@ describe('AppComponent', () => {
 
     it('should intercept clicks not on the search elements and hide the search results', () => {
       const searchResults: SearchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent)).componentInstance;
-      const docViewer = fixture.debugElement.query(By.css('aio-doc-viewer'));
       spyOn(searchResults, 'hideResults');
-      docViewer.nativeElement.click();
+      // docViewer is a commonly-clicked, non-search element
+      docViewer.click();
       expect(searchResults.hideResults).toHaveBeenCalled();
     });
 
@@ -262,6 +327,8 @@ describe('AppComponent', () => {
   });
 
 });
+
+//// test helpers ////
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
@@ -292,7 +359,12 @@ class TestHttp {
             "url": "guide/pipes",
             "title": "Pipes",
             "tooltip": "Pipes transform displayed values within a template."
-          }
+          },
+          {
+            "url": "guide/bags",
+            "title": "Bags",
+            "tooltip": "Pack your bags for a code adventure."
+          },
         ]
       },
       {
