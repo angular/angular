@@ -15,6 +15,7 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
+import { DeviceService } from 'app/shared/device.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { EmbeddedModule } from 'app/embedded/embedded.module';
@@ -59,6 +60,7 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
   ],
   providers: [
     ApiService,
+    DeviceService,
     GaService,
     Logger,
     Location,
