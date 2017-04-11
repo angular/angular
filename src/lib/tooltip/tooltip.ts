@@ -9,7 +9,7 @@ import {
   OnDestroy,
   Renderer,
   OnInit,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   style,
@@ -157,7 +157,7 @@ export class MdTooltip implements OnInit, OnDestroy {
     @Optional() private _dir: Dir) {
 
     // The mouse events shouldn't be bound on iOS devices, because
-    // they can prevent the first tap from firing it's click event.
+    // they can prevent the first tap from firing its click event.
     if (!_platform.IOS) {
       _renderer.listen(_elementRef.nativeElement, 'mouseenter', () => this.show());
       _renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
@@ -313,6 +313,8 @@ export class MdTooltip implements OnInit, OnDestroy {
     // Must wait for the message to be painted to the tooltip so that the overlay can properly
     // calculate the correct positioning based on the size of the text.
     this._tooltipInstance.message = message;
+    this._tooltipInstance._markForCheck();
+
     this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
       if (this._tooltipInstance) {
         this._overlayRef.updatePosition();
@@ -394,8 +396,8 @@ export class TooltipComponent {
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
-      this._changeDetectorRef.markForCheck();
-      setTimeout(() => { this._closeOnInteraction = true; }, 0);
+      this._markForCheck();
+      setTimeout(() => this._closeOnInteraction = true, 0);
     }, delay);
   }
 
@@ -415,7 +417,7 @@ export class TooltipComponent {
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
-      this._changeDetectorRef.markForCheck();
+      this._markForCheck();
     }, delay);
   }
 
@@ -441,8 +443,8 @@ export class TooltipComponent {
       case 'after':  this._transformOrigin = isLtr ? 'left' : 'right'; break;
       case 'left':   this._transformOrigin = 'right'; break;
       case 'right':  this._transformOrigin = 'left'; break;
-      case 'above':    this._transformOrigin = 'bottom'; break;
-      case 'below': this._transformOrigin = 'top'; break;
+      case 'above':  this._transformOrigin = 'bottom'; break;
+      case 'below':  this._transformOrigin = 'top'; break;
       default: throw new MdTooltipInvalidPositionError(value);
     }
   }
@@ -462,5 +464,14 @@ export class TooltipComponent {
     if (this._closeOnInteraction) {
       this.hide(0);
     }
+  }
+
+  /**
+   * Marks that the tooltip needs to be checked in the next change detection run.
+   * Mainly used for rendering the initial text before positioning a tooltip, which
+   * can be problematic in components with OnPush change detection.
+   */
+  _markForCheck(): void {
+    this._changeDetectorRef.markForCheck();
   }
 }
