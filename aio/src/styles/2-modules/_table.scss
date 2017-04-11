@@ -9,13 +9,23 @@ table {
   }
 
   thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+
+    tr {
+      display: table-row;
+      vertical-align: inherit;
+      border-color: inherit;
+    }
+
     th {
       background: $offwhite;
       border-bottom: 1px solid $lightgray;
       color: $darkgray;
       font-size: 12px;
       font-weight: 500;
-      padding: 0 24px;
+      padding: 8px 32px;
       text-align: left;
       text-transform: uppercase;
     }
