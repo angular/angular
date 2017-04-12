@@ -4,8 +4,7 @@
 }
 
 .nav-link {
-  margin-right: 10px;
-  margin-left: 20px;
+  margin: 0 16px;
   cursor: pointer;
 }
 
@@ -49,7 +48,13 @@ aio-top-menu {
 
     li {
       list-style-type: none;
-      padding: 0px;
+      line-height: 64px;
+      height: 64px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $accentblue;
+      }
     }
   }
 }
