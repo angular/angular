@@ -20,7 +20,7 @@ table {
     }
 
     th {
-      background: $offwhite;
+      background: rgba($lightgray, 0.2);
       border-bottom: 1px solid $lightgray;
       color: $darkgray;
       font-size: 12px;
@@ -28,6 +28,7 @@ table {
       padding: 8px 32px;
       text-align: left;
       text-transform: uppercase;
+      line-height: 28px;
     }
   }
 
@@ -35,7 +36,7 @@ table {
     th,
     td {
       border-bottom: 1px solid $lightgray;
-      padding: 16px 24px;
+      padding: 16px 32px;
       text-align: left;
       line-height: 24px;
 
@@ -64,7 +65,7 @@ table {
     }
 
     th {
-      background: $offwhite;
+      background: rgba($lightgray, 0.2);
       border-right: 1px solid $lightgray;
       font-weight: 600;
       max-width: 100px;
