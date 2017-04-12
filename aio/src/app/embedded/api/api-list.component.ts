@@ -28,8 +28,7 @@ class SearchCriteria {
 
 @Component({
   selector: 'aio-api-list',
-  templateUrl: './api-list.component.html',
-  styleUrls: ['./api-list.component.scss']
+  templateUrl: './api-list.component.html'
 })
 export class ApiListComponent implements OnInit {
 
