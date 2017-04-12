@@ -102,7 +102,7 @@ is available to <code>declarations</code> of this module.</p>
 </tr><tr>
 <td><code>&lt;p&nbsp;<b>*myUnless</b>="myExpression"&gt;...&lt;/p&gt;</code></td>
 <td><p>The <code>*</code> symbol turns the current element into an embedded template. Equivalent to:
-<code>&lt;template [myUnless]="myExpression"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/template&gt;</code></p>
+<code>&lt;ng-template [myUnless]="myExpression"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/ng-template&gt;</code></p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Card&nbsp;No.:&nbsp;<b>{{cardNumber&nbsp;|&nbsp;myCardNumberFormatter}}</b>&lt;/p&gt;</code></td>
@@ -139,7 +139,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.</p>
 </td>
 </tr><tr>
-<td><code>&lt;div&nbsp;<b>[ngSwitch]</b>="conditionExpression"&gt;<br>&nbsp;&nbsp;&lt;template&nbsp;<b>[<b>ngSwitchCase</b>]</b>="case1Exp"&gt;...&lt;/template&gt;<br>&nbsp;&nbsp;&lt;template&nbsp;<b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/template&gt;<br>&nbsp;&nbsp;&lt;template&nbsp;<b>ngSwitchDefault</b>&gt;...&lt;/template&gt;<br>&lt;/div&gt;</code></td>
+<td><code>&lt;div&nbsp;<b>[ngSwitch]</b>="conditionExpression"&gt;<br>&nbsp;&nbsp;&lt;ng-template&nbsp;<b>[<b>ngSwitchCase</b>]</b>="case1Exp"&gt;...&lt;/ng-template&gt;<br>&nbsp;&nbsp;&lt;ng-template&nbsp;<b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/ng-template&gt;<br>&nbsp;&nbsp;&lt;ng-template&nbsp;<b>ngSwitchDefault</b>&gt;...&lt;/ng-template&gt;<br>&lt;/div&gt;</code></td>
 <td><p>Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of <code>conditionExpression</code>.</p>
 </td>
 </tr><tr>
