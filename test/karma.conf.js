@@ -35,9 +35,10 @@ module.exports = (config) => {
       // Include a Material theme in the test suite.
       {pattern: 'dist/**/core/theming/prebuilt/indigo-pink.css', included: true, watched: true},
 
-      {pattern: 'dist/packages/material/**/*', included: false, watched: true},
+      // Includes Material spec and source files into karma. Those files will be watched.
+      {pattern: 'dist/packages/material/**/*.js', included: false, watched: true},
 
-      // paths to support debugging with source maps in dev tools
+      // Paths to support debugging with source maps in dev tools
       {pattern: 'dist/**/*.ts', included: false, watched: false},
       {pattern: 'dist/**/*.js.map', included: false, watched: false}
     ],
