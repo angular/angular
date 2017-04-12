@@ -1066,8 +1066,8 @@ by telling the router where to go.
 
 This approach requires the following changes to the component class:
 
-1. Import the `router` from the Angular router library.
-1. Inject the `router` in the constructor, along with the `HeroService`.
+1. Import the `Router` from the Angular router library.
+1. Inject the `Router` in the constructor, along with the `HeroService`.
 1. Implement `gotoDetail()` by calling the router `navigate()` method.
 
 
@@ -1223,7 +1223,7 @@ Look at the app now. The dashboard, heroes, and navigation links are styled.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/toh/dashboard-top-heroes.png' alt="View navigations"></img>
+  <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="View navigations"></img>
 </figure>
 
 

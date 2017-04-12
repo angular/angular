@@ -163,7 +163,7 @@ Now you can fill the template with hero names.
 
 ### List heroes with ngFor
 
-The goal is to bind the array of `heroes` in the component to the template, iterate over them,
+The goal is to bind the array of heroes in the component to the template, iterate over them,
 and display them individually.
 
 Modify the `<li>` tag by adding the built-in directive `*ngFor`.
@@ -255,7 +255,7 @@ In this case, the _master_ is the heroes list and the _detail_ is the selected h
 Next you'll connect the master to the detail through a `selectedHero` component property,
 which is bound to a click event.
 
-### Add a click event
+### Handle click events
 Add a click event binding to the `<li>` like this:
 
 
@@ -309,7 +309,7 @@ Add an `onSelect()` method that sets the `selectedHero` property to the `hero` t
 
 
 The template still refers to the old `hero` property.
-Bind to the new selectedHero property instead as follows:
+Bind to the new `selectedHero` property instead as follows:
 
 
 
@@ -321,7 +321,8 @@ Bind to the new selectedHero property instead as follows:
 
 ### Hide the empty detail with ngIf
 
-When the app loads, the `selectedHero` is undefined and won't be defined until you click a hero's name.
+When the app loads, `selectedHero` is undefined.
+The selected hero is initialized when the user clicks a hero's name.
 Angular can't display properties of the undefined `selectedHero` and throws the following error,
 visible in the browser's console:
 
@@ -360,7 +361,7 @@ Don't forget the asterisk (`*`) in front of `ngIf`.
 The app no longer fails and the list of names displays again in the browser.
 
 
-When there is no `selectedHero`, the `ngIf` directive removes the hero detail HTML from the DOM.
+When there is no selected hero, the `ngIf` directive removes the hero detail HTML from the DOM.
 There are no hero detail elements or bindings to worry about.
 
 When the user picks a hero, `selectedHero` becomes defined and
@@ -461,5 +462,5 @@ Your app should look like this <live-example></live-example>.
 
 ## The road ahead
 You've expanded the Tour of Heroes app, but it's far from complete.
-You can't put the entire app into a single component.
-In the [next page](tutorial/toh-pt3), you'll split the app into sub-components and make them work together.
+An app shouldn't be one monolithic component.
+In the [next page](tutorial/toh-pt3), you'll split the app into subcomponents and make them work together.
