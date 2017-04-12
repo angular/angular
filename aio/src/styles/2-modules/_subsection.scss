@@ -1,7 +1,11 @@
 .l-sub-section {
     color: $darkgray;
     background-color: $lightgray;
-    border-left: 10px solid $mediumgray;
+    border-left: 8px solid $mediumgray;
     padding: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+
+    h3 {
+        margin: 8px 0 0;
+    }
 }
