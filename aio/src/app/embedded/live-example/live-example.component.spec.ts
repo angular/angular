@@ -3,6 +3,8 @@ import { By } from '@angular/platform-browser';
 import { Component, DebugElement, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { DeviceService } from 'app/shared/device.service';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example.component';
 
@@ -18,11 +20,12 @@ describe('LiveExampleComponent', () => {
 
   //////// test helpers ////////
   class TestDeviceService {
-    isMobile = false;
+    displayWidth = new BehaviorSubject(1001);
   }
 
   class TestMobileDeviceService {
-    isMobile = true;
+    // 1000 is the trigger width for "narrow mobile device""
+    displayWidth = new BehaviorSubject(999);
   }
 
   @Component({
@@ -34,6 +37,12 @@ describe('LiveExampleComponent', () => {
   class TestLocation {
     path() { return testPath; }
   }
+
+  function getAnchors() {
+    return liveExampleDe.queryAll(By.css('a')).map(de => de.nativeElement as HTMLAnchorElement);
+  }
+
+  function getHrefs() { return getAnchors().map(a => a.href); }
 
   function setHostTemplate(template: string) {
     TestBed.overrideComponent(HostComponent, {set: {template}});
@@ -74,11 +83,6 @@ describe('LiveExampleComponent', () => {
   });
 
   describe('when not embedded', () => {
-
-    function getAnchors() {
-      return liveExampleDe.queryAll(By.css('a')).map(de => de.nativeElement as HTMLAnchorElement);
-    }
-    function getHrefs() { return getAnchors().map(a => a.href); }
     function getLiveExampleAnchor() { return getAnchors()[0]; }
     function getDownloadAnchor() { return getAnchors()[1]; }
 
@@ -151,6 +155,22 @@ describe('LiveExampleComponent', () => {
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain('/testing/app-specs.eplnkr.html');
         expect(hrefs[1]).toContain('/testing/app-specs.testing.zip');
+      });
+    }));
+
+    it('should be embedded style by default', async(() => {
+      setHostTemplate('<live-example></live-example>');
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
+      });
+    }));
+
+    it('should be flat style when flat-style requested', async(() => {
+      setHostTemplate('<live-example flat-style></live-example>');
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain(defaultTestPath + '/plnkr.html');
       });
     }));
 
@@ -273,7 +293,7 @@ describe('LiveExampleComponent', () => {
     });
   });
 
-  describe('when mobile', () => {
+  describe('when narrow display (mobile)', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -281,17 +301,19 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should say that live example is not available on mobile', async(() => {
-      testPath = '/tutorial/toh-pt1';
+    it('should be embedded style when no style defined', async(() => {
+      setHostTemplate('<live-example></live-example>');
       testComponent(() => {
-        expect(liveExampleDe.nativeElement.innerText).toContain('not available on mobile');
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
       });
     }));
 
-    it('should say that the embedded live example is not available on mobile', async(() => {
-      setHostTemplate('<live-example embedded></live-example>');
+    it('should be embedded style even when flat-style requested', async(() => {
+      setHostTemplate('<live-example flat-style></live-example>');
       testComponent(() => {
-        expect(liveExampleDe.nativeElement.innerText).toContain('not available on mobile');
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
       });
     }));
   });
