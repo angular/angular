@@ -1,5 +1,5 @@
 <span [ngSwitch]="mode">
-  <span *ngSwitchCase="'mobile'">{{title}} <em>(not available on mobile devices)</em></span>
+  <span *ngSwitchCase="'disabled'">{{title}} <em>(not available on this device)</em></span>
   <span *ngSwitchCase="'embedded'">
     <div *ngIf="showEmbedded" title="{{title}}">
       <aio-embedded-plunker [src]="plnkr"></aio-embedded-plunker>
