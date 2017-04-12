@@ -32,9 +32,10 @@ how you can write your own structural directives to do the same thing.
 
 * [Inside the *NgSwitch* directives](guide/structural-directives#ngSwitch)
 * [Prefer the (*) prefix](guide/structural-directives#prefer-asterisk)
-* [The &lt;template> element](guide/structural-directives#template)
+* [The &lt;ng-template> element](guide/structural-directives#template)
 * [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
 * [Write a structural directive](guide/structural-directives#unless)
+
 
 Try the <live-example></live-example>.
 
@@ -67,7 +68,7 @@ No brackets. No parentheses. Just `*ngIf` set to a string.
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
 [template expression](guide/template-syntax#template-expressions).
-Angular desugars this notation into a marked-up `<template>` that surrounds the
+Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
 host element and its descendents. 
 Each structural directive does something different with that template.
 
@@ -163,7 +164,7 @@ Confirm that fact using browser developer tools to inspect the DOM.
 
 
 The top paragraph is in the DOM. The bottom, disused paragraph is not; 
-in its place is a comment about "template bindings" (more about that [later](guide/structural-directives#asterisk)).
+in its place is a comment about "bindings" (more about that [later](guide/structural-directives#asterisk)).
 
 When the condition is false, `NgIf` removes its host element from the DOM,
 detaches it from DOM events (the attachments that it made),
@@ -243,7 +244,7 @@ First, it translates the `*ngIf="..."` into a template _attribute_, `template="n
 
 
 
-Then it translates the template _attribute_ into a template _element_, wrapped around the host element, like this.
+Then it translates the template _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
@@ -252,8 +253,8 @@ Then it translates the template _attribute_ into a template _element_, wrapped a
 
 
 
-* The `*ngIf` directive moved to the `<template>` element where it became a property binding,`[ngIf]`.
-* The rest of the `<div>`, including its class attribute, moved inside the `<template>` element.
+* The `*ngIf` directive moved to the `<ng-template>` element where it became a property binding,`[ngIf]`.
+* The rest of the `<div>`, including its class attribute, moved inside the `<ng-template>` element.
 
 None of these forms are actually rendered. 
 Only the finished product ends up in the DOM.
@@ -265,8 +266,8 @@ Only the finished product ends up in the DOM.
 
 
 
-Angular consumed the `<template>` content during its actual rendering and 
-replaced the `<template>` with a diagnostic comment.
+Angular consumed the `<ng-template>` content during its actual rendering and 
+replaced the `<ng-template>` with a diagnostic comment.
 
 The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/structural-directives#ngSwitch) directives follow the same pattern.
 
@@ -278,7 +279,7 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 ## Inside _*ngFor_
 
 Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax through
-template _attribute_ to template _element_. 
+template _attribute_ to `<ng-template>` _element_. 
 
 Here's a full-featured application of `NgFor`, written all three ways:
 
@@ -301,7 +302,7 @@ You enable these features in the string assigned to `ngFor`, which you write in 
 
 
 Everything _outside_ the `ngFor` string stays with the host element 
-(the `<div>`) as it moves inside the `<template>`. 
+(the `<div>`) as it moves inside the `<ng-template>`. 
 In this example, the `[ngClass]="odd"` stays on the `<div>`.
 
 
@@ -315,7 +316,7 @@ In this example, the `[ngClass]="odd"` stays on the `<div>`.
 ### Microsyntax
 
 The Angular microsyntax lets you configure a directive in a compact, friendly string.
-The microsyntax parser translates that string into attributes on the `<template>`:
+The microsyntax parser translates that string into attributes on the `<ng-template>`:
 
 * The `let` keyword declares a [_template input variable_](guide/structural-directives#template-input-variable) 
 that you reference within the template. The input variables in this example are `hero`, `i`, and `odd`.
@@ -342,7 +343,10 @@ which `NgFor` has initialized with the hero for the current iteration.
 describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
-Studying the source code for `NgIf` and `NgFor` is a great way to learn more.
+Studying the 
+[source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
+and [`NgFor`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgFor") 
+is a great way to learn more.
 
 
 
@@ -446,7 +450,7 @@ can be desugared into the template _attribute_ form.
 
 
 
-That, in turn, can be desugared into the `<template>` element form.
+That, in turn, can be desugared into the `<ng-template>` element form.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
@@ -465,22 +469,21 @@ Use [&lt;ng-container&gt;](guide/structural-directives#ng-container) when there'
 to host the directive.
 
 While there's rarely a good reason to apply a structural directive in template _attribute_ or _element_ form,
-it's still important to know that Angular creates a `<template>` and to understand how it works.
-You'll refer to the `<template>` when you [write your own structural directive](guide/structural-directives#unless).
+it's still important to know that Angular creates a `<ng-template>` and to understand how it works.
+You'll refer to the `<ng-template>` when you [write your own structural directive](guide/structural-directives#unless).
 
 
 {@a template}
 
 
 
-## The *&lt;template&gt;*
+## The *&lt;ng-template&gt;*
 
-The <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" target="_blank" title="MDN: Template Tag">HTML 5 &lt;template&gt;</a>
-is a formula for rendering HTML.
+The &lt;ng-template&gt; is an Angular element for rendering HTML.
 It is never displayed directly. 
-In fact, before rendering the view, Angular _replaces_ the `<template>` and its contents with a comment.
+In fact, before rendering the view, Angular _replaces_ the `<ng-template>` and its contents with a comment.
 
-If there is no structural directive and you merely wrap some elements in a `<template>`,
+If there is no structural directive and you merely wrap some elements in a `<ng-template>`,
 those elements disappear.
 That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
@@ -500,7 +503,7 @@ Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
 
-A structural directive puts a `<template>` to work
+A structural directive puts a `<ng-template>` to work
 as you'll see when you [write your own structural directive](guide/structural-directives#unless).
 
 
@@ -708,11 +711,11 @@ Angular's own directives do not.
 
 A simple structural directive like this one creates an 
 [_embedded view_](api/core/index/EmbeddedViewRef-class "API: EmbeddedViewRef")
-from the Angular-generated `<template>` and inserts that view in a 
+from the Angular-generated `<ng-template>` and inserts that view in a 
 [_view container_](api/core/index/ViewContainerRef-class "API: ViewContainerRef")
 adjacent to the directive's original `<p>` host element.
 
-You'll acquire the `<template>` contents with a
+You'll acquire the `<ng-template>` contents with a
 [`TemplateRef`](api/core/index/TemplateRef-class "API: TemplateRef")
 and access the _view container_ through a
 [`ViewContainerRef`](api/core/index/ViewContainerRef-class "API: ViewContainerRef").
@@ -839,7 +842,7 @@ You learned
 
 * that structural directives manipulate HTML layout.
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.
-* that the Angular desugars [asterisk (*) syntax](guide/structural-directives#asterisk) into a `<template>`.
+* that the Angular desugars [asterisk (*) syntax](guide/structural-directives#asterisk) into a `<ng-template>`.
 * how that works for the `NgIf`, `NgFor` and `NgSwitch` built-in directives.
-* about the [_microsyntax_](guide/structural-directives#microsyntax) that expands into a [`<template>`](guide/structural-directives#template).
+* about the [_microsyntax_](guide/structural-directives#microsyntax) that expands into a [`<ng-template>`](guide/structural-directives#template).
 * to write a [custom structural directive](guide/structural-directives#unless), `UnlessDirective`.

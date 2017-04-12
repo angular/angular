@@ -296,6 +296,19 @@ You added a *Submit* button at the bottom with some classes on it for styling.
 
 *You're not using Angular yet*. There are no bindings or extra directives, just layout.
 
+
+<div class="l-sub-section">
+
+
+
+In template driven forms, if you've imported `FormsModule`, you don't have to do anything 
+to the `<form>` tag in order to make use of `FormsModule`. Continue on to see how this works.
+
+
+</div>
+
+
+
 The `container`, `form-group`, `form-control`, and `btn` classes
 come from [Twitter Bootstrap](http://getbootstrap.com/css/). These classes are purely cosmetic.
 Bootstrap gives the form a little style.
@@ -400,6 +413,42 @@ You left yourself a note to throw it away when you're done.
 
 Focus on the binding syntax: `[(ngModel)]="..."`.
 
+You need one more addition to display the data. Declare 
+a template variable for the form. Update the `<form>` tag with 
+`#heroForm="ngForm"` as follows:
+
+
+<code-example path="forms/src/app/hero-form.component.html" linenums="false" title="src/app/hero-form.component.html (excerpt)" region="template-variable">
+
+</code-example>
+
+
+
+The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
+
+
+<div class="l-sub-section">
+
+
+
+### The _NgForm_ directive
+
+What `NgForm` directive?
+You didn't add an [NgForm](api/forms/index/NgForm-directive) directive.
+
+Angular did. Angular automatically creates and attaches an `NgForm` directive to the `<form>` tag.
+
+The `NgForm` directive supplements the `form` element with additional features.
+It holds the controls you created for the elements with an `ngModel` directive
+and `name` attribute, and monitors their properties, including their validity.
+It also has its own `valid` property which is true only *if every contained
+control* is valid.
+
+
+</div>
+
+
+
 If you ran the app now and started typing in the *Name* input box,
 adding and deleting characters, you'd see them appear and disappear
 from the interpolated text.
@@ -442,7 +491,7 @@ Defining a `name` attribute is a requirement when using `[(ngModel)]` in combina
 Internally, Angular creates `FormControl` instances and
 registers them with an `NgForm` directive that Angular attached to the `<form>` tag.
 Each `FormControl` is registered under the name you assigned to the `name` attribute.
-Read more in [The NgForm directive](guide/forms#ngForm), later in this page.
+Read more in the previous section, [The NgForm directive](guide/forms#ngForm).
 
 
 </div>
@@ -784,32 +833,9 @@ to the hero form component's `onSubmit()` method:
 
 
 
-You added something extra at the end. You defined a
-template reference variable, `#heroForm`, and initialized it with the value "ngForm".
-
-The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
-
-
-<div class="l-sub-section">
-
-
-
-### The _NgForm_ directive
-
-What `NgForm` directive?
-You didn't add an [NgForm](api/forms/index/NgForm-directive) directive.
-
-Angular did. Angular automatically creates and attaches an `NgForm` directive to the `<form>` tag.
-
-The `NgForm` directive supplements the `form` element with additional features.
-It holds the controls you created for the elements with an `ngModel` directive
-and `name` attribute, and monitors their properties, including their validity.
-It also has its own `valid` property which is true only *if every contained
-control* is valid.
-
-
-</div>
-
+You'd already defined a template reference variable, 
+`#heroForm`, and initialized it with the value "ngForm". 
+Now, use that variable to access the form with the Submit button.
 
 
 You'll bind the form's overall validity via

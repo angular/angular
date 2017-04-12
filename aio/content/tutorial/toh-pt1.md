@@ -157,7 +157,7 @@ Add these properties near the top of the `app.component.ts` file, just below the
 
 
 
-In the `Hero` class, refactor the component's `hero` property to be of type `Hero`,
+In the `AppComponent` class, refactor the component's `hero` property to be of type `Hero`,
 then initialize it with an `id` of `1` and the name `Windstorm`.
 
 

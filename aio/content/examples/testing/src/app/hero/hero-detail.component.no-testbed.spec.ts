@@ -12,7 +12,7 @@ describe('HeroDetailComponent - no TestBed', () => {
   let hds: any;
   let router: any;
 
-  beforeEach( done => {
+  beforeEach((done: any) => {
     expectedHero = new Hero(42, 'Bubba');
     activatedRoute = new ActivatedRouteStub();
     activatedRoute.testParams = { id: expectedHero.id };
@@ -45,7 +45,7 @@ describe('HeroDetailComponent - no TestBed', () => {
     expect(router.navigate.calls.any()).toBe(false, 'router.navigate not called yet');
   });
 
-  it('should navigate when click save resolves', done => {
+  it('should navigate when click save resolves', (done: any) => {
     comp.save();
     // waits for async save to complete before navigating
     hds.saveHero.calls.first().returnValue
