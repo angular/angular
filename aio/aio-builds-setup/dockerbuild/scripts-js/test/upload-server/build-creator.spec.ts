@@ -66,7 +66,7 @@ describe('BuildCreator', () => {
     it('should throw if the build does already exist', done => {
       bcExistsSpy.and.returnValue(true);
       bc.create(pr, sha, archive).catch(err => {
-        expectToBeUploadError(err, 403, `Request to overwrite existing directory: ${shaDir}`);
+        expectToBeUploadError(err, 409, `Request to overwrite existing directory: ${shaDir}`);
         done();
       });
     });
