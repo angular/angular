@@ -123,10 +123,9 @@ export class RouterLinkActive implements OnChanges,
 
     // react only when status has changed to prevent unnecessary dom updates
     if (this.active !== hasActiveLinks) {
-      this.active = hasActiveLinks;
       this.classes.forEach(
           c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
-      this.cdr.detectChanges();
+      Promise.resolve(hasActiveLinks).then(active => this.active = active);
     }
   }
 
