@@ -9,6 +9,11 @@ aio-api-list {
     .form-search input {
         width: 182px;
     }
+
+    .banner {
+        border: 1px solid rgba($lightgray, 0.5);
+        border-radius: 4px;
+    }
 }
 
 aio-api-list > div {
