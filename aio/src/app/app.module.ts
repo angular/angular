@@ -5,13 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
-import { MdToolbarModule } from '@angular/material/toolbar';
-import { MdButtonModule} from '@angular/material/button';
-import { MdIconModule} from '@angular/material/icon';
-import { MdInputModule } from '@angular/material/input';
-import { MdSidenavModule } from '@angular/material/sidenav';
-import { MdTabsModule } from '@angular/material';
-import { Platform } from '@angular/material/core';
+import { MdToolbarModule, MdButtonModule, MdIconModule, MdInputModule, MdSidenavModule, MdTabsModule, Platform} from '@angular/material';
 
 // Temporary fix for MdSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"

@@ -35,7 +35,7 @@
     "@angular/core": "next",
     "@angular/forms": "next",
     "@angular/http": "next",
-    "@angular/material": "https://github.com/angular/material2-builds",
+    "@angular/material": "^2.0.0-beta.3",
     "@angular/platform-browser": "next",
     "@angular/platform-browser-dynamic": "next",
     "@angular/platform-server": "next",
