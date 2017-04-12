@@ -27,7 +27,7 @@ export const RANGE_VALUE_ACCESSOR: Provider = {
  */
 @Directive({
   selector:
-      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
+      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel],[role=range][formControlName],[role=range][formControl],[role=range][ngModel]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',

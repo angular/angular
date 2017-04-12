@@ -70,7 +70,7 @@ abstract class HTMLCollection {
  */
 @Directive({
   selector:
-      'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
+      'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel],[role=multiple][formControlName],[role=multiple][formControl],[role=multiple][ngModel]',
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
