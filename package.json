@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular - a web framework for modern web apps",
