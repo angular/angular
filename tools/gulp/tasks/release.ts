@@ -2,12 +2,14 @@ import {spawn} from 'child_process';
 import {existsSync, readFileSync, statSync, writeFileSync} from 'fs-extra';
 import {basename, join} from 'path';
 import {dest, src, task} from 'gulp';
+import {inlineMetadataResources} from '../util/inline-resources';
 import {execNodeTask, execTask, sequenceTask} from '../util/task_helpers';
+import {composeRelease} from '../util/package-build';
 import {
   COMPONENTS_DIR,
   DIST_BUNDLES,
   DIST_MATERIAL,
-  DIST_RELEASE,
+  DIST_RELEASES,
   DIST_ROOT,
   LICENSE_BANNER,
   PROJECT_ROOT,
@@ -21,20 +23,14 @@ const gulpRename = require('gulp-rename');
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
 
-// Matches all Typescript definition files for Material.
-const typingsGlob = join(DIST_MATERIAL, '**/*.+(d.ts|metadata.json)');
-// Matches the "package.json" and "README.md" file that needs to be shipped.
-const assetsGlob = join(COMPONENTS_DIR, '+(package.json|README.md)');
-// Matches all UMD bundles inside of the bundles distribution.
-const umdGlob = join(DIST_BUNDLES, '*.umd.*');
-// Matches all flat ESM bundles (e.g material.js and material.es5.js)
-const fesmGlob = [join(DIST_BUNDLES, '*.js'), `!${umdGlob}`];
+// Path to the release output of material.
+const releasePath = join(DIST_RELEASES, 'material');
 
 // The entry-point for the scss theming bundle.
 const themingEntryPointPath = join(COMPONENTS_DIR, 'core', 'theming', '_all-theme.scss');
 
 // Output path for the scss theming bundle.
-const themingBundlePath = join(DIST_RELEASE, '_theming.scss');
+const themingBundlePath = join(releasePath, '_theming.scss');
 
 // Matches all pre-built theme css files
 const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css');
@@ -44,76 +40,15 @@ task('build:release', sequenceTask(
   ':package:release',
 ));
 
-/** Task that combines intermediate build artifacts into the release package structure. */
-task(':package:release', sequenceTask(
-  // Run in parallel
-  [
-    ':package:typings',
-    ':package:umd',
-    ':package:fesm',
-    ':package:assets',
-    ':package:theming',
-    ':package:license'
-  ],
-  // Run in sequence
-  ':inline-metadata-resources',
-  ':package:metadata',
-));
-
-/** Writes a re-export metadata */
-task(':package:metadata', () => {
-  const metadataReExport =
-      `{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./typings/index"}]}`;
-  writeFileSync(join(DIST_RELEASE, 'material.metadata.json'), metadataReExport, 'utf-8');
-});
-
-/** Inlines the html and css resources into all metadata.json files in dist/ */
-task(':inline-metadata-resources', () => {
-  // Create a map of fileName -> fullFilePath. This is needed because the templateUrl and
-  // styleUrls for each component use just the filename because, in the source, the component
-  // and the resources live in the same directory.
-  const componentResources = new Map<string, string>();
-  glob(join(DIST_ROOT, '**/*.+(html|css)'), (err: any, resourceFilePaths: any) => {
-    for (const path of resourceFilePaths) {
-      componentResources.set(basename(path), path);
-    }
-  });
-
-  // Find all metadata files. For each one, parse the JSON content, inline the resources, and
-  // reserialize and rewrite back to the original location.
-  glob(join(DIST_ROOT, '**/*.metadata.json'), (err: any, metadataFilePaths: any) => {
-    for (const path of metadataFilePaths) {
-      let metadata = JSON.parse(readFileSync(path, 'utf-8'));
-      inlineMetadataResources(metadata, componentResources);
-      writeFileSync(path , JSON.stringify(metadata), 'utf-8');
-    }
-  });
-});
-
-/** Copy static assets (package.json, README.md) to the release package. */
-task(':package:assets', () => src(assetsGlob).pipe(dest(DIST_RELEASE)));
-
-/** Copy the license to the release package. */
-task(':package:license', () => src(join(PROJECT_ROOT, 'LICENSE')).pipe(dest(DIST_RELEASE)));
-
-/** Copy all d.ts except the special flat typings from ngc to typings/ in the release package. */
-task(':package:typings', () => {
-  return src(typingsGlob)
-    .pipe(dest(join(DIST_RELEASE, 'typings')))
-    .on('end', () => createTypingFile());
-});
-
-/** Copy umd bundles to the root of the release package. */
-task(':package:umd', () => src(umdGlob).pipe((dest(join(DIST_RELEASE, 'bundles')))));
-
-/** Copy primary entry-point FESM bundles to the @angular/ directory. */
-task(':package:fesm', () => src(fesmGlob).pipe(dest(join(DIST_RELEASE, '@angular'))));
+/** Task that composes the different build files into the release structure. */
+task(':package:release', [':package:theming'], () => composeRelease('material'));
 
 /** Copies all prebuilt themes into the release package under `prebuilt-themes/` */
-task(':package:theming', [':bundle:theming-scss'],
-    () => src(prebuiltThemeGlob)
-        .pipe(gulpRename({dirname: ''}))
-        .pipe(dest(join(DIST_RELEASE, 'prebuilt-themes'))));
+task(':package:theming', [':bundle:theming-scss'], () => {
+  src(prebuiltThemeGlob)
+    .pipe(gulpRename({dirname: ''}))
+    .pipe(dest(join(releasePath, 'prebuilt-themes')));
+});
 
 /** Bundles all scss requires for theming into a single scss file in the root of the package. */
 task(':bundle:theming-scss', execNodeTask(
@@ -132,7 +67,7 @@ task(':publish:whoami', execTask('npm', ['whoami'], {
 
 /** Create a typing file that links to the bundled definitions of NGC. */
 function createTypingFile() {
-  writeFileSync(join(DIST_RELEASE, 'material.d.ts'),
+  writeFileSync(join(releasePath, 'material.d.ts'),
     LICENSE_BANNER + '\nexport * from "./typings/index";'
   );
 }
@@ -141,7 +76,7 @@ task(':publish:logout', execTask('npm', ['logout']));
 
 
 function _execNpmPublish(label: string): Promise<{}> {
-  const packageDir = DIST_RELEASE;
+  const packageDir = releasePath;
   if (!statSync(packageDir).isDirectory()) {
     return;
   }
@@ -209,36 +144,3 @@ task('publish', sequenceTask(
   ':publish',
   ':publish:logout',
 ));
-
-
-/**
- * Recurse through a parsed metadata.json file and inline all html and css.
- * Note: this assumes that all html and css files have a unique name.
- */
-function inlineMetadataResources(metadata: any, componentResources: Map<string, string>) {
-  // Convert `templateUrl` to `template`
-  if (metadata.templateUrl) {
-    const fullResourcePath = componentResources.get(metadata.templateUrl);
-    metadata.template = readFileSync(fullResourcePath, 'utf-8');
-    delete metadata.templateUrl;
-  }
-
-  // Convert `styleUrls` to `styles`
-  if (metadata.styleUrls && metadata.styleUrls.length) {
-    metadata.styles = [];
-    for (const styleUrl of metadata.styleUrls) {
-      const fullResourcePath = componentResources.get(styleUrl);
-      metadata.styles.push(readFileSync(fullResourcePath, 'utf-8'));
-    }
-    delete metadata.styleUrls;
-  }
-
-  // We we did nothing at this node, go deeper.
-  if (!metadata.template && !metadata.styles) {
-    for (const property in metadata) {
-      if (typeof metadata[property] == 'object' && metadata[property]) {
-        inlineMetadataResources(metadata[property], componentResources);
-      }
-    }
-  }
-}

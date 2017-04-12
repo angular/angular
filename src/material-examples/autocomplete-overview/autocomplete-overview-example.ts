@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
+
 import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'autocomplete-overview-example',

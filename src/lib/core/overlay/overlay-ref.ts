@@ -103,7 +103,7 @@ export class OverlayRef implements PortalHost {
     }
   }
 
-  /** Updates the text direction of the overlay panel. **/
+  /** Updates the text direction of the overlay panel. */
   private updateDirection() {
     this._pane.setAttribute('dir', this._state.direction);
   }

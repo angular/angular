@@ -1,0 +1,30 @@
+{
+  "name": "@angular/material-examples",
+  "version": "2.0.0-beta.3",
+  "description": "Angular Material Examples",
+  "main": "./bundles/material-examples.umd.js",
+  "module": "./@angular/material-examples.es5.js",
+  "es2015": "./@angular/material-examples.js",
+  "typings": "./material-examples.d.ts",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
+  "keywords": [
+    "angular",
+    "material",
+    "material design",
+    "components"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/material2/issues"
+  },
+  "homepage": "https://github.com/angular/material2#readme",
+  "peerDependencies": {
+    "@angular/core": "^4.0.0",
+    "@angular/common": "^4.0.0",
+    "@angular/http": "^4.0.0"
+  }
+}

@@ -48,7 +48,6 @@ const MARKDOWN_TAGS_TO_CLASS_ALIAS = [
   'code',
 ];
 
-
 /** Generate all docs content. */
 task('docs', [
   'markdown-docs',

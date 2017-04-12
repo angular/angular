@@ -39,7 +39,7 @@ OPTS=(
 
   # List of path prefixes to be removed from ES6 & CommonJS modules.
   "--js_module_root=dist/packages"
-  "--js_module_root=dist/release"
+  "--js_module_root=dist/releases/material"
   "--js_module_root=node_modules/@angular/core"
   "--js_module_root=node_modules/@angular/common"
   "--js_module_root=node_modules/@angular/compiler"
@@ -57,7 +57,7 @@ OPTS=(
   "--debug"
 
   # Include the Material FESM bundle
-  dist/release/@angular/material.js
+  dist/releases/material/@angular/material.js
 
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js

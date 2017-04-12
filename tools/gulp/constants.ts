@@ -13,12 +13,11 @@ export const DIST_BUNDLES = join(DIST_ROOT, 'bundles');
 
 /** Output subdirectory where all library artifacts will be written (compiled JS, CSS, etc.) */
 export const DIST_MATERIAL = join(DIST_ROOT, 'packages', 'material');
-
-/** Output subdirectory where the npm package will be staged for publish */
-export const DIST_RELEASE = join(DIST_ROOT, 'release');
-
 export const DIST_DEMOAPP = join(DIST_ROOT, 'packages', 'demo-app');
 export const DIST_E2EAPP = join(DIST_ROOT, 'packages', 'e2e-app');
+export const DIST_EXAMPLES = join(DIST_ROOT, 'packages', 'examples');
+
+export const DIST_RELEASES = join(DIST_ROOT, 'releases');
 
 export const COVERAGE_RESULT_FILE = join(DIST_ROOT, 'coverage', 'coverage-summary.json');
 

@@ -18,7 +18,7 @@ module.exports = function categorizer() {
    * Decorates all class docs inside of the dgeni pipeline.
    * - Methods and properties of a class-doc will be extracted into separate variables.
    * - Identifies directives, services or NgModules and marks them them in class-doc.
-   **/
+   */
   function decorateClassDoc(classDoc) {
     // Resolve all methods and properties from the classDoc. Includes inherited docs.
     classDoc.methods = resolveMethods(classDoc);
@@ -42,7 +42,7 @@ module.exports = function categorizer() {
   /**
    * Method that will be called for each method doc. The parameters for the method-docs
    * will be normalized, so that they can be easily used inside of dgeni templates.
-   **/
+   */
   function decorateMethodDoc(methodDoc) {
     normalizeMethodParameters(methodDoc);
 
@@ -53,7 +53,7 @@ module.exports = function categorizer() {
   /**
    * Method that will be called for each property doc. Properties that are Angular inputs or
    * outputs will be marked. Aliases for the inputs or outputs will be stored as well.
-   **/
+   */
   function decoratePropertyDoc(propertyDoc) {
     propertyDoc.isDirectiveInput = isDirectiveInput(propertyDoc);
     propertyDoc.directiveInputAlias = getDirectiveInputAlias(propertyDoc);
