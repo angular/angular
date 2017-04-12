@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
   get homeImageUrl() {
     return this.isSideBySide ?
       'assets/images/logos/standard/logo-nav@2x.png' :
-      'assets/images/logos/standard/logo-nav-small.png';
+      'assets/images/logos/standard/shield-large@2x.png';
   }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
