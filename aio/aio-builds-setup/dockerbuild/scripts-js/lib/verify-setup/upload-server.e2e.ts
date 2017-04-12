@@ -101,7 +101,7 @@ describe('upload-server (on HTTP)', () => {
       expect(h.readBuildFile(pr, sha9, 'index.html')).toBe('My content');
 
       h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).
-        then(h.verifyResponse(403, /^Request to overwrite existing directory/)).
+        then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
         then(() => expect(h.readBuildFile(pr, sha9, 'index.html')).toBe('My content')).
         then(done);
     });

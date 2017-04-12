@@ -26,7 +26,7 @@ export class BuildCreator extends EventEmitter {
       all([this.exists(prDir), this.exists(shaDir)]).
       then(([prDirExisted, shaDirExisted]) => {
         if (shaDirExisted) {
-          throw new UploadError(403, `Request to overwrite existing directory: ${shaDir}`);
+          throw new UploadError(409, `Request to overwrite existing directory: ${shaDir}`);
         }
 
         dirToRemoveOnError = prDirExisted ? shaDir : prDir;

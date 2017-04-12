@@ -73,7 +73,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     h.createDummyArchive(pr9, sha9, archivePath);
 
     uploadBuild(pr9, sha9, archivePath).
-      then(h.verifyResponse(403)).
+      then(h.verifyResponse(409)).
       then(() => Promise.all([
         getFile(pr9, sha9, 'index.html').then(h.verifyResponse(200, idxContentRegex9)),
         getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex9)),
