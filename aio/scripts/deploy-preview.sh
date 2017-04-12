@@ -24,8 +24,9 @@ httpCode=$(
   | sed 's/HTTP_CODE: //'
 )
 
-# Exit with an error if the request failed
-if [ $httpCode -lt 200 ] || [ $httpCode -ge 400 ]; then
+# Exit with an error if the request failed.
+# (Ignore 409 failures, which mean trying to re-deploy for the same PR/SHA.)
+if [ $httpCode -lt 200 ] || ([ $httpCode -ge 400 ] && [ $httpCode -ne 409 ]); then
   exit 1
 fi
 
