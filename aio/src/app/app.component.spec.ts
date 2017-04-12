@@ -338,7 +338,6 @@ class TestDeviceService {
   readonly sideBySideWidth = 1032;
   // Default to "wide", desktop browser.
   displayWidth = new BehaviorSubject(this.sideBySideWidth + 1);
-  isMobile = false;
 }
 
 class TestGaService {
