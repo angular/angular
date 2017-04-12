@@ -54,7 +54,9 @@ code-tabs mat-tab-body-content .fadeIn {
 aio-code pre {
     display: flex;
     padding: 0 48px 0 0;
+    min-height: 32px;
     white-space: pre-wrap;
+    align-items: center;
 
     code span, code ol li {
       line-height: 24px;
