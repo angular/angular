@@ -11,11 +11,10 @@ import {Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} fro
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
-import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
@@ -2470,13 +2469,14 @@ describe('Integration', () => {
          const fixture = TestBed.createComponent(ComponentWithRouterLink);
          router.navigateByUrl('/team');
          expect(() => advance(fixture)).not.toThrow();
+         advance(fixture);
 
          const paragraph = fixture.nativeElement.querySelector('p');
          expect(paragraph.textContent).toEqual('true');
 
          router.navigateByUrl('/otherteam');
          advance(fixture);
-
+         advance(fixture);
          expect(paragraph.textContent).toEqual('false');
        }));
 
