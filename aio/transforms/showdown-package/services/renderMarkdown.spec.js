@@ -1,6 +1,6 @@
 const renderMarkdownFactory = require('./renderMarkdown');
 
-describe('rho: renderMarkdown service', () => {
+fdescribe('renderMarkdown service', () => {
   let renderMarkdown;
   beforeEach(() => {
     renderMarkdown = renderMarkdownFactory();
@@ -19,8 +19,8 @@ describe('rho: renderMarkdown service', () => {
         '<h1>heading 1</h1>\n' +
         '<p>A paragraph with <strong>bold</strong> and <em>italic</em>.</p>\n' +
         '<ul>\n' +
-        '  <li>List item 1</li>\n' +
-        '  <li>List item 2</li>\n' +
+        '<li>List item 1</li>\n' +
+        '<li>List item 2</li>\n' +
         '</ul>');
   });
 

@@ -75,6 +75,7 @@
     "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.7",
+    "showdown": "^1.6.4",
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
     "typescript": "2.2.0",
