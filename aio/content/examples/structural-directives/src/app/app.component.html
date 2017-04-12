@@ -48,11 +48,11 @@
 <!-- #enddocregion display-none -->
 
 <h4>NgIf with template</h4>
-<p>&lt;template&gt; element</p>
+<p>&lt;ng-template&gt; element</p>
 <!-- #docregion ngif-template -->
-<template [ngIf]="hero">
+<ng-template [ngIf]="hero">
   <div>{{hero.name}}</div>
-</template>
+</ng-template>
 <!-- #enddocregion ngif-template -->
 
 <p>template attribute</p>
@@ -140,9 +140,9 @@
 <!--#enddocregion inside-ngfor -->
 <p class="code">&lt;template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"&gt;</p>
 <!--#docregion inside-ngfor -->
-<template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
+<ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
   <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
-</template>
+</ng-template>
 <!--#enddocregion inside-ngfor -->
 
 </div>
@@ -179,21 +179,21 @@
 </div>
 <!-- #enddocregion ngswitch-template-attr -->
 
-<h4>NgSwitch with &lt;template&gt;</h4>
+<h4>NgSwitch with &lt;ng-template&gt;</h4>
 <!-- #docregion ngswitch-template -->
 <div [ngSwitch]="hero?.emotion">
-  <template [ngSwitchCase]="'happy'">
+  <ng-template [ngSwitchCase]="'happy'">
     <happy-hero [hero]="hero"></happy-hero>
-  </template>
-  <template [ngSwitchCase]="'sad'">
+  </ng-template>
+  <ng-template [ngSwitchCase]="'sad'">
     <sad-hero [hero]="hero"></sad-hero>
-  </template>
-  <template [ngSwitchCase]="'confused'">
+  </ng-template>
+  <ng-template [ngSwitchCase]="'confused'">
     <confused-hero [hero]="hero"></confused-hero>
-  </template >
-  <template ngSwitchDefault>
+  </ng-template >
+  <ng-template ngSwitchDefault>
     <unknown-hero [hero]="hero"></unknown-hero>
-  </template>
+  </ng-template>
 </div>
 <!-- #enddocregion ngswitch-template -->
 
@@ -202,9 +202,9 @@
 <h2>&lt;template&gt;</h2>
 <!-- #docregion template-tag -->
 <p>Hip!</p>
-<template>
+<ng-template>
   <p>Hip!</p>
-</template>
+</ng-template>
 <p>Hooray!</p>
 <!-- #enddocregion template-tag -->
 
@@ -242,9 +242,9 @@
   (A) &lt;p template="myUnless condition" class="code unless"&gt;
 </p>
 
-<template [myUnless]="condition">
+<ng-template [myUnless]="condition">
   <p class="code unless">
     (A) &lt;template [myUnless]="condition"&gt;
   </p>
-</template>
+</ng-template>
 

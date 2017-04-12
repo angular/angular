@@ -150,7 +150,9 @@
   <!-- #docregion phase2-->
   <div class="container">
       <h1>Hero Form</h1>
-      <form>
+      <!-- #docregion template-variable-->
+      <form #heroForm="ngForm">
+      <!-- #enddocregion template-variable-->
     <!-- #docregion ngModel-2-->
         {{diagnostic}}
         <div class="form-group">

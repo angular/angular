@@ -408,7 +408,7 @@ console:
 
 
 <code-example format="nocode">
-  Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.
+  Angular is running in the development mode. Call enableProdMode() to enable the production mode.
 </code-example>
 
 
