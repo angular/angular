@@ -544,13 +544,13 @@ bindon-ngModel
 
 <!-- NgIf binding with template (no *) -->
 
-<template [ngIf]="currentHero">Add {{currentHero.name}} with template</template>
+<ng-template [ngIf]="currentHero">Add {{currentHero.name}} with template</ng-template>
 
 <!-- Does not show because isActive is false! -->
 <div>Hero Detail removed from DOM (via template) because isActive is false</div>
-<template [ngIf]="isActive">
+<ng-template [ngIf]="isActive">
   <hero-detail></hero-detail>
-</template>
+</ng-template>
 
 <!-- #docregion NgIf-3 -->
 <!-- isSpecial is true -->

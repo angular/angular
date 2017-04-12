@@ -18,7 +18,7 @@ describe('FancyService without the TestBed', () => {
     expect(service.getValue()).toBe('real value');
   });
 
-  it('#getAsyncValue should return async value', done => {
+  it('#getAsyncValue should return async value', (done: DoneFn) => {
     service.getAsyncValue().then(value => {
       expect(value).toBe('async value');
       done();
@@ -26,7 +26,7 @@ describe('FancyService without the TestBed', () => {
   });
 
   // #docregion getTimeoutValue
-  it('#getTimeoutValue should return timeout value',  done => {
+  it('#getTimeoutValue should return timeout value',  (done: DoneFn) => {
     service = new FancyService();
     service.getTimeoutValue().then(value => {
       expect(value).toBe('timeout value');
@@ -35,7 +35,7 @@ describe('FancyService without the TestBed', () => {
   });
   // #enddocregion getTimeoutValue
 
-  it('#getObservableValue should return observable value', done => {
+  it('#getObservableValue should return observable value', (done: DoneFn) => {
     service.getObservableValue().subscribe(value => {
       expect(value).toBe('observable value');
       done();

@@ -2028,7 +2028,7 @@ The string `"let hero of heroes"` means:
 > *Take each hero in the `heroes` array, store it in the local `hero` looping variable, and
 make it available to the templated HTML for each iteration.*
 
-Angular translates this instruction into a `<template>` around the host element,
+Angular translates this instruction into a `<ng-template>` around the host element,
 then uses this template repeatedly to create a new set of elements and bindings for each `hero`
 in the list.
 

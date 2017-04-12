@@ -276,7 +276,7 @@ This module declares only the two application components, `AppComponent` and `He
 
 
 
-Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule) guide.
+Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule)") guide.
 
 
 </div>
@@ -305,7 +305,7 @@ Coordinate the master `AppComponent` with the `HeroDetailComponent`
 by binding the `selectedHero` property of the `AppComponent`
 to the `hero` property of the `HeroDetailComponent`.
 
-<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="app.component.html (excerpt)" linenums="false">
+<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="app.component.ts (excerpt)" linenums="false">
 
 </code-example>
 

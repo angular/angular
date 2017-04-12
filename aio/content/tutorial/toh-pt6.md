@@ -503,8 +503,9 @@ The calling component can easily consume a single result in the form of a Promis
 But requests aren't always done only once.
 You may start one request,
 cancel it, and make a different request before the server has responded to the first request.
-A *request-cancel-new-request* sequence is difficult to implement with *Promises*, but
-easy with *Observables*.
+
+A *request-cancel-new-request* sequence is difficult to implement with `Promise`s, but
+easy with `Observable`s.
 
 ### Add the ability to search by name
 You're going to add a *hero search* feature to the Tour of Heroes.

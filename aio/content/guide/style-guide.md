@@ -3028,11 +3028,11 @@ module are referenced across the entire application.
 
 
 
-<div class="s-rule do">
+<div class="s-rule avoid">
 
 
 
-**Do** not provide services in shared modules. Services are usually 
+**Avoid** providing services in shared modules. Services are usually 
 singletons that are provided once for the entire application or 
 in a particular feature module.
 
@@ -3949,7 +3949,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
-<div class="s-rule do">
+<div class="s-rule consider">
 
 
 

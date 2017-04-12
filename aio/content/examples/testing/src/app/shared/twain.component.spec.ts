@@ -78,7 +78,7 @@ describe('TwainComponent', () => {
   // #enddocregion tests
 
   // #docregion done-test
-  it('should show quote after getQuote promise (done)', done => {
+  it('should show quote after getQuote promise (done)', (done: any) => {
     fixture.detectChanges();
 
     // get the spy promise and wait for it to resolve

@@ -156,7 +156,7 @@ Then you'll learn about the [Angular form classes](guide/reactive-forms#essentia
 
 ## Setup
 
-Follow the steps in the [_Setup_ guide](setup "Setup guide") 
+Follow the steps in the [_Setup_ guide](guide/setup "Setup guide") 
 for creating a new project folder (perhaps called `reactive-forms`)
 based on the _QuickStart seed_.
 
@@ -989,7 +989,7 @@ by binding to its `hero` input property.
 
 In this approach, the value of `hero` in the `HeroDetailComponent` changes 
 every time the user selects a new hero.
-You should call  _setValue_ in the [ngOnChanges](guide/lifecyle-hooks#onchanges)
+You should call  _setValue_ in the [ngOnChanges](guide/lifecycle-hooks#onchanges)
 hook, which Angular calls whenever the input `hero` property changes
 as the following steps demonstrate.
 

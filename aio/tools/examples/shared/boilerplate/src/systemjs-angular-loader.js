@@ -3,6 +3,8 @@ var stylesRegex = /styleUrls *:(\s*\[[^\]]*?\])/g;
 var stringRegex = /(['`"])((?:[^\\]\\\1|.)*?)\1/g;
 
 module.exports.translate = function(load){
+  if (load.source.indexOf('moduleId') != -1) return load;
+
   var url = document.createElement('a');
   url.href = load.address;
 
@@ -15,11 +17,13 @@ module.exports.translate = function(load){
   baseHref.href = this.baseURL;
   baseHref = baseHref.pathname;
 
-  basePath = basePath.replace(baseHref, '');
+  if (!baseHref.startsWith('/base/')) { // it is not karma
+    basePath = basePath.replace(baseHref, '');
+  }
 
   load.source = load.source
     .replace(templateUrlRegex, function(match, quote, url){
-      let resolvedUrl = url;
+      var resolvedUrl = url;
 
       if (url.startsWith('.')) {
         resolvedUrl = basePath + url.substr(1);

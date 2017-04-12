@@ -1079,7 +1079,7 @@ This is especially convenient when you consider that most dependency values are 
 
 <p>
   What if the dependency value isn't a class? Sometimes the thing you want to inject is a
-  span string, function, or object.
+  string, function, or object.
 </p>
 
 

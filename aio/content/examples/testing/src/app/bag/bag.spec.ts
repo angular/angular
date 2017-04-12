@@ -73,7 +73,7 @@ describe('use inject helper in beforeEach', () => {
   }));
 
   // Must use done. See https://github.com/angular/angular/issues/10127
-  it('test should wait for FancyService.getObservableDelayValue', done => {
+  it('test should wait for FancyService.getObservableDelayValue', (done: DoneFn) => {
     service.getObservableDelayValue().subscribe(value => {
       expect(value).toBe('observable delay value');
       done();
@@ -187,20 +187,21 @@ describe('TestBed Component Tests', () => {
     expect(selected).toHaveText(hero.name);
   });
 
-  it('can access the instance variable of an `*ngFor` row', () => {
+  it('can access the instance variable of an `*ngFor` row component', () => {
     const fixture = TestBed.createComponent(IoParentComponent);
     const comp = fixture.componentInstance;
+    const heroName = comp.heroes[0].name; // first hero's name
 
     fixture.detectChanges();
-    const heroEl = fixture.debugElement.query(By.css('.hero')); // first hero
+    const ngForRow = fixture.debugElement.query(By.directive(IoComponent)); // first hero ngForRow
 
-    const ngForRow = heroEl.parent; // Angular's NgForRow wrapper element
+    const hero = ngForRow.context['hero']; // the hero object passed into the row
+    expect(hero.name).toBe(heroName, 'ngRow.context.hero');
 
-    // jasmine.any is instance-of-type test.
-    expect(ngForRow.componentInstance).toEqual(jasmine.any(IoComponent), 'component is IoComp');
-
-    const hero = ngForRow.context['$implicit']; // the hero object
-    expect(hero.name).toBe(comp.heroes[0].name, '1st hero\'s name');
+    const rowComp = ngForRow.componentInstance;
+    // jasmine.any is an "instance-of-type" test.
+    expect(rowComp).toEqual(jasmine.any(IoComponent), 'component is IoComp');
+    expect(rowComp.hero.name).toBe(heroName, 'component.hero');
   });
 
 
@@ -343,7 +344,7 @@ describe('TestBed Component Tests', () => {
     const childComp = el.componentInstance as BankAccountComponent;
     expect(childComp).toEqual(jasmine.any(BankAccountComponent));
 
-    expect(el.context).toBe(comp, 'context is the parent component');
+    expect(el.context).toBe(childComp, 'context is the child component');
 
     expect(el.attributes['account']).toBe(childComp.id, 'account attribute');
     expect(el.attributes['bank']).toBe(childComp.bank, 'bank attribute');
@@ -447,7 +448,7 @@ describe('TestBed Component Overrides:', () => {
     // `inject` uses TestBed's injector
     inject([FancyService], (s: FancyService) => testBedProvider = s)();
     tcProvider = fixture.debugElement.injector.get(FancyService);
-    tpcProvider = fixture.debugElement.children[0].injector.get(FancyService);
+    tpcProvider = fixture.debugElement.children[0].injector.get(FancyService) as FakeFancyService;
 
     expect(testBedProvider).not.toBe(tcProvider, 'testBed/tc not same providers');
     expect(testBedProvider).not.toBe(tpcProvider, 'testBed/tpc not same providers');

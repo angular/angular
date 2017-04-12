@@ -90,7 +90,7 @@ function overrideSetup() {
   beforeEach( async(() => {
     createComponent();
     // get the component's injected HeroDetailServiceSpy
-    hdsSpy = fixture.debugElement.injector.get(HeroDetailService);
+    hdsSpy = fixture.debugElement.injector.get(HeroDetailService) as any;
   }));
 
   it('should have called `getHero`', () => {

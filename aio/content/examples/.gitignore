@@ -56,6 +56,7 @@ dist/
 
 # TS to JS
 !cb-ts-to-js/js*/**/*.js
+cb-ts-to-js/js*/**/system*.js
 
 # webpack
 !webpack/**/config/*.js
