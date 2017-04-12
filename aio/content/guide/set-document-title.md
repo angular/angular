@@ -10,10 +10,10 @@ Setting the document or window title using the Title service.
 {@a top}
 
 
-Our app should be able to make the browser title bar say whatever we want it to say.
+Your app should be able to make the browser title bar say whatever you want it to say.
 This cookbook explains how to do it.
 
-**See the <live-example name="cb-set-document-title"></live-example>**.
+See the <live-example name="cb-set-document-title"></live-example>.
 
 
 <table>
@@ -49,11 +49,11 @@ The obvious approach is to bind a property of the component to the HTML `<title>
 
 
 Sorry but that won't work.
-The root component of our application is an element contained within the `<body>` tag.
+The root component of the application is an element contained within the `<body>` tag.
 The HTML `<title>` is in the document `<head>`, outside the body, making it inaccessible to Angular data binding.
 
-We could grab the browser `document` object and set the title manually.
-That's dirty and undermines our chances of running the app outside of a browser someday.
+You could grab the browser `document` object and set the title manually.
+That's dirty and undermines your chances of running the app outside of a browser someday.
 
 <div class="l-sub-section">
 
@@ -74,10 +74,10 @@ Fortunately, Angular bridges the gap by providing a `Title` service as part of t
 The [Title](api/platform-browser/index/Title-class) service is a simple class that provides an API
 for getting and setting the current HTML document title:
 
-* `getTitle() : string` &mdash; Gets the title of the current HTML document.
-* `setTitle( newTitle : string )` &mdash; Sets the title of the current HTML document. 
+* `getTitle() : string`&mdash;Gets the title of the current HTML document.
+* `setTitle( newTitle : string )`&mdash;Sets the title of the current HTML document. 
 
-Let's inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
+You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
 <code-example path="cb-set-document-title/src/app/app.component.ts" region="class" title="src/app/app.component.ts (class)" linenums="false">
@@ -86,7 +86,7 @@ Let's inject the `Title` service into the root `AppComponent` and expose a binda
 
 
 
-We bind that method to three anchor tags and, voilà!
+Bind that method to three anchor tags and voilà!
 
 <figure class='image-display'>
   <img src="assets/images/cookbooks/set-document-title/set-title-anim.gif" alt="Set title"></img>
@@ -94,7 +94,7 @@ We bind that method to three anchor tags and, voilà!
 
 
 
-Here's the complete solution
+Here's the complete solution:
 
 
 <code-tabs>
@@ -116,17 +116,18 @@ Here's the complete solution
 
 
 
-## Why we provide the *Title* service in *bootstrap*
+## Why provide the *Title* service in *bootstrap*
 
-We generally recommended providing application-wide services in the root application component, `AppComponent`.
+Generally you want to provide application-wide services in the root application component, `AppComponent`.
 
-Here we recommend registering the title service during bootstrapping,
-a location we reserve for configuring the runtime Angular environment.
+This cookbook recommends registering the title service during bootstrapping,
+a location you reserve for configuring the runtime Angular environment.
 
-That's exactly what we're doing.
+That's exactly what you're doing.
 The `Title` service is part of the Angular *browser platform*.
-If we bootstrap our application into a different platform,
-we'll have to provide a different `Title` service that understands the concept of a "document title" for that specific platform.
-Ideally the application itself neither knows nor cares about the runtime environment.
+If you bootstrap your application into a different platform,
+you'll have to provide a different `Title` service that understands 
+the concept of a "document title" for that specific platform.
+Ideally, the application itself neither knows nor cares about the runtime environment.
 
 [Back to top](guide/set-document-title#top)

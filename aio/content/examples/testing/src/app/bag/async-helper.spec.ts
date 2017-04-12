@@ -34,7 +34,7 @@ describe('Angular async helper', () => {
 
   // Use done. Cannot use setInterval with async or fakeAsync
   // See https://github.com/angular/angular/issues/10127
-  it('should run async test with successful delayed Observable', done => {
+  it('should run async test with successful delayed Observable', (done: any) => {
     const source = Observable.of(true).delay(10);
     source.subscribe(
       val => actuallyDone = true,
