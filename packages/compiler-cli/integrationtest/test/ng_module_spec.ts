@@ -59,7 +59,8 @@ describe('NgModule', () => {
       const fixture = createComponent(ComponentUsingThirdParty);
       const thirdPComps = fixture.nativeElement.children;
       expect(thirdPComps[0].children[0].children[0].data).toEqual('3rdP-component');
-      expect(thirdPComps[1].children[0].children[0].data).toEqual('other-3rdP-component');
+      expect(thirdPComps[1].children[0].children[0].data).toEqual(`other-3rdP-component
+multi-lines`);
     });
 
     // https://github.com/angular/angular/issues/12428
