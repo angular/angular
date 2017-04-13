@@ -9,6 +9,7 @@
 import {NgModuleFactory, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
+import {LoadedRouterConfig} from './router_config_loader';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -363,7 +364,7 @@ export interface Route {
 
 export interface InternalRoute extends Route {
   // `LoadedRouterConfig` loaded via a Route `loadChildren`
-  _loadedConfig?: any;
+  _loadedConfig?: LoadedRouterConfig|undefined;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
