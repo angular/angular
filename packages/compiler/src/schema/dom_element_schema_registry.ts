@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
-import {CompilerInjectable} from '../injectable';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
 
+import {CompilerInjectable} from '../injectable';
+import {isNgContainer, isNgContent} from '../ml_parser/tags';
 import {dashCaseToCamelCase} from '../util';
 
 import {SECURITY_SCHEMA} from './dom_security_schema';
@@ -288,7 +289,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
 
     if (tagName.indexOf('-') > -1) {
-      if (tagName === 'ng-container' || tagName === 'ng-content') {
+      if (isNgContainer(tagName) || isNgContent(tagName)) {
         return false;
       }
 
@@ -309,7 +310,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
 
     if (tagName.indexOf('-') > -1) {
-      if (tagName === 'ng-container' || tagName === 'ng-content') {
+      if (isNgContainer(tagName) || isNgContent(tagName)) {
         return true;
       }
 
