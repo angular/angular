@@ -6,14 +6,13 @@
 cd "$(dirname $0)/../../"
 
 docsPath="./dist/docs"
+packagePath="./dist/releases/material-examples"
 repoPath="/tmp/material2-docs-content"
 repoUrl="https://github.com/angular/material2-docs-content"
 examplesSource="./dist/docs/examples"
 
-# If the docs directory is not present, generate docs
-if [ ! -d $docsPath ]; then
-  $(npm bin)/gulp docs
-fi
+$(npm bin)/gulp examples:release
+$(npm bin)/gulp docs
 
 # Get git meta info for commit
 commitSha="$(git rev-parse --short HEAD)"
@@ -28,14 +27,15 @@ git clone $repoUrl $repoPath
 
 # Clean out repo directory and copy contents of dist/docs into it
 rm -rf $repoPath/*
-mkdir $repoPath/overview
-mkdir $repoPath/guides
-mkdir $repoPath/api
-mkdir $repoPath/examples
-mkdir $repoPath/plunker
+
+# Create folders that will contain docs content files.  
+mkdir $repoPath/{overview,guides,api,examples,plunker,examples-package}
 
 # Copy api files over to $repoPath/api
 cp -r $docsPath/api/* $repoPath/api
+
+# Copy the material-examples package to the docs content repository.
+cp -r $packagePath/* $repoPath/examples-package
 
 # Flatten the markdown docs structure and move it into $repoPath/overview
 overviewFiles=$docsPath/markdown/
@@ -65,7 +65,7 @@ done
 cp -r $examplesSource/* $repoPath/examples
 
 # Copy example plunker assets
-rsync -a $docsPath/plunker $repoPath/plunker
+cp -r $docsPath/plunker/* $repoPath/plunker
 
 # Copies assets over to the docs-content repository.
 cp LICENSE $repoPath/

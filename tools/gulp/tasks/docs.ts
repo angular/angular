@@ -88,7 +88,7 @@ task('highlight-examples', () => {
     path.basename = `${path.basename}-${extension}`;
   };
 
-  return src('src/examples/**/*.+(html|css|ts)')
+  return src('src/material-examples/**/*.+(html|css|ts)')
       .pipe(flatten())
       .pipe(rename(renameFile))
       .pipe(highlight())
@@ -111,7 +111,7 @@ task('minified-api-docs', ['api-docs'], () => {
 
 /** Copies example sources to be used as plunker assets for the docs site. */
 task('plunker-example-assets', () => {
-  src(path.join(SOURCE_ROOT, 'examples', '**/*'))
+  src(path.join(SOURCE_ROOT, 'material-examples', '**/*'))
       .pipe(dest(path.join(DIST_DOCS, 'plunker', 'examples')));
 });
 
