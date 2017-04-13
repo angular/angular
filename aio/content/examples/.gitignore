@@ -36,9 +36,11 @@ dist/
 *.3.js.map
 !systemjs.config.*.js
 !karma-test-shim.*.js
+!copy-dist-files.js
 
 # AngularJS files
 !**/*.ajs.js
+**/app/**/*.ajs.js
 
 # aot
 **/*.ngfactory.ts

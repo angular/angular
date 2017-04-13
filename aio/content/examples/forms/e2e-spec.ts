@@ -1,7 +1,6 @@
 import { browser, element, by } from 'protractor';
-import { appLang, describeIf } from '../protractor-helpers';
 
-describeIf(appLang.appIsTs || appLang.appIsJs, 'Forms Tests', function () {
+describe('Forms Tests', function () {
 
   beforeEach(function () {
     browser.get('');

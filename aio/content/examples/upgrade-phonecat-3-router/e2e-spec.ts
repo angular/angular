@@ -1,7 +1,6 @@
 'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
-import { setProtractorToHybridMode } from '../protractor-helpers';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
@@ -9,7 +8,9 @@ import { setProtractorToHybridMode } from '../protractor-helpers';
 describe('PhoneCat Application', function() {
 
   beforeAll(function () {
-    setProtractorToHybridMode();
+    // Set protractor to hybrid mode.
+    browser.rootEl = 'body';
+    browser.ng12Hybrid = true;
   });
 
   it('should redirect `index.html` to `index.html#!/phones', function() {

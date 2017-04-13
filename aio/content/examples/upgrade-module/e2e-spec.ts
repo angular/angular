@@ -1,12 +1,13 @@
 'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
-import { setProtractorToHybridMode } from '../protractor-helpers';
 
 describe('Upgrade Tests', function () {
 
   beforeAll(function () {
-    setProtractorToHybridMode();
+    // Set protractor to hybrid mode.
+    browser.rootEl = 'body';
+    browser.ng12Hybrid = true;
   });
 
   describe('AngularJS Auto-bootstrap', function() {

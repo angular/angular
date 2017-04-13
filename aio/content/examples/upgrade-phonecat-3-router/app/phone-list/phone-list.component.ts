@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 import { Phone, PhoneData } from '../core/phone/phone.service';
 
 @Component({
-  templateUrl: 'phone-list.template.html'
+  templateUrl: './phone-list.template.html'
 })
 export class PhoneListComponent {
   phones: PhoneData[];

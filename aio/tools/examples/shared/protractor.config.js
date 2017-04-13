@@ -20,7 +20,11 @@ exports.config = {
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    // For Travis
+    chromeOptions: {
+      binary: process.env.CHROME_BIN
+    }
   },
 
   // Framework to use. Jasmine is recommended.
@@ -43,22 +47,7 @@ exports.config = {
 
     // debugging
     // console.log('browser.params:' + JSON.stringify(browser.params));
-    var protractorHelpers = require('./protractor-helpers.ts');
 
-    var appDir = browser.params.appDir;
-    if (appDir) {
-      if (appDir.match('/ts') != null) {
-        protractorHelpers.appLang.appIsTs = true;
-      } else if (appDir.match('/js') != null) {
-        protractorHelpers.appLang.appIsJs = true;
-      } else if (appDir.match('/dart') != null) {
-        protractorHelpers.appLang.appIsDart = true;
-      } else {
-        protractorHelpers.appLang.appIsUnknown = true;
-      }
-    } else {
-      protractorHelpers.appLang.appIsUnknown = true;
-    }
     jasmine.getEnv().addReporter(new Reporter( browser.params ));
   },
 
@@ -79,7 +68,7 @@ exports.config = {
 
 // See http://jasmine.github.io/2.1/custom_reporter.html
 function Reporter(options) {
-  var _defaultOutputFile = path.resolve(process.cwd(), "../../../", 'protractor-results.txt');
+  var _defaultOutputFile = path.resolve(__dirname, '../../protractor-results.txt');
   options.outputFile = options.outputFile || _defaultOutputFile;
 
   var _root = { appDir: options.appDir, suites: [] };

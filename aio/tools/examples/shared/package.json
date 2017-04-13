@@ -69,7 +69,7 @@
     "lodash": "^4.16.2",
     "null-loader": "^0.1.1",
     "phantomjs-prebuilt": "^2.1.7",
-    "protractor": "~4.0.14",
+    "protractor": "~5.1.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",

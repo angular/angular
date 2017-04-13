@@ -151,11 +151,11 @@ describe('Router', () => {
     await buttonEle.click();
     crisisEle = page.crisisList.get(index);
     if (save) {
-      expect(crisisEle.getText()).toEqual(crisisText + '-foo');
+      expect(crisisEle.getText()).toContain(crisisText + '-foo');
     } else {
       await browser.wait(EC.alertIsPresent(), 4000);
       await browser.switchTo().alert().accept();
-      expect(crisisEle.getText()).toEqual(crisisText);
+      expect(crisisEle.getText()).toContain(crisisText);
     }
   }
 

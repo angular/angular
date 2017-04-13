@@ -11,7 +11,7 @@ import { Phone, PhoneData } from '../core/phone/phone.service';
 // #docregion downgrade-component
 @Component({
   selector: 'phone-list',
-  templateUrl: 'phone-list.template.html'
+  templateUrl: './phone-list.template.html'
 })
 export class PhoneListComponent {
   // #enddocregion downgrade-component

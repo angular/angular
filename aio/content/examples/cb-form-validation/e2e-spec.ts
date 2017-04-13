@@ -1,10 +1,9 @@
 'use strict'; // necessary for node!
 
 import { browser, element, by, protractor, ElementFinder, ElementArrayFinder } from 'protractor';
-import { appLang, describeIf } from '../protractor-helpers';
 
 // THESE TESTS ARE INCOMPLETE
-describeIf(appLang.appIsTs || appLang.appIsJs, 'Form Validation Tests', function () {
+describe('Form Validation Tests', function () {
 
   beforeAll(function () {
     browser.get('');
