@@ -8,12 +8,12 @@
 
 import {CompileMetadataResolver, CompileNgModuleMetadata, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
 
-import {AstResult, AttrInfo, TemplateInfo} from './common';
+import {AstResult, TemplateInfo} from './common';
 import {getTemplateCompletions} from './completions';
 import {getDefinition} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics} from './diagnostics';
 import {getHover} from './hover';
-import {Completion, CompletionKind, Completions, Declaration, Declarations, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Location, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Pipes, Span, TemplateSource} from './types';
 
 
 /**
@@ -126,8 +126,7 @@ class LanguageServiceImpl implements LanguageService {
           const pipes = ngModule.transitiveModule.pipes.map(
               p => this.host.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
           const schemas = ngModule.schemas;
-          const parseResult = parser.tryParseHtml(
-              htmlResult, metadata, template.source, directives, pipes, schemas, '');
+          const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
           result = {
             htmlAst: htmlResult.rootNodes,
             templateAst: parseResult.templateAst,
