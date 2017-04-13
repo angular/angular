@@ -154,7 +154,8 @@ export class Evaluator {
         case ts.SyntaxKind.CallExpression:
           const callExpression = <ts.CallExpression>node;
           // We can fold a <array>.concat(<v>).
-          if (isMethodCallOf(callExpression, 'concat') && callExpression.arguments.length === 1) {
+          if (isMethodCallOf(callExpression, 'concat') &&
+              arrayOrEmpty(callExpression.arguments).length === 1) {
             const arrayNode = (<ts.PropertyAccessExpression>callExpression.expression).expression;
             if (this.isFoldableWorker(arrayNode, folding) &&
                 this.isFoldableWorker(callExpression.arguments[0], folding)) {
@@ -167,7 +168,8 @@ export class Evaluator {
           }
 
           // We can fold a call to CONST_EXPR
-          if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1)
+          if (isCallOf(callExpression, 'CONST_EXPR') &&
+              arrayOrEmpty(callExpression.arguments).length === 1)
             return this.isFoldableWorker(callExpression.arguments[0], folding);
           return false;
         case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
@@ -295,14 +297,15 @@ export class Evaluator {
         return recordEntry({__symbolic: 'spread', expression: spreadExpression}, node);
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;
-        if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
+        if (isCallOf(callExpression, 'forwardRef') &&
+            arrayOrEmpty(callExpression.arguments).length === 1) {
           const firstArgument = callExpression.arguments[0];
           if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
             const arrowFunction = <ts.ArrowFunction>firstArgument;
             return recordEntry(this.evaluateNode(arrowFunction.body), node);
           }
         }
-        const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
+        const args = arrayOrEmpty(callExpression.arguments).map(arg => this.evaluateNode(arg));
         if (!this.options.verboseInvalidExpression && args.some(isMetadataError)) {
           return args.find(isMetadataError);
         }
@@ -315,7 +318,8 @@ export class Evaluator {
           }
         }
         // Always fold a CONST_EXPR even if the argument is not foldable.
-        if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1) {
+        if (isCallOf(callExpression, 'CONST_EXPR') &&
+            arrayOrEmpty(callExpression.arguments).length === 1) {
           return recordEntry(args[0], node);
         }
         const expression = this.evaluateNode(callExpression.expression);
@@ -329,7 +333,7 @@ export class Evaluator {
         return recordEntry(result, node);
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
-        const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
+        const newArgs = arrayOrEmpty(newExpression.arguments).map(arg => this.evaluateNode(arg));
         if (!this.options.verboseInvalidExpression && newArgs.some(isMetadataError)) {
           return recordEntry(newArgs.find(isMetadataError), node);
         }
@@ -574,4 +578,10 @@ export class Evaluator {
 
 function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
   return node.kind == ts.SyntaxKind.PropertyAssignment;
+}
+
+const empty = [] as ts.NodeArray<any>;
+
+function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>): ts.NodeArray<T> {
+  return v || empty;
 }
