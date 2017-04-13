@@ -54,15 +54,19 @@ class TitleApp {
 class TitleAppModule {
 }
 
-@Component({selector: 'app', template: '{{text}}'})
+@Component({selector: 'app', template: '{{text}}<h1 [innerText]="h1"></h1>'})
 class MyAsyncServerApp {
   text = '';
+  h1 = '';
 
   @HostListener('window:scroll')
   track() { console.error('scroll'); }
 
   ngOnInit() {
-    Promise.resolve(null).then(() => setTimeout(() => { this.text = 'Works!'; }, 10));
+    Promise.resolve(null).then(() => setTimeout(() => {
+                                 this.text = 'Works!';
+                                 this.h1 = 'fine';
+                               }, 10));
   }
 }
 
@@ -353,7 +357,7 @@ export function main() {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innerText="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
