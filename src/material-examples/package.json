@@ -1,6 +1,6 @@
 {
   "name": "@angular/material-examples",
-  "version": "2.0.0-beta.3",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "Angular Material Examples",
   "main": "./bundles/material-examples.umd.js",
   "module": "./@angular/material-examples.es5.js",

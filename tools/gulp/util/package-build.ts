@@ -1,5 +1,4 @@
 import {join, basename, dirname} from 'path';
-import {DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, LICENSE_BANNER} from '../constants';
 import {createRollupBundle} from './rollup-helper';
 import {inlineMetadataResources} from './inline-resources';
 import {transpileFile} from './ts-compiler';
@@ -8,6 +7,9 @@ import {sync as glob} from 'glob';
 import {
   writeFileSync, copySync, mkdirpSync, readFileSync
 } from 'fs-extra';
+import {
+  DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, LICENSE_BANNER, MATERIAL_VERSION
+} from '../constants';
 
 // There are no type definitions available for these imports.
 const uglify = require('uglify-js');
@@ -32,6 +34,7 @@ export function composeRelease(packageName: string) {
   copyFiles(SOURCE_ROOT, 'README', releasePath);
   copyFiles(sourcePath, 'package.json', releasePath);
 
+  updatePackageVersion(releasePath);
   createTypingFile(releasePath, packageName);
   createMetadataFile(releasePath, packageName);
 }
@@ -79,6 +82,17 @@ function copyFiles(fromPath: string, fileGlob: string, outDir: string) {
     mkdirpSync(dirname(fileDestPath));
     copySync(join(fromPath, filePath), fileDestPath);
   });
+}
+
+/** Updates the `package.json` file of the specified package. Replaces the version placeholder. */
+function updatePackageVersion(packageDir: string) {
+  let packagePath = join(packageDir, 'package.json');
+  let packageConfig = require(packagePath);
+
+  // Replace the `0.0.0-PLACEHOLDER` version name with the version of the root package.json file.
+  packageConfig.version = packageConfig.version.replace('0.0.0-PLACEHOLDER', MATERIAL_VERSION);
+
+  writeFileSync(packagePath, JSON.stringify(packageConfig, null, 2));
 }
 
 /** Create a typing file that links to the bundled definitions of NGC. */
