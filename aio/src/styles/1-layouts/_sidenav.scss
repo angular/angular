@@ -11,7 +11,9 @@ aio-nav-menu.top-menu .vertical-menu-item  {
 }
 
 md-sidenav-container.sidenav-container {
-    height: auto;
+    min-height: 100%;
+    height: auto !important;
+    margin: 0 auto;
     transform: none;
   }
 
