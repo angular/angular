@@ -58,7 +58,7 @@ class UploadServerFactory {
     const githubPullRequests = new GithubPullRequests(githubToken, repoSlug);
 
     buildCreator.on(CreatedBuildEvent.type, ({pr, sha}: CreatedBuildEvent) => {
-      const body = `The angular.io preview for ${sha.slice(0, 7)} is available [here][1].\n\n` +
+      const body = `The angular.io preview for ${sha} is available [here][1].\n\n` +
                    `[1]: https://pr${pr}-${sha}.${domainName}/`;
 
       githubPullRequests.addComment(pr, body);
