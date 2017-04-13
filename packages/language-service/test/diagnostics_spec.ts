@@ -281,6 +281,35 @@ describe('diagnostics', () => {
           fileName => expectOnlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
     });
 
+    it('should be able to resolve modules using baseUrl', () => {
+      const app_component = `
+        import { Component } from '@angular/core';
+        import { NgForm } from '@angular/common';
+        import { Server } from 'app/server';
+
+        @Component({
+          selector: 'example-app',
+          template: '...',
+          providers: [Server]
+        })
+        export class AppComponent {
+          onSubmit(form: NgForm) {}
+        }
+      `;
+      const app_server = `
+        export class Server {}
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, app_component);
+      mockHost.addScript('/other/files/app/server.ts', app_server);
+      mockHost.overrideOptions(options => {
+        options.baseUrl = '/other/files';
+        return options;
+      });
+      const diagnostic = ngService.getDiagnostics(fileName);
+      expect(diagnostic).toEqual([]);
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
