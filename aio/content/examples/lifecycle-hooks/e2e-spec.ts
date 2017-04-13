@@ -1,4 +1,4 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
 
@@ -101,7 +101,10 @@ describe('Lifecycle hooks', function () {
       expect(commentEle.getText()).toContain('long name');
       return logEles.count();
     }).then(function(count: number) {
-      expect(logCount + 7).toEqual(count, '7 additional log messages should have been added');
+      expect(logCount + 7).toBeGreaterThan(count - 3,
+        '7 additional log messages should have been added');
+      expect(logCount + 7).toBeLessThan(count + 3,
+        '7 additional log messages should have been added');
       logCount = count;
       return buttonEle.click();
     }).then(function() {
