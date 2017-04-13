@@ -12,7 +12,6 @@ export enum TagContentType {
   PARSABLE_DATA
 }
 
-// TODO(vicb): read-only when TS supports it
 export interface TagDefinition {
   closedByParent: boolean;
   requiredParents: {[key: string]: boolean};
@@ -40,6 +39,21 @@ export function splitNsName(elementName: string): [string | null, string] {
   }
 
   return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
+}
+
+// `<ng-container>` tags work the same regardless the namespace
+export function isNgContainer(tagName: string): boolean {
+  return splitNsName(tagName)[1] === 'ng-container';
+}
+
+// `<ng-content>` tags work the same regardless the namespace
+export function isNgContent(tagName: string): boolean {
+  return splitNsName(tagName)[1] === 'ng-content';
+}
+
+// `<ng-template>` tags work the same regardless the namespace
+export function isNgTemplate(tagName: string): boolean {
+  return splitNsName(tagName)[1] === 'ng-template';
 }
 
 export function getNsPrefix(fullName: string): string
