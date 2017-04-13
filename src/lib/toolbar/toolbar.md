@@ -4,7 +4,7 @@
 
 ### Multiple rows
 Toolbars can have multiple rows using `<md-toolbar-row>` elements. Any content outside of an 
-`<md-toolbar-row>` element are automatically placed inside of one at the begining of the toolbar.
+`<md-toolbar-row>` element are automatically placed inside of one at the beginning of the toolbar.
 Each toolbar row is a `display: flex` container.
 
 ```html

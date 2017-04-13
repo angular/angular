@@ -143,7 +143,7 @@ All public APIs must have user-facing comments. These are extracted and shown in
 on [material.angular.io](https://material.angular.io).
 
 Private and internal APIs should have JsDoc when they are not obvious. Ultimately it is the purview
-of the code reviwer as to what is "obvious", but the rule of thumb is that *most* classes,
+of the code reviewer as to what is "obvious", but the rule of thumb is that *most* classes,
 properties, and methods should have a JsDoc description.
 
 Properties should have a concise description of what the property means:

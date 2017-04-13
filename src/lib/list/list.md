@@ -44,7 +44,7 @@ element in an `<md-list-item>`.
 
 ### Multi-line lists
 For lists that require multiple lines per item, annotate each line with an `md-line` attribute.
-Whichever heading tag is appropriate for your DOM hierarchy should be used (not necesarily `<h3>`
+Whichever heading tag is appropriate for your DOM hierarchy should be used (not necessarily `<h3>`
 as shown in the example).
 
 ```html

@@ -16,7 +16,7 @@ let snackBarRef = snackbar.openFromComponent(MessageArchivedComponent);
 ```
 
 In either case, an `MdSnackBarRef` is returned. This can be used to dismiss the snack-bar or to 
-recieve notification of when the snack-bar is dismissed. For simple messages with an action, the 
+receive notification of when the snack-bar is dismissed. For simple messages with an action, the 
 `MdSnackBarRef` exposes an observable for when the action is triggered.
 
 ```ts
