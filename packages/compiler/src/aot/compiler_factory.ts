@@ -51,12 +51,12 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
   const console = new Console();
   const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), translations, options.i18nFormat, MissingTranslationStrategy.Warning,
-      console);
+      new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,
     enableLegacyTemplate: options.enableLegacyTemplate !== false,
+    missingTranslation: options.missingTranslation,
   });
   const normalizer = new DirectiveNormalizer(
       {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);

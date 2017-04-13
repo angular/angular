@@ -31,12 +31,20 @@ export class NgcCliOptions extends CliOptions {
   public i18nFormat: string;
   public i18nFile: string;
   public locale: string;
+  public missingTranslation: string;
 
-  constructor({i18nFormat = null, i18nFile = null, locale = null, basePath = null}:
-                  {i18nFormat?: string, i18nFile?: string, locale?: string, basePath?: string}) {
+  constructor({i18nFormat = null, i18nFile = null, locale = null, missingTranslation = null,
+               basePath = null}: {
+    i18nFormat?: string,
+    i18nFile?: string,
+    locale?: string,
+    missingTranslation?: string,
+    basePath?: string
+  }) {
     super({basePath: basePath});
     this.i18nFormat = i18nFormat;
     this.i18nFile = i18nFile;
     this.locale = locale;
+    this.missingTranslation = missingTranslation;
   }
 }
