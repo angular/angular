@@ -143,7 +143,7 @@ describe('uploadServerFactory', () => {
 
     it('should post a comment on GitHub on \'build.created\'', () => {
       const prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment');
-      const commentBody = 'The angular.io preview for 1234567 is available [here][1].\n\n' +
+      const commentBody = 'The angular.io preview for 1234567890 is available [here][1].\n\n' +
                           '[1]: https://pr42-1234567890.domain.name/';
 
       buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890'});
