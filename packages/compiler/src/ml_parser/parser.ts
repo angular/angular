@@ -11,7 +11,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import * as html from './ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import * as lex from './lexer';
-import {TagDefinition, getNsPrefix, mergeNsAndName} from './tags';
+import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
@@ -352,11 +352,12 @@ class _TreeBuilder {
    *
    * `<ng-container>` elements are skipped as they are not rendered as DOM element.
    */
-  private _getParentElementSkippingContainers(): {parent: html.Element, container: html.Element} {
-    let container: html.Element = null !;
+  private _getParentElementSkippingContainers():
+      {parent: html.Element, container: html.Element|null} {
+    let container: html.Element|null = null;
 
     for (let i = this._elementStack.length - 1; i >= 0; i--) {
-      if (this._elementStack[i].name !== 'ng-container') {
+      if (!isNgContainer(this._elementStack[i].name)) {
         return {parent: this._elementStack[i], container};
       }
       container = this._elementStack[i];
@@ -382,7 +383,7 @@ class _TreeBuilder {
    * @internal
    */
   private _insertBeforeContainer(
-      parent: html.Element, container: html.Element, node: html.Element) {
+      parent: html.Element, container: html.Element|null, node: html.Element) {
     if (!container) {
       this._addToParent(node);
       this._elementStack.push(node);

@@ -9,14 +9,15 @@
 import {Component, Directive, Input} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('integration tests', () => {
     let fixture: ComponentFixture<TestComponent>;
 
-
-    describe('directiv  es', () => {
+    describe('directives', () => {
       it('should support dotted selectors', async(() => {
            @Directive({selector: '[dot.name]'})
            class MyDir {
@@ -38,6 +39,25 @@ export function main() {
          }));
     });
 
+    describe('ng-container', () => {
+      if (browserDetection.isChromeDesktop) {
+        it('should work regardless the namespace', async(() => {
+             @Component({
+               selector: 'comp',
+               template:
+                   '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
+             })
+             class MyCmp {
+             }
+
+             const f =
+                 TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+             f.detectChanges();
+
+             expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+           }));
+      }
+    });
   });
 }
 

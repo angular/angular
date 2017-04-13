@@ -7,10 +7,9 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {splitNsName} from '../ml_parser/tags';
+import {isNgContent} from '../ml_parser/tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
-const NG_CONTENT_ELEMENT = 'ng-content';
 const LINK_ELEMENT = 'link';
 const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
@@ -45,7 +44,7 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   selectAttr = normalizeNgContentSelect(selectAttr);
   const nodeName = ast.name.toLowerCase();
   let type = PreparsedElementType.OTHER;
-  if (splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
+  if (isNgContent(nodeName)) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (nodeName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;

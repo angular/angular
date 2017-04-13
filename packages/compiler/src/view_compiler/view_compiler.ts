@@ -14,6 +14,7 @@ import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
+import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
@@ -302,11 +303,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     // reserve the space in the nodeDefs array so we can add children
     this.nodes.push(null !);
 
-    let elName: string|null = ast.name;
-    if (ast.name === NG_CONTAINER_TAG) {
-      // Using a null element name creates an anchor.
-      elName = null;
-    }
+    // Using a null element name creates an anchor.
+    const elName: string|null = isNgContainer(ast.name) ? null : ast.name;
 
     const {flags, usedEvents, queryMatchesExpr, hostBindings: dirHostBindings, hostEvents} =
         this._visitElementOrTemplate(nodeIndex, ast);
@@ -988,7 +986,7 @@ function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
   }
 
   if (lastAstNode instanceof ElementAst) {
-    if (lastAstNode.name === NG_CONTAINER_TAG && lastAstNode.children.length) {
+    if (isNgContainer(lastAstNode.name) && lastAstNode.children.length) {
       return needsAdditionalRootNode(lastAstNode.children);
     }
     return lastAstNode.hasViewContainer;
@@ -1068,7 +1066,6 @@ function fixedAttrsDef(elementAst: ElementAst): o.Expression {
       mapResult[name] = prevValue != null ? mergeAttributeValue(name, prevValue, value) : value;
     });
   });
-  const mapEntries: o.LiteralMapEntry[] = [];
   // Note: We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
   return o.literalArr(Object.keys(mapResult).sort().map(

@@ -7,7 +7,8 @@
  */
 
 import {Inject, InjectionToken, Optional, SchemaMetadata, ɵConsole as Console} from '@angular/core';
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
+
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
@@ -18,13 +19,14 @@ import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {splitNsName} from '../ml_parser/tags';
+import {isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {syntaxError} from '../util';
+
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
@@ -53,7 +55,6 @@ const IDENT_PROPERTY_IDX = 9;
 // Group 10 = identifier inside ()
 const IDENT_EVENT_IDX = 10;
 
-const NG_TEMPLATE_ELEMENT = 'ng-template';
 // deprecated in 4.x
 const TEMPLATE_ELEMENT = 'template';
 // deprecated in 4.x
@@ -891,9 +892,8 @@ function isEmptyExpression(ast: AST): boolean {
 function isTemplate(
     el: html.Element, enableLegacyTemplate: boolean,
     reportDeprecation: (m: string, span: ParseSourceSpan) => void): boolean {
+  if (isNgTemplate(el.name)) return true;
   const tagNoNs = splitNsName(el.name)[1];
-  // `<ng-template>` is an angular construct and is lower case
-  if (tagNoNs === NG_TEMPLATE_ELEMENT) return true;
   // `<template>` is HTML and case insensitive
   if (tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
     if (enableLegacyTemplate && tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
