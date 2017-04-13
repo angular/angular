@@ -165,9 +165,9 @@ interaction (how to lazily load the CSS assets will vary based on your applicati
 It's important to remember, however, that the `mat-core` mixin should only ever be included _once_.
 
 ##### Multiple themes and overlay-based components
-Since certain components (e.g. `dialog`) are inside of a global overlay container, the css class
-that determines the theme (such as the `.unicorn-dark-theme` example above), an additional step is
-needed to affect overlay-based components (menu, select, dialog, etc.).
+Since certain components (e.g. menu, select, dialog, etc.) are inside of a global overlay container,
+an additional step is required for those components to be affected by the theme's css class selector 
+(`.unicorn-dark-theme` in the example above).
 
 To do this, you can specify a `themeClass` on the global overlay container. For the example above,
 this would look like:
