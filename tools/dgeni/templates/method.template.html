@@ -1,7 +1,12 @@
 <table class="docs-api-method-table">
   <thead>
     <tr class="docs-api-method-name-row">
-      <th colspan="2" class="docs-api-method-name-cell">{$ method.name $}</th>
+      <th colspan="2" class="docs-api-method-name-cell">
+        {%- if method.isDeprecated -%}
+          <div class="docs-api-deprecated-marker">Deprecated</div>
+        {%- endif -%}   
+        {$ method.name $}
+      </th>
     </tr>
   </thead>
   <tr class="docs-api-method-description-row">

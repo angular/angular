@@ -8,6 +8,10 @@
 <span class="docs-api-class-export-name">{$ class.directiveExportAs $}</span>
 {%- endif -%}
 
+{%- if class.isDeprecated -%}
+<div class="docs-api-class-deprecated-marker">Deprecated</div>
+{%- endif -%}   
+
 {$ propertyList(class.properties) $}
 
 {$ methodList(class.methods) $}

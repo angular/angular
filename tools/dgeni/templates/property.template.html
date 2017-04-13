@@ -18,6 +18,9 @@
         {%- endif -%}
       </div>
     {%- endif -%}
+    {%- if property.isDeprecated -%}
+      <div class="docs-api-deprecated-marker">Deprecated</div>
+    {%- endif -%}   
 
     <p class="docs-api-property-name">
       {$ property.name $}

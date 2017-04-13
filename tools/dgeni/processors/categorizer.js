@@ -28,6 +28,8 @@ module.exports = function categorizer() {
     classDoc.methods.forEach(doc => decorateMethodDoc(doc));
     classDoc.properties.forEach(doc => decoratePropertyDoc(doc));
 
+    decoratePublicDoc(classDoc);
+    
     // Categorize the current visited classDoc into its Angular type.
     if (isDirective(classDoc)) {
       classDoc.isDirective = true;
@@ -45,6 +47,7 @@ module.exports = function categorizer() {
    */
   function decorateMethodDoc(methodDoc) {
     normalizeMethodParameters(methodDoc);
+    decoratePublicDoc(methodDoc);
 
     // Mark methods with a `void` return type so we can omit show the return type in the docs.
     methodDoc.showReturns = methodDoc.returnType && methodDoc.returnType != 'void';
@@ -55,11 +58,21 @@ module.exports = function categorizer() {
    * outputs will be marked. Aliases for the inputs or outputs will be stored as well.
    */
   function decoratePropertyDoc(propertyDoc) {
+    decoratePublicDoc(propertyDoc);
+
     propertyDoc.isDirectiveInput = isDirectiveInput(propertyDoc);
     propertyDoc.directiveInputAlias = getDirectiveInputAlias(propertyDoc);
 
     propertyDoc.isDirectiveOutput = isDirectiveOutput(propertyDoc);
     propertyDoc.directiveOutputAlias = getDirectiveOutputAlias(propertyDoc);
+  }
+
+  /**
+   * Decorates public exposed docs. Creates a property on the doc that indicates whether
+   * the item is deprecated or not.
+   **/
+  function decoratePublicDoc(doc) {
+    doc.isDeprecated = isDeprecatedDoc(doc);
   }
 };
 
@@ -144,6 +157,10 @@ function isDirectiveOutput(doc) {
 
 function isDirectiveInput(doc) {
   return hasMemberDecorator(doc, 'Input');
+}
+
+function isDeprecatedDoc(doc) {
+  return (doc.tags && doc.tags.tags || []).some(tag => tag.tagName === 'deprecated');
 }
 
 function getDirectiveInputAlias(doc) {
