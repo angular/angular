@@ -80,6 +80,8 @@ export class Parse5DomAdapter extends DomAdapter {
   setProperty(el: any, name: string, value: any) {
     if (name === 'innerHTML') {
       this.setInnerHTML(el, value);
+    } else if (name === 'innerText') {
+      this.setText(el, value);
     } else if (name === 'className') {
       el.attribs['class'] = el.className = value;
     } else {
