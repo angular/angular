@@ -140,13 +140,13 @@ export class TemplateParser {
     return this.tryParseHtml(
         this.expandHtml(this._htmlParser !.parse(
             template, templateUrl, true, this.getInterpolationConfig(component))),
-        component, template, directives, pipes, schemas, templateUrl);
+        component, directives, pipes, schemas);
   }
 
   tryParseHtml(
-      htmlAstWithErrors: ParseTreeResult, component: CompileDirectiveMetadata, template: string,
-      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): TemplateParseResult {
+      htmlAstWithErrors: ParseTreeResult, component: CompileDirectiveMetadata,
+      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[],
+      schemas: SchemaMetadata[]): TemplateParseResult {
     let result: TemplateAst[];
     const errors = htmlAstWithErrors.errors;
     const usedPipes: CompilePipeSummary[] = [];
