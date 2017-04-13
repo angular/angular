@@ -35,6 +35,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   i18nFormat?: string;
   i18nFile?: string;
   locale?: string;
+  missingTranslation?: string;
 
   readResource: (fileName: string) => Promise<string>;
 
@@ -95,6 +96,7 @@ export class NgTools_InternalApi_NG_2 {
       i18nFormat: options.i18nFormat !,
       i18nFile: options.i18nFile !,
       locale: options.locale !,
+      missingTranslation: options.missingTranslation !,
       basePath: options.basePath
     };
 
