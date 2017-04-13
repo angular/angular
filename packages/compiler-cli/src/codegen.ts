@@ -11,9 +11,9 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
+import {MissingTranslationStrategy} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
@@ -61,20 +61,35 @@ export class CodeGenerator {
       ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
                                         new CompilerHost(program, options, context);
     }
-    const transFile = cliOptions.i18nFile;
-    const locale = cliOptions.locale;
     let transContent: string = '';
-    if (transFile) {
-      if (!locale) {
+    if (cliOptions.i18nFile) {
+      if (!cliOptions.locale) {
         throw new Error(
-            `The translation file (${transFile}) locale must be provided. Use the --locale option.`);
+            `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
       }
-      transContent = readFileSync(transFile, 'utf8');
+      transContent = readFileSync(cliOptions.i18nFile, 'utf8');
+    }
+    let missingTranslation = MissingTranslationStrategy.Warning;
+    if (cliOptions.missingTranslation) {
+      switch (cliOptions.missingTranslation) {
+        case 'error':
+          missingTranslation = MissingTranslationStrategy.Error;
+          break;
+        case 'warning':
+          missingTranslation = MissingTranslationStrategy.Warning;
+          break;
+        case 'ignore':
+          missingTranslation = MissingTranslationStrategy.Ignore;
+          break;
+        default:
+          throw new Error(
+              `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
+      }
     }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale,
+      locale: cliOptions.locale, missingTranslation,
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
       genFilePreamble: PREAMBLE,
     });
