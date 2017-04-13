@@ -25,6 +25,10 @@ export function transpileFile(inputPath: string, outputPath: string, options: ts
   reportDiagnostics(transpiled.diagnostics);
 
   fs.writeFileSync(outputPath, transpiled.outputText);
+
+  if (transpiled.sourceMapText) {
+    fs.writeFileSync(`${outputPath}.map`, transpiled.sourceMapText);
+  }
 }
 
 /** Parses a TypeScript project configuration. */

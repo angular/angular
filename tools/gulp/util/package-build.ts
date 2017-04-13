@@ -13,6 +13,7 @@ import {
 
 // There are no type definitions available for these imports.
 const uglify = require('uglify-js');
+const sorcery = require('sorcery');
 
 /**
  * Copies different output files into a folder structure that follows the `angular/angular`
@@ -28,8 +29,8 @@ export function composeRelease(packageName: string) {
   inlinePackageMetadataFiles(packagePath);
 
   copyFiles(packagePath, '**/*.+(d.ts|metadata.json)', join(releasePath, 'typings'));
-  copyFiles(DIST_BUNDLES, `${packageName}.umd?(.min).js`, join(releasePath, 'bundles'));
-  copyFiles(DIST_BUNDLES, `${packageName}?(.es5).js`, join(releasePath, '@angular'));
+  copyFiles(DIST_BUNDLES, `${packageName}.umd?(.min).js?(.map)`, join(releasePath, 'bundles'));
+  copyFiles(DIST_BUNDLES, `${packageName}?(.es5).js?(.map)`, join(releasePath, '@angular'));
   copyFiles(PROJECT_ROOT, 'LICENSE', releasePath);
   copyFiles(SOURCE_ROOT, 'README.md', releasePath);
   copyFiles(sourcePath, 'package.json', releasePath);
@@ -57,12 +58,16 @@ export async function buildModuleEntry(entryFile: string, entryName = 'material'
     format: 'es',
   });
 
+  await remapSourcemap(fesm2015File);
+
   // Downlevel FESM-2015 file to ES5.
   transpileFile(fesm2015File, fesm2014File, {
     target: ScriptTarget.ES5,
     module: ModuleKind.ES2015,
     allowJs: true
   });
+
+  await remapSourcemap(fesm2014File);
 
   // Create UMD bundle of FESM-2014 output.
   await createRollupBundle({
@@ -72,8 +77,31 @@ export async function buildModuleEntry(entryFile: string, entryName = 'material'
     format: 'umd'
   });
 
-  // Output a minified version of the UMD bundle
-  writeFileSync(umdMinFile, uglify.minify(umdFile, { preserveComments: 'license' }).code);
+  await remapSourcemap(umdFile);
+
+  uglifyFile(umdFile, umdMinFile);
+
+  await remapSourcemap(umdMinFile);
+}
+
+/**
+ * Finds the original sourcemap of the file and maps it to the current file.
+ * This is useful when multiple transformation happen (e.g TSC -> Rollup -> Uglify)
+ **/
+async function remapSourcemap(sourceFile: string) {
+  (await sorcery.load(sourceFile)).write();
+}
+
+/** Minifies a JavaScript file using UglifyJS2. Also writes sourcemaps to the output. */
+function uglifyFile(inputPath: string, outputPath: string) {
+  let sourcemapOut = `${outputPath}.map`;
+  let result = uglify.minify(inputPath, {
+    preserveComments: 'license',
+    outSourceMap: sourcemapOut
+  });
+
+  writeFileSync(outputPath, result.code);
+  writeFileSync(sourcemapOut, result.map);
 }
 
 function copyFiles(fromPath: string, fileGlob: string, outDir: string) {

@@ -106,6 +106,7 @@
     "sass": "^0.5.0",
     "scss-bundle": "^1.0.1",
     "selenium-webdriver": "^3.1.0",
+    "sorcery": "^0.10.0",
     "stylelint": "^7.8.0",
     "travis-after-modes": "0.0.7",
     "ts-node": "^3.0.0",

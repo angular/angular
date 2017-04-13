@@ -60,6 +60,7 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
     format: config.format,
     dest: config.dest,
     globals: ROLLUP_GLOBALS,
+    sourceMap: true
   };
 
   return rollup.rollup(bundleOptions).then((bundle: any) => bundle.write(writeOptions));
