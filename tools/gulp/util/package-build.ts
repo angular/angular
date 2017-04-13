@@ -31,7 +31,7 @@ export function composeRelease(packageName: string) {
   copyFiles(DIST_BUNDLES, `${packageName}.umd?(.min).js`, join(releasePath, 'bundles'));
   copyFiles(DIST_BUNDLES, `${packageName}?(.es5).js`, join(releasePath, '@angular'));
   copyFiles(PROJECT_ROOT, 'LICENSE', releasePath);
-  copyFiles(SOURCE_ROOT, 'README', releasePath);
+  copyFiles(SOURCE_ROOT, 'README.md', releasePath);
   copyFiles(sourcePath, 'package.json', releasePath);
 
   updatePackageVersion(releasePath);
