@@ -69,6 +69,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private overrides = new Map<string, string>();
   private projectVersion = 0;
   private options: ts.CompilerOptions;
+  private overrideDirectory = new Set<string>();
 
   constructor(private scriptNames: string[], private data: MockData) {
     const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -97,6 +98,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
     if (content) {
       this.overrides.set(fileName, content);
+      this.overrideDirectory.add(path.dirname(fileName));
     } else {
       this.overrides.delete(fileName);
     }
@@ -105,13 +107,14 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   addScript(fileName: string, content: string) {
     this.projectVersion++;
     this.overrides.set(fileName, content);
+    this.overrideDirectory.add(path.dirname(fileName));
     this.scriptNames.push(fileName);
   }
 
   forgetAngular() { this.angularPath = undefined; }
 
   overrideOptions(cb: (options: ts.CompilerOptions) => ts.CompilerOptions) {
-    this.options = cb(this.options);
+    this.options = cb((Object as any).assign({}, this.options));
     this.projectVersion++;
   }
 
@@ -136,6 +139,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
 
   directoryExists(directoryName: string): boolean {
+    if (this.overrideDirectory.has(directoryName)) return true;
     let effectiveName = this.getEffectiveName(directoryName);
     if (effectiveName === directoryName)
       return directoryExists(directoryName, this.data);
