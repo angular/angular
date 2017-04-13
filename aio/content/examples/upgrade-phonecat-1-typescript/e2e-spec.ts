@@ -1,7 +1,6 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by, ElementFinder } from 'protractor';
-import { setProtractorToNg1Mode } from '../protractor-helpers';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
@@ -10,7 +9,8 @@ describe('PhoneCat Application', function() {
 
   beforeAll(function() {
     browser.baseUrl = 'http://localhost:8080/app/';
-    setProtractorToNg1Mode();
+    // protractor.config.js is set to ng2 mode by default, so we must manually change it
+    browser.rootEl = 'body';
   });
 
   it('should redirect `index.html` to `index.html#!/phones', function() {

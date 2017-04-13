@@ -1,5 +1,5 @@
 // this tsconfig is used for protractor tests
-// see _boilerplate/tsconfig.json for the tsconfig used in examples
+// see boilerplate/tsconfig.json for the tsconfig used in examples
 {
   "compilerOptions": {
     "target": "es6",
@@ -15,10 +15,7 @@
       "node_modules/@types"
     ]
   },
-  "files": [
-    "protractor-helpers.ts"
-  ],
   "include": [
-    "*/e2e-spec.ts"
+    "../../../content/examples/*/e2e-spec.ts"
   ]
 }

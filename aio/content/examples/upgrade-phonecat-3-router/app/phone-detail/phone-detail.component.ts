@@ -8,7 +8,7 @@ import { Phone, PhoneData } from '../core/phone/phone.service';
 import { RouteParams } from '../ajs-upgraded-providers';
 
 @Component({
-  templateUrl: 'phone-detail.template.html',
+  templateUrl: './phone-detail.template.html',
 })
 export class PhoneDetailComponent {
   phone: PhoneData;

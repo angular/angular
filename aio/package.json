@@ -17,6 +17,7 @@
     "pretest-pwa-score-local": "yarn build",
     "test-pwa-score-local": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score -- http://localhost:4200 90\"",
     "test-pwa-score": "node scripts/test-pwa-score",
+    "example-e2e": "node ./tools/examples/run-example-e2e",
     "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-staging": "scripts/deploy-staging.sh",
     "check-env": "node ../tools/check-environment.js",
@@ -58,13 +59,14 @@
     "canonical-path": "^0.0.2",
     "codelyzer": "~2.0.0",
     "concurrently": "^3.4.0",
+    "cross-spawn": "^5.1.0",
     "dgeni": "^0.4.7",
     "dgeni-packages": "0.17.0",
     "entities": "^1.1.1",
     "eslint": "^3.19.0",
     "eslint-plugin-jasmine": "^2.2.0",
     "firebase-tools": "^3.2.1",
-    "fs-extra": "^2.1.1",
+    "fs-extra": "^2.1.2",
     "globby": "^6.1.0",
     "html": "^1.0.0",
     "http-server": "^0.9.0",
@@ -87,10 +89,12 @@
     "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.7",
+    "tree-kill": "^1.1.0",
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
     "typescript": "2.2.0",
     "vrsource-tslint-rules": "^4.0.1",
-    "watchr": "^3.0.1"
+    "watchr": "^3.0.1",
+    "yargs": "^7.0.2"
   }
 }
