@@ -7,162 +7,77 @@
  */
 
 import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
-import {$} from 'protractor';
+import {$, browser} from 'protractor';
 
-interface Worker {
-  id: string;
-  prepare?(): void;
-  work(): void;
-}
-
-const CreateOnlyWorker: Worker = {
-  id: 'createOnly',
-  prepare: () => $('#destroyDom').click(),
-  work: () => $('#createDom').click()
-};
-
-const CreateAndDestroyWorker: Worker = {
-  id: 'createDestroy',
-  work: () => {
-    $('#createDom').click();
-    $('#destroyDom').click();
-  }
-};
-
-const UpdateWorker: Worker = {
-  id: 'update',
-  work: () => $('#createDom').click()
-};
+import {Benchmark, Benchmarks, CreateBtn, DestroyBtn, DetectChangesBtn, RootEl} from './tree_data';
 
 describe('tree benchmark perf', () => {
 
-  afterEach(verifyNoBrowserErrors);
+  let _oldRootEl: any;
+  beforeEach(() => _oldRootEl = browser.rootEl);
 
-  [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
-    describe(worker.id, () => {
+  afterEach(() => {
+    browser.rootEl = _oldRootEl;
+    verifyNoBrowserErrors();
+  });
 
-      it('should run for ng2', (done) => {
+  Benchmarks.forEach(benchmark => {
+    describe(benchmark.id, () => {
+      it('should work for createOnly', (done) => {
         runTreeBenchmark({
-          id: `deepTree.ng2.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2/index.html',
-          work: worker.work,
-          prepare: worker.prepare,
+          id: 'createOnly',
+          benchmark,
+          prepare: () => $(CreateBtn).click(),
+          work: () => $(DestroyBtn).click()
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 next', (done) => {
+      it('should work for createDestroy', (done) => {
         runTreeBenchmark({
-          id: `deepTree.ng2.next.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2_next/index.html',
-          ignoreBrowserSynchronization: true,
-          work: worker.work,
-          prepare: worker.prepare,
-          // Can't use bundles as we use non exported code
-          extraParams: [{name: 'bundles', value: false}]
+          id: 'createDestroy',
+          benchmark,
+          work: () => {
+            $(DestroyBtn).click();
+            $(CreateBtn).click();
+          }
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 static', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.ng2.static.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2_static/index.html',
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
+      it('should work for update', (done) => {
+        runTreeBenchmark({id: 'update', benchmark, work: () => $(CreateBtn).click()})
+            .then(done, done.fail);
       });
 
-      it('should run for ng2 switch', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.ng2_switch.${worker.id}`,
-          url: 'all/benchmarks/src/tree/ng2_switch/index.html',
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
+      if (benchmark.buttons.indexOf(DetectChangesBtn) !== -1) {
+        it('should work for detectChanges', (done) => {
+          runTreeBenchmark({
+            id: 'detectChanges',
+            benchmark,
+            work: () => $(DetectChangesBtn).click(),
+            setup: () => $(DestroyBtn).click()
+          }).then(done, done.fail);
+        });
+      }
 
-      it('should run for the baseline', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.baseline.${worker.id}`,
-          url: 'all/benchmarks/src/tree/baseline/index.html',
-          ignoreBrowserSynchronization: true,
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
-
-      it('should run for incremental-dom', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.incremental_dom.${worker.id}`,
-          url: 'all/benchmarks/src/tree/incremental_dom/index.html',
-          ignoreBrowserSynchronization: true,
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
-
-      it('should run for polymer binary tree', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.polymer.${worker.id}`,
-          url: 'all/benchmarks/src/tree/polymer/index.html',
-          ignoreBrowserSynchronization: true,
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
-
-      it('should run for polymer leaves', (done) => {
-        runTreeBenchmark({
-          id: `deepTree.polymer_leaves.${worker.id}`,
-          url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
-          ignoreBrowserSynchronization: true,
-          work: worker.work,
-          prepare: worker.prepare,
-        }).then(done, done.fail);
-      });
     });
   });
-
-  it('should run ng2 changedetection', (done) => {
-    runTreeBenchmark({
-      id: `deepTree.ng2.changedetection`,
-      url: 'all/benchmarks/src/tree/ng2/index.html',
-      work: () => $('#detectChanges').click(),
-      setup: () => $('#createDom').click(),
-    }).then(done, done.fail);
-  });
-
-  it('should run ng2 next changedetection', (done) => {
-    runTreeBenchmark({
-      id: `deepTree.ng2.next.changedetection`,
-      url: 'all/benchmarks/src/tree/ng2_next/index.html',
-      work: () => $('#detectChanges').click(),
-      setup: () => $('#createDom').click(),
-      ignoreBrowserSynchronization: true,
-      // Can't use bundles as we use non exported code
-      extraParams: [{name: 'bundles', value: false}]
-    }).then(done, done.fail);
-  });
-
-  function runTreeBenchmark(config: {
-    id: string,
-    url: string, ignoreBrowserSynchronization?: boolean,
-    work: () => any,
-    prepare?: () => any,
-    extraParams?: {name: string, value: any}[],
-    setup?: () => any
-  }) {
-    let params = [{name: 'depth', value: 11}];
-    if (config.extraParams) {
-      params = params.concat(config.extraParams);
-    }
-    return runBenchmark({
-      id: config.id,
-      url: config.url,
-      ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
-      params: params,
-      work: config.work,
-      prepare: config.prepare,
-      setup: config.setup
-    });
-  }
 });
+
+function runTreeBenchmark({id, benchmark, prepare, setup, work}: {
+  id: string; benchmark: Benchmark, prepare ? () : void; setup ? () : void; work(): void;
+}) {
+  let params = [{name: 'depth', value: 11}];
+  if (benchmark.extraParams) {
+    params = params.concat(benchmark.extraParams);
+  }
+  browser.rootEl = RootEl;
+  return runBenchmark({
+    id: `${benchmark.id}.${id}`,
+    url: benchmark.url,
+    ignoreBrowserSynchronization: benchmark.ignoreBrowserSynchronization,
+    params: params,
+    work: work,
+    prepare: prepare,
+    setup: setup
+  });
+}
