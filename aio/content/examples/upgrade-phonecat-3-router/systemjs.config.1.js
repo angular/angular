@@ -10,6 +10,7 @@
       'npm:': '/node_modules/'
     },
     map: {
+      'ng-loader': '../src/systemjs-angular-loader.js',
       app: '/app',
       // #enddocregion paths
       // angular bundles
@@ -34,7 +35,12 @@
     packages: {
       'app': {
         main: './main.js',
-        defaultExtension: 'js'
+        defaultExtension: 'js',
+        meta: {
+          './*.js': {
+            loader: 'ng-loader'
+          }
+        }
       },
       rxjs: {
         defaultExtension: 'js'
