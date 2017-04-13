@@ -215,7 +215,20 @@ describe('Evaluator', () => {
       0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5
     ]);
   });
+
+  it('should be able to handle a new expression with no arguments', () => {
+    const source = sourceFileOf(`
+      export var a = new f;
+    `);
+    const expr = findVar(source, 'a');
+    expect(evaluator.evaluateNode(expr.initializer))
+        .toEqual({__symbolic: 'new', expression: {__symbolic: 'reference', name: 'f'}});
+  });
 });
+
+function sourceFileOf(text: string): ts.SourceFile {
+  return ts.createSourceFile('test.ts', text, ts.ScriptTarget.Latest, true);
+}
 
 const FILES: Directory = {
   'directives.ts': `
