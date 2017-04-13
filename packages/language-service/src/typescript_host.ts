@@ -7,6 +7,7 @@
  */
 
 import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AngularCompilerOptions} from '@angular/compiler-cli';
 import {Type, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,6 +16,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+
 
 
 // In TypeScript 2.1 these flags moved
@@ -386,9 +388,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       const tsConfigPath = findTsConfig(source.fileName);
       const basePath = path.dirname(tsConfigPath || this.context);
-
-      result = this._reflectorHost = new ReflectorHost(
-          () => this.tsService.getProgram(), this.host, {basePath, genDir: basePath});
+      const options: AngularCompilerOptions = {basePath, genDir: basePath};
+      const compilerOptions = this.host.getCompilationSettings();
+      if (compilerOptions && compilerOptions.baseUrl) {
+        options.baseUrl = compilerOptions.baseUrl;
+      }
+      result = this._reflectorHost =
+          new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
     }
     return result;
   }
