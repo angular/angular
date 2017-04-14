@@ -29,7 +29,7 @@ describe('MdTextareaAutosize', () => {
   });
 
   it('should resize the textarea based on its content', () => {
-    let previousHeight = textarea.offsetHeight;
+    let previousHeight = textarea.clientHeight;
 
     fixture.componentInstance.content = `
     Once upon a midnight dreary, while I pondered, weak and weary,
@@ -43,12 +43,12 @@ describe('MdTextareaAutosize', () => {
     fixture.detectChanges();
     autosize.resizeToFitContent();
 
-    expect(textarea.offsetHeight)
+    expect(textarea.clientHeight)
         .toBeGreaterThan(previousHeight, 'Expected textarea to have grown with added content.');
-    expect(textarea.offsetHeight)
+    expect(textarea.clientHeight)
         .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
 
-    previousHeight = textarea.offsetHeight;
+    previousHeight = textarea.clientHeight;
     fixture.componentInstance.content += `
         Ah, distinctly I remember it was in the bleak December;
     And each separate dying ember wrought its ghost upon the floor.
@@ -60,9 +60,9 @@ describe('MdTextareaAutosize', () => {
     fixture.detectChanges();
     autosize.resizeToFitContent();
 
-    expect(textarea.offsetHeight)
+    expect(textarea.clientHeight)
         .toBeGreaterThan(previousHeight, 'Expected textarea to have grown with added content.');
-    expect(textarea.offsetHeight)
+    expect(textarea.clientHeight)
         .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
   });
 
@@ -101,6 +101,27 @@ describe('MdTextareaAutosize', () => {
   it('should export the mdAutosize reference', () => {
     expect(fixture.componentInstance.autosize).toBeTruthy();
     expect(fixture.componentInstance.autosize.resizeToFitContent).toBeTruthy();
+  });
+
+
+  it('should properly resize to content on init', () => {
+    // Manually create the test component in this test, because in this test the first change
+    // detection should be triggered after a multiline content is set.
+    fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
+    textarea = fixture.nativeElement.querySelector('textarea');
+    autosize = fixture.debugElement.query(By.css('textarea')).injector.get(MdTextareaAutosize);
+
+    fixture.componentInstance.content = `
+      Line
+      Line
+      Line
+      Line
+      Line`;
+
+    fixture.detectChanges();
+
+    expect(textarea.clientHeight)
+      .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
   });
 
 });
