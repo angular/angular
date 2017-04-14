@@ -436,9 +436,6 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
       }
       return baseName + '.d.ts';
     }
-    if (modulePath == 'unresolved') {
-      return undefined;
-    }
     return '/tmp/' + modulePath + '.d.ts';
   }
 
