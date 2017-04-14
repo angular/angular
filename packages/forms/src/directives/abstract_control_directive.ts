@@ -20,7 +20,7 @@ import {ValidationErrors} from './validators';
 export abstract class AbstractControlDirective {
   get control(): AbstractControl { throw new Error('unimplemented'); }
 
-  get value(): any { return this.control ? this.control.value : null; }
+  get value(): {[key: string]: any} { return this.control ? this.control.value : null; }
 
   get valid(): boolean { return this.control ? this.control.valid : null; }
 
