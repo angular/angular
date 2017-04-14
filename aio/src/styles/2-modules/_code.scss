@@ -1,6 +1,6 @@
 code-example,
 code-tabs md-tab-body {
-    background-color: $backgroundgray;
+    background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
     border-radius: 5px;
     color: $darkgray;
@@ -20,8 +20,7 @@ code-example.code-shell, code-example[language=sh], code-example[language=bash] 
 }
 
 code-example header {
-  background-color: $mediumgray;
-  border: 0.5px solid $mediumgray;
+  background-color: $accentblue;
   border-radius: 5px 5px 0 0;
   color: $offwhite;
   font-size: 16px;
