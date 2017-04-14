@@ -45,7 +45,7 @@ export class RangeValueAccessor implements ControlValueAccessor {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
   }
 
-  registerOnChange(fn: (_: number) => void): void {
+  registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => { fn(value == '' ? null : parseFloat(value)); };
   }
 
