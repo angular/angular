@@ -7,12 +7,14 @@
       margin: 0;
       color: $darkgray;
       font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     h1 {
       display:inline-block;
-      font-size: 36px;
-      font-weight: 400;
+      font-size: 24px;
+      font-weight: 500;
       margin: 8px 0px;
     }
 
@@ -21,38 +23,38 @@
       display: block;
       height: 1px;
       width: 40%;
-      margin: 32px 0px 10px;
+      margin: 24px 0px 10px;
       background: $lightgray;
     }
 
     h2 {
-      font-size: 30px;
+      font-size: 20px;
       font-weight: 500;
       margin: 32px 0px 24px;
     }
 
     h3 {
-      font-size: 24px;
-      font-weight: 500;
+      font-size: 20px;
+      font-weight: 400;
       margin: 24px 0px;
     }
 
     h4 {
-      font-size: 24px;
+      font-size: 18px;
       font-weight: 400;
       margin: 8px 0px;
     }
 
     h5 {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
       margin: 8px 0px;
     }
 
     h6 {
       color: $mediumgray;
-      font-size: 18px;
-      font-weight: 400;
+      font-size: 16px;
+      font-weight: 500;
       margin: 8px 0px;
     }
 
@@ -79,7 +81,7 @@
     }
 
     .mat-toolbar-row a {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 300;
       color: white;
       font-family: $main-font;

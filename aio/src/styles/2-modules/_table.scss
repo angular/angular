@@ -37,6 +37,7 @@ table {
       padding: 16px 32px;
       text-align: left;
       line-height: 24px;
+      vertical-align: top;
 
       @media (max-width: 480px) {
         &:before {
