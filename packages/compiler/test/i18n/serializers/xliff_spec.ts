@@ -19,6 +19,7 @@ const HTML = `
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
 <!-- i18n -->{ count, plural, =0 {<p>test</p>}}<!-- /i18n -->
 <p i18n="m|d">foo</p>
+<p i18n="m|d">foo</p>
 <p i18n="m|d@@i">foo</p>
 <p i18n="@@bar">foo</p>
 <p i18n="ph names"><br><img><div></div></p>
@@ -33,43 +34,83 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
         <source>translatable attribute</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
         <source>foo</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
       </trans-unit>
       <trans-unit id="i" datatype="html">
         <source>foo</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
       </trans-unit>
       <trans-unit id="bar" datatype="html">
         <source>foo</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
         <note priority="1" from="description">ph names</note>
       </trans-unit>
       <trans-unit id="baz" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
       </trans-unit>
     </body>
   </file>
@@ -83,10 +124,18 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
         <source>translatable attribute</source>
         <target>etubirtta elbatalsnart</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
         <target><x id="INTERPOLATION"/> footnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="x-b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
@@ -95,27 +144,47 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
         <source>foo</source>
         <target>oof</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
       </trans-unit>
       <trans-unit id="i" datatype="html">
         <source>foo</source>
         <target>toto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
       </trans-unit>
       <trans-unit id="bar" datatype="html">
         <source>foo</source>
         <target>tata</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/><x id="TAG_IMG" ctype="image"/><x id="LINE_BREAK" ctype="lb"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
         <note priority="1" from="description">ph names</note>
       </trans-unit>            
       <trans-unit id="empty target" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
         <note priority="1" from="description">ph names</note>
       </trans-unit>
       <trans-unit id="baz" datatype="html">
@@ -136,7 +205,7 @@ export function main(): void {
 
   function toXliff(html: string, locale: string | null = null): string {
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-    catalog.updateFromTemplate(html, '', DEFAULT_INTERPOLATION_CONFIG);
+    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
 

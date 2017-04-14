@@ -19,6 +19,7 @@ export function main(): void {
           placeholderToMessage: {},
           meaning: '',
           description: '',
+          sources: [],
         })).toEqual('i');
       });
     });

@@ -39,7 +39,7 @@ export function main() {
     it('should extract from templates', () => {
       const catalog = new MessageBundle(new HtmlParser, [], {});
       const serializer = new Xmb();
-      catalog.updateFromTemplate(HTML, '', DEFAULT_INTERPOLATION_CONFIG);
+      catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
 
       expect(catalog.write(serializer)).toContain(XMB);
     });
@@ -84,29 +84,29 @@ const XTB = `
   <translation id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
 </translationbundle>`;
 
-const XMB = ` <msg id="615790887472569365">i18n attribute on tags</msg>
-  <msg id="3707494640264351337">nested</msg>
-  <msg id="5539162898278769904" meaning="different meaning">nested</msg>
-  <msg id="3780349238193953556"><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
-  <msg id="5525133077318024839">on not translatable node</msg>
-  <msg id="8670732454866344690">on translatable node</msg>
-  <msg id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="1746565782635215">
+const XMB = ` <msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
+  <msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>
+  <msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>
+  <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
+  <msg id="5525133077318024839"><source>file.ts:13</source>on not translatable node</msg>
+  <msg id="8670732454866344690"><source>file.ts:14</source>on translatable node</msg>
+  <msg id="4593805537723189714"><source>file.ts:19</source><source>file.ts:36</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="1746565782635215"><source>file.ts:21,23</source><source>file.ts:24,26</source>
         <ph name="ICU"><ex>ICU</ex></ph>
     </msg>
-  <msg id="5868084092545682515">{VAR_SELECT, select, m {male} f {female} }</msg>
-  <msg id="4851788426695310455"><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
-  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
-  <msg id="8324617391167353662"><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
-  <msg id="7685649297917455806">in a translatable section</msg>
-  <msg id="2387287228265107305">
+  <msg id="5868084092545682515"><source>file.ts:22</source><source>file.ts:25</source>{VAR_SELECT, select, m {male} f {female} }</msg>
+  <msg id="4851788426695310455"><source>file.ts:28</source><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="9013357158046221374"><source>file.ts:29</source>sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="8324617391167353662"><source>file.ts:30</source><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
+  <msg id="7685649297917455806"><source>file.ts:35</source><source>file.ts:53</source>in a translatable section</msg>
+  <msg id="2387287228265107305"><source>file.ts:33,37</source>
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>   
     <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"><ex>ICU</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
 </msg>
-  <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
-  <msg id="i18n16">with an explicit ID</msg>
-  <msg id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="4085484936881858615" desc="desc">{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
-  <msg id="4035252431381981115">foo<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></msg>
-  <msg id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></msg>`;
+  <msg id="1491627405349178954"><source>file.ts:39</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
+  <msg id="i18n16"><source>file.ts:41</source>with an explicit ID</msg>
+  <msg id="i18n17"><source>file.ts:42</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="4085484936881858615" desc="desc"><source>file.ts:45,51</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
+  <msg id="4035252431381981115"><source>file.ts:53</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></msg>
+  <msg id="5339604010413301604"><source>file.ts:55</source><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></msg>`;

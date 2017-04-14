@@ -25,6 +25,8 @@ const _FILE_TAG = 'file';
 const _SOURCE_TAG = 'source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
+const _CONTEXT_GROUP_TAG = 'context-group';
+const _CONTEXT_TAG = 'context';
 
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
@@ -34,10 +36,24 @@ export class Xliff extends Serializer {
     const transUnits: xml.Node[] = [];
 
     messages.forEach(message => {
+      let contextTags: xml.Node[] = [];
+      message.sources.forEach((source: i18n.MessageSpan) => {
+        let contextGroupTag = new xml.Tag(_CONTEXT_GROUP_TAG, {purpose: 'location'});
+        contextGroupTag.children.push(
+            new xml.CR(10),
+            new xml.Tag(
+                _CONTEXT_TAG, {'context-type': 'sourcefile'}, [new xml.Text(source.filePath)]),
+            new xml.CR(10), new xml.Tag(
+                                _CONTEXT_TAG, {'context-type': 'linenumber'},
+                                [new xml.Text(`${source.startLine}`)]),
+            new xml.CR(8));
+        contextTags.push(new xml.CR(8), contextGroupTag);
+      });
+
       const transUnit = new xml.Tag(_UNIT_TAG, {id: message.id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
-          new xml.CR(8), new xml.Tag(_TARGET_TAG));
+          new xml.CR(8), new xml.Tag(_TARGET_TAG), ...contextTags);
 
       if (message.description) {
         transUnit.children.push(

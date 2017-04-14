@@ -17,8 +17,9 @@ import {_extractMessages} from './i18n_parser_spec';
 export function main(): void {
   describe('TranslationBundle', () => {
     const file = new ParseSourceFile('content', 'url');
-    const location = new ParseLocation(file, 0, 0, 0);
-    const span = new ParseSourceSpan(location, null !);
+    const startLocation = new ParseLocation(file, 0, 0, 0);
+    const endLocation = new ParseLocation(file, 0, 0, 7);
+    const span = new ParseSourceSpan(startLocation, endLocation);
     const srcNode = new i18n.Text('src', span);
 
     it('should translate a plain message', () => {

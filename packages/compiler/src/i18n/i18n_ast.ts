@@ -9,6 +9,8 @@
 import {ParseSourceSpan} from '../parse_util';
 
 export class Message {
+  sources: MessageSpan[];
+
   /**
    * @param nodes message AST
    * @param placeholders maps placeholder names to static content
@@ -20,7 +22,28 @@ export class Message {
   constructor(
       public nodes: Node[], public placeholders: {[phName: string]: string},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
-      public description: string, public id: string) {}
+      public description: string, public id: string) {
+    if (nodes.length) {
+      this.sources = [{
+        filePath: nodes[0].sourceSpan.start.file.url,
+        startLine: nodes[0].sourceSpan.start.line + 1,
+        startCol: nodes[0].sourceSpan.start.col + 1,
+        endLine: nodes[nodes.length - 1].sourceSpan.end.line + 1,
+        endCol: nodes[0].sourceSpan.start.col + 1
+      }];
+    } else {
+      this.sources = [];
+    }
+  }
+}
+
+// line and columns indexes are 1 based
+export interface MessageSpan {
+  filePath: string;
+  startLine: number;
+  startCol: number;
+  endLine: number;
+  endCol: number;
 }
 
 export interface Node {
