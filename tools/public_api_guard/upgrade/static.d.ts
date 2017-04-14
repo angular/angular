@@ -9,12 +9,6 @@ export declare function downgradeComponent(info: {
 /** @experimental */
 export declare function downgradeInjectable(token: any): Function;
 
-/** @stable */
-export declare function getAngularLib(): any;
-
-/** @stable */
-export declare function setAngularLib(ng: any): void;
-
 /** @experimental */
 export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     constructor(name: string, elementRef: ElementRef, injector: Injector);
