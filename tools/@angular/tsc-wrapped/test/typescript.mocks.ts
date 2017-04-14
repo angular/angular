@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 export interface Directory { [name: string]: (Directory|string); }
@@ -127,7 +126,8 @@ export class MockSymbol implements ts.Symbol {
   getName(): string { return this.name; }
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
-  getJsDocTags(): ts.JSDocTagInfo[]{return []};
+  // TODO(vicb): removed in TS 2.2
+  getJsDocTags(): any[]{return []};
 
   static of (name: string): MockSymbol { return new MockSymbol(name); }
 }

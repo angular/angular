@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {AngularCompilerOptions} from '@angular/compiler-cli';
-import {Type, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -16,6 +16,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+import {isTypescriptVersion} from './utils';
 
 
 
@@ -25,6 +26,7 @@ const isPrivate = (ts as any).ModifierFlags ?
     ((node: ts.Node) =>
          !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Private)) :
     ((node: ts.Node) => !!(node.flags & (ts as any).NodeFlags.Private));
+
 const isReferenceType = (ts as any).ObjectFlags ?
     ((type: ts.Type) =>
          !!(type.flags & (ts as any).TypeFlags.Object &&
@@ -46,11 +48,9 @@ export function createLanguageServiceFromTypescript(
  * The language service never needs the normalized versions of the metadata. To avoid parsing
  * the content and resolving references, return an empty file. This also allows normalizing
  * template that are syntatically incorrect which is required to provide completions in
- * syntatically incorrect templates.
+ * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  constructor() { super(); }
-
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
@@ -71,7 +71,7 @@ export class DummyResourceLoader extends ResourceLoader {
  * The `TypeScriptServiceHost` implements the Angular `LanguageServiceHost` using
  * the TypeScript language services.
  *
- * @expermental
+ * @experimental
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
   private _resolver: CompileMetadataResolver;
@@ -342,7 +342,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
       case ts.SyntaxKind.StringLiteral:
         let [declaration, decorator] = this.getTemplateClassDeclFromNode(node);
-        let queryCache: SymbolQuery|undefined = undefined;
         if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
           return this.getSourceFromDeclaration(
@@ -564,8 +563,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private findNode(sourceFile: ts.SourceFile, position: number): ts.Node|undefined {
-    let _this = this;
-
     function find(node: ts.Node): ts.Node|undefined {
       if (position >= node.getStart() && position < node.getEnd()) {
         return ts.forEachChild(node, find) || node;
@@ -634,8 +631,6 @@ class TypeScriptSymbolQuery implements SymbolQuery {
 
   getTypeUnion(...types: Symbol[]): Symbol {
     // TODO: Replace with typeChecker API when available
-    const checker = this.checker;
-
     // No API exists so the cheat is to just return the last type any if no types are given.
     return types.length ? types[types.length - 1] : this.getBuiltinType(BuiltinType.Any);
   }
@@ -708,7 +703,9 @@ class TypeScriptSymbolQuery implements SymbolQuery {
 
   private getTemplateRefContextType(typeSymbol: ts.Symbol): ts.Symbol|undefined {
     const type = this.checker.getTypeOfSymbolAtLocation(typeSymbol, this.source);
-    const constructor = type.symbol && type.symbol.members && type.symbol.members['__constructor'];
+    const constructor = type.symbol && type.symbol.members &&
+        getFromSymbolTable(type.symbol.members !, '__constructor');
+
     if (constructor) {
       const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
@@ -719,7 +716,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
             return typeReference.typeArguments[0].symbol;
           }
         }
-      };
+      }
     }
   }
 
@@ -759,29 +756,6 @@ function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): 
   // TODO: Do a better job of selecting the right signature.
   const signatures = type.getCallSignatures();
   return signatures.length ? new SignatureWrapper(signatures[0], context) : undefined;
-}
-
-function toSymbolTable(symbols: ts.Symbol[]): ts.SymbolTable {
-  const result: ts.SymbolTable = <any>{};
-  for (const symbol of symbols) {
-    result[symbol.name] = symbol;
-  }
-  return result;
-}
-
-function toSymbols(
-    symbolTable: ts.SymbolTable | undefined, filter?: (symbol: ts.Symbol) => boolean) {
-  const result: ts.Symbol[] = [];
-  if (!symbolTable) return result;
-  const own = typeof symbolTable.hasOwnProperty === 'function' ?
-      (name: string) => symbolTable.hasOwnProperty(name) :
-      (name: string) => !!symbolTable[name];
-  for (const name in symbolTable) {
-    if (own(name) && (!filter || filter(symbolTable[name]))) {
-      result.push(symbolTable[name]);
-    }
-  }
-  return result;
 }
 
 class TypeWrapper implements Symbol {
@@ -932,31 +906,72 @@ class SignatureResultOverride implements Signature {
   get result(): Symbol { return this.resultType; }
 }
 
+function toSymbolTable(symbols: ts.Symbol[]): ts.SymbolTable {
+  if (isTypescriptVersion('2.2')) {
+    const result = new Map<string, ts.Symbol>();
+    for (const symbol of symbols) {
+      result.set(symbol.name, symbol);
+    }
+    return <ts.SymbolTable>(result as any);
+  }
+
+  const result = <any>{};
+  for (const symbol of symbols) {
+    result[symbol.name] = symbol;
+  }
+  return result as ts.SymbolTable;
+}
+
+function toSymbols(symbolTable: ts.SymbolTable | undefined): ts.Symbol[] {
+  if (!symbolTable) return [];
+
+  const table = symbolTable as any;
+
+  if (typeof table.values === 'function') {
+    return Array.from(table.values()) as ts.Symbol[];
+  }
+
+  const result: ts.Symbol[] = [];
+
+  const own = typeof table.hasOwnProperty === 'function' ?
+      (name: string) => table.hasOwnProperty(name) :
+      (name: string) => !!table[name];
+
+  for (const name in table) {
+    if (own(name)) {
+      result.push(table[name]);
+    }
+  }
+  return result;
+}
+
 class SymbolTableWrapper implements SymbolTable {
   private symbols: ts.Symbol[];
   private symbolTable: ts.SymbolTable;
 
-  constructor(
-      symbols: ts.SymbolTable|ts.Symbol[]|undefined, private context: TypeContext,
-      filter?: (symbol: ts.Symbol) => boolean) {
+  constructor(symbols: ts.SymbolTable|ts.Symbol[]|undefined, private context: TypeContext) {
     symbols = symbols || [];
+
     if (Array.isArray(symbols)) {
-      this.symbols = filter ? symbols.filter(filter) : symbols;
+      this.symbols = symbols;
       this.symbolTable = toSymbolTable(symbols);
     } else {
-      this.symbols = toSymbols(symbols, filter);
-      this.symbolTable = filter ? toSymbolTable(this.symbols) : symbols;
+      this.symbols = toSymbols(symbols);
+      this.symbolTable = symbols;
     }
   }
 
   get size(): number { return this.symbols.length; }
 
   get(key: string): Symbol|undefined {
-    const symbol = this.symbolTable[key];
+    const symbol = getFromSymbolTable(this.symbolTable, key);
     return symbol ? new SymbolWrapper(symbol, this.context) : undefined;
   }
 
-  has(key: string): boolean { return this.symbolTable[key] != null; }
+  has(key: string): boolean {
+    const table: any = this.symbolTable;
+    return (typeof table.has === 'function') ? table.has(key) : table[key] != null;
+  }
 
   values(): Symbol[] { return this.symbols.map(s => new SymbolWrapper(s, this.context)); }
 }
@@ -1319,4 +1334,20 @@ function typeKindOf(type: ts.Type): BuiltinType {
     }
   }
   return BuiltinType.Other;
+}
+
+
+function getFromSymbolTable(symbolTable: ts.SymbolTable, key: string): ts.Symbol|undefined {
+  const table = symbolTable as any;
+  let symbol: ts.Symbol|undefined;
+
+  if (typeof table.get === 'function') {
+    // TS 2.2 uses a Map
+    symbol = table.get(key);
+  } else {
+    // TS pre-2.2 uses an object
+    symbol = table[key];
+  }
+
+  return symbol;
 }

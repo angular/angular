@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, CompileTypeMetadata, CssSelector, ParseSourceSpan, SelectorMatcher, identifierName} from '@angular/compiler';
-
+import {CompileDirectiveSummary, CompileTypeMetadata, CssSelector, ParseSourceSpan, identifierName} from '@angular/compiler';
+import * as ts from 'typescript';
 import {SelectorInfo, TemplateInfo} from './common';
 import {Span} from './types';
 
@@ -95,4 +95,14 @@ export function uniqueByName < T extends {
     }
     return result;
   }
+}
+
+export function isTypescriptVersion(low: string, high?: string) {
+  const version = ts.version;
+
+  if (version.substring(0, low.length) < low) return false;
+
+  if (high && (version.substring(0, high.length) > high)) return false;
+
+  return true;
 }
