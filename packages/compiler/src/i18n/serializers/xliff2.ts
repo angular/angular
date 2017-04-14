@@ -97,7 +97,7 @@ export class Xliff2 extends Serializer {
       throw new Error(`xliff2 parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale, i18nNodesByMsgId};
+    return {locale: locale !, i18nNodesByMsgId};
   }
 
   digest(message: i18n.Message): string { return decimalDigest(message); }
@@ -177,7 +177,7 @@ class _WriteVisitor implements i18n.Visitor {
 
 // Extract messages as xml nodes from the xliff file
 class Xliff2Parser implements ml.Visitor {
-  private _unitMlString: string;
+  private _unitMlString: string|null;
   private _errors: I18nError[];
   private _msgIdToHtml: {[msgId: string]: string};
   private _locale: string|null = null;
@@ -225,9 +225,9 @@ class Xliff2Parser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        const innerTextStart = element.startSourceSpan.end.offset;
-        const innerTextEnd = element.endSourceSpan.start.offset;
-        const content = element.startSourceSpan.start.file.content;
+        const innerTextStart = element.startSourceSpan !.end.offset;
+        const innerTextEnd = element.endSourceSpan !.start.offset;
+        const content = element.startSourceSpan !.start.file.content;
         const innerText = content.slice(innerTextStart, innerTextEnd);
         this._unitMlString = innerText;
         break;
@@ -290,7 +290,7 @@ class XmlToI18n implements ml.Visitor {
 
   visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
 
-  visitElement(el: ml.Element, context: any): i18n.Node[] {
+  visitElement(el: ml.Element, context: any): i18n.Node[]|null {
     switch (el.name) {
       case _PLACEHOLDER_TAG:
         const nameAttr = el.attrs.find((attr) => attr.name === 'equiv');
@@ -312,7 +312,9 @@ class XmlToI18n implements ml.Visitor {
           const startId = startAttr.value;
           const endId = endAttr.value;
 
-          return [].concat(
+          const nodes: i18n.Node[] = [];
+
+          return nodes.concat(
               new i18n.Placeholder('', startId, el.sourceSpan),
               ...el.children.map(node => node.visit(this, null)),
               new i18n.Placeholder('', endId, el.sourceSpan));
@@ -321,6 +323,8 @@ class XmlToI18n implements ml.Visitor {
       default:
         this._addError(el, `Unexpected tag`);
     }
+
+    return null;
   }
 
   visitExpansion(icu: ml.Expansion, context: any) {
