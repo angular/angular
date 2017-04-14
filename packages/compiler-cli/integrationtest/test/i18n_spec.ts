@@ -98,9 +98,10 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>Welcome</source>
       </segment>
     </unit>
-    <unit id="3772663375917578720">
+    <unit id="126808141597411718">
       <segment>
-        <source>other-3rdP-component</source>
+        <source>other-3rdP-component
+multi-lines</source>
       </segment>
     </unit>
   </file>
