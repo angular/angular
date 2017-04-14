@@ -12,7 +12,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
-import {UpgradeModule, downgradeInjectable} from '@angular/upgrade/static';
+import {UpgradeModule, downgradeInjectable, getAngularLib, setAngularLib} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
@@ -98,6 +98,34 @@ export function main() {
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then(() => {
            expect(runBlockTriggered).toBeTruthy();
          });
+       }));
+
+    it('should allow resetting angular at runtime', async(() => {
+         let wrappedBootstrapepedCalled = false;
+
+         const n: any = getAngularLib();
+
+         setAngularLib({
+           bootstrap: (...args: any[]) => {
+             wrappedBootstrapepedCalled = true;
+             n.bootstrap(...args);
+           },
+           module: n.module,
+           element: n.element,
+           version: n.version,
+           resumeBootstrap: n.resumeBootstrap,
+           getTestability: n.getTestability
+         });
+
+         @NgModule({imports: [BrowserModule, UpgradeModule]})
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1Module', []);
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
+             .then((upgrade) => { expect(wrappedBootstrapepedCalled).toEqual(true); });
        }));
   });
 }
