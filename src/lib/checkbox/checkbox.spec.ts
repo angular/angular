@@ -710,6 +710,7 @@ describe('MdCheckbox', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxInstance: MdCheckbox;
     let testComponent: CheckboxWithFormControl;
+    let inputElement: HTMLInputElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(CheckboxWithFormControl);
@@ -718,6 +719,7 @@ describe('MdCheckbox', () => {
       checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
       checkboxInstance = checkboxDebugElement.componentInstance;
       testComponent = fixture.debugElement.componentInstance;
+      inputElement = <HTMLInputElement>checkboxDebugElement.nativeElement.querySelector('input');
     });
 
     it('should toggle the disabled state', () => {
@@ -727,11 +729,13 @@ describe('MdCheckbox', () => {
       fixture.detectChanges();
 
       expect(checkboxInstance.disabled).toBe(true);
+      expect(inputElement.disabled).toBe(true);
 
       testComponent.formControl.enable();
       fixture.detectChanges();
 
       expect(checkboxInstance.disabled).toBe(false);
+      expect(inputElement.disabled).toBe(false);
     });
   });
 });

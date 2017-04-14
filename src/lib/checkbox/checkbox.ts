@@ -304,6 +304,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
    */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
+    this._changeDetectorRef.markForCheck();
   }
 
   private _transitionCheckState(newState: TransitionCheckState) {
