@@ -546,6 +546,30 @@ describe('StaticReflector', () => {
     expect(annotation.providers).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
+  it('should ignore unresolved calls', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Component} from '@angular/core';
+        import {unknown} from 'unresolved';
+
+        @Component({
+          selector: 'tmp',
+          template: () => {},
+          providers: [triggers()]
+        })
+        export class BadComponent {
+
+        }
+      `;
+    init(data, [], () => {}, {verboseInvalidExpression: true});
+
+    const badComponent = reflector.getStaticSymbol(file, 'BadComponent');
+    const annotations = reflector.annotations(badComponent);
+    const annotation = annotations[0];
+    expect(annotation.providers).toEqual([]);
+  });
+
   describe('inheritance', () => {
     class ClassDecorator {
       constructor(public value: any) {}
