@@ -194,6 +194,19 @@ export function main() {
           }));
         });
 
+        // https://github.com/angular/angular/issues/14997
+        it('should work regardless key order', () => {
+          differ.check({a: 1, b: 2});
+          differ.check({b: 3, a: 2});
+          differ.check({a: 1, b: 2});
+
+          expect(differ.toString()).toEqual(kvChangesAsString({
+            map: ['a[2->1]', 'b[3->2]'],
+            previous: ['b[3->2]', 'a[2->1]'],
+            changes: ['a[2->1]', 'b[3->2]']
+          }));
+        });
+
         it('should when the first item is moved', () => {
           differ.check({a: 'a', b: 'b'});
           differ.check({c: 'c', a: 'a'});

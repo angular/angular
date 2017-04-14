@@ -120,7 +120,6 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
       }
 
       this._removalsHead = insertBefore;
-      this._removalsTail = insertBefore;
 
       for (let record = insertBefore; record !== null; record = record._nextRemoved) {
         if (record === this._mapHead) {
@@ -134,6 +133,10 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
         record._next = null;
       }
     }
+
+    // Make sure tails have no next records from previous runs
+    if (this._changesTail) this._changesTail._nextChanged = null;
+    if (this._additionsTail) this._additionsTail._nextAdded = null;
 
     return this.isDirty;
   }
@@ -222,7 +225,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
       this._changesHead = this._changesTail = null;
       this._additionsHead = this._additionsTail = null;
-      this._removalsHead = this._removalsTail = null;
+      this._removalsHead = null;
     }
   }
 
@@ -254,28 +257,17 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
   }
 
   toString(): string {
-    const items: any[] = [];
-    const previous: any[] = [];
-    const changes: any[] = [];
-    const additions: any[] = [];
-    const removals: any[] = [];
-    let record: KeyValueChangeRecord_<K, V>|null;
+    const items: string[] = [];
+    const previous: string[] = [];
+    const changes: string[] = [];
+    const additions: string[] = [];
+    const removals: string[] = [];
 
-    for (record = this._mapHead; record !== null; record = record._next) {
-      items.push(stringify(record));
-    }
-    for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
-      previous.push(stringify(record));
-    }
-    for (record = this._changesHead; record !== null; record = record._nextChanged) {
-      changes.push(stringify(record));
-    }
-    for (record = this._additionsHead; record !== null; record = record._nextAdded) {
-      additions.push(stringify(record));
-    }
-    for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
-      removals.push(stringify(record));
-    }
+    this.forEachItem(r => items.push(stringify(r)));
+    this.forEachPreviousItem(r => previous.push(stringify(r)));
+    this.forEachChangedItem(r => changes.push(stringify(r)));
+    this.forEachAddedItem(r => additions.push(stringify(r)));
+    this.forEachRemovedItem(r => removals.push(stringify(r)));
 
     return 'map: ' + items.join(', ') + '\n' +
         'previous: ' + previous.join(', ') + '\n' +
