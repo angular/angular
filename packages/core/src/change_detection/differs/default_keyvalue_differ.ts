@@ -121,7 +121,8 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
       this._removalsHead = insertBefore;
 
-      for (let record = insertBefore; record !== null; record = record._nextRemoved) {
+      for (let record: KeyValueChangeRecord_<K, V>|null = insertBefore; record !== null;
+           record = record._nextRemoved) {
         if (record === this._mapHead) {
           this._mapHead = null;
         }
@@ -150,8 +151,8 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
    * - The return value is the new value for the insertion pointer.
    */
   private _insertBeforeOrAppend(
-      before: KeyValueChangeRecord_<K, V>,
-      record: KeyValueChangeRecord_<K, V>): KeyValueChangeRecord_<K, V> {
+      before: KeyValueChangeRecord_<K, V>|null,
+      record: KeyValueChangeRecord_<K, V>): KeyValueChangeRecord_<K, V>|null {
     if (before) {
       const prev = before._prev;
       record._next = before;
@@ -181,7 +182,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
   private _getOrCreateRecordForKey(key: K, value: V): KeyValueChangeRecord_<K, V> {
     if (this._records.has(key)) {
-      const record = this._records.get(key);
+      const record = this._records.get(key) !;
       this._maybeAddToChanges(record, value);
       const prev = record._prev;
       const next = record._next;

@@ -55,10 +55,10 @@ export function main() {
          expect(meta.hostListeners).toEqual({'someHostListener': 'someHostListenerExpr'});
          expect(meta.hostProperties).toEqual({'someHostProp': 'someHostPropExpr'});
          expect(meta.hostAttributes).toEqual({'someHostAttr': 'someHostAttrValue'});
-         expect(meta.template.encapsulation).toBe(ViewEncapsulation.Emulated);
-         expect(meta.template.styles).toEqual(['someStyle']);
-         expect(meta.template.template).toEqual('someTemplate');
-         expect(meta.template.interpolation).toEqual(['{{', '}}']);
+         expect(meta.template !.encapsulation).toBe(ViewEncapsulation.Emulated);
+         expect(meta.template !.styles).toEqual(['someStyle']);
+         expect(meta.template !.template).toEqual('someTemplate');
+         expect(meta.template !.interpolation).toEqual(['{{', '}}']);
        }));
 
     it('should throw when reading metadata for component with external resources when sync=true is passed',
@@ -84,9 +84,9 @@ export function main() {
              resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
                const meta = resolver.getDirectiveMetadata(ComponentWithExternalResources);
                expect(meta.selector).toEqual('someSelector');
-               expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
-               expect(meta.template.templateUrl).toEqual('someTemplateUrl');
-               expect(meta.template.template).toEqual('someTemplate');
+               expect(meta.template !.styleUrls).toEqual(['someStyleUrl']);
+               expect(meta.template !.templateUrl).toEqual('someTemplateUrl');
+               expect(meta.template !.template).toEqual('someTemplate');
              });
              resourceLoader.flush();
            })));
@@ -104,7 +104,7 @@ export function main() {
 
          resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
            const value: string =
-               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.templateUrl;
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template !.templateUrl !;
            const expectedEndValue = './someUrl';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          });
