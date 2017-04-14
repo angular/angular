@@ -209,21 +209,21 @@ let angular: {
   element: (e: Element | string) => IAugmentedJQuery,
   version: {major: number}, resumeBootstrap?: () => void,
   getTestability: (e: Element) => ITestabilityService
+} = <any>{
+  bootstrap: noNg,
+  module: noNg,
+  element: noNg,
+  version: noNg,
+  resumeBootstrap: noNg,
+  getTestability: noNg
 };
 
 try {
   if (window.hasOwnProperty('angular')) {
-    setAngularLib((<any>window).angular);
+    angular = (<any>window).angular;
   }
 } catch (e) {
-  setAngularLib(<any>{
-    bootstrap: noNg,
-    module: noNg,
-    element: noNg,
-    version: noNg,
-    resumeBootstrap: noNg,
-    getTestability: noNg
-  });
+  // ignore in CJS mode.
 }
 
 /**
@@ -246,25 +246,17 @@ export function getAngularLib(): any {
   return angular;
 }
 
-export function bootstrap(
-    e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig): void {
-  angular.bootstrap(e, modules, config);
-}
+export const bootstrap =
+    (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig): void =>
+        angular.bootstrap(e, modules, config);
 
-export function module(prefix: string, dependencies?: string[]): IModule {
-  return angular.module(prefix, dependencies);
-}
+export const module = (prefix: string, dependencies?: string[]): IModule =>
+    angular.module(prefix, dependencies);
 
-export function element(e: Element | string): IAugmentedJQuery {
-  return angular.element(e);
-}
+export const element = (e: Element | string): IAugmentedJQuery => angular.element(e);
 
-export function resumeBootstrap(): void {
-  angular.resumeBootstrap();
-}
+export const resumeBootstrap = (): void => angular.resumeBootstrap();
 
-export function getTestability(e: Element): ITestabilityService {
-  return angular.getTestability(e);
-}
+export const getTestability = (e: Element): ITestabilityService => angular.getTestability(e);
 
 export const version = angular.version;
