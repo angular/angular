@@ -142,7 +142,7 @@ function normalizeLoadedTemplate(
         styleUrls: o.styleUrls || [],
         interpolation: o.interpolation || null,
         encapsulation: o.encapsulation || null,
-        animations: o.animations || null,
+        animations: o.animations || [],
       },
       template, templateAbsUrl);
 }

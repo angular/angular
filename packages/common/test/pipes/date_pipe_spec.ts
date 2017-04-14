@@ -35,7 +35,7 @@ export function main() {
     });
 
     it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
+       () => { expect(new PipeResolver().resolve(DatePipe) !.pure).toEqual(true); });
 
     describe('supports', () => {
       it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });

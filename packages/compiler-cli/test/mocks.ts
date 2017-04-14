@@ -20,12 +20,12 @@ export class MockAotContext implements CompilerHostContext {
 
   directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string {
     const data = this.getEntry(fileName);
     if (typeof data === 'string') {
       return data;
     }
-    return undefined;
+    return undefined !;
   }
 
   readResource(fileName: string): Promise<string> {
@@ -38,7 +38,7 @@ export class MockAotContext implements CompilerHostContext {
 
   writeFile(fileName: string, data: string): void {
     const parts = fileName.split('/');
-    const name = parts.pop();
+    const name = parts.pop() !;
     const entry = this.getEntry(parts);
     if (entry && typeof entry !== 'string') {
       entry[name] = data;
@@ -56,7 +56,7 @@ export class MockAotContext implements CompilerHostContext {
     parts = normalize(parts);
     let current = this.files;
     while (parts.length) {
-      const part = parts.shift();
+      const part = parts.shift() !;
       if (typeof current === 'string') {
         return undefined;
       }
@@ -82,7 +82,7 @@ export class MockAotContext implements CompilerHostContext {
 function normalize(parts: string[]): string[] {
   const result: string[] = [];
   while (parts.length) {
-    const part = parts.shift();
+    const part = parts.shift() !;
     switch (part) {
       case '.':
         break;
@@ -114,7 +114,7 @@ export class MockCompilerHost implements ts.CompilerHost {
     if (sourceText) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {
-      return undefined;
+      return undefined !;
     }
   }
 
