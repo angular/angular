@@ -6,14 +6,19 @@ aio-nav-menu.top-menu .vertical-menu-item  {
 .mat-sidenav.sidenav {
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
   background-color: $offwhite;
-  padding: 10px 0px 0px;
+  padding: 80px 0px 0px;
   min-width: 260px;
+}
+
+md-sidenav.mat-sidenav.sidenav.collapsed {
+    padding-top: 32px;
 }
 
 md-sidenav-container.sidenav-container {
     height: auto;
     transform: none;
-  }
+    padding-top: 52px;
+}
 
 // md-sidenav.sidenav.mat-sidenav.mat-sidenav-side.mat-sidenav-opened {
 //   position: fixed;
@@ -142,4 +147,15 @@ a.selected.level-1,
   @include bp(small) {
     max-width: 100%;
   }
+}
+
+aio-nav-menu.top-menu {
+  aio-nav-item:first-child .vertical-menu-item {
+    padding-top: 48px;
+  }
+
+  aio-nav-item:last-child div {
+    border-bottom: 2px solid rgba($mediumgray, 0.5);
+  }
+  
 }

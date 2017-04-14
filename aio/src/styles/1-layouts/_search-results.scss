@@ -5,10 +5,10 @@ aio-search-results {
 .search-results {
     display: flex;
     flex-direction: row;
-    overflow: scroll;
-    padding-top: 50px;
+    overflow: auto;
+    padding: 68px 32px 0;
     color: $offwhite;
-    width: 100%;
+    width: auto;
     max-height: 40%;
     position: fixed;
     top: 0;
@@ -16,7 +16,7 @@ aio-search-results {
     right: 0;
     z-index: 5;
     background-color: $darkgray;
-    border: 24px solid $darkgray;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
     @media (max-width: 480px) {
         display: block;
