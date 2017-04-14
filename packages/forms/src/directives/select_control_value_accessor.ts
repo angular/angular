@@ -15,7 +15,7 @@ export const SELECT_VALUE_ACCESSOR: Provider = {
   multi: true
 };
 
-function _buildValueString(id: string | null, value: any): string {
+function _buildValueString(id: string, value: any): string {
   if (id == null) return `${value}`;
   if (value && typeof value === 'object') value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
@@ -118,7 +118,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
-    const id: string|null = this._getOptionId(value);
+    const id: string = this._getOptionId(value);
     if (id == null) {
       this._renderer.setElementProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
     }
@@ -142,7 +142,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   _registerOption(): string { return (this._idCounter++).toString(); }
 
   /** @internal */
-  _getOptionId(value: any): string|null {
+  _getOptionId(value: any): string {
     for (const id of Array.from(this._optionMap.keys())) {
       if (this._compareWith(this._optionMap.get(id), value)) return id;
     }
