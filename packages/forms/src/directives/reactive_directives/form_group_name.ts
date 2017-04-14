@@ -166,7 +166,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   ngOnInit(): void {
     this._checkParentType();
-    this.formDirective !.addFormArray(this);
+    this.formDirective.addFormArray(this);
   }
 
   ngOnDestroy(): void {
@@ -175,19 +175,17 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     }
   }
 
-  get control(): FormArray { return this.formDirective !.getFormArray(this); }
+  get control(): FormArray { return this.formDirective.getFormArray(this); }
 
-  get formDirective(): FormGroupDirective|null {
+  get formDirective(): FormGroupDirective {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
   get path(): string[] { return controlPath(this.name, this._parent); }
 
-  get validator(): ValidatorFn|null { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-  get asyncValidator(): AsyncValidatorFn|null {
-    return composeAsyncValidators(this._asyncValidators);
-  }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
   private _checkParentType(): void {
     if (_hasInvalidParent(this._parent)) {
