@@ -78,7 +78,7 @@ export interface NavigationExtras {
   *  }
   * ```
   */
-  relativeTo?: ActivatedRoute;
+  relativeTo?: ActivatedRoute|null;
 
   /**
   * Sets query parameters to the URL.
@@ -88,7 +88,7 @@ export interface NavigationExtras {
   * this.router.navigate(['/results'], { queryParams: { page: 1 } });
   * ```
   */
-  queryParams?: Params;
+  queryParams?: Params|null;
 
   /**
   * Sets the hash fragment for the URL.
@@ -122,7 +122,7 @@ export interface NavigationExtras {
   * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
   * ```
   */
-  queryParamsHandling?: QueryParamsHandling;
+  queryParamsHandling?: QueryParamsHandling|null;
   /**
   * Preserves the fragment for the next navigation
   *
