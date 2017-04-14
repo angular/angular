@@ -130,7 +130,7 @@ export class NgForm extends ControlContainer implements Form {
 
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      const ctrl = <FormControl>this.form.get(dir.path);
+      const ctrl = <FormControl>this.form.get(dir.path !);
       ctrl.setValue(value);
     });
   }

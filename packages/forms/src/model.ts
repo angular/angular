@@ -42,7 +42,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }
   if (path instanceof Array && (path.length === 0)) return null;
 
-  return (<Array<string|number>>path).reduce((v, name) => {
+  return (<Array<string|number>>path).reduce((v: AbstractControl, name) => {
     if (v instanceof FormGroup) {
       return v.controls[name] || null;
     }
@@ -55,13 +55,14 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }, control);
 }
 
-function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
-  return Array.isArray(validator) ? composeValidators(validator) : validator;
+function coerceToValidator(validator?: ValidatorFn | ValidatorFn[] | null): ValidatorFn|null {
+  return Array.isArray(validator) ? composeValidators(validator) : validator || null;
 }
 
-function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]):
-    AsyncValidatorFn {
-  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator;
+function coerceToAsyncValidator(asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null):
+    AsyncValidatorFn|null {
+  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) :
+                                         asyncValidator || null;
 }
 
 /**
@@ -90,7 +91,7 @@ export abstract class AbstractControl {
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
-  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
+  constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null) {}
 
   /**
    * The value of the control.
@@ -209,7 +210,7 @@ export abstract class AbstractControl {
    * Sets the synchronous validators that are active on this control.  Calling
    * this will overwrite any existing sync validators.
    */
-  setValidators(newValidator: ValidatorFn|ValidatorFn[]): void {
+  setValidators(newValidator: ValidatorFn|ValidatorFn[]|null): void {
     this.validator = coerceToValidator(newValidator);
   }
 
@@ -322,7 +323,7 @@ export abstract class AbstractControl {
       this._statusChanges.emit(this._status);
     }
 
-    this._updateAncestors(onlySelf);
+    this._updateAncestors(!!onlySelf);
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
@@ -338,7 +339,7 @@ export abstract class AbstractControl {
     this._forEachChild((control: AbstractControl) => { control.enable({onlySelf: true}); });
     this.updateValueAndValidity({onlySelf: true, emitEvent});
 
-    this._updateAncestors(onlySelf);
+    this._updateAncestors(!!onlySelf);
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
@@ -409,7 +410,7 @@ export abstract class AbstractControl {
     return this.validator ? this.validator(this) : null;
   }
 
-  private _runAsyncValidator(emitEvent: boolean): void {
+  private _runAsyncValidator(emitEvent?: boolean): void {
     if (this.asyncValidator) {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
@@ -465,7 +466,7 @@ export abstract class AbstractControl {
    *
    * * `this.form.get(['person', 'name']);`
    */
-  get(path: Array<string|number>|string): AbstractControl { return _find(this, path, '.'); }
+  get(path: Array<string|number>|string): AbstractControl|null { return _find(this, path, '.'); }
 
   /**
    * Returns true if the control with the given path has the error specified. Otherwise
@@ -473,7 +474,7 @@ export abstract class AbstractControl {
    *
    * If no path is given, it checks for the error on the present control.
    */
-  getError(errorCode: string, path: string[] = null): any {
+  getError(errorCode: string, path?: string[]): any {
     const control = path ? this.get(path) : this;
     return control && control._errors ? control._errors[errorCode] : null;
   }
@@ -484,9 +485,7 @@ export abstract class AbstractControl {
    *
    * If no path is given, it checks for the error on the present control.
    */
-  hasError(errorCode: string, path: string[] = null): boolean {
-    return !!this.getError(errorCode, path);
-  }
+  hasError(errorCode: string, path?: string[]): boolean { return !!this.getError(errorCode, path); }
 
   /**
    * Retrieves the top-level ancestor of this control.
@@ -635,8 +634,8 @@ export class FormControl extends AbstractControl {
   _onChange: Function[] = [];
 
   constructor(
-      formState: any = null, validator: ValidatorFn|ValidatorFn[] = null,
-      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
+      formState: any = null, validator?: ValidatorFn|ValidatorFn[]|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
     this._applyFormState(formState);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -831,9 +830,9 @@ export class FormControl extends AbstractControl {
  */
 export class FormGroup extends AbstractControl {
   constructor(
-      public controls: {[key: string]: AbstractControl}, validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      public controls: {[key: string]: AbstractControl}, validator?: ValidatorFn|null,
+      asyncValidator?: AsyncValidatorFn|null) {
+    super(validator || null, asyncValidator || null);
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -1137,9 +1136,9 @@ export class FormGroup extends AbstractControl {
  */
 export class FormArray extends AbstractControl {
   constructor(
-      public controls: AbstractControl[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      public controls: AbstractControl[], validator?: ValidatorFn|null,
+      asyncValidator?: AsyncValidatorFn|null) {
+    super(validator || null, asyncValidator || null);
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
