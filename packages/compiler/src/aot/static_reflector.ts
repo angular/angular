@@ -601,7 +601,7 @@ export class StaticReflector implements ɵReflectorReader {
               case 'ignore':
                 return expression;
             }
-            return IGNORE;
+            return null;
           }
           return mapStringMap(expression, (value, name) => simplify(value));
         }
