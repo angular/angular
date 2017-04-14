@@ -71,6 +71,8 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
 
   proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo {
     let base = oldLS.getQuickInfoAtPosition(fileName, position);
+    // TODO(vicb): the tags property has been removed in TS 2.2
+    const tags = (<any>base).tags;
     tryOperation('get quick info', () => {
       const ours = ls.getHoverAt(fileName, position);
       if (ours) {
@@ -78,14 +80,16 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
         for (const part of ours.text) {
           displayParts.push({kind: part.language !, text: part.text});
         }
-        base = {
+        base = <any>{
           displayParts,
           documentation: [],
           kind: 'angular',
           kindModifiers: 'what does this do?',
           textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start},
-          tags: [],
         };
+        if (tags) {
+          (<any>base).tags = tags;
+        }
       }
     });
 
