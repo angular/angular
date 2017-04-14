@@ -341,7 +341,7 @@ export declare class DebugNode {
 
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-    readonly collection: NgIterable<V>;
+    readonly collection: V[] | Iterable<V> | null;
     readonly isDirty: boolean;
     readonly length: number;
     constructor(trackByFn?: TrackByFunction<V>);
@@ -716,7 +716,7 @@ export declare const PLATFORM_ID: InjectionToken<Object>;
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: Provider[] | undefined) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
@@ -891,7 +891,7 @@ export declare abstract class RootRenderer {
 
 /** @stable */
 export declare abstract class Sanitizer {
-    abstract sanitize(context: SecurityContext, value: string): string | null;
+    abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
 }
 
 /** @experimental */

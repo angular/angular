@@ -211,7 +211,7 @@ describe('diagnostics', () => {
        export class MyComponent {}
       `,
           fileName => {
-            const diagnostics = ngService.getDiagnostics(fileName);
+            const diagnostics = ngService.getDiagnostics(fileName) !;
             const expected = diagnostics.find(d => d.message.startsWith('Invalid providers for'));
             const notExpected = diagnostics.find(d => d.message.startsWith('Cannot read property'));
             expect(expected).toBeDefined();
@@ -233,7 +233,7 @@ describe('diagnostics', () => {
         })
         export class MyComponent {}
       `,
-          fileName => expectOnlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
+          fileName => expectOnlyModuleDiagnostics(ngService.getDiagnostics(fileName) !));
     });
 
     // Issue #15625
@@ -253,7 +253,7 @@ describe('diagnostics', () => {
           }
       `,
           fileName => {
-            const diagnostics = ngService.getDiagnostics(fileName);
+            const diagnostics = ngService.getDiagnostics(fileName) !;
             expectOnlyModuleDiagnostics(diagnostics);
           });
     });
@@ -323,8 +323,9 @@ describe('diagnostics', () => {
       }
     }
 
-    function expectOnlyModuleDiagnostics(diagnostics: Diagnostics) {
+    function expectOnlyModuleDiagnostics(diagnostics: Diagnostics | undefined) {
       // Expect only the 'MyComponent' diagnostic
+      if (!diagnostics) throw new Error('Expecting Diagnostics');
       expect(diagnostics.length).toBe(1);
       if (diagnostics.length > 1) {
         for (const diagnostic of diagnostics) {

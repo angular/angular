@@ -135,9 +135,9 @@ export interface NavigationExtras {
     fragment?: string;
     preserveFragment?: boolean;
     /** @deprecated */ preserveQueryParams?: boolean;
-    queryParams?: Params;
-    queryParamsHandling?: QueryParamsHandling;
-    relativeTo?: ActivatedRoute;
+    queryParams?: Params | null;
+    queryParamsHandling?: QueryParamsHandling | null;
+    relativeTo?: ActivatedRoute | null;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
 }

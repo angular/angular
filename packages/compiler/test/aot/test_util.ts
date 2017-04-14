@@ -366,9 +366,9 @@ export class MockAotCompilerHost implements AotCompilerHost {
   tsFilesOnly() { this.dtsAreSource = false; }
 
   // StaticSymbolResolverHost
-  getMetadataFor(modulePath: string): {[key: string]: any}[]|null {
+  getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined {
     if (!this.tsHost.fileExists(modulePath)) {
-      return null;
+      return undefined;
     }
     if (DTS.test(modulePath)) {
       if (this.metadataVisible) {
@@ -383,7 +383,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       const metadata = this.metadataCollector.getMetadata(sf);
       return metadata ? [metadata] : [];
     }
-    return null;
+    return undefined;
   }
 
   moduleNameToFileName(moduleName: string, containingFile: string): string|null {
