@@ -584,7 +584,7 @@ export class StaticReflector implements ɵReflectorReader {
                     return simplifyCall(staticSymbol, targetFunction, argExpressions);
                   }
                 }
-                break;
+                return IGNORE;
               case 'error':
                 let message = produceErrorMessage(expression);
                 if (expression['line']) {
