@@ -273,7 +273,8 @@ function setElementClass(view: ViewData, renderNode: any, name: string, value: b
 
 function setElementStyle(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
-  let renderValue: string|null = view.root.sanitizer.sanitize(SecurityContext.STYLE, value);
+  let renderValue: string|null =
+      view.root.sanitizer.sanitize(SecurityContext.STYLE, value as{} | string);
   if (renderValue != null) {
     renderValue = renderValue.toString();
     const unit = binding.suffix;

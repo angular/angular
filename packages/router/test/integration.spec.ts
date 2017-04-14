@@ -3050,12 +3050,12 @@ describe('Integration', () => {
                advance(fixture);
 
                const config = router.config;
-               const firstConfig = config[1]._loadedConfig;
+               const firstConfig = config[1]._loadedConfig !;
 
                expect(firstConfig).toBeDefined();
                expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
 
-               const secondConfig = firstConfig.routes[0]._loadedConfig;
+               const secondConfig = firstConfig.routes[0]._loadedConfig !;
                expect(secondConfig).toBeDefined();
                expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
              })));

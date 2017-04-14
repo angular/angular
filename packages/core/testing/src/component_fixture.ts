@@ -81,7 +81,7 @@ export class ComponentFixture<T> {
             // Do this check in the next tick so that ngZone gets a chance to update the state of
             // pending macrotasks.
             scheduleMicroTask(() => {
-              if (!this.ngZone.hasPendingMacrotasks) {
+              if (!ngZone.hasPendingMacrotasks) {
                 if (this._promise !== null) {
                   this._resolve !(true);
                   this._resolve = null;
@@ -141,7 +141,7 @@ export class ComponentFixture<T> {
    * Return whether the fixture is currently stable or has async tasks that have not been completed
    * yet.
    */
-  isStable(): boolean { return this._isStable && !this.ngZone.hasPendingMacrotasks; }
+  isStable(): boolean { return this._isStable && !this.ngZone !.hasPendingMacrotasks; }
 
   /**
    * Get a promise that resolves when the fixture is stable.

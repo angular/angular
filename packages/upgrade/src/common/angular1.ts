@@ -207,7 +207,8 @@ let angular: {
                  void,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: (e: Element | string) => IAugmentedJQuery,
-  version: {major: number}, resumeBootstrap?: () => void,
+  version: {major: number},
+  resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
 } = <any>{
   bootstrap: noNg,

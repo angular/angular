@@ -15,7 +15,7 @@ export function main() {
     const mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
 
     it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(I18nSelectPipe).pure).toEqual(true); });
+       () => { expect(new PipeResolver().resolve(I18nSelectPipe) !.pure).toEqual(true); });
 
     describe('transform', () => {
       it('should return the "male" text if value is "male"', () => {

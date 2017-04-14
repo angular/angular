@@ -26,7 +26,7 @@ export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustScript(value: string): SafeScript;
     abstract bypassSecurityTrustStyle(value: string): SafeStyle;
     abstract bypassSecurityTrustUrl(value: string): SafeUrl;
-    abstract sanitize(context: SecurityContext, value: any): string | null;
+    abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
 }
 
 /** @experimental */
@@ -110,6 +110,10 @@ export interface SafeStyle extends SafeValue {
 
 /** @stable */
 export interface SafeUrl extends SafeValue {
+}
+
+/** @stable */
+export interface SafeValue {
 }
 
 /** @experimental */

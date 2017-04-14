@@ -97,12 +97,12 @@ describe('RouterPreloader', () => {
              const c = router.config;
              expect(c[0].loadChildren).toEqual('expected');
 
-             const loadedConfig: LoadedRouterConfig = c[0]._loadedConfig;
+             const loadedConfig: LoadedRouterConfig = c[0]._loadedConfig !;
              const module: any = loadedConfig.module;
              expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
              expect(module.parent).toBe(testModule);
 
-             const loadedConfig2: LoadedRouterConfig = loadedConfig.routes[0]._loadedConfig;
+             const loadedConfig2: LoadedRouterConfig = loadedConfig.routes[0]._loadedConfig !;
              const module2: any = loadedConfig2.module;
              expect(loadedConfig2.routes[0].path).toEqual('LoadedModule2');
              expect(module2.parent).toBe(module);
@@ -165,12 +165,12 @@ describe('RouterPreloader', () => {
 
              const c = router.config;
 
-             const loadedConfig: LoadedRouterConfig = c[0]._loadedConfig;
+             const loadedConfig: LoadedRouterConfig = c[0]._loadedConfig !;
              const module: any = loadedConfig.module;
              expect(module.parent).toBe(testModule);
 
-             const loadedConfig2: LoadedRouterConfig = loadedConfig.routes[0]._loadedConfig;
-             const loadedConfig3: LoadedRouterConfig = loadedConfig2.routes[0]._loadedConfig;
+             const loadedConfig2: LoadedRouterConfig = loadedConfig.routes[0]._loadedConfig !;
+             const loadedConfig3: LoadedRouterConfig = loadedConfig2.routes[0]._loadedConfig !;
              const module3: any = loadedConfig3.module;
              expect(module3.parent).toBe(module2);
            })));

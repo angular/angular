@@ -89,7 +89,7 @@ export function createPlatform(injector: Injector): PlatformRef {
   }
   _platform = injector.get(PlatformRef);
   const inits = injector.get(PLATFORM_INITIALIZER, null);
-  if (inits) inits.forEach(init => init());
+  if (inits) inits.forEach((init: any) => init());
   return _platform;
 }
 

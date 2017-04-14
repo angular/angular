@@ -28,7 +28,7 @@ export function main() {
     });
 
     it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(I18nPluralPipe).pure).toEqual(true); });
+       () => { expect(new PipeResolver().resolve(I18nPluralPipe) !.pure).toEqual(true); });
 
     describe('transform', () => {
       it('should return 0 text if value is 0', () => {

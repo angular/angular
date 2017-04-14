@@ -127,7 +127,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     function createModule<T>(
         moduleType: Type<T>, parentInjector?: Injector | null): NgModuleRef<T> {
-      return compiler.compileModuleSync(moduleType).create(parentInjector);
+      return compiler.compileModuleSync(moduleType).create(parentInjector || null);
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
