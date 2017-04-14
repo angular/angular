@@ -811,10 +811,15 @@ class TypeWrapper implements Symbol {
 }
 
 class SymbolWrapper implements Symbol {
+  private symbol: ts.Symbol;
   private _tsType: ts.Type;
   private _members: SymbolTable;
 
-  constructor(private symbol: ts.Symbol, private context: TypeContext) {}
+  constructor(symbol: ts.Symbol, private context: TypeContext) {
+    this.symbol = symbol && context && (symbol.flags & ts.SymbolFlags.Alias) ?
+        context.checker.getAliasedSymbol(symbol) :
+        symbol;
+  }
 
   get name(): string { return this.symbol.name; }
 
