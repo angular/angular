@@ -201,6 +201,7 @@ function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
+
 let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
                  void,
@@ -208,27 +209,62 @@ let angular: {
   element: (e: Element | string) => IAugmentedJQuery,
   version: {major: number}, resumeBootstrap?: () => void,
   getTestability: (e: Element) => ITestabilityService
-} = <any>{
-  bootstrap: noNg,
-  module: noNg,
-  element: noNg,
-  version: noNg,
-  resumeBootstrap: noNg,
-  getTestability: noNg
 };
-
 
 try {
   if (window.hasOwnProperty('angular')) {
-    angular = (<any>window).angular;
+    setAngularLib((<any>window).angular);
   }
 } catch (e) {
-  // ignore in CJS mode.
+  setAngularLib(<any>{
+    bootstrap: noNg,
+    module: noNg,
+    element: noNg,
+    version: noNg,
+    resumeBootstrap: noNg,
+    getTestability: noNg
+  });
 }
 
-export const bootstrap = angular.bootstrap;
-export const module = angular.module;
-export const element = angular.element;
+/**
+ * Resets the AngularJS library.
+ *
+ * Used when angularjs is loaded lazily, and not available on `window`.
+ *
+ * @stable
+ */
+export function setAngularLib(ng: any): void {
+  angular = ng;
+}
+
+/**
+ * Returns the current version of the AngularJS library.
+ *
+ * @stable
+ */
+export function getAngularLib(): any {
+  return angular;
+}
+
+export function bootstrap(
+    e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig): void {
+  angular.bootstrap(e, modules, config);
+}
+
+export function module(prefix: string, dependencies?: string[]): IModule {
+  return angular.module(prefix, dependencies);
+}
+
+export function element(e: Element | string): IAugmentedJQuery {
+  return angular.element(e);
+}
+
+export function resumeBootstrap(): void {
+  angular.resumeBootstrap();
+}
+
+export function getTestability(e: Element): ITestabilityService {
+  return angular.getTestability(e);
+}
+
 export const version = angular.version;
-export const resumeBootstrap = angular.resumeBootstrap;
-export const getTestability = angular.getTestability;
