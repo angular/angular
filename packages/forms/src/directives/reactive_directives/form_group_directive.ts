@@ -69,7 +69,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   private _oldForm: FormGroup;
   directives: FormControlName[] = [];
 
-  @Input('formGroup') form: FormGroup = null;
+  @Input('formGroup') form: FormGroup = null !;
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
@@ -167,10 +167,10 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   private _updateValidators() {
     const sync = composeValidators(this._validators);
-    this.form.validator = Validators.compose([this.form.validator, sync]);
+    this.form.validator = Validators.compose([this.form.validator !, sync !]);
 
     const async = composeAsyncValidators(this._asyncValidators);
-    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
+    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator !, async !]);
   }
 
   private _checkFormPresent() {

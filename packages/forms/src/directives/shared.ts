@@ -27,55 +27,55 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './valida
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
-  return [...parent.path, name];
+  return [...parent.path !, name];
 }
 
 export function setUpControl(control: FormControl, dir: NgControl): void {
   if (!control) _throwError(dir, 'Cannot find control with');
   if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
-  control.validator = Validators.compose([control.validator, dir.validator]);
-  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
-  dir.valueAccessor.writeValue(control.value);
+  control.validator = Validators.compose([control.validator !, dir.validator]);
+  control.asyncValidator = Validators.composeAsync([control.asyncValidator !, dir.asyncValidator]);
+  dir.valueAccessor !.writeValue(control.value);
 
   // view -> model
-  dir.valueAccessor.registerOnChange((newValue: any) => {
+  dir.valueAccessor !.registerOnChange((newValue: any) => {
     dir.viewToModelUpdate(newValue);
     control.markAsDirty();
     control.setValue(newValue, {emitModelToViewChange: false});
   });
 
   // touched
-  dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
+  dir.valueAccessor !.registerOnTouched(() => control.markAsTouched());
 
   control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
     // control -> view
-    dir.valueAccessor.writeValue(newValue);
+    dir.valueAccessor !.writeValue(newValue);
 
     // control -> ngModel
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
   });
 
-  if (dir.valueAccessor.setDisabledState) {
+  if (dir.valueAccessor !.setDisabledState) {
     control.registerOnDisabledChange(
-        (isDisabled: boolean) => { dir.valueAccessor.setDisabledState(isDisabled); });
+        (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); });
   }
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
   dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange(() => control.updateValueAndValidity());
+      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
   });
 
   dir._rawAsyncValidators.forEach((validator: AsyncValidator | AsyncValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
-      (<Validator>validator).registerOnValidatorChange(() => control.updateValueAndValidity());
+      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
   });
 }
 
 export function cleanUpControl(control: FormControl, dir: NgControl) {
-  dir.valueAccessor.registerOnChange(() => _noControlError(dir));
-  dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
+  dir.valueAccessor !.registerOnChange(() => _noControlError(dir));
+  dir.valueAccessor !.registerOnTouched(() => _noControlError(dir));
 
   dir._rawValidators.forEach((validator: any) => {
     if (validator.registerOnValidatorChange) {
@@ -105,9 +105,9 @@ function _noControlError(dir: NgControl) {
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
   let messageEnd: string;
-  if (dir.path.length > 1) {
-    messageEnd = `path: '${dir.path.join(' -> ')}'`;
-  } else if (dir.path[0]) {
+  if (dir.path !.length > 1) {
+    messageEnd = `path: '${dir.path!.join(' -> ')}'`;
+  } else if (dir.path ![0]) {
     messageEnd = `name: '${dir.path}'`;
   } else {
     messageEnd = 'unspecified name attribute';
@@ -115,11 +115,12 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   throw new Error(`${message} ${messageEnd}`);
 }
 
-export function composeValidators(validators: Array<Validator|Function>): ValidatorFn {
+export function composeValidators(validators: Array<Validator|Function>): ValidatorFn|null {
   return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
-export function composeAsyncValidators(validators: Array<Validator|Function>): AsyncValidatorFn {
+export function composeAsyncValidators(validators: Array<Validator|Function>): AsyncValidatorFn|
+    null {
   return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
                               null;
 }
@@ -147,12 +148,12 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
-    dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
+    dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
   if (!valueAccessors) return null;
 
-  let defaultAccessor: ControlValueAccessor;
-  let builtinAccessor: ControlValueAccessor;
-  let customAccessor: ControlValueAccessor;
+  let defaultAccessor: ControlValueAccessor|undefined = undefined;
+  let builtinAccessor: ControlValueAccessor|undefined = undefined;
+  let customAccessor: ControlValueAccessor|undefined = undefined;
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;
