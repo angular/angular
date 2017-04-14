@@ -38,6 +38,13 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
 
 const baseHtmlParser = new InjectionToken('HtmlParser');
 
+export function i18nHtmlParserFactory(
+    parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
+    console: Console): i18n.I18NHtmlParser {
+  return new i18n.I18NHtmlParser(
+      parser, translations, format, config.missingTranslation !, console);
+}
+
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
  * template compilation.
@@ -56,10 +63,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   },
   {
     provide: i18n.I18NHtmlParser,
-    useFactory: (parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
-                 console: Console) =>
-                    new i18n.I18NHtmlParser(
-                        parser, translations, format, config.missingTranslation !, console),
+    useFactory: i18nHtmlParserFactory,
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
