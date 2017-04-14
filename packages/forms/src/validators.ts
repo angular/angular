@@ -143,9 +143,11 @@ export class Validators {
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps.
    */
-  static compose(validators: ValidatorFn[]): ValidatorFn {
+  static compose(validators: null): null;
+  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
+  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
+    const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -153,9 +155,9 @@ export class Validators {
     };
   }
 
-  static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
+  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
+    const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -188,7 +190,7 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
   const res: {[key: string]: any} =
       arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res, ...errors} : res;
+        return errors != null ? {...res !, ...errors} : res !;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
 }

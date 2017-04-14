@@ -28,7 +28,7 @@ class CustomValidatorDirective implements Validator {
 
 function asyncValidator(expected: any, timeout = 0) {
   return (c: AbstractControl): any => {
-    let resolve: (result: any) => void;
+    let resolve: (result: any) => void = undefined !;
     const promise = new Promise(res => { resolve = res; });
     const res = c.value != expected ? {'async': true} : null;
     if (timeout == 0) {
@@ -44,7 +44,7 @@ export function main() {
   describe('Form Directives', () => {
     let defaultAccessor: DefaultValueAccessor;
 
-    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null, null); });
+    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null !, null !, null !); });
 
     describe('shared', () => {
       describe('selectValueAccessor', () => {
@@ -59,42 +59,42 @@ export function main() {
            () => { expect(selectValueAccessor(dir, [defaultAccessor])).toEqual(defaultAccessor); });
 
         it('should return checkbox accessor when provided', () => {
-          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          const checkboxAccessor = new CheckboxControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, [
             defaultAccessor, checkboxAccessor
           ])).toEqual(checkboxAccessor);
         });
 
         it('should return select accessor when provided', () => {
-          const selectAccessor = new SelectControlValueAccessor(null, null);
+          const selectAccessor = new SelectControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectAccessor
           ])).toEqual(selectAccessor);
         });
 
         it('should return select multiple accessor when provided', () => {
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectMultipleAccessor
           ])).toEqual(selectMultipleAccessor);
         });
 
         it('should throw when more than one build-in accessor is provided', () => {
-          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          const selectAccessor = new SelectControlValueAccessor(null, null);
+          const checkboxAccessor = new CheckboxControlValueAccessor(null !, null !);
+          const selectAccessor = new SelectControlValueAccessor(null !, null !);
           expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
         });
 
         it('should return custom accessor when provided', () => {
           const customAccessor = new SpyValueAccessor();
-          const checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          const checkboxAccessor = new CheckboxControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
               .toEqual(customAccessor);
         });
 
         it('should return custom accessor when provided with select multiple', () => {
           const customAccessor = new SpyValueAccessor();
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null !, null !);
           expect(selectValueAccessor(
                      dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
               .toEqual(customAccessor);
@@ -110,13 +110,13 @@ export function main() {
         it('should compose functions', () => {
           const dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
           const dummy2 = (_: any /** TODO #9100 */) => ({'dummy2': true});
-          const v = composeValidators([dummy1, dummy2]);
+          const v = composeValidators([dummy1, dummy2]) !;
           expect(v(new FormControl(''))).toEqual({'dummy1': true, 'dummy2': true});
         });
 
         it('should compose validator directives', () => {
           const dummy1 = (_: any /** TODO #9100 */) => ({'dummy1': true});
-          const v = composeValidators([dummy1, new CustomValidatorDirective()]);
+          const v = composeValidators([dummy1, new CustomValidatorDirective()]) !;
           expect(v(new FormControl(''))).toEqual({'dummy1': true, 'custom': true});
         });
       });
@@ -168,7 +168,7 @@ export function main() {
 
       describe('addControl', () => {
         it('should throw when no control found', () => {
-          const dir = new FormControlName(form, null, null, [defaultAccessor]);
+          const dir = new FormControlName(form, null !, null !, [defaultAccessor]);
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
@@ -176,7 +176,7 @@ export function main() {
         });
 
         it('should throw for a named control when no value accessor', () => {
-          const dir = new FormControlName(form, null, null, null);
+          const dir = new FormControlName(form, null !, null !, null !);
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
@@ -184,8 +184,8 @@ export function main() {
         });
 
         it('should throw when no value accessor with path', () => {
-          const group = new FormGroupName(form, null, null);
-          const dir = new FormControlName(group, null, null, null);
+          const group = new FormGroupName(form, null !, null !);
+          const dir = new FormControlName(group, null !, null !, null !);
           group.name = 'passwords';
           dir.name = 'password';
 
@@ -315,7 +315,7 @@ export function main() {
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgModel(personControlGroupDir, null, null, [defaultAccessor]);
+        loginControlDir = new NgModel(personControlGroupDir, null !, null !, [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -534,7 +534,7 @@ export function main() {
 
       beforeEach(() => {
         ngModel = new NgModel(
-            null, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+            null !, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
         control = ngModel.control;
       });
@@ -566,7 +566,7 @@ export function main() {
       });
 
       it('should throw when no value accessor with named control', () => {
-        const namedDir = new NgModel(null, null, null, null);
+        const namedDir = new NgModel(null !, null !, null !, null !);
         namedDir.name = 'one';
 
         expect(() => namedDir.ngOnChanges({}))
@@ -574,7 +574,7 @@ export function main() {
       });
 
       it('should throw when no value accessor with unnamed control', () => {
-        const unnamedDir = new NgModel(null, null, null, null);
+        const unnamedDir = new NgModel(null !, null !, null !, null !);
 
         expect(() => unnamedDir.ngOnChanges({}))
             .toThrowError(
