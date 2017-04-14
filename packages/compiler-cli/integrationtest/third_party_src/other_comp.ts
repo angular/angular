@@ -10,7 +10,8 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'another-third-party-comp',
-  template: '<div i18n>other-3rdP-component</div>',
+  template: `<div i18n>other-3rdP-component
+multi-lines</div>`,
 })
 export class AnotherThirdpartyComponent {
 }

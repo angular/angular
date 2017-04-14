@@ -48,7 +48,7 @@ export class MessageBundle {
   // The public (serialized) format might be different, see the `write` method.
   getMessages(): i18n.Message[] { return this._messages; }
 
-  write(serializer: Serializer): string {
+  write(serializer: Serializer, filterSources?: (path: string) => string): string {
     const messages: {[id: string]: i18n.Message} = {};
     const mapperVisitor = new MapPlaceholderNames();
 
@@ -57,6 +57,8 @@ export class MessageBundle {
       const id = serializer.digest(message);
       if (!messages.hasOwnProperty(id)) {
         messages[id] = message;
+      } else {
+        messages[id].sources.push(...message.sources);
       }
     });
 
@@ -65,7 +67,13 @@ export class MessageBundle {
       const mapper = serializer.createNameMapper(messages[id]);
       const src = messages[id];
       const nodes = mapper ? mapperVisitor.convert(src.nodes, mapper) : src.nodes;
-      return new i18n.Message(nodes, {}, {}, src.meaning, src.description, id);
+      let transformedMessage = new i18n.Message(nodes, {}, {}, src.meaning, src.description, id);
+      transformedMessage.sources = src.sources;
+      if (filterSources) {
+        transformedMessage.sources.forEach(
+            (source: i18n.MessageSpan) => source.filePath = filterSources(source.filePath));
+      }
+      return transformedMessage;
     });
 
     return serializer.write(msgList, this._locale);
