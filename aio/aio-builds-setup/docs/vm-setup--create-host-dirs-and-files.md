@@ -41,9 +41,10 @@ certificate covering both the domain and subdomains.
 ## Create directory for logs (Optional)
 Optionally, a logs directory can pe passed to the docker container for storing non-system-related
 logs. If not provided, the logs are kept locally on the container and will be lost whenever the
-container is replaced (e.g. when updating to use a newer version of the docker image).
+container is replaced (e.g. when updating to use a newer version of the docker image). Log files are
+rotated and retained for 6 months.
 
-The following files log files are kept in this directory:
+The following log files are kept in this directory:
 
 - `clean-up.log`:
   Output of the `aio-clean-up` command, run as a cronjob for cleaning up the build artifacts of

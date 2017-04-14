@@ -79,6 +79,11 @@ RUN apt-get update -y && apt-get install -y \
 RUN yarn global add pm2@2
 
 
+# Set up log rotation
+COPY logrotate/* /etc/logrotate.d/
+RUN chmod 0644 /etc/logrotate.d/*
+
+
 # Set up cronjobs
 COPY cronjobs/aio-builds-cleanup /etc/cron.d/
 RUN chmod 0744 /etc/cron.d/aio-builds-cleanup
