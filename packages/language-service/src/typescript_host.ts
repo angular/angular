@@ -700,8 +700,9 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return spanAt(this.source, line, column);
   }
 
-  private getTemplateRefContextType(type: ts.Symbol): ts.Symbol|undefined {
-    const constructor = type.members && type.members !['__constructor'];
+  private getTemplateRefContextType(typeSymbol: ts.Symbol): ts.Symbol|undefined {
+    const type = this.checker.getTypeOfSymbolAtLocation(typeSymbol, this.source);
+    const constructor = type.symbol && type.symbol.members && type.symbol.members['__constructor'];
     if (constructor) {
       const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
