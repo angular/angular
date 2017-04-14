@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script that bundles the dev-app using the Google Closure compiler.
-# This is script is used to verify closure-compatiblity of all Material components.
+# This is script is used to verify closure-compatibility of all Material components.
 
 set -e -o pipefail
 
