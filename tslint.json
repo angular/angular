@@ -1,5 +1,8 @@
 {
-  "rulesDirectory": ["node_modules/tslint-no-unused-var"],
+  "rulesDirectory": [
+    "./node_modules/tslint-no-unused-var/", 
+    "./tools/tslint-rules/"
+  ],
   "rules": {
     "max-line-length": [true, 100],
     // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a
@@ -26,6 +29,7 @@
     "no-unused-expression": true,
     "no-unused-var": [true, {"ignore-pattern": "^(_.*)$"}],
     "no-var-keyword": true,
+    "no-exposed-todo": true,
     "no-debugger": true,
     "one-line": [
       true,

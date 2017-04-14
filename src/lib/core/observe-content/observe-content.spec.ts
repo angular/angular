@@ -2,10 +2,8 @@ import {Component} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {ObserveContentModule} from './observe-content';
 
-/**
- * TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
- * `MutationObserver` and needs to be investigated
- */
+// TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
+// `MutationObserver` and needs to be investigated
 
 describe('Observe content', () => {
   beforeEach(async(() => {
