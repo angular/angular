@@ -58,6 +58,7 @@ cp -v package.json $TMP
   ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
 
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf --locale=fr
+  ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf2 --outFile=messages.xliff2.xlf
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xmb --outFile=custom_file.xmb
 
   # Removed until #15219 is fixed
