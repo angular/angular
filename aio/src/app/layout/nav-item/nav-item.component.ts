@@ -17,7 +17,7 @@ export class NavItemComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedNodes'] || changes['node']) {
       this.isSelected = this.selectedNodes.indexOf(this.node) !== -1;
-      this.isExpanded = this.isExpanded || this.isSelected;
+      this.isExpanded = this.isSelected;
     }
     this.setClasses();
   }
