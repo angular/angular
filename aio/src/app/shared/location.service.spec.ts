@@ -369,8 +369,8 @@ describe('LocationService', () => {
     });
 
     it('should call locationChanged when window history changes', () => {
-     const locationStrategy: MockLocationStrategy = injector.get(LocationStrategy);
-     locationStrategy.simulatePopState('/next-url');
+      const locationStrategy: MockLocationStrategy = injector.get(LocationStrategy);
+      locationStrategy.simulatePopState('/next-url');
 
       expect(gaLocationChanged.calls.count()).toBe(2, 'gaService.locationChanged');
       const args = gaLocationChanged.calls.argsFor(1);
