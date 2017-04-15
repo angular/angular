@@ -194,7 +194,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       let sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
-        this.context = sourceFile.path;
+        this.context = (sourceFile as any).path || sourceFile.fileName;
         ts.forEachChild(sourceFile, visit);
       }
       return result.length ? result : undefined;
