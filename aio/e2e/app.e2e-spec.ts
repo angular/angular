@@ -15,7 +15,7 @@ describe('site App', function() {
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
-  it('should show the tutorial index page at `/tutorial/`', () => {
+  it('should show the tutorial index page at `/tutorial/` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
     page.navigateTo('tutorial/');
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
@@ -24,8 +24,11 @@ describe('site App', function() {
     page.getLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Features/i);
 
-    // Show the menu; the tutorial section should be fully open from previous visit
+    // Show the menu
     page.docsMenuLink.click();
+
+    // Open the tutorial header
+    page.getNavItem(/tutorial/i).click();
 
     // Navigate to the tutorial introduction via a link in the sidenav
     page.getNavItem(/introduction/i).click();
