@@ -6,7 +6,7 @@ import { Contributor } from './contributors.model';
   selector: 'aio-contributor',
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
-    
+
         <div class="card-front" (click)="flipCard(person)">
             <div *ngIf="person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+person.picture+')'">
             </div>
@@ -35,17 +35,11 @@ import { Contributor } from './contributors.model';
   `
 })
 export class ContributorComponent {
-    @Input() person: Contributor;
-    noPicture = '_no-one.png';
-    pictureBase = 'content/images/bios/';
-    
-    flipCard(person){
-        if(person.isFlipped==true){
-            person.isFlipped=false;
-        }else{
-            person.isFlipped=true;
-        }
-    }
+  @Input() person: Contributor;
+  noPicture = '_no-one.png';
+  pictureBase = 'content/images/bios/';
 
+  flipCard(person) {
+    person.isFlipped = !person.isFlipped;
+  }
 }
-
