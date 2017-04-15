@@ -1,0 +1,42 @@
+<div class="resources grid-fixed">
+  <div class="c8">
+    <div class="l-flex--column">
+      <div class="showcase" *ngFor="let category of categories">
+        <header class="c-resource-header">
+          <a class="h-anchor-offset" id="{{category.id}}"></a>
+          <h2 class="text-headline text-uppercase">{{category.title}}</h2>
+        </header>
+
+        <div class="shadow-1">
+          <div *ngFor="let subCategory of category.subCategories">
+            <a class="h-anchor-offset" id="{{subCategory.id}}"></a>
+            <h3 class="text-uppercase subcategory-title">{{subCategory.title}}</h3>
+
+            <div *ngFor="let resource of subCategory.resources">
+              <div class="c-resource" *ngIf="resource.rev">
+                <a class="l-flex--column resource-row-link" target="_blank" [href]="resource.url">
+                  <div>
+                    <h4>{{resource.title}}</h4>
+                    <p class="resource-description">{{resource.desc || 'No Description'}}</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c3">
+    <div class="c-resource-nav shadow-1 l-flex--column h-affix" [ngClass]="{ 'affix-top': scrollPos > 200 }">
+      <div class="category" *ngFor="let category of categories">
+        <a class="category-link h-capitalize" [href]="href(category)">{{category.title}}</a>
+        <div class="subcategory" *ngFor="let subCategory of category.subCategories">
+          <a class="subcategory-link" [href]="href(subCategory)">{{subCategory.title}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

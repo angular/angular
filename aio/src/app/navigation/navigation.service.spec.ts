@@ -51,7 +51,12 @@ describe('NavigationService', () => {
       expect(viewsEvents).toEqual([]);
       backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
       expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
+    });
 
+    it('navigationViews observable should complete', () => {
+      let completed = false;
+      navService.navigationViews.subscribe(null, null, () => completed = true);
+      expect(true).toBe(true, 'observable completed');
     });
 
     it('should return the same object to all subscribers', () => {

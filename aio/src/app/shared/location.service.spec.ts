@@ -354,7 +354,7 @@ describe('LocationService', () => {
     });
 
     it('should call locationChanged with initial URL', () => {
-      const initialUrl = location.path().replace(/^\/+/, '');
+      const initialUrl = location.path().replace(/^\/+/, '');  // strip leading slashes
 
       expect(gaLocationChanged.calls.count()).toBe(1, 'gaService.locationChanged');
       const args = gaLocationChanged.calls.first().args;

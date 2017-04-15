@@ -153,6 +153,11 @@ module.exports =
               include: CONTENTS_PATH + '/marketing/contributors.json',
               fileReader: 'jsonFileReader'
             },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/marketing/resources.json',
+              fileReader: 'jsonFileReader'
+            },
           ];
 
           collectExamples.exampleFolders = ['examples', 'examples'];
@@ -278,7 +283,8 @@ module.exports =
               outputPathTemplate: '${path}.json'
             },
             {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+            {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 
