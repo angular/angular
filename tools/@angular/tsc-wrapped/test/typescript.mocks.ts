@@ -83,6 +83,9 @@ export class MockNode implements ts.Node {
   getText(sourceFile?: ts.SourceFile): string { return ''; }
   getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
   getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
+  forEachChild<T>(cbNode: (node: ts.Node) => T, cbNodeArray?: (nodes: ts.Node[]) => T): T {
+    return null;
+  }
 }
 
 export class MockIdentifier extends MockNode implements ts.Identifier {

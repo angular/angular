@@ -51,7 +51,7 @@ export class Symbols {
               // in the parent chain). This doesn't damage the node as the binder unconditionally
               // sets the parent.
               externalReference.expression.parent = externalReference;
-              externalReference.parent = this.sourceFile;
+              externalReference.parent = this.sourceFile as any;
             }
             const from = stripQuotes(externalReference.expression.getText());
             symbols.set(importEqualsDeclaration.name.text, {__symbolic: 'reference', module: from});
