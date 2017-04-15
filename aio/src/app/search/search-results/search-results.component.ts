@@ -18,7 +18,7 @@ export interface SearchArea {
 })
 export class SearchResultsComponent implements OnInit {
 
-  readonly defaultArea = 'Other';
+  readonly defaultArea = 'other';
 
   showResults = false;
 
@@ -57,11 +57,16 @@ export class SearchResultsComponent implements OnInit {
     this.showResults = true;
     const searchAreaMap = {};
     search.results.forEach(result => {
+      if (!result.title) { return; } // bad data; should fix
       const areaName = this.computeAreaName(result) || this.defaultArea;
       const area = searchAreaMap[areaName] = searchAreaMap[areaName] || [];
       area.push(result);
     });
-    return Object.keys(searchAreaMap).map(name => ({ name, pages: searchAreaMap[name] }));
+    const keys = Object.keys(searchAreaMap).sort((l, r) => l > r ? 1 : -1);
+    return keys.map(name => ({
+      name,
+      pages: searchAreaMap[name].sort(compareResults)
+    }));
   }
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
@@ -69,4 +74,8 @@ export class SearchResultsComponent implements OnInit {
     const [areaName, rest] = result.path.split('/', 2);
     return rest && areaName;
   }
+}
+
+function compareResults(l: {title: string}, r: {title: string}) {
+  return l.title.toUpperCase() > r.title.toUpperCase() ? 1 : -1;
 }
