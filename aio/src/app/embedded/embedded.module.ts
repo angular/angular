@@ -20,13 +20,15 @@ import { ContributorListComponent } from './contributor/contributor-list.compone
 import { ContributorComponent } from './contributor/contributor.component';
 import { DocTitleComponent } from './doc-title.component';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example/live-example.component';
+import { ResourceListComponent } from './resource/resource-list.component';
+import { ResourceService } from './resource/resource.service';
 
 /** Components that can be embedded in docs
  * such as CodeExampleComponent, LiveExampleComponent,...
  */
 export const embeddedComponents: any[] = [
   ApiListComponent, CodeExampleComponent, CodeTabsComponent,
-  ContributorListComponent, DocTitleComponent, LiveExampleComponent
+  ContributorListComponent, DocTitleComponent, LiveExampleComponent, ResourceListComponent
 ];
 
 /** Injectable class w/ property returning components that can be embedded in docs */
@@ -46,7 +48,8 @@ export class EmbeddedComponents {
     ContributorService,
     CopierService,
     EmbeddedComponents,
-    PrettyPrinter
+    PrettyPrinter,
+    ResourceService
   ],
   entryComponents: [ embeddedComponents ]
 })
