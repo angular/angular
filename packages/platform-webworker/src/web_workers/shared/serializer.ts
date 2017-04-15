@@ -11,6 +11,18 @@ import {RenderStore} from './render_store';
 
 
 /**
+ * @experimental WebWorker support in Angular is currently experimental.
+ */
+export const enum SerializerTypes {
+  // RendererType2
+  RENDERER_TYPE_2,
+  // Primitive types
+  PRIMITIVE,
+  // An object stored in a RenderStore
+  RENDER_STORE_OBJECT,
+}
+
+/**
  * Any type that does not need to be serialized (string, number, boolean)
  *
  * @experimental WebWorker support in Angular is currently experimental.
@@ -23,18 +35,6 @@ export class LocationType {
       public href: string, public protocol: string, public host: string, public hostname: string,
       public port: string, public pathname: string, public search: string, public hash: string,
       public origin: string) {}
-}
-
-/**
- * @experimental WebWorker support in Angular is currently experimental.
- */
-export const enum SerializerTypes {
-  // RendererType2
-  RENDERER_TYPE_2,
-  // Primitive types
-  PRIMITIVE,
-  // An object stored in a RenderStore
-  RENDER_STORE_OBJECT,
 }
 
 @Injectable()
