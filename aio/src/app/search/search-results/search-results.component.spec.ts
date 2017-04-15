@@ -42,28 +42,61 @@ describe('SearchResultsComponent', () => {
 
     searchResults.next({ query: '', results: results});
     expect(currentAreas).toEqual([
+      { name: 'api', pages: [
+        { path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' }
+      ] },
       { name: 'guide', pages: [
         { path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
         { path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
         { path: 'guide/b/c', title: 'Guide B - C', type: 'content', keywords: '', titleWords: '' }
-      ] },
-      { name: 'api', pages: [
-        { path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' }
       ] }
     ]);
   });
 
-  it('should put search results with no containing folder into the default area (Other)', () => {
+  it('should sort by title within sorted area', () => {
+    const results = [
+      {path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
+      {path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
+      {path: 'api/d', title: 'API D', type: 'class', keywords: '', titleWords: '' },
+      {path: 'guide/a/c', title: 'Guide A - C', type: 'content', keywords: '', titleWords: '' },
+      {path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' },
+    ];
+
+    searchResults.next({ query: '', results: results });
+
+    expect(currentAreas).toEqual([
+      { name: 'api', pages: [
+        {path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' },
+        {path: 'api/d', title: 'API D', type: 'class', keywords: '', titleWords: '' },
+      ] },
+      { name: 'guide', pages: [
+        {path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
+        {path: 'guide/a/c', title: 'Guide A - C', type: 'content', keywords: '', titleWords: '' },
+        {path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
+      ] }
+    ]);
+  });
+
+  it('should put search results with no containing folder into the default area (other)', () => {
     const results = [
       {path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     searchResults.next({ query: '', results: results });
     expect(currentAreas).toEqual([
-      { name: 'Other', pages: [
+      { name: 'other', pages: [
         { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
       ] }
     ]);
+  });
+
+  it('should omit search results with no title', () => {
+    const results = [
+      {path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
+    ];
+
+    searchResults.next({ query: '', results: results });
+    expect(currentAreas).toEqual([]);
   });
 
   it('should emit an "resultSelected" event when a search result anchor is clicked', () => {
