@@ -56,15 +56,15 @@ describe('ContributorService', () => {
     });
 
     it('should reshape the contributor json to expected result', () => {
-      const groupNames = contribs.map(g => g.name);
-      expect(groupNames).toEqual(['Lead', 'Google', 'Community']);
+      const groupNames = contribs.map(g => g.name).join(',');
+      expect(groupNames).toEqual('Angular,Community');
     });
 
-    it('should have expected "Lead" contribs in order', () => {
-      const leads = contribs[0];
-      const actualLeadNames = leads.contributors.map(l => l.name).join(',');
-      const expectedLeadNames = [testData.igor, testData.misko, testData.naomi].map(l => l.name).join(',');
-      expect(actualLeadNames).toEqual(expectedLeadNames);
+    it('should have expected "Community" contribs in order', () => {
+      const community = contribs[1];
+      const actualAngularNames = community.contributors.map(l => l.name).join(',');
+      const expectedAngularNames = [testData.jeffcross, testData.kapunahelewong].map(l => l.name).join(',');
+      expect(actualAngularNames).toEqual(expectedAngularNames);
     });
   });
 
@@ -74,29 +74,37 @@ describe('ContributorService', () => {
 function getTestContribs() {
   // tslint:disable:quotemark
   return {
+    "kapunahelewong": {
+      "name": "Kapunahele Wong",
+      "picture": "kapunahelewong.jpg",
+      "website": " https://github.com/kapunahelewong",
+      "twitter": "kapunahele",
+      "bio": "Kapunahele is a front-end developer and contributor to angular.io",
+      "group": "Community"
+    },
     "misko": {
       "name": "Miško Hevery",
       "picture": "misko.jpg",
       "twitter": "mhevery",
       "website": "http://misko.hevery.com",
       "bio": "Miško Hevery is the creator of AngularJS framework.",
-      "group": "Lead"
+      "group": "Angular"
     },
     "igor": {
       "name": "Igor Minar",
       "picture": "igor-minar.jpg",
       "twitter": "IgorMinar",
-      "website": "https://google.com/+IgorMinar",
-      "bio": "Igor is a software engineer at Google.",
-      "group": "Lead"
+      "website": "https://Angular.com/+IgorMinar",
+      "bio": "Igor is a software engineer at Angular.",
+      "group": "Angular"
     },
     "kara": {
       "name": "Kara Erickson",
       "picture": "kara-erickson.jpg",
       "twitter": "karaforthewin",
       "website": "https://github.com/kara",
-      "bio": "Kara is a software engineer on the Angular team at Google and a co-organizer of the Angular-SF Meetup. ",
-      "group": "Google"
+      "bio": "Kara is a software engineer on the Angular team at Angular and a co-organizer of the Angular-SF Meetup. ",
+      "group": "Angular"
     },
     "jeffcross": {
       "name": "Jeff Cross",
@@ -110,9 +118,9 @@ function getTestContribs() {
       "name": "Naomi Black",
       "picture": "naomi.jpg",
       "twitter": "naomitraveller",
-      "website": "http://google.com/+NaomiBlack",
+      "website": "http://Angular.com/+NaomiBlack",
       "bio": "Naomi is Angular's TPM generalist and jack-of-all-trades.",
-      "group": "Lead"
+      "group": "Angular"
     }
  };
 }

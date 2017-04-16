@@ -9,7 +9,7 @@ import { Logger } from 'app/shared/logger.service';
 import { Contributor, ContributorGroup } from './contributors.model';
 
 const contributorsPath = 'content/contributors.json';
-const knownGroups = ['Lead', 'Google', 'Community'];
+const knownGroups = ['Angular', 'Community'];
 
 @Injectable()
 export class ContributorService {
