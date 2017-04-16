@@ -18,7 +18,7 @@ module.exports = function testPackage(packageName, mockTemplateEngine) {
   pkg.factory('log', function() { return require('dgeni/lib/mocks/log')(false); });
 
   // overrides base packageInfo and returns the one for the 'angular/angular' repo.
-  const PROJECT_ROOT = path.resolve(__dirname, '../../..');
+  const PROJECT_ROOT = path.resolve(__dirname, '../../../..');
   pkg.factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); });
 
 

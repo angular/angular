@@ -11,7 +11,7 @@ var globby = require('globby');
 var fileTranslator = require('./translator/fileTranslator');
 var indexHtmlRules = require('./translator/rules/indexHtml');
 var systemjsConfigExtrasRules = require('./translator/rules/systemjsConfigExtras');
-var regionExtractor = require('../../transforms/examples-package/services/region-parser');
+var regionExtractor = require('../transforms/examples-package/services/region-parser');
 
 class PlunkerBuilder {
   constructor(basePath, destPath, options) {
