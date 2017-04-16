@@ -36,7 +36,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt4.json'));
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt5.json'));
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt6.json'));
-      done()
+      done();
     });
   }, 2000);
 
