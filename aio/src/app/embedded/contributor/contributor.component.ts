@@ -22,7 +22,7 @@ import { Contributor } from './contributors.model';
                     <span class="fa fa-link fa-2x"></span>
                 </a>
                 <div>
-                    <a *ngIf="person.bio" aria-label="View Bio" (click)="flipCard(person)">View Bio</a>
+                    <a *ngIf="person.bio" aria-label="View Bio">View Bio</a>
                 </div>
             </div>
         </div>
