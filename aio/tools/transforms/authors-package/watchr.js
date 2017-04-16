@@ -2,7 +2,7 @@
 const watchr = require('watchr');
 const {resolve, relative} = require('canonical-path');
 const {generateDocs} = require('./index.js');
-const rootPath = resolve(__dirname, '../../..');
+const rootPath = resolve(__dirname, '../../../..');
 const contentsPath = resolve(rootPath, 'aio/content');
 const apiPath = resolve(rootPath, 'packages');
 
@@ -16,10 +16,16 @@ function listener(changeType, fullPath) {
   }
 }
 
+function next(error) {
+  if (error) {
+    console.log(error);
+  }
+}
+
 console.log('Started watching files in:');
 console.log(' - ', contentsPath);
 console.log(' - ', apiPath);
 console.log('Doc gen will run when you change a file in either of these folders.');
 
-watchr.open(contentsPath, listener);
-watchr.open(apiPath, listener);
+watchr.open(contentsPath, listener, next);
+watchr.open(apiPath, listener, next);

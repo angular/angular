@@ -1,9 +1,9 @@
 # Documentation Generation
 
 The dgeni tool is used to generate the documentation from the source files held in this repository.
-The documentation generation is configured by a dgeni package defined in `docs/angular.io-package/index.js`.
-This package, in turn requires a number of other packages, some are defined locally in the `docs` folder,
-such as `docs/cheatsheet-package` and `docs/content-package`, etc. And some are brought in from the
+The documentation generation is configured by a dgeni package defined in `tools/transforms/angular.io-package/index.js`.
+This package, in turn requires a number of other packages, some are defined locally in the `tools/transforms` folder,
+such as `tools/transforms/cheatsheet-package` and `tools/transforms/content-package`, etc. And some are brought in from the
 `dgeni-packages` node modules, such as `jsdoc` and `nunjucks`.
 
 ## Generating the docs

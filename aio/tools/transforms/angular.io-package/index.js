@@ -19,11 +19,11 @@ const targetPackage = require('../target-package');
 const contentPackage = require('../content-package');
 const remarkPackage = require('../remark-package');
 
-const PROJECT_ROOT = path.resolve(__dirname, '../../..');
+const PROJECT_ROOT = path.resolve(__dirname, '../../../..');
 const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'packages');
 const AIO_PATH = path.resolve(PROJECT_ROOT, 'aio');
 const CONTENTS_PATH = path.resolve(AIO_PATH, 'content');
-const TEMPLATES_PATH = path.resolve(AIO_PATH, 'transforms/templates');
+const TEMPLATES_PATH = path.resolve(AIO_PATH, 'tools/transforms/templates');
 const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content');
 const DOCS_OUTPUT_PATH = path.resolve(OUTPUT_PATH, 'docs');
 
@@ -162,7 +162,7 @@ module.exports =
 
           collectExamples.exampleFolders = ['examples', 'examples'];
 
-          generateKeywordsProcessor.ignoreWordsFile = 'aio/transforms/angular.io-package/ignore.words';
+          generateKeywordsProcessor.ignoreWordsFile = 'aio/tools/transforms/angular.io-package/ignore.words';
           generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
         })
 

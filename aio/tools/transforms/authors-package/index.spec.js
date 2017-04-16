@@ -1,7 +1,7 @@
 const fs = require('fs');
 const {resolve} = require('canonical-path');
 const {generateDocs} = require('./index.js');
-const rootPath = resolve(__dirname, '../../..');
+const rootPath = resolve(__dirname, '../../../..');
 const outputPath = resolve(rootPath, 'aio/src/content/docs');
 
 describe('authors-package', () => {
