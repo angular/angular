@@ -8,20 +8,20 @@ such as `docs/cheatsheet-package` and `docs/content-package`, etc. And some are 
 
 ## Generating the docs
 
-To generate the documentation simply run `gulp docs` from the command line.
+To generate the documentation simply run `yarn docs` from the command line.
 
 ## Testing the dgeni packages
 
-The local packages have unit tests that you can execute by running `gulp docs-test` from the command line.
+The local packages have unit tests that you can execute by running `yarn docs-test` from the command line.
 
 ## What does it generate?
 
-The output from dgeni is written to files in the `dist/docs` folder.
+The output from dgeni is written to files in the `src/content` folder.
 
-Notably this includes a partial HTML file for each "page" of the documentation, such as API pages and guides.
-It also includes JavaScript files that contain metadata about the documentation such as navigation data and
+Notably this includes a JSON file containing the partial HTML for each "page" of the documentation, such as API pages and guides.
+It also includes JSON files that contain metadata about the documentation such as navigation data and
 keywords for building a search index.
 
 ## Viewing the docs
 
-You can view the dummy demo app using a simple HTTP server hosting `dist/docs/index.html`
+You can view the pages by running `yarn start` and navigating to https://localhost:4200.
