@@ -1,4 +1,5 @@
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
 import { By } from '@angular/platform-browser';
@@ -264,6 +265,13 @@ describe('AppComponent', () => {
       expect(docViewer.innerText).toMatch(/Test Doc/i);
     });
 
+    it('should update the document title', () => {
+      const titleService = TestBed.get(Title);
+      spyOn(titleService, 'setTitle');
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
+    });
   });
 
   describe('autoScrolling', () => {

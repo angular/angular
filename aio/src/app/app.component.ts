@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
+import { Title } from '@angular/platform-browser';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
@@ -60,13 +61,17 @@ export class AppComponent implements OnInit {
     private documentService: DocumentService,
     private locationService: LocationService,
     private navigationService: NavigationService,
-    private swUpdateNotifications: SwUpdateNotificationsService
+    private swUpdateNotifications: SwUpdateNotificationsService,
+    private titleService: Title
   ) { }
 
   ngOnInit() {
     /* No need to unsubscribe because this root component never dies */
 
-    this.documentService.currentDocument.subscribe(doc => this.currentDocument = doc);
+    this.documentService.currentDocument.subscribe(doc => {
+      this.currentDocument = doc;
+      this.setDocumentTitle(doc.title);
+    });
 
     // scroll even if only the hash fragment changed
     this.locationService.currentUrl.subscribe(url => this.autoScroll());
@@ -137,5 +142,9 @@ export class AppComponent implements OnInit {
 
   sideNavToggle(value?: boolean) {
     this.sidenav.toggle(value);
+  }
+
+  setDocumentTitle(title) {
+    this.titleService.setTitle(`Angular - ${title}`);
   }
 }
