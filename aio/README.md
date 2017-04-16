@@ -1,31 +1,88 @@
-# Site
+# Angular documentation project (https://angular.io)
 
-This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.26.
+Everything in this folder is part of the documentation project. This includes
 
-## Development server
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+* the web site for displaying the documentation
+* the dgeni configuration for converting source files to rendered files that can be viewed in the web site.
+* the tooling for setting up examples for development; and generating plunkers and zip files from the examples.
 
-## Code scaffolding
+## Developer tasks
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+We use `yarn` to manage the dependencies and to run build tasks.
+You should run all these tasks from the `angular/aio` folder.
+Here are the most important tasks you might need to use:
 
-## Build
+* `yarn` - install all the dependencies.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+* `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
+* `yarn lint` - check that the doc-viewer code follows our style rules.
+* `yarn test` - watch all the source files, for the doc-viewer, and run all the unit tests when any change.
+* `yarn e2e` - run all the e2e tests for the doc-viewer.
 
-## Running unit tests
+* `yarn docs` - generate all the docs from the source files.
+* `yarn docs-watch` - watch the Angular source and the docs files and run a short-circuited doc-gen for the docs that changed.
+* `yarn docs-lint` - check that the doc gen code follows our style rules.
+* `yarn docs-test` - run the unit tests for the doc generation code.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
+* `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
+* `yarn generate-plunkers` - generate the plunker files that are used by the `live-example` tags in the docs.
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+## Guide to authoring
 
-## Deploying to GitHub Pages
+There are two types of content in the documentatation:
 
-Run `ng github-pages:deploy` to deploy to GitHub Pages.
+* **API docs**: descriptions of the modules, classes, interfaces, decorators, etc that make up the Angular platform.
+API docs are generated directly from the source code.
+The source code is contained in TypeScript files, located in the `angular/packages` folder.
+Each API item may have a preceding comment, which contains JSDoc style tags and content.
+The content is written in markdown.
 
-## Further help
+* **Other content**: guides, tutorials, and other marketing material.
+All other content is written using markdown in text files, located in the `angular/aio/content` folder.
+More specifically, there are sub-folders that contain particular types of content: guides, tutorial and marketing.
 
-To get more help on the `angular-cli` use `ng help` or go check out the [Angular-CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+We use the [dgeni](https://github.com/angular/dgeni) tool to convert these files into docs that can be viewed in the doc-viewer.
+
+### Generating the complete docs
+
+The main task for generating the docs is `yarn docs`. This will process all the source files (API and other),
+extracting the documentation and generating JSON files that can be consumed by the doc-viewer.
+
+### Partial doc generation for editors
+
+Full doc generation can take up to one minute. That's too slow for efficient document creation and editing.
+
+While you can make small changes in a smart editor that displays formatted markdown (e.g,. VS Code), you
+also want to see those changes displayed properly in the doc viewer. You'll want a quicker edit/view cycle
+time.
+
+For this purpose, use the `yarn docs-watch` task, which watches for changes to source files and only
+re-processes the the files necessary to generate the docs that are related to the file that has changed.
+Since this task takes shortcuts, it is much faster (often less than 1 second) but it won't produce full
+fidelity content. For example, links to other docs and code examples may not render correctly. This is
+most particularly noticed in links to other docs and in the embedded examples, which may not always render
+correctly.
+
+The general setup is as follows:
+
+* Open a terminal, ensure the dependencies are installed; run an initial doc generation; then start the doc-viewer:
+
+```bash
+yarn
+yarn docs
+yarn start
+```
+
+* Open a second terminal and start watching the docs
+
+```bash
+yarn docs-watch
+```
+
+* Open a browser at https://localhost:4200/ and navigate to the document on which you want to work.
+You can automatically open the browser by using `yarn start -- -o` in the first terminal.
+
+* Make changes to the page's associated doc or example files. Every time a file is saved, the doc will
+be regenerated, the app will rebuild and the page will reload.
