@@ -27,7 +27,8 @@
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false",
     "boilerplate:add": "node ./tools/examples/add-example-boilerplate add",
     "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove",
-    "generate-plunkers": "node ./tools/plunker-builder/generatePlunkers"
+    "generate-plunkers": "node ./tools/plunker-builder/generatePlunkers",
+    "generate-zips": "node ./tools/example-zipper/generateZips"
   },
   "private": true,
   "dependencies": {
@@ -52,6 +53,7 @@
     "@angular/compiler-cli": "next",
     "@types/jasmine": "2.5.38",
     "@types/node": "~6.0.60",
+    "archiver": "^1.3.0",
     "canonical-path": "^0.0.2",
     "codelyzer": "~2.0.0",
     "concurrently": "^3.4.0",

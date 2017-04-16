@@ -1,0 +1,14 @@
+{
+  "scripts": [
+    { "name": "ng", "command": "ng" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e" }
+  ],
+  "dependencies": [],
+  "devDependencies": [
+    "@angular/cli",
+    "ts-node"
+  ]
+}

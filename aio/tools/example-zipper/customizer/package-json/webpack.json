@@ -1,0 +1,26 @@
+{
+  "scripts": [
+    { "name": "start:webpack", "rename": "start" },
+    { "name": "test:webpack", "rename": "test" },
+    { "name": "build:webpack", "rename": "build" }
+  ],
+  "dependencies": [],
+  "devDependencies": [
+    "angular2-template-loader",
+    "awesome-typescript-loader",
+    "css-loader",
+    "extract-text-webpack-plugin",
+    "file-loader",
+    "html-loader",
+    "html-webpack-plugin",
+    "karma-sourcemap-loader",
+    "karma-webpack",
+    "null-loader",
+    "raw-loader",
+    "rimraf",
+    "style-loader",
+    "webpack",
+    "webpack-dev-server",
+    "webpack-merge"
+  ]
+}
