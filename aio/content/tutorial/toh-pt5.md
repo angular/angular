@@ -920,16 +920,14 @@ such as `RouterLink` and `RouterOutlet`.
 Delete the routing configuration from `AppModule` and import the `AppRoutingModule`.
 Use an ES `import` statement *and* add it to the `NgModule.imports` list.
 
-  Here is the revised `AppModule`, compared to its pre-refactor state:
+Here is the revised `AppModule`, compared to its pre-refactor state:
 
-+makeTabs(
-  `toh-5/ts/src/app/app.module.ts, toh-5/ts/src/app/app.module.3.ts`,
-   null,
-  `src/app/app.module.ts (after), src/app/app.module.ts (before)`)
-:marked
-  The revised and simplified `AppModule` is focused on identifying the key pieces of the app.
+<code-tabs>
+  <code-pane path="toh-5/src/app/app.module.ts" title="src/app/app.module.ts (after)"></code-pane>
+  <code-pane path="toh-5/src/app/app.module.3.ts" title="src/app/app.module.ts (before)"></code-pane>
+</code-tabs>
 
-
+The revised and simplified `AppModule` is focused on identifying the key pieces of the app.
 
 ## Select a hero in the *HeroesComponent*
 
