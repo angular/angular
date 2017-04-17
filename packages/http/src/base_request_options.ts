@@ -44,11 +44,11 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod|string|null;
+  method: RequestMethod|string;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
-  headers: Headers|null;
+  headers: Headers;
   /**
    * Body to be used when creating a {@link Request}.
    */
@@ -56,7 +56,7 @@ export class RequestOptions {
   /**
    * Url with which to perform a {@link Request}.
    */
-  url: string|null;
+  url: string;
   /**
    * Search parameters to be included in a {@link Request}.
    */
@@ -72,11 +72,11 @@ export class RequestOptions {
   /**
    * Enable use credentials for a {@link Request}.
    */
-  withCredentials: boolean|null;
+  withCredentials: boolean;
   /*
    * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
    */
-  responseType: ResponseContentType|null;
+  responseType: ResponseContentType;
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(
@@ -128,8 +128,8 @@ export class RequestOptions {
     });
   }
 
-  private _mergeSearchParams(params?: string|URLSearchParams|{[key: string]: any | any[]}|
-                             null): URLSearchParams {
+  private _mergeSearchParams(params: string|URLSearchParams|
+                             {[key: string]: any | any[]}): URLSearchParams {
     if (!params) return this.params;
 
     if (params instanceof URLSearchParams) {
