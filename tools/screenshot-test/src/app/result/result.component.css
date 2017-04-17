@@ -1,0 +1,58 @@
+img {
+  border: 1px solid #666;
+  width: 100%;
+}
+
+.images-section {
+  display:flex;
+}
+
+.image-title {
+  text-transform: uppercase;
+}
+
+.image-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.side-by-side .diff-section {
+  display: none;
+}
+
+.flip .diff-section {
+  visibility: hidden;
+}
+
+.flip .test-section,
+.flip .gold-section {
+  position: absolute;
+  top: 80px;
+  left: 0;
+}
+
+.flip .test-section {
+  visibility: visible;
+}
+
+.flip .gold-section {
+  visibility: hidden;
+}
+
+.flip.flipping .test-section {
+  visibility: hidden;
+}
+
+.flip.flipping .gold-section {
+  visibility: visible;
+}
+
+.failed {
+  color: red;
+}
+
+.passed {
+  color: forestgreen;
+}

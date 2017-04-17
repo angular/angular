@@ -1,0 +1,36 @@
+{
+  "name": "screenshot-test",
+  "version": "0.0.0",
+  "license": "MIT",
+  "angular-cli": {},
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^4.0.2",
+    "@angular/common": "^4.0.0",
+    "@angular/compiler": "^4.0.0",
+    "@angular/compiler-cli": "^4.0.0",
+    "@angular/core": "^4.0.0",
+    "@angular/forms": "^4.0.0",
+    "@angular/http": "^4.0.0",
+    "@angular/material": "^2.0.0-beta.3",
+    "@angular/platform-browser": "^4.0.0",
+    "@angular/platform-browser-dynamic": "^4.0.0",
+    "@angular/router": "^4.0.0",
+    "core-js": "^2.4.1",
+    "firebase": "^3.7.6",
+    "rxjs": "^5.0.1",
+    "ts-helpers": "^1.1.1",
+    "zone.js": "^0.8.4"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.0.0",
+    "@angular/compiler-cli": "^4.0.0",
+    "@types/node": "^6.0.42",
+    "ts-node": "1.2.1",
+    "typescript": "~2.2.1"
+  }
+}

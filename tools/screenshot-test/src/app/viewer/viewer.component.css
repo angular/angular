@@ -1,0 +1,19 @@
+.mode-section {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 40px 10px 10px;
+}
+
+.description {
+  font-size: 11px;
+  color: grey;
+  padding-left: 20px;
+}
+
+.failed {
+  color: red;
+}
+
+.passed {
+  color: forestgreen;
+}
