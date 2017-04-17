@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
 
   // Scroll to the anchor in the hash fragment.
   autoScroll() {
-    this.autoScrollService.scroll(this.docViewer.nativeElement.offsetParent);
+    this.autoScrollService.scroll();
   }
 
   onDocRendered() {

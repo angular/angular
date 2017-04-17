@@ -7,22 +7,23 @@ import { DOCUMENT } from '@angular/platform-browser';
  */
 @Injectable()
 export class AutoScrollService {
-
   constructor(
       @Inject(DOCUMENT) private document: any,
       private location: PlatformLocation) { }
 
   /**
-   * Scroll the contents of the container
-   * to the element with id extracted from the current location hash fragment
+   * Scroll to the element with id extracted from the current location hash fragment
+   * Scroll to top if no hash
+   * Don't scroll if hash not found
    */
-  scroll(container: HTMLElement) {
+  scroll() {
     const hash = this.getCurrentHash();
-    const element: HTMLElement = this.document.getElementById(hash);
+    const element: HTMLElement = hash
+        ? this.document.getElementById(hash)
+        : this.document.getElementById('top-of-page') || this.document.body;
     if (element) {
       element.scrollIntoView();
-    } else {
-      container.scrollTop = 0;
+      if (window && window.scrollBy) { window.scrollBy(0, -80); }
     }
   }
 
