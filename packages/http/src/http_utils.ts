@@ -32,14 +32,14 @@ export function normalizeMethodName(method: string | RequestMethod): RequestMeth
 
 export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
 
-export function getResponseURL(xhr: any): string|null {
+export function getResponseURL(xhr: any): string {
   if ('responseURL' in xhr) {
     return xhr.responseURL;
   }
   if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
     return xhr.getResponseHeader('X-Request-URL');
   }
-  return null;
+  return;
 }
 
 export function stringToArrayBuffer(input: String): ArrayBuffer {

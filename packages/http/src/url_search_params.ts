@@ -93,7 +93,7 @@ export class URLSearchParams {
 
   has(param: string): boolean { return this.paramsMap.has(param); }
 
-  get(param: string): string|null {
+  get(param: string): string {
     const storedParam = this.paramsMap.get(param);
 
     return Array.isArray(storedParam) ? storedParam[0] : null;
