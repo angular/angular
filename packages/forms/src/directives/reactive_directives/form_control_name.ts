@@ -125,14 +125,14 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this.update.emit(newValue);
   }
 
-  get path(): string[] { return controlPath(this.name, this._parent !); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
   get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-  get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
+  get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
   get asyncValidator(): AsyncValidatorFn {
-    return composeAsyncValidators(this._rawAsyncValidators) !;
+    return composeAsyncValidators(this._rawAsyncValidators);
   }
 
   get control(): FormControl { return this._control; }
@@ -151,8 +151,8 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _setUpControl() {
     this._checkParentType();
     this._control = this.formDirective.addControl(this);
-    if (this.control.disabled && this.valueAccessor !.setDisabledState) {
-      this.valueAccessor !.setDisabledState !(true);
+    if (this.control.disabled && this.valueAccessor.setDisabledState) {
+      this.valueAccessor.setDisabledState(true);
     }
     this._added = true;
   }

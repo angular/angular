@@ -158,9 +158,9 @@ export class NgModel extends NgControl implements OnChanges,
 
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
+              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
-              get asyncValidator(): AsyncValidatorFn|null {
+              get asyncValidator(): AsyncValidatorFn {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 
@@ -176,7 +176,7 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _isStandalone(): boolean {
-                return !this._parent || !!(this.options && this.options.standalone);
+                return !this._parent || (this.options && this.options.standalone);
               }
 
               private _setUpStandalone(): void {

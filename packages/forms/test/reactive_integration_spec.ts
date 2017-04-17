@@ -166,7 +166,7 @@ export function main() {
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('login') !.errors).toEqual({required: true});
+        expect(form.get('login').errors).toEqual({required: true});
 
         const newForm = new FormGroup({
           'login': new FormControl(''),
@@ -177,7 +177,7 @@ export function main() {
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(newForm.get('login') !.errors).toEqual({required: true});
+        expect(newForm.get('login').errors).toEqual({required: true});
       });
 
       it('should pick up dir validators from nested form groups', () => {
@@ -188,7 +188,7 @@ export function main() {
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin').valid).toBe(false);
 
         const newForm = new FormGroup({
           'signin':
@@ -197,7 +197,7 @@ export function main() {
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin').valid).toBe(false);
       });
 
       it('should strip named controls that are not found', () => {
@@ -373,7 +373,7 @@ export function main() {
 
       it('should throw an error if compareWith is not a function', () => {
         const fixture = initTest(FormControlSelectWithCompareFn);
-        fixture.componentInstance.compareFn = null !;
+        fixture.componentInstance.compareFn = null;
         expect(() => fixture.detectChanges())
             .toThrowError(/compareWith must be a function, but received null/);
       });
@@ -412,7 +412,7 @@ export function main() {
 
       it('should throw an error when compareWith is not a function', () => {
         const fixture = initTest(FormControlSelectMultipleWithCompareFn);
-        fixture.componentInstance.compareFn = null !;
+        fixture.componentInstance.compareFn = null;
         expect(() => fixture.detectChanges())
             .toThrowError(/compareWith must be a function, but received null/);
       });
@@ -623,7 +623,7 @@ export function main() {
       it('should emit ngSubmit event with the original submit event on submit', () => {
         const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
-        fixture.componentInstance.event = null !;
+        fixture.componentInstance.event = null;
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
@@ -739,7 +739,7 @@ export function main() {
 
       it('should work with single fields and async validators', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
-           const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
+           const control = new FormControl('', null, uniqLoginAsyncValidator('good'));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -995,10 +995,10 @@ export function main() {
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
+          expect(form.get('food').value).toEqual('chicken');
           expect(inputs[1].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('fish');
+          form.get('food').setValue('fish');
           fixture.detectChanges();
 
           // programmatic change -> view
@@ -1039,16 +1039,16 @@ export function main() {
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          form.get('food') !.setValue(null);
+          form.get('food').setValue(null);
           fixture.detectChanges();
 
           const inputs = fixture.debugElement.queryAll(By.css('input'));
           expect(inputs[0].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('chicken');
+          form.get('food').setValue('chicken');
           fixture.detectChanges();
 
-          form.get('food') !.setValue(undefined);
+          form.get('food').setValue(undefined);
           fixture.detectChanges();
           expect(inputs[0].nativeElement.checked).toEqual(false);
         });
@@ -1139,8 +1139,8 @@ export function main() {
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
-          expect(form.get('nested.food') !.value).toEqual('fish');
+          expect(form.get('food').value).toEqual('chicken');
+          expect(form.get('nested.food').value).toEqual('fish');
 
           expect(inputs[1].nativeElement.checked).toEqual(false);
           expect(inputs[2].nativeElement.checked).toEqual(false);
@@ -1161,7 +1161,7 @@ export function main() {
           expect(inputs[2].nativeElement.disabled).toEqual(false);
           expect(inputs[3].nativeElement.disabled).toEqual(false);
 
-          form.get('food') !.disable();
+          form.get('food').disable();
           expect(inputs[0].nativeElement.disabled).toEqual(true);
           expect(inputs[1].nativeElement.disabled).toEqual(true);
           expect(inputs[2].nativeElement.disabled).toEqual(false);
@@ -1267,9 +1267,9 @@ export function main() {
           expect(form.value).toEqual({'login': 'bb'});
 
           // custom validator
-          expect(form.get('login') !.errors).toEqual({'err': true});
+          expect(form.get('login').errors).toEqual({'err': true});
           form.setValue({login: 'expected'});
-          expect(form.get('login') !.errors).toEqual(null);
+          expect(form.get('login').errors).toEqual(null);
         });
 
         it('should support non builtin input elements that fire a change event without a \'target\' property',
@@ -1295,7 +1295,7 @@ export function main() {
           });
           fixture.detectChanges();
           expect(fixture.componentInstance.form.status).toEqual('DISABLED');
-          expect(fixture.componentInstance.form.get('login') !.status).toEqual('DISABLED');
+          expect(fixture.componentInstance.form.get('login').status).toEqual('DISABLED');
         });
 
         it('should support custom accessors without setDisabledState - formControlDirective',
@@ -1539,9 +1539,9 @@ export function main() {
             .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null;
+        fixture.componentInstance.maxLen = null;
+        fixture.componentInstance.pattern = null;
         fixture.detectChanges();
 
         expect(form.hasError('required', ['login'])).toEqual(false);
@@ -1581,9 +1581,9 @@ export function main() {
         fixture.detectChanges();
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null;
+        fixture.componentInstance.maxLen = null;
+        fixture.componentInstance.pattern = null;
         fixture.detectChanges();
 
         expect(newForm.hasError('required', ['login'])).toEqual(false);
@@ -1681,7 +1681,7 @@ export function main() {
            const fixture = initTest(FormControlComp);
            const resultArr: number[] = [];
            fixture.componentInstance.control =
-               new FormControl('', null !, observableValidator(resultArr));
+               new FormControl('', null, observableValidator(resultArr));
            fixture.detectChanges();
            tick(100);
 
