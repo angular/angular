@@ -54,9 +54,11 @@ extracting the documentation and generating JSON files that can be consumed by t
 
 Full doc generation can take up to one minute. That's too slow for efficient document creation and editing.
 
-While you can make small changes in a smart editor that displays formatted markdown (e.g,. VS Code), you
-also want to see those changes displayed properly in the doc viewer. You'll want a quicker edit/view cycle
-time.
+You can make small changes in a smart editor that displays formatted markdown: 
+>In VS Code, _Cmd-K, V_ opens markdown preview in side pane; _Cmd-B_ toggles left sidebar
+
+You also want to see those changes displayed properly in the doc viewer
+with a quick, edit/view cycle time.
 
 For this purpose, use the `yarn docs-watch` task, which watches for changes to source files and only
 re-processes the the files necessary to generate the docs that are related to the file that has changed.
