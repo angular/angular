@@ -1,20 +1,13 @@
-.text-headline {
-  margin: 0px 0px ($unit * 2) 0px;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 32px;
+.showcase {
+  width: 80%;
 }
 
-.grid-fixed {
-  margin: 0 auto;
-  *zoom: 1;
-  width: 960px;
+.c-resource-nav {
+  width: 20%;
 }
 
-.grid-fixed .c3, .grid-fixed .c8, {
-  display: inline;
-  margin-left: 10px;
-  margin-right: 10px;
+.resources-container {
+  position: relative;
 }
 
 .grid-fixed:after, .grid-fixed:before {
@@ -27,12 +20,6 @@
   line-height: 0;
   width: 0;
   height: 0;
-}
-.grid-fixed .c3 {
-  width: 220px;
-}
-.grid-fixed .c8 {
-  width: 620px;
 }
 
 @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
@@ -99,7 +86,7 @@
   }
 }
 
-.resources {
+aio-resource-list {
 
   .shadow-1 {
     transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -107,16 +94,8 @@
   }
 
   .showcase {
-    margin-bottom: $unit * 6;
+    margin-bottom: 8px * 6;
     border-radius: 4px;
-  }
-
-  .h-affix {
-    position: fixed;
-  }
-
-  .affix-top {
-    top: 150px;
   }
 
   .c-resource {
@@ -131,8 +110,10 @@
   }
 
   .c-resource-nav {
-    margin-top: 48px;
-    width: $unit * 20;
+    position: fixed;
+    top: 142px;
+    right: 32px;
+    width: 8px * 20;
     z-index: 1;
     background-color: #fff;
     border-radius: 2px;
