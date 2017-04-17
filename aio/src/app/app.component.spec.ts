@@ -10,19 +10,19 @@ import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
+import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { GaService } from 'app/shared/ga.service';
+import { LocationService } from 'app/shared/location.service';
+import { Logger } from 'app/shared/logger.service';
+import { MockLogger } from 'testing/logger.service';
+import { MockLocationService } from 'testing/location.service';
+import { MockSearchService } from 'testing/search.service';
+import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
-import { MockSearchService } from 'testing/search.service';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
-import { LocationService } from 'app/shared/location.service';
-import { MockLocationService } from 'testing/location.service';
-import { Logger } from 'app/shared/logger.service';
-import { MockLogger } from 'testing/logger.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
-import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
-import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -245,7 +245,7 @@ describe('AppComponent', () => {
     it('should display a marketing page', () => {
       locationService.go('features');
       fixture.detectChanges();
-      expect(docViewer.innerText).toMatch(/Features Doc/i);
+      expect(docViewer.innerText).toMatch(/Features/i);
     });
 
     it('should update the document title', () => {
@@ -443,7 +443,11 @@ class TestHttp {
       {
         "url": "features",
         "title": "Features"
-      }
+      },
+      {
+        "url": "no-title",
+        "title": "No Title"
+      },
     ],
     "SideNav": [
       {
@@ -459,7 +463,7 @@ class TestHttp {
             "url": "guide/bags",
             "title": "Bags",
             "tooltip": "Pack your bags for a code adventure."
-          },
+          }
         ]
       },
       {
@@ -493,12 +497,11 @@ class TestHttp {
     } else {
       const match = /content\/docs\/(.+)\.json/.exec(url);
       const id = match[1];
+      // Make up a title for test purposes
       const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-      const contents = `<h1>${title} Doc</h1><h2 id="#somewhere">Some heading</h2>`;
-      data = { id, title, contents };
-      if (id === 'no-title') {
-        data.title = '';
-      }
+      const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
+      const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
+      data = { id, contents };
     }
     return of({ json: () => data });
   }
