@@ -59,14 +59,13 @@ export function main() {
       ]);
       backend = injector.get(JSONPBackend);
       const base = new BaseRequestOptions();
-      sampleRequest =
-          new Request(base.merge(new RequestOptions({url: 'https://google.com'})) as any);
+      sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
     });
 
     afterEach(() => { existingScripts = []; });
 
     it('should create a connection', () => {
-      let instance: JSONPConnection = undefined !;
+      let instance: JSONPConnection;
       expect(() => instance = backend.createConnection(sampleRequest)).not.toThrow();
       expect(instance).toBeAnInstanceOf(JSONPConnection);
     });
@@ -147,8 +146,8 @@ export function main() {
          RequestMethod.Head, RequestMethod.Patch]
             .forEach(method => {
               const base = new BaseRequestOptions();
-              const req = new Request(base.merge(
-                  new RequestOptions({url: 'https://google.com', method: method})) as any);
+              const req = new Request(
+                  base.merge(new RequestOptions({url: 'https://google.com', method: method})));
               expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
                   .toThrowError();
             });
