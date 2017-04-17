@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
@@ -61,12 +61,27 @@ export function main() {
          });
        }));
 
-    it('should mark the timeline via console.time()',
+    it('should clear the perf logs and mark the timeline via console.time() on the first call',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension().timeBegin('someName').then((_) => {
-           expect(log).toEqual([['executeScript', `console.time('someName');`]]);
+         createExtension().timeBegin('someName').then(() => {
+           expect(log).toEqual(
+               [['logs', 'performance'], ['executeScript', `console.time('someName');`]]);
            async.done();
          });
+       }));
+
+    it('should mark the timeline via console.time() on the second call',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const ext = createExtension();
+         ext.timeBegin('someName')
+             .then((_) => {
+               log.splice(0, log.length);
+               ext.timeBegin('someName');
+             })
+             .then(() => {
+               expect(log).toEqual([['executeScript', `console.time('someName');`]]);
+               async.done();
+             });
        }));
 
     it('should mark the timeline via console.timeEnd()',
