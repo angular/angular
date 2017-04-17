@@ -286,14 +286,14 @@ describe('AppComponent', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
       locationService.go('some/url#fragment');
-      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+      expect(scrollService.scroll).toHaveBeenCalledWith();
     });
 
     it('should be called when a document has been rendered', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
       component.onDocRendered();
-      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+      expect(scrollService.scroll).toHaveBeenCalledWith();
     });
   });
 
