@@ -51,7 +51,7 @@ describe('applyRedirects', () => {
   });
 
   it('should throw when cannot handle a positional parameter', () => {
-    applyRedirects(testModule.injector, null !, serializer, tree('/a/1'), [
+    applyRedirects(testModule.injector, null, serializer, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
       expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
@@ -403,7 +403,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
-      applyRedirects(testModule.injector, null !, serializer, tree('b'), config)
+      applyRedirects(testModule.injector, null, serializer, tree('b'), config)
           .subscribe(
               (_) => { throw 'Should not be reached'; },
               e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\''); });
@@ -533,7 +533,7 @@ describe('applyRedirects', () => {
           ]
         }];
 
-        applyRedirects(testModule.injector, null !, serializer, tree('a/(d//aux:e)'), config)
+        applyRedirects(testModule.injector, null, serializer, tree('a/(d//aux:e)'), config)
             .subscribe(
                 (_) => { throw 'Should not be reached'; },
                 e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\''); });
@@ -564,7 +564,7 @@ describe('applyRedirects', () => {
 
     it('should error when no children matching and some url is left', () => {
       applyRedirects(
-          testModule.injector, null !, serializer, tree('/a/c'),
+          testModule.injector, null, serializer, tree('/a/c'),
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}])
           .subscribe(
               (_) => { throw 'Should not be reached'; },
@@ -587,7 +587,7 @@ describe('applyRedirects', () => {
             matcher: matcher,
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
-          }] as any,
+          }],
           '/a/1/b', (t: UrlTree) => { compareTrees(t, tree('a/1/b')); });
     });
   });
@@ -614,7 +614,7 @@ describe('applyRedirects', () => {
 
     it('should throw when using non-absolute redirects', () => {
       applyRedirects(
-          testModule.injector, null !, serializer, tree('a'),
+          testModule.injector, null, serializer, tree('a'),
           [
             {path: 'a', redirectTo: 'b(aux:c)'},
           ])
@@ -629,7 +629,7 @@ describe('applyRedirects', () => {
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(TestBed, null !, new DefaultUrlSerializer(), tree(url), config)
+  applyRedirects(TestBed, null, new DefaultUrlSerializer(), tree(url), config)
       .subscribe(callback, e => { throw e; });
 }
 

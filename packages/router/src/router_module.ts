@@ -327,7 +327,7 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
-      let resolve: Function = null !;
+      let resolve: Function = null;
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
@@ -349,7 +349,7 @@ export class RouterInitializer {
 
             // subsequent navigations should not be delayed
           } else {
-            return of (null) as any;
+            return of (null);
           }
         };
         router.initialNavigation();
@@ -380,7 +380,7 @@ export class RouterInitializer {
 
     preloader.setUpPreloading();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(null !);
+    this.resultOfPreactivationDone.next(null);
     this.resultOfPreactivationDone.complete();
   }
 

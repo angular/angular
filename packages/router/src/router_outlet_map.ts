@@ -25,5 +25,5 @@ export class RouterOutletMap {
   /**
    * Removes an outlet from this map.
    */
-  removeOutlet(name: string): void { this._outlets[name] = undefined !; }
+  removeOutlet(name: string): void { this._outlets[name] = undefined; }
 }
