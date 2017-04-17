@@ -1072,7 +1072,7 @@ The first is a sanity test; it confirms that the stubbed `UserService` is called
 
 
 
-The second parameter to the Jasmine `it` (e.g., `'expected name'`) is an optional addendum.
+The second parameter to the Jasmine matcher (e.g., `'expected name'`) is an optional addendum.
 If the expectation fails, Jasmine displays this addendum after the expectation failure message.
 In a spec with multiple expectations, it can help clarify what went wrong and which expectation failed.
 
