@@ -1,8 +1,10 @@
 import {OverlayRef, GlobalPositionStrategy} from '../core';
+import {AnimationEvent} from '@angular/animations';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {MdDialogContainer, MdDialogContainerAnimationState} from './dialog-container';
+import {MdDialogContainer} from './dialog-container';
+import 'rxjs/add/operator/filter';
 
 
 // TODO(jelbourn): resizing
@@ -23,17 +25,14 @@ export class MdDialogRef<T> {
   private _result: any;
 
   constructor(private _overlayRef: OverlayRef, public _containerInstance: MdDialogContainer) {
-    _containerInstance._onAnimationStateChange.subscribe(
-      (state: MdDialogContainerAnimationState) => {
-        if (state === 'exit-start') {
-          // Transition the backdrop in parallel with the dialog.
-          this._overlayRef.detachBackdrop();
-        } else if (state === 'exit') {
-          this._overlayRef.dispose();
-          this._afterClosed.next(this._result);
-          this._afterClosed.complete();
-          this.componentInstance = null;
-        }
+    _containerInstance._onAnimationStateChange
+      .filter((event: AnimationEvent) => event.toState === 'exit')
+      .subscribe(() => {
+        this._overlayRef.dispose();
+        this.componentInstance = null;
+      }, null, () => {
+        this._afterClosed.next(this._result);
+        this._afterClosed.complete();
       });
   }
 
@@ -44,6 +43,7 @@ export class MdDialogRef<T> {
   close(dialogResult?: any): void {
     this._result = dialogResult;
     this._containerInstance._exit();
+    this._overlayRef.detachBackdrop(); // Transition the backdrop in parallel with the dialog.
   }
 
   /**

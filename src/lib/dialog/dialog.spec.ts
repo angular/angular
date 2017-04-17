@@ -334,28 +334,6 @@ describe('MdDialog', () => {
     expect(dialogContainer._state).toBe('exit');
   });
 
-  it('should emit an event with the proper animation state', async(() => {
-    let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
-    let dialogContainer: MdDialogContainer =
-        viewContainerFixture.debugElement.query(By.directive(MdDialogContainer)).componentInstance;
-    let spy = jasmine.createSpy('animation state callback');
-
-    dialogContainer._onAnimationStateChange.subscribe(spy);
-    viewContainerFixture.detectChanges();
-
-    viewContainerFixture.whenStable().then(() => {
-      expect(spy).toHaveBeenCalledWith('enter');
-
-      dialogRef.close();
-      viewContainerFixture.detectChanges();
-      expect(spy).toHaveBeenCalledWith('exit-start');
-
-      viewContainerFixture.whenStable().then(() => {
-        expect(spy).toHaveBeenCalledWith('exit');
-      });
-    });
-  }));
-
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {
@@ -469,6 +447,35 @@ describe('MdDialog', () => {
 
       document.body.removeChild(button);
     }));
+
+    it('should allow the consumer to shift focus in afterClosed', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      let button = document.createElement('button');
+      let input = document.createElement('input');
+
+      button.id = 'dialog-trigger';
+      input.id = 'input-to-be-focused';
+
+      document.body.appendChild(button);
+      document.body.appendChild(input);
+      button.focus();
+
+      let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
+
+      dialogRef.afterClosed().subscribe(() => input.focus());
+
+      dialogRef.close();
+      tick(500);
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement.id).toBe('input-to-be-focused',
+          'Expected that the trigger was refocused after dialog close');
+
+      document.body.removeChild(button);
+      document.body.removeChild(input);
+    }));
+
   });
 
   describe('dialog content elements', () => {

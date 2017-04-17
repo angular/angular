@@ -3,8 +3,6 @@ import {
   ComponentRef,
   ViewChild,
   ViewEncapsulation,
-  NgZone,
-  OnDestroy,
   Renderer,
   ElementRef,
   EventEmitter,
@@ -21,11 +19,6 @@ import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} fr
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
-import 'rxjs/add/operator/first';
-
-
-/** Possible states for the dialog container animation. */
-export type MdDialogContainerAnimationState = 'void' | 'enter' | 'exit' | 'exit-start';
 
 
 /**
@@ -54,7 +47,7 @@ export type MdDialogContainerAnimationState = 'void' | 'enter' | 'exit' | 'exit-
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
 })
-export class MdDialogContainer extends BasePortalHost implements OnDestroy {
+export class MdDialogContainer extends BasePortalHost {
   /** The portal host inside of this container into which the dialog content will be loaded. */
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
@@ -68,13 +61,12 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   dialogConfig: MdDialogConfig;
 
   /** State of the dialog animation. */
-  _state: MdDialogContainerAnimationState = 'enter';
+  _state: 'void' | 'enter' | 'exit' = 'enter';
 
   /** Emits the current animation state whenever it changes. */
-  _onAnimationStateChange = new EventEmitter<MdDialogContainerAnimationState>();
+  _onAnimationStateChange = new EventEmitter<AnimationEvent>();
 
   constructor(
-    private _ngZone: NgZone,
     private _renderer: Renderer,
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory) {
@@ -108,7 +100,6 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
 
   /**
    * Moves the focus inside the focus trap.
-   * @private
    */
   private _trapFocus() {
     if (!this._focusTrap) {
@@ -123,46 +114,35 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
   }
 
   /**
-   * Kicks off the leave animation.
-   * @docs-private
-   */
-  _exit(): void {
-    this._state = 'exit';
-    this._onAnimationStateChange.emit('exit-start');
-  }
-
-  /**
    * Callback, invoked whenever an animation on the host completes.
    * @docs-private
    */
   _onAnimationDone(event: AnimationEvent) {
+    this._onAnimationStateChange.emit(event);
+
     if (event.toState === 'enter') {
       this._trapFocus();
+    } else if (event.toState === 'exit') {
+      this._onAnimationStateChange.complete();
     }
-
-    this._onAnimationStateChange.emit(event.toState as MdDialogContainerAnimationState);
   }
 
-  ngOnDestroy() {
-    // When the dialog is destroyed, return focus to the element that originally had it before
-    // the dialog was opened. Wait for the DOM to finish settling before changing the focus so
-    // that it doesn't end up back on the <body>. Also note that we need the extra check, because
-    // IE can set the `activeElement` to null in some cases.
-    let toFocus = this._elementFocusedBeforeDialogWasOpened as HTMLElement;
+  /**
+   * Kicks off the leave animation and restores focus to the previously-focused element.
+   * @docs-private
+   */
+  _exit(): void {
+    // We need the extra check, because IE can set the `activeElement` to null in some cases.
+    let toFocus = this._elementFocusedBeforeDialogWasOpened;
 
-    // We shouldn't use `this` inside of the NgZone subscription, because it causes a memory leak.
-    let animationStream = this._onAnimationStateChange;
-
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
-      if (toFocus && 'focus' in toFocus) {
-        toFocus.focus();
-      }
-
-      animationStream.complete();
-    });
+    if (toFocus && 'focus' in toFocus) {
+      toFocus.focus();
+    }
 
     if (this._focusTrap) {
       this._focusTrap.destroy();
     }
+
+    this._state = 'exit';
   }
 }
