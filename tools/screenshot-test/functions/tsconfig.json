@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "es2016", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "target": "es5",
+    "baseUrl": "",
+    "outDir": "../../../functions/",
+    "typeRoots": [
+      "../../../functions/node_modules/@types/!(node)"
+    ]
+  },
+  "files": [
+    "./index.ts"
+  ]
+}

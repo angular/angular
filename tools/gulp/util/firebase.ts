@@ -39,22 +39,6 @@ export function openScreenshotsBucket() {
   return gcs.bucket('material2-screenshots.appspot.com');
 }
 
-/** Opens a connection to the firebase database for screenshots. */
-export function openFirebaseScreenshotsDatabase() {
-  // Initialize the Firebase application with firebaseAdmin credentials.
-  // Credentials need to be for a Service Account, which can be created in the Firebase console.
-  let screenshotApp = firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert({
-      project_id: 'material2-screenshots',
-      client_email: 'firebase-adminsdk-t4209@material2-screenshots.iam.gserviceaccount.com',
-      private_key: decode(process.env['MATERIAL2_SCREENSHOT_FIREBASE_KEY'])
-    }),
-    databaseURL: 'https://material2-screenshots.firebaseio.com'
-  }, 'material2-screenshots');
-
-  return screenshotApp.database();
-}
-
 /** Decodes a Travis CI variable that is public in favor for PRs. */
 export function decode(str: string): string {
   // In Travis CI the private key will be incorrect because the line-breaks are escaped.

@@ -3,7 +3,7 @@ import {join} from 'path';
 import {statSync} from 'fs';
 import {DIST_ROOT} from '../constants';
 import {spawnSync} from 'child_process';
-import {isTravisPushBuild} from '../util/travis-ci';
+import {isTravisMasterBuild} from '../util/travis-ci';
 import {openFirebaseDashboardDatabase} from '../util/firebase';
 
 const bundlesDir = join(DIST_ROOT, 'bundles');
@@ -23,7 +23,7 @@ task('payload', ['library:clean-build'], () => {
   console.log('Payload Results:', JSON.stringify(results, null, 2));
 
   // Publish the results to firebase when it runs on Travis and not as a PR.
-  if (isTravisPushBuild()) {
+  if (isTravisMasterBuild()) {
     return publishResults(results);
   }
 
