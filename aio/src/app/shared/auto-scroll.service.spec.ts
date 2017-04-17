@@ -3,11 +3,9 @@ import { PlatformLocation } from '@angular/common';
 import { DOCUMENT } from '@angular/platform-browser';
 import { AutoScrollService } from './auto-scroll.service';
 
-
 describe('AutoScrollService', () => {
   let injector: ReflectiveInjector,
       autoScroll: AutoScrollService,
-      container: HTMLElement,
       location: MockPlatformLocation,
       document: MockDocument;
 
@@ -16,12 +14,17 @@ describe('AutoScrollService', () => {
   }
 
   class MockDocument {
+    body = new MockElement();
     getElementById = jasmine.createSpy('Document getElementById');
   }
 
   class MockElement {
     scrollIntoView = jasmine.createSpy('Element scrollIntoView');
   }
+
+  beforeEach(() => {
+    spyOn(window, 'scrollBy');
+  });
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -31,34 +34,37 @@ describe('AutoScrollService', () => {
     ]);
     location = injector.get(PlatformLocation);
     document = injector.get(DOCUMENT);
-    container = window.document.createElement('div');
-    container.scrollTop = 100;
     autoScroll = injector.get(AutoScrollService);
   });
 
-  it('should scroll the container to the top if there is no hash', () => {
+  it('should scroll to the top if there is no hash', () => {
     location.hash = '';
 
-    autoScroll.scroll(container);
-    expect(container.scrollTop).toEqual(0);
+    const topOfPage = new MockElement();
+    document.getElementById.and
+            .callFake(id  => id === 'top-of-page' ? topOfPage : null);
+
+    autoScroll.scroll();
+    expect(topOfPage.scrollIntoView).toHaveBeenCalled();
   });
 
-  it('should scroll the container to the top if the hash does not match an element id', () => {
-    location.hash = 'some-id';
+  it('should not scroll if the hash does not match an element id', () => {
+    location.hash = 'not-found';
     document.getElementById.and.returnValue(null);
 
-    autoScroll.scroll(container);
-    expect(document.getElementById).toHaveBeenCalledWith('some-id');
-    expect(container.scrollTop).toEqual(0);
+    autoScroll.scroll();
+    expect(document.getElementById).toHaveBeenCalledWith('not-found');
+    expect(window.scrollBy).not.toHaveBeenCalled();
   });
 
-  it('should scroll the container to the element whose id matches the hash', () => {
+  it('should scroll to the element whose id matches the hash', () => {
     const element = new MockElement();
     location.hash = 'some-id';
     document.getElementById.and.returnValue(element);
 
-    autoScroll.scroll(container);
+    autoScroll.scroll();
     expect(document.getElementById).toHaveBeenCalledWith('some-id');
     expect(element.scrollIntoView).toHaveBeenCalled();
+    expect(window.scrollBy).toHaveBeenCalledWith(0, -80);
   });
 });
