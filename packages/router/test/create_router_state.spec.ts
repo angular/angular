@@ -19,7 +19,7 @@ describe('create router state', () => {
   const reuseStrategy = new DefaultRouteReuseStrategy();
 
   const emptyState = () =>
-      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null), RootComponent);
+      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(
@@ -76,8 +76,8 @@ describe('create router state', () => {
         createRouterState(reuseStrategy, createState(config, 'a/2;p=22/(b//right:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
-    const prevP = prevState.firstChild(prevState.root);
-    const currP = state.firstChild(state.root);
+    const prevP = prevState.firstChild(prevState.root) !;
+    const currP = state.firstChild(state.root) !;
     expect(prevP).toBe(currP);
 
     const prevC = prevState.children(prevP);
@@ -101,7 +101,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 function createState(config: Routes, url: string): RouterStateSnapshot {
-  let res: RouterStateSnapshot;
+  let res: RouterStateSnapshot = undefined !;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }

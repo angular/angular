@@ -57,7 +57,7 @@ describe('Router', () => {
     const inj = {get: (token: any) => () => `${token}_value`};
     let empty: RouterStateSnapshot;
 
-    beforeEach(() => { empty = createEmptyStateSnapshot(serializer.parse('/'), null); });
+    beforeEach(() => { empty = createEmptyStateSnapshot(serializer.parse('/'), null !); });
 
     it('should resolve data', () => {
       const r = {data: 'resolver'};
@@ -65,7 +65,7 @@ describe('Router', () => {
       const s = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n, [])]));
 
       checkResolveData(s, empty, inj, () => {
-        expect(s.root.firstChild.data).toEqual({data: 'resolver_value'});
+        expect(s.root.firstChild !.data).toEqual({data: 'resolver_value'});
       });
     });
 
@@ -73,7 +73,7 @@ describe('Router', () => {
       const parentResolve = {data: 'resolver'};
       const childResolve = {};
 
-      const parent = createActivatedRouteSnapshot(null, {resolve: parentResolve});
+      const parent = createActivatedRouteSnapshot(null !, {resolve: parentResolve});
       const child = createActivatedRouteSnapshot('b', {resolve: childResolve});
 
       const s = new RouterStateSnapshot(
@@ -82,7 +82,7 @@ describe('Router', () => {
       const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
 
       checkResolveData(s, empty, inj, () => {
-        expect(s.root.firstChild.firstChild.data).toEqual({data: 'resolver_value'});
+        expect(s.root.firstChild !.firstChild !.data).toEqual({data: 'resolver_value'});
       });
     });
 
@@ -99,8 +99,8 @@ describe('Router', () => {
       const s2 = new RouterStateSnapshot(
           'url', new TreeNode(empty.root, [new TreeNode(n21, [new TreeNode(n22, [])])]));
       checkResolveData(s2, s1, inj, () => {
-        expect(s2.root.firstChild.data).toEqual({data: 'resolver1_value'});
-        expect(s2.root.firstChild.firstChild.data).toEqual({data: 'resolver2_value'});
+        expect(s2.root.firstChild !.data).toEqual({data: 'resolver1_value'});
+        expect(s2.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
       });
     });
   });
