@@ -9,14 +9,14 @@
   <span class="fill-remaining-space"></span>
 </md-toolbar>
 
-<md-sidenav-container class="sidenav-container">
+<md-sidenav-container class="sidenav-container" role="main">
 
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
     <aio-nav-menu *ngIf="!isSideBySide" class="top-menu" [nodes]="topMenuNodes" [currentNode]="currentNode"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
   </md-sidenav>
 
-  <section class="sidenav-content" [id]="pageId">
+  <section class="sidenav-content" [id]="pageId" role="content">
     <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
