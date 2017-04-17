@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.0.0-rc.5",
+  "version": "4.1.0-beta.1",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -85,6 +85,10 @@
           "dev": true
         }
       }
+    },
+    "ajv": {
+      "version": "4.11.7",
+      "dev": true
     },
     "align-text": {
       "version": "0.1.3",
@@ -2025,6 +2029,10 @@
         }
       }
     },
+    "co": {
+      "version": "4.6.0",
+      "dev": true
+    },
     "code-point-at": {
       "version": "1.0.0",
       "dev": true
@@ -3793,6 +3801,10 @@
         }
       }
     },
+    "har-schema": {
+      "version": "1.0.5",
+      "dev": true
+    },
     "har-validator": {
       "version": "2.0.6",
       "dev": true,
@@ -4219,6 +4231,10 @@
       "version": "0.2.3",
       "dev": true
     },
+    "json-stable-stringify": {
+      "version": "1.0.1",
+      "dev": true
+    },
     "json-stringify-safe": {
       "version": "5.0.1",
       "dev": true
@@ -4233,6 +4249,10 @@
     },
     "jsonfile": {
       "version": "2.2.3",
+      "dev": true
+    },
+    "jsonify": {
+      "version": "0.0.0",
       "dev": true
     },
     "jsonparse": {
@@ -5170,6 +5190,10 @@
       "version": "0.9.0",
       "dev": true
     },
+    "performance-now": {
+      "version": "0.2.0",
+      "dev": true
+    },
     "pify": {
       "version": "2.3.0",
       "dev": true
@@ -5225,39 +5249,51 @@
       }
     },
     "protractor": {
-      "version": "4.0.11",
+      "version": "4.0.14",
       "dev": true,
       "dependencies": {
         "@types/jasmine": {
-          "version": "2.5.37",
+          "version": "2.5.47",
           "dev": true
         },
         "@types/node": {
-          "version": "6.0.46",
+          "version": "6.0.68",
+          "dev": true
+        },
+        "@types/selenium-webdriver": {
+          "version": "2.53.37",
+          "dev": true
+        },
+        "caseless": {
+          "version": "0.12.0",
           "dev": true
         },
         "glob": {
           "version": "7.1.1",
           "dev": true
         },
+        "har-validator": {
+          "version": "4.2.1",
+          "dev": true
+        },
         "mime-db": {
-          "version": "1.24.0",
+          "version": "1.27.0",
           "dev": true
         },
         "mime-types": {
-          "version": "2.1.12",
+          "version": "2.1.15",
           "dev": true
         },
         "qs": {
-          "version": "6.3.0",
+          "version": "6.4.0",
           "dev": true
         },
         "request": {
-          "version": "2.78.0",
+          "version": "2.81.0",
           "dev": true
         },
         "rimraf": {
-          "version": "2.5.4",
+          "version": "2.6.1",
           "dev": true
         },
         "saucelabs": {
@@ -5272,8 +5308,16 @@
           "version": "2.3.2",
           "dev": true
         },
+        "tunnel-agent": {
+          "version": "0.6.0",
+          "dev": true
+        },
+        "uuid": {
+          "version": "3.0.1",
+          "dev": true
+        },
         "webdriver-manager": {
-          "version": "10.2.8",
+          "version": "10.3.0",
           "dev": true
         }
       }
@@ -5603,6 +5647,10 @@
     },
     "rxjs": {
       "version": "5.0.1"
+    },
+    "safe-buffer": {
+      "version": "5.0.1",
+      "dev": true
     },
     "sander": {
       "version": "0.5.1",
