@@ -151,19 +151,19 @@ export function main() {
 
     it('should remove the parameter when set to undefined or null', () => {
       const params = new URLSearchParams('q=Q');
-      params.set('q', undefined);
+      params.set('q', undefined !);
       expect(params.has('q')).toBe(false);
       expect(params.toString()).toEqual('');
-      params.set('q', null);
+      params.set('q', null !);
       expect(params.has('q')).toBe(false);
       expect(params.toString()).toEqual('');
     });
 
     it('should ignore the value when append undefined or null', () => {
       const params = new URLSearchParams('q=Q');
-      params.append('q', undefined);
+      params.append('q', undefined !);
       expect(params.toString()).toEqual('q=Q');
-      params.append('q', null);
+      params.append('q', null !);
       expect(params.toString()).toEqual('q=Q');
     });
 
