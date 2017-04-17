@@ -6,7 +6,9 @@ import {
   Input,
   ElementRef,
   NgZone,
-  Renderer, Directive
+  Renderer2,
+  Directive,
+  ViewChild,
 } from '@angular/core';
 
 
@@ -24,6 +26,8 @@ const startIndeterminate = 3;
 const endIndeterminate = 80;
 /* Maximum angle for the arc. The angle can't be exactly 360, because the arc becomes hidden. */
 const MAX_ANGLE = 359.99 / 100;
+/** Whether the user's browser supports requestAnimationFrame. */
+const HAS_RAF = typeof requestAnimationFrame !== 'undefined';
 
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
 
@@ -67,7 +71,7 @@ export class MdProgressSpinner implements OnDestroy {
   private _interdeterminateInterval: number;
 
   /** The SVG <path> node that is used to draw the circle. */
-  private _path: SVGPathElement;
+  @ViewChild('path') private _path: ElementRef;
 
   private _mode: ProgressSpinnerMode = 'determinate';
   private _value: number;
@@ -107,7 +111,11 @@ export class MdProgressSpinner implements OnDestroy {
   @Input()
   get color(): string { return this._color; }
   set color(value: string) {
-    this._updateColor(value);
+    if (value) {
+      this._renderer.removeClass(this._elementRef.nativeElement, `mat-${this._color}`);
+      this._renderer.addClass(this._elementRef.nativeElement, `mat-${value}`);
+      this._color = value;
+    }
   }
 
   /** Value of the progress circle. It is bound to the host as the attribute aria-valuenow. */
@@ -152,8 +160,7 @@ export class MdProgressSpinner implements OnDestroy {
   constructor(
     private _ngZone: NgZone,
     private _elementRef: ElementRef,
-    private _renderer: Renderer
-  ) {}
+    private _renderer: Renderer2) { }
 
 
   /**
@@ -178,7 +185,10 @@ export class MdProgressSpinner implements OnDestroy {
       this._renderArc(animateTo, rotation);
     } else {
       let animation = () => {
-        let elapsedTime = Math.max(0, Math.min(Date.now() - startTime, duration));
+        // If there is no requestAnimationFrame, skip ahead to the end of the animation.
+        let elapsedTime = HAS_RAF ?
+            Math.max(0, Math.min(Date.now() - startTime, duration)) :
+            duration;
 
         this._renderArc(
           ease(elapsedTime, animateFrom, changeInValue, duration),
@@ -237,30 +247,8 @@ export class MdProgressSpinner implements OnDestroy {
    * DOM attribute on the `<path>`.
    */
   private _renderArc(currentValue: number, rotation = 0) {
-    // Caches the path reference so it doesn't have to be looked up every time.
-    let path = this._path = this._path || this._elementRef.nativeElement.querySelector('path');
-
-    // Ensure that the path was found. This may not be the case if the
-    // animation function fires too early.
-    if (path) {
-      path.setAttribute('d', getSvgArc(currentValue, rotation));
-    }
-  }
-
-  /**
-   * Updates the color of the progress-spinner by adding the new palette class to the element
-   * and removing the old one.
-   */
-  private _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  /** Sets the given palette class on the component element. */
-  private _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `mat-${color}`, isAdd);
+    if (this._path) {
+      this._renderer.setAttribute(this._path.nativeElement, 'd', getSvgArc(currentValue, rotation));
     }
   }
 }
@@ -285,7 +273,7 @@ export class MdProgressSpinner implements OnDestroy {
 })
 export class MdSpinner extends MdProgressSpinner implements OnDestroy {
 
-  constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer) {
+  constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer2) {
     super(ngZone, elementRef, renderer);
     this.mode = 'indeterminate';
   }
