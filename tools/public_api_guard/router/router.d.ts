@@ -1,19 +1,19 @@
 /** @stable */
 export declare class ActivatedRoute {
     readonly children: ActivatedRoute[];
-    component: Type<any> | string | null;
+    component: Type<any> | string;
     data: Observable<Data>;
-    readonly firstChild: ActivatedRoute | null;
+    readonly firstChild: ActivatedRoute;
     fragment: Observable<string>;
     outlet: string;
     readonly paramMap: Observable<ParamMap>;
     params: Observable<Params>;
-    readonly parent: ActivatedRoute | null;
+    readonly parent: ActivatedRoute;
     readonly pathFromRoot: ActivatedRoute[];
     readonly queryParamMap: Observable<ParamMap>;
     queryParams: Observable<Params>;
     readonly root: ActivatedRoute;
-    readonly routeConfig: Route | null;
+    readonly routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
     toString(): string;
@@ -22,19 +22,19 @@ export declare class ActivatedRoute {
 /** @stable */
 export declare class ActivatedRouteSnapshot {
     readonly children: ActivatedRouteSnapshot[];
-    component: Type<any> | string | null;
+    component: Type<any> | string;
     data: Data;
-    readonly firstChild: ActivatedRouteSnapshot | null;
+    readonly firstChild: ActivatedRouteSnapshot;
     fragment: string;
     outlet: string;
     readonly paramMap: ParamMap;
     params: Params;
-    readonly parent: ActivatedRouteSnapshot | null;
+    readonly parent: ActivatedRouteSnapshot;
     readonly pathFromRoot: ActivatedRouteSnapshot[];
     readonly queryParamMap: ParamMap;
     queryParams: Params;
     readonly root: ActivatedRouteSnapshot;
-    readonly routeConfig: Route | null;
+    readonly routeConfig: Route;
     url: UrlSegment[];
     toString(): string;
 }
@@ -239,7 +239,7 @@ export declare class Router {
     readonly routerState: RouterState;
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
-    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
@@ -261,11 +261,11 @@ export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<a
 
 /** @experimental */
 export declare abstract class RouteReuseStrategy {
-    abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
+    abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
-    abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
+    abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void;
 }
 
 /** @stable */
@@ -424,7 +424,7 @@ export declare class UrlSegmentGroup {
         [key: string]: UrlSegmentGroup;
     };
     readonly numberOfChildren: number;
-    parent: UrlSegmentGroup | null;
+    parent: UrlSegmentGroup;
     segments: UrlSegment[];
     constructor(
         segments: UrlSegment[],
@@ -443,7 +443,7 @@ export declare abstract class UrlSerializer {
 
 /** @stable */
 export declare class UrlTree {
-    fragment: string | null;
+    fragment: string;
     readonly queryParamMap: ParamMap;
     queryParams: {
         [key: string]: string;

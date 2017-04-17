@@ -10,7 +10,6 @@
     "noEmitOnError": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "strictNullChecks": true,
     "outDir": "../../dist/packages/router",
     "paths": {
       "@angular/core": ["../../dist/packages/core"],

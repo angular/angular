@@ -25,9 +25,7 @@ import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, waitForMap, wrapIntoObservable} from './utils/collection';
 
 class NoMatch {
-  public segmentGroup: UrlSegmentGroup|null;
-
-  constructor(segmentGroup?: UrlSegmentGroup) { this.segmentGroup = segmentGroup || null; }
+  constructor(public segmentGroup: UrlSegmentGroup = null) {}
 }
 
 class AbsoluteRedirect {
@@ -82,7 +80,7 @@ class ApplyRedirects {
         this.expandSegmentGroup(this.ngModule, this.config, this.urlTree.root, PRIMARY_OUTLET);
     const urlTrees$ = map.call(
         expanded$, (rootSegmentGroup: UrlSegmentGroup) => this.createUrlTree(
-                       rootSegmentGroup, this.urlTree.queryParams, this.urlTree.fragment !));
+                       rootSegmentGroup, this.urlTree.queryParams, this.urlTree.fragment));
     return _catch.call(urlTrees$, (e: any) => {
       if (e instanceof AbsoluteRedirect) {
         // after an absolute redirect we do not apply any more redirects!
@@ -104,7 +102,7 @@ class ApplyRedirects {
         this.expandSegmentGroup(this.ngModule, this.config, tree.root, PRIMARY_OUTLET);
     const mapped$ = map.call(
         expanded$, (rootSegmentGroup: UrlSegmentGroup) =>
-                       this.createUrlTree(rootSegmentGroup, tree.queryParams, tree.fragment !));
+                       this.createUrlTree(rootSegmentGroup, tree.queryParams, tree.fragment));
     return _catch.call(mapped$, (e: any): Observable<UrlTree> => {
       if (e instanceof NoMatch) {
         throw this.noMatchError(e);
@@ -217,8 +215,8 @@ class ApplyRedirects {
   private expandWildCardWithParamsAgainstRouteUsingRedirect(
       ngModule: NgModuleRef<any>, routes: Route[], route: Route,
       outlet: string): Observable<UrlSegmentGroup> {
-    const newTree = this.applyRedirectCommands([], route.redirectTo !, {});
-    if (route.redirectTo !.startsWith('/')) {
+    const newTree = this.applyRedirectCommands([], route.redirectTo, {});
+    if (route.redirectTo.startsWith('/')) {
       return absoluteRedirect(newTree);
     }
 
@@ -236,8 +234,8 @@ class ApplyRedirects {
     if (!matched) return noMatch(segmentGroup);
 
     const newTree = this.applyRedirectCommands(
-        consumedSegments, route.redirectTo !, <any>positionalParamSegments);
-    if (route.redirectTo !.startsWith('/')) {
+        consumedSegments, route.redirectTo, <any>positionalParamSegments);
+    if (route.redirectTo.startsWith('/')) {
       return absoluteRedirect(newTree);
     }
 
@@ -333,7 +331,7 @@ class ApplyRedirects {
       }
 
       if (c.numberOfChildren > 1 || !c.children[PRIMARY_OUTLET]) {
-        return namedOutletsRedirect(route.redirectTo !);
+        return namedOutletsRedirect(route.redirectTo);
       }
 
       c = c.children[PRIMARY_OUTLET];
@@ -444,9 +442,9 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 
   return {
     matched: true,
-    consumedSegments: res.consumed !,
-    lastChild: res.consumed.length !,
-    positionalParamSegments: res.posParams !,
+    consumedSegments: res.consumed,
+    lastChild: res.consumed.length,
+    positionalParamSegments: res.posParams,
   };
 }
 
