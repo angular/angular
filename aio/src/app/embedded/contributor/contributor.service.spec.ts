@@ -94,7 +94,7 @@ function getTestContribs() {
       "name": "Igor Minar",
       "picture": "igor-minar.jpg",
       "twitter": "IgorMinar",
-      "website": "https://Angular.com/+IgorMinar",
+      "website": "https://google.com/+IgorMinar",
       "bio": "Igor is a software engineer at Angular.",
       "group": "Angular"
     },
@@ -118,7 +118,7 @@ function getTestContribs() {
       "name": "Naomi Black",
       "picture": "naomi.jpg",
       "twitter": "naomitraveller",
-      "website": "http://Angular.com/+NaomiBlack",
+      "website": "http://google.com/+NaomiBlack",
       "bio": "Naomi is Angular's TPM generalist and jack-of-all-trades.",
       "group": "Angular"
     }

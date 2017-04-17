@@ -94,6 +94,7 @@ aio-contributor {
         text-align: center;
         display: flex;
         flex-direction: column;
+        box-sizing: border-box;
       }
 
       .card-front {
@@ -101,8 +102,26 @@ aio-contributor {
       }
 
       .card-back {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         padding: 16px;
         transform:rotateY(180deg);
+
+        h3 {
+          overflow: auto;
+          padding: 8px;
+          margin: 0;
+        }
+
+        p {
+          margin: 8px 0;
+          font-size: 12px;
+          line-height: 14px;
+          text-align: left;
+        }
+
       }
 
       &.flipped {
