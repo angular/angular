@@ -24,6 +24,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   static PROVIDERS = [ChromeDriverExtension];
 
   private _majorChromeVersion: number;
+  private _firstRun = true;
 
   constructor(private _driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string) {
     super();
@@ -48,6 +49,12 @@ export class ChromeDriverExtension extends WebDriverExtension {
   gc() { return this._driver.executeScript('window.gc()'); }
 
   timeBegin(name: string): Promise<any> {
+    if (this._firstRun) {
+      this._firstRun = false;
+      // Before the first run, read out the existing performance logs
+      // so that the chrome buffer does not fill up.
+      this._driver.logs('performance');
+    }
     return this._driver.executeScript(`console.time('${name}');`);
   }
 
