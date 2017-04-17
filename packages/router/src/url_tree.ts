@@ -113,7 +113,7 @@ export class UrlTree {
       /** The query params of the URL */
       public queryParams: {[key: string]: string},
       /** The fragment of the URL */
-      public fragment: string) {}
+      public fragment: string|null) {}
 
   get queryParamMap(): ParamMap {
     if (!this._queryParamMap) {
@@ -139,7 +139,7 @@ export class UrlSegmentGroup {
   /** @internal */
   _segmentIndexShift: number;
   /** The parent node in the url tree */
-  parent: UrlSegmentGroup = null;
+  parent: UrlSegmentGroup|null = null;
 
   constructor(
       /** The URL segments of this group. See {@link UrlSegment} for more information */
@@ -280,7 +280,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
-    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment)}` : '';
+    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment !)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -397,7 +397,9 @@ class UrlParser {
     return params;
   }
 
-  parseFragment(): string { return this.consumeOptional('#') ? decodeURI(this.remaining) : null; }
+  parseFragment(): string|null {
+    return this.consumeOptional('#') ? decodeURI(this.remaining) : null;
+  }
 
   private parseChildren(): {[outlet: string]: UrlSegmentGroup} {
     if (this.remaining === '') {
@@ -521,7 +523,7 @@ class UrlParser {
         throw new Error(`Cannot parse url '${this.url}'`);
       }
 
-      let outletName: string;
+      let outletName: string = undefined !;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);
