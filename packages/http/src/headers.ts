@@ -41,7 +41,7 @@ export class Headers {
   _normalizedNames: Map<string, string> = new Map();
 
   // TODO(vicb): any -> string|string[]
-  constructor(headers?: Headers|{[name: string]: any}) {
+  constructor(headers?: Headers|{[name: string]: any}|null) {
     if (!headers) {
       return;
     }
@@ -100,7 +100,8 @@ export class Headers {
     this._headers.delete(lcName);
   }
 
-  forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
+  forEach(fn: (values: string[], name: string|undefined, headers: Map<string, string[]>) => void):
+      void {
     this._headers.forEach(
         (values, lcName) => fn(values, this._normalizedNames.get(lcName), this._headers));
   }
@@ -108,7 +109,7 @@ export class Headers {
   /**
    * Returns first header that matches given name.
    */
-  get(name: string): string {
+  get(name: string): string|null {
     const values = this.getAll(name);
 
     if (values === null) {
@@ -157,7 +158,7 @@ export class Headers {
     this._headers.forEach((values: string[], name: string) => {
       const split: string[] = [];
       values.forEach(v => split.push(...v.split(',')));
-      serialized[this._normalizedNames.get(name)] = split;
+      serialized[this._normalizedNames.get(name) !] = split;
     });
 
     return serialized;
@@ -166,8 +167,8 @@ export class Headers {
   /**
    * Returns list of header values for a given name.
    */
-  getAll(name: string): string[] {
-    return this.has(name) ? this._headers.get(name.toLowerCase()) : null;
+  getAll(name: string): string[]|null {
+    return this.has(name) ? this._headers.get(name.toLowerCase()) || null : null;
   }
 
   /**

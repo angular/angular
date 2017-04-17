@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
-let _jsonpConnections: {[key: string]: any} = null;
+let _jsonpConnections: {[key: string]: any}|null = null;
 
 function _getJsonpConnections(): {[key: string]: any} {
   const w: {[key: string]: any} = typeof window == 'object' ? window : {};
