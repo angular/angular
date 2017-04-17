@@ -86,7 +86,7 @@ export function setupTestingRouter(
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
     urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
-      null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
+      null !, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }
