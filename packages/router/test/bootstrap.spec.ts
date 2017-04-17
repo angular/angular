@@ -16,7 +16,7 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
 describe('bootstrap', () => {
   let log: any[] = [];
-  let testProviders: any[] = null !;
+  let testProviders: any[] = null;
 
   @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
   class RootCmp {
@@ -80,7 +80,7 @@ describe('bootstrap', () => {
 
     platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
       const router = res.injector.get(Router);
-      const data = router.routerState.snapshot.root.firstChild !.data;
+      const data = router.routerState.snapshot.root.firstChild.data;
       expect(data['test']).toEqual('test-data');
       expect(log).toEqual(
           ['TestModule', 'NavigationStart', 'RoutesRecognized', 'RootCmp', 'NavigationEnd']);

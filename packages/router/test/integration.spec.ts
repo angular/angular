@@ -240,7 +240,7 @@ describe('Integration', () => {
        advance(fixture);
 
        let recordedError: any = null;
-       router.navigateByUrl('/blank') !.catch(e => recordedError = e);
+       router.navigateByUrl('/blank').catch(e => recordedError = e);
        advance(fixture);
 
        expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
@@ -620,8 +620,8 @@ describe('Integration', () => {
        const user = fixture.debugElement.children[1].componentInstance;
 
        let r1: any, r2: any;
-       router.navigateByUrl('/user/victor') !.then(_ => r1 = _);
-       router.navigateByUrl('/user/fedor') !.then(_ => r2 = _);
+       router.navigateByUrl('/user/victor').then(_ => r1 = _);
+       router.navigateByUrl('/user/fedor').then(_ => r2 = _);
        advance(fixture);
 
        expect(r1).toEqual(false);  // returns false because it was canceled
@@ -650,7 +650,7 @@ describe('Integration', () => {
        router.events.forEach(e => recordedEvents.push(e));
 
        let e: any;
-       router.navigateByUrl('/invalid') !.catch(_ => e = _);
+       router.navigateByUrl('/invalid').catch(_ => e = _);
        advance(fixture);
        expect(e.message).toContain('Cannot match any routes');
 
@@ -677,7 +677,7 @@ describe('Integration', () => {
        router.events.forEach(e => recordedEvents.push(e));
 
        let e: any;
-       router.navigateByUrl('/invalid') !.then(_ => e = _);
+       router.navigateByUrl('/invalid').then(_ => e = _);
        advance(fixture);
        expect(e).toEqual('resolvedValue');
 
@@ -911,7 +911,7 @@ describe('Integration', () => {
          router.events.subscribe(e => recordedEvents.push(e));
 
          let e: any = null;
-         router.navigateByUrl('/simple') !.catch(error => e = error);
+         router.navigateByUrl('/simple').catch(error => e = error);
          advance(fixture);
 
          expectEvents(recordedEvents, [
@@ -1688,7 +1688,7 @@ describe('Integration', () => {
             {
               provide: 'RecordingDeactivate',
               useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                log.push({path: a.routeConfig !.path, component: c});
+                log.push({path: a.routeConfig.path, component: c});
                 return true;
               }
             },
@@ -1736,14 +1736,14 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/team/22');
 
-             let successStatus: boolean = false;
-             router.navigateByUrl('/team/33') !.then(res => successStatus = res);
+             let successStatus: boolean;
+             router.navigateByUrl('/team/33').then(res => successStatus = res);
              advance(fixture);
              expect(location.path()).toEqual('/team/33');
              expect(successStatus).toEqual(true);
 
-             let canceledStatus: boolean = false;
-             router.navigateByUrl('/team/44') !.then(res => canceledStatus = res);
+             let canceledStatus: boolean;
+             router.navigateByUrl('/team/44').then(res => canceledStatus = res);
              advance(fixture);
              expect(location.path()).toEqual('/team/33');
              expect(canceledStatus).toEqual(false);
@@ -2073,7 +2073,7 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/team/22');
 
-             router.navigateByUrl('/team/33') !.catch(() => {});
+             router.navigateByUrl('/team/33').catch(() => {});
              advance(fixture);
 
              expect(location.path()).toEqual('/team/22');
@@ -2582,8 +2582,8 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy/parent/child');
              expect(fixture.nativeElement).toHaveText('parent[child]');
 
-             const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
-             const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
+             const pInj = fixture.debugElement.query(By.directive(Parent)).injector;
+             const cInj = fixture.debugElement.query(By.directive(Child)).injector;
 
              expect(pInj.get('moduleName')).toEqual('parent');
              expect(pInj.get('fromParent')).toEqual('from parent');
@@ -2769,7 +2769,7 @@ describe('Integration', () => {
              router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
              let recordedError: any = null;
-             router.navigateByUrl('/lazy/loaded') !.catch(err => recordedError = err);
+             router.navigateByUrl('/lazy/loaded').catch(err => recordedError = err);
              advance(fixture);
              expect(recordedError.message)
                  .toEqual(
@@ -2942,7 +2942,7 @@ describe('Integration', () => {
              const recordedEvents: any[] = [];
              router.events.forEach(e => recordedEvents.push(e));
 
-             router.navigateByUrl('/lazy/loaded') !.catch(s => {});
+             router.navigateByUrl('/lazy/loaded').catch(s => {});
              advance(fixture);
 
              expect(location.path()).toEqual('/');
@@ -3206,19 +3206,19 @@ describe('Integration', () => {
       stored: {[k: string]: DetachedRouteHandle} = {};
 
       shouldDetach(route: ActivatedRouteSnapshot): boolean {
-        return route.routeConfig !.path === 'a';
+        return route.routeConfig.path === 'a';
       }
 
       store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {
-        this.stored[route.routeConfig !.path !] = detachedTree;
+        this.stored[route.routeConfig.path] = detachedTree;
       }
 
       shouldAttach(route: ActivatedRouteSnapshot): boolean {
-        return !!this.stored[route.routeConfig !.path !];
+        return !!this.stored[route.routeConfig.path];
       }
 
       retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
-        return this.stored[route.routeConfig !.path !];
+        return this.stored[route.routeConfig.path];
       }
 
       shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
@@ -3230,7 +3230,7 @@ describe('Integration', () => {
       shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
       store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
       shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
-      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null !; }
+      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null; }
       shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
         if (future.routeConfig !== curr.routeConfig) {
           return false;

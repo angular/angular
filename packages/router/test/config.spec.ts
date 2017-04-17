@@ -24,8 +24,7 @@ describe('config', () => {
 
     it('should throw for undefined route', () => {
       expect(() => {
-        validateConfig(
-            [{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}] as any);
+        validateConfig([{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}]);
       }).toThrowError(/Invalid configuration of route ''/);
     });
 
@@ -37,7 +36,7 @@ describe('config', () => {
             {path: 'b', component: ComponentB},
             ,
           ]
-        }] as any);
+        }]);
       }).toThrowError(/Invalid configuration of route 'a'/);
     });
 
@@ -99,7 +98,7 @@ describe('config', () => {
     });
 
     it('should throw when path and matcher are missing', () => {
-      expect(() => { validateConfig([{component: null, redirectTo: 'b'}] as any); })
+      expect(() => { validateConfig([{component: null, redirectTo: 'b'}]); })
           .toThrowError(
               `Invalid configuration of route '': routes must have either a path or a matcher specified`);
     });

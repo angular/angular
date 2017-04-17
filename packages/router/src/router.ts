@@ -189,7 +189,7 @@ export type RouterHook = (snapshot: RouterStateSnapshot) => Observable<void>;
  * @internal
  */
 function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
-  return of (null) as any;
+  return of (null);
 }
 
 /**
@@ -199,7 +199,7 @@ export class DefaultRouteReuseStrategy implements RouteReuseStrategy {
   shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
   store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
   shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
-  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null { return null; }
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null; }
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
     return future.routeConfig === curr.routeConfig;
   }
@@ -218,7 +218,7 @@ export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
 
-  private navigations = new BehaviorSubject<NavigationParams>(null !);
+  private navigations = new BehaviorSubject<NavigationParams>(null);
   private routerEvents = new Subject<Event>();
 
   private currentRouterState: RouterState;
@@ -263,7 +263,7 @@ export class Router {
    */
   // TODO: vsavkin make internal after the final is out.
   constructor(
-      private rootComponentType: Type<any>|null, private urlSerializer: UrlSerializer,
+      private rootComponentType: Type<any>, private urlSerializer: UrlSerializer,
       private outletMap: RouterOutletMap, private location: Location, injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
@@ -354,7 +354,7 @@ export class Router {
   dispose(): void {
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
-      this.locationSubscription = null !;
+      this.locationSubscription = null;
     }
   }
 
@@ -407,7 +407,7 @@ export class Router {
     }
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
-    let q: Params|null = null;
+    let q: Params = null;
     if (queryParamsHandling) {
       switch (queryParamsHandling) {
         case 'merge':
@@ -417,12 +417,12 @@ export class Router {
           q = this.currentUrlTree.queryParams;
           break;
         default:
-          q = queryParams || null;
+          q = queryParams;
       }
     } else {
-      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
+      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     }
-    return createUrlTree(a, this.currentUrlTree, commands, q !, f !);
+    return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
 
   /**
@@ -535,7 +535,7 @@ export class Router {
     // we should skip those.
     if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
-      return Promise.resolve(true);  // return value is not used
+      return null;  // return value is not used
     }
 
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
@@ -543,7 +543,7 @@ export class Router {
     // flicker.
     if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
-      return Promise.resolve(true);  // return value is not used
+      return null;  // return value is not used
     }
 
     let resolve: any = null;
@@ -572,7 +572,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, !!extras.skipLocationChange, !!extras.replaceUrl, id, null))
+                  url, rawUrl, extras.skipLocationChange, extras.replaceUrl, id, null))
           .then(resolve, reject);
 
       // we cannot process the current URL, but we could process the previous one =>
@@ -596,7 +596,7 @@ export class Router {
 
   private runNavigate(
       url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
-      id: number, precreatedState: RouterStateSnapshot|null): Promise<boolean> {
+      id: number, precreatedState: RouterStateSnapshot): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(
@@ -768,7 +768,7 @@ class CanActivate {
 }
 
 class CanDeactivate {
-  constructor(public component: Object|null, public route: ActivatedRouteSnapshot) {}
+  constructor(public component: Object, public route: ActivatedRouteSnapshot) {}
 }
 
 
@@ -804,8 +804,8 @@ export class PreActivation {
   }
 
   private traverseChildRoutes(
-      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
-      outletMap: RouterOutletMap|null, futurePath: ActivatedRouteSnapshot[]): void {
+      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
+      outletMap: RouterOutletMap, futurePath: ActivatedRouteSnapshot[]): void {
     const prevChildren = nodeChildrenAsMap(currNode);
 
     futureNode.children.forEach(c => {
@@ -814,12 +814,12 @@ export class PreActivation {
     });
     forEach(
         prevChildren, (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
-                          this.deactiveRouteAndItsChildren(v, outletMap !._outlets[k]));
+                          this.deactiveRouteAndItsChildren(v, outletMap._outlets[k]));
   }
 
   private traverseRoutes(
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
-      parentOutletMap: RouterOutletMap|null, futurePath: ActivatedRouteSnapshot[]): void {
+      parentOutletMap: RouterOutletMap, futurePath: ActivatedRouteSnapshot[]): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
     const outlet = parentOutletMap ? parentOutletMap._outlets[futureNode.value.outlet] : null;
@@ -827,9 +827,9 @@ export class PreActivation {
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
       if (this.shouldRunGuardsAndResolvers(
-              curr, future, future._routeConfig !.runGuardsAndResolvers)) {
+              curr, future, future._routeConfig.runGuardsAndResolvers)) {
         this.canActivateChecks.push(new CanActivate(futurePath));
-        this.canDeactivateChecks.push(new CanDeactivate(outlet !.component, curr));
+        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       } else {
         // we need to set the data
         future.data = curr.data;
@@ -864,7 +864,7 @@ export class PreActivation {
 
   private shouldRunGuardsAndResolvers(
       curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
-      mode: RunGuardsAndResolvers|undefined): boolean {
+      mode: RunGuardsAndResolvers): boolean {
     switch (mode) {
       case 'always':
         return true;
@@ -880,7 +880,7 @@ export class PreActivation {
   }
 
   private deactiveRouteAndItsChildren(
-      route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet|null): void {
+      route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet): void {
     const prevChildren = nodeChildrenAsMap(route);
     const r = route.value;
 
@@ -958,14 +958,13 @@ export class PreActivation {
   }
 
   private extractCanActivateChild(p: ActivatedRouteSnapshot):
-      {node: ActivatedRouteSnapshot, guards: any[]}|null {
+      {node: ActivatedRouteSnapshot, guards: any[]} {
     const canActivateChild = p._routeConfig ? p._routeConfig.canActivateChild : null;
     if (!canActivateChild || canActivateChild.length === 0) return null;
     return {node: p, guards: canActivateChild};
   }
 
-  private runCanDeactivate(component: Object|null, curr: ActivatedRouteSnapshot):
-      Observable<boolean> {
+  private runCanDeactivate(component: Object, curr: ActivatedRouteSnapshot): Observable<boolean> {
     const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
     const canDeactivate$ = mergeMap.call(from(canDeactivate), (c: any) => {
@@ -1021,7 +1020,7 @@ class ActivateRoutes {
   }
 
   private deactivateChildRoutes(
-      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
+      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
       outletMap: RouterOutletMap): void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(c => {
@@ -1032,7 +1031,7 @@ class ActivateRoutes {
   }
 
   private activateChildRoutes(
-      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
+      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
       outletMap: RouterOutletMap): void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(
@@ -1137,7 +1136,7 @@ class ActivateRoutes {
   private deactiveRouteAndOutlet(route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap):
       void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
-    let outlet: RouterOutlet|null = null;
+    let outlet: RouterOutlet = null;
 
     // getOutlet throws when cannot find the right outlet,
     // which can happen if an outlet was in an NgIf and was removed
@@ -1167,7 +1166,7 @@ function advanceActivatedRouteNodeAndItsChildren(node: TreeNode<ActivatedRoute>)
   node.children.forEach(advanceActivatedRouteNodeAndItsChildren);
 }
 
-function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
+function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
   for (let s = snapshot.parent; s; s = s.parent) {
     const route = s._routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
@@ -1177,7 +1176,7 @@ function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfi
   return null;
 }
 
-function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
+function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {
@@ -1188,7 +1187,7 @@ function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConf
   return null;
 }
 
-function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
+function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>) {
   const map: {[key: string]: TreeNode<T>} = {};
 
   if (node) {
