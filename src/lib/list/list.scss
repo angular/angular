@@ -88,6 +88,7 @@ $mat-dense-list-icon-size: 20px;
     width: $icon-size;
     height: $icon-size;
     font-size: $icon-size;
+    box-sizing: content-box;
     border-radius: 50%;
     padding: 4px;
   }
