@@ -36,7 +36,6 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
-  dir.valueAccessor.writeValue(control.value);
 
   // view -> model
   dir.valueAccessor.registerOnChange((newValue: any) => {
@@ -128,7 +127,7 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   if (!changes.hasOwnProperty('model')) return false;
   const change = changes['model'];
 
-  if (change.isFirstChange()) return true;
+  if (change.isFirstChange()) return change.currentValue !== '';
   return !looseIdentical(viewModel, change.currentValue);
 }
 
