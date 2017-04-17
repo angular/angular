@@ -13,8 +13,10 @@ const ROLLUP_GLOBALS = {
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/platform-browser-dynamic': 'ng.platformBrowserDynamic',
   '@angular/platform-browser/animations': 'ng.platformBrowser.animations',
+
   // NGC always adds the `index` suffix. As a temporary workaround just define that as a global.
   '@angular/material/index': 'ng.material',
+  '@angular/cdk/index': 'ng.cdk',
 
   // Rxjs dependencies
   'rxjs/Subject': 'Rx',

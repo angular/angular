@@ -1,34 +1,31 @@
-// TypeScript config file that is used to compile the library. Target environment needs to be
+// TypeScript config file that is used to compile the cdk package. Target environment needs to be
 // ES2015 since the build process will create FESM bundles using rollup.
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "declaration": true,
     "stripInternal": false,
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages/material",
+    "outDir": "../../dist/packages/cdk",
+    "paths": {},
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
     "target": "es2015",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
-    "types": [],
-    "baseUrl": ".",
-    "paths": {
-      "@angular/cdk": ["../../dist/packages/cdk"]
-    }
+    "types": []
   },
   "files": [
-    "public_api.ts",
-    "typings.d.ts"
+    "public_api.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material",
+    "flatModuleId": "@angular/cdk",
     "skipTemplateCodegen": true
   }
 }

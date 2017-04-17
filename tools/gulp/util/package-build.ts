@@ -40,15 +40,15 @@ export function composeRelease(packageName: string) {
   createMetadataFile(releasePath, packageName);
 }
 
-/** Builds a module entry-point. If no entry name is specified it builds the whole library. */
-export async function buildModuleEntry(entryFile: string, entryName = 'material') {
-  let moduleName = entryName ? `ng.material.${entryName}` : 'ng.material';
+/** Builds the bundles for the specified package. */
+export async function buildPackageBundles(entryFile: string, packageName: string) {
+  let moduleName = `ng.material.${packageName}`;
 
-  // List of paths for the specified entrypoint.
-  let fesm2015File = join(DIST_BUNDLES, `${entryName}.js`);
-  let fesm2014File = join(DIST_BUNDLES, `${entryName}.es5.js`);
-  let umdFile = join(DIST_BUNDLES, `${entryName}.umd.js`);
-  let umdMinFile = join(DIST_BUNDLES, `${entryName}.umd.min.js`);
+  // List of paths to the package bundles.
+  let fesm2015File = join(DIST_BUNDLES, `${packageName}.js`);
+  let fesm2014File = join(DIST_BUNDLES, `${packageName}.es5.js`);
+  let umdFile = join(DIST_BUNDLES, `${packageName}.umd.js`);
+  let umdMinFile = join(DIST_BUNDLES, `${packageName}.umd.min.js`);
 
   // Build FESM-2015 bundle file.
   await createRollupBundle({

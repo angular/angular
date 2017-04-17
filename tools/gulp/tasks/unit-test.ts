@@ -1,23 +1,18 @@
 import {join} from 'path';
 import {task, watch} from 'gulp';
-import {main as ngc} from '@angular/compiler-cli';
-import {PROJECT_ROOT, COMPONENTS_DIR} from '../constants';
+import {PROJECT_ROOT, SOURCE_ROOT} from '../constants';
 import {sequenceTask} from '../util/task_helpers';
 
 // There are no type definitions available for these imports.
 const runSequence = require('run-sequence');
 
-const tsconfigFile = join(COMPONENTS_DIR, 'tsconfig-specs.json');
-
-/** Builds the library with a tsconfig file that includes spec files. */
-task(':test:build:library-specs', () => ngc(tsconfigFile, {basePath: COMPONENTS_DIR}));
-
 /** Builds everything that is necessary for karma. */
 task(':test:build', sequenceTask(
   'clean',
-  ':test:build:library-specs',
-  'library:assets',
-  'library:assets:inline',
+  // Build the library bundles without any test files. (CDK will be also built)
+  'library:build',
+  // Additionally build the test files for the library and the CDK.
+  ['library:build:esm:tests', 'cdk:build:esm:tests']
 ));
 
 /**
@@ -50,7 +45,7 @@ task('test:single-run', [':test:build'], (done: () => void) => {
  * This task should be used when running unit tests locally.
  */
 task('test', [':test:build'], () => {
-  let patternRoot = join(COMPONENTS_DIR, '**/*');
+  let patternRoot = join(SOURCE_ROOT, '**/*');
   // Load karma not outside. Karma pollutes Promise with a different implementation.
   let karma = require('karma');
 

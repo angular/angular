@@ -33,20 +33,18 @@ module.exports = (config) => {
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
       // Include a Material theme in the test suite.
-      {pattern: 'dist/**/core/theming/prebuilt/indigo-pink.css', included: true, watched: true},
+      {pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css', included: true, watched: true},
 
-      // Includes Material spec and source files into karma. Those files will be watched.
-      {pattern: 'dist/packages/material/**/*.js', included: false, watched: true},
-
-      // Paths to support debugging with source maps in dev tools
-      {pattern: 'dist/**/*.ts', included: false, watched: false},
-      {pattern: 'dist/**/*.js.map', included: false, watched: false}
+      // Includes all package tests and source files into karma. Those files will be watched.
+      // This pattern also matches all all sourcemap files and TypeScript files for debugging.
+      {pattern: 'dist/packages/**/*', included: false, watched: true},
+      {pattern: 'dist/bundles/*.umd.js', included: false, watched: true},
     ],
 
     customLaunchers: customLaunchers,
 
     preprocessors: {
-      'dist/**/*.js': ['sourcemap']
+      'dist/packages/**/*.js': ['sourcemap']
     },
 
     reporters: ['dots'],
@@ -103,7 +101,7 @@ module.exports = (config) => {
     if (process.env['TRAVIS_PULL_REQUEST'] === 'false' &&
         process.env['MODE'] === "browserstack_required") {
 
-      config.preprocessors['dist/@angular/material/**/!(*+(.|-)spec).js'] = ['coverage'];
+      config.preprocessors['dist/packages/**/!(*+(.|-)spec).js'] = ['coverage'];
       config.reporters.push('coverage');
     }
 

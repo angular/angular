@@ -3,7 +3,7 @@ import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
 import {SOURCE_ROOT, DIST_EXAMPLES} from '../constants';
 import {sequenceTask, copyTask} from '../util/task_helpers';
-import {buildModuleEntry, composeRelease} from '../util/package-build';
+import {buildPackageBundles, composeRelease} from '../util/package-build';
 
 // There are no type definitions available for these imports.
 const inlineResources = require('../../../scripts/release/inline-resources');
@@ -13,7 +13,7 @@ const tsconfigPath = join(examplesRoot, 'tsconfig-build.json');
 
 // Paths to the different output files and directories.
 const examplesOut = DIST_EXAMPLES;
-const examplesMain = join(examplesOut, 'public_api.js');
+const examplesMain = join(examplesOut, 'index.js');
 
 task('examples:clean-build', sequenceTask('clean', 'examples:build'));
 
@@ -35,7 +35,7 @@ task('examples:release', ['examples:clean-build'], () => composeRelease('materia
  */
 
 task('examples:build:esm', () => tsc(tsconfigPath, {basePath: examplesRoot}));
-task('examples:build:bundles', () => buildModuleEntry(examplesMain, 'material-examples'));
+task('examples:build:bundles', () => buildPackageBundles(examplesMain, 'material-examples'));
 
 /**
  * Asset tasks. Copying and inlining CSS, HTML files into the ESM output.

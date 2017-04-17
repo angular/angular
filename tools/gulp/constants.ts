@@ -13,6 +13,7 @@ export const DIST_BUNDLES = join(DIST_ROOT, 'bundles');
 
 /** Output subdirectory where all library artifacts will be written (compiled JS, CSS, etc.) */
 export const DIST_MATERIAL = join(DIST_ROOT, 'packages', 'material');
+export const DIST_CDK = join(DIST_ROOT, 'packages', 'cdk');
 export const DIST_DEMOAPP = join(DIST_ROOT, 'packages', 'demo-app');
 export const DIST_E2EAPP = join(DIST_ROOT, 'packages', 'e2e-app');
 export const DIST_EXAMPLES = join(DIST_ROOT, 'packages', 'examples');
