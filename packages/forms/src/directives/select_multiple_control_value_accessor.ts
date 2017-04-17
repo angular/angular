@@ -149,9 +149,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /** @internal */
-  _getOptionId(value: any): string {
+  _getOptionId(value: any): string|null {
     for (const id of Array.from(this._optionMap.keys())) {
-      if (this._compareWith(this._optionMap.get(id)._value, value)) return id;
+      if (this._compareWith(this._optionMap.get(id) !._value, value)) return id;
     }
     return null;
   }
@@ -159,7 +159,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   /** @internal */
   _getOptionValue(valueString: string): any {
     const id: string = _extractId(valueString);
-    return this._optionMap.has(id) ? this._optionMap.get(id)._value : valueString;
+    return this._optionMap.has(id) ? this._optionMap.get(id) !._value : valueString;
   }
 }
 

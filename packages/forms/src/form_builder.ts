@@ -39,7 +39,7 @@ export class FormBuilder {
    *
    * See the {@link FormGroup} constructor for more details.
    */
-  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null): FormGroup {
+  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any}|null = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
     const validator: ValidatorFn = extra != null ? extra['validator'] : null;
     const asyncValidator: AsyncValidatorFn = extra != null ? extra['asyncValidator'] : null;
@@ -54,8 +54,8 @@ export class FormBuilder {
    *
    */
   control(
-      formState: Object, validator: ValidatorFn|ValidatorFn[] = null,
-      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null): FormControl {
+      formState: Object, validator?: ValidatorFn|ValidatorFn[]|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
     return new FormControl(formState, validator, asyncValidator);
   }
 
@@ -64,8 +64,8 @@ export class FormBuilder {
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
   array(
-      controlsConfig: any[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null): FormArray {
+      controlsConfig: any[], validator?: ValidatorFn|null,
+      asyncValidator?: AsyncValidatorFn|null): FormArray {
     const controls = controlsConfig.map(c => this._createControl(c));
     return new FormArray(controls, validator, asyncValidator);
   }
