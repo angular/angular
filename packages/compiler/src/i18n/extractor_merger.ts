@@ -20,6 +20,7 @@ const _I18N_ATTR_PREFIX = 'i18n-';
 const _I18N_COMMENT_PREFIX_REGEXP = /^i18n:?/;
 const MEANING_SEPARATOR = '|';
 const ID_SEPARATOR = '@@';
+const REF_SEPARATOR = '##';
 
 /**
  * Extract translatable messages from an html AST
@@ -81,7 +82,8 @@ class _Visitor implements html.Visitor {
   // _VisitorMode.Merge only
   private _translations: TranslationBundle;
   private _createI18nMessage:
-      (msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
+      (msg: html.Node[], meaning: string, description: string, id: string,
+       ref: string) => i18n.Message;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
@@ -322,8 +324,8 @@ class _Visitor implements html.Visitor {
       return null;
     }
 
-    const {meaning, description, id} = _parseMessageMeta(msgMeta);
-    const message = this._createI18nMessage(ast, meaning, description, id);
+    const {meaning, description, id, ref} = _parseMessageMeta(msgMeta);
+    const message = this._createI18nMessage(ast, meaning, description, id, ref);
     this._messages.push(message);
     return message;
   }
@@ -350,7 +352,7 @@ class _Visitor implements html.Visitor {
   private _translateAttributes(el: html.Element): html.Attribute[] {
     const attributes = el.attrs;
     const i18nParsedMessageMeta:
-        {[name: string]: {meaning: string, description: string, id: string}} = {};
+        {[name: string]: {meaning: string, description: string, id: string, ref: string}} = {};
 
     attributes.forEach(attr => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
@@ -368,8 +370,9 @@ class _Visitor implements html.Visitor {
       }
 
       if (attr.value && attr.value != '' && i18nParsedMessageMeta.hasOwnProperty(attr.name)) {
-        const {meaning, description, id} = i18nParsedMessageMeta[attr.name];
-        const message: i18n.Message = this._createI18nMessage([attr], meaning, description, id);
+        const {meaning, description, id, ref} = i18nParsedMessageMeta[attr.name];
+        const message: i18n.Message =
+            this._createI18nMessage([attr], meaning, description, id, ref);
         const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes.length == 0) {
@@ -485,16 +488,24 @@ function _getI18nAttr(p: html.Element): html.Attribute|null {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _parseMessageMeta(i18n?: string): {meaning: string, description: string, id: string} {
-  if (!i18n) return {meaning: '', description: '', id: ''};
+function _parseMessageMeta(i18n?: string):
+    {meaning: string, description: string, id: string, ref: string} {
+  if (!i18n) return {meaning: '', description: '', id: '', ref: ''};
+
+  let ref = '';
+  const refIndex = i18n.indexOf(REF_SEPARATOR);
+  if (refIndex > -1) {
+    [i18n, ref] = [i18n.slice(0, refIndex), i18n.slice(refIndex + 2)];
+  }
 
   const idIndex = i18n.indexOf(ID_SEPARATOR);
   const descIndex = i18n.indexOf(MEANING_SEPARATOR);
   const [meaningAndDesc, id] =
       (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+
   const [meaning, description] = (descIndex > -1) ?
       [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
       ['', meaningAndDesc];
 
-  return {meaning, description, id};
+  return {meaning, description, id, ref};
 }

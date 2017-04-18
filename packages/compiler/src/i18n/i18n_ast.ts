@@ -18,11 +18,12 @@ export class Message {
    * @param meaning
    * @param description
    * @param id
+   * @param ref a way to reference the message independently of the its id
    */
   constructor(
       public nodes: Node[], public placeholders: {[phName: string]: string},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
-      public description: string, public id: string) {
+      public description: string, public id: string, public ref: string = '') {
     if (nodes.length) {
       this.sources = [{
         filePath: nodes[0].sourceSpan.start.file.url,
@@ -37,7 +38,7 @@ export class Message {
   }
 }
 
-// line and columns indexes are 1 based
+// line and column indexes are 1 based
 export interface MessageSpan {
   filePath: string;
   startLine: number;

@@ -20,6 +20,7 @@ export function main(): void {
           meaning: '',
           description: '',
           sources: [],
+          ref: 'ref',
         })).toEqual('i');
       });
     });

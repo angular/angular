@@ -21,12 +21,13 @@ const _expParser = new ExpressionParser(new ExpressionLexer());
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
-export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
-    nodes: html.Node[], meaning: string, description: string, id: string) => i18n.Message {
+export function createI18nMessageFactory(interpolationConfig: InterpolationConfig):
+    (nodes: html.Node[], meaning: string, description: string, id: string, ref: string) =>
+        i18n.Message {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
 
-  return (nodes: html.Node[], meaning: string, description: string, id: string) =>
-             visitor.toI18nMessage(nodes, meaning, description, id);
+  return (nodes: html.Node[], meaning: string, description: string, id: string, ref: string) =>
+             visitor.toI18nMessage(nodes, meaning, description, id, ref);
 }
 
 class _I18nVisitor implements html.Visitor {
@@ -40,8 +41,9 @@ class _I18nVisitor implements html.Visitor {
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
-  public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string):
-      i18n.Message {
+  public toI18nMessage(
+      nodes: html.Node[], meaning: string, description: string, id: string,
+      ref: string): i18n.Message {
     this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
@@ -51,7 +53,8 @@ class _I18nVisitor implements html.Visitor {
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
 
     return new i18n.Message(
-        i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description, id);
+        i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description, id,
+        ref);
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
@@ -116,7 +119,7 @@ class _I18nVisitor implements html.Visitor {
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
     const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
-    this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '');
+    this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '', '');
     return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 
