@@ -133,14 +133,16 @@ export class AppComponent implements OnInit {
 
     if (eventTarget.tagName === 'FOOTER' && metaKey && altKey) {
       this.dtOn = !this.dtOn;
+      return false;
     }
 
-    // Deal with anchor clicks
-    if (eventTarget instanceof HTMLImageElement) {
-      eventTarget = eventTarget.parentElement; // assume image wrapped in Anchor
+    // Deal with anchor clicks; climb DOM tree until anchor found (or null)
+    let target = eventTarget;
+    while (target && !(target instanceof HTMLAnchorElement)) {
+      target = target.parentElement;
     }
-    if (eventTarget instanceof HTMLAnchorElement) {
-      return this.locationService.handleAnchorClick(eventTarget, button, ctrlKey, metaKey);
+    if (target) {
+      return this.locationService.handleAnchorClick(target as HTMLAnchorElement, button, ctrlKey, metaKey);
     }
     return true;
   }
