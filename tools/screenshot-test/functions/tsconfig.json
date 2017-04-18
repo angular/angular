@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es6", "es2016", "dom"],
+    "lib": ["es2015", "es2016", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -8,10 +8,7 @@
     "sourceMap": true,
     "target": "es5",
     "baseUrl": "",
-    "outDir": "../../../functions/",
-    "typeRoots": [
-      "../../../functions/node_modules/@types/!(node)"
-    ]
+    "outDir": "../../../dist/screenshot-functions/"
   },
   "files": [
     "./index.ts"

@@ -46,7 +46,7 @@ import {updateGithubStatus} from './github';
  * The JWT has 3 parts: header, payload and signature. These three parts are joint by '/' in path.
  */
 
-// Initailize the admin app
+// Initialize the admin app
 firebaseAdmin.initializeApp(firebaseFunctions.config().firebase);
 
 /** The valid data types database accepts */

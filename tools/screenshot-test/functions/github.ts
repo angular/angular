@@ -18,14 +18,11 @@ export function updateGithubStatus(event: firebaseFunctions.Event<any>) {
     return;
   }
   let result = event.data.val() == true;
-  let prNumber = event.params.prNumber;
-  return setGithubStatus(event.params.sha,
-    {
+  let {prNumber, sha} = event.params;
+  return setGithubStatus(sha, {
       result: result,
       name: toolName,
       description: `${toolName} ${result ? 'passed' : 'failed'}`,
       url: `http://${authDomain}/${prNumber}`
-    },
-    repoSlug,
-    token);
+  }, repoSlug, token);
 }

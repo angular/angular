@@ -1,9 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 
-export function verifyJWT(token: string,
-                          prNumber: string,
-                          secret: string,
-                          repoSlug: string) {
+export function verifyJWT(token: string, prNumber: string, secret: string, repoSlug: string) {
   return new Promise((resolve, reject) => {
     jwt.verify(token, secret, {issuer: 'Travis CI, GmbH'}, (err: any, payload: any) => {
       if (err) {

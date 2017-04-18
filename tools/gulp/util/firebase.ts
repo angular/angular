@@ -2,7 +2,8 @@ const firebaseAdmin = require('firebase-admin');
 const firebase = require('firebase');
 const cloudStorage = require('@google-cloud/storage');
 
-const config = require('../../../functions/config.json');
+// Firebase configuration for the Screenshot project. Use the config from the screenshot functions.
+const screenshotFirebaseConfig = require('../../screenshot-test/functions/config.json');
 
 /** Opens a connection to the firebase realtime database. */
 export function openFirebaseDashboardDatabase() {
@@ -51,6 +52,6 @@ export function decode(str: string): string {
  * This connection is client side connection with no credentials
  */
 export function connectFirebaseScreenshots() {
-  return firebase.initializeApp(config.firebase);
+  return firebase.initializeApp(screenshotFirebaseConfig.firebase);
 }
 

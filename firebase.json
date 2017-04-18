@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "source": "tools/screenshot-test/functions"
+  },
   "hosting": {
     "public": "dist",
     "rewrites": [
