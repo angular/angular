@@ -17,7 +17,7 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk": ["../../dist/packages/cdk"]
+      "@angular/cdk": ["../../dist/packages/cdk/public_api"]
     }
   },
   "files": [

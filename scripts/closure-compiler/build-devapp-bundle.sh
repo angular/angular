@@ -8,11 +8,13 @@ set -e -o pipefail
 # Go to the project root directory
 cd $(dirname $0)/../..
 
-# Build the demo-app and also create the release output.
-$(npm bin)/gulp build:devapp
-$(npm bin)/gulp :package:release
 
-# Rebuild demo-app with ES2015 modules. Closure compiler is then able to parse imports.
+# Build a release of the library and of the CDK package.
+$(npm bin)/gulp build:release
+$(npm bin)/gulp cdk:build-release
+
+# Build demo-app with ES2015 modules. Closure compiler is then able to parse imports.
+$(npm bin)/gulp :build:devapp:assets :build:devapp:scss
 $(npm bin)/tsc -p src/demo-app/tsconfig-build.json --target ES2015 --module ES2015
 
 # Re-compile RxJS sources into ES2015. Otherwise closure compiler can't parse it properly.
@@ -40,6 +42,7 @@ OPTS=(
   # List of path prefixes to be removed from ES6 & CommonJS modules.
   "--js_module_root=dist/packages"
   "--js_module_root=dist/releases/material"
+  "--js_module_root=dist/releases/cdk"
   "--js_module_root=node_modules/@angular/core"
   "--js_module_root=node_modules/@angular/common"
   "--js_module_root=node_modules/@angular/compiler"
@@ -56,8 +59,9 @@ OPTS=(
   "--formatting=PRETTY_PRINT"
   "--debug"
 
-  # Include the Material FESM bundle
+  # Include the Material and CDK FESM bundles
   dist/releases/material/@angular/material.js
+  dist/releases/cdk/@angular/cdk.js
 
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js

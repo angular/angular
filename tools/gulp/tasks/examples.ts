@@ -28,7 +28,8 @@ task('examples:build', sequenceTask(
   'examples:build:bundles',
 ));
 
-task('examples:release', ['examples:clean-build'], () => composeRelease('material-examples'));
+task('examples:build-release', ['examples:build'], () => composeRelease('material-examples'));
+task('examples:build-release:clean', sequenceTask('clean', 'examples:build-release'));
 
 /**
  * TypeScript compilation tasks. Tasks are creating ESM, FESM, UMD bundles for releases.

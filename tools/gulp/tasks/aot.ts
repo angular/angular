@@ -7,12 +7,17 @@ import {join} from 'path';
 const tsconfigFile = join(DIST_DEMOAPP, 'tsconfig-aot.json');
 
 /** Builds the demo-app and library. To be able to run NGC, apply the metadata workaround. */
-task('aot:deps', sequenceTask('build:devapp', ':package:release', 'aot:copy-release'));
+task('aot:deps', sequenceTask(
+  'build:devapp',
+  [':package:release', 'cdk:build-release'],
+  'aot:copy-release'
+));
 
 // As a workaround for https://github.com/angular/angular/issues/12249, we need to
-// copy the Material ESM output inside of the demo-app output.
+// copy the Material and CDK ESM output inside of the demo-app output.
 task('aot:copy-release', () => {
-  return copySync(join(DIST_RELEASES, 'material'), join(DIST_DEMOAPP, 'material'));
+  copySync(join(DIST_RELEASES, 'material'), join(DIST_DEMOAPP, 'material'));
+  copySync(join(DIST_RELEASES, 'cdk'), join(DIST_DEMOAPP, 'cdk'));
 });
 
 /** Build the demo-app and a release to confirm that the library is AOT-compatible. */

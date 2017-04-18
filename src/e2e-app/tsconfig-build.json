@@ -14,14 +14,12 @@
     "sourceMap": true,
     "target": "es5",
     "stripInternal": false,
-    "baseUrl": "",
     "typeRoots": [
       "../../node_modules/@types/!(node)"
     ],
+    "baseUrl": "",
     "paths": {
-      "@angular/material": [
-        "../../dist/packages/material"
-      ]
+      "@angular/material": ["../../dist/packages/material/public_api"]
     }
   },
   "angularCompilerOptions": {

@@ -26,7 +26,8 @@ task('cdk:build', sequenceTask(
   'cdk:build:bundles',
 ));
 
-task('cdk:build-release', ['cdk:clean-build'], () => composeRelease('cdk'));
+task('cdk:build-release', ['cdk:build'], () => composeRelease('cdk'));
+task('cdk:build-release:clean', sequenceTask('clean', 'cdk:build-release'));
 
 /** [Watch task] Rebuilds the CDK whenever TS, SCSS, or HTML files change. */
 task('cdk:watch', () => {

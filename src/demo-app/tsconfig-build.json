@@ -19,8 +19,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@angular/material": ["../../dist/packages/material"],
-      "@angular/cdk": ["../../dist/packages/cdk"]
+      "@angular/material": ["../../dist/packages/material/public_api"],
+      "@angular/cdk": ["../../dist/packages/cdk/public_api"]
     }
   },
   "files": [

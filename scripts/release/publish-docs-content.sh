@@ -11,7 +11,7 @@ repoPath="/tmp/material2-docs-content"
 repoUrl="https://github.com/angular/material2-docs-content"
 examplesSource="./dist/docs/examples"
 
-$(npm bin)/gulp examples:release
+$(npm bin)/gulp examples:build-release:clean
 $(npm bin)/gulp docs
 
 # Get git meta info for commit
