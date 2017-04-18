@@ -147,7 +147,7 @@ For example, the filename for `SpecialSuperHeroService` is `special-super-hero.s
 Name the class `HeroService` and export it for others to import.
 
 
-<code-example path="toh-4/src/app/hero.service.1.ts" region="empty-class" title="src/app/hero.service.ts (starting point)" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.1.ts" region="empty-class" title="src/app/hero.service.ts (starting point)" linenums="false">
 
 </code-example>
 
@@ -178,7 +178,7 @@ consistency and future-proofing.
 Add a `getHeroes()` method stub.
 
 
-<code-example path="toh-4/src/app/hero.service.1.ts" region="getHeroes-stub" title="src/app/hero.service.ts (getHeroes stub)" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.1.ts" region="getHeroes-stub" title="src/app/hero.service.ts (getHeroes stub)" linenums="false">
 
 </code-example>
 
@@ -195,7 +195,7 @@ Cut the `HEROES` array from `app.component.ts` and paste it to a new file in the
 Additionally, copy the `import {Hero} ...` statement because the heroes array uses the `Hero` class.
 
 
-<code-example path="toh-4/src/app/mock-heroes.ts" title="src/app/mock-heroes.ts">
+<code-example path="toh-pt4/src/app/mock-heroes.ts" title="src/app/mock-heroes.ts">
 
 </code-example>
 
@@ -206,7 +206,7 @@ The `HEROES` constant is exported so it can be imported elsewhere, such as the `
 In `app.component.ts`, where you cut the `HEROES` array,
 add an uninitialized `heroes` property:
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="heroes-prop" title="src/app/app.component.ts (heroes property)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="heroes-prop" title="src/app/app.component.ts (heroes property)" linenums="false">
 
 </code-example>
 
@@ -216,7 +216,7 @@ add an uninitialized `heroes` property:
 Back in the `HeroService`, import the mock `HEROES` and return it from the `getHeroes()` method.
 The `HeroService` looks like this:
 
-<code-example path="toh-4/src/app/hero.service.1.ts" region="full" title="src/app/hero.service.ts" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.1.ts" region="full" title="src/app/hero.service.ts" linenums="false">
 
 </code-example>
 
@@ -227,7 +227,7 @@ You're ready to use the `HeroService` in other components, starting with `AppCom
 
 Import the `HeroService` so that you can reference it in the code.
 
-<code-example path="toh-4/src/app/app.component.ts" linenums="false" title="toh-4/src/app/app.component.ts (hero-service-import)" region="hero-service-import">
+<code-example path="toh-pt4/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (hero-service-import)" region="hero-service-import">
 
 </code-example>
 
@@ -238,7 +238,7 @@ How should the `AppComponent` acquire a runtime concrete `HeroService` instance?
 
 You could create a new instance of the `HeroService` with `new` like this:
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="new-service" title="toh-4/src/app/app.component.ts" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="new-service" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -267,7 +267,7 @@ Instead of using the *new* line, you'll add two lines.
 
 Add the constructor:
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="ctor" title="src/app/app.component.ts (constructor)">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="ctor" title="src/app/app.component.ts (constructor)">
 
 </code-example>
 
@@ -304,7 +304,7 @@ in the `@Component` call.
 
 
 
-<code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/src/app/app.component.ts (providers)" region="providers">
+<code-example path="toh-pt4/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (providers)" region="providers">
 
 </code-example>
 
@@ -321,7 +321,7 @@ The service is in a `heroService` private variable.
 
 You could call the service and get the data in one line.
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="get-heroes" title="toh-4/src/app/app.component.ts" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="get-heroes" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -330,7 +330,7 @@ You could call the service and get the data in one line.
 You don't really need a dedicated method to wrap one line.  Write it anyway:
 
 
-<code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/src/app/app.component.ts (getHeroes)" region="getHeroes">
+<code-example path="toh-pt4/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (getHeroes)" region="getHeroes">
 
 </code-example>
 
@@ -362,7 +362,7 @@ Read more about lifecycle hooks in the [Lifecycle Hooks](guide/lifecycle-hooks) 
 
 Here's the essential outline for the `OnInit` interface (don't copy this into your code):
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="on-init" title="toh-4/src/app/app.component.ts" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="on-init" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -379,7 +379,7 @@ Add the implementation for the `OnInit` interface to your export statement:
 Write an `ngOnInit` method with the initialization logic inside. Angular will call it
 at the right time. In this case, initialize by calling `getHeroes()`.
 
-<code-example path="toh-4/src/app/app.component.1.ts" linenums="false" title="toh-4/src/app/app.component.ts (ng-on-init)" region="ng-on-init">
+<code-example path="toh-pt4/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (ng-on-init)" region="ng-on-init">
 
 </code-example>
 
@@ -393,7 +393,7 @@ when you click on a hero name.
 The `HeroService` returns a list of mock heroes immediately;
 its `getHeroes()` signature is synchronous.
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="get-heroes" title="toh-4/src/app/app.component.ts" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="get-heroes" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -429,7 +429,7 @@ This is a simplified explanation. Read more about ES2015 Promises in the
 
 Update the `HeroService` with this Promise-returning `getHeroes()` method:
 
-<code-example path="toh-4/src/app/hero.service.ts" region="get-heroes" title="src/app/hero.service.ts (excerpt)" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.ts" region="get-heroes" title="src/app/hero.service.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -442,7 +442,7 @@ by returning an *immediately resolved Promise* with the mock heroes as the resul
 
 As a result of the change to `HeroService`, `this.heroes` is now set to a `Promise` rather than an array of heroes.
 
-<code-example path="toh-4/src/app/app.component.1.ts" region="getHeroes" title="src/app/app.component.ts (getHeroes - old)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="getHeroes" title="src/app/app.component.ts (getHeroes - old)" linenums="false">
 
 </code-example>
 
@@ -453,7 +453,7 @@ When the `Promise` resolves successfully, you'll have heroes to display.
 
 Pass the callback function as an argument to the Promise's `then()` method:
 
-<code-example path="toh-4/src/app/app.component.ts" region="get-heroes" title="src/app/app.component.ts (getHeroes - revised)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.ts" region="get-heroes" title="src/app/app.component.ts (getHeroes - revised)" linenums="false">
 
 </code-example>
 
@@ -577,15 +577,15 @@ Here are the code files discussed in this page.
 
 <code-tabs>
 
-  <code-pane title="src/app/hero.service.ts" path="toh-4/src/app/hero.service.ts">
+  <code-pane title="src/app/hero.service.ts" path="toh-pt4/src/app/hero.service.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.component.ts" path="toh-4/src/app/app.component.ts">
+  <code-pane title="src/app/app.component.ts" path="toh-pt4/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/mock-heroes.ts" path="toh-4/src/app/mock-heroes.ts">
+  <code-pane title="src/app/mock-heroes.ts" path="toh-pt4/src/app/mock-heroes.ts">
 
   </code-pane>
 
@@ -617,7 +617,7 @@ Read about the Angular component router and navigation among the views in the [n
 To simulate a slow connection,
 import the `Hero` symbol and add the following `getHeroesSlowly()` method to the `HeroService`.
 
-<code-example path="toh-4/src/app/hero.service.ts" region="get-heroes-slowly" title="app/hero.service.ts (getHeroesSlowly)" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.ts" region="get-heroes-slowly" title="app/hero.service.ts (getHeroesSlowly)" linenums="false">
 
 </code-example>
 

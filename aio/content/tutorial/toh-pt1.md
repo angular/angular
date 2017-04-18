@@ -109,7 +109,7 @@ Add two properties to the `AppComponent`: a `title` property for the app name an
 for a hero named "Windstorm."
 
 
-<code-example path="toh-1/app/app.component.1.ts" region="app-component-1" title="app.component.ts (AppComponent class)" linenums="false">
+<code-example path="toh-pt1/app/app.component.1.ts" region="app-component-1" title="app.component.ts (AppComponent class)" linenums="false">
 
 </code-example>
 
@@ -118,7 +118,7 @@ for a hero named "Windstorm."
 Now update the template in the `@Component` decorator with data bindings to these new properties.
 
 
-<code-example path="toh-1/app/app.component.1.ts" region="show-hero" title="app.component.ts (@Component)" linenums="false">
+<code-example path="toh-pt1/app/app.component.1.ts" region="show-hero" title="app.component.ts (@Component)" linenums="false">
 
 </code-example>
 
@@ -151,7 +151,7 @@ Create a `Hero` class with `id` and `name` properties.
 Add these properties near the top of the `app.component.ts` file, just below the import statement.
 
 
-<code-example path="toh-1/src/app/app.component.ts" region="hero-class-1" title="src/app/app.component.ts (Hero class)" linenums="false">
+<code-example path="toh-pt1/src/app/app.component.ts" region="hero-class-1" title="src/app/app.component.ts (Hero class)" linenums="false">
 
 </code-example>
 
@@ -161,7 +161,7 @@ In the `AppComponent` class, refactor the component's `hero` property to be of t
 then initialize it with an `id` of `1` and the name `Windstorm`.
 
 
-<code-example path="toh-1/src/app/app.component.ts" region="hero-property-1" title="src/app/app.component.ts (hero property)" linenums="false">
+<code-example path="toh-pt1/src/app/app.component.ts" region="hero-property-1" title="src/app/app.component.ts (hero property)" linenums="false">
 
 </code-example>
 
@@ -171,7 +171,7 @@ Because you changed the hero from a string to an object,
 update the binding in the template to refer to the hero's `name` property.
 
 
-<code-example path="toh-1/app/app.component.1.ts" region="show-hero-2" title="toh-1/app/app.component.ts">
+<code-example path="toh-pt1/app/app.component.1.ts" region="show-hero-2" title="src/app/app.component.ts">
 
 </code-example>
 
@@ -191,7 +191,7 @@ thanks to the <i>template literals</i> feature in ES2015 and TypeScript. For mor
 
 
 
-<code-example path="toh-1/app/app.component.1.ts" region="multi-line-strings" title="app.component.ts (AppComponent's template)" linenums="false">
+<code-example path="toh-pt1/app/app.component.1.ts" region="multi-line-strings" title="app.component.ts (AppComponent's template)" linenums="false">
 
 </code-example>
 
@@ -210,7 +210,7 @@ You need a two-way binding between the `<input>` form element and the `hero.name
 
 Refactor the hero name in the template so it looks like this:
 
-<code-example path="toh-1/app/app.component.1.ts" region="name-input" title="toh-1/app/app.component.ts" linenums="false">
+<code-example path="toh-pt1/app/app.component.1.ts" region="name-input" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -237,7 +237,7 @@ of external modules that the app uses.
 
 The updated `AppModule` looks like this:
 
-<code-example path="toh-1/src/app/app.module.ts" title="app.module.ts (FormsModule import)">
+<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts (FormsModule import)">
 
 </code-example>
 
@@ -279,7 +279,7 @@ Your app should look like this <live-example></live-example>.
 Here's the complete `app.component.ts` as it stands now:
 
 
-<code-example path="toh-1/src/app/app.component.ts" title="src/app/app.component.ts">
+<code-example path="toh-pt1/src/app/app.component.ts" title="src/app/app.component.ts">
 
 </code-example>
 

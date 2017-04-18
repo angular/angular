@@ -264,7 +264,7 @@ With a basic understanding of the component, you're ready to look inside the `He
 In many of the previous samples the app faked the interaction with the server by
 returning mock heroes in a service like this one:
 
-<code-example path="toh-4/src/app/hero.service.ts" region="just-get-heroes" title="toh-4/src/app/hero.service.ts" linenums="false">
+<code-example path="toh-pt4/src/app/hero.service.ts" region="just-get-heroes" title="toh-4/src/app/hero.service.ts" linenums="false">
 
 </code-example>
 
