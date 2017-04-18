@@ -20,7 +20,6 @@ const FILE_NOT_FOUND_URL = 'file-not-found';
 export class DocumentService {
 
   private cache = new Map<string, Observable<DocumentContents>>();
-  private fileNotFoundPath = this.computePath(FILE_NOT_FOUND_URL);
 
   currentDocument: Observable<DocumentContents>;
 
@@ -34,44 +33,45 @@ export class DocumentService {
 
   private getDocument(url: string) {
     this.logger.log('getting document', url);
-    const path = this.computePath(url);
-    if ( !this.cache.has(path)) {
-      this.cache.set(path, this.fetchDocument(path));
+    url = this.cleanUrl(url);
+    if ( !this.cache.has(url)) {
+      this.cache.set(url, this.fetchDocument(url));
     }
-    return this.cache.get(path);
+    return this.cache.get(url);
   }
 
-  private fetchDocument(path: string) {
-    this.logger.log('fetching document from', path);
+  private fetchDocument(url: string) {
+    this.logger.log('fetching document from', url);
     const subject = new AsyncSubject();
     this.http
-      .get(path)
-      .map(res => res.json())
+      .get(`content/docs/${url}.json`)
+      // Add the document's url to the DocumentContents provided to the rest of the app
+      .map(res => Object.assign(res.json(), { url }) as DocumentContents)
       .catch((error: Response) => {
         if (error.status === 404) {
-          if (path !== this.fileNotFoundPath) {
-            this.logger.error(`Document file not found at '${path}'`);
+          if (url !== FILE_NOT_FOUND_URL) {
+            this.logger.error(`Document file not found at '${url}'`);
             // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
             return this.getDocument(FILE_NOT_FOUND_URL);
           } else {
-            return of({ title: 'Not Found', contents: 'Document not found' });
+            return of({ title: 'Not Found', contents: 'Document not found', url: FILE_NOT_FOUND_URL });
           }
         } else {
           this.logger.error('Error fetching document', error);
-          return Observable.of({ title: 'Error fetching document', contents: 'Sorry we were not able to fetch that document.' });
+          return Observable.of({ title: 'Error fetching document', contents: 'Sorry we were not able to fetch that document.', url});
         }
       })
       .subscribe(subject);
     return subject.asObservable();
   }
 
-  private computePath(url: string) {
+  private cleanUrl(url: string) {
     url = url.match(/[^#?]*/)[0]; // strip off fragment and query
     url = url.replace(/\/$/, ''); // strip off trailing slash
     if (url === '') {
       // deal with root url
       url = 'index';
     }
-    return 'content/docs/' + url + '.json';
+    return url;
   }
 }

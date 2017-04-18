@@ -61,8 +61,8 @@ describe('DocumentService', () => {
 
     it('should emit a document each time the location changes', () => {
       let latestDocument: DocumentContents;
-      const doc0 = { title: 'doc 0' };
-      const doc1 = { title: 'doc 1' };
+      const doc0 = { title: 'doc 0', url: 'initial/url' };
+      const doc1 = { title: 'doc 1', url: 'new/url'  };
       const { docService, backend, locationService } = getServices('initial/url');
       const connections = backend.connectionsArray;
 
@@ -80,17 +80,22 @@ describe('DocumentService', () => {
     it('should emit the not-found document if the document is not found on the server', () => {
       const { docService, backend } = getServices('missing/url');
       const connections = backend.connectionsArray;
-      docService.currentDocument.subscribe();
+      let currentDocument: DocumentContents;
+      docService.currentDocument.subscribe(doc => currentDocument = doc);
 
       connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
       expect(connections.length).toEqual(2);
       expect(connections[1].request.url).toEqual(CONTENT_URL_PREFIX + 'file-not-found.json');
+      const fileNotFoundDoc = { title: 'File Not Found' };
+      connections[1].mockRespond(createResponse(fileNotFoundDoc));
+      expect(currentDocument).toEqual(jasmine.objectContaining(fileNotFoundDoc));
+      expect(currentDocument.url).toEqual('file-not-found');
     });
 
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
       let currentDocument: DocumentContents;
-      const notFoundDoc = { title: 'Not Found', contents: 'Document not found' };
-      const nextDoc = { title: 'Next Doc' };
+      const notFoundDoc: DocumentContents = { title: 'Not Found', contents: 'Document not found', url: 'file-not-found' };
+      const nextDoc = { title: 'Next Doc', url: 'new/url' };
       const { docService, backend, locationService } = getServices('file-not-found');
       const connections = backend.connectionsArray;
       docService.currentDocument.subscribe(doc => currentDocument = doc);
@@ -118,7 +123,7 @@ describe('DocumentService', () => {
       const doc1 = { title: 'doc 1' };
       locationService.go('new/url');
       connections[1].mockRespond(createResponse(doc1));
-      expect(latestDocument).toEqual(doc1);
+      expect(latestDocument).toEqual(jasmine.objectContaining(doc1));
     });
 
     it('should not make a request to the server if the doc is in the cache already', () => {
@@ -133,7 +138,7 @@ describe('DocumentService', () => {
       subscription = docService.currentDocument.subscribe(doc => latestDocument = doc);
       expect(connections.length).toEqual(1);
       connections[0].mockRespond(createResponse(doc0));
-      expect(latestDocument).toEqual(doc0);
+      expect(latestDocument).toEqual(jasmine.objectContaining(doc0));
       subscription.unsubscribe();
 
       // modify the response so we can check that future subscriptions do not trigger another request
@@ -143,7 +148,7 @@ describe('DocumentService', () => {
       locationService.go('url/1');
       expect(connections.length).toEqual(2);
       connections[1].mockRespond(createResponse(doc1));
-      expect(latestDocument).toEqual(doc1);
+      expect(latestDocument).toEqual(jasmine.objectContaining(doc1));
       subscription.unsubscribe();
 
       // modify the response so we can check that future subscriptions do not trigger another request
@@ -152,13 +157,13 @@ describe('DocumentService', () => {
       subscription = docService.currentDocument.subscribe(doc => latestDocument = doc);
       locationService.go('url/0');
       expect(connections.length).toEqual(2);
-      expect(latestDocument).toEqual(doc0);
+      expect(latestDocument).toEqual(jasmine.objectContaining(doc0));
       subscription.unsubscribe();
 
       subscription = docService.currentDocument.subscribe(doc => latestDocument = doc);
       locationService.go('url/1');
       expect(connections.length).toEqual(2);
-      expect(latestDocument).toEqual(doc1);
+      expect(latestDocument).toEqual(jasmine.objectContaining(doc1));
       subscription.unsubscribe();
     });
   });

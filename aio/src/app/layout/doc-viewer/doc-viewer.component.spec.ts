@@ -122,23 +122,23 @@ describe('DocViewerComponent', () => {
   });
 
   it(('should display nothing when set currentDoc has no content'), () => {
-    component.currentDoc = { title: 'fake title', contents: '' };
+    component.currentDoc = { title: 'fake title', contents: '', url: 'a/b' };
     fixture.detectChanges();
     expect(docViewerEl.innerHTML).toBe('');
   });
 
   it(('should display simple static content doc'), () => {
     const contents = '<p>Howdy, doc viewer</p>';
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
     fixture.detectChanges();
     expect(docViewerEl.innerHTML).toEqual(contents);
   });
 
   it(('should display nothing after reset static content doc'), () => {
     const contents = '<p>Howdy, doc viewer</p>';
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
     fixture.detectChanges();
-    component.currentDoc = { title: 'fake title', contents: '' };
+    component.currentDoc = { title: 'fake title', contents: '', url: 'a/c' };
     fixture.detectChanges();
     expect(docViewerEl.innerHTML).toEqual('');
   });
@@ -149,7 +149,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Below Foo</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
     fixture.detectChanges();
     const fooHtml = docViewerEl.querySelector('aio-foo').innerHTML;
     expect(fooHtml).toContain('Foo Component');
@@ -165,7 +165,7 @@ describe('DocViewerComponent', () => {
       </div>
       <p>Below Foo</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
     fixture.detectChanges();
     const foos = docViewerEl.querySelectorAll('aio-foo');
     expect(foos.length).toBe(2);
@@ -177,7 +177,7 @@ describe('DocViewerComponent', () => {
       <aio-bar></aio-bar>
       <p>Below Bar</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
     fixture.detectChanges();
     const barHtml = docViewerEl.querySelector('aio-bar').innerHTML;
     expect(barHtml).toContain('Bar Component');
@@ -189,7 +189,7 @@ describe('DocViewerComponent', () => {
       <aio-bar>###bar content###</aio-bar>
       <p>Below Bar</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
 
     // necessary to trigger projection within ngOnInit
     fixture.detectChanges();
@@ -207,7 +207,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Bottom</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -230,7 +230,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo><p>
       <p>Bottom</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -254,7 +254,7 @@ describe('DocViewerComponent', () => {
       <p><aio-foo></aio-foo></p>
       <p>Bottom</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
@@ -282,7 +282,7 @@ describe('DocViewerComponent', () => {
       <p><aio-baz>---More baz--</aio-baz></p>
       <p>Bottom</p>
     `;
-    component.currentDoc = { title: 'fake title', contents };
+    component.currentDoc = { title: 'fake title', contents, url: 'a/b' };
 
     // necessary to trigger Bar's projection within ngOnInit
     fixture.detectChanges();
