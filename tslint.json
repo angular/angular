@@ -1,6 +1,5 @@
 {
   "rulesDirectory": [
-    "./node_modules/tslint-no-unused-var/", 
     "./tools/tslint-rules/"
   ],
   "rules": {
@@ -27,7 +26,6 @@
     "no-bitwise": true,
     "no-shadowed-variable": true,
     "no-unused-expression": true,
-    "no-unused-var": [true, {"ignore-pattern": "^(_.*)$"}],
     "no-var-keyword": true,
     "no-exposed-todo": true,
     "no-debugger": true,
