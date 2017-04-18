@@ -339,6 +339,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
   @ContentChildren(MdSuffix) _suffixChildren: QueryList<MdSuffix>;
 
   constructor(
+    public _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() private _parentForm: NgForm,
     @Optional() private _parentFormGroup: FormGroupDirective) { }

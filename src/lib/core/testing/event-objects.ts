@@ -40,7 +40,7 @@ export function createKeyboardEvent(type: string, keyCode: number) {
 
 /** Creates a fake event object with any desired event type. */
 export function createFakeEvent(type: string) {
-  let event  = document.createEvent('Event');
+  let event = document.createEvent('Event');
   event.initEvent(type, true, true);
   return event;
 }

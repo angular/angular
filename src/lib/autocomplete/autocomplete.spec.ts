@@ -130,13 +130,12 @@ describe('MdAutocomplete', () => {
         });
       }));
 
-    it('should close the panel when blurred', async(() => {
+    it('should close the panel when input loses focus', async(() => {
       dispatchFakeEvent(input, 'focus');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        dispatchFakeEvent(input, 'blur');
-        fixture.detectChanges();
+        dispatchFakeEvent(document, 'click');
 
         expect(fixture.componentInstance.trigger.panelOpen)
             .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
