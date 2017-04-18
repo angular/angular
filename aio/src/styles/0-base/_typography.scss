@@ -18,6 +18,14 @@
       margin: 8px 0px;
     }
 
+    // Temporary fix
+    h1 p {
+      display:inline-block;
+      font-size: 24px;
+      font-weight: 500;
+      margin: 8px 0px;
+    }
+
     h1:after {
       content: "";
       display: block;
