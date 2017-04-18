@@ -68,7 +68,6 @@
     "fs-extra": "^2.0.0",
     "glob": "^7.1.1",
     "google-closure-compiler": "^20170218.0.0",
-    "google-cloud": "^0.48.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-clean-css": "^3.0.3",

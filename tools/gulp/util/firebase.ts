@@ -1,6 +1,6 @@
 const firebaseAdmin = require('firebase-admin');
 const firebase = require('firebase');
-const gcloud = require('google-cloud');
+const cloudStorage = require('@google-cloud/storage');
 
 const config = require('../../../functions/config.json');
 
@@ -27,7 +27,7 @@ export function openFirebaseDashboardDatabase() {
  * The files uploaded to google cloud are also available to firebase storage.
  */
 export function openScreenshotsBucket() {
-  let gcs = gcloud.storage({
+  let gcs = cloudStorage({
     projectId: 'material2-screenshots',
     credentials: {
       client_email: 'firebase-adminsdk-t4209@material2-screenshots.iam.gserviceaccount.com',
