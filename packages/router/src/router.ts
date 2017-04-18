@@ -530,14 +530,6 @@ export class Router {
       Promise<boolean> {
     const lastNavigation = this.navigations.value;
 
-    // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
-    // and that navigation results in 'replaceState' that leads to the same URL,
-    // we should skip those.
-    if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
-        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
-      return null;  // return value is not used
-    }
-
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
     // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
     // flicker.
@@ -562,8 +554,8 @@ export class Router {
     return promise.catch((e: any) => Promise.reject(e));
   }
 
-  private executeScheduledNavigation({id, rawUrl, extras, resolve, reject}: NavigationParams):
-      void {
+  private executeScheduledNavigation({id, source, rawUrl, extras, resolve,
+                                      reject}: NavigationParams): void {
     const url = this.urlHandlingStrategy.extract(rawUrl);
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
@@ -572,7 +564,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, extras.skipLocationChange, extras.replaceUrl, id, null))
+                  url, rawUrl, extras.skipLocationChange, extras.replaceUrl, id, null, source))
           .then(resolve, reject);
 
       // we cannot process the current URL, but we could process the previous one =>
@@ -585,7 +577,7 @@ export class Router {
           .then(
               (_) => this.runNavigate(
                   url, rawUrl, false, false, id,
-                  createEmptyState(url, this.rootComponentType).snapshot))
+                  createEmptyState(url, this.rootComponentType).snapshot, source))
           .then(resolve, reject);
 
     } else {
@@ -596,7 +588,8 @@ export class Router {
 
   private runNavigate(
       url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
-      id: number, precreatedState: RouterStateSnapshot): Promise<boolean> {
+      id: number, precreatedState: RouterStateSnapshot,
+      source: NavigationSource): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(
@@ -726,8 +719,22 @@ export class Router {
                       id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
                 } else {
-                  this.resetUrlToCurrentUrlTree();
-                  this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url), ''));
+                  const navigatedUrl: string = this.serializeUrl(url);
+                  // When navigation is canceled and it was initiated by the click on Back button,
+                  // browser history is 1 item above the actual state. So we need to call pushState
+                  // instead of replaceState to restore the correct history. We can detect click
+                  // on Back button when:
+                  // 1. Source of navigation is browser event
+                  // 2. Url is equal to the previous url
+                  if (source === 'imperative') {
+                    this.resetUrlToCurrentUrlTree();
+                  } else {
+                    const prevUrl: string =
+                        this.urlSerializer.serialize(this.navigations.value.rawUrl);
+                    const pushState: boolean = navigatedUrl === prevUrl;
+                    this.resetUrlToCurrentUrlTree(pushState);
+                  }
+                  this.routerEvents.next(new NavigationCancel(id, navigatedUrl, ''));
                   resolvePromise(false);
                 }
               },
@@ -755,9 +762,13 @@ export class Router {
     });
   }
 
-  private resetUrlToCurrentUrlTree(): void {
-    const path = this.urlSerializer.serialize(this.rawUrlTree);
-    this.location.replaceState(path);
+  private resetUrlToCurrentUrlTree(pushState: boolean = false): void {
+    const currentUrl: string = this.urlSerializer.serialize(this.rawUrlTree);
+    if (pushState) {
+      this.location.go(currentUrl);
+    } else {
+      this.location.replaceState(currentUrl);
+    }
   }
 }
 
