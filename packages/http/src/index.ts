@@ -11,7 +11,7 @@ export {JSONPBackend, JSONPConnection} from './backends/jsonp_backend';
 export {CookieXSRFStrategy, XHRBackend, XHRConnection} from './backends/xhr_backend';
 export {BaseRequestOptions, RequestOptions} from './base_request_options';
 export {BaseResponseOptions, ResponseOptions} from './base_response_options';
-export {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
+export {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
 export {Headers} from './headers';
 export {Http, Jsonp} from './http';
 export {HttpModule, JsonpModule} from './http_module';
