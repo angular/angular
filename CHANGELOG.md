@@ -46,6 +46,12 @@ imports only the set of components actually used in the application.
 need to explicitly import `BrowserAnimationsModule` (or `NoopAnimationsModule`) from
 `@angular/platform-browser/animations` as well as installing `@angular/animations`.
 
+#### Other changes
+* The `DomProjection` service was removed. This was an experimental, undocumented service that we 
+ultimately found did not provide a good approach to composing components.
+* The `config` property was removed from `MdDialogRef`. If you were using this to access the `data`
+property, you can instead inject that value using the `MD_DIALOG_DATA` of the opened component.
+
 
 
 ### Bug Fixes
