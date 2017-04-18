@@ -18,7 +18,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _broker: ClientMessageBroker;
   private _popStateListeners: Array<Function> = [];
   private _hashChangeListeners: Array<Function> = [];
-  private _location: LocationType = null;
+  private _location: LocationType = null !;
   private _channelSource: EventEmitter<Object>;
   public initialized: Promise<any>;
   private initializedResolve: () => void;
@@ -31,7 +31,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
     this._channelSource.subscribe({
       next: (msg: {[key: string]: any}) => {
-        let listeners: Array<Function> = null;
+        let listeners: Array<Function>|null = null;
         if (msg.hasOwnProperty('event')) {
           const type: string = msg['event']['type'];
           if (type === 'popstate') {
@@ -55,14 +55,13 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   init(): Promise<boolean> {
     const args: UiArguments = new UiArguments('getLocation');
 
-    return this._broker.runOnService(args, LocationType)
-        .then(
-            (val: LocationType) => {
-              this._location = val;
-              this.initializedResolve();
-              return true;
-            },
-            err => { throw new Error(err); });
+    return this._broker.runOnService(args, LocationType) !.then(
+        (val: LocationType) => {
+          this._location = val;
+          this.initializedResolve();
+          return true;
+        },
+        err => { throw new Error(err); });
   }
 
   getBaseHrefFromDOM(): string {
@@ -74,11 +73,11 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
 
-  get pathname(): string { return this._location ? this._location.pathname : null; }
+  get pathname(): string { return this._location ? this._location.pathname ! : '<unknown>'; }
 
-  get search(): string { return this._location ? this._location.search : null; }
+  get search(): string { return this._location ? this._location.search : '<unknown>'; }
 
-  get hash(): string { return this._location ? this._location.hash : null; }
+  get hash(): string { return this._location ? this._location.hash : '<unknown>'; }
 
   set pathname(newPath: string) {
     if (this._location === null) {
