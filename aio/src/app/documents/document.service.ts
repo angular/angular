@@ -72,6 +72,37 @@ export class DocumentService {
       // deal with root url
       url = 'index';
     }
-    return 'content/docs/' + url + '.json';
+    return 'content/docs/' + this.applyRedirects(url) + '.json';
+  }
+
+  private applyRedirects(url: string): string {
+    const tsLatestRe = /^docs\/ts\/latest\//;
+
+    if (!tsLatestRe.test(url)) {
+      return url;
+    }
+
+    url = url.replace(tsLatestRe, '');
+
+    // docs/ts/latest/cli-quickstart --> guide/cli-quickstart
+    // docs/ts/latest/quickstart     --> guide/quickstart
+    if (url === 'cli-quickstart' || url === 'quickstart') {
+      return `guide/${url}`;
+    }
+
+    // docs/ts/latest/guide/<GUIDE> --> guide/<GUIDE>
+    // docs/ts/latest/tutorial/<PART> --> tutorial/<PART>
+    if (/^guide\//.test(url) || /^tutorial\//.test(url)) {
+      return url;
+    }
+
+    // docs/ts/latest/api/<PACKAGE>/index/<API>-type --> api/<PACKAGE>/<API>
+    const apiMatch = /^api\/([^/]+)\/index\/(.+)-type$/.exec(url);
+    if (apiMatch) {
+      return `api/${apiMatch[1]}/${apiMatch[2]}`;
+    }
+
+    // docs/ts/latest/<ANYTHING> --> <ANYTHING>
+    return url;
   }
 }
