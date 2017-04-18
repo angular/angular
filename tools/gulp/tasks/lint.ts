@@ -17,6 +17,11 @@ gulp.task('dashboardlint', execNodeTask(
     '--syntax', 'scss']
 ));
 
+const tsLintBaseFlags = ['-c', 'tslint.json', '+(src|e2e|tools)/**/*.ts', '--exclude',
+    '**/node_modules/**/*'];
+
 /** Task to run TSLint against the e2e/ and src/ directories. */
-gulp.task('tslint', execNodeTask('tslint', ['-c', 'tslint.json', '+(src|e2e|tools)/**/*.ts',
-    '--exclude', '**/node_modules/**/*']));
+gulp.task('tslint', execNodeTask('tslint', tsLintBaseFlags));
+
+/** Task that automatically fixes TSLint warnings. */
+gulp.task('tslint:fix', execNodeTask('tslint', [...tsLintBaseFlags, '--fix']));
