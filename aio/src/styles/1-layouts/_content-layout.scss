@@ -1,6 +1,7 @@
 .sidenav-content {
   padding: 1rem 3rem 3rem;
   margin: auto;
+  min-height: 100vh;
 }
 
 .fill-remaining-space {
@@ -23,4 +24,12 @@
 
 .sidenav-content button {
   min-width: 50px;
+}
+
+#guide-change-log h2::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 24px 0px;
+  background: $lightgray;
 }

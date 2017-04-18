@@ -2,6 +2,7 @@
 Cheat Sheet
 
 @description
+
 <div class="l-content-small grid-fluid docs-content cheatsheet">
 
 <table>

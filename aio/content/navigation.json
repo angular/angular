@@ -28,7 +28,7 @@
     },
 
     {
-      "title": "Getting started",
+      "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular.",
       "children": [
         {
@@ -63,13 +63,13 @@
 
         {
           "url": "guide/appmodule",
-          "title": "The root AppModule",
+          "title": "The Root AppModule",
           "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
         },
 
         {
           "url": "guide/displaying-data",
-          "title": "Displaying data",
+          "title": "Displaying Data",
           "tooltip": "Property binding helps show app data in the UI."
         },
 
@@ -103,17 +103,17 @@
         },
         {
           "url": "tutorial/toh-pt1",
-          "title": "The hero editor",
+          "title": "The Hero Editor",
           "tooltip": "Build a simple hero editor"
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "Master/detail",
+          "title": "Master/Detail",
           "tooltip": "Build a master/detail page with a list of heroes."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "Multiple components",
+          "title": "Multiple Components",
           "tooltip": "Refactor the master/detail view into separate components."
         },
         {
@@ -151,14 +151,14 @@
 
             {
               "url": "guide/ngmodule-faq",
-              "title": "Angular module FAQs",
+              "title": "Angular Module FAQs",
               "tooltip": "Answers to frequently asked questions about @NgModule."
             }
         ]},
 
         {
           "url": "guide/component-communication",
-          "title": "Component interaction",
+          "title": "Component Interaction",
           "tooltip": "Share information between different directives and components."
         },
 
@@ -168,20 +168,20 @@
           "children": [
             {
               "url": "guide/cb-dependency-injection",
-              "title": "Dependency injection",
+              "title": "Dependency Injection",
               "tooltip": "Techniques for Dependency Injection."
             },
 
             {
               "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical injectors",
+              "title": "Hierarchical Injectors",
               "tooltip": "Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree."
             }
         ]},
 
         {
           "url": "guide/dynamic-component-loader",
-          "title": "Dynamic components",
+          "title": "Dynamic Components",
           "tooltip": "Load components dynamically."
         },
 
@@ -191,12 +191,12 @@
           "children": [
             {
               "url": "guide/attribute-directives",
-              "title": "Attribute directives",
+              "title": "Attribute Directives",
               "tooltip": "Attribute directives attach behavior to elements."
             },
             {
               "url": "guide/structural-directives",
-              "title": "Structural directives",
+              "title": "Structural Directives",
               "tooltip": "Structural directives manipulate the layout of the page."
             }
           ]
@@ -214,26 +214,26 @@
 
             {
               "url": "guide/form-validation",
-              "title": "Form validation",
+              "title": "Form Validation",
               "tooltip": "Validate user's form entries."
             },
 
             {
               "url": "guide/reactive-forms",
-              "title": "Reactive forms",
+              "title": "Reactive Forms",
               "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             }
         ]},
 
         {
           "url": "guide/server-communication",
-          "title": "HTTP client",
+          "title": "HTTP Client",
           "tooltip": "Use an HTTP Client to talk to a remote server."
         },
 
         {
           "url": "guide/lifecycle-hooks",
-          "title": "Lifecycle hooks",
+          "title": "Lifecycle Hooks",
           "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
         },
 
@@ -245,7 +245,7 @@
 
         {
           "url": "guide/router",
-          "title": "Routing & navigation",
+          "title": "Routing & Navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
 
@@ -269,7 +269,7 @@
       "children": [
         {
           "url": "guide/aot-compiler",
-          "title": "Ahead-of-Time compilation",
+          "title": "Ahead-of-Time Compilation",
           "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
         },
 
@@ -287,7 +287,7 @@
 
         {
           "url": "guide/component-styles",
-          "title": "Component styles",
+          "title": "Component Styles",
           "tooltip": "Learn how to apply CSS styles to components."
         },
 
@@ -321,19 +321,19 @@
 
             {
               "url": "guide/browser-support",
-              "title": "Browser support",
+              "title": "Browser Support",
               "tooltip": "Browser support and polyfills guide."
             },
 
             {
               "url": "guide/npm-packages",
-              "title": "Npm packages",
+              "title": "Npm Packages",
               "tooltip": "Recommended npm packages, and how to specify package dependencies."
             },
 
             {
               "url": "guide/typescript-configuration",
-              "title": "TypeScript configuration",
+              "title": "TypeScript Configuration",
               "tooltip": "TypeScript configuration for Angular developers."
             }
         ]},
@@ -364,7 +364,7 @@
 
         {
           "url": "guide/webpack",
-          "title": "Webpack: an introduction",
+          "title": "Webpack: An Introduction",
           "tooltip": "Create Angular applications with a Webpack based tooling."
         }
       ]
@@ -393,7 +393,7 @@
 
         {
           "url": "guide/style-guide",
-          "title": "Style guide",
+          "title": "Style Guide",
           "tooltip": "Write Angular with style."
         }
       ]

@@ -1,5 +1,5 @@
 @title
-Webpack: an introduction
+Webpack: An Introduction
 
 @intro
 Create Angular applications with a Webpack based tooling.
