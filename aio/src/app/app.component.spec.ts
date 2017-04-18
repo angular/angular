@@ -308,11 +308,33 @@ describe('AppComponent', () => {
   describe('click intercepting', () => {
     it('should intercept clicks on anchors and call `location.handleAnchorClick()`',
             inject([LocationService], (location: LocationService) => {
-      const anchorElement: HTMLAnchorElement = document.createElement('a');
-      anchorElement.href = 'some/local/url';
-      fixture.nativeElement.append(anchorElement);
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<a href="some/local/url">click me</a>';
+      const anchorElement = el.getElementsByTagName('a')[0];
       anchorElement.click();
       expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+    }));
+
+    it('should intercept clicks on elements deep within an anchor tag',
+            inject([LocationService], (location: LocationService) => {
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<a href="some/local/url"><div><img></div></a>';
+      const imageElement  = el.getElementsByTagName('img')[0];
+      const anchorElement = el.getElementsByTagName('a')[0];
+      imageElement.click();
+      expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+    }));
+
+    it('should ignore clicks on elements without an anchor ancestor',
+            inject([LocationService], (location: LocationService) => {
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<div><p><div><img></div></p></div>';
+      const imageElement  = el.getElementsByTagName('img')[0];
+      imageElement.click();
+      expect(location.handleAnchorClick).not.toHaveBeenCalled();
     }));
 
     it('should intercept clicks not on the search elements and hide the search results', () => {
