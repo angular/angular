@@ -146,10 +146,12 @@ export class ShadowCss {
   * - hostSelector is the attribute added to the host itself.
   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
-    const sourceMappingUrl: string = extractSourceMappingUrl(cssText);
+    const commentsWithHash = extractCommentsWithHash(cssText);
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector, hostSelector) + sourceMappingUrl;
+
+    const scopedCssText = this._scopeCssText(cssText, selector, hostSelector);
+    return [scopedCssText, ...commentsWithHash].join('\n');
   }
 
   private _insertDirectives(cssText: string): string {
@@ -544,12 +546,10 @@ function stripComments(input: string): string {
   return input.replace(_commentRe, '');
 }
 
-// all comments except inline source mapping
-const _sourceMappingUrlRe = /\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\//;
+const _commentWithHashRe = /\/\*\s*#\s*source(Mapping)?URL=[\s\S]+?\*\//g;
 
-function extractSourceMappingUrl(input: string): string {
-  const matcher = input.match(_sourceMappingUrlRe);
-  return matcher ? matcher[0] : '';
+function extractCommentsWithHash(input: string): string[] {
+  return input.match(_commentWithHashRe) || [];
 }
 
 const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
