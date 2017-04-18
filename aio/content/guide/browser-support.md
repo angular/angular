@@ -44,7 +44,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </th>
 
     <th>
-      IE mobile
+      IE Mobile
     </th>
 
   </tr>
@@ -251,11 +251,11 @@ These are the polyfills required to run an Angular application on each supported
   <tr style="vertical-align: top">
  
     <th>
-      Browsers (desktop & mobile)
+      Browsers (Desktop & Mobile)
     </th>
 
     <th>
-      Polyfills required
+      Polyfills Required
     </th>
 
   </tr>
@@ -327,7 +327,7 @@ Here are the features which may require additional polyfills:
     </th>
 
     <th style="width: 50%">
-       Browsers (desktop & mobile)
+       Browsers (Desktop & Mobile)
     </th>
 
   </tr>

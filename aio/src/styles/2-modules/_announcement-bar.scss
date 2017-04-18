@@ -88,7 +88,7 @@ $announcement-bar-width: 784px;
 
   img {
     height: 40px;
-    margin: 8px auto;
+    margin: 0 0 8px;
   }
 
   p {
@@ -146,6 +146,7 @@ $announcement-bar-width: 784px;
 
     @media (max-width: 480px) {
       padding: 16px;
+      align-items: center;
     }
   }
 }
