@@ -621,11 +621,11 @@ Here they are for comparison:
 
 <code-tabs>
 
-  <code-pane title="aot/index.html (AOT)" path="toh-6/aot/index.html">
+  <code-pane title="aot/index.html (AOT)" path="toh-pt6/aot/index.html">
 
   </code-pane>
 
-  <code-pane title="src/index.html (JIT)" path="toh-6/src/index.html">
+  <code-pane title="src/index.html (JIT)" path="toh-pt6/src/index.html">
 
   </code-pane>
 
@@ -648,11 +648,11 @@ are evident in these `main` files which can and should reside in the same folder
 
 <code-tabs>
 
-  <code-pane title="main-aot.ts (AOT)" path="toh-6/src/main-aot.ts">
+  <code-pane title="main-aot.ts (AOT)" path="toh-pt6/src/main-aot.ts">
 
   </code-pane>
 
-  <code-pane title="main.ts (JIT)" path="toh-6/src/main.ts">
+  <code-pane title="main.ts (JIT)" path="toh-pt6/src/main.ts">
 
   </code-pane>
 
@@ -671,11 +671,11 @@ You'll need separate TypeScript configuration files such as these:
 
 <code-tabs>
 
-  <code-pane title="tsconfig-aot.json (AOT)" path="toh-6/tsconfig-aot.json">
+  <code-pane title="tsconfig-aot.json (AOT)" path="toh-pt6/tsconfig-aot.json">
 
   </code-pane>
 
-  <code-pane title="src/tsconfig.json (JIT)" path="toh-6/src/tsconfig.1.json">
+  <code-pane title="src/tsconfig.json (JIT)" path="toh-pt6/src/tsconfig.1.json">
 
   </code-pane>
 
@@ -713,7 +713,7 @@ Edit your `tsconfig-aot.json` to fit your project's file structure.
 Rollup does the tree shaking as before.
 
 
-<code-example path="toh-6/rollup-config.js" title="rollup-config.js" linenums="false">
+<code-example path="toh-pt6/rollup-config.js" title="rollup-config.js" linenums="false">
 
 </code-example>
 
@@ -747,19 +747,19 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
 
 <code-tabs>
 
-  <code-pane title="src/index.html" path="toh-6/src/index.html">
+  <code-pane title="src/index.html" path="toh-pt6/src/index.html">
 
   </code-pane>
 
-  <code-pane title="copy-dist-files.js" path="toh-6/copy-dist-files.js">
+  <code-pane title="copy-dist-files.js" path="toh-pt6/copy-dist-files.js">
 
   </code-pane>
 
-  <code-pane title="rollup-config.js" path="toh-6/rollup-config.js">
+  <code-pane title="rollup-config.js" path="toh-pt6/rollup-config.js">
 
   </code-pane>
 
-  <code-pane title="tsconfig-aot.json" path="toh-6/tsconfig-aot.json">
+  <code-pane title="tsconfig-aot.json" path="toh-pt6/tsconfig-aot.json">
 
   </code-pane>
 
