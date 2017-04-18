@@ -136,6 +136,7 @@
 
     {
       "title": "Core",
+      "url": "guide/core",
       "tooltip": "Learn the core capabilities of Angular",
       "children": [
         {
@@ -263,7 +264,8 @@
 
     {
       "title": "Additional Techniques",
-      "tooltip": "Other",
+      "url": "guide/additional",
+      "tooltip": "Additional modules and techniques",
       "children": [
         {
           "url": "guide/aot-compiler",
